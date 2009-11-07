@@ -25,6 +25,8 @@ to be implemented soon in Predis.
 
 ### Connecting to a local instance of Redis ###
 
+You don't have to specify a tcp host and port when connecting to Redis instances 
+running on the localhost on the default port:
 
     $redis = new Predis\Client();
     $redis->set('library', 'predis');
@@ -33,6 +35,8 @@ to be implemented soon in Predis.
 
 ### Pipelining multiple commands to a remote instance of Redis ##
 
+Pipelining helps with performances when there is the need to issue many commands 
+to a server in one go:
 
     $redis   = new Predis\Client('10.0.0.1', 6379);
     $replies = $redis->pipeline(function($pipe) {
@@ -45,6 +49,10 @@ to be implemented soon in Predis.
 
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
 
+Predis supports data sharding using consistent-hashing on keys on the client side. 
+Furthermore, a pipeline can be initialized on a cluster of redis instances in the 
+same exact way they are created on single connection. Sharding is still transparent 
+to the user:
 
     $redis = Predis\Client::createCluster(
         array('host' => '10.0.0.1', 'port' => 6379),
@@ -61,14 +69,20 @@ to be implemented soon in Predis.
 
 ### Definition and runtime registration of new commands on the client ###
 
+Let's suppose Redis just added the support for a brand new feature associated 
+with a new command. If you want to start using the above mentioned new feature 
+right away without messing with Predis source code or waiting for it to find 
+its way into a stable Predis release, then you can start off by creating a new 
+class that matches the command type and its behaviour and then bind it to a 
+client instance at runtime. Actually, it is easier done than said:
 
-class BrandNewRedisCommand extends \Predis\InlineCommand {
-    public function getCommandId() { return 'NEWCMD'; }
-}
+    class BrandNewRedisCommand extends \Predis\InlineCommand {
+        public function getCommandId() { return 'NEWCMD'; }
+    }
 
-$redis = new Predis\Client();
-$redis->registerCommand('BrandNewRedisCommand', 'newcmd');
-$redis->newcmd();
+    $redis = new Predis\Client();
+    $redis->registerCommand('BrandNewRedisCommand', 'newcmd');
+    $redis->newcmd();
 
 
 ## Development ##
@@ -97,14 +111,14 @@ variable set to E_ALL.
 ## Links ##
 
 ### Project ###
-[Source code](https://github.com/nrk/predis/)
-[Issue tracker](http://github.com/nrk/predis/issues)
+- [Source code](https://github.com/nrk/predis/)
+- [Issue tracker](http://github.com/nrk/predis/issues)
 
 ### Related ###
-[Redis](http://code.google.com/p/redis/)
-[PHP](http://php.net/)
-[PHPUnit](http://www.phpunit.de/)
-[Git](http://git-scm.com/)
+- [Redis](http://code.google.com/p/redis/)
+- [PHP](http://php.net/)
+- [PHPUnit](http://www.phpunit.de/)
+- [Git](http://git-scm.com/)
 
 ## Author ##
 
