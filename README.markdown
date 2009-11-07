@@ -111,7 +111,7 @@ variable set to E_ALL.
 ## Links ##
 
 ### Project ###
-- [Source code](https://github.com/nrk/predis/)
+- [Source code](http://github.com/nrk/predis/)
 - [Issue tracker](http://github.com/nrk/predis/issues)
 
 ### Related ###
@@ -122,7 +122,7 @@ variable set to E_ALL.
 
 ## Author ##
 
-[Daniele Alessandri](mailto://suppakilla@gmail.com)
+[Daniele Alessandri](mailto:suppakilla@gmail.com)
 
 
 ## License ##
