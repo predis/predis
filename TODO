@@ -1,0 +1,21 @@
+* Authentication and database selection should be handled transparently by 
+  the client.
+
+* The current behaviour of sending, by default, unshardable commands to the 
+  first registered connection of a ConnectionCluster instance needs to be 
+  verified.
+
+* The included test suite covers almost all the Redis server commands, but a 
+  full battery of tests targeting specific functions of this library is still 
+  missing.
+
+* Support for pipelining commands on one or more connections works, but it 
+  could be optimized for better performances with a cache of computed commands 
+  hashes, but the memory impact still needs to be evalued.
+
+* Add the possibility of flushing the command buffer from inside of a pipeline.
+
+* Switching to/from instances of Connection and ConnectionCluster should be 
+  transparent to the user. Using a ConnectionCluster instance when there is 
+  only one active connection has an unnecessary overhead.
+
