@@ -98,8 +98,8 @@ issue tracker with a link to your repository. Obviously, you can use any other G
 hosting provider of you preference. Diff patches will be accepted too, even though 
 they are not the preferred way to contribute to Predis.
 
-When modifying Predis plrease be sure that no warning or notices are emitted by PHP by 
-running the interpreter in your development environment with the "error_reporting"
+When modifying Predis please be sure that no warnings or notices are emitted by PHP 
+by running the interpreter in your development environment with the "error_reporting"
 variable set to E_ALL.
 
 
