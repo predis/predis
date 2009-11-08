@@ -754,7 +754,7 @@ class Quit extends \Predis\InlineCommand {
 }
 
 /* commands operating on string values */
-class Set extends \Predis\MultiBulkCommand {
+class Set extends \Predis\BulkCommand {
     public function getCommandId() { return 'SET'; }
 }
 
@@ -774,7 +774,7 @@ class SetMultiplePreserve extends \Predis\MultiBulkCommand {
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Get extends \Predis\MultiBulkCommand {
+class Get extends \Predis\InlineCommand {
     public function getCommandId() { return 'GET'; }
 }
 
