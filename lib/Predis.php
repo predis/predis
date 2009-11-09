@@ -17,7 +17,8 @@ class Client {
 
     public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
         $this->_pipelining = false;
-        $this->_connection = new Connection($host, $port);
+        $connectionParams  = new ConnectionParameters(array('host' => $host, 'port' => $port));
+        $this->_connection = new Connection($connectionParams);
         $this->_registeredCommands = self::initializeDefaultCommands();
     }
 
@@ -45,59 +46,18 @@ class Client {
         return $client;
     }
 
-    private static function parseURI($uri) {
-        $parsed = @parse_url($uri);
+    private function createConnection($parameters) {
+        $params     = new ConnectionParameters($parameters);
+        $connection = new Connection($params);
 
-        if ($parsed == false || $parsed['scheme'] != 'redis' || $parsed['host'] == null) {
-            throw new ClientException("Invalid URI: $uri");
-        }
-
-        $details = array();
-        foreach (explode('&', $parsed['query']) as $kv) {
-            list($k, $v) = explode('=', $kv);
-            switch ($k) {
-                case 'database':
-                    $details['database'] = $v;
-                    break;
-                case 'password':
-                    $details['password'] = $v;
-                    break;
-            }
-        }
-
-        return self::filterConnectionParams(array_merge($parsed, $details));
-    }
-
-    private static function filterConnectionParams($parameters) {
-        return array(
-            'host' => $parameters['host'] != null 
-                ? $parameters['host'] 
-                : Connection::DEFAULT_HOST, 
-            'port' => $parameters['port'] != null 
-                ? (int) $parameters['port'] 
-                : Connection::DEFAULT_PORT, 
-            'database' => $parameters['database'], 
-            'password' => $parameters['password'], 
-        );
-    }
-
-    private function createConnection($connectionDetails) {
-        $parameters = is_array($connectionDetails) 
-            ? self::filterConnectionParams($connectionDetails) 
-            : self::parseURI($connectionDetails);
-
-        $connection = new Connection($parameters['host'], $parameters['port']);
-
-        if ($parameters['password'] !== null) {
+        if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommandInstance(
-                'auth', 
-                array($parameters['password'])
+                'auth', array($params->password)
             ));
         }
-        if ($parameters['database'] !== null) {
+        if ($params->database !== null) {
             $connection->pushInitCommand($this->createCommandInstance(
-                'select', 
-                array($parameters['database'])
+                'select', array($params->database)
             ));
         }
 
@@ -584,6 +544,56 @@ class CommandPipeline {
 
 /* ------------------------------------------------------------------------- */
 
+class ConnectionParameters {
+    private $_parameters;
+
+    public function __construct($parameters) {
+        $this->_parameters = is_array($parameters) 
+            ? self::filterConnectionParams($parameters) 
+            : self::parseURI($parameters);
+    }
+
+    private static function parseURI($uri) {
+        $parsed = @parse_url($uri);
+
+        if ($parsed == false || $parsed['scheme'] != 'redis' || $parsed['host'] == null) {
+            throw new ClientException("Invalid URI: $uri");
+        }
+
+        $details = array();
+        foreach (explode('&', $parsed['query']) as $kv) {
+            list($k, $v) = explode('=', $kv);
+            switch ($k) {
+                case 'database':
+                    $details['database'] = $v;
+                    break;
+                case 'password':
+                    $details['password'] = $v;
+                    break;
+            }
+        }
+
+        return self::filterConnectionParams(array_merge($parsed, $details));
+    }
+
+    private static function filterConnectionParams($parameters) {
+        return array(
+            'host' => $parameters['host'] != null 
+                ? $parameters['host'] 
+                : Connection::DEFAULT_HOST, 
+            'port' => $parameters['port'] != null 
+                ? (int) $parameters['port'] 
+                : Connection::DEFAULT_PORT, 
+            'database' => $parameters['database'], 
+            'password' => $parameters['password'], 
+        );
+    }
+
+    public function __get($parameter) {
+        return $this->_parameters[$parameter];
+    }
+}
+
 interface IConnection {
     public function connect();
     public function disconnect();
@@ -600,9 +610,9 @@ class Connection implements IConnection {
 
     private $_host, $_port, $_socket;
 
-    public function __construct($host = self::DEFAULT_HOST, $port = self::DEFAULT_PORT) {
-        $this->_host = $host;
-        $this->_port = $port;
+    public function __construct(ConnectionParameters $parameters) {
+        $this->_host = $parameters->host;
+        $this->_port = $parameters->port;
         $this->_initCmds = array();
     }
 
