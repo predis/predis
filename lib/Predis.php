@@ -501,10 +501,10 @@ class CommandPipeline {
 
     public function __call($method, $arguments) {
         $command = $this->_redisClient->createCommandInstance($method, $arguments);
-        $this->registerCommand($command);
+        $this->recordCommand($command);
     }
 
-    private function registerCommand(Command $command) {
+    private function recordCommand(Command $command) {
         $this->_pipelineBuffer[] = $command;
     }
 
