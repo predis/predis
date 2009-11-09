@@ -25,14 +25,83 @@ class Client {
         $this->_connection->disconnect();
     }
 
-    public static function createCluster(/* arguments */) {
-        $cluster = new ConnectionCluster();
-        foreach (func_get_args() as $parameters) {
-            $cluster->add(new Connection($parameters['host'], $parameters['port']));
-        }
+    public static function create(/* arguments */) {
+        $argv = func_get_args();
+        $argc = func_num_args();
+
         $client = new Client();
-        $client->setConnection($cluster);
+
+        if ($argc == 1) {
+            $client->setConnection($client->createConnection($argv[0]));
+        }
+        else if ($argc > 1) {
+            $cluster = new ConnectionCluster();
+            foreach ($argv as $parameters) {
+                $cluster->add($client->createConnection($parameters));
+            }
+            $client->setConnection($cluster);
+        }
+
         return $client;
+    }
+
+    private static function parseURI($uri) {
+        $parsed = @parse_url($uri);
+
+        if ($parsed == false || $parsed['scheme'] != 'redis' || $parsed['host'] == null) {
+            throw new ClientException("Invalid URI: $uri");
+        }
+
+        $details = array();
+        foreach (explode('&', $parsed['query']) as $kv) {
+            list($k, $v) = explode('=', $kv);
+            switch ($k) {
+                case 'database':
+                    $details['database'] = $v;
+                    break;
+                case 'password':
+                    $details['password'] = $v;
+                    break;
+            }
+        }
+
+        return self::filterConnectionParams(array_merge($parsed, $details));
+    }
+
+    private static function filterConnectionParams($parameters) {
+        return array(
+            'host' => $parameters['host'] != null 
+                ? $parameters['host'] 
+                : Connection::DEFAULT_HOST, 
+            'port' => $parameters['port'] != null 
+                ? (int) $parameters['port'] 
+                : Connection::DEFAULT_PORT, 
+            'database' => $parameters['database'], 
+            'password' => $parameters['password'], 
+        );
+    }
+
+    private function createConnection($connectionDetails) {
+        $parameters = is_array($connectionDetails) 
+            ? self::filterConnectionParams($connectionDetails) 
+            : self::parseURI($connectionDetails);
+
+        $connection = new Connection($parameters['host'], $parameters['port']);
+
+        if ($parameters['password'] !== null) {
+            $connection->pushInitCommand($this->createCommandInstance(
+                'auth', 
+                array($parameters['password'])
+            ));
+        }
+        if ($parameters['database'] !== null) {
+            $connection->pushInitCommand($this->createCommandInstance(
+                'select', 
+                array($parameters['database'])
+            ));
+        }
+
+        return $connection;
     }
 
     private function setConnection(IConnection $connection) {
@@ -534,6 +603,7 @@ class Connection implements IConnection {
     public function __construct($host = self::DEFAULT_HOST, $port = self::DEFAULT_PORT) {
         $this->_host = $host;
         $this->_port = $port;
+        $this->_initCmds = array();
     }
 
     public function __destruct() {
@@ -554,11 +624,28 @@ class Connection implements IConnection {
             throw new ClientException(trim($errstr), $errno);
         }
         stream_set_timeout($this->_socket, self::READ_WRITE_TIMEOUT);
+
+        if (count($this->_initCmds) > 0){
+            $this->sendInitializationCommands();
+        }
     }
 
     public function disconnect() {
         if ($this->isConnected()) {
             fclose($this->_socket);
+        }
+    }
+
+    public function pushInitCommand(Command $command){
+        $this->_initCmds[] = $command;
+    }
+
+    private function sendInitializationCommands() {
+        foreach ($this->_initCmds as $command) {
+            $this->writeCommand($command);
+        }
+        foreach ($this->_initCmds as $command) {
+            $this->readResponse($command);
         }
     }
 

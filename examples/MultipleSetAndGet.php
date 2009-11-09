@@ -11,8 +11,7 @@ $mkv = array(
     'usr:0003' => 'Third user' 
 );
 
-$redis = new Predis\Client(REDIS_HOST, REDIS_PORT);
-$redis->select(REDIS_DB);
+$redis = Predis\Client::create($configurations);
 
 $redis->mset($mkv);
 $retval = $redis->mget(array_keys($mkv));
