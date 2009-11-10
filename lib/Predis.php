@@ -608,11 +608,10 @@ class Connection implements IConnection {
     const CONNECTION_TIMEOUT = 2;
     const READ_WRITE_TIMEOUT = 5;
 
-    private $_host, $_port, $_socket;
+    private $_params, $_socket;
 
     public function __construct(ConnectionParameters $parameters) {
-        $this->_host = $parameters->host;
-        $this->_port = $parameters->port;
+        $this->_params   = $parameters;
         $this->_initCmds = array();
     }
 
@@ -628,7 +627,7 @@ class Connection implements IConnection {
         if ($this->isConnected()) {
             throw new ClientException('Connection already estabilished');
         }
-        $uri = sprintf('tcp://%s:%d/', $this->_host, $this->_port);
+        $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
         $this->_socket = @stream_socket_client($uri, $errno, $errstr, self::CONNECTION_TIMEOUT);
         if (!$this->_socket) {
             throw new ClientException(trim($errstr), $errno);
@@ -688,7 +687,7 @@ class Connection implements IConnection {
     }
 
     public function __toString() {
-        return sprintf('tcp://%s:%d/', $this->_host, $this->_port);
+        return sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
     }
 }
 
