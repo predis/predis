@@ -608,7 +608,7 @@ class Connection implements IConnection {
     const CONNECTION_TIMEOUT = 2;
     const READ_WRITE_TIMEOUT = 5;
 
-    private $_params, $_socket;
+    private $_params, $_socket, $_initCmds;
 
     public function __construct(ConnectionParameters $parameters) {
         $this->_params   = $parameters;
