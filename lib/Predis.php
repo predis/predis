@@ -670,7 +670,7 @@ class ConnectionCluster implements IConnection  {
 namespace Predis\Utilities;
 
 class HashRing {
-    const DEFAULT_REPLICAS = 64;
+    const DEFAULT_REPLICAS = 128;
     private $_ring, $_ringKeys, $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
