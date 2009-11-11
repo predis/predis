@@ -679,8 +679,9 @@ class HashRing {
     }
 
     public function add($node) {
+        $nodeHash = (string) $node;
         for ($i = 0; $i < self::NUMBER_OF_REPLICAS; $i++) {
-            $key = crc32((string)$node . ':' . $i);
+            $key = crc32($nodeHash . ':' . $i);
             $this->_ring[$key] = $node;
         }
         ksort($this->_ring, SORT_NUMERIC);
@@ -688,8 +689,9 @@ class HashRing {
     }
 
     public function remove($node) {
+        $nodeHash = (string) $node;
         for ($i = 0; $i < self::NUMBER_OF_REPLICAS; $i++) {
-            $key = crc32((string)$node . '_' . $i);
+            $key = crc32($nodeHash . '_' . $i);
             unset($this->_ring[$key]);
             $this->_ringKeys = array_filter($this->_ringKeys, function($rk) use($key) {
                 return $rk !== $key;
