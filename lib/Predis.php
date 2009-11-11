@@ -670,17 +670,18 @@ class ConnectionCluster implements IConnection  {
 namespace Predis\Utilities;
 
 class HashRing {
-    const NUMBER_OF_REPLICAS = 64;
-    private $_ring, $_ringKeys;
+    const DEFAULT_REPLICAS = 64;
+    private $_ring, $_ringKeys, $_replicas;
 
-    public function __construct() {
+    public function __construct($replicas = self::DEFAULT_REPLICAS) {
+        $this->_replicas = $replicas;
         $this->_ring     = array();
         $this->_ringKeys = array();
     }
 
     public function add($node) {
         $nodeHash = (string) $node;
-        for ($i = 0; $i < self::NUMBER_OF_REPLICAS; $i++) {
+        for ($i = 0; $i < $this->_replicas; $i++) {
             $key = crc32($nodeHash . ':' . $i);
             $this->_ring[$key] = $node;
         }
@@ -690,7 +691,7 @@ class HashRing {
 
     public function remove($node) {
         $nodeHash = (string) $node;
-        for ($i = 0; $i < self::NUMBER_OF_REPLICAS; $i++) {
+        for ($i = 0; $i < $this->_replicas; $i++) {
             $key = crc32($nodeHash . '_' . $i);
             unset($this->_ring[$key]);
             $this->_ringKeys = array_filter($this->_ringKeys, function($rk) use($key) {
