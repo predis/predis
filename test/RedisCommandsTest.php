@@ -458,6 +458,24 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testListPopPush() {
+        $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
+
+        $this->assertEquals(0, $this->redis->listLength('temporary'));
+        $this->assertEquals(2, $this->redis->listPopPush('numbers', 'temporary'));
+        $this->assertEquals(1, $this->redis->listPopPush('numbers', 'temporary'));
+        $this->assertEquals(0, $this->redis->listPopPush('numbers', 'temporary'));
+        $this->assertEquals(0, $this->redis->listLength('numbers'));
+        $this->assertEquals(3, $this->redis->listLength('temporary'));
+        $this->assertEquals(array(), $this->redis->listRange('numbers', 0, -1));
+        $this->assertEquals($numbers, $this->redis->listRange('temporary', 0, -1));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->listPopPush('foo', 'hoge');
+        });
+    }
+
     function testListPopFirst() {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2, 3, 4));
 
