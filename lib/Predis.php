@@ -1093,7 +1093,17 @@ class Info extends \Predis\InlineCommand {
         $infoLines = explode("\r\n", $data, -1);
         foreach ($infoLines as $row) {
             list($k, $v) = explode(':', $row);
-            $info[$k] = $v;
+            if (!preg_match('/^db\d+$/', $k)) {
+                $info[$k] = $v;
+            }
+            else {
+                $db = array();
+                foreach (explode(',', $v) as $dbvar) {
+                    list($dbvk, $dbvv) = explode('=', $dbvar);
+                    $db[trim($dbvk)] = $dbvv;
+                }
+                $info[$k] = $db;
+            }
         }
         return $info;
     }
