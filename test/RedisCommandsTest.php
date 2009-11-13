@@ -1004,6 +1004,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(20, $this->redis->zsetScore('zset', 'e'));
 
         $this->assertNull($this->redis->zsetScore('zset', 'x'));
+        $this->assertNull($this->redis->zsetScore('zsetDoesNotExist', 'a'));
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
