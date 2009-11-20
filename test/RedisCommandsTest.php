@@ -505,33 +505,33 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
 
-    function testListPushTailPopFist() {
+    function testListPopLastPushHead() {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
         $this->assertEquals(0, $this->redis->listLength('temporary'));
-        $this->assertEquals(2, $this->redis->listPushTailPopFist('numbers', 'temporary'));
-        $this->assertEquals(1, $this->redis->listPushTailPopFist('numbers', 'temporary'));
-        $this->assertEquals(0, $this->redis->listPushTailPopFist('numbers', 'temporary'));
+        $this->assertEquals(2, $this->redis->listPopLastPushHead('numbers', 'temporary'));
+        $this->assertEquals(1, $this->redis->listPopLastPushHead('numbers', 'temporary'));
+        $this->assertEquals(0, $this->redis->listPopLastPushHead('numbers', 'temporary'));
         $this->assertEquals(0, $this->redis->listLength('numbers'));
         $this->assertEquals(3, $this->redis->listLength('temporary'));
         $this->assertEquals(array(), $this->redis->listRange('numbers', 0, -1));
         $this->assertEquals($numbers, $this->redis->listRange('temporary', 0, -1));
 
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
-        $this->redis->listPushTailPopFist('numbers', 'numbers');
-        $this->redis->listPushTailPopFist('numbers', 'numbers');
-        $this->redis->listPushTailPopFist('numbers', 'numbers');
+        $this->redis->listPopLastPushHead('numbers', 'numbers');
+        $this->redis->listPopLastPushHead('numbers', 'numbers');
+        $this->redis->listPopLastPushHead('numbers', 'numbers');
         $this->assertEquals($numbers, $this->redis->listRange('numbers', 0, -1));
 
-        $this->assertEquals(null, $this->redis->listPushTailPopFist('listDoesNotExist1', 'listDoesNotExist2'));
+        $this->assertEquals(null, $this->redis->listPopLastPushHead('listDoesNotExist1', 'listDoesNotExist2'));
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
-            $test->redis->listPushTailPopFist('foo', 'hoge');
+            $test->redis->listPopLastPushHead('foo', 'hoge');
         });
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
-            $test->redis->listPushTailPopFist('temporary', 'foo');
+            $test->redis->listPopLastPushHead('temporary', 'foo');
         });
     }
 
