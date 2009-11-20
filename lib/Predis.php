@@ -223,6 +223,8 @@ class Client {
                 'popFirst'     => '\Predis\Commands\ListPopFirst',
             'rpop'             => '\Predis\Commands\ListPopLast',
                 'popLast'      => '\Predis\Commands\ListPopLast',
+            'rpoplpush'        => '\Predis\Commands\ListPushTailPopFirst',
+                'listPushTailPopFist'  => '\Predis\Commands\ListPushTailPopFirst',
 
             /* commands operating on sets */
             'sadd'                      => '\Predis\Commands\SetAdd', 
@@ -898,6 +900,10 @@ class ListSet extends \Predis\BulkCommand {
 
 class ListRemove extends \Predis\BulkCommand {
     public function getCommandId() { return 'LREM'; }
+}
+
+class ListPushTailPopFirst extends \Predis\BulkCommand {
+    public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
 class ListPopFirst extends \Predis\InlineCommand {
