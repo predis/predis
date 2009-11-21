@@ -428,7 +428,7 @@ class Response {
                 }
 
                 if ($dataLength > 0) {
-                    $value = fread($socket, $dataLength);
+                    $value = stream_get_contents($socket, $dataLength);
                     fread($socket, 2);
                     return $value;
                 }
