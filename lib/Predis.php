@@ -576,16 +576,16 @@ class ConnectionParameters {
         return self::filterConnectionParams(array_merge($parsed, $details));
     }
 
+    private static function getParamOrDefault(Array $parameters, $param, $default = null) {
+        return array_key_exists($param, $parameters) ? $parameters[$param] : $default;
+    }
+
     private static function filterConnectionParams($parameters) {
         return array(
-            'host' => $parameters['host'] != null 
-                ? $parameters['host'] 
-                : Connection::DEFAULT_HOST, 
-            'port' => $parameters['port'] != null 
-                ? (int) $parameters['port'] 
-                : Connection::DEFAULT_PORT, 
-            'database' => $parameters['database'], 
-            'password' => $parameters['password'], 
+            'host' => self::getParamOrDefault($parameters, 'host', Connection::DEFAULT_HOST), 
+            'port' => (int) self::getParamOrDefault($parameters, 'port', Connection::DEFAULT_PORT), 
+            'database' => self::getParamOrDefault($parameters, 'database'), 
+            'password' => self::getParamOrDefault($parameters, 'password')
         );
     }
 
