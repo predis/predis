@@ -12,12 +12,11 @@ class Client {
     // TODO: command arguments should be sanitized or checked for bad arguments 
     //       (e.g. CRLF in keys for inline commands)
 
-    private $_connection, $_registeredCommands, $_pipelining;
+    private $_connection, $_registeredCommands;
 
     public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
-        $this->_pipelining = false;
-        $this->_connection = new Connection($host, $port);
         $this->_registeredCommands = self::initializeDefaultCommands();
+        $this->_connection = new Connection($host, $port);
     }
 
     public function __destruct() {
@@ -72,16 +71,11 @@ class Client {
     }
 
     public function executeCommand(Command $command) {
-        if ($this->_pipelining === false) {
-            $this->_connection->writeCommand($command);
-            if ($command->closesConnection()) {
-                return $this->_connection->disconnect();
-            }
-            return $this->_connection->readResponse($command);
+        $this->_connection->writeCommand($command);
+        if ($command->closesConnection()) {
+            return $this->_connection->disconnect();
         }
-        else {
-            $this->_pipelineBuffer[] = $command;
-        }
+        return $this->_connection->readResponse($command);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
