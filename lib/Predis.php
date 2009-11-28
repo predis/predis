@@ -93,9 +93,9 @@ class Client {
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
     }
 
-    public function pipeline(\Closure $pipelineBlock) {
+    public function pipeline(\Closure $pipelineBlock = null) {
         $pipeline = new CommandPipeline($this);
-        return $pipeline->execute($pipelineBlock);
+        return $pipelineBlock !== null ? $pipeline->execute($pipelineBlock) : $pipeline;
     }
 
     public function registerCommands(Array $commands) {
@@ -511,12 +511,14 @@ class CommandPipeline {
         $this->_running = $bool;
     }
 
-    public function execute(\Closure $block) {
+    public function execute(\Closure $block = null) {
         $this->setRunning(true);
         $pipelineBlockException = null;
 
         try {
-            $block($this);
+            if ($block !== null) {
+                $block($this);
+            }
             $this->flushPipeline();
         }
         catch (\Exception $exception) {
