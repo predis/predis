@@ -560,20 +560,23 @@ class ConnectionParameters {
             throw new ClientException("Invalid URI: $uri");
         }
 
-        $details = array();
-        foreach (explode('&', $parsed['query']) as $kv) {
-            list($k, $v) = explode('=', $kv);
-            switch ($k) {
-                case 'database':
-                    $details['database'] = $v;
-                    break;
-                case 'password':
-                    $details['password'] = $v;
-                    break;
+        if (array_key_exists('query', $parsed)) {
+            $details = array();
+            foreach (explode('&', $parsed['query']) as $kv) {
+                list($k, $v) = explode('=', $kv);
+                switch ($k) {
+                    case 'database':
+                        $details['database'] = $v;
+                        break;
+                    case 'password':
+                        $details['password'] = $v;
+                        break;
+                }
             }
+            $parsed = array_merge($parsed, $details);
         }
 
-        return self::filterConnectionParams(array_merge($parsed, $details));
+        return self::filterConnectionParams($parsed);
     }
 
     private static function getParamOrDefault(Array $parameters, $param, $default = null) {
