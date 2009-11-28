@@ -34,20 +34,22 @@ class Client {
         $argv = func_get_args();
         $argc = func_num_args();
 
-        $client = new Client();
-
         if ($argc == 1) {
-            $client->setConnection($client->createConnection($argv[0]));
+            return new Client($argv[0]);
         }
         else if ($argc > 1) {
+            $client  = new Client();
             $cluster = new ConnectionCluster();
             foreach ($argv as $parameters) {
+                // TODO: this is a bit dirty...
                 $cluster->add($client->createConnection($parameters));
             }
             $client->setConnection($cluster);
+            return $client;
         }
-
-        return $client;
+        else {
+            return new Client();
+        }
     }
 
     private function createConnection($parameters) {
