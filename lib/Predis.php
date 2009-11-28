@@ -17,9 +17,13 @@ class Client {
 
     public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
         $this->_pipelining = false;
-        $connectionParams  = new ConnectionParameters(array('host' => $host, 'port' => $port));
-        $this->_connection = new Connection($connectionParams);
         $this->_registeredCommands = self::initializeDefaultCommands();
+
+        $this->setConnection($this->createConnection(
+            func_num_args() === 1 && is_array($host) || @stripos('redis://') === 0
+                ? $host
+                : array('host' => $host, 'port' => $port)
+        ));
     }
 
     public function __destruct() {
