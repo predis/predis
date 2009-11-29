@@ -789,6 +789,56 @@ class ConnectionCluster implements IConnection  {
 
 /* ------------------------------------------------------------------------- */
 
+abstract class RedisServerCompatibility { 
+    private $_registeredCommands;
+
+    public function __construct() {
+        $this->_registeredCommands = $this->getSupportedCommands();
+    }
+
+    public abstract function getVersion();
+
+    protected abstract function getSupportedCommands();
+
+    public function createCommandInstance($method, $arguments) {
+        $commandClass = $this->_registeredCommands[$method];
+
+        if ($commandClass === null) {
+            throw new ClientException("'$method' is not a registered Redis command");
+        }
+
+        $command = new $commandClass();
+        $command->setArgumentsArray($arguments);
+        return $command;
+    }
+
+
+    public function registerCommands(Array $commands) {
+        foreach ($commands as $command => $aliases) {
+            $this->registerCommand($command, $aliases);
+        }
+    }
+
+    public function registerCommand($command, $aliases) {
+        $commandReflection = new \ReflectionClass($command);
+
+        if (!$commandReflection->isSubclassOf('\Predis\Command')) {
+            throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
+        }
+
+        if (is_array($aliases)) {
+            foreach ($aliases as $alias) {
+                $this->_registeredCommands[$alias] = $command;
+            }
+        }
+        else {
+            $this->_registeredCommands[$aliases] = $command;
+        }
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+
 namespace Predis\Utilities;
 
 class HashRing {
