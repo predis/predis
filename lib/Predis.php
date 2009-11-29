@@ -12,10 +12,11 @@ class Client {
     // TODO: command arguments should be sanitized or checked for bad arguments 
     //       (e.g. CRLF in keys for inline commands)
 
-    private $_connection, $_registeredCommands;
+    private $_connection, $_serverProfile;
 
     public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
-        $this->_registeredCommands = self::initializeDefaultCommands();
+        // TODO: for now the server compatibility profile is hardcoded.
+        $this->_serverProfile = new RedisServer__V1_2();
         $this->setConnection($this->createConnection(
             func_num_args() === 1 && is_array($host) || @stripos('redis://') === 0
                 ? $host
@@ -93,15 +94,7 @@ class Client {
     }
 
     public function createCommandInstance($method, $arguments) {
-        $commandClass = $this->_registeredCommands[$method];
-
-        if ($commandClass === null) {
-            throw new ClientException("'$method' is not a registered Redis command");
-        }
-
-        $command = new $commandClass();
-        $command->setArgumentsArray($arguments);
-        return $command;
+        return $this->_serverProfile->createCommandInstance($method, $arguments);
     }
 
     public function executeCommand(Command $command) {
@@ -127,178 +120,11 @@ class Client {
     }
 
     public function registerCommands(Array $commands) {
-        foreach ($commands as $command => $aliases) {
-            $this->registerCommand($command, $aliases);
-        }
+        $this->_serverProfile->registerCommands($commands);
     }
 
     public function registerCommand($command, $aliases) {
-        $commandReflection = new \ReflectionClass($command);
-
-        if (!$commandReflection->isSubclassOf('\Predis\Command')) {
-            throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
-        }
-
-        if (is_array($aliases)) {
-            foreach ($aliases as $alias) {
-                $this->_registeredCommands[$alias] = $command;
-            }
-        }
-        else {
-            $this->_registeredCommands[$aliases] = $command;
-        }
-    }
-
-    private static function initializeDefaultCommands() {
-        // NOTE: we don't use \Predis\Client::registerCommands for performance reasons.
-        return array(
-            /* miscellaneous commands */
-            'ping'      => '\Predis\Commands\Ping',
-            'echo'      => '\Predis\Commands\DoEcho',
-            'auth'      => '\Predis\Commands\Auth',
-
-            /* connection handling */
-            'quit'      => '\Predis\Commands\Quit',
-
-            /* commands operating on string values */
-            'set'                     => '\Predis\Commands\Set',
-            'setnx'                   => '\Predis\Commands\SetPreserve',
-                'setPreserve'         => '\Predis\Commands\SetPreserve',
-            'mset'                    => '\Predis\Commands\SetMultiple',  
-                'setMultiple'         => '\Predis\Commands\SetMultiple',
-            'msetnx'                  => '\Predis\Commands\SetMultiplePreserve',
-                'setMultiplePreserve' => '\Predis\Commands\SetMultiplePreserve',
-            'get'                     => '\Predis\Commands\Get',
-            'mget'                    => '\Predis\Commands\GetMultiple',
-                'getMultiple'         => '\Predis\Commands\GetMultiple',
-            'getset'                  => '\Predis\Commands\GetSet',
-                'getSet'              => '\Predis\Commands\GetSet',
-            'incr'                    => '\Predis\Commands\Increment',
-                'increment'           => '\Predis\Commands\Increment',
-            'incrby'                  => '\Predis\Commands\IncrementBy',
-                'incrementBy'         => '\Predis\Commands\IncrementBy',
-            'incr'                    => '\Predis\Commands\Decrement',
-                'decrement'           => '\Predis\Commands\Decrement',
-            'decrby'                  => '\Predis\Commands\DecrementBy',
-                'decrementBy'         => '\Predis\Commands\DecrementBy',
-            'exists'                  => '\Predis\Commands\Exists',
-            'del'                     => '\Predis\Commands\Delete',
-                'delete'              => '\Predis\Commands\Delete',
-            'type'                    => '\Predis\Commands\Type',
-
-            /* commands operating on the key space */
-            'keys'               => '\Predis\Commands\Keys',
-            'randomkey'          => '\Predis\Commands\RandomKey',
-                'randomKey'      => '\Predis\Commands\RandomKey',
-            'rename'             => '\Predis\Commands\Rename',
-            'renamenx'           => '\Predis\Commands\RenamePreserve',
-                'renamePreserve' => '\Predis\Commands\RenamePreserve',
-            'expire'             => '\Predis\Commands\Expire',
-            'expireat'           => '\Predis\Commands\ExpireAt',
-                'expireAt'       => '\Predis\Commands\ExpireAt',
-            'dbsize'             => '\Predis\Commands\DatabaseSize',
-                'databaseSize'   => '\Predis\Commands\DatabaseSize',
-            'ttl'                => '\Predis\Commands\TimeToLive',
-                'timeToLive'     => '\Predis\Commands\TimeToLive',
-
-            /* commands operating on lists */
-            'rpush'            => '\Predis\Commands\ListPushTail',
-                'pushTail'     => '\Predis\Commands\ListPushTail',
-            'lpush'            => '\Predis\Commands\ListPushHead',
-                'pushHead'     => '\Predis\Commands\ListPushHead',
-            'llen'             => '\Predis\Commands\ListLength',
-                'listLength'   => '\Predis\Commands\ListLength',
-            'lrange'           => '\Predis\Commands\ListRange',
-                'listRange'    => '\Predis\Commands\ListRange',
-            'ltrim'            => '\Predis\Commands\ListTrim',
-                'listTrim'     => '\Predis\Commands\ListTrim',
-            'lindex'           => '\Predis\Commands\ListIndex',
-                'listIndex'    => '\Predis\Commands\ListIndex',
-            'lset'             => '\Predis\Commands\ListSet',
-                'listSet'      => '\Predis\Commands\ListSet',
-            'lrem'             => '\Predis\Commands\ListRemove',
-                'listRemove'   => '\Predis\Commands\ListRemove',
-            'lpop'             => '\Predis\Commands\ListPopFirst',
-                'popFirst'     => '\Predis\Commands\ListPopFirst',
-            'rpop'             => '\Predis\Commands\ListPopLast',
-                'popLast'      => '\Predis\Commands\ListPopLast',
-            'rpoplpush'        => '\Predis\Commands\ListPushTailPopFirst',
-                'listPopLastPushHead'  => '\Predis\Commands\ListPopLastPushHead',
-
-            /* commands operating on sets */
-            'sadd'                      => '\Predis\Commands\SetAdd', 
-                'setAdd'                => '\Predis\Commands\SetAdd',
-            'srem'                      => '\Predis\Commands\SetRemove', 
-                'setRemove'             => '\Predis\Commands\SetRemove',
-            'spop'                      => '\Predis\Commands\SetPop',
-                'setPop'                => '\Predis\Commands\SetPop',
-            'smove'                     => '\Predis\Commands\SetMove', 
-                'setMove'               => '\Predis\Commands\SetMove',
-            'scard'                     => '\Predis\Commands\SetCardinality', 
-                'setCardinality'        => '\Predis\Commands\SetCardinality',
-            'sismember'                 => '\Predis\Commands\SetIsMember', 
-                'setIsMember'           => '\Predis\Commands\SetIsMember',
-            'sinter'                    => '\Predis\Commands\SetIntersection', 
-                'setIntersection'       => '\Predis\Commands\SetIntersection',
-            'sinterstore'               => '\Predis\Commands\SetIntersectionStore', 
-                'setIntersectionStore'  => '\Predis\Commands\SetIntersectionStore',
-            'sunion'                    => '\Predis\Commands\SetUnion', 
-                'setUnion'              => '\Predis\Commands\SetUnion',
-            'sunionstore'               => '\Predis\Commands\SetUnionStore', 
-                'setUnionStore'         => '\Predis\Commands\SetUnionStore',
-            'sdiff'                     => '\Predis\Commands\SetDifference', 
-                'setDifference'         => '\Predis\Commands\SetDifference',
-            'sdiffstore'                => '\Predis\Commands\SetDifferenceStore', 
-                'setDifferenceStore'    => '\Predis\Commands\SetDifferenceStore',
-            'smembers'                  => '\Predis\Commands\SetMembers', 
-                'setMembers'            => '\Predis\Commands\SetMembers',
-            'srandmember'               => '\Predis\Commands\SetRandomMember', 
-                'setRandomMember'       => '\Predis\Commands\SetRandomMember',
-
-            /* commands operating on sorted sets */
-            'zadd'                          => '\Predis\Commands\ZSetAdd', 
-                'zsetAdd'                   => '\Predis\Commands\ZSetAdd',
-            'zrem'                          => '\Predis\Commands\ZSetRemove', 
-                'zsetRemove'                => '\Predis\Commands\ZSetRemove',
-            'zrange'                        => '\Predis\Commands\ZSetRange', 
-                'zsetRange'                 => '\Predis\Commands\ZSetRange',
-            'zrevrange'                     => '\Predis\Commands\ZSetReverseRange', 
-                'zsetReverseRange'          => '\Predis\Commands\ZSetReverseRange',
-            'zrangebyscore'                 => '\Predis\Commands\ZSetRangeByScore', 
-                'zsetRangeByScore'          => '\Predis\Commands\ZSetRangeByScore',
-            'zcard'                         => '\Predis\Commands\ZSetCardinality', 
-                'zsetCardinality'           => '\Predis\Commands\ZSetCardinality',
-            'zscore'                        => '\Predis\Commands\ZSetScore', 
-                'zsetScore'                 => '\Predis\Commands\ZSetScore',
-            'zremrangebyscore'              => '\Predis\Commands\ZSetRemoveRangeByScore', 
-                'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore',
-
-            /* multiple databases handling commands */
-            'select'                => '\Predis\Commands\SelectDatabase', 
-                'selectDatabase'    => '\Predis\Commands\SelectDatabase',
-            'move'                  => '\Predis\Commands\MoveKey', 
-                'moveKey'           => '\Predis\Commands\MoveKey',
-            'flushdb'               => '\Predis\Commands\FlushDatabase', 
-                'flushDatabase'     => '\Predis\Commands\FlushDatabase',
-            'flushall'              => '\Predis\Commands\FlushAll', 
-                'flushDatabases'    => '\Predis\Commands\FlushAll',
-
-            /* sorting */
-            'sort'                  => '\Predis\Commands\Sort',
-
-            /* remote server control commands */
-            'info'                  => '\Predis\Commands\Info',
-            'slaveof'               => '\Predis\Commands\SlaveOf', 
-                'slaveOf'           => '\Predis\Commands\SlaveOf',
-
-            /* persistence control commands */
-            'save'                  => '\Predis\Commands\Save',
-            'bgsave'                => '\Predis\Commands\BackgroundSave', 
-                'backgroundSave'    => '\Predis\Commands\BackgroundSave',
-            'lastsave'              => '\Predis\Commands\LastSave', 
-                'lastSave'          => '\Predis\Commands\LastSave',
-            'shutdown'              => '\Predis\Commands\Shutdown'
-        );
+        $this->_serverProfile->registerCommand($command, $aliases);
     }
 }
 
