@@ -177,7 +177,7 @@ class Client {
                 'increment'           => '\Predis\Commands\Increment',
             'incrby'                  => '\Predis\Commands\IncrementBy',
                 'incrementBy'         => '\Predis\Commands\IncrementBy',
-            'incr'                    => '\Predis\Commands\Decrement',
+            'decr'                    => '\Predis\Commands\Decrement',
                 'decrement'           => '\Predis\Commands\Decrement',
             'decrby'                  => '\Predis\Commands\DecrementBy',
                 'decrementBy'         => '\Predis\Commands\DecrementBy',
