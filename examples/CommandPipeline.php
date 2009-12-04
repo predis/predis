@@ -4,17 +4,17 @@ require_once 'SharedConfigurations.php';
 // when you have a whole set of consecutive commands to send to 
 // a redis server, you can use a pipeline to improve performances.
 
-$redis = Predis\Client::create($configurations);
+$redis = Predis_Client::create($configurations);
 
-$replies = $redis->pipeline(function($pipe) {
-    $pipe->ping();
-    $pipe->flushdb();
-    $pipe->incrby('counter', 10);
-    $pipe->incrby('counter', 30);
-    $pipe->exists('counter');
-    $pipe->get('counter');
-    $pipe->mget('does_not_exist', 'counter');
-});
+$pipe = $redis->pipeline();
+$pipe->ping();
+$pipe->flushdb();
+$pipe->incrby('counter', 10);
+$pipe->incrby('counter', 30);
+$pipe->exists('counter');
+$pipe->get('counter');
+$pipe->mget('does_not_exist', 'counter');
+$replies = $pipe->execute();
 
 print_r($replies);
 
