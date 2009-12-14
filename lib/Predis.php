@@ -332,11 +332,11 @@ abstract class Command {
     }
 
     protected function getArguments() {
-        return $this->_arguments !== null ? $this->_arguments : array();
+        return isset($this->_arguments) ? $this->_arguments : array();
     }
 
     public function getArgument($index = 0) {
-        return $this->_arguments !== null ? $this->_arguments[$index] : null;
+        return isset($this->_arguments[$index]) ? $this->_arguments[$index] : null;
     }
 
     public function parseResponse($data) {
