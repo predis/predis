@@ -761,10 +761,10 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     private function getConnectionFromRing(Command $command) {
-        return $this->_ring->get($this->computeHash($command));
+        return $this->_ring->get(self::computeHash($command));
     }
 
-    private function computeHash(Command $command) {
+    private static function computeHash(Command $command) {
         return crc32($command->getArgument(0));
     }
 
