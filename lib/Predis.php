@@ -717,7 +717,7 @@ class Connection implements IConnection {
     }
 }
 
-class ConnectionCluster implements IConnection  {
+class ConnectionCluster implements IConnection, \IteratorAggregate {
     // TODO: storing a temporary map of commands hashes to hashring items (that 
     //       is, connections) could offer a notable speedup, but I am wondering 
     //       about the increased memory footprint.
@@ -776,6 +776,10 @@ class ConnectionCluster implements IConnection  {
 
     public function getConnectionById($id = null) {
         return $this->_pool[$id === null ? 0 : $id];
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator($this->_pool);
     }
 
     public function writeCommand(Command $command) {
