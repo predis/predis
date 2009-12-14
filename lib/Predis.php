@@ -104,12 +104,29 @@ class Client {
         return $command;
     }
 
-    public function executeCommand(Command $command) {
-        $this->_connection->writeCommand($command);
+    private function executeCommandInternal(Connection $connection, Command $command) {
+        $connection->writeCommand($command);
         if ($command->closesConnection()) {
-            return $this->_connection->disconnect();
+            return $connection->disconnect();
         }
-        return $this->_connection->readResponse($command);
+        return $connection->readResponse($command);
+    }
+
+    public function executeCommand(Command $command) {
+        return self::executeCommandInternal($this->_connection, $command);
+    }
+
+    public function executeCommandOnShards(Command $command) {
+        $replies = array();
+        if (is_a($this->_connection, '\Predis\ConnectionCluster')) {
+            foreach($this->_connection as $connection) {
+                $replies[] = self::executeCommandInternal($connection, $command);
+            }
+        }
+        else {
+            $replies[] = self::executeCommandInternal($this->_connection, $command);
+        }
+        return $replies;
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
