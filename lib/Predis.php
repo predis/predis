@@ -92,7 +92,7 @@ class Client {
         return $this->executeCommand($command);
     }
 
-    public function createCommandInstance($method, $arguments) {
+    public function createCommandInstance($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
         if ($commandClass === null) {
