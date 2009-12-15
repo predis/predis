@@ -104,7 +104,7 @@ class Client {
         return $command;
     }
 
-    private function executeCommandInternal(Connection $connection, Command $command) {
+    private function executeCommandInternal(IConnection $connection, Command $command) {
         $connection->writeCommand($command);
         if ($command->closesConnection()) {
             return $connection->disconnect();
