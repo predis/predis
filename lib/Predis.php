@@ -90,7 +90,7 @@ class Predis_Client {
         return $this->executeCommand($command);
     }
 
-    public function createCommandInstance($method, $arguments) {
+    public function createCommandInstance($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
         if ($commandClass === null) {
@@ -102,12 +102,29 @@ class Predis_Client {
         return $command;
     }
 
-    public function executeCommand(Predis_Command $command) {
-        $this->_connection->writeCommand($command);
+    private function executeCommandInternal(Predis_IConnection $connection, Predis_Command $command) {
+        $connection->writeCommand($command);
         if ($command->closesConnection()) {
-            return $this->_connection->disconnect();
+            return $connection->disconnect();
         }
-        return $this->_connection->readResponse($command);
+        return $connection->readResponse($command);
+    }
+
+    public function executeCommand(Predis_Command $command) {
+        return self::executeCommandInternal($this->_connection, $command);
+    }
+
+    public function executeCommandOnShards(Predis_Command $command) {
+        $replies = array();
+        if (is_a($this->_connection, 'Predis_ConnectionCluster')) {
+            foreach($this->_connection as $connection) {
+                $replies[] = self::executeCommandInternal($connection, $command);
+            }
+        }
+        else {
+            $replies[] = self::executeCommandInternal($this->_connection, $command);
+        }
+        return $replies;
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
@@ -329,11 +346,11 @@ abstract class Predis_Command {
     }
 
     protected function getArguments() {
-        return $this->_arguments !== null ? $this->_arguments : array();
+        return isset($this->_arguments) ? $this->_arguments : array();
     }
 
     public function getArgument($index = 0) {
-        return $this->_arguments !== null ? $this->_arguments[$index] : null;
+        return isset($this->_arguments[$index]) ? $this->_arguments[$index] : null;
     }
 
     public function parseResponse($data) {
@@ -721,7 +738,7 @@ class Predis_Connection implements Predis_IConnection {
     }
 }
 
-class Predis_ConnectionCluster implements Predis_IConnection  {
+class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate {
     // TODO: storing a temporary map of commands hashes to hashring items (that 
     //       is, connections) could offer a notable speedup, but I am wondering 
     //       about the increased memory footprint.
@@ -765,21 +782,28 @@ class Predis_ConnectionCluster implements Predis_IConnection  {
     }
 
     private function getConnectionFromRing(Predis_Command $command) {
-        return $this->_ring->get($this->computeHash($command));
+        return $this->_ring->get(self::computeHash($command));
     }
 
-    private function computeHash(Predis_Command $command) {
+    private static function computeHash(Predis_Command $command) {
         return crc32($command->getArgument(0));
     }
 
     private function getConnection(Predis_Command $command) {
-        return $command->canBeHashed() 
-            ? $this->getConnectionFromRing($command) 
-            : $this->getConnectionById(0);
+        if ($command->canBeHashed() === false) {
+            throw new Predis_ClientException(
+                sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
+            );
+        }
+        return $this->getConnectionFromRing($command);
     }
 
     public function getConnectionById($id = null) {
         return $this->_pool[$id === null ? 0 : $id];
+    }
+
+    public function getIterator() {
+        return new ArrayIterator($this->_pool);
     }
 
     public function writeCommand(Predis_Command $command) {
