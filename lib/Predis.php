@@ -856,24 +856,26 @@ class HashRing {
     }
 
     private function getNodeKey($key) {
-        $upper = count($this->_ringKeys) - 1;
+        $ringKeys = $this->_ringKeys;
+
+        $upper = count($ringKeys) - 1;
         $lower = 0;
         $index = 0;
 
         while ($lower <= $upper) {
             $index = ($lower + $upper) / 2;
-            $item  = $this->_ringKeys[$index];
-            if ($item === $key) {
-                return $index;
-            }
-            else if ($item > $key) {
+            $item  = $ringKeys[$index];
+            if ($item > $key) {
                 $upper = $index - 1;
             }
-            else {
+            else if ($item < $key) {
                 $lower = $index + 1;
             }
+            else {
+                return $index;
+            }
         }
-        return $this->_ringKeys[$upper];
+        return $ringKeys[$upper];
     }
 }
 
