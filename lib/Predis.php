@@ -322,7 +322,7 @@ class Client {
 /* ------------------------------------------------------------------------- */
 
 abstract class Command {
-    private $_arguments;
+    private $_arguments, $_hash;
 
     public abstract function getCommandId();
 
@@ -330,6 +330,19 @@ abstract class Command {
 
     public function canBeHashed() {
         return true;
+    }
+
+    public function getHash() {
+        if (isset($this->_hash)) {
+            return $this->_hash;
+        }
+        else {
+            if (isset($this->_arguments[0])) {
+                $this->_hash = crc32($this->_arguments[0]);
+                return $this->_hash;
+            }
+        }
+        return null;
     }
 
     public function closesConnection() {
@@ -778,11 +791,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     private function getConnectionFromRing(Command $command) {
-        return $this->_ring->get(self::computeHash($command));
-    }
-
-    private static function computeHash(Command $command) {
-        return crc32($command->getArgument(0));
+        return $this->_ring->get($command->getHash());
     }
 
     private function getConnection(Command $command) {
