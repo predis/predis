@@ -72,6 +72,10 @@ class Client {
         $this->_connection = $connection;
     }
 
+    public function setServerProfile(RedisServerProfile $serverProfile) {
+        $this->_serverProfile = $serverProfile;
+    }
+
     public function connect() {
         $this->_connection->connect();
     }
