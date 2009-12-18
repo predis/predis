@@ -631,7 +631,7 @@ abstract class RedisServerProfile {
 
     protected abstract function getSupportedCommands();
 
-    public function createCommandInstance($method, $arguments) {
+    public function createCommandInstance($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
         if ($commandClass === null) {
