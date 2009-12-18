@@ -337,7 +337,15 @@ abstract class Command {
         }
         else {
             if (isset($this->_arguments[0])) {
-                $this->_hash = crc32($this->_arguments[0]);
+                $key = $this->_arguments[0];
+
+                $start = strpos($key, '{');
+                $end   = strpos($key, '}');
+                if ($start !== false && $end !== false) {
+                    $key = substr($key, ++$start, $end - $start);
+                }
+
+                $this->_hash = crc32($key);
                 return $this->_hash;
             }
         }
