@@ -167,7 +167,6 @@ class Client {
     }
 
     private static function initializeDefaultCommands() {
-        // NOTE: we don't use \Predis\Client::registerCommands for performance reasons.
         return array(
             /* miscellaneous commands */
             'ping'      => '\Predis\Commands\Ping',
@@ -510,7 +509,7 @@ class Response {
     }
 
     public static function getPrefixHandler($prefix) {
-        if (self::$_prefixHandlers == null) {
+        if (self::$_prefixHandlers === null) {
             self::$_prefixHandlers = self::initializePrefixHandlers();
         }
 
@@ -748,9 +747,6 @@ class Connection implements IConnection {
 }
 
 class ConnectionCluster implements IConnection, \IteratorAggregate {
-    // TODO: storing a temporary map of commands hashes to hashring items (that 
-    //       is, connections) could offer a notable speedup, but I am wondering 
-    //       about the increased memory footprint.
     // TODO: find a clean way to handle connection failures of single nodes.
 
     private $_pool, $_ring;
