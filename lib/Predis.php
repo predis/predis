@@ -12,11 +12,12 @@ class Client {
     // TODO: command arguments should be sanitized or checked for bad arguments 
     //       (e.g. CRLF in keys for inline commands)
 
+    private static $_defaultServerProfile = 'Predis\RedisServer__V1_2';
     private $_connection, $_serverProfile;
 
     public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
-        // TODO: for now the server compatibility profile is hardcoded.
-        $this->_serverProfile = new RedisServer__V1_2();
+        // TODO: the server profile should be provided upon initialization.
+        $this->_serverProfile = new self::$_defaultServerProfile();
         $this->setConnection($this->createConnection(
             func_num_args() === 1 && is_array($host) || @stripos('redis://') === 0
                 ? $host
