@@ -790,17 +790,13 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
         $this->_ring->add($connection);
     }
 
-    private function getConnectionFromRing(Command $command) {
-        return $this->_ring->get($command->getHash());
-    }
-
     private function getConnection(Command $command) {
         if ($command->canBeHashed() === false) {
             throw new ClientException(
                 sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
             );
         }
-        return $this->getConnectionFromRing($command);
+        return $this->_ring->get($command->getHash());
     }
 
     public function getConnectionById($id = null) {
