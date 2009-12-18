@@ -615,7 +615,7 @@ class ConnectionCluster implements IConnection  {
 
 /* ------------------------------------------------------------------------- */
 
-abstract class RedisServerCompatibility { 
+abstract class RedisServerProfile { 
     private $_registeredCommands;
 
     public function __construct() {
@@ -663,7 +663,7 @@ abstract class RedisServerCompatibility {
     }
 }
 
-class RedisServer__V1_0 extends RedisServerCompatibility {
+class RedisServer__V1_0 extends RedisServerProfile {
     public function getVersion() { return 1.0; }
     public function getSupportedCommands() {
         return array(
