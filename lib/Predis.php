@@ -986,7 +986,6 @@ class ZSetAdd extends \Predis\BulkCommand {
 
 class ZSetIncrementBy extends \Predis\BulkCommand {
     public function getCommandId() { return 'ZINCRBY'; }
-    public function parseResponse($data) { return (bool) $data; }
 }
 
 class ZSetRemove extends \Predis\BulkCommand {
