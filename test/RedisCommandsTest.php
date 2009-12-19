@@ -866,6 +866,26 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetIncrementBy() {
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zsetDoesNotExist', 1, 'foo'));
+        $this->assertEquals('zset', $this->redis->type('zsetDoesNotExist'));
+
+        RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+        $this->assertEquals(-5, $this->redis->zsetIncrementBy('zset', 5, 'a'));
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zset', 1, 'b'));
+        $this->assertEquals(10, $this->redis->zsetIncrementBy('zset', 0, 'c'));
+        $this->assertEquals(0, $this->redis->zsetIncrementBy('zset', -20, 'd'));
+        $this->assertEquals(2, $this->redis->zsetIncrementBy('zset', 2, 'd'));
+        $this->assertEquals(-10, $this->redis->zsetIncrementBy('zset', -30, 'e'));
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zset', 1, 'x'));
+
+        // wrong type
+        $this->redis->set('foo', 'bar');
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->zsetIncrementBy('foo', 1, 'a');
+        });
+    }
+
     function testZsetRemove() {
         RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
         
