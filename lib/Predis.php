@@ -274,6 +274,8 @@ class Client {
             /* commands operating on sorted sets */
             'zadd'                          => '\Predis\Commands\ZSetAdd', 
                 'zsetAdd'                   => '\Predis\Commands\ZSetAdd',
+            'zincrby'                       => '\Predis\Commands\ZSetIncrementBy', 
+                'zsetIncrementBy'           => '\Predis\Commands\ZSetIncrementBy', 
             'zrem'                          => '\Predis\Commands\ZSetRemove', 
                 'zsetRemove'                => '\Predis\Commands\ZSetRemove',
             'zrange'                        => '\Predis\Commands\ZSetRange', 
@@ -1137,6 +1139,10 @@ class SetRandomMember extends \Predis\InlineCommand {
 class ZSetAdd extends \Predis\BulkCommand {
     public function getCommandId() { return 'ZADD'; }
     public function parseResponse($data) { return (bool) $data; }
+}
+
+class ZSetIncrementBy extends \Predis\BulkCommand {
+    public function getCommandId() { return 'ZINCRBY'; }
 }
 
 class ZSetRemove extends \Predis\BulkCommand {
