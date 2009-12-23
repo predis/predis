@@ -941,6 +941,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetRange('zset', -100, 100)
         );
 
+        $this->assertEquals(
+            array_values(array_keys($zset)), 
+            $this->redis->zsetRange('zset', -100, 100)
+        );
+
+        $this->assertEquals(
+            array(array('a', -10), array('b', 0), array('c', 10)), 
+            $this->redis->zsetRange('zset', 0, 2, 'withscores')
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->zsetRange('foo', 0, -1);
@@ -988,6 +998,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array_values(array_reverse(array_keys($zset))), 
             $this->redis->zsetReverseRange('zset', -100, 100)
+        );
+
+        $this->assertEquals(
+            array(array('f', 30), array('e', 20), array('d', 20)), 
+            $this->redis->zsetReverseRange('zset', 0, 2, 'withscores')
         );
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
