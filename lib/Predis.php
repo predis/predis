@@ -1152,10 +1152,36 @@ class ZSetRemove extends \Predis\BulkCommand {
 
 class ZSetRange extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZRANGE'; }
+    public function parseResponse($data) {
+        $arguments = $this->getArguments();
+        if (count($arguments) === 4) {
+            if (strtolower($arguments[3]) === 'withscores') {
+                $result = array();
+                for ($i = 0; $i < count($data); $i++) {
+                    $result[] = array($data[$i], $data[++$i]);
+                }
+                return $result;
+            }
+        }
+        return $data;
+    }
 }
 
 class ZSetReverseRange extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZREVRANGE'; }
+    public function parseResponse($data) {
+        $arguments = $this->getArguments();
+        if (count($arguments) === 4) {
+            if (strtolower($arguments[3]) === 'withscores') {
+                $result = array();
+                for ($i = 0; $i < count($data); $i++) {
+                    $result[] = array($data[$i], $data[++$i]);
+                }
+                return $result;
+            }
+        }
+        return $data;
+    }
 }
 
 class ZSetRangeByScore extends \Predis\InlineCommand {
