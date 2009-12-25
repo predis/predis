@@ -12,17 +12,11 @@ class Client {
     // TODO: command arguments should be sanitized or checked for bad arguments 
     //       (e.g. CRLF in keys for inline commands)
 
-    private static $_defaultServerProfile = 'Predis\RedisServer__V1_2';
     private $_connection, $_serverProfile;
 
-    public function __construct($host = Connection::DEFAULT_HOST, $port = Connection::DEFAULT_PORT) {
-        // TODO: the server profile should be provided upon initialization.
-        $this->_serverProfile = new self::$_defaultServerProfile();
-        $this->setConnection($this->createConnection(
-            func_num_args() === 1 && is_array($host) || @stripos('redis://') === 0
-                ? $host
-                : array('host' => $host, 'port' => $port)
-        ));
+    public function __construct($parameters, RedisServerProfile $serverProfile = null) {
+        $this->setServerProfile($serverProfile === null ? RedisServerProfile::getDefault() : $serverProfile);
+        $this->setupConnection($parameters);
     }
 
     public function __destruct() {
@@ -36,18 +30,27 @@ class Client {
         if ($argc == 1) {
             return new Client($argv[0]);
         }
-        else if ($argc > 1) {
-            $client  = new Client();
-            $cluster = new ConnectionCluster();
-            foreach ($argv as $parameters) {
-                // TODO: this is a bit dirty...
-                $cluster->add($client->createConnection($parameters));
+        else {
+            if (is_subclass_of($argv[$argc-1], '\Predis\RedisServerProfile')) {
+                $serverProfile = array_pop($argv);
+                return new Client(count($argv) > 1 ? $argv : $argv[0], $serverProfile);
             }
-            $client->setConnection($cluster);
-            return $client;
+            else {
+                return new Client($argv);
+            }
+        }
+    }
+
+    private function setupConnection($parameters) {
+        if (is_array($parameters) && isset($parameters[0]) && is_array($parameters[0])) {
+            $cluster = new ConnectionCluster();
+            foreach ($parameters as $shardParams) {
+                $cluster->add($this->createConnection($shardParams));
+            }
+            $this->setConnection($cluster);
         }
         else {
-            return new Client();
+            $this->setConnection($this->createConnection($parameters));
         }
     }
 
@@ -620,7 +623,8 @@ class ConnectionCluster implements IConnection  {
 
 /* ------------------------------------------------------------------------- */
 
-abstract class RedisServerProfile { 
+abstract class RedisServerProfile {
+    const DEFAULT_SERVER_PROFILE = '\Predis\RedisServer__V1_2';
     private $_registeredCommands;
 
     public function __construct() {
@@ -630,6 +634,11 @@ abstract class RedisServerProfile {
     public abstract function getVersion();
 
     protected abstract function getSupportedCommands();
+
+    public static function getDefault() {
+        $defaultProfile = self::DEFAULT_SERVER_PROFILE;
+        return new $defaultProfile();
+    }
 
     public function createCommandInstance($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
@@ -642,7 +651,6 @@ abstract class RedisServerProfile {
         $command->setArgumentsArray($arguments);
         return $command;
     }
-
 
     public function registerCommands(Array $commands) {
         foreach ($commands as $command => $aliases) {
