@@ -593,7 +593,7 @@ class Connection implements IConnection {
     }
 
     public function __toString() {
-        return sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
+        return sprintf('%s:%d', $this->_params->host, $this->_params->port);
     }
 }
 
