@@ -14,8 +14,12 @@ class Client {
 
     private $_connection, $_serverProfile;
 
-    public function __construct($parameters, RedisServerProfile $serverProfile = null) {
-        $this->setServerProfile($serverProfile === null ? RedisServerProfile::getDefault() : $serverProfile);
+    public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
+        $this->setServerProfile(
+            $serverProfile === null 
+                ? RedisServerProfile::getDefault() 
+                : $serverProfile
+        );
         $this->setupConnection($parameters);
     }
 
@@ -27,21 +31,24 @@ class Client {
         $argv = func_get_args();
         $argc = func_num_args();
 
-        if ($argc == 1) {
-            return new Client($argv[0]);
+        $serverProfile = null;
+        if ($argc > 0 && is_subclass_of($argv[$argc-1], '\Predis\RedisServerProfile')) {
+            $serverProfile = array_pop($argv);
+            $argc--;
         }
-        else {
-            if (is_subclass_of($argv[$argc-1], '\Predis\RedisServerProfile')) {
-                $serverProfile = array_pop($argv);
-                return new Client(count($argv) > 1 ? $argv : $argv[0], $serverProfile);
-            }
-            else {
-                return new Client($argv);
-            }
+
+        if ($argc === 0) {
+            throw new ClientException('Missing connection parameters');
         }
+
+        return new Client($argc === 1 ? $argv[0] : $argv, $serverProfile);
     }
 
     private function setupConnection($parameters) {
+        if ($parameters !== null && !(is_array($parameters) || is_string($parameters))) {
+            throw new ClientException('Invalid parameters type (array or string expected)');
+        }
+
         if (is_array($parameters) && isset($parameters[0]) && is_array($parameters[0])) {
             $cluster = new ConnectionCluster();
             foreach ($parameters as $shardParams) {
