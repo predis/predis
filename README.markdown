@@ -38,7 +38,7 @@ running on the localhost on the default port:
 Pipelining helps with performances when there is the need to issue many commands 
 to a server in one go:
 
-    $redis   = new Predis\Client('10.0.0.1', 6379);
+    $redis   = new Predis\Client('redis://10.0.0.1:6379/');
     $replies = $redis->pipeline(function($pipe) {
         $pipe->ping();
         $pipe->incrby('counter', 10);
