@@ -409,9 +409,12 @@ class CommandPipeline {
 /* ------------------------------------------------------------------------- */
 
 class ConnectionParameters {
+    const DEFAULT_HOST = '127.0.0.1';
+    const DEFAULT_PORT = 6379;
     private $_parameters;
 
     public function __construct($parameters) {
+        $parameters = $parameters !== null ? $parameters : array();
         $this->_parameters = is_array($parameters) 
             ? self::filterConnectionParams($parameters) 
             : self::parseURI($parameters);
@@ -449,8 +452,8 @@ class ConnectionParameters {
 
     private static function filterConnectionParams($parameters) {
         return array(
-            'host' => self::getParamOrDefault($parameters, 'host', Connection::DEFAULT_HOST), 
-            'port' => (int) self::getParamOrDefault($parameters, 'port', Connection::DEFAULT_PORT), 
+            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
+            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password')
         );
@@ -470,8 +473,6 @@ interface IConnection {
 }
 
 class Connection implements IConnection {
-    const DEFAULT_HOST = '127.0.0.1';
-    const DEFAULT_PORT = 6379;
     const CONNECTION_TIMEOUT = 2;
     const READ_WRITE_TIMEOUT = 5;
 
