@@ -48,7 +48,7 @@ to a server in one go:
     $pipe->incrby('counter', 10);
     $pipe->incrby('counter', 30);
     $pipe->get('counter');
-    $replies = $pipe->flushPipeline();
+    $replies = $pipe->execute();
 
 
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
