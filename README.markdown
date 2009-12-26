@@ -5,9 +5,13 @@
 Predis is a flexible and feature-complete PHP client library for the Redis key-value 
 database.
 
-Predis is currently a work-in-progress and it targets PHP >= 5.3, though it is highly 
-due to be backported to PHP >= 5.2.6 as soon as the public API and the internal design 
-on the main branch will be considered stable enough.
+Predis is currently a work-in-progress and it comes in two flavors:
+
+ - the mainline client library, which targets PHP 5.3.x and exploits a lot of the 
+   features introduced in this new version of the PHP interpreter.
+ - a backport to PHP 5.2.x for those who can not upgrade their environment yet 
+   (it admittedly has a lower priority compared to the mainline library, although we 
+   try to keep the two versions aligned as much as possible).
 
 Please refer to the TODO file to see which issues are still pending and what is due 
 to be implemented soon in Predis.
@@ -28,7 +32,7 @@ to be implemented soon in Predis.
 You don't have to specify a tcp host and port when connecting to Redis instances 
 running on the localhost on the default port:
 
-    $redis = new Predis\Client();
+    $redis = new Predis_Client();
     $redis->set('library', 'predis');
     $value = $redis->get('library');
 
@@ -38,13 +42,13 @@ running on the localhost on the default port:
 Pipelining helps with performances when there is the need to issue many commands 
 to a server in one go:
 
-    $redis   = new Predis\Client('10.0.0.1', 6379);
-    $replies = $redis->pipeline(function($pipe) {
-        $pipe->ping();
-        $pipe->incrby('counter', 10);
-        $pipe->incrby('counter', 30);
-        $pipe->get('counter');
-    });
+    $redis = new Predis_Client('redis://10.0.0.1:6379/');
+    $pipe  = $redis->pipeline();
+    $pipe->ping();
+    $pipe->incrby('counter', 10);
+    $pipe->incrby('counter', 30);
+    $pipe->get('counter');
+    $replies = $pipe->flushPipeline();
 
 
 ### Pipelining multiple commands to multiple instances of Redis (sharding) ##
@@ -54,17 +58,17 @@ Furthermore, a pipeline can be initialized on a cluster of redis instances in th
 same exact way they are created on single connection. Sharding is still transparent 
 to the user:
 
-    $redis = Predis\Client::create(
+    $redis = Predis_Client::create(
         array('host' => '10.0.0.1', 'port' => 6379),
         array('host' => '10.0.0.2', 'port' => 6379)
     );
 
-    $replies = $redis->pipeline(function($pipe) {
-        for ($i = 0; $i < 1000; $i++) {
-            $pipe->set("key:$i", str_pad($i, 4, '0', 0));
-            $pipe->get("key:$i");
-        }
-    });
+    $pipe = $redis->pipeline();
+    for ($i = 0; $i < 1000; $i++) {
+        $pipe->set("key:$i", str_pad($i, 4, '0', 0));
+        $pipe->get("key:$i");
+    }
+    $replies = $pipe->flushPipeline();
 
 
 ### Definition and runtime registration of new commands on the client ###
@@ -76,11 +80,11 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends \Predis\InlineCommand {
+    class BrandNewRedisCommand extends Predis_InlineCommand {
         public function getCommandId() { return 'NEWCMD'; }
     }
 
-    $redis = new Predis\Client();
+    $redis = new Predis_Client();
     $redis->registerCommand('BrandNewRedisCommand', 'newcmd');
     $redis->newcmd();
 
@@ -105,7 +109,7 @@ variable set to E_ALL.
 
 ## Dependencies ##
 
-- PHP >= 5.3
+- PHP >= 5.2
 - PHPUnit (needed to run the test suite)
 
 ## Links ##
