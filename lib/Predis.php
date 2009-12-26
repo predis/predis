@@ -30,7 +30,8 @@ class Predis_Client {
         $argc = func_num_args();
 
         $serverProfile = null;
-        if ($argc > 0 && is_subclass_of($argv[$argc-1], 'Predis_RedisServerProfile')) {
+        $lastArg = $argv[$argc-1];
+        if ($argc > 0 && !is_string($lastArg) && is_subclass_of($lastArg, 'Predis_RedisServerProfile')) {
             $serverProfile = array_pop($argv);
             $argc--;
         }
@@ -47,7 +48,7 @@ class Predis_Client {
             throw new Predis_ClientException('Invalid parameters type (array or string expected)');
         }
 
-        if (is_array($parameters) && isset($parameters[0]) && is_array($parameters[0])) {
+        if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new Predis_ConnectionCluster();
             foreach ($parameters as $shardParams) {
                 $cluster->add($this->createConnection($shardParams));
