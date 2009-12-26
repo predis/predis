@@ -32,7 +32,8 @@ class Client {
         $argc = func_num_args();
 
         $serverProfile = null;
-        if ($argc > 0 && is_subclass_of($argv[$argc-1], '\Predis\RedisServerProfile')) {
+        $lastArg = $argv[$argc-1];
+        if ($argc > 0 && !is_string($lastArg) && is_subclass_of($lastArg, '\Predis\RedisServerProfile')) {
             $serverProfile = array_pop($argv);
             $argc--;
         }
