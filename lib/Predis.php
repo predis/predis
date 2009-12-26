@@ -50,7 +50,7 @@ class Client {
             throw new ClientException('Invalid parameters type (array or string expected)');
         }
 
-        if (is_array($parameters) && isset($parameters[0]) && is_array($parameters[0])) {
+        if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new ConnectionCluster();
             foreach ($parameters as $shardParams) {
                 $cluster->add($this->createConnection($shardParams));
