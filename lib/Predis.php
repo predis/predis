@@ -886,6 +886,16 @@ class RedisServer__V1_2 extends RedisServer__V1_0 {
     }
 }
 
+class RedisServer__Futures extends RedisServer__V1_2 {
+    public function getVersion() { return 0; }
+    public function getSupportedCommands() {
+        return array_merge(parent::getSupportedCommands(), array(
+            'multi'     => '\Predis\Commands\Multi',
+            'exec'      => '\Predis\Commands\Exec'
+        ));
+    }
+}
+
 /* ------------------------------------------------------------------------- */
 
 namespace Predis\Utilities;
@@ -1361,5 +1371,15 @@ class SlaveOf extends \Predis\InlineCommand {
     public function filterArguments(Array $arguments) {
         return count($arguments) === 0 ? array('NO ONE') : $arguments;
     }
+}
+
+class Multi extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'MULTI'; }
+}
+
+class Exec extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'EXEC'; }
 }
 ?>
