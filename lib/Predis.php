@@ -572,8 +572,8 @@ class Connection implements IConnection {
     public function readResponse(Command $command) {
         $socket   = $this->getSocket();
         $handler  = Response::getPrefixHandler(fgetc($socket));
-        $response = $command->parseResponse($handler($socket));
-        return $response;
+        $response = $handler($socket);
+        return $response !== 'QUEUED' ? $command->parseResponse($response) : $response;
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
