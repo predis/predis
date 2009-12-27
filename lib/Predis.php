@@ -105,7 +105,7 @@ class Client {
     }
 
     public function __call($method, $arguments) {
-        $command = $this->createCommand($method, $arguments);
+        $command = $this->_serverProfile->createCommand($method, $arguments);
         return $this->executeCommand($command);
     }
 
