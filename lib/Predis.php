@@ -445,6 +445,59 @@ class CommandPipeline {
     }
 }
 
+class MultiExecBlock {
+    private $_redisClient, $_commands, $_initialized;
+
+    public function __construct(Client $redisClient) {
+        $this->_initialized = false;
+        $this->_redisClient = $redisClient;
+        $this->_commands    = array();
+    }
+
+    private function initialize() {
+        if ($this->_initialized === false) {
+            $this->_redisClient->multi();
+            $this->_initialized = true;
+        }
+    }
+
+    public function __call($method, $arguments) {
+        $this->initialize();
+        $command = $this->_redisClient->createCommand($method, $arguments);
+        if ($this->_redisClient->executeCommand($command) === 'QUEUED') {
+            $this->_commands[] = $command;
+        }
+        else {
+            // TODO: ...
+            throw ClientException('Unexpected condition');
+        }
+    }
+
+    public function execute(\Closure $block = null) {
+        $blockException = null;
+        $returnValues   = array();
+
+        try {
+            if ($block !== null) {
+                $block($this);
+            }
+            $execReply = $this->_redisClient->exec();
+            for ($i = 0; $i < count($execReply); $i++) {
+                $returnValues[] = $this->_commands[$i]->parseResponse($execReply[$i]);
+            }
+        }
+        catch (\Exception $exception) {
+            $blockException = $exception;
+        }
+
+        if ($blockException !== null) {
+            throw $blockException;
+        }
+
+        return $returnValues;
+    }
+}
+
 /* ------------------------------------------------------------------------- */
 
 class ConnectionParameters {
