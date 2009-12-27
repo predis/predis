@@ -152,6 +152,11 @@ class Client {
         return $pipelineBlock !== null ? $pipeline->execute($pipelineBlock) : $pipeline;
     }
 
+    public function multiExec(\Closure $multiExecBlock = null) {
+        $multiExec = new MultiExecBlock($this);
+        return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
+    }
+
     public function registerCommands(Array $commands) {
         $this->_serverProfile->registerCommands($commands);
     }
