@@ -400,7 +400,7 @@ class CommandPipeline {
         }
 
         $connection = $this->_redisClient->getConnection();
-        $commands   = &$this->getRecordedCommands();
+        $commands   = $this->getRecordedCommands();
 
         foreach ($commands as $command) {
             $connection->writeCommand($command);
