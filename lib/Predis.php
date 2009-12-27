@@ -67,12 +67,12 @@ class Client {
         $connection = new Connection($params);
 
         if ($params->password !== null) {
-            $connection->pushInitCommand($this->createCommandInstance(
+            $connection->pushInitCommand($this->createCommand(
                 'auth', array($params->password)
             ));
         }
         if ($params->database !== null) {
-            $connection->pushInitCommand($this->createCommandInstance(
+            $connection->pushInitCommand($this->createCommand(
                 'select', array($params->database)
             ));
         }
@@ -105,12 +105,12 @@ class Client {
     }
 
     public function __call($method, $arguments) {
-        $command = $this->createCommandInstance($method, $arguments);
+        $command = $this->createCommand($method, $arguments);
         return $this->executeCommand($command);
     }
 
-    public function createCommandInstance($method, $arguments = array()) {
-        return $this->_serverProfile->createCommandInstance($method, $arguments);
+    public function createCommand($method, $arguments = array()) {
+        return $this->_serverProfile->createCommand($method, $arguments);
     }
 
     private function executeCommandInternal(IConnection $connection, Command $command) {
@@ -382,7 +382,7 @@ class CommandPipeline {
     }
 
     public function __call($method, $arguments) {
-        $command = $this->_redisClient->createCommandInstance($method, $arguments);
+        $command = $this->_redisClient->createCommand($method, $arguments);
         $this->recordCommand($command);
     }
 
@@ -683,7 +683,7 @@ abstract class RedisServerProfile {
         return new $defaultProfile();
     }
 
-    public function createCommandInstance($method, $arguments = array()) {
+    public function createCommand($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
         if ($commandClass === null) {
