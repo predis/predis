@@ -1276,7 +1276,7 @@ class FlushAll extends \Predis\InlineCommand {
 /* sorting */
 class Sort extends \Predis\InlineCommand {
     public function getCommandId() { return 'SORT'; }
-    public function filterArguments($arguments) {
+    public function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
             return $arguments;
         }
@@ -1358,7 +1358,7 @@ class Info extends \Predis\InlineCommand {
 class SlaveOf extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SLAVEOF'; }
-    public function filterArguments($arguments) {
+    public function filterArguments(Array $arguments) {
         return count($arguments) === 0 ? array('NO ONE') : $arguments;
     }
 }
