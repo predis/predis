@@ -65,12 +65,12 @@ class Predis_Client {
         $connection = new Predis_Connection($params);
 
         if ($params->password !== null) {
-            $connection->pushInitCommand($this->createCommandInstance(
+            $connection->pushInitCommand($this->createCommand(
                 'auth', array($params->password)
             ));
         }
         if ($params->database !== null) {
-            $connection->pushInitCommand($this->createCommandInstance(
+            $connection->pushInitCommand($this->createCommand(
                 'select', array($params->database)
             ));
         }
@@ -103,12 +103,12 @@ class Predis_Client {
     }
 
     public function __call($method, $arguments) {
-        $command = $this->createCommandInstance($method, $arguments);
+        $command = $this->_serverProfile->createCommand($method, $arguments);
         return $this->executeCommand($command);
     }
 
-    public function createCommandInstance($method, $arguments = array()) {
-        return $this->_serverProfile->createCommandInstance($method, $arguments);
+    public function createCommand($method, $arguments = array()) {
+        return $this->_serverProfile->createCommand($method, $arguments);
     }
 
     private function executeCommandInternal(Predis_IConnection $connection, Predis_Command $command) {
@@ -389,7 +389,7 @@ class Predis_CommandPipeline {
     }
 
     public function __call($method, $arguments) {
-        $command = $this->_redisClient->createCommandInstance($method, $arguments);
+        $command = $this->_redisClient->createCommand($method, $arguments);
         $this->recordCommand($command);
     }
 
@@ -687,7 +687,7 @@ abstract class Predis_RedisServerProfile {
         return new $defaultProfile();
     }
 
-    public function createCommandInstance($method, $arguments = array()) {
+    public function createCommand($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
         if ($commandClass === null) {
@@ -1235,21 +1235,8 @@ class Predis_Commands_ZSetRange extends Predis_InlineCommand {
     }
 }
 
-class Predis_Commands_ZSetReverseRange extends Predis_InlineCommand {
+class Predis_Commands_ZSetReverseRange extends Predis_Commands_ZSetRange {
     public function getCommandId() { return 'ZREVRANGE'; }
-    public function parseResponse($data) {
-        $arguments = $this->getArguments();
-        if (count($arguments) === 4) {
-            if (strtolower($arguments[3]) === 'withscores') {
-                $result = array();
-                for ($i = 0; $i < count($data); $i++) {
-                    $result[] = array($data[$i], $data[++$i]);
-                }
-                return $result;
-            }
-        }
-        return $data;
-    }
 }
 
 class Predis_Commands_ZSetRangeByScore extends Predis_InlineCommand {
@@ -1293,7 +1280,7 @@ class Predis_Commands_FlushAll extends Predis_InlineCommand {
 /* sorting */
 class Predis_Commands_Sort extends Predis_InlineCommand {
     public function getCommandId() { return 'SORT'; }
-    public function filterArguments($arguments) {
+    public function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
             return $arguments;
         }
@@ -1375,7 +1362,7 @@ class Predis_Commands_Info extends Predis_InlineCommand {
 class SlaveOf extends Predis_InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SLAVEOF'; }
-    public function filterArguments($arguments) {
+    public function filterArguments(Array $arguments) {
         return count($arguments) === 0 ? array('NO ONE') : $arguments;
     }
 }
