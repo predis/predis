@@ -312,8 +312,8 @@ class Response {
                     return $value;
                 }
                 else if ($dataLength == 0) {
-                    // TODO: I just have a doubt here...
                     fread($socket, 2);
+                    return '';
                 }
 
                 return null;
