@@ -698,6 +698,10 @@ abstract class RedisServerProfile {
         return new $defaultProfile();
     }
 
+    public function supportsCommand($command) {
+        return isset($this->_registeredCommands[$command]);
+    }
+
     public function createCommand($method, $arguments = array()) {
         $commandClass = $this->_registeredCommands[$method];
 
