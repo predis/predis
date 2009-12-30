@@ -1151,7 +1151,7 @@ class ListPopLast extends \Predis\InlineCommand {
 }
 
 class ListPopFirstBlocking extends \Predis\InlineCommand {
-    public function getCommandId() { return 'BRPOP'; }
+    public function getCommandId() { return 'BLPOP'; }
 }
 
 class ListPopLastBlocking extends \Predis\InlineCommand {
