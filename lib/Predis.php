@@ -509,6 +509,10 @@ class ConnectionParameters {
     public function __get($parameter) {
         return $this->_parameters[$parameter];
     }
+
+    public function __isset($parameter) {
+        return isset($this->_parameters[$parameter]);
+    }
 }
 
 interface IConnection {
