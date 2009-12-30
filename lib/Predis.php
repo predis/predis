@@ -285,6 +285,7 @@ class Response {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
     const ERROR   = 'ERR';
+    const QUEUED  = 'QUEUED';
     const NULL    = 'nil';
 
     private static $_prefixHandlers;
@@ -294,7 +295,13 @@ class Response {
             // status
             '+' => function($socket) {
                 $status = rtrim(fgets($socket), Response::NEWLINE);
-                return $status === Response::OK ? true : $status;
+                if ($status === Response::OK) {
+                    return true;
+                }
+                else if ($status === Response::QUEUED) {
+                    return new ResponseQueued();
+                }
+                return $status;
             }, 
 
             // error
@@ -374,6 +381,14 @@ class Response {
             throw new MalformedServerResponse("Unknown prefix '$prefix'");
         }
         return $handler;
+    }
+}
+
+class ResponseQueued {
+    public $queued = true;
+
+    public function __toString() {
+        return Response::QUEUED;
     }
 }
 
@@ -469,12 +484,12 @@ class MultiExecBlock {
     public function __call($method, $arguments) {
         $this->initialize();
         $command = $this->_redisClient->createCommand($method, $arguments);
-        if ($this->_redisClient->executeCommand($command) === 'QUEUED') {
+        if (isset($this->_redisClient->executeCommand($command)->queued)) {
             $this->_commands[] = $command;
         }
         else {
             // TODO: ...
-            throw ClientException('Unexpected condition');
+            throw new ClientException('Unexpected condition');
         }
     }
 
@@ -631,7 +646,7 @@ class Connection implements IConnection {
         $socket   = $this->getSocket();
         $handler  = Response::getPrefixHandler(fgetc($socket));
         $response = $handler($socket);
-        return $response !== 'QUEUED' ? $command->parseResponse($response) : $response;
+        return isset($response->queued) ? $response : $command->parseResponse($response);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
