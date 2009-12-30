@@ -477,6 +477,12 @@ class ConnectionParameters {
                     case 'password':
                         $details['password'] = $v;
                         break;
+                    case 'connection_timeout':
+                        $details['connection_timeout'] = $v;
+                        break;
+                    case 'read_write_timeout':
+                        $details['read_write_timeout'] = $v;
+                        break;
                 }
             }
             $parsed = array_merge($parsed, $details);
@@ -494,7 +500,9 @@ class ConnectionParameters {
             'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
-            'password' => self::getParamOrDefault($parameters, 'password')
+            'password' => self::getParamOrDefault($parameters, 'password'), 
+            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout'), 
+            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
         );
     }
 
@@ -535,11 +543,12 @@ class Connection implements IConnection {
             throw new ClientException('Connection already estabilished');
         }
         $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
-        $this->_socket = @stream_socket_client($uri, $errno, $errstr, self::CONNECTION_TIMEOUT);
+        $connectionTimeout = $this->_params->connection_timeout ?: self::CONNECTION_TIMEOUT;
+        $this->_socket = @stream_socket_client($uri, $errno, $errstr, $connectionTimeout);
         if (!$this->_socket) {
             throw new ClientException(trim($errstr), $errno);
         }
-        stream_set_timeout($this->_socket, self::READ_WRITE_TIMEOUT);
+        stream_set_timeout($this->_socket, $this->_params->read_write_timeout ?: self::READ_WRITE_TIMEOUT);
 
         if (count($this->_initCmds) > 0){
             $this->sendInitializationCommands();
