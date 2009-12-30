@@ -525,7 +525,6 @@ interface IConnection {
 
 class Connection implements IConnection {
     const CONNECTION_TIMEOUT = 2;
-    const READ_WRITE_TIMEOUT = 5;
 
     private $_params, $_socket, $_initCmds;
 
@@ -552,7 +551,10 @@ class Connection implements IConnection {
         if (!$this->_socket) {
             throw new ClientException(trim($errstr), $errno);
         }
-        stream_set_timeout($this->_socket, $this->_params->read_write_timeout ?: self::READ_WRITE_TIMEOUT);
+
+        if (isset($this->_params->read_write_timeout)) {
+            stream_set_timeout($this->_socket, $this->_params->read_write_timeout);
+        }
 
         if (count($this->_initCmds) > 0){
             $this->sendInitializationCommands();
