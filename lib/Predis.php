@@ -152,6 +152,11 @@ class Client {
         return $pipelineBlock !== null ? $pipeline->execute($pipelineBlock) : $pipeline;
     }
 
+    public function multiExec(\Closure $multiExecBlock = null) {
+        $multiExec = new MultiExecBlock($this);
+        return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
+    }
+
     public function registerCommands(Array $commands) {
         $this->_serverProfile->registerCommands($commands);
     }
@@ -280,6 +285,7 @@ class Response {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
     const ERROR   = 'ERR';
+    const QUEUED  = 'QUEUED';
     const NULL    = 'nil';
 
     private static $_prefixHandlers;
@@ -289,7 +295,13 @@ class Response {
             // status
             '+' => function($socket) {
                 $status = rtrim(fgets($socket), Response::NEWLINE);
-                return $status === Response::OK ? true : $status;
+                if ($status === Response::OK) {
+                    return true;
+                }
+                else if ($status === Response::QUEUED) {
+                    return new ResponseQueued();
+                }
+                return $status;
             }, 
 
             // error
@@ -372,6 +384,14 @@ class Response {
     }
 }
 
+class ResponseQueued {
+    public $queued = true;
+
+    public function __toString() {
+        return Response::QUEUED;
+    }
+}
+
 class CommandPipeline {
     private $_redisClient, $_pipelineBuffer, $_returnValues, $_running;
 
@@ -442,6 +462,59 @@ class CommandPipeline {
         }
 
         return $this->_returnValues;
+    }
+}
+
+class MultiExecBlock {
+    private $_redisClient, $_commands, $_initialized;
+
+    public function __construct(Client $redisClient) {
+        $this->_initialized = false;
+        $this->_redisClient = $redisClient;
+        $this->_commands    = array();
+    }
+
+    private function initialize() {
+        if ($this->_initialized === false) {
+            $this->_redisClient->multi();
+            $this->_initialized = true;
+        }
+    }
+
+    public function __call($method, $arguments) {
+        $this->initialize();
+        $command = $this->_redisClient->createCommand($method, $arguments);
+        if (isset($this->_redisClient->executeCommand($command)->queued)) {
+            $this->_commands[] = $command;
+        }
+        else {
+            // TODO: ...
+            throw new ClientException('Unexpected condition');
+        }
+    }
+
+    public function execute(\Closure $block = null) {
+        $blockException = null;
+        $returnValues   = array();
+
+        try {
+            if ($block !== null) {
+                $block($this);
+            }
+            $execReply = $this->_redisClient->exec();
+            for ($i = 0; $i < count($execReply); $i++) {
+                $returnValues[] = $this->_commands[$i]->parseResponse($execReply[$i]);
+            }
+        }
+        catch (\Exception $exception) {
+            $blockException = $exception;
+        }
+
+        if ($blockException !== null) {
+            throw $blockException;
+        }
+
+        return $returnValues;
     }
 }
 
@@ -587,8 +660,8 @@ class Connection implements IConnection {
     public function readResponse(Command $command) {
         $socket   = $this->getSocket();
         $handler  = Response::getPrefixHandler(fgetc($socket));
-        $response = $command->parseResponse($handler($socket));
-        return $response;
+        $response = $handler($socket);
+        return isset($response->queued) ? $response : $command->parseResponse($response);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
@@ -901,6 +974,16 @@ class RedisServer__V1_2 extends RedisServer__V1_0 {
                 'zsetScore'                 => '\Predis\Commands\ZSetScore',
             'zremrangebyscore'              => '\Predis\Commands\ZSetRemoveRangeByScore',
                 'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore'
+        ));
+    }
+}
+
+class RedisServer__Futures extends RedisServer__V1_2 {
+    public function getVersion() { return 0; }
+    public function getSupportedCommands() {
+        return array_merge(parent::getSupportedCommands(), array(
+            'multi'     => '\Predis\Commands\Multi',
+            'exec'      => '\Predis\Commands\Exec'
         ));
     }
 }
@@ -1380,5 +1463,15 @@ class SlaveOf extends \Predis\InlineCommand {
     public function filterArguments(Array $arguments) {
         return count($arguments) === 0 ? array('NO ONE') : $arguments;
     }
+}
+
+class Multi extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'MULTI'; }
+}
+
+class Exec extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'EXEC'; }
 }
 ?>
