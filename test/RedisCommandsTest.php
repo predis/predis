@@ -46,23 +46,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testMultiExec() {
-        // NOTE: due to a limitation in the current implementation of Predis\Client, 
-        //       the replies returned by Predis\Command\Exec are not parsed by their 
-        //       respective Predis\Command::parseResponse methods. If you need that 
-        //       kind of behaviour, you should use an instance of Predis\MultiExecBlock.
+        // NOTE: due to a limitation in the current implementation of Predis_Client, 
+        //       the replies returned by Predis_Command\Exec are not parsed by their 
+        //       respective Predis_Command::parseResponse methods. If you need that 
+        //       kind of behaviour, you should use an instance of Predis_MultiExecBlock.
         $this->assertTrue($this->redis->multi());
-        $this->assertType('Predis\ResponseQueued', $this->redis->ping());
-        $this->assertType('Predis\ResponseQueued', $this->redis->echo('hello'));
-        $this->assertType('Predis\ResponseQueued', $this->redis->echo('redis'));
+        $this->assertType('Predis_ResponseQueued', $this->redis->ping());
+        $this->assertType('Predis_ResponseQueued', $this->redis->echo('hello'));
+        $this->assertType('Predis_ResponseQueued', $this->redis->echo('redis'));
         $this->assertEquals(array('PONG', 'hello', 'redis'), $this->redis->exec());
 
         $this->assertTrue($this->redis->multi());
         $this->assertEquals(array(), $this->redis->exec());
 
         // should throw an exception when trying to EXEC without having previously issued MULTI
-        RC::testForServerException($this, RC::EXCEPTION_EXEC_NO_MULTI, function($test) {
-            $test->redis->exec();
-        });
+        RC::testForServerException($this, RC::EXCEPTION_EXEC_NO_MULTI, p_anon("\$test", "
+            \$test->redis->exec();
+        "));
     }
 
     /* commands operating on string values */
@@ -79,10 +79,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->redis->get('fooDoesNotExist'));
 
         // should throw an exception when trying to do a GET on non-string types
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->pushTail('metavars', 'foo');
-            $test->redis->get('metavars');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->pushTail('metavars', 'foo');
+            \$test->redis->get('metavars');
+        "));
     }
 
     function testExists() {
@@ -230,9 +230,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $this->redis->get('foofoo'));
 
         // should throw an excepion then trying to rename non-existing keys
-        RC::testForServerException($this, RC::EXCEPTION_NO_SUCH_KEY, function($test) {
-            $test->redis->rename('hoge', 'hogehoge');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_NO_SUCH_KEY, p_anon("\$test", "
+            \$test->redis->rename('hoge', 'hogehoge');
+        "));
     }
 
     function testRenamePreserve() {
@@ -246,9 +246,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->exists('hoge'));
 
         // should throw an excepion then trying to rename non-existing keys
-        RC::testForServerException($this, RC::EXCEPTION_NO_SUCH_KEY, function($test) {
-            $test->redis->renamePreserve('fuga', 'baz');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_NO_SUCH_KEY, p_anon("\$test", "
+            \$test->redis->renamePreserve('fuga', 'baz');
+        "));
     }
 
     function testExpirationAndTTL() {
@@ -291,11 +291,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->pushTail('metavars', 'hoge'));
 
         // should throw an exception when trying to do a RPUSH on non-list types
-        // should throw an exception when trying to do a LPUSH on non-list types
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->pushTail('foo', 'bar');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->pushTail('foo', 'bar');
+        "));
     }
 
     function testPushHead() {
@@ -304,10 +303,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->pushHead('metavars', 'hoge'));
 
         // should throw an exception when trying to do a LPUSH on non-list types
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->pushHead('foo', 'bar');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->pushHead('foo', 'bar');
+        "));
     }
 
     function testListLength() {
@@ -318,10 +317,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->listLength('doesnotexist'));
 
         // should throw an exception when trying to do a LLEN on non-list types
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listLength('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listLength('foo');
+        "));
     }
 
     function testListRange() {
@@ -367,10 +366,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->redis->listRange('keyDoesNotExist', 0, 1));
 
         // should throw an exception when trying to do a LRANGE on non-list types
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listRange('foo', 0, -1);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listRange('foo', 0, -1);
+        "));
     }
 
     function testListTrim() {
@@ -409,10 +408,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->listRange('numbers', 0, -1)
         );
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listTrim('foo', 0, 1);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listTrim('foo', 0, 1);
+        "));
     }
 
     function testListIndex() {
@@ -428,10 +427,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(7, $this->redis->listIndex('numbers', -3));
         $this->assertNull($this->redis->listIndex('numbers', -100));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listIndex('foo', 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listIndex('foo', 0);
+        "));
     }
 
     function testListSet() {
@@ -440,14 +439,14 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->listSet('numbers', 5, -5));
         $this->assertEquals(-5, $this->redis->listIndex('numbers', 5));
 
-        RC::testForServerException($this, RC::EXCEPTION_OUT_OF_RANGE, function($test) {
-            $test->redis->listSet('numbers', 99, 99);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_OUT_OF_RANGE, p_anon("\$test", "
+            \$test->redis->listSet('numbers', 99, 99);
+        "));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listSet('foo', 0, 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listSet('foo', 0, 0);
+        "));
     }
 
     function testListRemove() {
@@ -471,10 +470,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(0, $this->redis->listRemove('listDoesNotExist', 2, '_'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listRemove('foo', 0, 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listRemove('foo', 0, 0);
+        "));
     }
 
     function testListPopFirst() {
@@ -494,10 +493,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertNull($this->redis->popFirst('listDoesNotExist'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->popFirst('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->popFirst('foo');
+        "));
     }
 
     function testListPopLast() {
@@ -517,10 +516,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertNull($this->redis->popLast('listDoesNotExist'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->popLast('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->popLast('foo');
+        "));
     }
 
 
@@ -543,15 +542,15 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(null, $this->redis->listPopLastPushHead('listDoesNotExist1', 'listDoesNotExist2'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listPopLastPushHead('foo', 'hoge');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listPopLastPushHead('foo', 'hoge');
+        "));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->listPopLastPushHead('temporary', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->listPopLastPushHead('temporary', 'foo');
+        "));
     }
 
 
@@ -562,10 +561,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->setAdd('set', 1));
         $this->assertFalse($this->redis->setAdd('set', 0));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->setAdd('foo', 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->setAdd('foo', 0);
+        "));
     }
 
     function testSetRemove() {
@@ -575,10 +574,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->setRemove('set', 4));
         $this->assertFalse($this->redis->setRemove('set', 10));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->setRemove('foo', 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->setRemove('foo', 0);
+        "));
     }
 
     function testSetPop() {
@@ -588,10 +587,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertNull($this->redis->setPop('setDoesNotExist'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->setPop('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->setPop('foo');
+        "));
     }
 
     function testSetMove() {
@@ -607,12 +606,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setMove('foo', 'setB', 5);
-        });
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setMove('setA', 'foo', 5);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setMove('foo', 'setB', 5);
+        "));
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setMove('setA', 'foo', 5);
+        "));
     }
 
     function testSetCardinality() {
@@ -629,10 +628,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->setCardinality('setDoesNotExist'));
 
         // wrong type
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->setCardinality('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->setCardinality('foo');
+        "));
     }
 
     function testSetIsMember() {
@@ -644,10 +643,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->redis->setIsMember('setDoesNotExist', 0));
 
         // wrong type
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->setIsMember('foo', 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->setIsMember('foo', 0);
+        "));
     }
 
     function testSetMembers() {
@@ -659,9 +658,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setMembers('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setMembers('foo');
+        "));
     }
 
     function testSetIntersection() {
@@ -683,12 +682,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setIntersection('foo');
-        });
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setIntersection('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setIntersection('foo');
+        "));
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setIntersection('setA', 'foo');
+        "));
     }
 
     function testSetIntersectionStore() {
@@ -718,9 +717,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setIntersectionStore('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setIntersectionStore('setA', 'foo');
+        "));
     }
 
     function testSetUnion() {
@@ -744,12 +743,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setUnion('foo');
-        });
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setUnion('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setUnion('foo');
+        "));
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setUnion('setA', 'foo');
+        "));
     }
 
     function testSetUnionStore() {
@@ -781,9 +780,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setUnionStore('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setUnionStore('setA', 'foo');
+        "));
     }
 
     function testSetDifference() {
@@ -807,12 +806,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setDifference('foo');
-        });
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setDifference('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setDifference('foo');
+        "));
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setDifference('setA', 'foo');
+        "));
     }
 
     function testSetDifferenceStore() {
@@ -844,9 +843,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setDifferenceStore('setA', 'foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setDifferenceStore('setA', 'foo');
+        "));
     }
 
     function testRandomMember() {
@@ -858,9 +857,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->setRandomMember('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->setRandomMember('foo');
+        "));
     }
 
 
@@ -879,10 +878,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->redis->zsetAdd('zset', 2, 'b'));
         $this->assertFalse($this->redis->zsetAdd('zset', -2, 'b'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetAdd('foo', 0, 'a');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetAdd('foo', 0, 'a');
+        "));
     }
 
     function testZsetIncrementBy() {
@@ -900,9 +899,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // wrong type
         $this->redis->set('foo', 'bar');
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->zsetIncrementBy('foo', 1, 'a');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->zsetIncrementBy('foo', 1, 'a');
+        "));
     }
 
     function testZsetRemove() {
@@ -911,10 +910,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->zsetRemove('zset', 'a'));
         $this->assertFalse($this->redis->zsetRemove('zset', 'x'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetRemove('foo', 'bar');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetRemove('foo', 'bar');
+        "));
     }
 
     function testZsetRange() {
@@ -970,10 +969,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetRange('zset', 0, 2, 'withscores')
         );
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetRange('foo', 0, -1);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetRange('foo', 0, -1);
+        "));
     }
 
     function testZsetReverseRange() {
@@ -1024,10 +1023,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetReverseRange('zset', 0, 2, 'withscores')
         );
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetReverseRange('foo', 0, -1);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetReverseRange('foo', 0, -1);
+        "));
     }
 
     function testZsetRangeByScore() {
@@ -1053,10 +1052,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetRangeByScore('zset', 30, 0)
         );
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetRangeByScore('foo', 0, 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetRangeByScore('foo', 0, 0);
+        "));
     }
 
     function testZsetCardinality() {
@@ -1075,10 +1074,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         // non-existing zset
         $this->assertEquals(0, $this->redis->zsetCardinality('zsetDoesNotExist'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetCardinality('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetCardinality('foo');
+        "));
     }
 
     function testZsetScore() {
@@ -1091,10 +1090,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertNull($this->redis->zsetScore('zset', 'x'));
         $this->assertNull($this->redis->zsetScore('zsetDoesNotExist', 'a'));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetScore('foo', 'bar');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetScore('foo', 'bar');
+        "));
     }
 
     function testZsetRemoveRangeByScore() {
@@ -1119,10 +1118,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(0, $this->redis->zsetRemoveRangeByScore('zsetDoesNotExist', 0, 100));
 
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->zsetRemoveRangeByScore('foo', 0, 0);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zsetRemoveRangeByScore('foo', 0, 0);
+        "));
     }
 
 
@@ -1132,13 +1131,13 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->selectDatabase(0));
         $this->assertTrue($this->redis->selectDatabase(RC::DEFAULT_DATABASE));
 
-        RC::testForServerException($this, RC::EXCEPTION_INVALID_DB_IDX, function($test) {
-            $test->redis->selectDatabase(32);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_INVALID_DB_IDX, p_anon("\$test", "
+            \$test->redis->selectDatabase(32);
+        "));
 
-        RC::testForServerException($this, RC::EXCEPTION_INVALID_DB_IDX, function($test) {
-            $test->redis->selectDatabase(-1);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_INVALID_DB_IDX, p_anon("\$test", "
+            \$test->redis->selectDatabase(-1);
+        "));
     }
 
     function testMove() {
@@ -1156,9 +1155,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->redis->set('hoge', 'piyo');
         // TODO: shouldn't Redis send an EXCEPTION_INVALID_DB_IDX instead of EXCEPTION_OUT_OF_RANGE?
-        RC::testForServerException($this, RC::EXCEPTION_OUT_OF_RANGE, function($test) {
-            $test->redis->move('hoge', 32);
-        });
+        RC::testForServerException($this, RC::EXCEPTION_OUT_OF_RANGE, p_anon("\$test", "
+            \$test->redis->move('hoge', 32);
+        "));
     }
 
     function testFlushDatabase() {
@@ -1236,10 +1235,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(1, 2, 3, 10, 30, 100),  $this->redis->listRange('ordered', 0, -1));
 
         // wront type
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->set('foo', 'bar');
-            $test->redis->sort('foo');
-        });
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->sort('foo');
+        "));
     }
 
     /* remote server control commands */

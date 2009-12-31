@@ -11,6 +11,10 @@ if (!function_exists('array_union')) {
     }
 }
 
+function p_anon($param, $function) {
+    return create_function($param, $function);
+}
+
 class RC {
     const SERVER_HOST      = '127.0.0.1';
     const SERVER_PORT      = 6379;
@@ -26,8 +30,8 @@ class RC {
     private static $_connection;
 
     private static function createConnection() {
-        $serverProfile = new Predis\RedisServer__Futures();
-        $connection = new Predis\Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
+        $serverProfile = new Predis_RedisServer__Futures();
+        $connection = new Predis_Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
         $connection->connect();
         $connection->selectDatabase(RC::DEFAULT_DATABASE);
         return $connection;
@@ -85,14 +89,14 @@ class RC {
         try {
             $wrapFunction($testcaseInstance);
         }
-        catch (Predis\ServerException $exception) {
+        catch (Predis_ServerException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\ServerException', $thrownException);
+        $testcaseInstance->assertType('Predis_ServerException', $thrownException);
         $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
     }
 
-    public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
+    public static function pushTailAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
             $client->delete($keyName);
         }
@@ -102,7 +106,7 @@ class RC {
         return $values;
     }
 
-    public static function setAddAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
+    public static function setAddAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
             $client->delete($keyName);
         }
@@ -112,7 +116,7 @@ class RC {
         return $values;
     }
 
-    public static function zsetAddAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
+    public static function zsetAddAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         // $values: array(SCORE => VALUE, ...);
         if ($wipeOut == true) {
             $client->delete($keyName);
