@@ -490,8 +490,7 @@ class MultiExecBlock {
             return $response;
         }
         else {
-            // TODO: ...
-            throw new ClientException('Unexpected condition');
+            throw new ClientException('The server did not respond with a QUEUED status reply');
         }
     }
 
