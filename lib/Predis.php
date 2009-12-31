@@ -483,9 +483,11 @@ class MultiExecBlock {
 
     public function __call($method, $arguments) {
         $this->initialize();
-        $command = $this->_redisClient->createCommand($method, $arguments);
-        if (isset($this->_redisClient->executeCommand($command)->queued)) {
+        $command  = $this->_redisClient->createCommand($method, $arguments);
+        $response = $this->_redisClient->executeCommand($command);
+        if (isset($response->queued)) {
             $this->_commands[] = $command;
+            return $response;
         }
         else {
             // TODO: ...
