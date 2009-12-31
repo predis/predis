@@ -45,6 +45,25 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->redis->isConnected());
     }
 
+    function testMultiExec() {
+        // NOTE: due to a limitation in the current implementation of Predis\Client, 
+        //       the replies returned by Predis\Command\Exec are not parsed by their 
+        //       respective Predis\Command::parseResponse methods. If you need that 
+        //       kind of behaviour, you should use an instance of Predis\MultiExecBlock.
+        $this->assertTrue($this->redis->multi());
+        $this->assertType('Predis\ResponseQueued', $this->redis->ping());
+        $this->assertType('Predis\ResponseQueued', $this->redis->echo('hello'));
+        $this->assertType('Predis\ResponseQueued', $this->redis->echo('redis'));
+        $this->assertEquals(array('PONG', 'hello', 'redis'), $this->redis->exec());
+
+        $this->assertTrue($this->redis->multi());
+        $this->assertEquals(array(), $this->redis->exec());
+
+        // should throw an exception when trying to EXEC without having previously issued MULTI
+        RC::testForServerException($this, RC::EXCEPTION_EXEC_NO_MULTI, function($test) {
+            $test->redis->exec();
+        });
+    }
 
     /* commands operating on string values */
 
@@ -866,6 +885,26 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetIncrementBy() {
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zsetDoesNotExist', 1, 'foo'));
+        $this->assertEquals('zset', $this->redis->type('zsetDoesNotExist'));
+
+        RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+        $this->assertEquals(-5, $this->redis->zsetIncrementBy('zset', 5, 'a'));
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zset', 1, 'b'));
+        $this->assertEquals(10, $this->redis->zsetIncrementBy('zset', 0, 'c'));
+        $this->assertEquals(0, $this->redis->zsetIncrementBy('zset', -20, 'd'));
+        $this->assertEquals(2, $this->redis->zsetIncrementBy('zset', 2, 'd'));
+        $this->assertEquals(-10, $this->redis->zsetIncrementBy('zset', -30, 'e'));
+        $this->assertEquals(1, $this->redis->zsetIncrementBy('zset', 1, 'x'));
+
+        // wrong type
+        $this->redis->set('foo', 'bar');
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->zsetIncrementBy('foo', 1, 'a');
+        });
+    }
+
     function testZsetRemove() {
         RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
         
@@ -921,6 +960,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetRange('zset', -100, 100)
         );
 
+        $this->assertEquals(
+            array_values(array_keys($zset)), 
+            $this->redis->zsetRange('zset', -100, 100)
+        );
+
+        $this->assertEquals(
+            array(array('a', -10), array('b', 0), array('c', 10)), 
+            $this->redis->zsetRange('zset', 0, 2, 'withscores')
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->zsetRange('foo', 0, -1);
@@ -968,6 +1017,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array_values(array_reverse(array_keys($zset))), 
             $this->redis->zsetReverseRange('zset', -100, 100)
+        );
+
+        $this->assertEquals(
+            array(array('f', 30), array('e', 20), array('d', 20)), 
+            $this->redis->zsetReverseRange('zset', 0, 2, 'withscores')
         );
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
