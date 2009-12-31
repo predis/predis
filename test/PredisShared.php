@@ -25,7 +25,8 @@ class RC {
     private static $_connection;
 
     private static function createConnection() {
-        $connection = new Predis\Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
+        $serverProfile = new Predis\RedisServer__Futures();
+        $connection = new Predis\Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
         $connection->connect();
         $connection->selectDatabase(RC::DEFAULT_DATABASE);
         return $connection;
