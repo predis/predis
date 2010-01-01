@@ -813,7 +813,7 @@ abstract class RedisServerProfile {
 }
 
 class RedisServer__V1_0 extends RedisServerProfile {
-    public function getVersion() { return 1.0; }
+    public function getVersion() { return '1.0'; }
     public function getSupportedCommands() {
         return array(
             /* miscellaneous commands */
@@ -943,7 +943,7 @@ class RedisServer__V1_0 extends RedisServerProfile {
 }
 
 class RedisServer__V1_2 extends RedisServer__V1_0 {
-    public function getVersion() { return 1.2; }
+    public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* commands operating on string values */
@@ -980,7 +980,7 @@ class RedisServer__V1_2 extends RedisServer__V1_0 {
 }
 
 class RedisServer__Futures extends RedisServer__V1_2 {
-    public function getVersion() { return 0; }
+    public function getVersion() { return 'DEV'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             'multi'     => '\Predis\Commands\Multi',
