@@ -807,6 +807,10 @@ abstract class RedisServerProfile {
             $this->_registeredCommands[$aliases] = $command;
         }
     }
+
+    public function __toString() {
+        return $this->getVersion();
+    }
 }
 
 class RedisServer__V1_0 extends RedisServerProfile {
