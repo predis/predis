@@ -88,6 +88,10 @@ class Client {
         $this->_serverProfile = $serverProfile;
     }
 
+    public function getProfile() {
+        return $this->_serverProfile;
+    }
+
     public function connect() {
         $this->_connection->connect();
     }
