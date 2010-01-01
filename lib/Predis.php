@@ -783,12 +783,10 @@ abstract class RedisServerProfile {
     }
 
     public function createCommand($method, $arguments = array()) {
-        $commandClass = $this->_registeredCommands[$method];
-
-        if ($commandClass === null) {
+        if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
-
+        $commandClass = $this->_registeredCommands[$method];
         $command = new $commandClass();
         $command->setArgumentsArray($arguments);
         return $command;
