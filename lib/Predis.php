@@ -12,11 +12,7 @@ class Client {
     private $_connection, $_serverProfile;
 
     public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
-        $this->setProfile(
-            $serverProfile === null 
-                ? RedisServerProfile::getDefault() 
-                : $serverProfile
-        );
+        $this->setProfile($serverProfile ?: RedisServerProfile::getDefault());
         $this->setupConnection($parameters);
     }
 
@@ -517,7 +513,7 @@ class ConnectionParameters {
     private $_parameters;
 
     public function __construct($parameters) {
-        $parameters = $parameters !== null ? $parameters : array();
+        $parameters = $parameters ?: array();
         $this->_parameters = is_array($parameters) 
             ? self::filterConnectionParams($parameters) 
             : self::parseURI($parameters);
@@ -727,7 +723,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     public function getConnectionById($id = null) {
-        return $this->_pool[$id === null ? 0 : $id];
+        return $this->_pool[$id ?: 0];
     }
 
     public function getIterator() {
