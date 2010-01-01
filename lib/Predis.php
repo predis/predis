@@ -142,12 +142,12 @@ class Client {
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
     }
 
-    public function pipeline(\Closure $pipelineBlock = null) {
+    public function pipeline($pipelineBlock = null) {
         $pipeline = new CommandPipeline($this);
         return $pipelineBlock !== null ? $pipeline->execute($pipelineBlock) : $pipeline;
     }
 
-    public function multiExec(\Closure $multiExecBlock = null) {
+    public function multiExec($multiExecBlock = null) {
         $multiExec = new MultiExecBlock($this);
         return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
     }
@@ -427,7 +427,11 @@ class CommandPipeline {
         $this->_running = $bool;
     }
 
-    public function execute(\Closure $block = null) {
+    public function execute($block = null) {
+        if ($block && !is_callable($block)) {
+            throw new \RuntimeException('Argument passed must be a callable object');
+        }
+
         $this->setRunning(true);
         $pipelineBlockException = null;
 
@@ -480,7 +484,11 @@ class MultiExecBlock {
         }
     }
 
-    public function execute(\Closure $block = null) {
+    public function execute($block = null) {
+        if ($block && !is_callable($block)) {
+            throw new \RuntimeException('Argument passed must be a callable object');
+        }
+
         $blockException = null;
         $returnValues   = array();
 
