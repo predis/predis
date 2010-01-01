@@ -362,12 +362,10 @@ class Response {
         if (self::$_prefixHandlers === null) {
             self::$_prefixHandlers = self::initializePrefixHandlers();
         }
-
-        $handler = self::$_prefixHandlers[$prefix];
-        if ($handler === null) {
+        if (!isset(self::$_prefixHandlers[$prefix])) {
             throw new MalformedServerResponse("Unknown prefix '$prefix'");
         }
-        return $handler;
+        return self::$_prefixHandlers[$prefix];
     }
 }
 
