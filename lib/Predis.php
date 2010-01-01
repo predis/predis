@@ -15,7 +15,7 @@ class Client {
     private $_connection, $_serverProfile;
 
     public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
-        $this->setServerProfile(
+        $this->setProfile(
             $serverProfile === null 
                 ? RedisServerProfile::getDefault() 
                 : $serverProfile
@@ -84,7 +84,7 @@ class Client {
         $this->_connection = $connection;
     }
 
-    public function setServerProfile(RedisServerProfile $serverProfile) {
+    public function setProfile(RedisServerProfile $serverProfile) {
         $this->_serverProfile = $serverProfile;
     }
 
