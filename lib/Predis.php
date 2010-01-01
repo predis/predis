@@ -9,9 +9,6 @@ class MalformedServerResponse extends ServerException { }
 /* ------------------------------------------------------------------------- */
 
 class Client {
-    // TODO: command arguments should be sanitized or checked for bad arguments 
-    //       (e.g. CRLF in keys for inline commands)
-
     private $_connection, $_serverProfile;
 
     public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
@@ -143,8 +140,6 @@ class Client {
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        // TODO: rather than check the type of a connection instance, we should 
-        //       check if it does respond to the rawCommand method.
         if (is_a($this->_connection, '\Predis\ConnectionCluster')) {
             throw new ClientException('Cannot send raw commands when connected to a cluster of Redis servers');
         }
@@ -160,7 +155,6 @@ class Client {
         $multiExec = new MultiExecBlock($this);
         return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
     }
-
 }
 
 /* ------------------------------------------------------------------------- */
@@ -430,7 +424,6 @@ class CommandPipeline {
     }
 
     private function setRunning($bool) {
-        // TODO: I am honest when I say that I don't like this approach.
         if ($bool == true && $this->_running == true) {
             throw new ClientException("This pipeline is already opened");
         }
@@ -1178,7 +1171,6 @@ class RandomKey extends \Predis\InlineCommand {
 }
 
 class Rename extends \Predis\InlineCommand {
-    // TODO: doesn't RENAME break the hash-based client-side sharding?
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RENAME'; }
 }
