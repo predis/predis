@@ -769,6 +769,18 @@ abstract class RedisServerProfile {
         return new $defaultProfile();
     }
 
+    public function compareWith($version, $operator = null) {
+        // one could expect that PHP's version_compare would behave 
+        // the same way if invoked with 2 arguments or 3 arguments 
+        // with the third being NULL, but it is not like that.
+        // TODO: since version_compare considers 1 < 1.0 < 1.0.0, 
+        //       we might need to revise the behavior of this method.
+        return ($operator === null 
+            ? version_compare($this, $version)
+            : version_compare($this, $version, $operator)
+        );
+    }
+
     public function supportsCommand($command) {
         return isset($this->_registeredCommands[$command]);
     }
