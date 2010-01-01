@@ -161,13 +161,6 @@ class Client {
         return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
     }
 
-    public function registerCommands(Array $commands) {
-        $this->_serverProfile->registerCommands($commands);
-    }
-
-    public function registerCommand($command, $aliases) {
-        $this->_serverProfile->registerCommand($command, $aliases);
-    }
 }
 
 /* ------------------------------------------------------------------------- */
