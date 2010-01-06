@@ -554,6 +554,60 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testListBlockingPopFirst() {
+        // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it 
+        //       does not run with a concurrent client pushing items on lists. 
+        RC::helperForBlockingPops('blpop');
+
+        // BLPOP on one key
+        $start = time();
+        $item = $this->redis->blpop('blpop3', 5);
+        $this->assertEquals((float)(time() - $start), 0, '', 1);
+        $this->assertEquals($item, array('blpop3', 'c'));
+
+        // BLPOP on more than one key
+        $poppedItems = array();
+        while ($item = $this->redis->blpop('blpop1', 'blpop2', 1)) {
+            $poppedItems[] = $item;
+        }
+        $this->assertEquals(
+            array(array('blpop1', 'a'), array('blpop1', 'd'), array('blpop2', 'b')),
+            $poppedItems
+        );
+
+        // check if BLPOP timeouts as expected on empty lists
+        $start = time();
+        $this->redis->blpop('blpop4', 2);
+        $this->assertEquals((float)(time() - $start), 2, '', 1);
+    }
+
+    function testListBlockingPopLast() {
+        // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it 
+        //       does not run with a concurrent client pushing items on lists. 
+        RC::helperForBlockingPops('brpop');
+
+        // BRPOP on one key
+        $start = time();
+        $item = $this->redis->brpop('brpop3', 5);
+        $this->assertEquals((float)(time() - $start), 0, '', 1);
+        $this->assertEquals($item, array('brpop3', 'c'));
+
+        // BRPOP on more than one key
+        $poppedItems = array();
+        while ($item = $this->redis->brpop('brpop1', 'brpop2', 1)) {
+            $poppedItems[] = $item;
+        }
+        $this->assertEquals(
+            array(array('brpop1', 'd'), array('brpop1', 'a'), array('brpop2', 'b')),
+            $poppedItems
+        );
+
+        // check if BRPOP timeouts as expected on empty lists
+        $start = time();
+        $this->redis->brpop('brpop4', 2);
+        $this->assertEquals((float)(time() - $start), 2, '', 1);
+    }
+
 
     /* commands operating on sets */
 

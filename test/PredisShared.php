@@ -47,6 +47,22 @@ class RC {
         }
     }
 
+    public static function helperForBlockingPops($op) {
+        // TODO: I admit that this helper is kinda lame and it does not run 
+        //       in a separate process to properly test BLPOP/BRPOP
+        $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
+        $handle = popen('php', 'w');
+        fwrite($handle, "<?php
+        require '../lib/Predis.php';
+        \$redis = Predis\Client::create('$redisUri');
+        \$redis->rpush('{$op}1', 'a');
+        \$redis->rpush('{$op}2', 'b');
+        \$redis->rpush('{$op}3', 'c');
+        \$redis->rpush('{$op}1', 'd');
+        ?>");
+        pclose($handle);
+    }
+
     public static function getArrayOfNumbers() {
         return array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }

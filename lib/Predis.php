@@ -990,7 +990,13 @@ class RedisServer__Futures extends RedisServer__V1_2 {
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             'multi'     => '\Predis\Commands\Multi',
-            'exec'      => '\Predis\Commands\Exec'
+            'exec'      => '\Predis\Commands\Exec',
+
+            /* commands operating on lists */
+            'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
+                'popFirstBlocking'      => '\Predis\Commands\ListPopFirstBlocking',
+            'brpop'                     => '\Predis\Commands\ListPopLastBlocking',
+                'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking'
         ));
     }
 }
@@ -1243,6 +1249,14 @@ class ListPopFirst extends \Predis\InlineCommand {
 
 class ListPopLast extends \Predis\InlineCommand {
     public function getCommandId() { return 'RPOP'; }
+}
+
+class ListPopFirstBlocking extends \Predis\InlineCommand {
+    public function getCommandId() { return 'BLPOP'; }
+}
+
+class ListPopLastBlocking extends \Predis\InlineCommand {
+    public function getCommandId() { return 'BRPOP'; }
 }
 
 /* commands operating on sets */
