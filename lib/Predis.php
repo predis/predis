@@ -280,8 +280,7 @@ class Response {
     private static function initializePrefixHandlers() {
         return array(
             // status
-            '+' => function($socket) {
-                $status = rtrim(fgets($socket), Response::NEWLINE);
+            '+' => function($socket, $prefix, $status) {
                 if ($status === Response::OK) {
                     return true;
                 }
@@ -292,15 +291,12 @@ class Response {
             }, 
 
             // error
-            '-' => function($socket) {
-                $errorMessage = rtrim(fgets($socket), Response::NEWLINE);
+            '-' => function($socket, $prefix, $errorMessage) {
                 throw new ServerException(substr($errorMessage, 4));
             }, 
 
             // bulk
-            '$' => function($socket) {
-                $dataLength = rtrim(fgets($socket), Response::NEWLINE);
-
+            '$' => function($socket, $prefix, $dataLength) {
                 if (!is_numeric($dataLength)) {
                     throw new ClientException("Cannot parse '$dataLength' as data length");
                 }
@@ -319,8 +315,7 @@ class Response {
             }, 
 
             // multibulk
-            '*' => function($socket) {
-                $rawLength = rtrim(fgets($socket), Response::NEWLINE);
+            '*' => function($socket, $prefix, $rawLength) {
                 if (!is_numeric($rawLength)) {
                     throw new ClientException("Cannot parse '$rawLength' as data length");
                 }
@@ -334,8 +329,9 @@ class Response {
 
                 if ($listLength > 0) {
                     for ($i = 0; $i < $listLength; $i++) {
-                        $handler = Response::getPrefixHandler(fgetc($socket));
-                        $list[] = $handler($socket);
+                        Response::getHeader($socket, $mbPrefix, $mbPayload);
+                        $handler  = Response::getPrefixHandler($mbPrefix);
+                        $list[] = $handler($socket, $mbPrefix, $mbPayload);
                     }
                 }
 
@@ -343,8 +339,7 @@ class Response {
             }, 
 
             // integer
-            ':' => function($socket) {
-                $number = rtrim(fgets($socket), Response::NEWLINE);
+            ':' => function($socket, $prefix, $number) {
                 if (is_numeric($number)) {
                     return (int) $number;
                 }
@@ -366,6 +361,12 @@ class Response {
             throw new MalformedServerResponse("Unknown prefix '$prefix'");
         }
         return self::$_prefixHandlers[$prefix];
+    }
+
+    public static function getHeader($socket, &$prefix, &$payload) {
+        $header  = fgets($socket);
+        $prefix  = $header[0];
+        $payload = substr($header, 1, -2);
     }
 }
 
@@ -652,8 +653,9 @@ class Connection implements IConnection {
 
     public function readResponse(Command $command) {
         $socket   = $this->getSocket();
-        $handler  = Response::getPrefixHandler(fgetc($socket));
-        $response = $handler($socket);
+        Response::getHeader($socket, $prefix, $payload);
+        $handler  = Response::getPrefixHandler($prefix);
+        $response = $handler($socket, $prefix, $payload);
         return isset($response->queued) ? $response : $command->parseResponse($response);
     }
 
@@ -663,8 +665,9 @@ class Connection implements IConnection {
         if ($closesConnection) {
             return;
         }
-        $handler = Response::getPrefixHandler(fgetc($socket));
-        return $handler($socket);
+        Response::getHeader($socket, $prefix, $payload);
+        $handler  = Response::getPrefixHandler($prefix);
+        return $handler($socket, $prefix, $payload);
     }
 
     public function getSocket() {
