@@ -495,9 +495,19 @@ class MultiExecBlock {
             if ($block !== null) {
                 $block($this);
             }
+
             $execReply = $this->_redisClient->exec();
-            for ($i = 0; $i < count($execReply); $i++) {
-                $returnValues[] = $this->_commands[$i]->parseResponse($execReply[$i]);
+            $commands  = &$this->_commands;
+            $sizeofReplies = count($execReply);
+
+            if ($sizeofReplies !== count($commands)) {
+                // TODO: think of a better exception message
+                throw new ClientException("Out-of-sync");
+            }
+
+            for ($i = 0; $i < $sizeofReplies; $i++) {
+                $returnValues[] = $commands[$i]->parseResponse($execReply[$i]);
+                unset($commands[$i]);
             }
         }
         catch (\Exception $exception) {
