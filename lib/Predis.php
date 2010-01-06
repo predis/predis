@@ -400,21 +400,21 @@ class CommandPipeline {
     }
 
     public function flushPipeline() {
-        if (count($this->_pipelineBuffer) === 0) {
+        $sizeofPipe = count($this->_pipelineBuffer);
+        if ($sizeofPipe === 0) {
             return;
         }
 
         $connection = $this->_redisClient->getConnection();
-        $commands   = $this->getRecordedCommands();
+        $commands   = &$this->_pipelineBuffer;
 
         foreach ($commands as $command) {
             $connection->writeCommand($command);
         }
-        foreach ($commands as $command) {
-            $this->_returnValues[] = $connection->readResponse($command);
+        for ($i = 0; $i < $sizeofPipe; $i++) {
+            $this->_returnValues[] = $connection->readResponse($commands[$i]);
+            unset($commands[$i]);
         }
-
-        $this->_pipelineBuffer = array();
     }
 
     private function setRunning($bool) {
