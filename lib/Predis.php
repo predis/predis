@@ -329,9 +329,7 @@ class Response {
 
                 if ($listLength > 0) {
                     for ($i = 0; $i < $listLength; $i++) {
-                        Response::getHeader($socket, $mbPrefix, $mbPayload);
-                        $handler  = Response::getPrefixHandler($mbPrefix);
-                        $list[] = $handler($socket, $mbPrefix, $mbPayload);
+                        $list[] = Response::read($socket);
                     }
                 }
 
@@ -353,20 +351,20 @@ class Response {
         );
     }
 
-    public static function getPrefixHandler($prefix) {
+    public static function read($socket) {
+        $header  = fgets($socket);
+        $prefix  = $header[0];
+        $payload = substr($header, 1, -2);
+
         if (self::$_prefixHandlers === null) {
             self::$_prefixHandlers = self::initializePrefixHandlers();
         }
         if (!isset(self::$_prefixHandlers[$prefix])) {
             throw new MalformedServerResponse("Unknown prefix '$prefix'");
         }
-        return self::$_prefixHandlers[$prefix];
-    }
 
-    public static function getHeader($socket, &$prefix, &$payload) {
-        $header  = fgets($socket);
-        $prefix  = $header[0];
-        $payload = substr($header, 1, -2);
+        $handler = self::$_prefixHandlers[$prefix];
+        return $handler($socket, $prefix, $payload);
     }
 }
 
@@ -662,10 +660,7 @@ class Connection implements IConnection {
     }
 
     public function readResponse(Command $command) {
-        $socket   = $this->getSocket();
-        Response::getHeader($socket, $prefix, $payload);
-        $handler  = Response::getPrefixHandler($prefix);
-        $response = $handler($socket, $prefix, $payload);
+        $response = Response::read($this->getSocket());
         return isset($response->queued) ? $response : $command->parseResponse($response);
     }
 
@@ -675,9 +670,7 @@ class Connection implements IConnection {
         if ($closesConnection) {
             return;
         }
-        Response::getHeader($socket, $prefix, $payload);
-        $handler  = Response::getPrefixHandler($prefix);
-        return $handler($socket, $prefix, $payload);
+        return Response::read($socket);
     }
 
     public function getSocket() {
