@@ -965,7 +965,7 @@ class RedisServer__V1_0 extends RedisServerProfile {
                 'backgroundSave'    => '\Predis\Commands\BackgroundSave',
             'lastsave'              => '\Predis\Commands\LastSave', 
                 'lastSave'          => '\Predis\Commands\LastSave',
-            'shutdown'              => '\Predis\Commands\Shutdown'
+            'shutdown'              => '\Predis\Commands\Shutdown',
         );
     }
 }
@@ -1002,7 +1002,7 @@ class RedisServer__V1_2 extends RedisServer__V1_0 {
             'zscore'                        => '\Predis\Commands\ZSetScore',
                 'zsetScore'                 => '\Predis\Commands\ZSetScore',
             'zremrangebyscore'              => '\Predis\Commands\ZSetRemoveRangeByScore',
-                'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore'
+                'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore',
         ));
     }
 }
@@ -1011,6 +1011,7 @@ class RedisServer__Futures extends RedisServer__V1_2 {
     public function getVersion() { return '1.3'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
+            /* miscellaneous commands */
             'multi'     => '\Predis\Commands\Multi',
             'exec'      => '\Predis\Commands\Exec',
 
@@ -1018,7 +1019,7 @@ class RedisServer__Futures extends RedisServer__V1_2 {
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
                 'popFirstBlocking'      => '\Predis\Commands\ListPopFirstBlocking',
             'brpop'                     => '\Predis\Commands\ListPopLastBlocking',
-                'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking'
+                'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking',
         ));
     }
 }
