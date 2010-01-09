@@ -1461,6 +1461,12 @@ class Save extends \Predis\InlineCommand {
 class BackgroundSave extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'BGSAVE'; }
+    public function parseResponse($data) {
+        if ($data == 'Background saving started') {
+            return true;
+        }
+        return $data;
+    }
 }
 
 class LastSave extends \Predis\InlineCommand {
