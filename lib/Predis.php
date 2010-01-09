@@ -303,6 +303,9 @@ class Response {
 
                 if ($dataLength > 0) {
                     $value = stream_get_contents($socket, $dataLength);
+                    if ($value === false) {
+                        throw new ClientException('An error has occurred while reading from the network stream');
+                    }
                     fread($socket, 2);
                     return $value;
                 }
@@ -353,6 +356,10 @@ class Response {
 
     public static function read($socket) {
         $header  = fgets($socket);
+        if ($header === false) {
+           throw new ClientException('An error has occurred while reading from the network stream');
+        }
+
         $prefix  = $header[0];
         $payload = substr($header, 1, -2);
 
@@ -656,7 +663,13 @@ class Connection implements IConnection {
     }
 
     public function writeCommand(Command $command) {
-        fwrite($this->getSocket(), $command());
+        $written = fwrite($this->getSocket(), $command());
+        if ($written === false){
+           throw new ClientException(sprintf(
+               'An error has occurred while writing command %s on the network stream'),
+               $command->getCommandId()
+           );
+        }
     }
 
     public function readResponse(Command $command) {
@@ -666,7 +679,10 @@ class Connection implements IConnection {
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
         $socket = $this->getSocket();
-        fwrite($socket, $rawCommandData);
+        $written = fwrite($socket, $rawCommandData);
+        if ($written === false){
+           throw new ClientException('An error has occurred while writing a raw command on the network stream');
+        }
         if ($closesConnection) {
             return;
         }
