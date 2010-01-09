@@ -7,7 +7,7 @@ database.
 
 Predis is currently a work-in-progress and it comes in two flavors:
 
- - the mainline client library, which targets PHP 5.3.x and exploits a lot of the 
+ - the mainline client library, which targets PHP 5.3.x and leverages a lot of the 
    features introduced in this new version of the PHP interpreter.
  - a backport to PHP 5.2.x for those who can not upgrade their environment yet 
    (it admittedly has a lower priority compared to the mainline library, although we 
@@ -26,6 +26,9 @@ to be implemented soon in Predis.
 
 
 ## Quick examples ##
+
+See the [official wiki](http://wiki.github.com/nrk/predis) of the project for a more 
+complete coverage of all the features available in Predis.
 
 ### Connecting to a local instance of Redis ###
 
@@ -109,13 +112,15 @@ variable set to E_ALL.
 
 ## Dependencies ##
 
-- PHP >= 5.2
+- PHP >= 5.3.0 (for the mainline client library)
+- PHP >= 5.2.6 (for the backported client library)
 - PHPUnit (needed to run the test suite)
 
 ## Links ##
 
 ### Project ###
 - [Source code](http://github.com/nrk/predis/)
+- [Wiki](http://wiki.github.com/nrk/predis/)
 - [Issue tracker](http://github.com/nrk/predis/issues)
 
 ### Related ###
