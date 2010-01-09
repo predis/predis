@@ -363,7 +363,7 @@ class Response {
         $prefix  = $header[0];
         $payload = substr($header, 1, -2);
 
-        if (self::$_prefixHandlers === null) {
+        if (!isset(self::$_prefixHandlers)) {
             self::$_prefixHandlers = self::initializePrefixHandlers();
         }
         if (!isset(self::$_prefixHandlers[$prefix])) {
