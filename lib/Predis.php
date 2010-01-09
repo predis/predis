@@ -770,7 +770,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
 /* ------------------------------------------------------------------------- */
 
 abstract class RedisServerProfile {
-    const DEFAULT_SERVER_PROFILE = '\Predis\RedisServer__V1_2';
+    const DEFAULT_SERVER_PROFILE = '\Predis\RedisServer_v1_2';
     private $_registeredCommands;
 
     public function __construct() {
@@ -840,7 +840,7 @@ abstract class RedisServerProfile {
     }
 }
 
-class RedisServer__V1_0 extends RedisServerProfile {
+class RedisServer_v1_0 extends RedisServerProfile {
     public function getVersion() { return '1.0'; }
     public function getSupportedCommands() {
         return array(
@@ -970,7 +970,7 @@ class RedisServer__V1_0 extends RedisServerProfile {
     }
 }
 
-class RedisServer__V1_2 extends RedisServer__V1_0 {
+class RedisServer_v1_2 extends RedisServer_v1_0 {
     public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
@@ -1007,7 +1007,7 @@ class RedisServer__V1_2 extends RedisServer__V1_0 {
     }
 }
 
-class RedisServer__Futures extends RedisServer__V1_2 {
+class RedisServer_vNext extends RedisServer_v1_2 {
     public function getVersion() { return '1.3'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
