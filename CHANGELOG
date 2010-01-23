@@ -7,5 +7,8 @@ v0.5.1
 
   * Added missing support for BGREWRITEAOF for Redis >= 1.2.0
 
+  * Implemented a factory method for the RedisServerProfile class to ease the 
+    creation of new server profile instances based on a version string.
+
 v0.5.0
   * First versioned release of Predis
