@@ -1262,7 +1262,11 @@ class ListRemove extends \Predis\BulkCommand {
     public function getCommandId() { return 'LREM'; }
 }
 
-class ListPopLastPushHead extends \Predis\BulkCommand {
+class ListPopLastPushHead extends \Predis\InlineCommand {
+    public function getCommandId() { return 'RPOPLPUSH'; }
+}
+
+class ListPopLastPushHeadBulk extends \Predis\BulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
