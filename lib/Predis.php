@@ -1003,6 +1003,10 @@ class RedisServer_v1_2 extends RedisServer_v1_0 {
                 'zsetScore'                 => '\Predis\Commands\ZSetScore',
             'zremrangebyscore'              => '\Predis\Commands\ZSetRemoveRangeByScore',
                 'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore',
+
+            /* persistence control commands */
+            'bgrewriteaof'                      =>  '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
+            'backgroundRewriteAppendOnlyFile'   =>  '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
         ));
     }
 }
@@ -1471,6 +1475,14 @@ class BackgroundSave extends \Predis\InlineCommand {
             return true;
         }
         return $data;
+    }
+}
+
+class BackgroundRewriteAppendOnlyFile extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'BGREWRITEAOF'; }
+    public function parseResponse($data) {
+        return $data == 'Background append only file rewriting started';
     }
 }
 
