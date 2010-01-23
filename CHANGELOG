@@ -1,0 +1,14 @@
+v0.5.1
+  * RPOPLPUSH has been changed from bulk command to inline command in Redis
+    1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
+    behavior is still available via the ListPopLastPushHeadBulk class so that
+    you can override the server profile if you need the old (and uncorrect)
+    behaviour when connecting to a Redis 1.2.0 instance.
+
+  * Added missing support for BGREWRITEAOF for Redis >= 1.2.0
+
+  * Implemented a factory method for the RedisServerProfile class to ease the 
+    creation of new server profile instances based on a version string.
+
+v0.5.0
+  * First versioned release of Predis

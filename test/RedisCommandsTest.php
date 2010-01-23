@@ -1336,6 +1336,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->backgroundSave());
     }
 
+    function testBackgroundRewriteAppendOnlyFile() {
+        $this->assertTrue($this->redis->backgroundRewriteAppendOnlyFile());
+    }
+
     function testLastSave() {
         $this->assertGreaterThan(0, $this->redis->lastSave());
     }

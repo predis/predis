@@ -784,7 +784,7 @@ class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate 
 /* ------------------------------------------------------------------------- */
 
 abstract class Predis_RedisServerProfile {
-    const DEFAULT_SERVER_PROFILE = 'Predis_RedisServer_v1_2';
+    private static $_serverProfiles;
     private $_registeredCommands;
 
     public function __construct() {
@@ -796,8 +796,27 @@ abstract class Predis_RedisServerProfile {
     protected abstract function getSupportedCommands();
 
     public static function getDefault() {
-        $defaultProfile = self::DEFAULT_SERVER_PROFILE;
-        return new $defaultProfile();
+        return self::get('default');
+    }
+
+    private static function predisServerProfiles() {
+        return array(
+            '1.0'     => 'Predis_RedisServer_v1_0',
+            '1.2'     => 'Predis_RedisServer_v1_2',
+            'default' => 'Predis_RedisServer_v1_2',
+            'dev'     => 'Predis_RedisServer_vNext',
+        );
+    }
+
+    public static function get($version) {
+        if (!isset(self::$_serverProfiles)) {
+            self::$_serverProfiles = self::predisServerProfiles();
+        }
+        if (!isset(self::$_serverProfiles[$version])) {
+            throw new Predis_ClientException("Unknown server profile: $version");
+        }
+        $profile = self::$_serverProfiles[$version];
+        return new $profile();
     }
 
     public function compareWith($version, $operator = null) {
@@ -1017,6 +1036,10 @@ class Predis_RedisServer_v1_2 extends Predis_RedisServer_v1_0 {
                 'zsetScore'                 => 'Predis_Commands_ZSetScore',
             'zremrangebyscore'              => 'Predis_Commands_ZSetRemoveRangeByScore',
                 'zsetRemoveRangeByScore'    => 'Predis_Commands_ZSetRemoveRangeByScore',
+
+            /* persistence control commands */
+            'bgrewriteaof'                      =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
+            'backgroundRewriteAppendOnlyFile'   =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
         ));
     }
 }
@@ -1276,7 +1299,11 @@ class Predis_Commands_ListRemove extends Predis_BulkCommand {
     public function getCommandId() { return 'LREM'; }
 }
 
-class Predis_Commands_ListPopLastPushHead extends Predis_BulkCommand {
+class Predis_Commands_ListPopLastPushHead extends Predis_InlineCommand {
+    public function getCommandId() { return 'RPOPLPUSH'; }
+}
+
+class Predis_Commands_ListPopLastPushHeadBulk extends Predis_BulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
@@ -1481,6 +1508,14 @@ class Predis_Commands_BackgroundSave extends Predis_InlineCommand {
             return true;
         }
         return $data;
+    }
+}
+
+class Predis_Commands_BackgroundRewriteAppendOnlyFile extends Predis_InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'BGREWRITEAOF'; }
+    public function parseResponse($data) {
+        return $data == 'Background append only file rewriting started';
     }
 }
 
