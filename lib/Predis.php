@@ -770,7 +770,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
 /* ------------------------------------------------------------------------- */
 
 abstract class RedisServerProfile {
-    const DEFAULT_SERVER_PROFILE = '\Predis\RedisServer_v1_2';
+    private static $_serverProfiles;
     private $_registeredCommands;
 
     public function __construct() {
@@ -782,8 +782,27 @@ abstract class RedisServerProfile {
     protected abstract function getSupportedCommands();
 
     public static function getDefault() {
-        $defaultProfile = self::DEFAULT_SERVER_PROFILE;
-        return new $defaultProfile();
+        return self::get('default');
+    }
+
+    private static function predisServerProfiles() {
+        return array(
+            '1.0'     => '\Predis\RedisServer_v1_0',
+            '1.2'     => '\Predis\RedisServer_v1_2',
+            'default' => '\Predis\RedisServer_v1_2',
+            'dev'     => '\Predis\RedisServer_vNext',
+        );
+    }
+
+    public static function get($version) {
+        if (!isset(self::$_serverProfiles)) {
+            self::$_serverProfiles = self::predisServerProfiles();
+        }
+        if (!isset(self::$_serverProfiles[$version])) {
+            throw new ClientException("Unknown server profile: $version");
+        }
+        $profile = self::$_serverProfiles[$version];
+        return new $profile();
     }
 
     public function compareWith($version, $operator = null) {
@@ -1003,6 +1022,10 @@ class RedisServer_v1_2 extends RedisServer_v1_0 {
                 'zsetScore'                 => '\Predis\Commands\ZSetScore',
             'zremrangebyscore'              => '\Predis\Commands\ZSetRemoveRangeByScore',
                 'zsetRemoveRangeByScore'    => '\Predis\Commands\ZSetRemoveRangeByScore',
+
+            /* persistence control commands */
+            'bgrewriteaof'                      =>  '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
+            'backgroundRewriteAppendOnlyFile'   =>  '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
         ));
     }
 }
@@ -1262,7 +1285,11 @@ class ListRemove extends \Predis\BulkCommand {
     public function getCommandId() { return 'LREM'; }
 }
 
-class ListPopLastPushHead extends \Predis\BulkCommand {
+class ListPopLastPushHead extends \Predis\InlineCommand {
+    public function getCommandId() { return 'RPOPLPUSH'; }
+}
+
+class ListPopLastPushHeadBulk extends \Predis\BulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
@@ -1467,6 +1494,14 @@ class BackgroundSave extends \Predis\InlineCommand {
             return true;
         }
         return $data;
+    }
+}
+
+class BackgroundRewriteAppendOnlyFile extends \Predis\InlineCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'BGREWRITEAOF'; }
+    public function parseResponse($data) {
+        return $data == 'Background append only file rewriting started';
     }
 }
 
