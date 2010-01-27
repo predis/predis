@@ -1219,10 +1219,6 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->flushDatabase());
     }
 
-    function testFlushDatabases() {
-        $this->assertTrue($this->redis->flushDatabases());
-    }
-
 
     /* sorting */
 
