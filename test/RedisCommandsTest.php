@@ -1285,6 +1285,21 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         );
         $this->assertEquals(array(1, 2, 3, 10, 30, 100),  $this->redis->listRange('ordered', 0, -1));
 
+        // with parameter GET
+        $this->redis->pushTail('uids', 1003);
+        $this->redis->pushTail('uids', 1001);
+        $this->redis->pushTail('uids', 1002);
+        $this->redis->pushTail('uids', 1000);
+        $sortget = array(
+            'uid:1000' => 'foo',  'uid:1001' => 'bar', 
+            'uid:1002' => 'hoge', 'uid:1003' => 'piyo'
+        );
+        $this->redis->setMultiple($sortget);
+        $this->assertEquals(
+            array_values($sortget), 
+            $this->redis->sort('uids', array('get' => 'uid:*'))
+        );
+
         // wront type
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
