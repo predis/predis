@@ -1461,7 +1461,15 @@ class Sort extends \Predis\InlineCommand {
             $query[] = 'BY ' . $sortParams['by'];
         }
         if (isset($sortParams['get'])) {
-            $query[] = 'GET ' . $sortParams['get'];
+            $getargs = $sortParams['get'];
+            if (is_array($getargs)) {
+                foreach ($getargs as $getarg) {
+                    $query[] = 'GET ' . $getarg;
+                }
+            }
+            else {
+                $query[] = 'GET ' . $getargs;
+            }
         }
         if (isset($sortParams['limit']) && is_array($sortParams['limit'])) {
             $query[] = 'LIMIT ' . $sortParams['limit'][0] . ' ' . $sortParams['limit'][1];
