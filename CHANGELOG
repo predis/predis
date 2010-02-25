@@ -1,3 +1,10 @@
+v0.x.x
+  * The GET parameter for the SORT command now accepts also multiple key 
+    patterns by passing an array of strings.
+
+  * Switched to class-based handlers instead of anonymous functions to 
+    handle the various server response types.
+
 v0.5.1
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
     1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
