@@ -1129,7 +1129,7 @@ class HashRing {
     }
 }
 
-class MultiBulkResponseIterator implements \Iterator {
+class MultiBulkResponseIterator implements \Iterator, \Countable {
     private $_connection, $_position, $_current, $_replySize;
 
     public function __construct($socket, $size) {
@@ -1174,6 +1174,13 @@ class MultiBulkResponseIterator implements \Iterator {
 
     public function valid() {
         return $this->_position < $this->_replySize;
+    }
+
+    public function count() {
+        // NOTE: use count if you want to get the size of the current multi-bulk 
+        //       response without using iterator_count (which actually consumes 
+        //       our iterator to calculate the size, and we cannot perform a rewind)
+        return $this->_replySize;
     }
 
     private function getValue() {
