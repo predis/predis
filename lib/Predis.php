@@ -435,7 +435,11 @@ class CommandPipeline {
             $connection->writeCommand($command);
         }
         for ($i = 0; $i < $sizeofPipe; $i++) {
-            $this->_returnValues[] = $connection->readResponse($commands[$i]);
+            $response = $connection->readResponse($commands[$i]);
+            $this->_returnValues[] = ($response instanceof \Iterator
+                ? iterator_to_array($response)
+                : $response
+            );
             unset($commands[$i]);
         }
     }
