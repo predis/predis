@@ -1129,6 +1129,64 @@ class HashRing {
     }
 }
 
+class MultiBulkResponseIterator implements \Iterator {
+    private $_connection, $_position, $_last, $_current, $_replySize;
+
+    public function __construct($socket, $size) {
+        $this->_connection = $socket;
+        $this->_position   = 0;
+        $this->_last       = -1;
+        $this->_current    = null;
+        $this->_replySize  = $size;
+    }
+
+    public function __destruct() {
+        // when the iterator is garbage-collected (e.g. it goes out of the
+        // scope of a foreach) but it has not reached its end, we must sync
+        // the client with the queued elements that have not been read from
+        // the connection with the server.
+        $this->sync();
+    }
+
+    public function sync() {
+        while ($this->valid()) {
+            $this->getValue();
+            $this->next();
+        }
+    }
+
+    public function rewind() {
+        // NOOP
+    }
+
+    public function current() {
+        if ($this->_last != $this->_position) {
+            if (!$this->valid()) {
+                return null;
+            }
+            $this->_current = $this->getValue();
+            $this->_last = $this->_position;
+        }
+        return $this->_current;
+    }
+
+    public function key() {
+        return $this->_position;
+    }
+
+    public function next() {
+        return ++$this->_position;
+    }
+
+    public function valid() {
+        return $this->_position < $this->_replySize;
+    }
+
+    private function getValue() {
+        return \Predis\Response::read($this->_connection);
+    }
+}
+
 /* ------------------------------------------------------------------------- */
 
 namespace Predis\Commands;
