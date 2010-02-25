@@ -85,6 +85,10 @@ class Client {
         return $this->_serverProfile;
     }
 
+    public function useMultiBulkIterator($value = true) {
+        Response::useMultiBulkIterator($value);
+    }
+
     public function connect() {
         $this->_connection->connect();
     }
@@ -336,6 +340,15 @@ class ResponseMultiBulkHandler implements IResponseHandler {
     }
 }
 
+class ResponseMultiBulkStreamHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $rawLength) {
+        if (!is_numeric($rawLength)) {
+            throw new ClientException("Cannot parse '$rawLength' as data length");
+        }
+        return new Utilities\MultiBulkResponseIterator($socket, (int)$rawLength);
+    }
+}
+
 class ResponseIntegerHandler implements IResponseHandler {
     public function handle($socket, $prefix, $number) {
         if (is_numeric($number)) {
@@ -357,7 +370,7 @@ class Response {
     const QUEUED  = 'QUEUED';
     const NULL    = 'nil';
 
-    private static $_prefixHandlers;
+    private static $_prefixHandlers, $_useMultiBulkIterator;
 
     private static function initializePrefixHandlers() {
         return array(
@@ -365,8 +378,20 @@ class Response {
             '-' => new ResponseErrorHandler(), 
             ':' => new ResponseIntegerHandler(), 
             '$' => new ResponseBulkHandler(), 
-            '*' => new ResponseMultiBulkHandler()
+            '*' => self::$_useMultiBulkIterator
+                    ? new ResponseMultiBulkStreamHandler()
+                    : new ResponseMultiBulkHandler()
         );
+    }
+
+    public static function useMultiBulkIterator($value = null) {
+        if (is_bool($value)) {
+            self::$_useMultiBulkIterator = $value;
+            self::$_prefixHandlers = self::initializePrefixHandlers();
+        }
+        else {
+            return self::$_useMultiBulkIterator;
+        }
     }
 
     public static function read($socket) {
