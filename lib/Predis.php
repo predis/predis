@@ -522,7 +522,10 @@ class MultiExecBlock {
                 $block($this);
             }
 
-            $execReply = $this->_redisClient->exec();
+            $execReply = (($reply = $this->_redisClient->exec()) instanceof \Iterator
+                ? iterator_to_array($reply)
+                : $reply
+            );
             $commands  = &$this->_commands;
             $sizeofReplies = count($execReply);
 
@@ -532,7 +535,10 @@ class MultiExecBlock {
             }
 
             for ($i = 0; $i < $sizeofReplies; $i++) {
-                $returnValues[] = $commands[$i]->parseResponse($execReply[$i]);
+                $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
+                    ? iterator_to_array($execReply[$i])
+                    : $execReply[$i]
+                );
                 unset($commands[$i]);
             }
         }
