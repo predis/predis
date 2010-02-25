@@ -268,6 +268,88 @@ abstract class MultiBulkCommand extends Command {
 
 /* ------------------------------------------------------------------------- */
 
+interface IResponseHandler {
+    function handle($socket, $prefix, $payload);
+}
+
+class ResponseStatusHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $status) {
+        if ($status === Response::OK) {
+            return true;
+        }
+        else if ($status === Response::QUEUED) {
+            return new ResponseQueued();
+        }
+        return $status;
+    }
+}
+
+class ResponseErrorHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $errorMessage) {
+        throw new ServerException(substr($errorMessage, 4));
+    }
+}
+
+class ResponseBulkHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $dataLength) {
+        if (!is_numeric($dataLength)) {
+            throw new ClientException("Cannot parse '$dataLength' as data length");
+        }
+
+        if ($dataLength > 0) {
+            $value = stream_get_contents($socket, $dataLength);
+            if ($value === false) {
+                throw new ClientException('An error has occurred while reading from the network stream');
+            }
+            fread($socket, 2);
+            return $value;
+        }
+        else if ($dataLength == 0) {
+            fread($socket, 2);
+            return '';
+        }
+
+        return null;
+    }
+}
+
+class ResponseMultiBulkHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $rawLength) {
+        if (!is_numeric($rawLength)) {
+            throw new ClientException("Cannot parse '$rawLength' as data length");
+        }
+
+        $listLength = (int) $rawLength;
+        if ($listLength === -1) {
+            return null;
+        }
+
+        $list = array();
+
+        if ($listLength > 0) {
+            for ($i = 0; $i < $listLength; $i++) {
+                $list[] = Response::read($socket);
+            }
+        }
+
+        return $list;
+    }
+}
+
+class ResponseIntegerHandler implements IResponseHandler {
+    public function handle($socket, $prefix, $number) {
+        if (is_numeric($number)) {
+            return (int) $number;
+        }
+        else {
+            if ($number !== Response::NULL) {
+                throw new ClientException("Cannot parse '$number' as numeric response");
+            }
+            return null;
+        }
+    }
+}
+
 class Response {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
@@ -279,78 +361,11 @@ class Response {
 
     private static function initializePrefixHandlers() {
         return array(
-            // status
-            '+' => function($socket, $prefix, $status) {
-                if ($status === Response::OK) {
-                    return true;
-                }
-                else if ($status === Response::QUEUED) {
-                    return new ResponseQueued();
-                }
-                return $status;
-            }, 
-
-            // error
-            '-' => function($socket, $prefix, $errorMessage) {
-                throw new ServerException(substr($errorMessage, 4));
-            }, 
-
-            // bulk
-            '$' => function($socket, $prefix, $dataLength) {
-                if (!is_numeric($dataLength)) {
-                    throw new ClientException("Cannot parse '$dataLength' as data length");
-                }
-
-                if ($dataLength > 0) {
-                    $value = stream_get_contents($socket, $dataLength);
-                    if ($value === false) {
-                        throw new ClientException('An error has occurred while reading from the network stream');
-                    }
-                    fread($socket, 2);
-                    return $value;
-                }
-                else if ($dataLength == 0) {
-                    fread($socket, 2);
-                    return '';
-                }
-
-                return null;
-            }, 
-
-            // multibulk
-            '*' => function($socket, $prefix, $rawLength) {
-                if (!is_numeric($rawLength)) {
-                    throw new ClientException("Cannot parse '$rawLength' as data length");
-                }
-
-                $listLength = (int) $rawLength;
-                if ($listLength === -1) {
-                    return null;
-                }
-
-                $list = array();
-
-                if ($listLength > 0) {
-                    for ($i = 0; $i < $listLength; $i++) {
-                        $list[] = Response::read($socket);
-                    }
-                }
-
-                return $list;
-            }, 
-
-            // integer
-            ':' => function($socket, $prefix, $number) {
-                if (is_numeric($number)) {
-                    return (int) $number;
-                }
-                else {
-                    if ($number !== Response::NULL) {
-                        throw new ClientException("Cannot parse '$number' as numeric response");
-                    }
-                    return null;
-                }
-            }
+            '+' => new ResponseStatusHandler(), 
+            '-' => new ResponseErrorHandler(), 
+            ':' => new ResponseIntegerHandler(), 
+            '$' => new ResponseBulkHandler(), 
+            '*' => new ResponseMultiBulkHandler()
         );
     }
 
@@ -371,7 +386,7 @@ class Response {
         }
 
         $handler = self::$_prefixHandlers[$prefix];
-        return $handler($socket, $prefix, $payload);
+        return $handler->handle($socket, $prefix, $payload);
     }
 }
 
@@ -382,6 +397,8 @@ class ResponseQueued {
         return Response::QUEUED;
     }
 }
+
+/* ------------------------------------------------------------------------- */
 
 class CommandPipeline {
     private $_redisClient, $_pipelineBuffer, $_returnValues, $_running;
