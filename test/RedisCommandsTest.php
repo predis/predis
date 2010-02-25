@@ -1300,7 +1300,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->sort('uids', array('get' => 'uid:*'))
         );
 
-        // wront type
+        // wrong type
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->sort('foo');
