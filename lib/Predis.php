@@ -1130,13 +1130,12 @@ class HashRing {
 }
 
 class MultiBulkResponseIterator implements \Iterator {
-    private $_connection, $_position, $_last, $_current, $_replySize;
+    private $_connection, $_position, $_current, $_replySize;
 
     public function __construct($socket, $size) {
         $this->_connection = $socket;
         $this->_position   = 0;
-        $this->_last       = -1;
-        $this->_current    = null;
+        $this->_current    = $size > 0 ? $this->getValue() : null;
         $this->_replySize  = $size;
     }
 
@@ -1150,7 +1149,6 @@ class MultiBulkResponseIterator implements \Iterator {
 
     public function sync() {
         while ($this->valid()) {
-            $this->getValue();
             $this->next();
         }
     }
@@ -1160,13 +1158,6 @@ class MultiBulkResponseIterator implements \Iterator {
     }
 
     public function current() {
-        if ($this->_last != $this->_position) {
-            if (!$this->valid()) {
-                return null;
-            }
-            $this->_current = $this->getValue();
-            $this->_last = $this->_position;
-        }
         return $this->_current;
     }
 
@@ -1175,7 +1166,10 @@ class MultiBulkResponseIterator implements \Iterator {
     }
 
     public function next() {
-        return ++$this->_position;
+        if (++$this->_position < $this->_replySize) {
+            $this->_current = $this->getValue();
+        }
+        return $this->_position;
     }
 
     public function valid() {
