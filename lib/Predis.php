@@ -412,6 +412,7 @@ class CommandPipeline {
     public function __call($method, $arguments) {
         $command = $this->_redisClient->createCommand($method, $arguments);
         $this->recordCommand($command);
+        return $this;
     }
 
     private function recordCommand(Command $command) {
@@ -438,6 +439,8 @@ class CommandPipeline {
             $this->_returnValues[] = $connection->readResponse($commands[$i]);
             unset($commands[$i]);
         }
+
+        return $this;
     }
 
     private function setRunning($bool) {
