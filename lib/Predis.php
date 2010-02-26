@@ -124,7 +124,7 @@ class Client {
 
     public function executeCommandOnShards(Command $command) {
         $replies = array();
-        if (is_a($this->_connection, '\Predis\ConnectionCluster')) {
+        if ($this->_connection instanceof \Predis\ConnectionCluster) {
             foreach($this->_connection as $connection) {
                 $replies[] = self::executeCommandInternal($connection, $command);
             }
@@ -136,7 +136,7 @@ class Client {
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        if (is_a($this->_connection, '\Predis\ConnectionCluster')) {
+        if ($this->_connection instanceof \Predis\ConnectionCluster) {
             throw new ClientException('Cannot send raw commands when connected to a cluster of Redis servers');
         }
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
