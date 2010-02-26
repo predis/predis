@@ -553,6 +553,7 @@ class MultiExecBlock {
 class ConnectionParameters {
     const DEFAULT_HOST = '127.0.0.1';
     const DEFAULT_PORT = 6379;
+    const DEFAULT_TIMEOUT = 5;
     private $_parameters;
 
     public function __construct($parameters) {
@@ -604,7 +605,7 @@ class ConnectionParameters {
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password'), 
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout'), 
+            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
         );
     }
@@ -627,8 +628,6 @@ interface IConnection {
 }
 
 class Connection implements IConnection {
-    const CONNECTION_TIMEOUT = 2;
-
     private $_params, $_socket, $_initCmds;
 
     public function __construct(ConnectionParameters $parameters) {
@@ -649,8 +648,7 @@ class Connection implements IConnection {
             throw new ClientException('Connection already estabilished');
         }
         $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
-        $connectionTimeout = $this->_params->connection_timeout ?: self::CONNECTION_TIMEOUT;
-        $this->_socket = @stream_socket_client($uri, $errno, $errstr, $connectionTimeout);
+        $this->_socket = @stream_socket_client($uri, $errno, $errstr, $this->_params->connection_timeout);
         if (!$this->_socket) {
             throw new ClientException(trim($errstr), $errno);
         }
