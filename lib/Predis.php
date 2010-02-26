@@ -502,7 +502,7 @@ class MultiExecBlock {
         $response = $this->_redisClient->executeCommand($command);
         if (isset($response->queued)) {
             $this->_commands[] = $command;
-            return $response;
+            return $this;
         }
         else {
             throw new ClientException('The server did not respond with a QUEUED status reply');
