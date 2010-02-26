@@ -5,6 +5,9 @@ v0.x.x
   * Switched to class-based handlers instead of anonymous functions to 
     handle the various server response types.
 
+  * CommandPipeline and MultiExecBlock return their instances when invoking 
+    commands, thus allowing method chaining in pipelines and multi-exec blocks.
+
 v0.5.1
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
     1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
