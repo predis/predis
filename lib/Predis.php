@@ -439,6 +439,7 @@ class CommandPipeline {
             $this->_returnValues[] = $connection->readResponse($commands[$i]);
             unset($commands[$i]);
         }
+        $this->_pipelineBuffer = array();
 
         return $this;
     }
