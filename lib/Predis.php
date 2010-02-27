@@ -1164,29 +1164,8 @@ class HashRing {
     }
 }
 
-class MultiBulkResponseIterator implements \Iterator, \Countable {
-    private $_connection, $_position, $_current, $_replySize;
-
-    public function __construct($socket, $size) {
-        $this->_connection = $socket;
-        $this->_position   = 0;
-        $this->_current    = $size > 0 ? $this->getValue() : null;
-        $this->_replySize  = $size;
-    }
-
-    public function __destruct() {
-        // when the iterator is garbage-collected (e.g. it goes out of the
-        // scope of a foreach) but it has not reached its end, we must sync
-        // the client with the queued elements that have not been read from
-        // the connection with the server.
-        $this->sync();
-    }
-
-    public function sync() {
-        while ($this->valid()) {
-            $this->next();
-        }
-    }
+abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
+    protected $_position, $_current, $_replySize;
 
     public function rewind() {
         // NOOP
@@ -1218,13 +1197,40 @@ class MultiBulkResponseIterator implements \Iterator, \Countable {
         return $this->_replySize;
     }
 
-    private function getValue() {
+    protected abstract function getValue();
+}
+
+class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
+    private $_connection;
+
+    public function __construct($socket, $size) {
+        $this->_connection = $socket;
+        $this->_position   = 0;
+        $this->_current    = $size > 0 ? $this->getValue() : null;
+        $this->_replySize  = $size;
+    }
+
+    public function __destruct() {
+        // when the iterator is garbage-collected (e.g. it goes out of the
+        // scope of a foreach) but it has not reached its end, we must sync
+        // the client with the queued elements that have not been read from
+        // the connection with the server.
+        $this->sync();
+    }
+
+    public function sync() {
+        while ($this->valid()) {
+            $this->next();
+        }
+    }
+
+    protected function getValue() {
         return \Predis\Response::read($this->_connection);
     }
 }
 
-class MultiBulkResponseKVIterator implements \Iterator, \Countable {
-    private $_iterator, $_position, $_current, $_replySize;
+class MultiBulkResponseKVIterator extends MultiBulkResponseIteratorBase {
+    private $_iterator;
 
     public function __construct(MultiBulkResponseIterator $iterator) {
         $virtualSize = count($iterator) / 2;
@@ -1239,34 +1245,7 @@ class MultiBulkResponseKVIterator implements \Iterator, \Countable {
         $this->_iterator->sync();
     }
 
-    public function rewind() {
-        // NOOP
-    }
-
-    public function current() {
-        return $this->_current;
-    }
-
-    public function key() {
-        return $this->_position;
-    }
-
-    public function next() {
-        if (++$this->_position < $this->_replySize) {
-            $this->_current = $this->getValue();
-        }
-        return $this->_position;
-    }
-
-    public function valid() {
-        return $this->_position < $this->_replySize;
-    }
-
-    public function count() {
-        return $this->_replySize;
-    }
-
-    private function getValue() {
+    protected function getValue() {
         $k = $this->_iterator->current();
         $this->_iterator->next();
         $v = $this->_iterator->current();
