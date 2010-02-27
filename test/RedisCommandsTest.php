@@ -1118,6 +1118,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetCount() {
+        $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+
+        $this->assertEquals(0, $this->redis->zsetCount('zset', 50, 100));
+        $this->assertEquals(6, $this->redis->zsetCount('zset', -100, 100));
+        $this->assertEquals(3, $this->redis->zsetCount('zset', 10, 20));
+        $this->assertEquals(2, $this->redis->zsetCount('zset', "(10", 20));
+        $this->assertEquals(1, $this->redis->zsetCount('zset', 10, "(20"));
+        $this->assertEquals(0, $this->redis->zsetCount('zset', "(10", "(20"));
+        $this->assertEquals(3, $this->redis->zsetCount('zset', "(0", "(30"));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->zsetCount('foo', 0, 0);
+        });
+    }
+
     function testZsetCardinality() {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
