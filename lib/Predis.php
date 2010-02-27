@@ -97,8 +97,15 @@ class Client {
         return $this->_connection->isConnected();
     }
 
-    public function getConnection() {
-        return $this->_connection;
+    public function getConnection($id = null) {
+        if (!isset($id)) {
+            return $this->_connection;
+        }
+        else {
+            return $this->_connection instanceof ConnectionCluster 
+                ? $this->_connection->getConnectionById($id)
+                : $this->_connection;
+        }
     }
 
     public function __call($method, $arguments) {
@@ -587,6 +594,9 @@ class ConnectionParameters {
                     case 'read_write_timeout':
                         $details['read_write_timeout'] = $v;
                         break;
+                    case 'alias':
+                        $details['alias'] = $v;
+                        break;
                 }
             }
             $parsed = array_merge($parsed, $details);
@@ -607,6 +617,7 @@ class ConnectionParameters {
             'password' => self::getParamOrDefault($parameters, 'password'), 
             'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
+            'alias' => self::getParamOrDefault($parameters, 'alias'), 
         );
     }
 
@@ -715,6 +726,10 @@ class Connection implements IConnection {
         return $this->_socket;
     }
 
+    public function getAlias() {
+        return $this->_params->alias;
+    }
+
     public function __toString() {
         return sprintf('%s:%d', $this->_params->host, $this->_params->port);
     }
@@ -756,7 +771,13 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     public function add(Connection $connection) {
-        $this->_pool[] = $connection;
+        $connectionAlias = $connection->getAlias();
+        if (isset($connectionAlias)) {
+            $this->_pool[$connectionAlias] = $connection;
+        }
+        else {
+            $this->_pool[] = $connection;
+        }
         $this->_ring->add($connection);
     }
 
