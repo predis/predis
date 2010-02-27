@@ -65,6 +65,21 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testAppend() {
+        $this->redis->set('foo', 'bar');
+        $this->assertEquals(5, $this->redis->append('foo', '__'));
+        $this->assertEquals(8, $this->redis->append('foo', 'bar'));
+        $this->assertEquals('bar__bar', $this->redis->get('foo'));
+
+        $this->assertEquals(4, $this->redis->append('hoge', 'piyo'));
+        $this->assertEquals('piyo', $this->redis->get('hoge'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->pushTail('metavars', 'foo');
+            $test->redis->append('metavars', 'bar');
+        });
+    }
+
     /* commands operating on string values */
 
     function testSet() {
