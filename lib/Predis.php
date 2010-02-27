@@ -1223,6 +1223,58 @@ class MultiBulkResponseIterator implements \Iterator, \Countable {
     }
 }
 
+class MultiBulkResponseKVIterator implements \Iterator, \Countable {
+    private $_iterator, $_position, $_current, $_replySize;
+
+    public function __construct(MultiBulkResponseIterator $iterator) {
+        $virtualSize = count($iterator) / 2;
+
+        $this->_iterator   = $iterator;
+        $this->_position   = 0;
+        $this->_current    = $virtualSize > 0 ? $this->getValue() : null;
+        $this->_replySize  = $virtualSize;
+    }
+
+    public function __destruct() {
+        $this->_iterator->sync();
+    }
+
+    public function rewind() {
+        // NOOP
+    }
+
+    public function current() {
+        return $this->_current;
+    }
+
+    public function key() {
+        return $this->_position;
+    }
+
+    public function next() {
+        if (++$this->_position < $this->_replySize) {
+            $this->_current = $this->getValue();
+        }
+        return $this->_position;
+    }
+
+    public function valid() {
+        return $this->_position < $this->_replySize;
+    }
+
+    public function count() {
+        return $this->_replySize;
+    }
+
+    private function getValue() {
+        $k = $this->_iterator->current();
+        $this->_iterator->next();
+        $v = $this->_iterator->current();
+        $this->_iterator->next();
+        return array($k, $v);
+    }
+}
+
 /* ------------------------------------------------------------------------- */
 
 namespace Predis\Commands;
