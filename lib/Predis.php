@@ -1077,6 +1077,7 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             /* miscellaneous commands */
             'multi'     => '\Predis\Commands\Multi',
             'exec'      => '\Predis\Commands\Exec',
+            'append'    => '\Predis\Commands\Append',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
@@ -1605,5 +1606,9 @@ class Multi extends \Predis\InlineCommand {
 class Exec extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'EXEC'; }
+}
+
+class Append extends \Predis\BulkCommand {
+    public function getCommandId() { return 'APPEND'; }
 }
 ?>
