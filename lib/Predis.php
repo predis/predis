@@ -1452,7 +1452,7 @@ class ZSetReverseRange extends \Predis\Commands\ZSetRange {
     public function getCommandId() { return 'ZREVRANGE'; }
 }
 
-class ZSetRangeByScore extends \Predis\InlineCommand {
+class ZSetRangeByScore extends \Predis\Commands\ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
 }
 
