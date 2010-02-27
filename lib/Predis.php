@@ -1555,6 +1555,9 @@ class ZSetRange extends \Predis\InlineCommand {
         $arguments = $this->getArguments();
         if (count($arguments) === 4) {
             if (strtolower($arguments[3]) === 'withscores') {
+                if ($data instanceof \Iterator) {
+                    return new \Predis\Utilities\MultiBulkResponseKVIterator($data);
+                }
                 $result = array();
                 for ($i = 0; $i < count($data); $i++) {
                     $result[] = array($data[$i], $data[++$i]);
