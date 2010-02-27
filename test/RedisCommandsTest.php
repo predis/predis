@@ -1107,6 +1107,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zsetRangeByScore('zset', 30, 0)
         );
 
+        $this->assertEquals(
+            array(array('c', 10), array('d', 20), array('e', 20)), 
+            $this->redis->zsetRangeByScore('zset', 10, 20, 'withscores')
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->zsetRangeByScore('foo', 0, 0);
