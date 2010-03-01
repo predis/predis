@@ -381,6 +381,10 @@ class ResponseReader {
         );
     }
 
+    private function setHandler($prefix, IResponseHandler $handler) {
+        $this->_prefixHandlers[$prefix] = $handler;
+    }
+
     public function read($socket) {
         $header  = fgets($socket);
         if ($header === false) {
