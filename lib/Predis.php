@@ -1257,6 +1257,9 @@ class Keys extends \Predis\InlineCommand {
     public function getCommandId() { return 'KEYS'; }
     public function parseResponse($data) { 
         // TODO: is this behaviour correct?
+        if (is_array($data)) {
+            return $data;
+        }
         return strlen($data) > 0 ? explode(' ', $data) : array();
     }
 }
