@@ -1,12 +1,22 @@
 v0.x.x
+  * New commands added for the Redis 2.0 (DEV) profile: 
+      - APPEND
+      - ZCOUNT
+      - DISCARD
+
   * The GET parameter for the SORT command now accepts also multiple key 
     patterns by passing an array of strings.
+
+  * KEYS will return a multibulk reply starting from Redis 2.0 (DEV). Predis 
+    handles this change in a backwards-compatible way.
 
   * Switched to class-based handlers instead of anonymous functions to 
     handle the various server response types.
 
   * CommandPipeline and MultiExecBlock return their instances when invoking 
     commands, thus allowing method chaining in pipelines and multi-exec blocks.
+
+  * MultiExecBlock instances can handle the new DISCARD command.
 
   * Connections can now be identified by an alias using the "alias" parameter 
     in the connection arguments. When connected to a cluster of Redis servers, 
