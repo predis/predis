@@ -488,10 +488,11 @@ class CommandPipeline {
 }
 
 class MultiExecBlock {
-    private $_redisClient, $_commands, $_initialized;
+    private $_redisClient, $_commands, $_initialized, $_discarded;
 
     public function __construct(Client $redisClient) {
         $this->_initialized = false;
+        $this->_discarded   = false;
         $this->_redisClient = $redisClient;
         $this->_commands    = array();
     }
@@ -500,6 +501,7 @@ class MultiExecBlock {
         if ($this->_initialized === false) {
             $this->_redisClient->multi();
             $this->_initialized = true;
+            $this->_discarded   = false;
         }
     }
 
@@ -516,6 +518,13 @@ class MultiExecBlock {
         }
     }
 
+    public function discard() {
+        $this->_redisClient->discard();
+        $this->_commands    = array();
+        $this->_initialized = false;
+        $this->_discarded   = true;
+    }
+
     public function execute($block = null) {
         if ($block && !is_callable($block)) {
             throw new \RuntimeException('Argument passed must be a callable object');
@@ -527,6 +536,10 @@ class MultiExecBlock {
         try {
             if ($block !== null) {
                 $block($this);
+            }
+
+            if ($this->_discarded === true) {
+                return;
             }
 
             $execReply = $this->_redisClient->exec();
