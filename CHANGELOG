@@ -1,7 +1,9 @@
 v0.x.x
   * New commands added for the Redis 2.0 (DEV) profile: 
       - APPEND
+      - SUBSTR
       - ZCOUNT
+      - ZRANK
       - DISCARD
 
   * The GET parameter for the SORT command now accepts also multiple key 
