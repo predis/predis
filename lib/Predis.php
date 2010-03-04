@@ -1103,8 +1103,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking',
 
             /* commands operating on sorted sets */
-            'zcount'                    => '\Predis\Commands\ZCount',
-                'zsetCount'             => '\Predis\Commands\ZCount',
+            'zcount'                    => '\Predis\Commands\ZSetCount',
+                'zsetCount'             => '\Predis\Commands\ZSetCount',
             'zrank'                     => '\Predis\Commands\ZSetRank',
                 'zsetRank'              => '\Predis\Commands\ZSetRank',
         ));
@@ -1486,7 +1486,7 @@ class ZSetRangeByScore extends \Predis\Commands\ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
 }
 
-class ZCount extends \Predis\InlineCommand {
+class ZSetCount extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZCOUNT'; }
 }
 
