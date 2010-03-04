@@ -1094,6 +1094,7 @@ class RedisServer_vNext extends RedisServer_v1_2 {
 
             /* commands operating on string values */
             'append'    => '\Predis\Commands\Append',
+            'substr'    => '\Predis\Commands\Substr',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
@@ -1269,6 +1270,10 @@ class Type extends \Predis\InlineCommand {
 
 class Append extends \Predis\BulkCommand {
     public function getCommandId() { return 'APPEND'; }
+}
+
+class Substr extends \Predis\InlineCommand {
+    public function getCommandId() { return 'SUBSTR'; }
 }
 
 /* commands operating on the key space */
