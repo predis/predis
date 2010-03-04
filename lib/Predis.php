@@ -1091,6 +1091,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             'multi'     => '\Predis\Commands\Multi',
             'exec'      => '\Predis\Commands\Exec',
             'discard'   => '\Predis\Commands\Discard',
+
+            /* commands operating on string values */
             'append'    => '\Predis\Commands\Append',
 
             /* commands operating on lists */
@@ -1263,6 +1265,10 @@ class Delete extends \Predis\InlineCommand {
 
 class Type extends \Predis\InlineCommand {
     public function getCommandId() { return 'TYPE'; }
+}
+
+class Append extends \Predis\BulkCommand {
+    public function getCommandId() { return 'APPEND'; }
 }
 
 /* commands operating on the key space */
@@ -1636,9 +1642,5 @@ class Exec extends \Predis\InlineCommand {
 class Discard extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DISCARD'; }
-}
-
-class Append extends \Predis\BulkCommand {
-    public function getCommandId() { return 'APPEND'; }
 }
 ?>
