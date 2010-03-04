@@ -1232,6 +1232,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZrank() {
+        $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+
+        $this->assertEquals(0, $this->redis->zsetRank('zset', 'a'));
+        $this->assertEquals(1, $this->redis->zsetRank('zset', 'b'));
+        $this->assertEquals(4, $this->redis->zsetRank('zset', 'e'));
+
+        $this->redis->zsetRemove('zset', 'd');
+        $this->assertEquals(3, $this->redis->zsetRank('zset', 'e'));
+
+        $this->assertNull($this->redis->zsetRank('zset', 'x'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->zsetRank('foo', 'a');
+        });
+    }
 
     /* multiple databases handling commands */
 
