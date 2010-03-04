@@ -65,6 +65,21 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testDiscard() {
+        $this->assertTrue($this->redis->multi());
+        $this->assertType('Predis\ResponseQueued', $this->redis->set('foo', 'bar'));
+        $this->assertType('Predis\ResponseQueued', $this->redis->set('hoge', 'piyo'));
+        $this->assertEquals(true, $this->redis->discard());
+
+        // should throw an exception when trying to EXEC after a DISCARD
+        RC::testForServerException($this, RC::EXCEPTION_EXEC_NO_MULTI, function($test) {
+            $test->redis->exec();
+        });
+
+        $this->assertFalse($this->redis->exists('foo'));
+        $this->assertFalse($this->redis->exists('hoge'));
+    }
+
     /* commands operating on string values */
 
     function testSet() {
