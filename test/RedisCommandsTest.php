@@ -205,6 +205,19 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testSubstr() {
+        $this->redis->set('var', 'foobar');
+        $this->assertEquals('foo', $this->redis->substr('var', 0, 2));
+        $this->assertEquals('bar', $this->redis->substr('var', 3, 5));
+        $this->assertEquals('bar', $this->redis->substr('var', -3, -1));
+        $this->assertNull($this->redis->substr('var', 5, 0));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->pushTail('metavars', 'foo');
+            $test->redis->substr('metavars', 0, 3);
+        });
+    }
+
     /* commands operating on the key space */
 
     function testKeys() {
