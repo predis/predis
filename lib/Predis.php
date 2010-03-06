@@ -1107,6 +1107,12 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'zsetCount'             => '\Predis\Commands\ZSetCount',
             'zrank'                     => '\Predis\Commands\ZSetRank',
                 'zsetRank'              => '\Predis\Commands\ZSetRank',
+
+            /* commands operating on hashes */
+            'hset'                      => '\Predis\Commands\HSet',
+                'hashSet'               => '\Predis\Commands\HSet',
+            'hget'                      => '\Predis\Commands\HGet',
+                'hashGet'               => '\Predis\Commands\HGet',
         ));
     }
 }
@@ -1504,6 +1510,15 @@ class ZSetRemoveRangeByScore extends \Predis\InlineCommand {
 
 class ZSetRank extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZRANK'; }
+}
+
+/* commands operating on hashes */
+class HSet extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'HSET'; }
+}
+
+class HGet extends \Predis\BulkCommand {
+    public function getCommandId() { return 'HGET'; }
 }
 
 /* multiple databases handling commands */
