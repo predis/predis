@@ -302,6 +302,12 @@ class ResponseErrorHandler implements IResponseHandler {
     }
 }
 
+class ResponseErrorSilentHandler implements IResponseHandler {
+    public function handle(ResponseReader $reader, $socket, $errorMessage) {
+        return new ResponseError(substr($errorMessage, 4));
+    }
+}
+
 class ResponseBulkHandler implements IResponseHandler {
     public function handle(ResponseReader $reader, $socket, $dataLength) {
         if (!is_numeric($dataLength)) {
@@ -407,6 +413,13 @@ class ResponseReader {
                     : new ResponseMultiBulkHandler()
                 );
                 break;
+            case 'errorThrowException':
+            case 'error_throw_exception':
+                $this->setHandler('-', $value == true 
+                    ? new ResponseErrorHandler()
+                    : new ResponseErrorSilentHandler()
+                );
+                break;
             default:
                 throw new \InvalidArgumentException("Unknown option: $option");
         }
@@ -434,6 +447,31 @@ class ResponseReader {
 
         $handler = $this->_prefixHandlers[$prefix];
         return $handler->handle($this, $socket, $payload);
+    }
+}
+
+class ResponseError {
+    private $_message;
+
+    public function __construct($message) {
+        $this->_message = $message;
+    }
+
+    public function __get($property) {
+        if ($property == 'error') {
+            return true;
+        }
+        if ($property == 'message') {
+            return $this->_message;
+        }
+    }
+
+    public function __isset($property) {
+        return $property === 'error';
+    }
+
+    public function __toString() {
+        return $this->_message;
     }
 }
 
