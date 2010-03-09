@@ -400,6 +400,13 @@ class ResponseReader {
 
     public function setOption($option, $value) {
         switch ($option) {
+            case 'iterable_multibulk_replies':
+            case 'iterableMultiBulkReplies':
+                $this->setHandler('*', $value == true 
+                    ? new ResponseMultiBulkStreamHandler()
+                    : new ResponseMultiBulkHandler()
+                );
+                break;
             default:
                 throw new \InvalidArgumentException("Unknown option: $option");
         }
