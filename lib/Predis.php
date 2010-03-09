@@ -86,6 +86,10 @@ class Client {
         return $this->_serverProfile;
     }
 
+    public function getResponseReader() {
+        return $this->_responseReader;
+    }
+
     public function connect() {
         $this->_connection->connect();
     }
