@@ -389,6 +389,20 @@ class ResponseReader {
         $this->_prefixHandlers[$prefix] = $handler;
     }
 
+    public function setOption($option, $value) {
+        switch ($option) {
+            default:
+                throw new \InvalidArgumentException("Unknown option: $option");
+        }
+    }
+
+    public function getOption($option) {
+        switch ($option) {
+            default:
+                throw new \InvalidArgumentException("Unknown option: $option");
+        }
+    }
+
     public function read($socket) {
         $header  = fgets($socket);
         if ($header === false) {
