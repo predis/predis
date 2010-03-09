@@ -24,6 +24,14 @@ v0.x.x
     in the connection arguments. When connected to a cluster of Redis servers, 
     this is useful to get a certain connection out of a cluster of connections.
 
+  * In addition to the classic way of fetching a whole multibulk reply into an 
+    array, the client can now optionally stream a multibulk reply down to the 
+    user code by using PHP iterators. It is just a little bit slower, but it 
+    can save a lot of memory in certain scenarios.
+
+  * Server errors can optionally be handled "silently": instead of throwing an 
+    exception, the client returns a error response type.
+
 v0.5.1
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
     1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
