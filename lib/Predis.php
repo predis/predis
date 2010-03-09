@@ -1196,6 +1196,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking',
 
             /* commands operating on sorted sets */
+            'zunion'                    => '\Predis\Commands\ZSetUnion',
+                'zsetUnion'             => '\Predis\Commands\ZSetUnion',
             'zcount'                    => '\Predis\Commands\ZSetCount',
                 'zsetCount'             => '\Predis\Commands\ZSetCount',
             'zrank'                     => '\Predis\Commands\ZSetRank',
@@ -1653,6 +1655,10 @@ class ZSetIncrementBy extends \Predis\BulkCommand {
 class ZSetRemove extends \Predis\BulkCommand {
     public function getCommandId() { return 'ZREM'; }
     public function parseResponse($data) { return (bool) $data; }
+}
+
+class ZSetUnion extends \Predis\InlineCommand {
+    public function getCommandId() { return 'ZUNION'; }
 }
 
 class ZSetRange extends \Predis\InlineCommand {
