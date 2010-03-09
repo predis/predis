@@ -332,9 +332,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     /* commands operating on lists */
 
     function testPushTail() {
-        $this->assertTrue($this->redis->pushTail('metavars', 'foo'));
+        // NOTE: List push operations return the list length since Redis commit 520b5a3
+        $this->assertEquals(1, $this->redis->pushTail('metavars', 'foo'));
         $this->assertTrue($this->redis->exists('metavars'));
-        $this->assertTrue($this->redis->pushTail('metavars', 'hoge'));
+        $this->assertEquals(2, $this->redis->pushTail('metavars', 'hoge'));
 
         // should throw an exception when trying to do a RPUSH on non-list types
         // should throw an exception when trying to do a LPUSH on non-list types
@@ -345,9 +346,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testPushHead() {
-        $this->assertTrue($this->redis->pushHead('metavars', 'foo'));
+        // NOTE: List push operations return the list length since Redis commit 520b5a3
+        $this->assertEquals(1, $this->redis->pushHead('metavars', 'foo'));
         $this->assertTrue($this->redis->exists('metavars'));
-        $this->assertTrue($this->redis->pushHead('metavars', 'hoge'));
+        $this->assertEquals(2, $this->redis->pushHead('metavars', 'hoge'));
 
         // should throw an exception when trying to do a LPUSH on non-list types
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
@@ -357,8 +359,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testListLength() {
-        $this->assertTrue($this->redis->pushTail('metavars', 'foo'));
-        $this->assertTrue($this->redis->pushTail('metavars', 'hoge'));
+        $this->assertEquals(1, $this->redis->pushTail('metavars', 'foo'));
+        $this->assertEquals(2, $this->redis->pushTail('metavars', 'hoge'));
         $this->assertEquals(2, $this->redis->listLength('metavars'));
 
         $this->assertEquals(0, $this->redis->listLength('doesnotexist'));
