@@ -14,7 +14,7 @@ class Client {
     public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
         $this->_responseReader = new ResponseReader();
         $this->setProfile($serverProfile ?: RedisServerProfile::getDefault());
-        $this->setupConnection($parameters, $this->_responseReader);
+        $this->setupConnection($parameters);
     }
 
     public function __destruct() {
