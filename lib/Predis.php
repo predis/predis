@@ -349,11 +349,11 @@ class ResponseMultiBulkHandler implements IResponseHandler {
 }
 
 class ResponseMultiBulkStreamHandler implements IResponseHandler {
-    public function handle($socket, $prefix, $rawLength) {
+    public function handle(ResponseReader $reader, $socket, $rawLength) {
         if (!is_numeric($rawLength)) {
             throw new ClientException("Cannot parse '$rawLength' as data length");
         }
-        return new Utilities\MultiBulkResponseIterator($socket, (int)$rawLength);
+        return new Utilities\MultiBulkResponseIterator($socket, $reader, (int)$rawLength);
     }
 }
 
@@ -1269,8 +1269,9 @@ abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
 class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
     private $_connection;
 
-    public function __construct($socket, $size) {
+    public function __construct($socket, $reader, $size) {
         $this->_connection = $socket;
+        $this->_reader     = $reader;
         $this->_position   = 0;
         $this->_current    = $size > 0 ? $this->getValue() : null;
         $this->_replySize  = $size;
@@ -1291,7 +1292,7 @@ class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
     }
 
     protected function getValue() {
-        return \Predis\Response::read($this->_connection);
+        return $this->_reader->read($this->_connection);
     }
 }
 
