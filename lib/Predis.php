@@ -751,6 +751,10 @@ class Connection implements IConnection {
         return $this->_socket;
     }
 
+    public function getResponseReader() {
+        return $this->_reader;
+    }
+
     public function getAlias() {
         return $this->_params->alias;
     }
