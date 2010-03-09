@@ -1198,6 +1198,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             /* commands operating on sorted sets */
             'zunion'                    => '\Predis\Commands\ZSetUnion',
                 'zsetUnion'             => '\Predis\Commands\ZSetUnion',
+            'zinter'                    => '\Predis\Commands\ZSetIntersection',
+                'zsetIntersection'      => '\Predis\Commands\ZSetIntersection',
             'zcount'                    => '\Predis\Commands\ZSetCount',
                 'zsetCount'             => '\Predis\Commands\ZSetCount',
             'zrank'                     => '\Predis\Commands\ZSetRank',
@@ -1659,6 +1661,10 @@ class ZSetRemove extends \Predis\BulkCommand {
 
 class ZSetUnion extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZUNION'; }
+}
+
+class ZSetIntersection extends \Predis\InlineCommand {
+    public function getCommandId() { return 'ZINTER'; }
 }
 
 class ZSetRange extends \Predis\InlineCommand {
