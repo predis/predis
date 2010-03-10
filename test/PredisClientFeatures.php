@@ -64,6 +64,93 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
 
+    /* Command and derivates */
+
+    function testCommand_TestArguments() {
+        $cmdArgs = array('key1', 'key2', 'key3');
+
+        $cmd = new \Predis\Commands\GetMultiple();
+        $cmd->setArgumentsArray($cmdArgs);
+        $this->assertEquals($cmdArgs[0], $cmd->getArgument(0));
+        $this->assertEquals($cmdArgs[1], $cmd->getArgument(1));
+        $this->assertEquals($cmdArgs[2], $cmd->getArgument(2));
+
+        $cmd = new \Predis\Commands\GetMultiple();
+        $cmd->setArguments('key1', 'key2', 'key3');
+        $this->assertEquals($cmdArgs[0], $cmd->getArgument(0));
+        $this->assertEquals($cmdArgs[1], $cmd->getArgument(1));
+        $this->assertEquals($cmdArgs[2], $cmd->getArgument(2));
+
+        $cmd = new \Predis\Commands\Ping();
+        $this->assertNull($cmd->getArgument(0));
+    }
+
+    function testCommand_InlineWithNoArguments() {
+        $cmd = new \Predis\Commands\Ping();
+
+        $this->assertType('\Predis\InlineCommand', $cmd);
+        $this->assertEquals('PING', $cmd->getCommandId());
+        $this->assertFalse($cmd->closesConnection());
+        $this->assertFalse($cmd->canBeHashed());
+        $this->assertNull($cmd->getHash());
+        $this->assertEquals("PING\r\n", $cmd());
+    }
+
+    function testCommand_InlineWithArguments() {
+        $cmd = new \Predis\Commands\Get();
+        $cmd->setArgumentsArray(array('key'));
+
+        $this->assertType('\Predis\InlineCommand', $cmd);
+        $this->assertEquals('GET', $cmd->getCommandId());
+        $this->assertFalse($cmd->closesConnection());
+        $this->assertTrue($cmd->canBeHashed());
+        $this->assertNotNull($cmd->getHash());
+        $this->assertEquals("GET key\r\n", $cmd());
+    }
+
+    function testCommand_BulkWithArguments() {
+        $cmd = new \Predis\Commands\Set();
+        $cmd->setArgumentsArray(array('key', 'value'));
+
+        $this->assertType('\Predis\BulkCommand', $cmd);
+        $this->assertEquals('SET', $cmd->getCommandId());
+        $this->assertFalse($cmd->closesConnection());
+        $this->assertTrue($cmd->canBeHashed());
+        $this->assertNotNull($cmd->getHash());
+        $this->assertEquals("SET key 5\r\nvalue\r\n", $cmd());
+    }
+
+    function testCommand_MultiBulkWithArguments() {
+        $cmd = new \Predis\Commands\SetMultiple();
+        $cmd->setArgumentsArray(array('key1', 'value1', 'key2', 'value2'));
+
+        $this->assertType('\Predis\MultiBulkCommand', $cmd);
+        $this->assertEquals('MSET', $cmd->getCommandId());
+        $this->assertFalse($cmd->closesConnection());
+        $this->assertFalse($cmd->canBeHashed());
+        $this->assertNull($cmd->getHash());
+        $this->assertEquals("*5\r\n$4\r\nMSET\r\n$4\r\nkey1\r\n$6\r\nvalue1\r\n$4\r\nkey2\r\n$6\r\nvalue2\r\n", $cmd());
+    }
+
+    function testCommand_ParseResponse() {
+        // default parser
+        $cmd = new \Predis\Commands\Get();
+        $this->assertEquals('test', $cmd->parseResponse('test'));
+
+        // overridden parser (boolean)
+        $cmd = new \Predis\Commands\Exists();
+        $this->assertTrue($cmd->parseResponse('1'));
+        $this->assertFalse($cmd->parseResponse('0'));
+
+        // overridden parser (boolean)
+        $cmd = new \Predis\Commands\Ping();
+        $this->assertTrue($cmd->parseResponse('PONG'));
+
+        // overridden parser (complex)
+        // TODO: emulate a respons to INFO
+    }
+
+
     /* RedisServerProfile and derivates */
 
     function testRedisServerProfile_GetSpecificVersions() {
