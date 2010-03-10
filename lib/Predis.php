@@ -384,6 +384,12 @@ class ResponseReader {
     const QUEUED  = 'QUEUED';
     const NULL    = 'nil';
 
+    const PREFIX_STATUS     = '+';
+    const PREFIX_ERROR      = '-';
+    const PREFIX_INTEGER    = ':';
+    const PREFIX_BULK       = '$';
+    const PREFIX_MULTI_BULK = '*';
+
     private $_prefixHandlers;
 
     public function __construct() {
@@ -392,11 +398,11 @@ class ResponseReader {
 
     private function initializePrefixHandlers() {
         $this->_prefixHandlers = array(
-            '+' => new ResponseStatusHandler(), 
-            '-' => new ResponseErrorHandler(), 
-            ':' => new ResponseIntegerHandler(), 
-            '$' => new ResponseBulkHandler(), 
-            '*' => new ResponseMultiBulkHandler(), 
+            self::PREFIX_STATUS     => new ResponseStatusHandler(), 
+            self::PREFIX_ERROR      => new ResponseErrorHandler(), 
+            self::PREFIX_INTEGER    => new ResponseIntegerHandler(), 
+            self::PREFIX_BULK       => new ResponseBulkHandler(), 
+            self::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(), 
         );
     }
 
@@ -408,14 +414,14 @@ class ResponseReader {
         switch ($option) {
             case 'iterable_multibulk_replies':
             case 'iterableMultiBulkReplies':
-                $this->setHandler('*', $value == true 
+                $this->setHandler(self::PREFIX_MULTI_BULK, $value == true 
                     ? new ResponseMultiBulkStreamHandler()
                     : new ResponseMultiBulkHandler()
                 );
                 break;
             case 'errorThrowException':
             case 'error_throw_exception':
-                $this->setHandler('-', $value == true 
+                $this->setHandler(self::PREFIX_ERROR, $value == true 
                     ? new ResponseErrorHandler()
                     : new ResponseErrorSilentHandler()
                 );
@@ -429,10 +435,12 @@ class ResponseReader {
         switch ($option) {
             case 'iterable_multibulk_replies':
             case 'iterableMultiBulkReplies':
-                return $this->_prefixHandlers['*'] instanceof ResponseMultiBulkStreamHandler;
+                return $this->_prefixHandlers[self::PREFIX_MULTI_BULK] 
+                    instanceof ResponseMultiBulkStreamHandler;
             case 'errorThrowException':
             case 'error_throw_exception':
-                return $this->_prefixHandlers['*'] instanceof ResponseErrorHandler;
+                return $this->_prefixHandlers[self::PREFIX_ERROR] 
+                    instanceof ResponseErrorHandler;
             default:
                 throw new \InvalidArgumentException("Unknown option: $option");
         }
