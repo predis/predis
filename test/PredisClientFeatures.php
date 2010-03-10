@@ -229,5 +229,103 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals($errorMessage, $response->message);
         $this->assertEquals($errorMessage, (string)$response);
     }
+
+
+    /* Connection */
+
+    function testConnection_StringCastReturnsIPAndPort() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $this->assertEquals(RC::SERVER_HOST . ':' . RC::SERVER_PORT, (string) $connection);
+    }
+
+    function testConnection_ConnectDisconnect() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+
+        $this->assertFalse($connection->isConnected());
+        $connection->connect();
+        $this->assertTrue($connection->isConnected());
+        $connection->disconnect();
+        $this->assertFalse($connection->isConnected());
+    }
+
+    function testConnection_WriteAndReadCommand() {
+        $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection->connect();
+
+        $connection->writeCommand($cmd);
+        $this->assertTrue($connection->readResponse($cmd));
+    }
+
+    function testConnection_WriteCommandAndCloseConnection() {
+        $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('quit');
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection->connect();
+
+        $this->assertTrue($connection->isConnected());
+        $connection->writeCommand($cmd);
+        $exceptionMessage = 'An error has occurred while reading from the network stream';
+        RC::testForClientException($this, $exceptionMessage, function($test) use($connection, $cmd) {
+            $connection->readResponse($cmd);
+        });
+        //$this->assertFalse($connection->isConnected());
+    }
+
+    function testConnection_GetSocketOpensConnection() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+
+        $this->assertFalse($connection->isConnected());
+        $this->assertType('resource', $connection->getSocket());
+        $this->assertTrue($connection->isConnected());
+    }
+
+    function testConnection_LazyConnect() {
+        $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+
+        $this->assertFalse($connection->isConnected());
+        $connection->writeCommand($cmd);
+        $this->assertTrue($connection->isConnected());
+        $this->assertTrue($connection->readResponse($cmd));
+    }
+
+    function testConnection_RawCommand() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $this->assertEquals('PONG', $connection->rawCommand("PING\r\n"));
+    }
+
+    function testConnection_Alias() {
+        $connection1 = new \Predis\Connection(RC::getConnectionParameters());
+        $this->assertNull($connection1->getAlias());
+
+        $args = array_merge(RC::getConnectionArguments(), array('alias' => 'servername'));
+        $connection2 = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+        $this->assertEquals('servername', $connection2->getAlias());
+    }
+
+    function testConnection_ConnectionTimeout() {
+        $timeout = 3;
+        $args    = array('host' => '1.0.0.1', 'connection_timeout' => $timeout);
+        $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+
+        $start = time();
+        RC::testForClientException($this, null, function($test) use($connection) {
+            $connection->connect();
+        });
+        $this->assertEquals((float)(time() - $start), $timeout, '', 1);
+    }
+
+    function testConnection_ReadTimeout() {
+        $timeout = 1;
+        $args    = array_merge(RC::getConnectionArguments(), array('read_write_timeout' => $timeout));
+        $cmdFake = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
+        $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+
+        $start = time();
+        RC::testForClientException($this, null, function($test) use($connection, $cmdFake) {
+            $connection->readResponse($cmdFake);
+        });
+        $this->assertEquals((float)(time() - $start), $timeout, '', 1);
+    }
 }
 ?>
