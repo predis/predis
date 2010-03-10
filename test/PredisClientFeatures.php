@@ -327,5 +327,42 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
     }
+
+
+    /* ResponseReader */
+
+    function testResponseReader_OptionIterableMultiBulkReplies() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $responseReader = $connection->getResponseReader();
+
+        $responseReader->setOption('iterable_multibulk_replies', false);
+        $this->assertFalse($responseReader->getOption('iterable_multibulk_replies'));
+        $this->assertType('array', $connection->rawCommand("KEYS *\r\n"));
+
+        $responseReader->setOption('iterable_multibulk_replies', true);
+        $this->assertTrue($responseReader->getOption('iterable_multibulk_replies'));
+        $this->assertType('\Iterator', $connection->rawCommand("KEYS *\r\n"));
+    }
+
+    function testResponseReader_OptionExceptionOnError() {
+        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $responseReader = $connection->getResponseReader();
+        $connection->rawCommand("SET key 5\r\nvalue\r\n");
+        $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
+
+        $responseReader->setOption('error_throw_exception', false);
+        $this->assertFalse($responseReader->getOption('error_throw_exception'));
+        $errorReply = $connection->rawCommand($rawCmdUnexpected);
+        $this->assertType('\Predis\ResponseError', $errorReply);
+        $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
+
+        $responseReader->setOption('error_throw_exception', true);
+        $this->assertTrue($responseReader->getOption('error_throw_exception'));
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
+            use ($connection, $rawCmdUnexpected) {
+
+            $connection->rawCommand($rawCmdUnexpected);
+        });
+    }
 }
 ?>
