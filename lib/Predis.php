@@ -427,6 +427,12 @@ class ResponseReader {
 
     public function getOption($option) {
         switch ($option) {
+            case 'iterable_multibulk_replies':
+            case 'iterableMultiBulkReplies':
+                return $this->_prefixHandlers['*'] instanceof ResponseMultiBulkStreamHandler;
+            case 'errorThrowException':
+            case 'error_throw_exception':
+                return $this->_prefixHandlers['*'] instanceof ResponseErrorHandler;
             default:
                 throw new \InvalidArgumentException("Unknown option: $option");
         }
