@@ -130,5 +130,17 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($response->queued);
         $this->assertEquals(\Predis\ResponseReader::QUEUED, (string)$response);
     }
+
+
+    /* ResponseError */
+
+    function testResponseError() {
+        $errorMessage = 'ERROR MESSAGE';
+        $response = new \Predis\ResponseError($errorMessage);
+
+        $this->assertTrue($response->error);
+        $this->assertEquals($errorMessage, $response->message);
+        $this->assertEquals($errorMessage, (string)$response);
+    }
 }
 ?>
