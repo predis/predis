@@ -25,11 +25,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     /* ConnectionParameters */
 
     function testConnectionParametersDefaultValues() {
-        $params = new Predis\ConnectionParameters();
+        $params = new \Predis\ConnectionParameters();
 
-        $this->assertEquals(Predis\ConnectionParameters::DEFAULT_HOST, $params->host);
-        $this->assertEquals(Predis\ConnectionParameters::DEFAULT_PORT, $params->port);
-        $this->assertEquals(Predis\ConnectionParameters::DEFAULT_TIMEOUT, $params->connection_timeout);
+        $this->assertEquals(\Predis\ConnectionParameters::DEFAULT_HOST, $params->host);
+        $this->assertEquals(\Predis\ConnectionParameters::DEFAULT_PORT, $params->port);
+        $this->assertEquals(\Predis\ConnectionParameters::DEFAULT_TIMEOUT, $params->connection_timeout);
         $this->assertNull($params->read_write_timeout);
         $this->assertNull($params->database);
         $this->assertNull($params->password);
@@ -38,7 +38,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnectionParametersSetupValuesArray() {
         $paramsArray = RC::getConnectionParametersArgumentsArray();
-        $params = new Predis\ConnectionParameters($paramsArray);
+        $params = new \Predis\ConnectionParameters($paramsArray);
 
         $this->assertEquals($paramsArray['host'], $params->host);
         $this->assertEquals($paramsArray['port'], $params->port);
@@ -52,7 +52,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     function testConnectionParametersSetupValuesString() {
         $paramsArray  = RC::getConnectionParametersArgumentsArray();
         $paramsString = RC::getConnectionParametersArgumentsString($paramsArray);
-        $params = new Predis\ConnectionParameters($paramsArray);
+        $params = new \Predis\ConnectionParameters($paramsArray);
 
         $this->assertEquals($paramsArray['host'], $params->host);
         $this->assertEquals($paramsArray['port'], $params->port);
@@ -191,7 +191,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $bogusCommand    = 'not_existing_command';
         $expectedMessage = "'$bogusCommand' is not a registered Redis command";
-        RC::testForClientException($this, $expectedMessage, function($test) 
+        RC::testForClientException($this, $expectedMessage, function() 
             use($profile, $bogusCommand) {
 
             $profile->createCommand($bogusCommand);
@@ -265,7 +265,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($connection->isConnected());
         $connection->writeCommand($cmd);
         $exceptionMessage = 'An error has occurred while reading from the network stream';
-        RC::testForClientException($this, $exceptionMessage, function($test) use($connection, $cmd) {
+        RC::testForClientException($this, $exceptionMessage, function() use($connection, $cmd) {
             $connection->readResponse($cmd);
         });
         //$this->assertFalse($connection->isConnected());
@@ -309,7 +309,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
 
         $start = time();
-        RC::testForClientException($this, null, function($test) use($connection) {
+        RC::testForClientException($this, null, function() use($connection) {
             $connection->connect();
         });
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
@@ -322,7 +322,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
 
         $start = time();
-        RC::testForClientException($this, null, function($test) use($connection, $cmdFake) {
+        RC::testForClientException($this, null, function() use($connection, $cmdFake) {
             $connection->readResponse($cmdFake);
         });
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
