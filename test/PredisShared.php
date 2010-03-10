@@ -138,5 +138,21 @@ class RC {
         }
         return $values;
     }
+
+    public static function getConnectionParametersArgumentsArray() {
+        return array(
+            'host' => '10.0.0.1', 'port' => 6380, 'connection_timeout' => 10, 'read_write_timeout' => 30, 
+            'database' => 5, 'password' => 'dbpassword', 'alias' => 'connection_alias'
+        );
+    }
+
+    public static function getConnectionParametersArgumentsString($arguments = null) {
+        // TODO: must be improved
+        $args = $arguments ?: RC::getConnectionParametersArgumentsArray();
+        $paramsString = "redis://{$args['host']}:{$args['port']}/";
+        $paramsString .= "?connection_timeout={$args['connection_timeout']}&read_write_timeout={$args['read_write_timeout']}";
+        $paramsString .= "&database={$args['database']}&password={$args['password']}&alias={$args['alias']}";
+        return $paramsString;
+    }
 }
 ?>
