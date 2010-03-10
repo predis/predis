@@ -364,5 +364,100 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $connection->rawCommand($rawCmdUnexpected);
         });
     }
+
+
+    /* Client + CommandPipeline */
+
+    function testCommandPipeline_Simple() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $pipe = $client->pipeline();
+
+        $this->assertType('\Predis\CommandPipeline', $pipe);
+        $this->assertType('\Predis\CommandPipeline', $pipe->set('foo', 'bar'));
+        $this->assertType('\Predis\CommandPipeline', $pipe->set('hoge', 'piyo'));
+        $this->assertType('\Predis\CommandPipeline', $pipe->mset(array(
+            'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
+        )));
+        $this->assertType('\Predis\CommandPipeline', $pipe->mget(array(
+            'foo', 'hoge', 'foofoo', 'hogehoge'
+        )));
+
+        $replies = $pipe->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals(4, count($replies));
+        $this->assertEquals(4, count($replies[3]));
+        $this->assertEquals('barbar', $replies[3][2]);
+    }
+
+    function testCommandPipeline_FluentInterface() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->pipeline()->ping()->set('foo', 'bar')->get('foo')->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testCommandPipeline_CallableAnonymousBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->pipeline(function($pipe) { 
+            $pipe->ping();
+            $pipe->set('foo', 'bar');
+            $pipe->get('foo');
+        });
+
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testCommandPipeline_ClientExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        RC::testForClientException($this, 'TEST', function() use($client) {
+            $client->pipeline(function($pipe) { 
+                $pipe->ping();
+                $pipe->set('foo', 'bar');
+                throw new \Predis\ClientException("TEST");
+            });
+        });
+        $this->assertFalse($client->exists('foo'));
+    }
+
+    function testCommandPipeline_ServerExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->pipeline(function($pipe) { 
+                $pipe->set('foo', 'bar');
+                $pipe->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
+                $pipe->set('hoge', 'piyo');
+        });
+
+        $this->assertType('array', $replies);
+        $this->assertType('\Predis\ResponseError', $replies[1]);
+        $this->assertTrue($client->exists('foo'));
+        $this->assertTrue($client->exists('hoge'));
+    }
+
+    function testCommandPipeline_Flush() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $pipe = $client->pipeline();
+        $pipe->set('foo', 'bar')->set('hoge', 'piyo');
+        $pipe->flushPipeline();
+        $pipe->ping()->mget(array('foo', 'hoge'));
+        $replies = $pipe->execute();
+
+        $this->assertType('array', $replies);
+        $this->assertEquals(4, count($replies));
+        $this->assertEquals('bar', $replies[3][0]);
+        $this->assertEquals('piyo', $replies[3][1]);
+    }
 }
 ?>
