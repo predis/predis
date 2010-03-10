@@ -62,5 +62,64 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals($paramsArray['password'], $params->password);
         $this->assertEquals($paramsArray['alias'], $params->alias);
     }
+
+
+    /* RedisServerProfile and derivates */
+
+    function testRedisServerProfile_GetSpecificVersions() {
+        $this->assertType('\Predis\RedisServer_v1_0', \Predis\RedisServerProfile::get('1.0'));
+        $this->assertType('\Predis\RedisServer_v1_2', \Predis\RedisServerProfile::get('1.2'));
+        $this->assertType('\Predis\RedisServer_vNext', \Predis\RedisServerProfile::get('dev'));
+        $this->assertType('\Predis\RedisServerProfile', \Predis\RedisServerProfile::get('default'));
+        $this->assertEquals(\Predis\RedisServerProfile::get('default'), \Predis\RedisServerProfile::getDefault());
+    }
+
+    function testRedisServerProfile_SupportedCommands() {
+        $profile_10 = \Predis\RedisServerProfile::get('1.0');
+        $profile_12 = \Predis\RedisServerProfile::get('1.2');
+
+        $this->assertTrue($profile_10->supportsCommand('info'));
+        $this->assertTrue($profile_12->supportsCommand('info'));
+
+        $this->assertFalse($profile_10->supportsCommand('mset'));
+        $this->assertTrue($profile_12->supportsCommand('mset'));
+
+        $this->assertFalse($profile_10->supportsCommand('multi'));
+        $this->assertFalse($profile_12->supportsCommand('multi'));
+    }
+
+    function testRedisServerProfile_CommandsCreation() {
+        $profile = \Predis\RedisServerProfile::get('1.0');
+
+        $cmdNoArgs = $profile->createCommand('info');
+        $this->assertType('\Predis\Commands\Info', $cmdNoArgs);
+        $this->assertNull($cmdNoArgs->getArgument());
+
+        $args = array('key1', 'key2');
+        $cmdWithArgs = $profile->createCommand('mget', $args);
+        $this->assertType('\Predis\Commands\GetMultiple', $cmdWithArgs);
+        $this->assertEquals($args[0], $cmdWithArgs->getArgument()); // TODO: why?
+        $this->assertEquals($args[0], $cmdWithArgs->getArgument(0));
+        $this->assertEquals($args[1], $cmdWithArgs->getArgument(1));
+
+        $bogusCommand    = 'not_existing_command';
+        $expectedMessage = "'$bogusCommand' is not a registered Redis command";
+        RC::testForClientException($this, $expectedMessage, function($test) 
+            use($profile, $bogusCommand) {
+
+            $profile->createCommand($bogusCommand);
+        });
+    }
+
+    function testRedisServerProfile_CommandsRegistration() {
+        $profile  = \Predis\RedisServerProfile::get('1.0');
+        $cmdId    = 'mset';
+        $cmdClass = '\Predis\Commands\SetMultiple';
+
+        $this->assertFalse($profile->supportsCommand($cmdId));
+        $profile->registerCommand(new $cmdClass(), $cmdId);
+        $this->assertTrue($profile->supportsCommand($cmdId));
+        $this->assertType($cmdClass, $profile->createCommand($cmdId));
+    }
 }
 ?>

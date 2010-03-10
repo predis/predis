@@ -108,6 +108,18 @@ class RC {
         $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
     }
 
+    public static function testForClientException($testcaseInstance, $expectedMessage, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis\ClientException $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis\ClientException', $thrownException);
+        $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+    }
+
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
             $client->delete($keyName);
