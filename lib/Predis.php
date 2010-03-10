@@ -216,6 +216,7 @@ abstract class Command {
     }
 
     protected function getArguments() {
+        // TODO: why getArguments is protected?
         return isset($this->_arguments) ? $this->_arguments : array();
     }
 
@@ -560,6 +561,7 @@ class CommandPipeline {
             throw new \RuntimeException('Argument passed must be a callable object');
         }
 
+        // TODO: do not reuse previously executed pipelines
         $this->setRunning(true);
         $pipelineBlockException = null;
 
@@ -570,6 +572,7 @@ class CommandPipeline {
             $this->flushPipeline();
         }
         catch (\Exception $exception) {
+            // TODO: client/server desync on ServerException
             $pipelineBlockException = $exception;
         }
 
@@ -856,8 +859,6 @@ class Connection implements IConnection {
 }
 
 class ConnectionCluster implements IConnection, \IteratorAggregate {
-    // TODO: find a clean way to handle connection failures of single nodes.
-
     private $_pool, $_ring;
 
     public function __construct() {
