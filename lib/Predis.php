@@ -678,7 +678,7 @@ class ConnectionParameters {
     const DEFAULT_TIMEOUT = 5;
     private $_parameters;
 
-    public function __construct($parameters) {
+    public function __construct($parameters = null) {
         $parameters = $parameters ?: array();
         $this->_parameters = is_array($parameters) 
             ? self::filterConnectionParams($parameters) 
