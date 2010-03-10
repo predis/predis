@@ -121,5 +121,14 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($profile->supportsCommand($cmdId));
         $this->assertType($cmdClass, $profile->createCommand($cmdId));
     }
+
+
+    /* ResponseQueued */
+
+    function testResponseQueued() {
+        $response = new \Predis\ResponseQueued();
+        $this->assertTrue($response->queued);
+        $this->assertEquals(\Predis\ResponseReader::QUEUED, (string)$response);
+    }
 }
 ?>
