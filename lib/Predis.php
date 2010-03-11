@@ -825,7 +825,8 @@ class Connection implements IConnection {
 
     public function readResponse(Command $command) {
         $response = $this->_reader->read($this);
-        return isset($response->queued) ? $response : $command->parseResponse($response);
+        $skipparse = isset($response->queued) || isset($response->error);
+        return $skipparse ? $response : $command->parseResponse($response);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
