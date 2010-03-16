@@ -1236,6 +1236,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'hashDelete'            => '\Predis\Commands\HashDelete',
             'hkeys'                     => '\Predis\Commands\HashKeys',
                 'hashKeys'              => '\Predis\Commands\HashKeys',
+            'hvals'                     => '\Predis\Commands\HashValues',
+                'hashValues'            => '\Predis\Commands\HashValues',
         ));
     }
 }
@@ -1760,6 +1762,10 @@ class HashDelete extends \Predis\BulkCommand {
 
 class HashKeys extends \Predis\InlineCommand {
     public function getCommandId() { return 'HKEYS'; }
+}
+
+class HashValues extends \Predis\InlineCommand {
+    public function getCommandId() { return 'HVALS'; }
 }
 
 /* multiple databases handling commands */
