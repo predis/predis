@@ -1238,6 +1238,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'hashKeys'              => '\Predis\Commands\HashKeys',
             'hvals'                     => '\Predis\Commands\HashValues',
                 'hashValues'            => '\Predis\Commands\HashValues',
+            'hgetall'                   => '\Predis\Commands\HashGetAll',
+                'hashKeysValues'        => '\Predis\Commands\HashGetAll',
         ));
     }
 }
@@ -1766,6 +1768,10 @@ class HashKeys extends \Predis\InlineCommand {
 
 class HashValues extends \Predis\InlineCommand {
     public function getCommandId() { return 'HVALS'; }
+}
+
+class HashGetAll extends \Predis\InlineCommand {
+    public function getCommandId() { return 'HGETALL'; }
 }
 
 /* multiple databases handling commands */
