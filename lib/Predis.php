@@ -817,9 +817,9 @@ class Connection implements IConnection {
         $written = fwrite($this->getSocket(), $command());
         if ($written === false){
            throw new ClientException(sprintf(
-               'An error has occurred while writing command %s on the network stream'),
+               'An error has occurred while writing command %s on the network stream',
                $command->getCommandId()
-           );
+           ));
         }
     }
 
