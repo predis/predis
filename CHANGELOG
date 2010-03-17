@@ -2,7 +2,7 @@ v0.x.x
   * New commands added for the Redis 2.0 (DEV) profile: 
       - Strings: APPEND, SUBSTR
       - ZSets  : ZCOUNT, ZRANK, ZUNION, ZINTER, ZREMBYRANK, ZREVRANK
-      - Hashes : HSET, HGET
+      - Hashes : HSET, HGET, HDEL, HLEN, HKEYS, HVALS, HGETALL
       - Misc.  : DISCARD
 
   * The GET parameter for the SORT command now accepts also multiple key 
