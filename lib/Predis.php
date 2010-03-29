@@ -1242,6 +1242,10 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'hashValues'            => '\Predis\Commands\HashValues',
             'hgetall'                   => '\Predis\Commands\HashGetAll',
                 'hashKeysValues'        => '\Predis\Commands\HashGetAll',
+
+            /* remote server control commands */
+            'config'                    => '\Predis\Commands\Config',
+                'configuration'         => '\Predis\Commands\Config',
         ));
     }
 }
@@ -1912,6 +1916,11 @@ class SlaveOf extends \Predis\InlineCommand {
     public function filterArguments(Array $arguments) {
         return count($arguments) === 0 ? array('NO ONE') : $arguments;
     }
+}
+
+class Config extends \Predis\BulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'CONFIG'; }
 }
 
 class Multi extends \Predis\InlineCommand {
