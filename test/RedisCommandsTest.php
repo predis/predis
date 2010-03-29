@@ -580,7 +580,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->listPopLastPushHead('numbers', 'temporary'));
         $this->assertEquals(0, $this->redis->listLength('numbers'));
         $this->assertEquals(3, $this->redis->listLength('temporary'));
-        $this->assertEquals(array(), $this->redis->listRange('numbers', 0, -1));
+        $this->assertNull($this->redis->listRange('numbers', 0, -1));
         $this->assertEquals($numbers, $this->redis->listRange('temporary', 0, -1));
 
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
@@ -874,7 +874,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         // non-existing keys are considered empty sets
         $this->redis->delete('setC');
         $this->assertEquals(0, $this->redis->setUnionStore('setC', 'setDoesNotExist'));
-        $this->assertTrue($this->redis->exists('setC'));
+        $this->assertFalse($this->redis->exists('setC'));
         $this->assertEquals(0, $this->redis->setCardinality('setC'));
 
         // existing keys are replaced by SUNIONSTORE
@@ -937,7 +937,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         // non-existing keys are considered empty sets
         $this->redis->delete('setC');
         $this->assertEquals(0, $this->redis->setDifferenceStore('setC', 'setDoesNotExist'));
-        $this->assertTrue($this->redis->exists('setC'));
+        $this->assertFalse($this->redis->exists('setC'));
         $this->assertEquals(0, $this->redis->setCardinality('setC'));
 
         // existing keys are replaced by SDIFFSTORE

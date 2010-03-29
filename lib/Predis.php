@@ -1739,11 +1739,11 @@ class ZSetRemoveRangeByScore extends \Predis\InlineCommand {
     public function getCommandId() { return 'ZREMRANGEBYSCORE'; }
 }
 
-class ZSetRank extends \Predis\InlineCommand {
+class ZSetRank extends \Predis\BulkCommand {
     public function getCommandId() { return 'ZRANK'; }
 }
 
-class ZSetReverseRank extends \Predis\InlineCommand {
+class ZSetReverseRank extends \Predis\BulkCommand {
     public function getCommandId() { return 'ZREVRANK'; }
 }
 
