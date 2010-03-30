@@ -1303,14 +1303,16 @@ class HashRing {
     }
 
     private function getNodeKey($key) {
+        // NOTE: binary search for the last item in _ringkeys with a value
+        //       less or equal to the key. If no such item exists, return the 
+        //       last item.
         $ringKeys = $this->_ringKeys;
-
         $upper = count($ringKeys) - 1;
         $lower = 0;
         $index = 0;
 
         while ($lower <= $upper) {
-            $index = ($lower + $upper) / 2;
+            $index = ($lower + $upper) >> 1;
             $item  = $ringKeys[$index];
             if ($item > $key) {
                 $upper = $index - 1;
@@ -1319,10 +1321,10 @@ class HashRing {
                 $lower = $index + 1;
             }
             else {
-                return $index;
+                return $item;
             }
         }
-        return $ringKeys[$upper];
+        return $ringKeys[$upper >= 0 ? $upper : count($ringKeys) - 1];
     }
 }
 
