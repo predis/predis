@@ -115,34 +115,26 @@ class Client {
 
     public function __call($method, $arguments) {
         $command = $this->_serverProfile->createCommand($method, $arguments);
-        return $this->executeCommand($command);
+        return $this->_connection->executeCommand($command);
     }
 
     public function createCommand($method, $arguments = array()) {
         return $this->_serverProfile->createCommand($method, $arguments);
     }
 
-    private function executeCommandInternal(IConnection $connection, Command $command) {
-        $connection->writeCommand($command);
-        if ($command->closesConnection()) {
-            return $connection->disconnect();
-        }
-        return $connection->readResponse($command);
-    }
-
     public function executeCommand(Command $command) {
-        return self::executeCommandInternal($this->_connection, $command);
+        return $this->_connection->executeCommand($command);
     }
 
     public function executeCommandOnShards(Command $command) {
         $replies = array();
         if ($this->_connection instanceof \Predis\ConnectionCluster) {
             foreach($this->_connection as $connection) {
-                $replies[] = self::executeCommandInternal($connection, $command);
+                $replies[] = $connection->executeCommand($command);
             }
         }
         else {
-            $replies[] = self::executeCommandInternal($this->_connection, $command);
+            $replies[] = $this->_connection->executeCommand($command);
         }
         return $replies;
     }
@@ -756,6 +748,7 @@ interface IConnection {
     public function isConnected();
     public function writeCommand(Command $command);
     public function readResponse(Command $command);
+    public function executeCommand(Command $command);
 }
 
 class Connection implements IConnection {
@@ -827,6 +820,14 @@ class Connection implements IConnection {
         $response = $this->_reader->read($this);
         $skipparse = isset($response->queued) || isset($response->error);
         return $skipparse ? $response : $command->parseResponse($response);
+    }
+
+    public function executeCommand(Command $command) {
+        $this->writeCommand($command);
+        if ($command->closesConnection()) {
+            return $this->disconnect();
+        }
+        return $this->readResponse($command);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
@@ -928,6 +929,12 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
 
     public function readResponse(Command $command) {
         return $this->getConnection($command)->readResponse($command);
+    }
+
+    public function executeCommand(Command $command) {
+        $connection = $this->getConnection($command);
+        $connection->writeCommand($command);
+        return $connection->readResponse($command);
     }
 }
 
