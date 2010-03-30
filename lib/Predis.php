@@ -1267,15 +1267,19 @@ namespace Predis\Utilities;
 
 class HashRing {
     const DEFAULT_REPLICAS = 128;
-    private $_ring, $_ringKeys, $_replicas;
+    private $_nodes, $_ring, $_ringKeys, $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
         $this->_replicas = $replicas;
+        $this->_nodes    = array();
         $this->_ring     = array();
         $this->_ringKeys = array();
     }
 
     public function add($node) {
+        // NOTE: in case of collisions in the hashes of the nodes, the node added
+        //       last wins, thus the order in which nodes are added is significant.
+        $this->_nodes[] = $node;
         $nodeHash = (string) $node;
         $replicas = $this->_replicas;
         for ($i = 0; $i < $replicas; $i++) {
@@ -1287,14 +1291,17 @@ class HashRing {
     }
 
     public function remove($node) {
-        $nodeHash = (string) $node;
-        $replicas = $this->_replicas;
-        for ($i = 0; $i < $replicas; $i++) {
-            $key = crc32($nodeHash . ':' . $i);
-            unset($this->_ring[$key]);
-            $this->_ringKeys = array_filter($this->_ringKeys, function($rk) use($key) {
-                return $rk !== $key;
-            });
+        // NOTE: a node is removed by recreating the whole ring from scratch, in 
+        //       order to reassign possible hashes with collisions to the right node 
+        //       according to the order in which they were added in the first place.
+        $oldNodes = $this->_nodes;
+        $this->_nodes    = array();
+        $this->_ring     = array();
+        $this->_ringKeys = array();
+        foreach ($oldNodes as $oldNode) {
+            if ($oldNode !== $node) {
+                $this->add($oldNode);
+            }
         }
     }
 
