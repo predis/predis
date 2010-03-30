@@ -906,7 +906,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
         $this->_ring->add($connection);
     }
 
-    private function getConnection(Command $command) {
+    public function getConnection(Command $command) {
         if ($command->canBeHashed() === false) {
             throw new ClientException(
                 sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
