@@ -1269,42 +1269,76 @@ namespace Predis\Utilities;
 
 class HashRing {
     const DEFAULT_REPLICAS = 128;
+    const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
         $this->_replicas = $replicas;
         $this->_nodes    = array();
-        $this->_ring     = array();
-        $this->_ringKeys = array();
     }
 
-    public function add($node) {
+    public function add($node, $weight = self::DEFAULT_WEIGHT) {
         // NOTE: in case of collisions in the hashes of the nodes, the node added
         //       last wins, thus the order in which nodes are added is significant.
-        $this->_nodes[] = $node;
-        $nodeHash = (string) $node;
-        $replicas = $this->_replicas;
-        for ($i = 0; $i < $replicas; $i++) {
-            $key = crc32($nodeHash . ':' . $i);
-            $this->_ring[$key] = $node;
-        }
-        ksort($this->_ring, SORT_NUMERIC);
-        $this->_ringKeys = array_keys($this->_ring);
+        $this->_nodes[] = array('object' => $node, 'weight' => (int) $weight);
+        $this->reset();
     }
 
     public function remove($node) {
-        // NOTE: a node is removed by recreating the whole ring from scratch, in 
-        //       order to reassign possible hashes with collisions to the right node 
-        //       according to the order in which they were added in the first place.
-        $oldNodes = $this->_nodes;
-        $this->_nodes    = array();
-        $this->_ring     = array();
-        $this->_ringKeys = array();
-        foreach ($oldNodes as $oldNode) {
-            if ($oldNode !== $node) {
-                $this->add($oldNode);
+        // NOTE: a node is removed by resetting the ring so that it's recreated from 
+        //       scratch, in order to reassign possible hashes with collisions to the 
+        //       right node according to the order in which they were added in the 
+        //       first place.
+        for ($i = 0; $i < count($this->_nodes); ++$i) {
+            if ($this->_nodes[$i]['object'] === $node) {
+                array_splice($this->_nodes, $i, 1);
+                $this->reset();
+                break;
             }
         }
+    }
+
+    private function reset() {
+        unset($this->_ring);
+        unset($this->_ringKeys);
+    }
+
+    private function isInitialized() {
+        return isset($this->_ringKeys);
+    }
+
+    private function computeTotalWeight() {
+        // TODO: array_reduce + lambda for PHP 5.3
+        $totalWeight = 0;
+        foreach ($this->_nodes as $node) {
+            $totalWeight += $node['weight'];
+        }
+        return $totalWeight;
+    }
+
+    private function initialize() {
+        if ($this->isInitialized()) {
+            return;
+        }
+        if (count($this->_nodes) === 0) {
+            throw new \LogicException('Cannot initialize empty hashring');
+        }
+
+        $this->_ring = array();
+        $totalWeight = $this->computeTotalWeight();
+        $nodesCount  = count($this->_nodes);
+        foreach ($this->_nodes as $node) {
+            $nodeObject  = $node['object'];
+            $nodeHash    = (string) $nodeObject;
+            $weightRatio = $node['weight'] / $totalWeight;
+            $replicas    = (int) round($weightRatio * $nodesCount * $this->_replicas);
+            for ($i = 0; $i < $replicas; $i++) {
+                $key = crc32($nodeHash . ':' . $i);
+                $this->_ring[$key] = $nodeObject;
+            }
+        }
+        ksort($this->_ring, SORT_NUMERIC);
+        $this->_ringKeys = array_keys($this->_ring);
     }
 
     public function get($key) {
@@ -1315,10 +1349,10 @@ class HashRing {
         // NOTE: binary search for the last item in _ringkeys with a value
         //       less or equal to the key. If no such item exists, return the 
         //       last item.
+        $this->initialize();
         $ringKeys = $this->_ringKeys;
         $upper = count($ringKeys) - 1;
         $lower = 0;
-        $index = 0;
 
         while ($lower <= $upper) {
             $index = ($lower + $upper) >> 1;
