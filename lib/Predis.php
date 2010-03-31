@@ -779,7 +779,9 @@ class Connection implements IConnection {
         }
 
         if (isset($this->_params->read_write_timeout)) {
-            stream_set_timeout($this->_socket, $this->_params->read_write_timeout);
+            $timeoutSeconds  = floor($this->_params->read_write_timeout);
+            $timeoutUSeconds = ($this->_params->read_write_timeout - $timeoutSeconds) * 1000000;
+            stream_set_timeout($this->_socket, $timeoutSeconds, $timeoutUSeconds);
         }
 
         if (count($this->_initCmds) > 0){
