@@ -709,6 +709,9 @@ class ConnectionParameters {
                     case 'alias':
                         $details['alias'] = $v;
                         break;
+                    case 'weight':
+                        $details['weight'] = $v;
+                        break;
                 }
             }
             $parsed = array_merge($parsed, $details);
@@ -729,7 +732,8 @@ class ConnectionParameters {
             'password' => self::getParamOrDefault($parameters, 'password'), 
             'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
-            'alias' => self::getParamOrDefault($parameters, 'alias'), 
+            'alias'  => self::getParamOrDefault($parameters, 'alias'), 
+            'weight' => self::getParamOrDefault($parameters, 'weight', Utilities\HashRing::DEFAULT_WEIGHT), 
         );
     }
 
@@ -855,8 +859,8 @@ class Connection implements IConnection {
         return $this->_reader;
     }
 
-    public function getAlias() {
-        return $this->_params->alias;
+    public function getParameters() {
+        return $this->_params;
     }
 
     public function __toString() {
@@ -898,14 +902,14 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     public function add(Connection $connection) {
-        $connectionAlias = $connection->getAlias();
-        if (isset($connectionAlias)) {
-            $this->_pool[$connectionAlias] = $connection;
+        $parameters = $connection->getParameters();
+        if (isset($parameters->alias)) {
+            $this->_pool[$parameters->alias] = $connection;
         }
         else {
             $this->_pool[] = $connection;
         }
-        $this->_ring->add($connection);
+        $this->_ring->add($connection, $parameters->weight);
     }
 
     public function getConnection(Command $command) {
