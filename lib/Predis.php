@@ -78,8 +78,16 @@ class Client {
         $this->_connection = $connection;
     }
 
-    public function setProfile(RedisServerProfile $serverProfile) {
-        $this->_serverProfile = $serverProfile;
+    public function setProfile($serverProfile) {
+        if (!($serverProfile instanceof RedisServerProfile || is_string($serverProfile))) {
+            throw new \InvalidArgumentException(
+                "Invalid type for server profile, \Predis\RedisServerProfile or string expected"
+            );
+        }
+        $this->_serverProfile = (is_string($serverProfile) 
+            ? RedisServerProfile::get($serverProfile)
+            : $serverProfile
+        );
     }
 
     public function getProfile() {
