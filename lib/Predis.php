@@ -2,9 +2,10 @@
 namespace Predis;
 
 class PredisException extends \Exception { }
-class ClientException extends PredisException { }
-class ServerException extends PredisException { }
-class MalformedServerResponse extends ServerException { }
+class ClientException extends PredisException { }                   // Client-side errors
+class ServerException extends PredisException { }                   // Server-side errors
+class CommunicationException extends PredisException { }            // Communication errors
+class MalformedServerResponse extends CommunicationException { }    // Unexpected responses
 
 /* ------------------------------------------------------------------------- */
 
@@ -300,19 +301,20 @@ class ResponseErrorSilentHandler implements IResponseHandler {
 class ResponseBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $dataLength) {
         if (!is_numeric($dataLength)) {
-            throw new ClientException("Cannot parse '$dataLength' as data length");
+            throw new MalformedServerResponse("Cannot parse '$dataLength' as data length");
         }
 
         if ($dataLength > 0) {
             $value = $connection->readBytes($dataLength);
-            if ($value === false) {
-                throw new ClientException('An error has occurred while reading from the network stream');
+            if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
+                throw new MalformedServerResponse('Did not receive a new-line at the end of a bulk response');
             }
-            $connection->readBytes(2);
             return $value;
         }
         else if ($dataLength == 0) {
-            $connection->readBytes(2);
+            if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
+                throw new MalformedServerResponse('Did not receive a new-line at the end of a bulk response');
+            }
             return '';
         }
 
@@ -323,7 +325,7 @@ class ResponseBulkHandler implements IResponseHandler {
 class ResponseMultiBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
-            throw new ClientException("Cannot parse '$rawLength' as data length");
+            throw new MalformedServerResponse("Cannot parse '$rawLength' as data length");
         }
 
         $listLength = (int) $rawLength;
@@ -346,7 +348,7 @@ class ResponseMultiBulkHandler implements IResponseHandler {
 class ResponseMultiBulkStreamHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
-            throw new ClientException("Cannot parse '$rawLength' as data length");
+            throw new MalformedServerResponse("Cannot parse '$rawLength' as data length");
         }
         return new Utilities\MultiBulkResponseIterator($connection, (int)$rawLength);
     }
@@ -359,7 +361,7 @@ class ResponseIntegerHandler implements IResponseHandler {
         }
         else {
             if ($number !== ResponseReader::NULL) {
-                throw new ClientException("Cannot parse '$number' as numeric response");
+                throw new MalformedServerResponse("Cannot parse '$number' as numeric response");
             }
             return null;
         }
@@ -436,7 +438,11 @@ class ResponseReader {
     }
 
     public function read(Connection $connection) {
-        $header  = $connection->readLine();
+        $header = $connection->readLine();
+        if ($header === '') {
+            throw new MalformedServerResponse('Unexpected empty header');
+        }
+
         $prefix  = $header[0];
         $payload = strlen($header) > 1 ? substr($header, 1) : '';
 
@@ -597,7 +603,7 @@ class MultiExecBlock {
             return $this;
         }
         else {
-            throw new ClientException('The server did not respond with a QUEUED status reply');
+            throw new MalformedServerResponse('The server did not respond with a QUEUED status reply');
         }
     }
 
@@ -633,8 +639,7 @@ class MultiExecBlock {
             $sizeofReplies = count($execReply);
 
             if ($sizeofReplies !== count($commands)) {
-                // TODO: think of a better exception message
-                throw new ClientException("Out-of-sync");
+                throw new MalformedServerResponse('Unexpected number of responses for a MultiExecBlock');
             }
 
             for ($i = 0; $i < $sizeofReplies; $i++) {
@@ -780,7 +785,7 @@ class Connection implements IConnection {
         );
 
         if (!$this->_socket) {
-            throw new ClientException(trim($errstr), $errno);
+            throw new CommunicationException(trim($errstr), $errno);
         }
 
         if (isset($this->_params->read_write_timeout)) {
@@ -814,13 +819,7 @@ class Connection implements IConnection {
     }
 
     public function writeCommand(Command $command) {
-        $written = $this->writeBytes($command());
-        if ($written === false){
-           throw new ClientException(sprintf(
-               'An error has occurred while writing command %s on the network stream',
-               $command->getCommandId()
-           ));
-        }
+        $this->writeBytes($command());
     }
 
     public function readResponse(Command $command) {
@@ -838,10 +837,7 @@ class Connection implements IConnection {
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        $written = $this->writeBytes($rawCommandData);
-        if ($written === false){
-           throw new ClientException('An error has occurred while writing a raw command on the network stream');
-        }
+        $this->writeBytes($rawCommandData);
         if ($closesConnection) {
             $this->disconnect();
             return;
@@ -857,7 +853,7 @@ class Connection implements IConnection {
                 return true;
             }
             if ($written === false || $written === 0) {
-                return false;
+                throw new CommunicationException('Error while writing bytes to the server');
             }
             $value = substr($value, $written);
         }
@@ -870,7 +866,7 @@ class Connection implements IConnection {
         do {
             $chunk = fread($socket, $length);
             if ($chunk === false || $chunk === '') {
-                return false;
+                throw new CommunicationException('Error while reading bytes from the server');
             }
             $value .= $chunk;
         }
@@ -884,7 +880,7 @@ class Connection implements IConnection {
         do {
             $chunk = fgets($socket);
             if ($chunk === false || strlen($chunk) == 0) {
-                return false;
+                throw new CommunicationException('Error while reading line from the server');
             }
             $value .= $chunk;
         }
