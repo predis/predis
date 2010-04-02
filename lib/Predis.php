@@ -836,6 +836,7 @@ class Connection implements IConnection {
            throw new ClientException('An error has occurred while writing a raw command on the network stream');
         }
         if ($closesConnection) {
+            $this->disconnect();
             return;
         }
         return $this->_reader->read($this);
