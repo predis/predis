@@ -694,6 +694,9 @@ class ConnectionParameters {
                     case 'password':
                         $details['password'] = $v;
                         break;
+                    case 'connection_async':
+                        $details['connection_async'] = $v;
+                        break;
                     case 'connection_timeout':
                         $details['connection_timeout'] = $v;
                         break;
@@ -724,6 +727,7 @@ class ConnectionParameters {
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password'), 
+            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
             'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
             'alias'  => self::getParamOrDefault($parameters, 'alias'), 
@@ -771,7 +775,14 @@ class Connection implements IConnection {
             throw new ClientException('Connection already estabilished');
         }
         $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
-        $this->_socket = @stream_socket_client($uri, $errno, $errstr, $this->_params->connection_timeout);
+        $connectFlags = STREAM_CLIENT_CONNECT;
+        if ($this->_params->connection_async) {
+            $connectFlags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+        $this->_socket = @stream_socket_client(
+            $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
+        );
+
         if (!$this->_socket) {
             throw new ClientException(trim($errstr), $errno);
         }
