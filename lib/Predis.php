@@ -17,10 +17,6 @@ class Client {
         $this->setupConnection($parameters);
     }
 
-    public function __destruct() {
-        $this->_connection->disconnect();
-    }
-
     public static function create(/* arguments */) {
         $argv = func_get_args();
         $argc = func_num_args();
@@ -922,10 +918,6 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     public function __construct() {
         $this->_pool = array();
         $this->_ring = new Utilities\HashRing();
-    }
-
-    public function __destruct() {
-        $this->disconnect();
     }
 
     public function isConnected() {
