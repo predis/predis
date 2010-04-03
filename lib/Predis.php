@@ -322,23 +322,23 @@ class ResponseBulkHandler implements IResponseHandler {
 
         if ($dataLength > 0) {
             $value = $connection->readBytes($dataLength);
-            if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
-                Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                    $connection, 'Did not receive a new-line at the end of a bulk response'
-                ));
-            }
+            self::discardNewLine($connection);
             return $value;
         }
         else if ($dataLength == 0) {
-            if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
-                Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                    $connection, 'Did not receive a new-line at the end of a bulk response'
-                ));
-            }
+            self::discardNewLine($connection);
             return '';
         }
 
         return null;
+    }
+
+    private static function discardNewLine(Connection $connection) {
+        if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
+            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+                $connection, 'Did not receive a new-line at the end of a bulk response'
+            ));
+        }
     }
 }
 
