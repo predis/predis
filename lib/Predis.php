@@ -8,7 +8,7 @@ class ServerException extends PredisException { }                   // Server-si
 class CommunicationException extends PredisException {              // Communication errors
     private $_connection;
 
-    public function __construct($message, Connection $connection, $code = null) {
+    public function __construct(Connection $connection, $message = null,  $code = null) {
         $this->_connection = $connection;
         parent::__construct($message, $code);
     }
@@ -316,7 +316,7 @@ class ResponseBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $dataLength) {
         if (!is_numeric($dataLength)) {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                "Cannot parse '$dataLength' as data length", $connection
+                $connection, "Cannot parse '$dataLength' as data length"
             ));
         }
 
@@ -324,7 +324,7 @@ class ResponseBulkHandler implements IResponseHandler {
             $value = $connection->readBytes($dataLength);
             if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
                 Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                    'Did not receive a new-line at the end of a bulk response', $connection
+                    $connection, 'Did not receive a new-line at the end of a bulk response'
                 ));
             }
             return $value;
@@ -332,7 +332,7 @@ class ResponseBulkHandler implements IResponseHandler {
         else if ($dataLength == 0) {
             if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
                 Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                    'Did not receive a new-line at the end of a bulk response', $connection
+                    $connection, 'Did not receive a new-line at the end of a bulk response'
                 ));
             }
             return '';
@@ -346,7 +346,7 @@ class ResponseMultiBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                "Cannot parse '$rawLength' as data length", $connection
+                $connection, "Cannot parse '$rawLength' as data length"
             ));
         }
 
@@ -371,7 +371,7 @@ class ResponseMultiBulkStreamHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                "Cannot parse '$rawLength' as data length", $connection
+                $connection, "Cannot parse '$rawLength' as data length"
             ));
         }
         return new Utilities\MultiBulkResponseIterator($connection, (int)$rawLength);
@@ -386,7 +386,7 @@ class ResponseIntegerHandler implements IResponseHandler {
         else {
             if ($number !== ResponseReader::NULL) {
                 Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                    "Cannot parse '$number' as numeric response", $connection
+                    $connection, "Cannot parse '$number' as numeric response"
                 ));
             }
             return null;
@@ -467,7 +467,7 @@ class ResponseReader {
         $header = $connection->readLine();
         if ($header === '') {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                'Unexpected empty header', $connection
+                $connection, 'Unexpected empty header'
             ));
         }
 
@@ -476,7 +476,7 @@ class ResponseReader {
 
         if (!isset($this->_prefixHandlers[$prefix])) {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-                "Unknown prefix '$prefix'", $connection
+                $connection, "Unknown prefix '$prefix'"
             ));
         }
 
@@ -696,7 +696,7 @@ class MultiExecBlock {
         //       connection, which means that Predis\Client::getConnection 
         //       will always return an instance of Predis\Connection.
         Utilities\Shared::onCommunicationException(new MalformedServerResponse(
-            $message, $this->_redisClient->getConnection()
+            $this->_redisClient->getConnection(), $message
         ));
     }
 }
@@ -859,7 +859,7 @@ class Connection implements IConnection {
 
     private function onCommunicationException($message, $code = null) {
         Utilities\Shared::onCommunicationException(
-            new CommunicationException($message, $this, $code)
+            new CommunicationException($this, $message, $code)
         );
     }
 
