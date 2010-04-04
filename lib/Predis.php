@@ -1488,6 +1488,31 @@ class HashRing implements IRing {
     }
 }
 
+class KetamaPureRing extends HashRing {
+    const DEFAULT_REPLICAS = 160;
+
+    public function __construct() {
+        parent::__construct($this::DEFAULT_REPLICAS);
+    }
+
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $weightRatio, $replicas) {
+        $nodeObject = $node['object'];
+        $nodeHash = (string) $nodeObject;
+        $replicas = (int) floor($weightRatio * $totalNodes * ($replicas / 4));
+        for ($i = 0; $i < $replicas; $i++) {
+            $unpackedDigest = unpack('V4', md5("$nodeHash-$i", true));
+            foreach ($unpackedDigest as $key) {
+                $ring[$key] = $nodeObject;
+            }
+        }
+    }
+
+    public function generateKey($value) {
+        $hash = unpack('V', md5($value, true));
+        return $hash[1];
+    }
+}
+
 abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
     protected $_position, $_current, $_replySize;
 
