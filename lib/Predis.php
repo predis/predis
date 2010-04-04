@@ -961,9 +961,9 @@ class Connection implements IConnection {
 class ConnectionCluster implements IConnection, \IteratorAggregate {
     private $_pool, $_ring;
 
-    public function __construct() {
+    public function __construct(Utilities\IRing $ring = null) {
         $this->_pool = array();
-        $this->_ring = new Utilities\HashRing();
+        $this->_ring = $ring ?: new Utilities\HashRing();
     }
 
     public function isConnected() {
