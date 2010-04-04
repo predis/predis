@@ -773,7 +773,7 @@ class ConnectionParameters {
             'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
             'alias'  => self::getParamOrDefault($parameters, 'alias'), 
-            'weight' => self::getParamOrDefault($parameters, 'weight', Utilities\HashRing::DEFAULT_WEIGHT), 
+            'weight' => self::getParamOrDefault($parameters, 'weight'), 
         );
     }
 
@@ -1386,10 +1386,10 @@ class HashRing implements IRing {
         $this->_nodes    = array();
     }
 
-    public function add($node, $weight = self::DEFAULT_WEIGHT) {
+    public function add($node, $weight = null) {
         // NOTE: in case of collisions in the hashes of the nodes, the node added
         //       last wins, thus the order in which nodes are added is significant.
-        $this->_nodes[] = array('object' => $node, 'weight' => (int) $weight);
+        $this->_nodes[] = array('object' => $node, 'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT);
         $this->reset();
     }
 
@@ -1437,17 +1437,21 @@ class HashRing implements IRing {
         $totalWeight = $this->computeTotalWeight();
         $nodesCount  = count($this->_nodes);
         foreach ($this->_nodes as $node) {
-            $nodeObject  = $node['object'];
-            $nodeHash    = (string) $nodeObject;
             $weightRatio = $node['weight'] / $totalWeight;
-            $replicas    = (int) round($weightRatio * $nodesCount * $this->_replicas);
-            for ($i = 0; $i < $replicas; $i++) {
-                $key = crc32("$nodeHash:$i");
-                $this->_ring[$key] = $nodeObject;
-            }
+            $this->addNodeToRing($this->_ring, $node, $nodesCount, $weightRatio, $this->_replicas);
         }
         ksort($this->_ring, SORT_NUMERIC);
         $this->_ringKeys = array_keys($this->_ring);
+    }
+
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $weightRatio, $replicas) {
+        $nodeObject = $node['object'];
+        $nodeHash = (string) $nodeObject;
+        $replicas = (int) round($weightRatio * $totalNodes * $replicas);
+        for ($i = 0; $i < $replicas; $i++) {
+            $key = crc32("$nodeHash:$i");
+            $ring[$key] = $nodeObject;
+        }
     }
 
     public function generateKey($value) {
@@ -1480,7 +1484,7 @@ class HashRing implements IRing {
                 return $item;
             }
         }
-        return $ringKeys[$upper >= 0 ? $upper : count($ringKeys) - 1];
+        return $ringKeys[$lower < count($ringKeys) ? $lower : 0];
     }
 }
 
