@@ -181,7 +181,7 @@ abstract class Command {
         return true;
     }
 
-    public function getHash() {
+    public function getHash(Utilities\IRing $ring) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -195,7 +195,7 @@ abstract class Command {
                     $key = substr($key, ++$start, $end - $start);
                 }
 
-                $this->_hash = crc32($key);
+                $this->_hash = $ring->generateKey($key);
                 return $this->_hash;
             }
         }
@@ -212,10 +212,12 @@ abstract class Command {
 
     public function setArguments(/* arguments */) {
         $this->_arguments = $this->filterArguments(func_get_args());
+        $this->_hash = null;
     }
 
     public function setArgumentsArray(Array $arguments) {
         $this->_arguments = $this->filterArguments($arguments);
+        $this->_hash = null;
     }
 
     protected function getArguments() {
@@ -1002,7 +1004,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
                 sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
             );
         }
-        return $this->_ring->get($command->getHash());
+        return $this->_ring->get($command->getHash($this->_ring));
     }
 
     public function getConnectionById($id = null) {
@@ -1367,7 +1369,14 @@ class Shared {
     }
 }
 
-class HashRing {
+interface IRing {
+    public function add($node, $weight = null);
+    public function remove($node);
+    public function get($key);
+    public function generateKey($value);
+}
+
+class HashRing implements IRing {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_replicas;
@@ -1433,12 +1442,16 @@ class HashRing {
             $weightRatio = $node['weight'] / $totalWeight;
             $replicas    = (int) round($weightRatio * $nodesCount * $this->_replicas);
             for ($i = 0; $i < $replicas; $i++) {
-                $key = crc32($nodeHash . ':' . $i);
+                $key = crc32("$nodeHash:$i");
                 $this->_ring[$key] = $nodeObject;
             }
         }
         ksort($this->_ring, SORT_NUMERIC);
         $this->_ringKeys = array_keys($this->_ring);
+    }
+
+    public function generateKey($value) {
+        return crc32($value);
     }
 
     public function get($key) {
