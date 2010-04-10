@@ -8,7 +8,7 @@ class ServerException extends PredisException { }                   // Server-si
 class CommunicationException extends PredisException {              // Communication errors
     private $_connection;
 
-    public function __construct(Connection $connection, $message = null,  $code = null) {
+    public function __construct(Connection $connection, $message = null, $code = null) {
         $this->_connection = $connection;
         parent::__construct($message, $code);
     }
