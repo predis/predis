@@ -17,9 +17,7 @@ class CommunicationException extends PredisException {              // Communica
     public function shouldResetConnection() {  return true; }
 }
 
-class MalformedServerResponse extends CommunicationException {      // Unexpected responses
-    public function shouldResetConnection() {  return false;  }
-}
+class MalformedServerResponse extends CommunicationException { }    // Unexpected responses
 
 /* ------------------------------------------------------------------------- */
 
