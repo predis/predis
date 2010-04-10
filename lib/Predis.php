@@ -542,8 +542,14 @@ class ResponseReader {
         );
     }
 
-    private function setHandler($prefix, IResponseHandler $handler) {
+    public function setHandler($prefix, IResponseHandler $handler) {
         $this->_prefixHandlers[$prefix] = $handler;
+    }
+
+    public function getHandler($prefix) {
+        if (isset($this->_prefixHandlers[$prefix])) {
+            return $this->_prefixHandlers[$prefix];
+        }
     }
 
     public function setOption($option, $value) {
