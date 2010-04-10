@@ -22,11 +22,11 @@ class MalformedServerResponse extends CommunicationException { }    // Unexpecte
 /* ------------------------------------------------------------------------- */
 
 class Client {
-    private $_connection, $_serverProfile, $_responseReader;
+    private $_options, $_connection, $_serverProfile, $_responseReader;
 
-    public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
+    public function __construct($parameters = null, $clientOptions = null) {
         $this->_responseReader = new ResponseReader();
-        $this->setProfile($serverProfile ?: RedisServerProfile::getDefault());
+        $this->setupClient($clientOptions ?: new ClientOptions());
         $this->setupConnection($parameters);
     }
 
@@ -34,10 +34,11 @@ class Client {
         $argv = func_get_args();
         $argc = func_num_args();
 
-        $serverProfile = null;
+        $options = null;
         $lastArg = $argv[$argc-1];
-        if ($argc > 0 && !is_string($lastArg) && is_subclass_of($lastArg, '\Predis\RedisServerProfile')) {
-            $serverProfile = array_pop($argv);
+        if ($argc > 0 && !is_string($lastArg) && ($lastArg instanceof ClientOptions ||
+            is_subclass_of($lastArg, '\Predis\RedisServerProfile'))) {
+            $options = array_pop($argv);
             $argc--;
         }
 
@@ -45,7 +46,39 @@ class Client {
             throw new ClientException('Missing connection parameters');
         }
 
-        return new Client($argc === 1 ? $argv[0] : $argv, $serverProfile);
+        return new Client($argc === 1 ? $argv[0] : $argv, $options);
+    }
+
+    private static function filterClientOptions($options) {
+        if ($options instanceof ClientOptions) {
+            return $options;
+        }
+        if (is_array($options)) {
+            return new ClientOptions($options);
+        }
+        if ($options instanceof RedisServerProfile) {
+            return new ClientOptions(array(
+                'profile' => $options
+            ));
+        }
+        if (is_string($options)) {
+            return new ClientOptions(array(
+                'profile' => RedisServerProfile::get($options)
+            ));
+        }
+        throw new \InvalidArgumentException("Invalid type for client options");
+    }
+
+    private function setupClient($options) {
+        $this->_options = self::filterClientOptions($options);
+
+        $this->setProfile($this->_options->profile);
+        if ($this->_options->iterable_multibulk) {
+            $this->_responseReader->setOption('iterable_multibulk_replies', true);
+        }
+        if (!$this->_options->throw_on_error) {
+            $this->_responseReader->setOption('error_throw_exception', false);
+        }
     }
 
     private function setupConnection($parameters) {
