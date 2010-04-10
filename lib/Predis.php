@@ -1463,9 +1463,6 @@ class HashRing implements IRing {
     }
 
     private function getNodeKey($key) {
-        // NOTE: binary search for the last item in _ringkeys with a value
-        //       less or equal to the key. If no such item exists, return the 
-        //       last item.
         $this->initialize();
         $ringKeys = $this->_ringKeys;
         $upper = count($ringKeys) - 1;
@@ -1484,7 +1481,14 @@ class HashRing implements IRing {
                 return $item;
             }
         }
-        return $ringKeys[$lower < count($ringKeys) ? $lower : 0];
+        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, count($ringKeys))];
+    }
+
+    protected function wrapAroundStrategy($upper, $lower, $ringKeysCount) {
+        // NOTE: binary search for the last item in _ringkeys with a value 
+        //       less or equal to the key. If no such item exists, return the 
+        //       last item.
+        return $upper >= 0 ? $upper : $ringKeysCount - 1;
     }
 }
 
@@ -1510,6 +1514,13 @@ class KetamaPureRing extends HashRing {
     public function generateKey($value) {
         $hash = unpack('V', md5($value, true));
         return $hash[1];
+    }
+
+    protected function wrapAroundStrategy($upper, $lower, $ringKeysCount) {
+        // NOTE: binary search for the first item in _ringkeys with a value 
+        //       greater or equal to the key. If no such item exists, return the 
+        //       first item.
+        return $lower < $ringKeysCount ? $lower : 0;
     }
 }
 
