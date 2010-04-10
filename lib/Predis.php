@@ -73,11 +73,17 @@ class Client {
         $this->_options = self::filterClientOptions($options);
 
         $this->setProfile($this->_options->profile);
-        if ($this->_options->iterable_multibulk) {
-            $this->_responseReader->setOption('iterable_multibulk_replies', true);
+        if ($this->_options->iterable_multibulk === true) {
+            $this->_responseReader->setHandler(
+                ResponseReader::PREFIX_MULTI_BULK, 
+                new ResponseMultiBulkStreamHandler()
+            );
         }
-        if (!$this->_options->throw_on_error) {
-            $this->_responseReader->setOption('error_throw_exception', false);
+        if ($this->_options->throw_on_error === false) {
+            $this->_responseReader->setHandler(
+                ResponseReader::PREFIX_ERROR, 
+                new ResponseErrorSilentHandler()
+            );
         }
     }
 
@@ -549,42 +555,6 @@ class ResponseReader {
     public function getHandler($prefix) {
         if (isset($this->_prefixHandlers[$prefix])) {
             return $this->_prefixHandlers[$prefix];
-        }
-    }
-
-    public function setOption($option, $value) {
-        switch ($option) {
-            case 'iterable_multibulk_replies':
-            case 'iterableMultiBulkReplies':
-                $this->setHandler(self::PREFIX_MULTI_BULK, $value == true 
-                    ? new ResponseMultiBulkStreamHandler()
-                    : new ResponseMultiBulkHandler()
-                );
-                break;
-            case 'errorThrowException':
-            case 'error_throw_exception':
-                $this->setHandler(self::PREFIX_ERROR, $value == true 
-                    ? new ResponseErrorHandler()
-                    : new ResponseErrorSilentHandler()
-                );
-                break;
-            default:
-                throw new \InvalidArgumentException("Unknown option: $option");
-        }
-    }
-
-    public function getOption($option) {
-        switch ($option) {
-            case 'iterable_multibulk_replies':
-            case 'iterableMultiBulkReplies':
-                return $this->_prefixHandlers[self::PREFIX_MULTI_BULK] 
-                    instanceof ResponseMultiBulkStreamHandler;
-            case 'errorThrowException':
-            case 'error_throw_exception':
-                return $this->_prefixHandlers[self::PREFIX_ERROR] 
-                    instanceof ResponseErrorHandler;
-            default:
-                throw new \InvalidArgumentException("Unknown option: $option");
         }
     }
 
