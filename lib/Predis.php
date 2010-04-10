@@ -1439,14 +1439,14 @@ class HashRing implements IRing {
         $nodesCount  = count($this->_nodes);
         foreach ($this->_nodes as $node) {
             $weightRatio = $node['weight'] / $totalWeight;
-            $this->addNodeToRing($this->_ring, $node, $nodesCount, $weightRatio, $this->_replicas);
+            $this->addNodeToRing($this->_ring, $node, $nodesCount, $this->_replicas, $weightRatio);
         }
         ksort($this->_ring, SORT_NUMERIC);
         $this->_ringKeys = array_keys($this->_ring);
         $this->_ringKeysCount = count($this->_ringKeys);
     }
 
-    protected function addNodeToRing(&$ring, $node, $totalNodes, $weightRatio, $replicas) {
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
         $nodeObject = $node['object'];
         $nodeHash = (string) $nodeObject;
         $replicas = (int) round($weightRatio * $totalNodes * $replicas);
@@ -1501,7 +1501,7 @@ class KetamaPureRing extends HashRing {
         parent::__construct($this::DEFAULT_REPLICAS);
     }
 
-    protected function addNodeToRing(&$ring, $node, $totalNodes, $weightRatio, $replicas) {
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
         $nodeObject = $node['object'];
         $nodeHash = (string) $nodeObject;
         $replicas = (int) floor($weightRatio * $totalNodes * ($replicas / 4));
