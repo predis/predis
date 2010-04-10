@@ -168,6 +168,94 @@ class Client {
 
 /* ------------------------------------------------------------------------- */
 
+interface IClientOptionsHandler {
+    public function validate($option, $value);
+    public function getDefault();
+}
+
+class ClientOptionsProfile implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof \Predis\RedisServerProfile) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return \Predis\RedisServerProfile::get($value);
+        }
+        throw new \InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return \Predis\RedisServerProfile::getDefault();
+    }
+}
+
+class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return false;
+    }
+}
+
+class ClientOptionsThrowOnError implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return true;
+    }
+}
+
+class ClientOptions {
+    private static $_optionsHandlers;
+    private $_options;
+
+    public function __construct($options = null) {
+        self::initializeOptionsHandlers();
+        $this->initializeOptions($options ?: array());
+    }
+
+    private static function initializeOptionsHandlers() {
+        if (!isset(self::$_optionsHandlers)) {
+            self::$_optionsHandlers = self::getOptionsHandlers();
+        }
+    }
+
+    private static function getOptionsHandlers() {
+        return array(
+            'profile'    => new \Predis\ClientOptionsProfile(),
+            'iterable_multibulk' => new \Predis\ClientOptionsIterableMultiBulk(),
+            'throw_on_error' => new \Predis\ClientOptionsThrowOnError(),
+        );
+    }
+
+    private function initializeOptions($options) {
+        foreach ($options as $option => $value) {
+            if (isset(self::$_optionsHandlers[$option])) {
+                $handler = self::$_optionsHandlers[$option];
+                $this->_options[$option] = $handler->validate($option, $value);
+            }
+        }
+    }
+
+    public function __get($option) {
+        if (!isset($this->_options[$option])) {
+            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
+            $this->_options[$option] = $defaultValue;
+        }
+        return $this->_options[$option];
+    }
+
+    public function __isset($option) {
+        return isset(self::$_optionsHandlers[$option]);
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+
 abstract class Command {
     private $_arguments, $_hash;
 
