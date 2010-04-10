@@ -1379,7 +1379,7 @@ interface IRing {
 class HashRing implements IRing {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
-    private $_nodes, $_ring, $_ringKeys, $_replicas;
+    private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
         $this->_replicas = $replicas;
@@ -1410,6 +1410,7 @@ class HashRing implements IRing {
     private function reset() {
         unset($this->_ring);
         unset($this->_ringKeys);
+        unset($this->_ringKeysCount);
     }
 
     private function isInitialized() {
@@ -1442,6 +1443,7 @@ class HashRing implements IRing {
         }
         ksort($this->_ring, SORT_NUMERIC);
         $this->_ringKeys = array_keys($this->_ring);
+        $this->_ringKeysCount = count($this->_ringKeys);
     }
 
     protected function addNodeToRing(&$ring, $node, $totalNodes, $weightRatio, $replicas) {
@@ -1465,7 +1467,7 @@ class HashRing implements IRing {
     private function getNodeKey($key) {
         $this->initialize();
         $ringKeys = $this->_ringKeys;
-        $upper = count($ringKeys) - 1;
+        $upper = $this->_ringKeysCount - 1;
         $lower = 0;
 
         while ($lower <= $upper) {
@@ -1481,7 +1483,7 @@ class HashRing implements IRing {
                 return $item;
             }
         }
-        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, count($ringKeys))];
+        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->_ringKeysCount)];
     }
 
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount) {
