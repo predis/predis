@@ -20,9 +20,25 @@ v0.x.x
 
   * MultiExecBlock instances can handle the new DISCARD command.
 
-  * Connections can now be identified by an alias using the "alias" parameter 
-    in the connection arguments. When connected to a cluster of Redis servers, 
-    this is useful to get a certain connection out of a cluster of connections.
+  * New parameters for connections: 
+      - alias [default: not set]
+        every connection can now be identified by an alias that is useful to 
+        get a certain connection when connected to a cluster of Redis servers.
+      - weight [default: not set]
+        allows the client to balance the keys asymmetrically across multiple 
+        servers. This might be useful when you have servers with different 
+        amounts of memory and you want to distribute the load of your keys 
+        accordingly.
+      - connection_async [default: FALSE]
+        estabilish connections to servers in a non-blocking way, so that the 
+        client is not blocked while the underlying resource performs the actual 
+      - connection_persistent [default: FALSE]
+        the underlying connection resource is left open when a script ends its 
+        lifecycle. Persistent connections can lead to unpredictable or strange 
+        behaviours, so they should be used with extreme care.
+
+  * Connections now support float values for the connection_timeout parameter 
+    to express timeouts with a microsecond resolution.
 
   * In addition to the classic way of fetching a whole multibulk reply into an 
     array, the client can now optionally stream a multibulk reply down to the 
