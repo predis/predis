@@ -737,6 +737,9 @@ class ConnectionParameters {
                     case 'connection_async':
                         $details['connection_async'] = $v;
                         break;
+                    case 'connection_persistent':
+                        $details['connection_persistent'] = $v;
+                        break;
                     case 'connection_timeout':
                         $details['connection_timeout'] = $v;
                         break;
@@ -768,6 +771,7 @@ class ConnectionParameters {
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password'), 
             'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
+            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false), 
             'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
             'alias'  => self::getParamOrDefault($parameters, 'alias'), 
@@ -803,7 +807,9 @@ class Connection implements IConnection {
     }
 
     public function __destruct() {
-        $this->disconnect();
+        if (!$this->_params->connection_persistent) {
+            $this->disconnect();
+        }
     }
 
     public function isConnected() {
@@ -818,6 +824,9 @@ class Connection implements IConnection {
         $connectFlags = STREAM_CLIENT_CONNECT;
         if ($this->_params->connection_async) {
             $connectFlags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+        if ($this->_params->connection_persistent) {
+            $connectFlags |= STREAM_CLIENT_PERSISTENT;
         }
         $this->_socket = @stream_socket_client(
             $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
