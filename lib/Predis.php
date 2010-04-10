@@ -914,7 +914,7 @@ class Connection implements IConnection {
 
     public function readBytes($length) {
         if ($length == 0) {
-            throw new InvalidArgumentException('Length parameter must be greater than 0');
+            throw new \InvalidArgumentException('Length parameter must be greater than 0');
         }
         $socket = $this->getSocket();
         $value  = '';
