@@ -93,7 +93,7 @@ class Client {
         }
 
         if (is_array($parameters) && isset($parameters[0])) {
-            $cluster = new ConnectionCluster();
+            $cluster = new ConnectionCluster($this->_options->key_distribution);
             foreach ($parameters as $shardParams) {
                 $cluster->add($this->createConnection($shardParams));
             }
@@ -228,6 +228,25 @@ class ClientOptionsProfile implements IClientOptionsHandler {
     }
 }
 
+class ClientOptionsKeyDistribution implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof \Predis\Utilities\IRing) {
+            return $value;
+        }
+        if (is_string($value)) {
+            $valueReflection = new \ReflectionClass($value);
+            if ($valueReflection->isSubclassOf('\Predis\Utilities\IRing')) {
+                return new $value;
+            }
+        }
+        throw new \InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return new \Predis\Utilities\HashRing();
+    }
+}
+
 class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
     public function validate($option, $value) {
         return (bool) $value;
@@ -266,6 +285,7 @@ class ClientOptions {
     private static function getOptionsHandlers() {
         return array(
             'profile'    => new \Predis\ClientOptionsProfile(),
+            'key_distribution' => new \Predis\ClientOptionsKeyDistribution(),
             'iterable_multibulk' => new \Predis\ClientOptionsIterableMultiBulk(),
             'throw_on_error' => new \Predis\ClientOptionsThrowOnError(),
         );
