@@ -22,11 +22,11 @@ class MalformedServerResponse extends CommunicationException { }    // Unexpecte
 /* ------------------------------------------------------------------------- */
 
 class Client {
-    private $_connection, $_serverProfile, $_responseReader;
+    private $_options, $_connection, $_serverProfile, $_responseReader;
 
-    public function __construct($parameters = null, RedisServerProfile $serverProfile = null) {
+    public function __construct($parameters = null, $clientOptions = null) {
         $this->_responseReader = new ResponseReader();
-        $this->setProfile($serverProfile ?: RedisServerProfile::getDefault());
+        $this->setupClient($clientOptions ?: new ClientOptions());
         $this->setupConnection($parameters);
     }
 
@@ -34,10 +34,11 @@ class Client {
         $argv = func_get_args();
         $argc = func_num_args();
 
-        $serverProfile = null;
+        $options = null;
         $lastArg = $argv[$argc-1];
-        if ($argc > 0 && !is_string($lastArg) && is_subclass_of($lastArg, '\Predis\RedisServerProfile')) {
-            $serverProfile = array_pop($argv);
+        if ($argc > 0 && !is_string($lastArg) && ($lastArg instanceof ClientOptions ||
+            is_subclass_of($lastArg, '\Predis\RedisServerProfile'))) {
+            $options = array_pop($argv);
             $argc--;
         }
 
@@ -45,7 +46,45 @@ class Client {
             throw new ClientException('Missing connection parameters');
         }
 
-        return new Client($argc === 1 ? $argv[0] : $argv, $serverProfile);
+        return new Client($argc === 1 ? $argv[0] : $argv, $options);
+    }
+
+    private static function filterClientOptions($options) {
+        if ($options instanceof ClientOptions) {
+            return $options;
+        }
+        if (is_array($options)) {
+            return new ClientOptions($options);
+        }
+        if ($options instanceof RedisServerProfile) {
+            return new ClientOptions(array(
+                'profile' => $options
+            ));
+        }
+        if (is_string($options)) {
+            return new ClientOptions(array(
+                'profile' => RedisServerProfile::get($options)
+            ));
+        }
+        throw new \InvalidArgumentException("Invalid type for client options");
+    }
+
+    private function setupClient($options) {
+        $this->_options = self::filterClientOptions($options);
+
+        $this->setProfile($this->_options->profile);
+        if ($this->_options->iterable_multibulk === true) {
+            $this->_responseReader->setHandler(
+                ResponseReader::PREFIX_MULTI_BULK, 
+                new ResponseMultiBulkStreamHandler()
+            );
+        }
+        if ($this->_options->throw_on_error === false) {
+            $this->_responseReader->setHandler(
+                ResponseReader::PREFIX_ERROR, 
+                new ResponseErrorSilentHandler()
+            );
+        }
     }
 
     private function setupConnection($parameters) {
@@ -163,6 +202,94 @@ class Client {
     public function multiExec($multiExecBlock = null) {
         $multiExec = new MultiExecBlock($this);
         return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+
+interface IClientOptionsHandler {
+    public function validate($option, $value);
+    public function getDefault();
+}
+
+class ClientOptionsProfile implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof \Predis\RedisServerProfile) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return \Predis\RedisServerProfile::get($value);
+        }
+        throw new \InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return \Predis\RedisServerProfile::getDefault();
+    }
+}
+
+class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return false;
+    }
+}
+
+class ClientOptionsThrowOnError implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return true;
+    }
+}
+
+class ClientOptions {
+    private static $_optionsHandlers;
+    private $_options;
+
+    public function __construct($options = null) {
+        self::initializeOptionsHandlers();
+        $this->initializeOptions($options ?: array());
+    }
+
+    private static function initializeOptionsHandlers() {
+        if (!isset(self::$_optionsHandlers)) {
+            self::$_optionsHandlers = self::getOptionsHandlers();
+        }
+    }
+
+    private static function getOptionsHandlers() {
+        return array(
+            'profile'    => new \Predis\ClientOptionsProfile(),
+            'iterable_multibulk' => new \Predis\ClientOptionsIterableMultiBulk(),
+            'throw_on_error' => new \Predis\ClientOptionsThrowOnError(),
+        );
+    }
+
+    private function initializeOptions($options) {
+        foreach ($options as $option => $value) {
+            if (isset(self::$_optionsHandlers[$option])) {
+                $handler = self::$_optionsHandlers[$option];
+                $this->_options[$option] = $handler->validate($option, $value);
+            }
+        }
+    }
+
+    public function __get($option) {
+        if (!isset($this->_options[$option])) {
+            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
+            $this->_options[$option] = $defaultValue;
+        }
+        return $this->_options[$option];
+    }
+
+    public function __isset($option) {
+        return isset(self::$_optionsHandlers[$option]);
     }
 }
 
@@ -423,43 +550,13 @@ class ResponseReader {
         );
     }
 
-    private function setHandler($prefix, IResponseHandler $handler) {
+    public function setHandler($prefix, IResponseHandler $handler) {
         $this->_prefixHandlers[$prefix] = $handler;
     }
 
-    public function setOption($option, $value) {
-        switch ($option) {
-            case 'iterable_multibulk_replies':
-            case 'iterableMultiBulkReplies':
-                $this->setHandler(self::PREFIX_MULTI_BULK, $value == true 
-                    ? new ResponseMultiBulkStreamHandler()
-                    : new ResponseMultiBulkHandler()
-                );
-                break;
-            case 'errorThrowException':
-            case 'error_throw_exception':
-                $this->setHandler(self::PREFIX_ERROR, $value == true 
-                    ? new ResponseErrorHandler()
-                    : new ResponseErrorSilentHandler()
-                );
-                break;
-            default:
-                throw new \InvalidArgumentException("Unknown option: $option");
-        }
-    }
-
-    public function getOption($option) {
-        switch ($option) {
-            case 'iterable_multibulk_replies':
-            case 'iterableMultiBulkReplies':
-                return $this->_prefixHandlers[self::PREFIX_MULTI_BULK] 
-                    instanceof ResponseMultiBulkStreamHandler;
-            case 'errorThrowException':
-            case 'error_throw_exception':
-                return $this->_prefixHandlers[self::PREFIX_ERROR] 
-                    instanceof ResponseErrorHandler;
-            default:
-                throw new \InvalidArgumentException("Unknown option: $option");
+    public function getHandler($prefix) {
+        if (isset($this->_prefixHandlers[$prefix])) {
+            return $this->_prefixHandlers[$prefix];
         }
     }
 
