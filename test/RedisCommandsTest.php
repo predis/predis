@@ -201,7 +201,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->redis->setAdd('fooSet', 'bar');
         $this->assertEquals('set', $this->redis->type('fooSet'));
 
-        $this->redis->zsetAdd('fooZSet', 'bar', 0);
+        $this->redis->zsetAdd('fooZSet', 0, 'bar');
         $this->assertEquals('zset', $this->redis->type('fooZSet'));
     }
 
