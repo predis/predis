@@ -25,9 +25,17 @@ class RC {
 
     private static $_connection;
 
+    public static function getConnectionArguments() { 
+        return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
+    }
+
+    public static function getConnectionParameters() { 
+        return new Predis\ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
+    }
+
     private static function createConnection() {
         $serverProfile = Predis\RedisServerProfile::get('dev');
-        $connection = new Predis\Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
+        $connection = new Predis\Client(RC::getConnectionArguments(), $serverProfile);
         $connection->connect();
         $connection->selectDatabase(RC::DEFAULT_DATABASE);
         return $connection;
@@ -105,7 +113,23 @@ class RC {
             $thrownException = $exception;
         }
         $testcaseInstance->assertType('Predis\ServerException', $thrownException);
-        $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
+    }
+
+    public static function testForClientException($testcaseInstance, $expectedMessage, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis\ClientException $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis\ClientException', $thrownException);
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
     }
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
@@ -137,6 +161,22 @@ class RC {
             $client->zsetAdd($keyName, $score, $value);
         }
         return $values;
+    }
+
+    public static function getConnectionParametersArgumentsArray() {
+        return array(
+            'host' => '10.0.0.1', 'port' => 6380, 'connection_timeout' => 10, 'read_write_timeout' => 30, 
+            'database' => 5, 'password' => 'dbpassword', 'alias' => 'connection_alias'
+        );
+    }
+
+    public static function getConnectionParametersArgumentsString($arguments = null) {
+        // TODO: must be improved
+        $args = $arguments ?: RC::getConnectionParametersArgumentsArray();
+        $paramsString = "redis://{$args['host']}:{$args['port']}/";
+        $paramsString .= "?connection_timeout={$args['connection_timeout']}&read_write_timeout={$args['read_write_timeout']}";
+        $paramsString .= "&database={$args['database']}&password={$args['password']}&alias={$args['alias']}";
+        return $paramsString;
     }
 }
 ?>
