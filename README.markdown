@@ -133,6 +133,9 @@ variable set to E_ALL.
 
 [Daniele Alessandri](mailto:suppakilla@gmail.com)
 
+## Contributors ##
+
+[Lorenzo Castelli](http://github.com/lcastelli)
 
 ## License ##
 
