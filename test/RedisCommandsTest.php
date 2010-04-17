@@ -1311,7 +1311,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     /* sorting */
 
-    function __testSort() {
+    function testSort() {
         $unorderedList = RC::pushTailAndReturn($this->redis, 'unordered', array(2, 100, 3, 1, 30, 10));
 
         // without parameters
