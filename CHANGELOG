@@ -1,4 +1,4 @@
-v0.x.x
+v0.6.0
   * New commands added for the Redis 2.0 (DEV) profile: 
       - Strings: APPEND, SUBSTR
       - ZSets  : ZCOUNT, ZRANK, ZUNION, ZINTER, ZREMBYRANK, ZREVRANK
