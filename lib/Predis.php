@@ -1400,7 +1400,7 @@ class RedisServer_v1_2 extends RedisServer_v1_0 {
                 'setMultiplePreserve' => '\Predis\Commands\SetMultiplePreserve',
 
             /* commands operating on lists */
-            'rpoplpush'        => '\Predis\Commands\ListPushTailPopFirst',
+            'rpoplpush'        => '\Predis\Commands\ListPopLastPushHead',
                 'listPopLastPushHead'  => '\Predis\Commands\ListPopLastPushHead',
 
             /* commands operating on sorted sets */
