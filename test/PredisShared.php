@@ -29,7 +29,7 @@ class RC {
         $serverProfile = Predis\RedisServerProfile::get('dev');
         $connection = new Predis\Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
         $connection->connect();
-        $connection->selectDatabase(RC::DEFAULT_DATABASE);
+        $connection->select(RC::DEFAULT_DATABASE);
         return $connection;
     }
 
@@ -110,20 +110,20 @@ class RC {
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value) {
-            $client->pushTail($keyName, $value);
+            $client->rpush($keyName, $value);
         }
         return $values;
     }
 
     public static function setAddAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value) {
-            $client->setAdd($keyName, $value);
+            $client->sadd($keyName, $value);
         }
         return $values;
     }
@@ -131,10 +131,10 @@ class RC {
     public static function zsetAddAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
         // $values: array(SCORE => VALUE, ...);
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value => $score) {
-            $client->zsetAdd($keyName, $score, $value);
+            $client->zadd($keyName, $score, $value);
         }
         return $values;
     }
