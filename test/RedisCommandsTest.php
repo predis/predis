@@ -201,7 +201,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->redis->setAdd('fooSet', 'bar');
         $this->assertEquals('set', $this->redis->type('fooSet'));
 
-        $this->redis->zsetAdd('fooZSet', 'bar', 0);
+        $this->redis->zsetAdd('fooZSet', 0, 'bar');
         $this->assertEquals('zset', $this->redis->type('fooZSet'));
     }
 
@@ -412,7 +412,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->listRange('numbers', -100, 100)
         );
 
-        $this->assertNull($this->redis->listRange('keyDoesNotExist', 0, 1));
+        $this->assertEquals(
+            array(), 
+            $this->redis->listRange('keyDoesNotExist', 0, 1)
+        );
 
         // should throw an exception when trying to do a LRANGE on non-list types
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
@@ -580,7 +583,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->listPopLastPushHead('numbers', 'temporary'));
         $this->assertEquals(0, $this->redis->listLength('numbers'));
         $this->assertEquals(3, $this->redis->listLength('temporary'));
-        $this->assertNull($this->redis->listRange('numbers', 0, -1));
+        $this->assertEquals(array(), $this->redis->listRange('numbers', 0, -1));
         $this->assertEquals($numbers, $this->redis->listRange('temporary', 0, -1));
 
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
@@ -589,7 +592,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->redis->listPopLastPushHead('numbers', 'numbers');
         $this->assertEquals($numbers, $this->redis->listRange('numbers', 0, -1));
 
-        $this->assertEquals(null, $this->redis->listPopLastPushHead('listDoesNotExist1', 'listDoesNotExist2'));
+        $this->assertNull($this->redis->listPopLastPushHead('listDoesNotExist1', 'listDoesNotExist2'));
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
@@ -757,7 +760,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue(RC::sameValuesInArrays($set, $this->redis->setMembers('set')));
 
-        $this->assertNull($this->redis->setMembers('setDoesNotExist'));
+        $this->assertEquals(array(), $this->redis->setMembers('setDoesNotExist'));
 
         // wrong type
         $this->redis->set('foo', 'bar');
@@ -780,8 +783,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->setIntersection('setA', 'setB')
         ));
 
-        // TODO: should nil really be considered an empty set?
-        $this->assertNull($this->redis->setIntersection('setA', 'setDoesNotExist'));
+        $this->assertEquals(array(), $this->redis->setIntersection('setA', 'setDoesNotExist'));
 
         // wrong type
         $this->redis->set('foo', 'bar');
@@ -811,7 +813,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         ));
 
         $this->redis->delete('setC');
-        $this->assertNull($this->redis->setIntersection('setC', 'setDoesNotExist'));
+        $this->assertEquals(array(), $this->redis->setIntersection('setC', 'setDoesNotExist'));
         $this->assertFalse($this->redis->exists('setC'));
 
         // existing keys are replaced by SINTERSTORE
