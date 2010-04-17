@@ -3,7 +3,12 @@ namespace Predis;
 
 class PredisException extends \Exception { }
 class ClientException extends PredisException { }                   // Client-side errors
-class ServerException extends PredisException { }                   // Server-side errors
+
+class ServerException extends PredisException {                     // Server-side errors
+    public function toResponseError() {
+        return new ResponseError($this->getMessage());
+    }
+}
 
 class CommunicationException extends PredisException {              // Communication errors
     private $_connection;
