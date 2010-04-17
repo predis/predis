@@ -132,6 +132,20 @@ class RC {
         }
     }
 
+    public static function testForCommunicationException($testcaseInstance, $expectedMessage, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis\CommunicationException $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis\CommunicationException', $thrownException);
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
+    }
+
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
             $client->delete($keyName);

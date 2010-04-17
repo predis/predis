@@ -92,7 +92,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('PING', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
-        $this->assertNull($cmd->getHash());
+        $this->assertNull($cmd->getHash(new \Predis\Utilities\HashRing()));
         $this->assertEquals("PING\r\n", $cmd());
     }
 
@@ -104,7 +104,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('GET', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertTrue($cmd->canBeHashed());
-        $this->assertNotNull($cmd->getHash());
+        $this->assertNotNull($cmd->getHash(new \Predis\Utilities\HashRing()));
         $this->assertEquals("GET key\r\n", $cmd());
     }
 
@@ -116,7 +116,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('SET', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertTrue($cmd->canBeHashed());
-        $this->assertNotNull($cmd->getHash());
+        $this->assertNotNull($cmd->getHash(new \Predis\Utilities\HashRing()));
         $this->assertEquals("SET key 5\r\nvalue\r\n", $cmd());
     }
 
@@ -128,7 +128,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('MSET', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
-        $this->assertNull($cmd->getHash());
+        $this->assertNull($cmd->getHash(new \Predis\Utilities\HashRing()));
         $this->assertEquals("*5\r\n$4\r\nMSET\r\n$4\r\nkey1\r\n$6\r\nvalue1\r\n$4\r\nkey2\r\n$6\r\nvalue2\r\n", $cmd());
     }
 
@@ -264,8 +264,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($connection->isConnected());
         $connection->writeCommand($cmd);
-        $exceptionMessage = 'An error has occurred while reading from the network stream';
-        RC::testForClientException($this, $exceptionMessage, function() use($connection, $cmd) {
+        $exceptionMessage = 'Error while reading line from the server';
+        RC::testForCommunicationException($this, $exceptionMessage, function() use($connection, $cmd) {
             $connection->readResponse($cmd);
         });
         //$this->assertFalse($connection->isConnected());
@@ -296,11 +296,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_Alias() {
         $connection1 = new \Predis\Connection(RC::getConnectionParameters());
-        $this->assertNull($connection1->getAlias());
+        $this->assertNull($connection1->getParameters()->alias);
 
         $args = array_merge(RC::getConnectionArguments(), array('alias' => 'servername'));
         $connection2 = new \Predis\Connection(new \Predis\ConnectionParameters($args));
-        $this->assertEquals('servername', $connection2->getAlias());
+        $this->assertEquals('servername', $connection2->getParameters()->alias);
     }
 
     function testConnection_ConnectionTimeout() {
@@ -309,7 +309,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
 
         $start = time();
-        RC::testForClientException($this, null, function() use($connection) {
+        RC::testForCommunicationException($this, null, function() use($connection) {
             $connection->connect();
         });
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
@@ -321,8 +321,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $cmdFake = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
         $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
 
+        $expectedMessage = 'Error while reading line from the server';
         $start = time();
-        RC::testForClientException($this, null, function() use($connection, $cmdFake) {
+        RC::testForCommunicationException($this, $expectedMessage, function() use($connection, $cmdFake) {
             $connection->readResponse($cmdFake);
         });
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
@@ -335,12 +336,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Connection(RC::getConnectionParameters());
         $responseReader = $connection->getResponseReader();
 
-        $responseReader->setOption('iterable_multibulk_replies', false);
-        $this->assertFalse($responseReader->getOption('iterable_multibulk_replies'));
+        $responseReader->setHandler(
+            \Predis\ResponseReader::PREFIX_MULTI_BULK, 
+            new \Predis\ResponseMultiBulkHandler()
+        );
         $this->assertType('array', $connection->rawCommand("KEYS *\r\n"));
 
-        $responseReader->setOption('iterable_multibulk_replies', true);
-        $this->assertTrue($responseReader->getOption('iterable_multibulk_replies'));
+        $responseReader->setHandler(
+            \Predis\ResponseReader::PREFIX_MULTI_BULK, 
+            new \Predis\ResponseMultiBulkStreamHandler()
+        );
         $this->assertType('\Iterator', $connection->rawCommand("KEYS *\r\n"));
     }
 
@@ -350,14 +355,18 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $connection->rawCommand("SET key 5\r\nvalue\r\n");
         $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
 
-        $responseReader->setOption('error_throw_exception', false);
-        $this->assertFalse($responseReader->getOption('error_throw_exception'));
+        $responseReader->setHandler(
+            \Predis\ResponseReader::PREFIX_ERROR,  
+            new \Predis\ResponseErrorSilentHandler()
+        );
         $errorReply = $connection->rawCommand($rawCmdUnexpected);
         $this->assertType('\Predis\ResponseError', $errorReply);
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
-        $responseReader->setOption('error_throw_exception', true);
-        $this->assertTrue($responseReader->getOption('error_throw_exception'));
+        $responseReader->setHandler(
+            \Predis\ResponseReader::PREFIX_ERROR, 
+            new \Predis\ResponseErrorHandler()
+        );
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
             use ($connection, $rawCmdUnexpected) {
 
@@ -431,6 +440,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     function testCommandPipeline_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
+        $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
 
         $replies = $client->pipeline(function($pipe) { 
                 $pipe->set('foo', 'bar');
