@@ -3,9 +3,7 @@
 ## About ##
 
 Predis is a flexible and feature-complete PHP client library for the Redis key-value 
-database.
-
-Predis is currently a work-in-progress and it comes in two flavors:
+database. It currently comes in two flavors:
 
  - the mainline client library, which targets PHP 5.3.x and leverages a lot of the 
    features introduced in this new version of the PHP interpreter.
@@ -17,9 +15,9 @@ Please refer to the TODO file to see which issues are still pending and what is 
 to be implemented soon in Predis.
 
 
-## Features ##
+## Main features ##
 
-- Client-side sharding (support for consistent hashing of keys)
+- Client-side sharding (support for consistent hashing and custom distribution algorithms)
 - Command pipelining on single and multiple connections (transparent)
 - Lazy connections (connections to Redis instances are only established just in time)
 - Flexible system to define and register your own set of commands to a client instance
