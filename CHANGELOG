@@ -57,6 +57,7 @@ v0.x.x
       - connection_async [default: FALSE]
         estabilish connections to servers in a non-blocking way, so that the 
         client is not blocked while the underlying resource performs the actual 
+        connection.
       - connection_persistent [default: FALSE]
         the underlying connection resource is left open when a script ends its 
         lifecycle. Persistent connections can lead to unpredictable or strange 
