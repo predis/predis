@@ -418,27 +418,32 @@ abstract class BulkCommand extends Command {
 
 abstract class MultiBulkCommand extends Command {
     public function serializeRequest($command, $arguments) {
-        $buffer   = array();
         $cmd_args = null;
+        $argsc    = count($arguments);
 
-        if (count($arguments) === 1 && is_array($arguments[0])) {
+        if ($argsc === 1 && is_array($arguments[0])) {
             $cmd_args = array();
             foreach ($arguments[0] as $k => $v) {
                 $cmd_args[] = $k;
                 $cmd_args[] = $v;
             }
+            $argsc = count($cmd_args);
         }
         else {
             $cmd_args = $arguments;
         }
 
-        $buffer[] = '*' . ((string) count($cmd_args) + 1) . ResponseReader::NEWLINE;
-        $buffer[] = '$' . strlen($command) . ResponseReader::NEWLINE . $command . ResponseReader::NEWLINE;
+        $newline = ResponseReader::NEWLINE;
+        $cmdlen  = strlen($command);
+        $reqlen  = $argsc + 1;
+
+        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
         foreach ($cmd_args as $argument) {
-            $buffer[] = '$' . strlen($argument) . ResponseReader::NEWLINE . $argument . ResponseReader::NEWLINE;
+            $arglen  = strlen($argument);
+            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
         }
 
-        return implode('', $buffer);
+        return $buffer;
     }
 }
 
