@@ -2188,21 +2188,26 @@ class Sort extends \Predis\InlineCommand {
         $sortParams = $arguments[1];
 
         if (isset($sortParams['by'])) {
-            $query[] = 'BY ' . $sortParams['by'];
+            $query[] = 'BY';
+            $query[] = $sortParams['by'];
         }
         if (isset($sortParams['get'])) {
             $getargs = $sortParams['get'];
             if (is_array($getargs)) {
                 foreach ($getargs as $getarg) {
-                    $query[] = 'GET ' . $getarg;
+                    $query[] = 'GET';
+                    $query[] = $getarg;
                 }
             }
             else {
-                $query[] = 'GET ' . $getargs;
+                $query[] = 'GET';
+                $query[] = $getargs;
             }
         }
         if (isset($sortParams['limit']) && is_array($sortParams['limit'])) {
-            $query[] = 'LIMIT ' . $sortParams['limit'][0] . ' ' . $sortParams['limit'][1];
+            $query[] = 'LIMIT';
+            $query[] = $sortParams['limit'][0];
+            $query[] = $sortParams['limit'][1];
         }
         if (isset($sortParams['sort'])) {
             $query[] = strtoupper($sortParams['sort']);
@@ -2211,7 +2216,8 @@ class Sort extends \Predis\InlineCommand {
             $query[] = 'ALPHA';
         }
         if (isset($sortParams['store']) && $sortParams['store'] == true) {
-            $query[] = 'STORE ' . $sortParams['store'];
+            $query[] = 'STORE';
+            $query[] = $sortParams['store'];
         }
 
         return $query;
