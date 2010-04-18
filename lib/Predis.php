@@ -2283,7 +2283,10 @@ class SlaveOf extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SLAVEOF'; }
     public function filterArguments(Array $arguments) {
-        return count($arguments) === 0 ? array('NO ONE') : $arguments;
+        if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
+            return array('NO', 'ONE');
+        }
+        return $arguments;
     }
 }
 
