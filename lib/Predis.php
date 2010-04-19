@@ -1195,6 +1195,27 @@ abstract class RedisServerProfile {
         );
     }
 
+    public static function registerProfile($profileClass, $aliases) {
+        if (!isset(self::$_serverProfiles)) {
+            self::$_serverProfiles = self::predisServerProfiles();
+        }
+
+        $profileReflection = new \ReflectionClass($profileClass);
+
+        if (!$profileReflection->isSubclassOf('\Predis\RedisServerProfile')) {
+            throw new ClientException("Cannot register '$profileClass' as it is not a valid profile class");
+        }
+
+        if (is_array($aliases)) {
+            foreach ($aliases as $alias) {
+                self::$_serverProfiles[$alias] = $profileClass;
+            }
+        }
+        else {
+            self::$_serverProfiles[$aliases] = $profileClass;
+        }
+    }
+
     public static function get($version) {
         if (!isset(self::$_serverProfiles)) {
             self::$_serverProfiles = self::predisServerProfiles();
