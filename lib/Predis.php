@@ -30,7 +30,6 @@ class Client {
     private $_options, $_connection, $_serverProfile, $_responseReader;
 
     public function __construct($parameters = null, $clientOptions = null) {
-        $this->_responseReader = new ResponseReader();
         $this->setupClient($clientOptions ?: new ClientOptions());
         $this->setupConnection($parameters);
     }
@@ -75,6 +74,7 @@ class Client {
     }
 
     private function setupClient($options) {
+        $this->_responseReader = new ResponseReader();
         $this->_options = self::filterClientOptions($options);
 
         $this->setProfile($this->_options->profile);
