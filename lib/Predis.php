@@ -243,12 +243,12 @@ class ClientOptionsProfile implements IClientOptionsHandler {
 
 class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     public function validate($option, $value) {
-        if ($value instanceof \Predis\Utilities\IRing) {
+        if ($value instanceof \Predis\Utilities\IDistributionAlgorithm) {
             return $value;
         }
         if (is_string($value)) {
             $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\Utilities\IRing')) {
+            if ($valueReflection->isSubclassOf('\Predis\Utilities\IDistributionAlgorithm')) {
                 return new $value;
             }
         }
@@ -339,7 +339,7 @@ abstract class Command {
         return true;
     }
 
-    public function getHash(Utilities\IRing $ring) {
+    public function getHash(Utilities\IDistributionAlgorithm $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -353,7 +353,7 @@ abstract class Command {
                     $key = substr($key, ++$start, $end - $start);
                 }
 
-                $this->_hash = $ring->generateKey($key);
+                $this->_hash = $distributor->generateKey($key);
                 return $this->_hash;
             }
         }
@@ -1097,11 +1097,11 @@ class Connection implements IConnection {
 }
 
 class ConnectionCluster implements IConnection, \IteratorAggregate {
-    private $_pool, $_ring;
+    private $_pool, $_distributor;
 
-    public function __construct(Utilities\IRing $ring = null) {
+    public function __construct(Utilities\IDistributionAlgorithm $distributor = null) {
         $this->_pool = array();
-        $this->_ring = $ring ?: new Utilities\HashRing();
+        $this->_distributor = $distributor ?: new Utilities\HashRing();
     }
 
     public function isConnected() {
@@ -1133,7 +1133,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
         else {
             $this->_pool[] = $connection;
         }
-        $this->_ring->add($connection, $parameters->weight);
+        $this->_distributor->add($connection, $parameters->weight);
     }
 
     public function getConnection(Command $command) {
@@ -1142,7 +1142,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
                 sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
             );
         }
-        return $this->_ring->get($command->getHash($this->_ring));
+        return $this->_distributor->get($command->getHash($this->_distributor));
     }
 
     public function getConnectionById($id = null) {
@@ -1514,14 +1514,14 @@ class Shared {
     }
 }
 
-interface IRing {
+interface IDistributionAlgorithm {
     public function add($node, $weight = null);
     public function remove($node);
     public function get($key);
     public function generateKey($value);
 }
 
-class HashRing implements IRing {
+class HashRing implements IDistributionAlgorithm {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
