@@ -1457,6 +1457,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             'discard'   => '\Predis\Commands\Discard',
 
             /* commands operating on string values */
+            'setex'     => '\Predis\Commands\SetExpire',
+            'setExpire' => '\Predis\Commands\SetExpire',
             'append'    => '\Predis\Commands\Append',
             'substr'    => '\Predis\Commands\Substr',
 
@@ -1808,6 +1810,10 @@ class Quit extends \Predis\MultiBulkCommand {
 /* commands operating on string values */
 class Set extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SET'; }
+}
+
+class SetExpire extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'SETEX'; }
 }
 
 class SetPreserve extends \Predis\MultiBulkCommand {
