@@ -2063,6 +2063,10 @@ class ZSetRemove extends \Predis\MultiBulkCommand {
 
 class ZSetUnion extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'ZUNION'; }
+    public function filterArguments(Array $arguments) {
+        // TODO: add explicit support for AGGREGATE [SUM|MIN|MAX] and WEIGHT
+        return $arguments;
+    }
 }
 
 class ZSetIntersection extends \Predis\MultiBulkCommand {
