@@ -1451,7 +1451,7 @@ class RedisServer_vNext extends RedisServer_v1_2 {
     public function getVersion() { return '1.3'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
-            /* miscellaneous commands */
+            /* transactions */
             'multi'     => '\Predis\Commands\Multi',
             'exec'      => '\Predis\Commands\Exec',
             'discard'   => '\Predis\Commands\Discard',
