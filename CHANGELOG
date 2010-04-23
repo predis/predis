@@ -7,7 +7,7 @@ v0.6.0
     'Predis_Compatibility.php' before creating an instance of \Predis\Client.
 
   * New commands added to the Redis 2.0 profile since Predis 0.5.1:
-      - Strings: APPEND, SUBSTR
+      - Strings: SETEX, APPEND, SUBSTR
       - ZSets  : ZCOUNT, ZRANK, ZUNION, ZINTER, ZREMBYRANK, ZREVRANK
       - Hashes : HSET, HSETNX, HMSET, HINCRBY, HGET, HMGET, HDEL, HEXISTS, 
                  HLEN, HKEYS, HVALS, HGETALL
