@@ -1489,6 +1489,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'hashIncrementBy'       => '\Predis\Commands\HashIncrementBy',
             'hget'                      => '\Predis\Commands\HashGet',
                 'hashGet'               => '\Predis\Commands\HashGet',
+            'hmget'                     => '\Predis\Commands\HashGetMultiple',
+                'hmGetMultiple'         => '\Predis\Commands\HashGetMultiple',
             'hdel'                      => '\Predis\Commands\HashDelete',
                 'hashDelete'            => '\Predis\Commands\HashDelete',
             'hexists'                   => '\Predis\Commands\HashExists',
@@ -2152,6 +2154,11 @@ class HashIncrementBy extends \Predis\MultiBulkCommand {
 
 class HashGet extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HGET'; }
+}
+
+class HashGetMultiple extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'HMGET'; }
 }
 
 class HashDelete extends \Predis\MultiBulkCommand {
