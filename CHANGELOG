@@ -9,8 +9,8 @@ v0.6.0
   * New commands added to the Redis 2.0 profile since Predis 0.5.1:
       - Strings: APPEND, SUBSTR
       - ZSets  : ZCOUNT, ZRANK, ZUNION, ZINTER, ZREMBYRANK, ZREVRANK
-      - Hashes : HSET, HMSET, HINCRBY, HGET, HDEL, HEXISTS, HLEN, HKEYS, 
-                 HVALS, HGETALL
+      - Hashes : HSET, HSETNX, HMSET, HINCRBY, HGET, HMGET, HDEL, HEXISTS, 
+                 HLEN, HKEYS, HVALS, HGETALL
       - PubSub : PUBLISH, SUBSCRIBE, UNSUBSCRIBE
       - Misc.  : DISCARD, CONFIG
 
