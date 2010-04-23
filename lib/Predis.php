@@ -1483,6 +1483,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             /* commands operating on hashes */
             'hset'                      => '\Predis\Commands\HashSet',
                 'hashSet'               => '\Predis\Commands\HashSet',
+            'hmset'                     => '\Predis\Commands\HashSetMultiple',
+                'hashSetMultiple'       => '\Predis\Commands\HashSetMultiple',
             'hincrby'                   => '\Predis\Commands\HashIncrementBy',
                 'hashIncrementBy'       => '\Predis\Commands\HashIncrementBy',
             'hget'                      => '\Predis\Commands\HashGet',
@@ -2137,6 +2139,11 @@ class ZSetRemoveRangeByRank extends \Predis\MultiBulkCommand {
 /* commands operating on hashes */
 class HashSet extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HSET'; }
+}
+
+class HashSetMultiple extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'HMSET'; }
 }
 
 class HashIncrementBy extends \Predis\MultiBulkCommand {
