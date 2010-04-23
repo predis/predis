@@ -1500,6 +1500,11 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             'hgetall'                   => '\Predis\Commands\HashGetAll',
                 'hashKeysValues'        => '\Predis\Commands\HashGetAll',
 
+            /* publish - subscribe */
+            'subscribe'                 => '\Predis\Commands\Subscribe',
+            'unsubscribe'               => '\Predis\Commands\Unsubscribe',
+            'publish'                   => '\Predis\Commands\Publish',
+
             /* remote server control commands */
             'config'                    => '\Predis\Commands\Config',
                 'configuration'         => '\Predis\Commands\Config',
@@ -2327,5 +2332,20 @@ class Exec extends \Predis\MultiBulkCommand {
 class Discard extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DISCARD'; }
+}
+
+class Subscribe extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'SUBSCRIBE'; }
+}
+
+class Unsubscribe extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'UNSUBSCRIBE'; }
+}
+
+class Publish extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PUBLISH'; }
 }
 ?>
