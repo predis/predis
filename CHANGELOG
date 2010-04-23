@@ -9,8 +9,9 @@ v0.6.0
   * New commands added to the Redis 2.0 profile since Predis 0.5.1:
       - Strings: APPEND, SUBSTR
       - ZSets  : ZCOUNT, ZRANK, ZUNION, ZINTER, ZREMBYRANK, ZREVRANK
-      - Hashes : HSET, HINCRBY, HGET, HDEL, HEXISTS, HLEN, HKEYS, HVALS, 
-                 HGETALL
+      - Hashes : HSET, HMSET, HINCRBY, HGET, HDEL, HEXISTS, HLEN, HKEYS, 
+                 HVALS, HGETALL
+      - PubSub : PUBLISH, SUBSCRIBE, UNSUBSCRIBE
       - Misc.  : DISCARD, CONFIG
 
   * Introduced client-level options with the new Predis\ClientOptions class. 
@@ -26,9 +27,10 @@ v0.6.0
       - key_distribution [default: Predis\Utilities\HashRing]
         specifies which key distribution algorithm to use to distribute keys 
         among the servers that compose a cluster. This option accepts an 
-        instance of Predis\Utilities\IRing so that users can implement their 
-        own key distribution strategy. The new Predis\Utilities\KetamaPureRing 
-        class provides a pure-PHP implementation of the Ketama algorithm.
+        instance of Predis\IDistributionAlgorithm so that users can implement 
+        their own key distribution strategy. Optionally, the new 
+        Predis\Utilities\KetamaPureRing class also provides a pure-PHP 
+        implementation of the Ketama algorithm.
       - throw_on_error [default: TRUE]
         server errors can optionally be handled "silently": instead of throwing 
         an exception, the client returns an error response type.
