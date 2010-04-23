@@ -243,12 +243,12 @@ class ClientOptionsProfile implements IClientOptionsHandler {
 
 class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     public function validate($option, $value) {
-        if ($value instanceof \Predis\Utilities\IDistributionAlgorithm) {
+        if ($value instanceof \Predis\IDistributionAlgorithm) {
             return $value;
         }
         if (is_string($value)) {
             $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\Utilities\IDistributionAlgorithm')) {
+            if ($valueReflection->isSubclassOf('\Predis\IDistributionAlgorithm')) {
                 return new $value;
             }
         }
@@ -339,7 +339,7 @@ abstract class Command {
         return true;
     }
 
-    public function getHash(Utilities\IDistributionAlgorithm $distributor) {
+    public function getHash(IDistributionAlgorithm $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -919,6 +919,13 @@ class ConnectionParameters {
     }
 }
 
+interface IDistributionAlgorithm {
+    public function add($node, $weight = null);
+    public function remove($node);
+    public function get($key);
+    public function generateKey($value);
+}
+
 interface IConnection {
     public function connect();
     public function disconnect();
@@ -1099,7 +1106,7 @@ class Connection implements IConnection {
 class ConnectionCluster implements IConnection, \IteratorAggregate {
     private $_pool, $_distributor;
 
-    public function __construct(Utilities\IDistributionAlgorithm $distributor = null) {
+    public function __construct(IDistributionAlgorithm $distributor = null) {
         $this->_pool = array();
         $this->_distributor = $distributor ?: new Utilities\HashRing();
     }
@@ -1514,14 +1521,7 @@ class Shared {
     }
 }
 
-interface IDistributionAlgorithm {
-    public function add($node, $weight = null);
-    public function remove($node);
-    public function get($key);
-    public function generateKey($value);
-}
-
-class HashRing implements IDistributionAlgorithm {
+class HashRing implements \Predis\IDistributionAlgorithm {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
