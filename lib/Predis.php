@@ -80,13 +80,13 @@ class Client {
         $this->setProfile($this->_options->profile);
         if ($this->_options->iterable_multibulk === true) {
             $this->_responseReader->setHandler(
-                ResponseReader::PREFIX_MULTI_BULK, 
+                Protocol::PREFIX_MULTI_BULK, 
                 new ResponseMultiBulkStreamHandler()
             );
         }
         if ($this->_options->throw_on_error === false) {
             $this->_responseReader->setHandler(
-                ResponseReader::PREFIX_ERROR, 
+                Protocol::PREFIX_ERROR, 
                 new ResponseErrorSilentHandler()
             );
         }
@@ -328,6 +328,20 @@ class ClientOptions {
 
 /* ------------------------------------------------------------------------- */
 
+class Protocol {
+    const NEWLINE = "\r\n";
+    const OK      = 'OK';
+    const ERROR   = 'ERR';
+    const QUEUED  = 'QUEUED';
+    const NULL    = 'nil';
+
+    const PREFIX_STATUS     = '+';
+    const PREFIX_ERROR      = '-';
+    const PREFIX_INTEGER    = ':';
+    const PREFIX_BULK       = '$';
+    const PREFIX_MULTI_BULK = '*';
+}
+
 abstract class Command {
     private $_arguments, $_hash;
 
@@ -401,7 +415,7 @@ abstract class InlineCommand extends Command {
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = implode($arguments[0], ' ');
         }
-        return $command . ' ' . implode($arguments, ' ') . ResponseReader::NEWLINE;
+        return $command . ' ' . implode($arguments, ' ') . Protocol::NEWLINE;
     }
 }
 
@@ -412,7 +426,7 @@ abstract class BulkCommand extends Command {
             $data = implode($data, ' ');
         }
         return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) . 
-            ResponseReader::NEWLINE . $data . ResponseReader::NEWLINE;
+            Protocol::NEWLINE . $data . Protocol::NEWLINE;
     }
 }
 
@@ -429,7 +443,7 @@ abstract class MultiBulkCommand extends Command {
             $cmd_args = $arguments;
         }
 
-        $newline = ResponseReader::NEWLINE;
+        $newline = Protocol::NEWLINE;
         $cmdlen  = strlen($command);
         $reqlen  = $argsc + 1;
 
@@ -451,10 +465,10 @@ interface IResponseHandler {
 
 class ResponseStatusHandler implements IResponseHandler {
     public function handle(Connection $connection, $status) {
-        if ($status === ResponseReader::OK) {
+        if ($status === Protocol::OK) {
             return true;
         }
-        else if ($status === ResponseReader::QUEUED) {
+        else if ($status === Protocol::QUEUED) {
             return new ResponseQueued();
         }
         return $status;
@@ -495,7 +509,7 @@ class ResponseBulkHandler implements IResponseHandler {
     }
 
     private static function discardNewLine(Connection $connection) {
-        if ($connection->readBytes(2) !== ResponseReader::NEWLINE) {
+        if ($connection->readBytes(2) !== Protocol::NEWLINE) {
             Utilities\Shared::onCommunicationException(new MalformedServerResponse(
                 $connection, 'Did not receive a new-line at the end of a bulk response'
             ));
@@ -545,7 +559,7 @@ class ResponseIntegerHandler implements IResponseHandler {
             return (int) $number;
         }
         else {
-            if ($number !== ResponseReader::NULL) {
+            if ($number !== Protocol::NULL) {
                 Utilities\Shared::onCommunicationException(new MalformedServerResponse(
                     $connection, "Cannot parse '$number' as numeric response"
                 ));
@@ -556,18 +570,6 @@ class ResponseIntegerHandler implements IResponseHandler {
 }
 
 class ResponseReader {
-    const NEWLINE = "\r\n";
-    const OK      = 'OK';
-    const ERROR   = 'ERR';
-    const QUEUED  = 'QUEUED';
-    const NULL    = 'nil';
-
-    const PREFIX_STATUS     = '+';
-    const PREFIX_ERROR      = '-';
-    const PREFIX_INTEGER    = ':';
-    const PREFIX_BULK       = '$';
-    const PREFIX_MULTI_BULK = '*';
-
     private $_prefixHandlers;
 
     public function __construct() {
@@ -576,11 +578,11 @@ class ResponseReader {
 
     private function initializePrefixHandlers() {
         $this->_prefixHandlers = array(
-            self::PREFIX_STATUS     => new ResponseStatusHandler(), 
-            self::PREFIX_ERROR      => new ResponseErrorHandler(), 
-            self::PREFIX_INTEGER    => new ResponseIntegerHandler(), 
-            self::PREFIX_BULK       => new ResponseBulkHandler(), 
-            self::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(), 
+            Protocol::PREFIX_STATUS     => new ResponseStatusHandler(), 
+            Protocol::PREFIX_ERROR      => new ResponseErrorHandler(), 
+            Protocol::PREFIX_INTEGER    => new ResponseIntegerHandler(), 
+            Protocol::PREFIX_BULK       => new ResponseBulkHandler(), 
+            Protocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(), 
         );
     }
 
@@ -645,7 +647,7 @@ class ResponseQueued {
     public $queued = true;
 
     public function __toString() {
-        return ResponseReader::QUEUED;
+        return Protocol::QUEUED;
     }
 }
 
@@ -1079,7 +1081,7 @@ class Connection implements IConnection {
             }
             $value .= $chunk;
         }
-        while (substr($value, -2) !== ResponseReader::NEWLINE);
+        while (substr($value, -2) !== Protocol::NEWLINE);
         return substr($value, 0, -2);
     }
 
