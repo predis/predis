@@ -2249,6 +2249,38 @@ class Sort extends \Predis\MultiBulkCommand {
     }
 }
 
+/* transactions */
+class Multi extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'MULTI'; }
+}
+
+class Exec extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'EXEC'; }
+}
+
+class Discard extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'DISCARD'; }
+}
+
+/* publish/subscribe */
+class Subscribe extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'SUBSCRIBE'; }
+}
+
+class Unsubscribe extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'UNSUBSCRIBE'; }
+}
+
+class Publish extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PUBLISH'; }
+}
+
 /* persistence control commands */
 class Save extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
@@ -2324,35 +2356,5 @@ class SlaveOf extends \Predis\MultiBulkCommand {
 class Config extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'CONFIG'; }
-}
-
-class Multi extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'MULTI'; }
-}
-
-class Exec extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'EXEC'; }
-}
-
-class Discard extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'DISCARD'; }
-}
-
-class Subscribe extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'SUBSCRIBE'; }
-}
-
-class Unsubscribe extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'UNSUBSCRIBE'; }
-}
-
-class Publish extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'PUBLISH'; }
 }
 ?>
