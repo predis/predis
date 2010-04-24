@@ -321,6 +321,26 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-1, $this->redis->ttl('foo'));
     }
 
+    function testSetExpire() {
+        $this->assertTrue($this->redis->setex('foo', 10, 'bar'));
+        $this->assertTrue($this->redis->exists('foo'));
+        $this->assertEquals(10, $this->redis->ttl('foo'));
+
+        $this->assertTrue($this->redis->setex('hoge', 1, 'piyo'));
+        sleep(2);
+        $this->assertFalse($this->redis->exists('hoge'));
+
+        RC::testForServerException($this, RC::EXCEPTION_VALUE_NOT_INT, function($test) {
+            $test->redis->setex('hoge', 2.5, 'piyo');
+        });
+        RC::testForServerException($this, RC::EXCEPTION_SETEX_TTL, function($test) {
+            $test->redis->setex('hoge', 0, 'piyo');
+        });
+        RC::testForServerException($this, RC::EXCEPTION_SETEX_TTL, function($test) {
+            $test->redis->setex('hoge', -10, 'piyo');
+        });
+    }
+
     function testDatabaseSize() {
         // TODO: is this really OK?
         $this->assertEquals(0, $this->redis->dbsize());
