@@ -1494,7 +1494,7 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             'hget'                      => '\Predis\Commands\HashGet',
                 'hashGet'               => '\Predis\Commands\HashGet',
             'hmget'                     => '\Predis\Commands\HashGetMultiple',
-                'hmGetMultiple'         => '\Predis\Commands\HashGetMultiple',
+                'hashGetMultiple'       => '\Predis\Commands\HashGetMultiple',
             'hdel'                      => '\Predis\Commands\HashDelete',
                 'hashDelete'            => '\Predis\Commands\HashDelete',
             'hexists'                   => '\Predis\Commands\HashExists',
@@ -1506,7 +1506,7 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             'hvals'                     => '\Predis\Commands\HashValues',
                 'hashValues'            => '\Predis\Commands\HashValues',
             'hgetall'                   => '\Predis\Commands\HashGetAll',
-                'hashKeysValues'        => '\Predis\Commands\HashGetAll',
+                'hashGetAll'            => '\Predis\Commands\HashGetAll',
 
             /* publish - subscribe */
             'subscribe'                 => '\Predis\Commands\Subscribe',
