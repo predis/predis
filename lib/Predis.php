@@ -1452,15 +1452,15 @@ class RedisServer_vNext extends RedisServer_v1_2 {
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* transactions */
-            'multi'     => '\Predis\Commands\Multi',
-            'exec'      => '\Predis\Commands\Exec',
-            'discard'   => '\Predis\Commands\Discard',
+            'multi'                     => '\Predis\Commands\Multi',
+            'exec'                      => '\Predis\Commands\Exec',
+            'discard'                   => '\Predis\Commands\Discard',
 
             /* commands operating on string values */
-            'setex'     => '\Predis\Commands\SetExpire',
-            'setExpire' => '\Predis\Commands\SetExpire',
-            'append'    => '\Predis\Commands\Append',
-            'substr'    => '\Predis\Commands\Substr',
+            'setex'                     => '\Predis\Commands\SetExpire',
+                'setExpire'             => '\Predis\Commands\SetExpire',
+            'append'                    => '\Predis\Commands\Append',
+            'substr'                    => '\Predis\Commands\Substr',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
