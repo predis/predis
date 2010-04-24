@@ -1458,6 +1458,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testHashGet() {
+        $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
+        $this->assertEquals('bar', $this->redis->hget('metavars', 'foo'));
+
+        $this->assertEquals('bar', $this->redis->hget('metavars', 'foo'));
+        $this->assertNull($this->redis->hget('metavars', 'hoge'));
+        $this->assertNull($this->redis->hget('hashDoesNotExist', 'field'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->rpush('metavars', 'foo');
+            $test->redis->hget('metavars', 'foo');
+        });
+   }
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
