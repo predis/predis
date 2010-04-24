@@ -1240,6 +1240,48 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetIntersection() {
+        $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
+        $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
+
+        // basic ZINTER
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb'));
+        $this->assertEquals(
+            array(array('b', 3), array('c', 5)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetbNull'));
+        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zsetaNull', 'zsetb'));
+        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zsetaNull', 'zsetbNull'));
+
+        // with WEIGHTS
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'WEIGHTS', 2, 3));
+        $this->assertEquals(
+            array(array('b', 7), array('c', 12)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // with AGGREGATE (min)
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MIN'));
+        $this->assertEquals(
+            array(array('b', 1), array('c', 2)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // with AGGREGATE (max)
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MAX'));
+        $this->assertEquals(
+            array(array('b', 2), array('c', 3)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('zsetFake', 'fake');
+            $test->redis->zinter('zsetc', 2, 'zseta', 'zsetFake');
+        });
+    }
+
     function testZsetCount() {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
