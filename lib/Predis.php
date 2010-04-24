@@ -2202,6 +2202,7 @@ class HashDelete extends \Predis\MultiBulkCommand {
 
 class HashExists extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HEXISTS'; }
+    public function parseResponse($data) { return (bool) $data; }
 }
 
 class HashLength extends \Predis\MultiBulkCommand {
