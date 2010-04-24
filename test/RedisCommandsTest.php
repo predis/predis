@@ -1401,6 +1401,49 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetRemoveRangeByRank() {
+        RC::zsetAddAndReturn($this->redis, 'zseta', RC::getZSetArray());
+
+        $this->assertEquals(3, $this->redis->zremrangebyrank('zseta', 0, 2));
+        $this->assertEquals(
+            array('d', 'e', 'f'), 
+            $this->redis->zrange('zseta', 0, -1)
+        );
+
+        $this->assertEquals(1, $this->redis->zremrangebyrank('zseta', 0, 0));
+        $this->assertEquals(
+            array('e', 'f'), 
+            $this->redis->zrange('zseta', 0, -1)
+        );
+
+        RC::zsetAddAndReturn($this->redis, 'zsetb', RC::getZSetArray());
+        $this->assertEquals(3, $this->redis->zremrangebyrank('zsetb', -3, -1));
+        $this->assertEquals(
+            array('a', 'b', 'c'), 
+            $this->redis->zrange('zsetb', 0, -1)
+        );
+
+        $this->assertEquals(1, $this->redis->zremrangebyrank('zsetb', -1, -1));
+        $this->assertEquals(
+            array('a', 'b'), 
+            $this->redis->zrange('zsetb', 0, -1)
+        );
+
+        $this->assertEquals(2, $this->redis->zremrangebyrank('zsetb', -2, 1));
+        $this->assertEquals(
+            array(), 
+            $this->redis->zrange('zsetb', 0, -1)
+        );
+        $this->assertFalse($this->redis->exists('zsetb'));
+
+        $this->assertEquals(0, $this->redis->zremrangebyrank('zsetc', 0, 0));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->zremrangebyrank('foo', 0, 1);
+        });
+    }
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
