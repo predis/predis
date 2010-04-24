@@ -1504,6 +1504,21 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array('bar', 'piyo'), $this->redis->hmget('metavars', 'foo', 'hoge'));
     }
 
+    function testHashIncrementBy() {
+        // test subsequent increment commands
+        $this->assertEquals(10, $this->redis->hincrby('hash', 'counter', 10));
+        $this->assertEquals(20, $this->redis->hincrby('hash', 'counter', 10));
+        $this->assertEquals(0, $this->redis->hincrby('hash', 'counter', -20));
+
+        $this->assertTrue($this->redis->hset('hash', 'field', 'stringvalue'));
+        $this->assertEquals(10, $this->redis->hincrby('hash', 'field', 10));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->hincrby('foo', 'bar', 1);
+        });
+    }
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
