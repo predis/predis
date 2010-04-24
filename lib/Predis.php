@@ -2149,6 +2149,7 @@ class ZSetRemoveRangeByRank extends \Predis\MultiBulkCommand {
 /* commands operating on hashes */
 class HashSet extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HSET'; }
+    public function parseResponse($data) { return (bool) $data; }
 }
 
 class HashSetPreserve extends \Predis\MultiBulkCommand {
