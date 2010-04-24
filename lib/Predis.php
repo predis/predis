@@ -2220,6 +2220,16 @@ class HashValues extends \Predis\MultiBulkCommand {
 
 class HashGetAll extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HGETALL'; }
+    public function parseResponse($data) {
+        if ($data instanceof \Iterator) {
+            return new \Predis\Utilities\MultiBulkResponseKVIterator($data);
+        }
+        $result = array();
+        for ($i = 0; $i < count($data); $i++) {
+            $result[$data[$i]] = $data[++$i];
+        }
+        return $result;
+    }
 }
 
 /* multiple databases handling commands */
