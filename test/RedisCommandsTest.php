@@ -1470,7 +1470,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $test->redis->rpush('metavars', 'foo');
             $test->redis->hget('metavars', 'foo');
         });
-   }
+    }
 
     function testHashSetPreserve() {
         $this->assertTrue($this->redis->hsetnx('metavars', 'foo', 'bar'));
