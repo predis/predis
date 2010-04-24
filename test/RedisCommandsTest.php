@@ -1494,6 +1494,21 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testHashLength() {
+        $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
+        $this->assertTrue($this->redis->hset('metavars', 'hoge', 'piyo'));
+        $this->assertTrue($this->redis->hset('metavars', 'foofoo', 'barbar'));
+        $this->assertTrue($this->redis->hset('metavars', 'hogehoge', 'piyopiyo'));
+
+        $this->assertEquals(4, $this->redis->hlen('metavars'));
+        $this->assertEquals(0, $this->redis->hlen('hashDoesNotExist'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->hlen('foo');
+        });
+    }
+
     function testHashSetPreserve() {
         $this->assertTrue($this->redis->hsetnx('metavars', 'foo', 'bar'));
         $this->assertFalse($this->redis->hsetnx('metavars', 'foo', 'barbar'));
