@@ -2158,8 +2158,19 @@ class HashSetPreserve extends \Predis\MultiBulkCommand {
 }
 
 class HashSetMultiple extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
     public function getCommandId() { return 'HMSET'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattenedKVs = array($arguments[0]);
+            $args = &$arguments[1];
+            foreach ($args as $k => $v) {
+                $flattenedKVs[] = $k;
+                $flattenedKVs[] = $v;
+            }
+            return $flattenedKVs;
+        }
+        return $arguments;
+    }
 }
 
 class HashIncrementBy extends \Predis\MultiBulkCommand {
@@ -2171,8 +2182,18 @@ class HashGet extends \Predis\MultiBulkCommand {
 }
 
 class HashGetMultiple extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
     public function getCommandId() { return 'HMGET'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattenedKVs = array($arguments[0]);
+            $args = &$arguments[1];
+            foreach ($args as $v) {
+                $flattenedKVs[] = $v;
+            }
+            return $flattenedKVs;
+        }
+        return $arguments;
+    }
 }
 
 class HashDelete extends \Predis\MultiBulkCommand {
