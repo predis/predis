@@ -1549,6 +1549,45 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testHashKeys() {
+        $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
+        $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
+
+        $this->assertEquals(array_keys($hashKVs), $this->redis->hkeys('metavars'));
+        $this->assertEquals(array(), $this->redis->hkeys('hashDoesNotExist'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->hkeys('foo');
+        });
+    }
+
+    function testHashValues() {
+        $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
+        $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
+
+        $this->assertEquals(array_values($hashKVs), $this->redis->hvals('metavars'));
+        $this->assertEquals(array(), $this->redis->hvals('hashDoesNotExist'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->hvals('foo');
+        });
+    }
+
+    function testHashGetAll() {
+        $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
+        $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
+
+        $this->assertEquals($hashKVs, $this->redis->hgetall('metavars'));
+        $this->assertEquals(array(), $this->redis->hgetall('hashDoesNotExist'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->hgetall('foo');
+        });
+    }
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
