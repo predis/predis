@@ -1271,7 +1271,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZrank() {
+    function testZsetRank() {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(0, $this->redis->zrank('zset', 'a'));
