@@ -1483,6 +1483,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testHashSetAndGetMultiple() {
+        $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
+
+        // key=>value pairs via array instance
+        $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
+        $multiRet = $this->redis->hmget('metavars', array_keys($hashKVs));
+        $this->assertEquals($hashKVs, array_combine(array_keys($hashKVs), array_values($multiRet)));
+
+        // key=>value pairs via function arguments
+        $this->redis->del('metavars');
+        $this->assertTrue($this->redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
+        $this->assertEquals(array('bar', 'piyo'), $this->redis->hmget('metavars', 'foo', 'hoge'));
+    }
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
