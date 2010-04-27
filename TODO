@@ -5,9 +5,6 @@
   full battery of tests targeting specific functions of this library is still 
   missing.
 
-* Better support for arguments such as WEIGHTS and AGGREGATE [MIN|MAX] for 
-  ZUNION and ZINTER.
-
 * Add a PubSubBlock class.
 
 * Missing tests for new commands: 
