@@ -1214,21 +1214,24 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->zunion('zsetc', 2, 'zsetaNull', 'zsetbNull'));
 
         // with WEIGHTS
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', 'WEIGHTS', 2, 3));
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 2), array('b', 7), array('d', 9), array('c', 12)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
         // with AGGREGATE (min)
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MIN'));
+        $options = array('aggregate' => 'min');
+        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 1), array('b', 1), array('c', 2), array('d', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
         // with AGGREGATE (max)
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MAX'));
+        $options = array('aggregate' => 'max');
+        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 1), array('b', 2), array('c', 3), array('d', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1256,21 +1259,24 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zsetaNull', 'zsetbNull'));
 
         // with WEIGHTS
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'WEIGHTS', 2, 3));
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 7), array('c', 12)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
         // with AGGREGATE (min)
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MIN'));
+        $options = array('aggregate' => 'min');
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 1), array('c', 2)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
         // with AGGREGATE (max)
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', 'AGGREGATE', 'MAX'));
+        $options = array('aggregate' => 'max');
+        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 2), array('c', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
