@@ -209,7 +209,6 @@ class Exists extends \Predis\InlineCommand {
 
 class Delete extends \Predis\InlineCommand {
     public function getCommandId() { return 'DEL'; }
-    public function parseResponse($data) { return (bool) $data; }
 }
 
 class Type extends \Predis\InlineCommand {

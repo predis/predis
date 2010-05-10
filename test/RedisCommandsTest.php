@@ -184,9 +184,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testDelete() {
         $this->redis->set('foo', 'bar');
-        $this->assertTrue($this->redis->del('foo'));
+        $this->assertEquals(1, $this->redis->del('foo'));
         $this->assertFalse($this->redis->exists('foo'));
-        $this->assertFalse($this->redis->del('foo'));
+        $this->assertEquals(0, $this->redis->del('foo'));
     }
 
     function testType() {

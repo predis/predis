@@ -1880,7 +1880,6 @@ class Exists extends \Predis\MultiBulkCommand {
 
 class Delete extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'DEL'; }
-    public function parseResponse($data) { return (bool) $data; }
 }
 
 class Type extends \Predis\MultiBulkCommand {
