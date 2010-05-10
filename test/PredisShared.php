@@ -24,6 +24,7 @@ class RC {
     const EXCEPTION_VALUE_NOT_INT  = 'value is not an integer';
     const EXCEPTION_EXEC_NO_MULTI  = 'EXEC without MULTI';
     const EXCEPTION_SETEX_TTL      = 'invalid expire time in SETEX';
+    const EXCEPTION_HASH_VALNOTINT = 'hash value is not an integer';
 
     private static $_connection;
 
