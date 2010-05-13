@@ -1511,6 +1511,8 @@ class RedisServer_vNext extends RedisServer_v1_2 {
             /* publish - subscribe */
             'subscribe'                 => '\Predis\Commands\Subscribe',
             'unsubscribe'               => '\Predis\Commands\Unsubscribe',
+            'psubscribe'                => '\Predis\Commands\SubscribeByPattern',
+            'punsubscribe'              => '\Predis\Commands\UnsubscribeByPattern',
             'publish'                   => '\Predis\Commands\Publish',
 
             /* remote server control commands */
@@ -2346,6 +2348,16 @@ class Subscribe extends \Predis\MultiBulkCommand {
 class Unsubscribe extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'UNSUBSCRIBE'; }
+}
+
+class SubscribeByPattern extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PSUBSCRIBE'; }
+}
+
+class UnsubscribeByPattern extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PUNSUBSCRIBE'; }
 }
 
 class Publish extends \Predis\MultiBulkCommand {
