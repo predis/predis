@@ -3,6 +3,7 @@ define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
 
 require_once 'PHPUnit/Framework.php';
 require_once 'PredisShared.php';
+require_once '../lib/Predis_Compatibility.php';
 
 class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
@@ -86,7 +87,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testCommand_InlineWithNoArguments() {
-        $cmd = new \Predis\Commands\Ping();
+        $cmd = new \Predis\Compatibility\v1_0\Commands\Ping();
 
         $this->assertType('\Predis\InlineCommand', $cmd);
         $this->assertEquals('PING', $cmd->getCommandId());
@@ -97,7 +98,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testCommand_InlineWithArguments() {
-        $cmd = new \Predis\Commands\Get();
+        $cmd = new \Predis\Compatibility\v1_0\Commands\Get();
         $cmd->setArgumentsArray(array('key'));
 
         $this->assertType('\Predis\InlineCommand', $cmd);
@@ -109,7 +110,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testCommand_BulkWithArguments() {
-        $cmd = new \Predis\Commands\Set();
+        $cmd = new \Predis\Compatibility\v1_0\Commands\Set();
         $cmd->setArgumentsArray(array('key', 'value'));
 
         $this->assertType('\Predis\BulkCommand', $cmd);
@@ -179,12 +180,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $profile = \Predis\RedisServerProfile::get('1.0');
 
         $cmdNoArgs = $profile->createCommand('info');
-        $this->assertType('\Predis\Commands\Info', $cmdNoArgs);
+        $this->assertType('\Predis\Compatibility\v1_0\Commands\Info', $cmdNoArgs);
         $this->assertNull($cmdNoArgs->getArgument());
 
         $args = array('key1', 'key2');
         $cmdWithArgs = $profile->createCommand('mget', $args);
-        $this->assertType('\Predis\Commands\GetMultiple', $cmdWithArgs);
+        $this->assertType('\Predis\Compatibility\v1_0\Commands\GetMultiple', $cmdWithArgs);
         $this->assertEquals($args[0], $cmdWithArgs->getArgument()); // TODO: why?
         $this->assertEquals($args[0], $cmdWithArgs->getArgument(0));
         $this->assertEquals($args[1], $cmdWithArgs->getArgument(1));
@@ -215,7 +216,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseQueued() {
         $response = new \Predis\ResponseQueued();
         $this->assertTrue($response->queued);
-        $this->assertEquals(\Predis\ResponseReader::QUEUED, (string)$response);
+        $this->assertEquals(\Predis\Protocol::QUEUED, (string)$response);
     }
 
 
@@ -337,13 +338,13 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $responseReader = $connection->getResponseReader();
 
         $responseReader->setHandler(
-            \Predis\ResponseReader::PREFIX_MULTI_BULK, 
+            \Predis\Protocol::PREFIX_MULTI_BULK, 
             new \Predis\ResponseMultiBulkHandler()
         );
         $this->assertType('array', $connection->rawCommand("KEYS *\r\n"));
 
         $responseReader->setHandler(
-            \Predis\ResponseReader::PREFIX_MULTI_BULK, 
+            \Predis\Protocol::PREFIX_MULTI_BULK, 
             new \Predis\ResponseMultiBulkStreamHandler()
         );
         $this->assertType('\Iterator', $connection->rawCommand("KEYS *\r\n"));
@@ -356,7 +357,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
 
         $responseReader->setHandler(
-            \Predis\ResponseReader::PREFIX_ERROR,  
+            \Predis\Protocol::PREFIX_ERROR,  
             new \Predis\ResponseErrorSilentHandler()
         );
         $errorReply = $connection->rawCommand($rawCmdUnexpected);
@@ -364,7 +365,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
         $responseReader->setHandler(
-            \Predis\ResponseReader::PREFIX_ERROR, 
+            \Predis\Protocol::PREFIX_ERROR, 
             new \Predis\ResponseErrorHandler()
         );
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
