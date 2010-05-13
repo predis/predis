@@ -5,7 +5,5 @@
   full battery of tests targeting specific functions of this library is still 
   missing.
 
-* Add a PubSubBlock class.
-
 * Missing tests for new commands: 
     PubSub  : PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE
