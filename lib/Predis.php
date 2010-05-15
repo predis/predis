@@ -1198,7 +1198,8 @@ abstract class RedisServerProfile {
     private static function predisServerProfiles() {
         return array(
             '1.2'     => '\Predis\RedisServer_v1_2',
-            'default' => '\Predis\RedisServer_v1_2',
+            '2.0'     => '\Predis\RedisServer_v2_0',
+            'default' => '\Predis\RedisServer_v2_0',
             'dev'     => '\Predis\RedisServer_vNext',
         );
     }
@@ -1447,8 +1448,8 @@ class RedisServer_v1_2 extends RedisServerProfile {
     }
 }
 
-class RedisServer_vNext extends RedisServer_v1_2 {
-    public function getVersion() { return '1.3'; }
+class RedisServer_v2_0 extends RedisServer_v1_2 {
+    public function getVersion() { return '2.0'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* transactions */
@@ -1520,6 +1521,10 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'configuration'         => '\Predis\Commands\Config',
         ));
     }
+}
+
+class RedisServer_vNext extends RedisServer_v2_0 {
+    public function getVersion() { return '2.1'; }
 }
 
 /* ------------------------------------------------------------------------- */
