@@ -1561,7 +1561,7 @@ class SafeExecutor implements IExecutor {
 
         foreach ($commands as $command) {
             try {
-                $this->_connection->writeCommand($command);
+                $connection->writeCommand($command);
             }
             catch (CommunicationException $exception) {
                 return array_fill(0, $sizeofPipe, $exception);
@@ -1572,7 +1572,7 @@ class SafeExecutor implements IExecutor {
             $command = $commands[$i];
             unset($commands[$i]);
             try {
-                $response = $this->_connection->readResponse($command);
+                $response = $connection->readResponse($command);
                 $values[] = ($response instanceof \Iterator
                     ? iterator_to_array($response)
                     : $response
