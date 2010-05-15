@@ -1469,10 +1469,10 @@ class RedisServer_vNext extends RedisServer_v1_2 {
                 'popLastBlocking'       => '\Predis\Commands\ListPopLastBlocking',
 
             /* commands operating on sorted sets */
-            'zunion'                    => '\Predis\Commands\ZSetUnion',
-                'zsetUnion'             => '\Predis\Commands\ZSetUnion',
-            'zinter'                    => '\Predis\Commands\ZSetIntersection',
-                'zsetIntersection'      => '\Predis\Commands\ZSetIntersection',
+            'zunionstore'               => '\Predis\Commands\ZSetUnionStore',
+                'zsetUnionStore'        => '\Predis\Commands\ZSetUnionStore',
+            'zinterstore'               => '\Predis\Commands\ZSetIntersectionStore',
+                'zsetIntersectionStore' => '\Predis\Commands\ZSetIntersectionStore',
             'zcount'                    => '\Predis\Commands\ZSetCount',
                 'zsetCount'             => '\Predis\Commands\ZSetCount',
             'zrank'                     => '\Predis\Commands\ZSetRank',
@@ -2079,8 +2079,8 @@ class ZSetRemove extends \Predis\MultiBulkCommand {
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class ZSetUnion extends \Predis\MultiBulkCommand {
-    public function getCommandId() { return 'ZUNION'; }
+class ZSetUnionStore extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
         $argc    = count($arguments);
@@ -2106,8 +2106,8 @@ class ZSetUnion extends \Predis\MultiBulkCommand {
     }
 }
 
-class ZSetIntersection extends \Predis\Commands\ZSetUnion {
-    public function getCommandId() { return 'ZINTER'; }
+class ZSetIntersectionStore extends \Predis\Commands\ZSetUnionStore {
+    public function getCommandId() { return 'ZINTERSTORE'; }
 }
 
 class ZSetRange extends \Predis\MultiBulkCommand {

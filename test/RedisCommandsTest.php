@@ -1188,34 +1188,34 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetUnion() {
+    function testZsetUnionStore() {
         $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
         $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
 
-        // basic ZUNION
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb'));
+        // basic ZUNIONSTORE
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', 2, 'zseta', 'zsetb'));
         $this->assertEquals(
             array(array('a', 1), array('b', 3), array('d', 3), array('c', 5)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
-        $this->assertEquals(3, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetbNull'));
+        $this->assertEquals(3, $this->redis->zunionstore('zsetc', 2, 'zseta', 'zsetbNull'));
         $this->assertEquals(
             array(array('a', 1), array('b', 2), array('c', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
-        $this->assertEquals(3, $this->redis->zunion('zsetc', 2, 'zsetaNull', 'zsetb'));
+        $this->assertEquals(3, $this->redis->zunionstore('zsetc', 2, 'zsetaNull', 'zsetb'));
         $this->assertEquals(
             array(array('b', 1), array('c', 2), array('d', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
-        $this->assertEquals(0, $this->redis->zunion('zsetc', 2, 'zsetaNull', 'zsetbNull'));
+        $this->assertEquals(0, $this->redis->zunionstore('zsetc', 2, 'zsetaNull', 'zsetbNull'));
 
         // with WEIGHTS
         $options = array('weights' => array(2, 3));
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 2), array('b', 7), array('d', 9), array('c', 12)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1223,7 +1223,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // with AGGREGATE (min)
         $options = array('aggregate' => 'min');
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 1), array('b', 1), array('c', 2), array('d', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1231,7 +1231,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // with AGGREGATE (max)
         $options = array('aggregate' => 'max');
-        $this->assertEquals(4, $this->redis->zunion('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('a', 1), array('b', 2), array('c', 3), array('d', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1239,28 +1239,28 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('zsetFake', 'fake');
-            $test->redis->zunion('zsetc', 2, 'zseta', 'zsetFake');
+            $test->redis->zunionstore('zsetc', 2, 'zseta', 'zsetFake');
         });
     }
 
-    function testZsetIntersection() {
+    function testZsetIntersectionStore() {
         $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
         $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
 
-        // basic ZINTER
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb'));
+        // basic ZINTERSTORE
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb'));
         $this->assertEquals(
             array(array('b', 3), array('c', 5)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
-        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetbNull'));
-        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zsetaNull', 'zsetb'));
-        $this->assertEquals(0, $this->redis->zinter('zsetc', 2, 'zsetaNull', 'zsetbNull'));
+        $this->assertEquals(0, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetbNull'));
+        $this->assertEquals(0, $this->redis->zinterstore('zsetc', 2, 'zsetaNull', 'zsetb'));
+        $this->assertEquals(0, $this->redis->zinterstore('zsetc', 2, 'zsetaNull', 'zsetbNull'));
 
         // with WEIGHTS
         $options = array('weights' => array(2, 3));
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 7), array('c', 12)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1268,7 +1268,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // with AGGREGATE (min)
         $options = array('aggregate' => 'min');
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 1), array('c', 2)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1276,7 +1276,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         // with AGGREGATE (max)
         $options = array('aggregate' => 'max');
-        $this->assertEquals(2, $this->redis->zinter('zsetc', 2, 'zseta', 'zsetb', $options));
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 2), array('c', 3)), 
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
@@ -1284,7 +1284,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('zsetFake', 'fake');
-            $test->redis->zinter('zsetc', 2, 'zseta', 'zsetFake');
+            $test->redis->zinterstore('zsetc', 2, 'zseta', 'zsetFake');
         });
     }
 
