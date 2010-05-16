@@ -157,6 +157,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testRedisServerProfile_GetSpecificVersions() {
         $this->assertType('\Predis\RedisServer_v1_0', \Predis\RedisServerProfile::get('1.0'));
         $this->assertType('\Predis\RedisServer_v1_2', \Predis\RedisServerProfile::get('1.2'));
+        $this->assertType('\Predis\RedisServer_v2_0', \Predis\RedisServerProfile::get('2.0'));
         $this->assertType('\Predis\RedisServer_vNext', \Predis\RedisServerProfile::get('dev'));
         $this->assertType('\Predis\RedisServerProfile', \Predis\RedisServerProfile::get('default'));
         $this->assertEquals(\Predis\RedisServerProfile::get('default'), \Predis\RedisServerProfile::getDefault());
