@@ -445,9 +445,9 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
 
         $replies = $client->pipeline(function($pipe) { 
-                $pipe->set('foo', 'bar');
-                $pipe->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
-                $pipe->set('hoge', 'piyo');
+            $pipe->set('foo', 'bar');
+            $pipe->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
+            $pipe->set('hoge', 'piyo');
         });
 
         $this->assertType('array', $replies);
