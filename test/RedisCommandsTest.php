@@ -358,7 +358,6 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $this->redis->rpush('metavars', 'hoge'));
 
         // should throw an exception when trying to do a RPUSH on non-list types
-        // should throw an exception when trying to do a LPUSH on non-list types
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->rpush('foo', 'bar');
@@ -593,7 +592,6 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $test->redis->rpop('foo');
         });
     }
-
 
     function testListPopLastPushHead() {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
@@ -1450,6 +1448,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+
     /* commands operating on hashes */
 
     function testHashSet() {
@@ -1596,6 +1595,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+
     /* multiple databases handling commands */
 
     function testSelectDatabase() {
@@ -1722,6 +1722,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $test->redis->sort('foo');
         });
     }
+
 
     /* remote server control commands */
 
