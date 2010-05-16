@@ -25,15 +25,26 @@ class RC {
     const EXCEPTION_NO_SUCH_KEY    = 'no such key';
     const EXCEPTION_OUT_OF_RANGE   = 'index out of range';
     const EXCEPTION_INVALID_DB_IDX = 'invalid DB index';
+    const EXCEPTION_VALUE_NOT_INT  = 'value is not an integer';
     const EXCEPTION_EXEC_NO_MULTI  = 'EXEC without MULTI';
+    const EXCEPTION_SETEX_TTL      = 'invalid expire time in SETEX';
+    const EXCEPTION_HASH_VALNOTINT = 'hash value is not an integer';
 
     private static $_connection;
 
+    public static function getConnectionArguments() { 
+        return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
+    }
+
+    public static function getConnectionParameters() { 
+        return new Predis_ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
+    }
+
     private static function createConnection() {
         $serverProfile = Predis_RedisServerProfile::get('dev');
-        $connection = new Predis_Client(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $serverProfile);
+        $connection = new Predis_Client(RC::getConnectionArguments(), $serverProfile);
         $connection->connect();
-        $connection->selectDatabase(RC::DEFAULT_DATABASE);
+        $connection->select(RC::DEFAULT_DATABASE);
         return $connection;
     }
 
@@ -109,25 +120,55 @@ class RC {
             $thrownException = $exception;
         }
         $testcaseInstance->assertType('Predis_ServerException', $thrownException);
-        $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
+    }
+
+    public static function testForClientException($testcaseInstance, $expectedMessage, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis_ClientException $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis_ClientException', $thrownException);
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
+    }
+
+    public static function testForCommunicationException($testcaseInstance, $expectedMessage, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis_CommunicationException $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis_CommunicationException', $thrownException);
+        if (isset($expectedMessage)) {
+            $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
+        }
     }
 
     public static function pushTailAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value) {
-            $client->pushTail($keyName, $value);
+            $client->rpush($keyName, $value);
         }
         return $values;
     }
 
     public static function setAddAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value) {
-            $client->setAdd($keyName, $value);
+            $client->sadd($keyName, $value);
         }
         return $values;
     }
@@ -135,12 +176,28 @@ class RC {
     public static function zsetAddAndReturn(Predis_Client $client, $keyName, Array $values, $wipeOut = 0) {
         // $values: array(SCORE => VALUE, ...);
         if ($wipeOut == true) {
-            $client->delete($keyName);
+            $client->del($keyName);
         }
         foreach ($values as $value => $score) {
-            $client->zsetAdd($keyName, $score, $value);
+            $client->zadd($keyName, $score, $value);
         }
         return $values;
+    }
+
+    public static function getConnectionParametersArgumentsArray() {
+        return array(
+            'host' => '10.0.0.1', 'port' => 6380, 'connection_timeout' => 10, 'read_write_timeout' => 30, 
+            'database' => 5, 'password' => 'dbpassword', 'alias' => 'connection_alias'
+        );
+    }
+
+    public static function getConnectionParametersArgumentsString($arguments = null) {
+        // TODO: must be improved
+        $args = $arguments !== null ? $arguments : RC::getConnectionParametersArgumentsArray();
+        $paramsString = "redis://{$args['host']}:{$args['port']}/";
+        $paramsString .= "?connection_timeout={$args['connection_timeout']}&read_write_timeout={$args['read_write_timeout']}";
+        $paramsString .= "&database={$args['database']}&password={$args['password']}&alias={$args['alias']}";
+        return $paramsString;
     }
 }
 ?>

@@ -1,35 +1,51 @@
 <?php
 class PredisException extends Exception { }
+
+// Client-side errors
 class Predis_ClientException extends PredisException { }
-class Predis_ServerException extends PredisException { }
-class Predis_MalformedServerResponse extends Predis_ServerException { }
+
+// Server-side errors
+class Predis_ServerException extends PredisException {
+    public function toResponseError() {
+        return new ResponseError($this->getMessage());
+    }
+}
+
+// Communication errors
+class Predis_CommunicationException extends PredisException {
+    private $_connection;
+
+    public function __construct(Predis_Connection $connection, $message = null, $code = null) {
+        $this->_connection = $connection;
+        parent::__construct($message, $code);
+    }
+
+    public function getConnection() { return $this->_connection; }
+    public function shouldResetConnection() {  return true; }
+}
+
+// Unexpected responses
+class Predis_MalformedServerResponse extends Predis_CommunicationException { }
 
 /* ------------------------------------------------------------------------- */
 
 class Predis_Client {
-    private $_connection, $_serverProfile;
+    private $_options, $_connection, $_serverProfile, $_responseReader;
 
-    public function __construct($parameters = null, Predis_RedisServerProfile $serverProfile = null) {
-        $this->setProfile(
-            $serverProfile === null 
-                ? Predis_RedisServerProfile::getDefault() 
-                : $serverProfile
-        );
+    public function __construct($parameters = null, $clientOptions = null) {
+        $this->setupClient($clientOptions !== null ? $clientOptions : new Predis_ClientOptions());
         $this->setupConnection($parameters);
-    }
-
-    public function __destruct() {
-        $this->_connection->disconnect();
     }
 
     public static function create(/* arguments */) {
         $argv = func_get_args();
         $argc = func_num_args();
 
-        $serverProfile = null;
+        $options = null;
         $lastArg = $argv[$argc-1];
-        if ($argc > 0 && !is_string($lastArg) && is_subclass_of($lastArg, 'Predis_RedisServerProfile')) {
-            $serverProfile = array_pop($argv);
+        if ($argc > 0 && !is_string($lastArg) && ($lastArg instanceof Predis_ClientOptions ||
+            is_subclass_of($lastArg, 'Predis_RedisServerProfile'))) {
+            $options = array_pop($argv);
             $argc--;
         }
 
@@ -40,13 +56,52 @@ class Predis_Client {
         return new Predis_Client($argc === 1 ? $argv[0] : $argv, $serverProfile);
     }
 
+    private static function filterClientOptions($options) {
+        if ($options instanceof Predis_ClientOptions) {
+            return $options;
+        }
+        if (is_array($options)) {
+            return new Predis_ClientOptions($options);
+        }
+        if ($options instanceof Predis_RedisServerProfile) {
+            return new Predis_ClientOptions(array(
+                'profile' => $options
+            ));
+        }
+        if (is_string($options)) {
+            return new Predis_ClientOptions(array(
+                'profile' => Predis_RedisServerProfile::get($options)
+            ));
+        }
+        throw new InvalidArgumentException("Invalid type for client options");
+    }
+
+    private function setupClient($options) {
+        $this->_responseReader = new Predis_ResponseReader();
+        $this->_options = self::filterClientOptions($options);
+
+        $this->setProfile($this->_options->profile);
+        if ($this->_options->iterable_multibulk === true) {
+            $this->_responseReader->setHandler(
+                Predis_Protocol::PREFIX_MULTI_BULK, 
+                new Predis_ResponseMultiBulkStreamHandler()
+            );
+        }
+        if ($this->_options->throw_on_error === false) {
+            $this->_responseReader->setHandler(
+                Predis_Protocol::PREFIX_ERROR, 
+                new Predis_ResponseErrorSilentHandler()
+            );
+        }
+    }
+
     private function setupConnection($parameters) {
         if ($parameters !== null && !(is_array($parameters) || is_string($parameters))) {
             throw new Predis_ClientException('Invalid parameters type (array or string expected)');
         }
 
         if (is_array($parameters) && isset($parameters[0])) {
-            $cluster = new Predis_ConnectionCluster();
+            $cluster = new Predis_ConnectionCluster($this->_options->key_distribution);
             foreach ($parameters as $shardParams) {
                 $cluster->add($this->createConnection($shardParams));
             }
@@ -59,7 +114,7 @@ class Predis_Client {
 
     private function createConnection($parameters) {
         $params     = new Predis_ConnectionParameters($parameters);
-        $connection = new Predis_Connection($params);
+        $connection = new Predis_Connection($params, $this->_responseReader);
 
         if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommand(
@@ -79,12 +134,24 @@ class Predis_Client {
         $this->_connection = $connection;
     }
 
-    public function setProfile(Predis_RedisServerProfile $serverProfile) {
-        $this->_serverProfile = $serverProfile;
+    public function setProfile($serverProfile) {
+        if (!($serverProfile instanceof Predis_RedisServerProfile || is_string($serverProfile))) {
+            throw new InvalidArgumentException(
+                "Invalid type for server profile, Predis_RedisServerProfile or string expected"
+            );
+        }
+        $this->_serverProfile = (is_string($serverProfile) 
+            ? Predis_RedisServerProfile::get($serverProfile)
+            : $serverProfile
+        );
     }
 
     public function getProfile() {
         return $this->_serverProfile;
+    }
+
+    public function getResponseReader() {
+        return $this->_responseReader;
     }
 
     public function connect() {
@@ -99,46 +166,45 @@ class Predis_Client {
         return $this->_connection->isConnected();
     }
 
-    public function getConnection() {
-        return $this->_connection;
+    public function getConnection($id = null) {
+        if (!isset($id)) {
+            return $this->_connection;
+        }
+        else {
+            return $this->_connection instanceof Predis_ConnectionCluster 
+                ? $this->_connection->getConnectionById($id)
+                : $this->_connection;
+        }
     }
 
     public function __call($method, $arguments) {
         $command = $this->_serverProfile->createCommand($method, $arguments);
-        return $this->executeCommand($command);
+        return $this->_connection->executeCommand($command);
     }
 
     public function createCommand($method, $arguments = array()) {
         return $this->_serverProfile->createCommand($method, $arguments);
     }
 
-    private function executeCommandInternal(Predis_IConnection $connection, Predis_Command $command) {
-        $connection->writeCommand($command);
-        if ($command->closesConnection()) {
-            return $connection->disconnect();
-        }
-        return $connection->readResponse($command);
+    public function executeCommand(Command $command) {
+        return $this->_connection->executeCommand($command);
     }
 
-    public function executeCommand(Predis_Command $command) {
-        return self::executeCommandInternal($this->_connection, $command);
-    }
-
-    public function executeCommandOnShards(Predis_Command $command) {
+    public function executeCommandOnShards(Command $command) {
         $replies = array();
-        if (is_a($this->_connection, 'Predis_ConnectionCluster')) {
+        if ($this->_connection instanceof Predis_ConnectionCluster) {
             foreach($this->_connection as $connection) {
-                $replies[] = self::executeCommandInternal($connection, $command);
+                $replies[] = $connection->executeCommand($command);
             }
         }
         else {
-            $replies[] = self::executeCommandInternal($this->_connection, $command);
+            $replies[] = $this->_connection->executeCommand($command);
         }
         return $replies;
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        if (is_a($this->_connection, 'Predis_ConnectionCluster')) {
+        if ($this->_connection instanceof Predis_ConnectionCluster) {
             throw new Predis_ClientException('Cannot send raw commands when connected to a cluster of Redis servers');
         }
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
@@ -157,6 +223,128 @@ class Predis_Client {
 
 /* ------------------------------------------------------------------------- */
 
+interface Predis_IClientOptionsHandler {
+    public function validate($option, $value);
+    public function getDefault();
+}
+
+class Predis_ClientOptionsProfile implements Predis_IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof Predis_RedisServerProfile) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return Predis_RedisServerProfile::get($value);
+        }
+        throw new InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return Predis_RedisServerProfile::getDefault();
+    }
+}
+
+class Predis_ClientOptionsKeyDistribution implements Predis_IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof Predis_IDistributionAlgorithm) {
+            return $value;
+        }
+        if (is_string($value)) {
+            $valueReflection = new ReflectionClass($value);
+            if ($valueReflection->isSubclassOf('Predis_IDistributionAlgorithm')) {
+                return new $value;
+            }
+        }
+        throw new InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return new Predis_Utilities_HashRing();
+    }
+}
+
+class Predis_ClientOptionsIterableMultiBulk implements Predis_IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return false;
+    }
+}
+
+class Predis_ClientOptionsThrowOnError implements Predis_IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return true;
+    }
+}
+
+class Predis_ClientOptions {
+    private static $_optionsHandlers;
+    private $_options;
+
+    public function __construct($options = null) {
+        self::initializeOptionsHandlers();
+        $this->initializeOptions($options !== null ? $options : array());
+    }
+
+    private static function initializeOptionsHandlers() {
+        if (!isset(self::$_optionsHandlers)) {
+            self::$_optionsHandlers = self::getOptionsHandlers();
+        }
+    }
+
+    private static function getOptionsHandlers() {
+        return array(
+            'profile'    => new Predis_ClientOptionsProfile(),
+            'key_distribution' => new Predis_ClientOptionsKeyDistribution(),
+            'iterable_multibulk' => new Predis_ClientOptionsIterableMultiBulk(),
+            'throw_on_error' => new Predis_ClientOptionsThrowOnError(),
+        );
+    }
+
+    private function initializeOptions($options) {
+        foreach ($options as $option => $value) {
+            if (isset(self::$_optionsHandlers[$option])) {
+                $handler = self::$_optionsHandlers[$option];
+                $this->_options[$option] = $handler->validate($option, $value);
+            }
+        }
+    }
+
+    public function __get($option) {
+        if (!isset($this->_options[$option])) {
+            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
+            $this->_options[$option] = $defaultValue;
+        }
+        return $this->_options[$option];
+    }
+
+    public function __isset($option) {
+        return isset(self::$_optionsHandlers[$option]);
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+
+class Predis_Protocol {
+    const NEWLINE = "\r\n";
+    const OK      = 'OK';
+    const ERROR   = 'ERR';
+    const QUEUED  = 'QUEUED';
+    const NULL    = 'nil';
+
+    const PREFIX_STATUS     = '+';
+    const PREFIX_ERROR      = '-';
+    const PREFIX_INTEGER    = ':';
+    const PREFIX_BULK       = '$';
+    const PREFIX_MULTI_BULK = '*';
+}
+
 abstract class Predis_Command {
     private $_arguments, $_hash;
 
@@ -168,7 +356,7 @@ abstract class Predis_Command {
         return true;
     }
 
-    public function getHash() {
+    public function getHash(Predis_IDistributionAlgorithm $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -182,7 +370,7 @@ abstract class Predis_Command {
                     $key = substr($key, ++$start, $end - $start);
                 }
 
-                $this->_hash = crc32($key);
+                $this->_hash = $distributor->generateKey($key);
                 return $this->_hash;
             }
         }
@@ -199,13 +387,16 @@ abstract class Predis_Command {
 
     public function setArguments(/* arguments */) {
         $this->_arguments = $this->filterArguments(func_get_args());
+        $this->_hash = null;
     }
 
     public function setArgumentsArray(Array $arguments) {
         $this->_arguments = $this->filterArguments($arguments);
+        $this->_hash = null;
     }
 
     protected function getArguments() {
+        // TODO: why getArguments is protected?
         return isset($this->_arguments) ? $this->_arguments : array();
     }
 
@@ -227,7 +418,7 @@ abstract class Predis_InlineCommand extends Predis_Command {
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = implode($arguments[0], ' ');
         }
-        return $command . ' ' . implode($arguments, ' ') . Predis_Response::NEWLINE;
+        return $command . ' ' . implode($arguments, ' ') . Predis_Protocol::NEWLINE;
     }
 }
 
@@ -238,104 +429,103 @@ abstract class Predis_BulkCommand extends Predis_Command {
             $data = implode($data, ' ');
         }
         return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) . 
-            Predis_Response::NEWLINE . $data . Predis_Response::NEWLINE;
+            Predis_Protocol::NEWLINE . $data . Predis_Protocol::NEWLINE;
     }
 }
 
 abstract class Predis_MultiBulkCommand extends Predis_Command {
     public function serializeRequest($command, $arguments) {
-        $buffer   = array();
         $cmd_args = null;
+        $argsc    = count($arguments);
 
-        if (count($arguments) === 1 && is_array($arguments[0])) {
-            $cmd_args = array();
-            foreach ($arguments[0] as $k => $v) {
-                $cmd_args[] = $k;
-                $cmd_args[] = $v;
-            }
+        if ($argsc === 1 && is_array($arguments[0])) {
+            $cmd_args = $arguments[0];
+            $argsc = count($cmd_args);
         }
         else {
             $cmd_args = $arguments;
         }
 
-        $buffer[] = '*' . ((string) count($cmd_args) + 1) . Predis_Response::NEWLINE;
-        $buffer[] = '$' . strlen($command) . Predis_Response::NEWLINE . $command . Predis_Response::NEWLINE;
+        $newline = Predis_Protocol::NEWLINE;
+        $cmdlen  = strlen($command);
+        $reqlen  = $argsc + 1;
+
+        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
         foreach ($cmd_args as $argument) {
-            $buffer[] = '$' . strlen($argument) . Predis_Response::NEWLINE . $argument . Predis_Response::NEWLINE;
+            $arglen  = strlen($argument);
+            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
         }
 
-        return implode('', $buffer);
+        return $buffer;
     }
 }
 
 /* ------------------------------------------------------------------------- */
 
-class Predis_Response {
-    const NEWLINE = "\r\n";
-    const OK      = 'OK';
-    const ERROR   = 'ERR';
-    const QUEUED  = 'QUEUED';
-    const NULL    = 'nil';
+interface Predis_IResponseHandler {
+    function handle(Predis_Connection $connection, $payload);
+}
 
-    private static $_prefixHandlers;
-
-    private static function initializePrefixHandlers() {
-        return array(
-            // status
-            '+' => array('Predis_Response', 'handleStatus'), 
-
-            // error
-            '-' => array('Predis_Response', 'handleError'), 
-
-            // bulk
-            '$' => array('Predis_Response', 'handleBulk'), 
-
-            // multibulk
-            '*' => array('Predis_Response', 'handleMultiBulk'), 
-
-            // integer
-            ':' => array('Predis_Response', 'handleInteger')
-        );
-    }
-
-    public static function handleStatus($socket, $prefix, $status) {
-        if ($status === Predis_Response::OK) {
+class Predis_ResponseStatusHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $status) {
+        if ($status === Predis_Protocol::OK) {
             return true;
         }
-        else if ($status === Predis_Response::QUEUED) {
+        else if ($status === Predis_Protocol::QUEUED) {
             return new Predis_ResponseQueued();
         }
         return $status;
     }
+}
 
-    public static function handleError($socket, $prefix, $errorMessage) {
+class Predis_ResponseErrorHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $errorMessage) {
         throw new Predis_ServerException(substr($errorMessage, 4));
     }
+}
 
-    public static function handleBulk($socket, $prefix, $dataLength) {
+class Predis_ResponseErrorSilentHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $errorMessage) {
+        return new Predis_ResponseError(substr($errorMessage, 4));
+    }
+}
+
+class Predis_ResponseBulkHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $dataLength) {
         if (!is_numeric($dataLength)) {
-            throw new Predis_ClientException("Cannot parse '$dataLength' as data length");
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, "Cannot parse '$dataLength' as data length"
+            ));
         }
 
         if ($dataLength > 0) {
-            $value = stream_get_contents($socket, $dataLength);
-            if ($value === false) {
-                throw new Predis_ClientException('An error has occurred while reading from the network stream');
-            }
-            fread($socket, 2);
+            $value = $connection->readBytes($dataLength);
+            self::discardNewLine($connection);
             return $value;
         }
         else if ($dataLength == 0) {
-            fread($socket, 2);
+            self::discardNewLine($connection);
             return '';
         }
 
         return null;
     }
 
-    public static function handleMultiBulk($socket, $prefix, $rawLength) {
+    private static function discardNewLine(Predis_Connection $connection) {
+        if ($connection->readBytes(2) !== Predis_Protocol::NEWLINE) {
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, 'Did not receive a new-line at the end of a bulk response'
+            ));
+        }
+    }
+}
+
+class Predis_ResponseMultiBulkHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
-            throw new Predis_ClientException("Cannot parse '$rawLength' as data length");
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, "Cannot parse '$rawLength' as data length"
+            ));
         }
 
         $listLength = (int) $rawLength;
@@ -347,43 +537,112 @@ class Predis_Response {
 
         if ($listLength > 0) {
             for ($i = 0; $i < $listLength; $i++) {
-                $list[] = Predis_Response::read($socket);
+                $list[] = $connection->getResponseReader()->read($connection);
             }
         }
 
         return $list;
     }
+}
 
-    public static function handleInteger($socket, $prefix, $number) {
+class Predis_ResponseMultiBulkStreamHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $rawLength) {
+        if (!is_numeric($rawLength)) {
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, "Cannot parse '$rawLength' as data length"
+            ));
+        }
+        return new Predis_Utilities_MultiBulkResponseIterator($connection, (int)$rawLength);
+    }
+}
+
+class Predis_ResponseIntegerHandler implements Predis_IResponseHandler {
+    public function handle(Predis_Connection $connection, $number) {
         if (is_numeric($number)) {
             return (int) $number;
         }
         else {
-            if ($number !== Response::NULL) {
-                throw new Predis_ClientException("Cannot parse '$number' as numeric response");
+            if ($number !== Predis_Protocol::NULL) {
+                Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                    $connection, "Cannot parse '$number' as numeric response"
+                ));
             }
             return null;
         }
     }
+}
 
-    public static function read($socket) {
-        $header  = fgets($socket);
-        if ($header === false) {
-           throw new Predis_ClientException('An error has occurred while reading from the network stream');
+class Predis_ResponseReader {
+    private $_prefixHandlers;
+
+    public function __construct() {
+        $this->initializePrefixHandlers();
+    }
+
+    private function initializePrefixHandlers() {
+        $this->_prefixHandlers = array(
+            Predis_Protocol::PREFIX_STATUS     => new Predis_ResponseStatusHandler(), 
+            Predis_Protocol::PREFIX_ERROR      => new Predis_ResponseErrorHandler(), 
+            Predis_Protocol::PREFIX_INTEGER    => new Predis_ResponseIntegerHandler(), 
+            Predis_Protocol::PREFIX_BULK       => new Predis_ResponseBulkHandler(), 
+            Predis_Protocol::PREFIX_MULTI_BULK => new Predis_ResponseMultiBulkHandler(), 
+        );
+    }
+
+    public function setHandler($prefix, Predis_IResponseHandler $handler) {
+        $this->_prefixHandlers[$prefix] = $handler;
+    }
+
+    public function getHandler($prefix) {
+        if (isset($this->_prefixHandlers[$prefix])) {
+            return $this->_prefixHandlers[$prefix];
+        }
+    }
+
+    public function read(Predis_Connection $connection) {
+        $header = $connection->readLine();
+        if ($header === '') {
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, 'Unexpected empty header'
+            ));
         }
 
         $prefix  = $header[0];
-        $payload = substr($header, 1, -2);
+        $payload = strlen($header) > 1 ? substr($header, 1) : '';
 
-        if (!isset(self::$_prefixHandlers)) {
-            self::$_prefixHandlers = self::initializePrefixHandlers();
-        }
-        if (!isset(self::$_prefixHandlers[$prefix])) {
-            throw new Predis_MalformedServerResponse("Unknown prefix '$prefix'");
+        if (!isset($this->_prefixHandlers[$prefix])) {
+            Predis_Utilities_Shared::onCommunicationException(new Predis_MalformedServerResponse(
+                $connection, "Unknown prefix '$prefix'"
+            ));
         }
 
-        $handler = self::$_prefixHandlers[$prefix];
-        return call_user_func($handler, $socket, $prefix, $payload);
+        $handler = $this->_prefixHandlers[$prefix];
+        return $handler->handle($connection, $payload);
+    }
+}
+
+class Predis_ResponseError {
+    private $_message;
+
+    public function __construct($message) {
+        $this->_message = $message;
+    }
+
+    public function __get($property) {
+        if ($property == 'error') {
+            return true;
+        }
+        if ($property == 'message') {
+            return $this->_message;
+        }
+    }
+
+    public function __isset($property) {
+        return $property === 'error';
+    }
+
+    public function __toString() {
+        return $this->_message;
     }
 }
 
@@ -391,9 +650,11 @@ class Predis_ResponseQueued {
     public $queued = true;
 
     public function __toString() {
-        return Predis_Response::QUEUED;
+        return Predis_Protocol::QUEUED;
     }
 }
+
+/* ------------------------------------------------------------------------- */
 
 class Predis_CommandPipeline {
     private $_redisClient, $_pipelineBuffer, $_returnValues, $_running;
@@ -407,6 +668,7 @@ class Predis_CommandPipeline {
     public function __call($method, $arguments) {
         $command = $this->_redisClient->createCommand($method, $arguments);
         $this->recordCommand($command);
+        return $this;
     }
 
     private function recordCommand(Predis_Command $command) {
@@ -430,9 +692,16 @@ class Predis_CommandPipeline {
             $connection->writeCommand($command);
         }
         for ($i = 0; $i < $sizeofPipe; $i++) {
-            $this->_returnValues[] = $connection->readResponse($commands[$i]);
+            $response = $connection->readResponse($commands[$i]);
+            $this->_returnValues[] = ($response instanceof Iterator
+                ? iterator_to_array($response)
+                : $response
+            );
             unset($commands[$i]);
         }
+        $this->_pipelineBuffer = array();
+
+        return $this;
     }
 
     private function setRunning($bool) {
@@ -448,6 +717,7 @@ class Predis_CommandPipeline {
             throw new RuntimeException('Argument passed must be a callable object');
         }
 
+        // TODO: do not reuse previously executed pipelines
         $this->setRunning(true);
         $pipelineBlockException = null;
 
@@ -458,6 +728,7 @@ class Predis_CommandPipeline {
             $this->flushPipeline();
         }
         catch (Exception $exception) {
+            // TODO: client/server desync on ServerException
             $pipelineBlockException = $exception;
         }
 
@@ -472,10 +743,11 @@ class Predis_CommandPipeline {
 }
 
 class Predis_MultiExecBlock {
-    private $_redisClient, $_commands, $_initialized;
+    private $_redisClient, $_commands, $_initialized, $_discarded;
 
     public function __construct(Predis_Client $redisClient) {
         $this->_initialized = false;
+        $this->_discarded   = false;
         $this->_redisClient = $redisClient;
         $this->_commands    = array();
     }
@@ -484,6 +756,7 @@ class Predis_MultiExecBlock {
         if ($this->_initialized === false) {
             $this->_redisClient->multi();
             $this->_initialized = true;
+            $this->_discarded   = false;
         }
     }
 
@@ -493,11 +766,18 @@ class Predis_MultiExecBlock {
         $response = $this->_redisClient->executeCommand($command);
         if (isset($response->queued)) {
             $this->_commands[] = $command;
-            return $response;
+            return $this;
         }
         else {
-            throw new Predis_ClientException('The server did not respond with a QUEUED status reply');
+            $this->malformedServerResponse('The server did not respond with a QUEUED status reply');
         }
+    }
+
+    public function discard() {
+        $this->_redisClient->discard();
+        $this->_commands    = array();
+        $this->_initialized = false;
+        $this->_discarded   = true;
     }
 
     public function execute($block = null) {
@@ -513,17 +793,26 @@ class Predis_MultiExecBlock {
                 $block($this);
             }
 
-            $execReply = $this->_redisClient->exec();
+            if ($this->_discarded === true) {
+                return;
+            }
+
+            $execReply = (($reply = $this->_redisClient->exec()) instanceof Iterator
+                ? iterator_to_array($reply)
+                : $reply
+            );
             $commands  = &$this->_commands;
             $sizeofReplies = count($execReply);
 
             if ($sizeofReplies !== count($commands)) {
-                // TODO: think of a better exception message
-                throw new Predis_ClientException("Out-of-sync");
+                $this->malformedServerResponse('Unexpected number of responses for a MultiExecBlock');
             }
 
             for ($i = 0; $i < $sizeofReplies; $i++) {
-                $returnValues[] = $commands[$i]->parseResponse($execReply[$i]);
+                $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof Iterator
+                    ? iterator_to_array($execReply[$i])
+                    : $execReply[$i]
+                );
                 unset($commands[$i]);
             }
         }
@@ -544,9 +833,10 @@ class Predis_MultiExecBlock {
 class Predis_ConnectionParameters {
     const DEFAULT_HOST = '127.0.0.1';
     const DEFAULT_PORT = 6379;
+    const DEFAULT_TIMEOUT = 5;
     private $_parameters;
 
-    public function __construct($parameters) {
+    public function __construct($parameters = null) {
         $parameters = $parameters !== null ? $parameters : array();
         $this->_parameters = is_array($parameters) 
             ? self::filterConnectionParams($parameters) 
@@ -571,11 +861,23 @@ class Predis_ConnectionParameters {
                     case 'password':
                         $details['password'] = $v;
                         break;
+                    case 'connection_async':
+                        $details['connection_async'] = $v;
+                        break;
+                    case 'connection_persistent':
+                        $details['connection_persistent'] = $v;
+                        break;
                     case 'connection_timeout':
                         $details['connection_timeout'] = $v;
                         break;
                     case 'read_write_timeout':
                         $details['read_write_timeout'] = $v;
+                        break;
+                    case 'alias':
+                        $details['alias'] = $v;
+                        break;
+                    case 'weight':
+                        $details['weight'] = $v;
                         break;
                 }
             }
@@ -595,8 +897,12 @@ class Predis_ConnectionParameters {
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password'), 
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout'), 
+            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
+            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false), 
+            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
             'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
+            'alias'  => self::getParamOrDefault($parameters, 'alias'), 
+            'weight' => self::getParamOrDefault($parameters, 'weight'), 
         );
     }
 
@@ -609,26 +915,35 @@ class Predis_ConnectionParameters {
     }
 }
 
+interface Predis_IDistributionAlgorithm {
+    public function add($node, $weight = null);
+    public function remove($node);
+    public function get($key);
+    public function generateKey($value);
+}
+
 interface Predis_IConnection {
     public function connect();
     public function disconnect();
     public function isConnected();
     public function writeCommand(Predis_Command $command);
     public function readResponse(Predis_Command $command);
+    public function executeCommand(Predis_Command $command);
 }
 
 class Predis_Connection implements Predis_IConnection {
-    const CONNECTION_TIMEOUT = 2;
+    private $_params, $_socket, $_initCmds, $_reader;
 
-    private $_params, $_socket, $_initCmds;
-
-    public function __construct(Predis_ConnectionParameters $parameters) {
+    public function __construct(Predis_ConnectionParameters $parameters, Predis_ResponseReader $reader = null) {
         $this->_params   = $parameters;
         $this->_initCmds = array();
+        $this->_reader   = $reader !== null ? $reader : new Predis_ResponseReader();
     }
 
     public function __destruct() {
-        $this->disconnect();
+        if (!$this->_params->connection_persistent) {
+            $this->disconnect();
+        }
     }
 
     public function isConnected() {
@@ -640,16 +955,25 @@ class Predis_Connection implements Predis_IConnection {
             throw new Predis_ClientException('Connection already estabilished');
         }
         $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
-        $connectionTimeout = isset($this->_params->connection_timeout) 
-            ? $this->_params->connection_timeout
-            : self::CONNECTION_TIMEOUT;
-        $this->_socket = @stream_socket_client($uri, $errno, $errstr, $connectionTimeout);
+        $connectFlags = STREAM_CLIENT_CONNECT;
+        if ($this->_params->connection_async) {
+            $connectFlags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+        if ($this->_params->connection_persistent) {
+            $connectFlags |= STREAM_CLIENT_PERSISTENT;
+        }
+        $this->_socket = @stream_socket_client(
+            $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
+        );
+
         if (!$this->_socket) {
-            throw new Predis_ClientException(trim($errstr), $errno);
+            $this->onCommunicationException(trim($errstr), $errno);
         }
 
         if (isset($this->_params->read_write_timeout)) {
-            stream_set_timeout($this->_socket, $this->_params->read_write_timeout);
+            $timeoutSeconds  = floor($this->_params->read_write_timeout);
+            $timeoutUSeconds = ($this->_params->read_write_timeout - $timeoutSeconds) * 1000000;
+            stream_set_timeout($this->_socket, $timeoutSeconds, $timeoutUSeconds);
         }
 
         if (count($this->_initCmds) > 0){
@@ -676,31 +1000,83 @@ class Predis_Connection implements Predis_IConnection {
         }
     }
 
+    private function onCommunicationException($message, $code = null) {
+        Predis_Utilities_Shared::onCommunicationException(
+            new Predis_CommunicationException($this, $message, $code)
+        );
+    }
+
     public function writeCommand(Predis_Command $command) {
-        $written = fwrite($this->getSocket(), $command->invoke());
-        if ($written === false){
-           throw new Predis_ClientException(sprintf(
-               'An error has occurred while writing command %s on the network stream'),
-               $command->getCommandId()
-           );
-        }
+        $this->writeBytes($command->invoke());
     }
 
     public function readResponse(Predis_Command $command) {
-        $response = Predis_Response::read($this->getSocket());
-        return isset($response->queued) ? $response : $command->parseResponse($response);
+        $response = $this->_reader->read($this);
+        $skipparse = isset($response->queued) || isset($response->error);
+        return $skipparse ? $response : $command->parseResponse($response);
+    }
+
+    public function executeCommand(Predis_Command $command) {
+        $this->writeCommand($command);
+        if ($command->closesConnection()) {
+            return $this->disconnect();
+        }
+        return $this->readResponse($command);
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        $socket = $this->getSocket();
-        $written = fwrite($socket, $rawCommandData);
-        if ($written === false){
-           throw new Predis_ClientException('An error has occurred while writing a raw command on the network stream');
-        }
+        $this->writeBytes($rawCommandData);
         if ($closesConnection) {
+            $this->disconnect();
             return;
         }
-        return Predis_Response::read($socket);
+        return $this->_reader->read($this);
+    }
+
+    public function writeBytes($value) {
+        $socket = $this->getSocket();
+        while (($length = strlen($value)) > 0) {
+            $written = fwrite($socket, $value);
+            if ($length === $written) {
+                return true;
+            }
+            if ($written === false || $written === 0) {
+                $this->onCommunicationException('Error while writing bytes to the server');
+            }
+            $value = substr($value, $written);
+        }
+        return true;
+    }
+
+    public function readBytes($length) {
+        if ($length == 0) {
+            throw new InvalidArgumentException('Length parameter must be greater than 0');
+        }
+        $socket = $this->getSocket();
+        $value  = '';
+        do {
+            $chunk = fread($socket, $length);
+            if ($chunk === false || $chunk === '') {
+                $this->onCommunicationException('Error while reading bytes from the server');
+            }
+            $value .= $chunk;
+        }
+        while (($length -= strlen($chunk)) > 0);
+        return $value;
+    }
+
+    public function readLine() {
+        $socket = $this->getSocket();
+        $value  = '';
+        do {
+            $chunk = fgets($socket);
+            if ($chunk === false || strlen($chunk) == 0) {
+                $this->onCommunicationException('Error while reading line from the server');
+            }
+            $value .= $chunk;
+        }
+        while (substr($value, -2) !== Predis_Protocol::NEWLINE);
+        return substr($value, 0, -2);
     }
 
     public function getSocket() {
@@ -710,23 +1086,25 @@ class Predis_Connection implements Predis_IConnection {
         return $this->_socket;
     }
 
+    public function getResponseReader() {
+        return $this->_reader;
+    }
+
+    public function getParameters() {
+        return $this->_params;
+    }
+
     public function __toString() {
         return sprintf('%s:%d', $this->_params->host, $this->_params->port);
     }
 }
 
 class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate {
-    // TODO: find a clean way to handle connection failures of single nodes.
+    private $_pool, $_distributor;
 
-    private $_pool, $_ring;
-
-    public function __construct() {
+    public function __construct(Predis_IDistributionAlgorithm $distributor = null) {
         $this->_pool = array();
-        $this->_ring = new Utilities_HashRing();
-    }
-
-    public function __destruct() {
-        $this->disconnect();
+        $this->_distributor = $distributor !== null ? $distributor : new Predis_Utilities_HashRing();
     }
 
     public function isConnected() {
@@ -751,17 +1129,23 @@ class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate 
     }
 
     public function add(Predis_Connection $connection) {
-        $this->_pool[] = $connection;
-        $this->_ring->add($connection);
+        $parameters = $connection->getParameters();
+        if (isset($parameters->alias)) {
+            $this->_pool[$parameters->alias] = $connection;
+        }
+        else {
+            $this->_pool[] = $connection;
+        }
+        $this->_distributor->add($connection, $parameters->weight);
     }
 
-    private function getConnection(Predis_Command $command) {
+    public function getConnection(Predis_Command $command) {
         if ($command->canBeHashed() === false) {
             throw new Predis_ClientException(
                 sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
             );
         }
-        return $this->_ring->get($command->getHash());
+        return $this->_distributor->get($command->getHash($this->_distributor));
     }
 
     public function getConnectionById($id = null) {
@@ -778,6 +1162,12 @@ class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate 
 
     public function readResponse(Predis_Command $command) {
         return $this->getConnection($command)->readResponse($command);
+    }
+
+    public function executeCommand(Predis_Command $command) {
+        $connection = $this->getConnection($command);
+        $connection->writeCommand($command);
+        return $connection->readResponse($command);
     }
 }
 
@@ -801,11 +1191,32 @@ abstract class Predis_RedisServerProfile {
 
     private static function predisServerProfiles() {
         return array(
-            '1.0'     => 'Predis_RedisServer_v1_0',
             '1.2'     => 'Predis_RedisServer_v1_2',
-            'default' => 'Predis_RedisServer_v1_2',
+            '2.0'     => 'Predis_RedisServer_v2_0',
+            'default' => 'Predis_RedisServer_v2_0',
             'dev'     => 'Predis_RedisServer_vNext',
         );
+    }
+
+    public static function registerProfile($profileClass, $aliases) {
+        if (!isset(self::$_serverProfiles)) {
+            self::$_serverProfiles = self::predisServerProfiles();
+        }
+
+        $profileReflection = new ReflectionClass($profileClass);
+
+        if (!$profileReflection->isSubclassOf('Predis_RedisServerProfile')) {
+            throw new Predis_ClientException("Cannot register '$profileClass' as it is not a valid profile class");
+        }
+
+        if (is_array($aliases)) {
+            foreach ($aliases as $alias) {
+                self::$_serverProfiles[$alias] = $profileClass;
+            }
+        }
+        else {
+            self::$_serverProfiles[$aliases] = $profileClass;
+        }
     }
 
     public static function get($version) {
@@ -855,7 +1266,7 @@ abstract class Predis_RedisServerProfile {
         $commandReflection = new ReflectionClass($command);
 
         if (!$commandReflection->isSubclassOf('Predis_Command')) {
-            throw new Predis_ClientException("Cannot register '$command' as it is not a valid Redis command");
+            throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
 
         if (is_array($aliases)) {
@@ -873,8 +1284,8 @@ abstract class Predis_RedisServerProfile {
     }
 }
 
-class Predis_RedisServer_v1_0 extends Predis_RedisServerProfile {
-    public function getVersion() { return '1.0'; }
+class Predis_RedisServer_v1_2 extends Predis_RedisServerProfile {
+    public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array(
             /* miscellaneous commands */
@@ -889,6 +1300,10 @@ class Predis_RedisServer_v1_0 extends Predis_RedisServerProfile {
             'set'                     => 'Predis_Commands_Set',
             'setnx'                   => 'Predis_Commands_SetPreserve',
                 'setPreserve'         => 'Predis_Commands_SetPreserve',
+            'mset'                    => 'Predis_Commands_SetMultiple',
+                'setMultiple'         => 'Predis_Commands_SetMultiple',
+            'msetnx'                  => 'Predis_Commands_SetMultiplePreserve',
+                'setMultiplePreserve' => 'Predis_Commands_SetMultiplePreserve',
             'get'                     => 'Predis_Commands_Get',
             'mget'                    => 'Predis_Commands_GetMultiple',
                 'getMultiple'         => 'Predis_Commands_GetMultiple',
@@ -943,6 +1358,8 @@ class Predis_RedisServer_v1_0 extends Predis_RedisServerProfile {
                 'popFirst'     => 'Predis_Commands_ListPopFirst',
             'rpop'             => 'Predis_Commands_ListPopLast',
                 'popLast'      => 'Predis_Commands_ListPopLast',
+            'rpoplpush'        => 'Predis_Commands_ListPopLastPushHead',
+                'listPopLastPushHead'  => 'Predis_Commands_ListPopLastPushHead',
 
             /* commands operating on sets */
             'sadd'                      => 'Predis_Commands_SetAdd', 
@@ -974,6 +1391,26 @@ class Predis_RedisServer_v1_0 extends Predis_RedisServerProfile {
             'srandmember'               => 'Predis_Commands_SetRandomMember', 
                 'setRandomMember'       => 'Predis_Commands_SetRandomMember',
 
+            /* commands operating on sorted sets */
+            'zadd'                          => 'Predis_Commands_ZSetAdd',
+                'zsetAdd'                   => 'Predis_Commands_ZSetAdd',
+            'zincrby'                       => 'Predis_Commands_ZSetIncrementBy',
+                'zsetIncrementBy'           => 'Predis_Commands_ZSetIncrementBy',
+            'zrem'                          => 'Predis_Commands_ZSetRemove',
+                'zsetRemove'                => 'Predis_Commands_ZSetRemove',
+            'zrange'                        => 'Predis_Commands_ZSetRange',
+                'zsetRange'                 => 'Predis_Commands_ZSetRange',
+            'zrevrange'                     => 'Predis_Commands_ZSetReverseRange',
+                'zsetReverseRange'          => 'Predis_Commands_ZSetReverseRange',
+            'zrangebyscore'                 => 'Predis_Commands_ZSetRangeByScore',
+                'zsetRangeByScore'          => 'Predis_Commands_ZSetRangeByScore',
+            'zcard'                         => 'Predis_Commands_ZSetCardinality',
+                'zsetCardinality'           => 'Predis_Commands_ZSetCardinality',
+            'zscore'                        => 'Predis_Commands_ZSetScore',
+                'zsetScore'                 => 'Predis_Commands_ZSetScore',
+            'zremrangebyscore'              => 'Predis_Commands_ZSetRemoveRangeByScore',
+                'zsetRemoveRangeByScore'    => 'Predis_Commands_ZSetRemoveRangeByScore',
+
             /* multiple databases handling commands */
             'select'                => 'Predis_Commands_SelectDatabase', 
                 'selectDatabase'    => 'Predis_Commands_SelectDatabase',
@@ -999,105 +1436,191 @@ class Predis_RedisServer_v1_0 extends Predis_RedisServerProfile {
             'lastsave'              => 'Predis_Commands_LastSave', 
                 'lastSave'          => 'Predis_Commands_LastSave',
             'shutdown'              => 'Predis_Commands_Shutdown',
+            'bgrewriteaof'                      =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
+            'backgroundRewriteAppendOnlyFile'   =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
         );
     }
 }
 
-class Predis_RedisServer_v1_2 extends Predis_RedisServer_v1_0 {
-    public function getVersion() { return '1.2'; }
+class Predis_RedisServer_v2_0 extends Predis_RedisServer_v1_2 {
+    public function getVersion() { return '2.0'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
+            /* transactions */
+            'multi'                     => 'Predis_Commands_Multi',
+            'exec'                      => 'Predis_Commands_Exec',
+            'discard'                   => 'Predis_Commands_Discard',
+
             /* commands operating on string values */
-            'mset'                    => 'Predis_Commands_SetMultiple',
-                'setMultiple'         => 'Predis_Commands_SetMultiple',
-            'msetnx'                  => 'Predis_Commands_SetMultiplePreserve',
-                'setMultiplePreserve' => 'Predis_Commands_SetMultiplePreserve',
-
-            /* commands operating on lists */
-            'rpoplpush'        => 'Predis_Commands_ListPushTailPopFirst',
-                'listPopLastPushHead'  => 'Predis_Commands_ListPopLastPushHead',
-
-            /* commands operating on sorted sets */
-            'zadd'                          => 'Predis_Commands_ZSetAdd',
-                'zsetAdd'                   => 'Predis_Commands_ZSetAdd',
-            'zincrby'                       => 'Predis_Commands_ZSetIncrementBy',
-                'zsetIncrementBy'           => 'Predis_Commands_ZSetIncrementBy',
-            'zrem'                          => 'Predis_Commands_ZSetRemove',
-                'zsetRemove'                => 'Predis_Commands_ZSetRemove',
-            'zrange'                        => 'Predis_Commands_ZSetRange',
-                'zsetRange'                 => 'Predis_Commands_ZSetRange',
-            'zrevrange'                     => 'Predis_Commands_ZSetReverseRange',
-                'zsetReverseRange'          => 'Predis_Commands_ZSetReverseRange',
-            'zrangebyscore'                 => 'Predis_Commands_ZSetRangeByScore',
-                'zsetRangeByScore'          => 'Predis_Commands_ZSetRangeByScore',
-            'zcard'                         => 'Predis_Commands_ZSetCardinality',
-                'zsetCardinality'           => 'Predis_Commands_ZSetCardinality',
-            'zscore'                        => 'Predis_Commands_ZSetScore',
-                'zsetScore'                 => 'Predis_Commands_ZSetScore',
-            'zremrangebyscore'              => 'Predis_Commands_ZSetRemoveRangeByScore',
-                'zsetRemoveRangeByScore'    => 'Predis_Commands_ZSetRemoveRangeByScore',
-
-            /* persistence control commands */
-            'bgrewriteaof'                      =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
-            'backgroundRewriteAppendOnlyFile'   =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
-        ));
-    }
-}
-
-class Predis_RedisServer_vNext extends Predis_RedisServer_v1_2 {
-    public function getVersion() { return '1.3'; }
-    public function getSupportedCommands() {
-        return array_merge(parent::getSupportedCommands(), array(
-            /* miscellaneous commands */
-            'multi'     => 'Predis_Commands_Multi',
-            'exec'      => 'Predis_Commands_Exec',
+            'setex'                     => 'Predis_Commands_SetExpire',
+                'setExpire'             => 'Predis_Commands_SetExpire',
+            'append'                    => 'Predis_Commands_Append',
+            'substr'                    => 'Predis_Commands_Substr',
 
             /* commands operating on lists */
             'blpop'                     => 'Predis_Commands_ListPopFirstBlocking',
                 'popFirstBlocking'      => 'Predis_Commands_ListPopFirstBlocking',
             'brpop'                     => 'Predis_Commands_ListPopLastBlocking',
                 'popLastBlocking'       => 'Predis_Commands_ListPopLastBlocking',
+
+            /* commands operating on sorted sets */
+            'zunionstore'               => 'Predis_Commands_ZSetUnionStore',
+                'zsetUnionStore'        => 'Predis_Commands_ZSetUnionStore',
+            'zinterstore'               => 'Predis_Commands_ZSetIntersectionStore',
+                'zsetIntersectionStore' => 'Predis_Commands_ZSetIntersectionStore',
+            'zcount'                    => 'Predis_Commands_ZSetCount',
+                'zsetCount'             => 'Predis_Commands_ZSetCount',
+            'zrank'                     => 'Predis_Commands_ZSetRank',
+                'zsetRank'              => 'Predis_Commands_ZSetRank',
+            'zrevrank'                  => 'Predis_Commands_ZSetReverseRank',
+                'zsetReverseRank'       => 'Predis_Commands_ZSetReverseRank',
+            'zremrangebyrank'           => 'Predis_Commands_ZSetRemoveRangeByRank',
+                'zsetRemoveRangeByRank' => 'Predis_Commands_ZSetRemoveRangeByRank',
+
+            /* commands operating on hashes */
+            'hset'                      => 'Predis_Commands_HashSet',
+                'hashSet'               => 'Predis_Commands_HashSet',
+            'hsetnx'                    => 'Predis_Commands_HashSetPreserve',
+                'hashSetPreserve'       => 'Predis_Commands_HashSetPreserve',
+            'hmset'                     => 'Predis_Commands_HashSetMultiple',
+                'hashSetMultiple'       => 'Predis_Commands_HashSetMultiple',
+            'hincrby'                   => 'Predis_Commands_HashIncrementBy',
+                'hashIncrementBy'       => 'Predis_Commands_HashIncrementBy',
+            'hget'                      => 'Predis_Commands_HashGet',
+                'hashGet'               => 'Predis_Commands_HashGet',
+            'hmget'                     => 'Predis_Commands_HashGetMultiple',
+                'hashGetMultiple'       => 'Predis_Commands_HashGetMultiple',
+            'hdel'                      => 'Predis_Commands_HashDelete',
+                'hashDelete'            => 'Predis_Commands_HashDelete',
+            'hexists'                   => 'Predis_Commands_HashExists',
+                'hashExists'            => 'Predis_Commands_HashExists',
+            'hlen'                      => 'Predis_Commands_HashLength',
+                'hashLength'            => 'Predis_Commands_HashLength',
+            'hkeys'                     => 'Predis_Commands_HashKeys',
+                'hashKeys'              => 'Predis_Commands_HashKeys',
+            'hvals'                     => 'Predis_Commands_HashValues',
+                'hashValues'            => 'Predis_Commands_HashValues',
+            'hgetall'                   => 'Predis_Commands_HashGetAll',
+                'hashGetAll'            => 'Predis_Commands_HashGetAll',
+
+            /* publish - subscribe */
+            'subscribe'                 => 'Predis_Commands_Subscribe',
+            'unsubscribe'               => 'Predis_Commands_Unsubscribe',
+            'psubscribe'                => 'Predis_Commands_SubscribeByPattern',
+            'punsubscribe'              => 'Predis_Commands_UnsubscribeByPattern',
+            'publish'                   => 'Predis_Commands_Publish',
+
+            /* remote server control commands */
+            'config'                    => 'Predis_Commands_Config',
+                'configuration'         => 'Predis_Commands_Config',
         ));
     }
 }
 
+class Predis_RedisServer_vNext extends Predis_RedisServer_v2_0 {
+    public function getVersion() { return '2.1'; }
+}
+
 /* ------------------------------------------------------------------------- */
 
-class Utilities_HashRing {
+class Predis_Utilities_Shared {
+    public static function onCommunicationException(Predis_CommunicationException $exception) {
+        if ($exception->shouldResetConnection()) {
+            $connection = $exception->getConnection();
+            if ($connection->isConnected()) {
+                $connection->disconnect();
+            }
+        }
+        throw $exception;
+    }
+}
+
+class Predis_Utilities_HashRing implements Predis_IDistributionAlgorithm {
     const DEFAULT_REPLICAS = 128;
-    private $_ring, $_ringKeys, $_replicas;
+    const DEFAULT_WEIGHT   = 100;
+    private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
         $this->_replicas = $replicas;
-        $this->_ring     = array();
-        $this->_ringKeys = array();
+        $this->_nodes    = array();
     }
 
-    public function add($node) {
-        $nodeHash = (string) $node;
-        $replicas = $this->_replicas;
-        for ($i = 0; $i < $replicas; $i++) {
-            $key = crc32($nodeHash . ':' . $i);
-            $this->_ring[$key] = $node;
-        }
-        ksort($this->_ring, SORT_NUMERIC);
-        $this->_ringKeys = array_keys($this->_ring);
+    public function add($node, $weight = null) {
+        // NOTE: in case of collisions in the hashes of the nodes, the node added
+        //       last wins, thus the order in which nodes are added is significant.
+        // TODO: self::DEFAULT_WEIGHT does not work for inherited classes that 
+        //       override the DEFAULT_WEIGHT constant.
+        $this->_nodes[] = array(
+            'object' => $node, 
+            'weight' => (int) ($weight !== null ? $weight : self::DEFAULT_WEIGHT), 
+        );
+        $this->reset();
     }
 
     public function remove($node) {
-        $nodeHash = (string) $node;
-        $replicas = $this->_replicas;
-        for ($i = 0; $i < $replicas; $i++) {
-            $key = crc32($nodeHash . ':' . $i);
-            unset($this->_ring[$key]);
-            $newRing = array();
-            foreach ($this->_ringKeys as $rk) {
-                if ($rk !== $key) {
-                    $newRing[] = $rk;
-                }
+        // NOTE: a node is removed by resetting the ring so that it's recreated from 
+        //       scratch, in order to reassign possible hashes with collisions to the 
+        //       right node according to the order in which they were added in the 
+        //       first place.
+        for ($i = 0; $i < count($this->_nodes); ++$i) {
+            if ($this->_nodes[$i]['object'] === $node) {
+                array_splice($this->_nodes, $i, 1);
+                $this->reset();
+                break;
             }
-            $this->_ringKeys = $newRing;
         }
+    }
+
+    private function reset() {
+        unset($this->_ring);
+        unset($this->_ringKeys);
+        unset($this->_ringKeysCount);
+    }
+
+    private function isInitialized() {
+        return isset($this->_ringKeys);
+    }
+
+    private function computeTotalWeight() {
+        $totalWeight = 0;
+        foreach ($this->_nodes as $node) {
+            $totalWeight += $node['weight'];
+        }
+        return $totalWeight;
+    }
+
+    private function initialize() {
+        if ($this->isInitialized()) {
+            return;
+        }
+        if (count($this->_nodes) === 0) {
+            throw new LogicException('Cannot initialize empty hashring');
+        }
+
+        $this->_ring = array();
+        $totalWeight = $this->computeTotalWeight();
+        $nodesCount  = count($this->_nodes);
+        foreach ($this->_nodes as $node) {
+            $weightRatio = $node['weight'] / $totalWeight;
+            $this->addNodeToRing($this->_ring, $node, $nodesCount, $this->_replicas, $weightRatio);
+        }
+        ksort($this->_ring, SORT_NUMERIC);
+        $this->_ringKeys = array_keys($this->_ring);
+        $this->_ringKeysCount = count($this->_ringKeys);
+    }
+
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
+        $nodeObject = $node['object'];
+        $nodeHash = (string) $nodeObject;
+        $replicas = (int) round($weightRatio * $totalNodes * $replicas);
+        for ($i = 0; $i < $replicas; $i++) {
+            $key = crc32("$nodeHash:$i");
+            $ring[$key] = $nodeObject;
+        }
+    }
+
+    public function generateKey($value) {
+        return crc32($value);
     }
 
     public function get($key) {
@@ -1105,14 +1628,13 @@ class Utilities_HashRing {
     }
 
     private function getNodeKey($key) {
+        $this->initialize();
         $ringKeys = $this->_ringKeys;
-
-        $upper = count($ringKeys) - 1;
+        $upper = $this->_ringKeysCount - 1;
         $lower = 0;
-        $index = 0;
 
         while ($lower <= $upper) {
-            $index = ($lower + $upper) / 2;
+            $index = ($lower + $upper) >> 1;
             $item  = $ringKeys[$index];
             if ($item > $key) {
                 $upper = $index - 1;
@@ -1121,17 +1643,147 @@ class Utilities_HashRing {
                 $lower = $index + 1;
             }
             else {
-                return $index;
+                return $item;
             }
         }
-        return $ringKeys[$upper];
+        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->_ringKeysCount)];
+    }
+
+    protected function wrapAroundStrategy($upper, $lower, $ringKeysCount) {
+        // NOTE: binary search for the last item in _ringkeys with a value 
+        //       less or equal to the key. If no such item exists, return the 
+        //       last item.
+        return $upper >= 0 ? $upper : $ringKeysCount - 1;
+    }
+}
+
+class Predis_Utilities_KetamaPureRing extends Predis_Utilities_HashRing {
+    const DEFAULT_REPLICAS = 160;
+
+    public function __construct() {
+        parent::__construct(self::DEFAULT_REPLICAS);
+    }
+
+    protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
+        $nodeObject = $node['object'];
+        $nodeHash = (string) $nodeObject;
+        $replicas = (int) floor($weightRatio * $totalNodes * ($replicas / 4));
+        for ($i = 0; $i < $replicas; $i++) {
+            $unpackedDigest = unpack('V4', md5("$nodeHash-$i", true));
+            foreach ($unpackedDigest as $key) {
+                $ring[$key] = $nodeObject;
+            }
+        }
+    }
+
+    public function generateKey($value) {
+        $hash = unpack('V', md5($value, true));
+        return $hash[1];
+    }
+
+    protected function wrapAroundStrategy($upper, $lower, $ringKeysCount) {
+        // NOTE: binary search for the first item in _ringkeys with a value 
+        //       greater or equal to the key. If no such item exists, return the 
+        //       first item.
+        return $lower < $ringKeysCount ? $lower : 0;
+    }
+}
+
+abstract class Predis_Utilities_MultiBulkResponseIteratorBase implements Iterator, Countable {
+    protected $_position, $_current, $_replySize;
+
+    public function rewind() {
+        // NOOP
+    }
+
+    public function current() {
+        return $this->_current;
+    }
+
+    public function key() {
+        return $this->_position;
+    }
+
+    public function next() {
+        if (++$this->_position < $this->_replySize) {
+            $this->_current = $this->getValue();
+        }
+        return $this->_position;
+    }
+
+    public function valid() {
+        return $this->_position < $this->_replySize;
+    }
+
+    public function count() {
+        // NOTE: use count if you want to get the size of the current multi-bulk 
+        //       response without using iterator_count (which actually consumes 
+        //       our iterator to calculate the size, and we cannot perform a rewind)
+        return $this->_replySize;
+    }
+
+    protected abstract function getValue();
+}
+
+class Predis_Utilities_MultiBulkResponseIterator extends Predis_Utilities_MultiBulkResponseIteratorBase {
+    private $_connection;
+
+    public function __construct(Predis_Connection $connection, $size) {
+        $this->_connection = $connection;
+        $this->_reader     = $connection->getResponseReader();
+        $this->_position   = 0;
+        $this->_current    = $size > 0 ? $this->getValue() : null;
+        $this->_replySize  = $size;
+    }
+
+    public function __destruct() {
+        // when the iterator is garbage-collected (e.g. it goes out of the
+        // scope of a foreach) but it has not reached its end, we must sync
+        // the client with the queued elements that have not been read from
+        // the connection with the server.
+        $this->sync();
+    }
+
+    public function sync() {
+        while ($this->valid()) {
+            $this->next();
+        }
+    }
+
+    protected function getValue() {
+        return $this->_reader->read($this->_connection);
+    }
+}
+
+class Predis_Utilities_MultiBulkResponseKVIterator extends Predis_Utilities_MultiBulkResponseIteratorBase {
+    private $_iterator;
+
+    public function __construct(Predis_Utilities_MultiBulkResponseIterator $iterator) {
+        $virtualSize = count($iterator) / 2;
+
+        $this->_iterator   = $iterator;
+        $this->_position   = 0;
+        $this->_current    = $virtualSize > 0 ? $this->getValue() : null;
+        $this->_replySize  = $virtualSize;
+    }
+
+    public function __destruct() {
+        $this->_iterator->sync();
+    }
+
+    protected function getValue() {
+        $k = $this->_iterator->current();
+        $this->_iterator->next();
+        $v = $this->_iterator->current();
+        $this->_iterator->next();
+        return array($k, $v);
     }
 }
 
 /* ------------------------------------------------------------------------- */
 
 /* miscellaneous commands */
-class Predis_Commands_Ping extends  Predis_InlineCommand {
+class Predis_Commands_Ping extends  Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PING'; }
     public function parseResponse($data) {
@@ -1139,29 +1791,33 @@ class Predis_Commands_Ping extends  Predis_InlineCommand {
     }
 }
 
-class Predis_Commands_DoEcho extends Predis_BulkCommand {
+class Predis_Commands_DoEcho extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'ECHO'; }
 }
 
-class Predis_Commands_Auth extends Predis_InlineCommand {
+class Predis_Commands_Auth extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'AUTH'; }
 }
 
 /* connection handling */
-class Predis_Commands_Quit extends Predis_InlineCommand {
+class Predis_Commands_Quit extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'QUIT'; }
     public function closesConnection() { return true; }
 }
 
 /* commands operating on string values */
-class Predis_Commands_Set extends Predis_BulkCommand {
+class Predis_Commands_Set extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SET'; }
 }
 
-class Predis_Commands_SetPreserve extends Predis_BulkCommand {
+class Predis_Commands_SetExpire extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'SETEX'; }
+}
+
+class Predis_Commands_SetPreserve extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SETNX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
@@ -1169,243 +1825,299 @@ class Predis_Commands_SetPreserve extends Predis_BulkCommand {
 class Predis_Commands_SetMultiple extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MSET'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            $flattenedKVs = array();
+            $args = &$arguments[0];
+            foreach ($args as $k => $v) {
+                $flattenedKVs[] = $k;
+                $flattenedKVs[] = $v;
+            }
+            return $flattenedKVs;
+        }
+        return $arguments;
+    }
 }
 
-class Predis_Commands_SetMultiplePreserve extends Predis_MultiBulkCommand {
+class Predis_Commands_SetMultiplePreserve extends Predis_Commands_SetMultiple {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MSETNX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_Get extends Predis_InlineCommand {
+class Predis_Commands_Get extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'GET'; }
 }
 
-class Predis_Commands_GetMultiple extends Predis_InlineCommand {
+class Predis_Commands_GetMultiple extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MGET'; }
 }
 
-class Predis_Commands_GetSet extends Predis_BulkCommand {
+class Predis_Commands_GetSet extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'GETSET'; }
 }
 
-class Predis_Commands_Increment extends Predis_InlineCommand {
+class Predis_Commands_Increment extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'INCR'; }
 }
 
-class Predis_Commands_IncrementBy extends Predis_InlineCommand {
+class Predis_Commands_IncrementBy extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'INCRBY'; }
 }
 
-class Predis_Commands_Decrement extends Predis_InlineCommand {
+class Predis_Commands_Decrement extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'DECR'; }
 }
 
-class Predis_Commands_DecrementBy extends Predis_InlineCommand {
+class Predis_Commands_DecrementBy extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'DECRBY'; }
 }
 
-class Predis_Commands_Exists extends Predis_InlineCommand {
+class Predis_Commands_Exists extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'EXISTS'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_Delete extends Predis_InlineCommand {
+class Predis_Commands_Delete extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'DEL'; }
-    public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_Type extends Predis_InlineCommand {
+class Predis_Commands_Type extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'TYPE'; }
 }
 
+class Predis_Commands_Append extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'APPEND'; }
+}
+
+class Predis_Commands_Substr extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'SUBSTR'; }
+}
+
 /* commands operating on the key space */
-class Predis_Commands_Keys extends Predis_InlineCommand {
+class Predis_Commands_Keys extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'KEYS'; }
     public function parseResponse($data) { 
         // TODO: is this behaviour correct?
+        if (is_array($data) || $data instanceof Iterator) {
+            return $data;
+        }
         return strlen($data) > 0 ? explode(' ', $data) : array();
     }
 }
 
-class Predis_Commands_RandomKey extends Predis_InlineCommand {
+class Predis_Commands_RandomKey extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RANDOMKEY'; }
     public function parseResponse($data) { return $data !== '' ? $data : null; }
 }
 
-class Predis_Commands_Rename extends Predis_InlineCommand {
+class Predis_Commands_Rename extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RENAME'; }
 }
 
-class Predis_Commands_RenamePreserve extends Predis_InlineCommand {
+class Predis_Commands_RenamePreserve extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RENAMENX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_Expire extends Predis_InlineCommand {
+class Predis_Commands_Expire extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'EXPIRE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_ExpireAt extends Predis_InlineCommand {
+class Predis_Commands_ExpireAt extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'EXPIREAT'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_DatabaseSize extends Predis_InlineCommand {
+class Predis_Commands_DatabaseSize extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DBSIZE'; }
 }
 
-class Predis_Commands_TimeToLive extends Predis_InlineCommand {
+class Predis_Commands_TimeToLive extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'TTL'; }
 }
 
 /* commands operating on lists */
-class Predis_Commands_ListPushTail extends Predis_BulkCommand {
+class Predis_Commands_ListPushTail extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'RPUSH'; }
 }
 
-class Predis_Commands_ListPushHead extends Predis_BulkCommand {
+class Predis_Commands_ListPushHead extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LPUSH'; }
 }
 
-class Predis_Commands_ListLength extends Predis_InlineCommand {
+class Predis_Commands_ListLength extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LLEN'; }
 }
 
-class Predis_Commands_ListRange extends Predis_InlineCommand {
+class Predis_Commands_ListRange extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LRANGE'; }
 }
 
-class Predis_Commands_ListTrim extends Predis_InlineCommand {
+class Predis_Commands_ListTrim extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LTRIM'; }
 }
 
-class Predis_Commands_ListIndex extends Predis_InlineCommand {
+class Predis_Commands_ListIndex extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LINDEX'; }
 }
 
-class Predis_Commands_ListSet extends Predis_BulkCommand {
+class Predis_Commands_ListSet extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LSET'; }
 }
 
-class Predis_Commands_ListRemove extends Predis_BulkCommand {
+class Predis_Commands_ListRemove extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LREM'; }
 }
 
-class Predis_Commands_ListPopLastPushHead extends Predis_InlineCommand {
+class Predis_Commands_ListPopLastPushHead extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class Predis_Commands_ListPopLastPushHeadBulk extends Predis_BulkCommand {
+class Predis_Commands_ListPopLastPushHeadBulk extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class Predis_Commands_ListPopFirst extends Predis_InlineCommand {
+class Predis_Commands_ListPopFirst extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LPOP'; }
 }
 
-class Predis_Commands_ListPopLast extends Predis_InlineCommand {
+class Predis_Commands_ListPopLast extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'RPOP'; }
 }
 
-class Predis_Commands_ListPopFirstBlocking extends Predis_InlineCommand {
+class Predis_Commands_ListPopFirstBlocking extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'BLPOP'; }
 }
 
-class Predis_Commands_ListPopLastBlocking extends Predis_InlineCommand {
+class Predis_Commands_ListPopLastBlocking extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'BRPOP'; }
 }
 
 /* commands operating on sets */
-class Predis_Commands_SetAdd extends Predis_BulkCommand {
+class Predis_Commands_SetAdd extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SADD'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_SetRemove extends Predis_BulkCommand {
+class Predis_Commands_SetRemove extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SREM'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_SetPop  extends Predis_InlineCommand {
+class Predis_Commands_SetPop  extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SPOP'; }
 }
 
-class Predis_Commands_SetMove extends Predis_BulkCommand {
+class Predis_Commands_SetMove extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SMOVE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_SetCardinality extends Predis_InlineCommand {
+class Predis_Commands_SetCardinality extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SCARD'; }
 }
 
-class Predis_Commands_SetIsMember extends Predis_BulkCommand {
+class Predis_Commands_SetIsMember extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SISMEMBER'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_SetIntersection extends Predis_InlineCommand {
+class Predis_Commands_SetIntersection extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SINTER'; }
 }
 
-class Predis_Commands_SetIntersectionStore extends Predis_InlineCommand {
+class Predis_Commands_SetIntersectionStore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SINTERSTORE'; }
 }
 
-class Predis_Commands_SetUnion extends Predis_InlineCommand {
+class Predis_Commands_SetUnion extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SUNION'; }
 }
 
-class Predis_Commands_SetUnionStore extends Predis_InlineCommand {
+class Predis_Commands_SetUnionStore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SUNIONSTORE'; }
 }
 
-class Predis_Commands_SetDifference extends Predis_InlineCommand {
+class Predis_Commands_SetDifference extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SDIFF'; }
 }
 
-class Predis_Commands_SetDifferenceStore extends Predis_InlineCommand {
+class Predis_Commands_SetDifferenceStore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SDIFFSTORE'; }
 }
 
-class Predis_Commands_SetMembers extends Predis_InlineCommand {
+class Predis_Commands_SetMembers extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SMEMBERS'; }
 }
 
-class Predis_Commands_SetRandomMember extends Predis_InlineCommand {
+class Predis_Commands_SetRandomMember extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SRANDMEMBER'; }
 }
 
 /* commands operating on sorted sets */
-class Predis_Commands_ZSetAdd extends Predis_BulkCommand {
+class Predis_Commands_ZSetAdd extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZADD'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_ZSetIncrementBy extends Predis_BulkCommand {
+class Predis_Commands_ZSetIncrementBy extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZINCRBY'; }
 }
 
-class Predis_Commands_ZSetRemove extends Predis_BulkCommand {
+class Predis_Commands_ZSetRemove extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZREM'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_ZSetRange extends Predis_InlineCommand {
+class Predis_Commands_ZSetUnionStore extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'ZUNIONSTORE'; }
+    public function filterArguments(Array $arguments) {
+        $options = array();
+        $argc    = count($arguments);
+        if ($argc > 1 && is_array($arguments[$argc - 1])) {
+            $options = $this->prepareOptions(array_pop($arguments));
+        }
+        $args = is_array($arguments[0]) ? $arguments[0] : $arguments;
+        return  array_merge($args, $options);
+    }
+    private function prepareOptions($options) {
+        $opts = array_change_key_case($options, CASE_UPPER);
+        $finalizedOpts = array();
+        if (isset($opts['WEIGHTS']) && is_array($opts['WEIGHTS'])) {
+            $finalizedOpts[] = 'WEIGHTS';
+            $finalizedOpts[] = $opts['WEIGHTS'][0];
+            $finalizedOpts[] = $opts['WEIGHTS'][1];
+        }
+        if (isset($opts['AGGREGATE'])) {
+            $finalizedOpts[] = 'AGGREGATE';
+            $finalizedOpts[] = $opts['AGGREGATE'];
+        }
+        return $finalizedOpts;
+    }
+}
+
+class Predis_Commands_ZSetIntersectionStore extends Predis_Commands_ZSetUnionStore {
+    public function getCommandId() { return 'ZINTERSTORE'; }
+}
+
+class Predis_Commands_ZSetRange extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZRANGE'; }
     public function parseResponse($data) {
         $arguments = $this->getArguments();
         if (count($arguments) === 4) {
             if (strtolower($arguments[3]) === 'withscores') {
+                if ($data instanceof Iterator) {
+                    return new Predis_Utilities_MultiBulkResponseKVIterator($data);
+                }
                 $result = array();
                 for ($i = 0; $i < count($data); $i++) {
                     $result[] = array($data[$i], $data[++$i]);
@@ -1421,46 +2133,148 @@ class Predis_Commands_ZSetReverseRange extends Predis_Commands_ZSetRange {
     public function getCommandId() { return 'ZREVRANGE'; }
 }
 
-class Predis_Commands_ZSetRangeByScore extends Predis_InlineCommand {
+class Predis_Commands_ZSetRangeByScore extends Predis_Commands_ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
 }
 
-class Predis_Commands_ZSetCardinality extends Predis_InlineCommand {
+class Predis_Commands_ZSetCount extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'ZCOUNT'; }
+}
+
+class Predis_Commands_ZSetCardinality extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZCARD'; }
 }
 
-class Predis_Commands_ZSetScore extends Predis_BulkCommand {
+class Predis_Commands_ZSetScore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZSCORE'; }
 }
 
-class Predis_Commands_ZSetRemoveRangeByScore extends Predis_InlineCommand {
+class Predis_Commands_ZSetRemoveRangeByScore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZREMRANGEBYSCORE'; }
 }
 
+class Predis_Commands_ZSetRank extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'ZRANK'; }
+}
+
+class Predis_Commands_ZSetReverseRank extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'ZREVRANK'; }
+}
+
+class Predis_Commands_ZSetRemoveRangeByRank extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'ZREMRANGEBYRANK'; }
+}
+
+/* commands operating on hashes */
+class Predis_Commands_HashSet extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HSET'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Predis_Commands_HashSetPreserve extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HSETNX'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Predis_Commands_HashSetMultiple extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HMSET'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattenedKVs = array($arguments[0]);
+            $args = &$arguments[1];
+            foreach ($args as $k => $v) {
+                $flattenedKVs[] = $k;
+                $flattenedKVs[] = $v;
+            }
+            return $flattenedKVs;
+        }
+        return $arguments;
+    }
+}
+
+class Predis_Commands_HashIncrementBy extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HINCRBY'; }
+}
+
+class Predis_Commands_HashGet extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HGET'; }
+}
+
+class Predis_Commands_HashGetMultiple extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HMGET'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattenedKVs = array($arguments[0]);
+            $args = &$arguments[1];
+            foreach ($args as $v) {
+                $flattenedKVs[] = $v;
+            }
+            return $flattenedKVs;
+        }
+        return $arguments;
+    }
+}
+
+class Predis_Commands_HashDelete extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HDEL'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Predis_Commands_HashExists extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HEXISTS'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Predis_Commands_HashLength extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HLEN'; }
+}
+
+class Predis_Commands_HashKeys extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HKEYS'; }
+}
+
+class Predis_Commands_HashValues extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HVALS'; }
+}
+
+class Predis_Commands_HashGetAll extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'HGETALL'; }
+    public function parseResponse($data) {
+        if ($data instanceof Iterator) {
+            return new Predis_Utilities_MultiBulkResponseKVIterator($data);
+        }
+        $result = array();
+        for ($i = 0; $i < count($data); $i++) {
+            $result[$data[$i]] = $data[++$i];
+        }
+        return $result;
+    }
+}
+
 /* multiple databases handling commands */
-class Predis_Commands_SelectDatabase extends Predis_InlineCommand {
+class Predis_Commands_SelectDatabase extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SELECT'; }
 }
 
-class Predis_Commands_MoveKey extends Predis_InlineCommand {
+class Predis_Commands_MoveKey extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MOVE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Predis_Commands_FlushDatabase extends Predis_InlineCommand {
+class Predis_Commands_FlushDatabase extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'FLUSHDB'; }
 }
 
-class Predis_Commands_FlushAll extends Predis_InlineCommand {
+class Predis_Commands_FlushAll extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'FLUSHALL'; }
 }
 
 /* sorting */
-class Predis_Commands_Sort extends Predis_InlineCommand {
+class Predis_Commands_Sort extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SORT'; }
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
@@ -1472,13 +2286,26 @@ class Predis_Commands_Sort extends Predis_InlineCommand {
         $sortParams = $arguments[1];
 
         if (isset($sortParams['by'])) {
-            $query[] = 'BY ' . $sortParams['by'];
+            $query[] = 'BY';
+            $query[] = $sortParams['by'];
         }
         if (isset($sortParams['get'])) {
-            $query[] = 'GET ' . $sortParams['get'];
+            $getargs = $sortParams['get'];
+            if (is_array($getargs)) {
+                foreach ($getargs as $getarg) {
+                    $query[] = 'GET';
+                    $query[] = $getarg;
+                }
+            }
+            else {
+                $query[] = 'GET';
+                $query[] = $getargs;
+            }
         }
         if (isset($sortParams['limit']) && is_array($sortParams['limit'])) {
-            $query[] = 'LIMIT ' . $sortParams['limit'][0] . ' ' . $sortParams['limit'][1];
+            $query[] = 'LIMIT';
+            $query[] = $sortParams['limit'][0];
+            $query[] = $sortParams['limit'][1];
         }
         if (isset($sortParams['sort'])) {
             $query[] = strtoupper($sortParams['sort']);
@@ -1487,20 +2314,63 @@ class Predis_Commands_Sort extends Predis_InlineCommand {
             $query[] = 'ALPHA';
         }
         if (isset($sortParams['store']) && $sortParams['store'] == true) {
-            $query[] = 'STORE ' . $sortParams['store'];
+            $query[] = 'STORE';
+            $query[] = $sortParams['store'];
         }
 
         return $query;
     }
 }
 
+/* transactions */
+class Predis_Commands_Multi extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'MULTI'; }
+}
+
+class Predis_Commands_Exec extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'EXEC'; }
+}
+
+class Predis_Commands_Discard extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'DISCARD'; }
+}
+
+/* publish/subscribe */
+class Predis_Commands_Subscribe extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'SUBSCRIBE'; }
+}
+
+class Predis_Commands_Unsubscribe extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'UNSUBSCRIBE'; }
+}
+
+class Predis_Commands_SubscribeByPattern extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PSUBSCRIBE'; }
+}
+
+class Predis_Commands_UnsubscribeByPattern extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PUNSUBSCRIBE'; }
+}
+
+class Predis_Commands_Publish extends Predis_MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'PUBLISH'; }
+}
+
 /* persistence control commands */
-class Predis_Commands_Save extends Predis_InlineCommand {
+class Predis_Commands_Save extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SAVE'; }
 }
 
-class Predis_Commands_BackgroundSave extends Predis_InlineCommand {
+class Predis_Commands_BackgroundSave extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'BGSAVE'; }
     public function parseResponse($data) {
@@ -1511,7 +2381,7 @@ class Predis_Commands_BackgroundSave extends Predis_InlineCommand {
     }
 }
 
-class Predis_Commands_BackgroundRewriteAppendOnlyFile extends Predis_InlineCommand {
+class Predis_Commands_BackgroundRewriteAppendOnlyFile extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'BGREWRITEAOF'; }
     public function parseResponse($data) {
@@ -1519,19 +2389,19 @@ class Predis_Commands_BackgroundRewriteAppendOnlyFile extends Predis_InlineComma
     }
 }
 
-class Predis_Commands_LastSave extends Predis_InlineCommand {
+class Predis_Commands_LastSave extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'LASTSAVE'; }
 }
 
-class Predis_Commands_Shutdown extends Predis_InlineCommand {
+class Predis_Commands_Shutdown extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SHUTDOWN'; }
     public function closesConnection() { return true; }
 }
 
 /* remote server control commands */
-class Predis_Commands_Info extends Predis_InlineCommand {
+class Predis_Commands_Info extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'INFO'; }
     public function parseResponse($data) {
@@ -1555,21 +2425,19 @@ class Predis_Commands_Info extends Predis_InlineCommand {
     }
 }
 
-class Predis_Commands_SlaveOf extends Predis_InlineCommand {
+class Predis_Commands_SlaveOf extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SLAVEOF'; }
     public function filterArguments(Array $arguments) {
-        return count($arguments) === 0 ? array('NO ONE') : $arguments;
+        if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
+            return array('NO', 'ONE');
+        }
+        return $arguments;
     }
 }
 
-class Predis_Commands_Multi extends Predis_InlineCommand {
+class Predis_Commands_Config extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'MULTI'; }
-}
-
-class Predis_Commands_Exec extends Predis_InlineCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'EXEC'; }
+    public function getCommandId() { return 'CONFIG'; }
 }
 ?>
