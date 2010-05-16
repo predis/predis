@@ -5,7 +5,7 @@ require_once 'PHPUnit/Framework.php';
 require_once 'PredisShared.php';
 require_once '../lib/Predis_Compatibility.php';
 
-class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
+class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
     protected function setUp() { 
@@ -16,7 +16,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     protected function tearDown() { 
     }
 
-    protected function onNotSuccessfulTest($exception) {
+    protected function onNotSuccessfulTest(Exception $exception) {
         // drops and reconnect to a redis server on uncaught exceptions
         RC::resetConnection();
         parent::onNotSuccessfulTest($exception);
