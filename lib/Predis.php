@@ -1543,6 +1543,8 @@ class Shared {
     }
 }
 
+class EmptyRingException extends \Exception { }
+
 class HashRing implements \Predis\IDistributionAlgorithm {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
@@ -1598,7 +1600,7 @@ class HashRing implements \Predis\IDistributionAlgorithm {
             return;
         }
         if (count($this->_nodes) === 0) {
-            throw new \LogicException('Cannot initialize empty hashring');
+            throw new \EmptyRingException('Cannot initialize empty hashring');
         }
 
         $this->_ring = array();
