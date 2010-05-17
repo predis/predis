@@ -711,7 +711,7 @@ class CommandPipeline {
 
     public function execute($block = null) {
         if ($block && !is_callable($block)) {
-            throw new \RuntimeException('Argument passed must be a callable object');
+            throw new \InvalidArgumentException('Argument passed must be a callable object');
         }
 
         // TODO: do not reuse previously executed pipelines
@@ -779,7 +779,7 @@ class MultiExecBlock {
 
     public function execute($block = null) {
         if ($block && !is_callable($block)) {
-            throw new \RuntimeException('Argument passed must be a callable object');
+            throw new \InvalidArgumentException('Argument passed must be a callable object');
         }
 
         $blockException = null;
