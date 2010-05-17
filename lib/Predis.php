@@ -243,12 +243,12 @@ class ClientOptionsProfile implements IClientOptionsHandler {
 
 class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     public function validate($option, $value) {
-        if ($value instanceof \Predis\IDistributionAlgorithm) {
+        if ($value instanceof \Predis\Distribution\IDistributionAlgorithm) {
             return $value;
         }
         if (is_string($value)) {
             $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\IDistributionAlgorithm')) {
+            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionAlgorithm')) {
                 return new $value;
             }
         }
@@ -256,7 +256,7 @@ class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     }
 
     public function getDefault() {
-        return new \Predis\Utilities\HashRing();
+        return new \Predis\Distribution\HashRing();
     }
 }
 
@@ -353,7 +353,7 @@ abstract class Command {
         return true;
     }
 
-    public function getHash(IDistributionAlgorithm $distributor) {
+    public function getHash(Distribution\IDistributionAlgorithm $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -921,13 +921,6 @@ class ConnectionParameters {
     }
 }
 
-interface IDistributionAlgorithm {
-    public function add($node, $weight = null);
-    public function remove($node);
-    public function get($key);
-    public function generateKey($value);
-}
-
 interface IConnection {
     public function connect();
     public function disconnect();
@@ -1108,9 +1101,9 @@ class Connection implements IConnection {
 class ConnectionCluster implements IConnection, \IteratorAggregate {
     private $_pool, $_distributor;
 
-    public function __construct(IDistributionAlgorithm $distributor = null) {
+    public function __construct(Distribution\IDistributionAlgorithm $distributor = null) {
         $this->_pool = array();
-        $this->_distributor = $distributor ?: new Utilities\HashRing();
+        $this->_distributor = $distributor ?: new Distribution\HashRing();
     }
 
     public function isConnected() {
@@ -1529,23 +1522,18 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
 /* ------------------------------------------------------------------------- */
 
-namespace Predis\Utilities;
+namespace Predis\Distribution;
 
-class Shared {
-    public static function onCommunicationException(\Predis\CommunicationException $exception) {
-        if ($exception->shouldResetConnection()) {
-            $connection = $exception->getConnection();
-            if ($connection->isConnected()) {
-                $connection->disconnect();
-            }
-        }
-        throw $exception;
-    }
+interface IDistributionAlgorithm {
+    public function add($node, $weight = null);
+    public function remove($node);
+    public function get($key);
+    public function generateKey($value);
 }
 
 class EmptyRingException extends \Exception { }
 
-class HashRing implements \Predis\IDistributionAlgorithm {
+class HashRing implements IDistributionAlgorithm {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
@@ -1692,6 +1680,22 @@ class KetamaPureRing extends HashRing {
         //       greater or equal to the key. If no such item exists, return the 
         //       first item.
         return $lower < $ringKeysCount ? $lower : 0;
+    }
+}
+
+/* ------------------------------------------------------------------------- */
+
+namespace Predis\Utilities;
+
+class Shared {
+    public static function onCommunicationException(\Predis\CommunicationException $exception) {
+        if ($exception->shouldResetConnection()) {
+            $connection = $exception->getConnection();
+            if ($connection->isConnected()) {
+                $connection->disconnect();
+            }
+        }
+        throw $exception;
     }
 }
 
