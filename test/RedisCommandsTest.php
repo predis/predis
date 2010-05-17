@@ -203,6 +203,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         $this->redis->zadd('fooZSet', 0, 'bar');
         $this->assertEquals('zset', $this->redis->type('fooZSet'));
+
+        $this->redis->hset('fooHash', 'value', 'bar');
+        $this->assertEquals('hash', $this->redis->type('fooHash'));
     }
 
     function testAppend() {
