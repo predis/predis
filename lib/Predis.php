@@ -490,7 +490,7 @@ class ResponseErrorSilentHandler implements IResponseHandler {
 class ResponseBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $dataLength) {
         if (!is_numeric($dataLength)) {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$dataLength' as data length"
             ));
         }
@@ -510,7 +510,7 @@ class ResponseBulkHandler implements IResponseHandler {
 
     private static function discardNewLine(Connection $connection) {
         if ($connection->readBytes(2) !== Protocol::NEWLINE) {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, 'Did not receive a new-line at the end of a bulk response'
             ));
         }
@@ -520,7 +520,7 @@ class ResponseBulkHandler implements IResponseHandler {
 class ResponseMultiBulkHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$rawLength' as data length"
             ));
         }
@@ -545,11 +545,11 @@ class ResponseMultiBulkHandler implements IResponseHandler {
 class ResponseMultiBulkStreamHandler implements IResponseHandler {
     public function handle(Connection $connection, $rawLength) {
         if (!is_numeric($rawLength)) {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$rawLength' as data length"
             ));
         }
-        return new Utilities\MultiBulkResponseIterator($connection, (int)$rawLength);
+        return new Shared\MultiBulkResponseIterator($connection, (int)$rawLength);
     }
 }
 
@@ -560,7 +560,7 @@ class ResponseIntegerHandler implements IResponseHandler {
         }
         else {
             if ($number !== Protocol::NULL) {
-                Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+                Shared\Utils::onCommunicationException(new MalformedServerResponse(
                     $connection, "Cannot parse '$number' as numeric response"
                 ));
             }
@@ -599,7 +599,7 @@ class ResponseReader {
     public function read(Connection $connection) {
         $header = $connection->readLine();
         if ($header === '') {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, 'Unexpected empty header'
             ));
         }
@@ -608,7 +608,7 @@ class ResponseReader {
         $payload = strlen($header) > 1 ? substr($header, 1) : '';
 
         if (!isset($this->_prefixHandlers[$prefix])) {
-            Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Unknown prefix '$prefix'"
             ));
         }
@@ -828,7 +828,7 @@ class MultiExecBlock {
         // NOTE: a MULTI/EXEC block cannot be initialized on a clustered 
         //       connection, which means that Predis\Client::getConnection 
         //       will always return an instance of Predis\Connection.
-        Utilities\Shared::onCommunicationException(new MalformedServerResponse(
+        Shared\Utils::onCommunicationException(new MalformedServerResponse(
             $this->_redisClient->getConnection(), $message
         ));
     }
@@ -1000,7 +1000,7 @@ class Connection implements IConnection {
     }
 
     private function onCommunicationException($message, $code = null) {
-        Utilities\Shared::onCommunicationException(
+        Shared\Utils::onCommunicationException(
             new CommunicationException($this, $message, $code)
         );
     }
@@ -1685,9 +1685,9 @@ class KetamaPureRing extends HashRing {
 
 /* ------------------------------------------------------------------------- */
 
-namespace Predis\Utilities;
+namespace Predis\Shared;
 
-class Shared {
+class Utils {
     public static function onCommunicationException(\Predis\CommunicationException $exception) {
         if ($exception->shouldResetConnection()) {
             $connection = $exception->getConnection();
@@ -2128,7 +2128,7 @@ class ZSetRange extends \Predis\MultiBulkCommand {
         if (count($arguments) === 4) {
             if (strtolower($arguments[3]) === 'withscores') {
                 if ($data instanceof \Iterator) {
-                    return new \Predis\Utilities\MultiBulkResponseKVIterator($data);
+                    return new \Predis\Shared\MultiBulkResponseKVIterator($data);
                 }
                 $result = array();
                 for ($i = 0; $i < count($data); $i++) {
@@ -2253,7 +2253,7 @@ class HashGetAll extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'HGETALL'; }
     public function parseResponse($data) {
         if ($data instanceof \Iterator) {
-            return new \Predis\Utilities\MultiBulkResponseKVIterator($data);
+            return new \Predis\Shared\MultiBulkResponseKVIterator($data);
         }
         $result = array();
         for ($i = 0; $i < count($data); $i++) {
