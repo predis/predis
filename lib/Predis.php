@@ -668,7 +668,7 @@ class ResponseQueued {
 class CommandPipeline {
     private $_redisClient, $_pipelineBuffer, $_returnValues, $_running, $_executor;
 
-    public function __construct(Client $redisClient, Pipeline\IExecutor $executor = null) {
+    public function __construct(Client $redisClient, Pipeline\IPipelineExecutor $executor = null) {
         $this->_redisClient    = $redisClient;
         $this->_executor       = $executor ?: new Pipeline\StandardExecutor();
         $this->_pipelineBuffer = array();
@@ -1529,11 +1529,11 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
 namespace Predis\Pipeline;
 
-interface IExecutor {
+interface IPipelineExecutor {
     public function execute(\Predis\IConnection $connection, &$commands);
 }
 
-class StandardExecutor implements IExecutor {
+class StandardExecutor implements IPipelineExecutor {
     public function execute(\Predis\IConnection $connection, &$commands) {
         $sizeofPipe = count($commands);
         $values = array();
@@ -1553,7 +1553,7 @@ class StandardExecutor implements IExecutor {
     }
 }
 
-class SafeExecutor implements IExecutor {
+class SafeExecutor implements IPipelineExecutor {
     public function execute(\Predis\IConnection $connection, &$commands) {
         $firstServerException = null;
         $sizeofPipe = count($commands);
@@ -1595,7 +1595,7 @@ class SafeExecutor implements IExecutor {
     }
 }
 
-class SafeClusterExecutor implements IExecutor {
+class SafeClusterExecutor implements IPipelineExecutor {
     public function execute(\Predis\IConnection $connection, &$commands) {
         $connectionExceptions = array();
         $sizeofPipe = count($commands);
