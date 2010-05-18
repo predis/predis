@@ -1588,7 +1588,7 @@ class HashRing implements IDistributionAlgorithm {
             return;
         }
         if (count($this->_nodes) === 0) {
-            throw new \EmptyRingException('Cannot initialize empty hashring');
+            throw new EmptyRingException('Cannot initialize empty hashring');
         }
 
         $this->_ring = array();
