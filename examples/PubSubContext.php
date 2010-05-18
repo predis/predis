@@ -15,7 +15,7 @@ $pubsub->subscribe('notifications');
 // to push messages to the channels. Examples:
 //   ./redis-cli PUBLISH notifications "this is a test"
 //   ./redis-cli PUBLISH control_channel quit_loop
-foreach ($pubsub as $i => $message) {
+foreach ($pubsub as $message) {
     switch ($message->kind) {
         case 'subscribe':
             echo "Subscribed to {$message->channel}\n";
