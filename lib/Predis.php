@@ -216,6 +216,10 @@ class Client {
         $multiExec = new MultiExecBlock($this);
         return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
     }
+
+    public function pubSubContext() {
+        return new PubSubContext($this);
+    }
 }
 
 /* ------------------------------------------------------------------------- */

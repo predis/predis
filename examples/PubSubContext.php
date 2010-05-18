@@ -5,7 +5,7 @@ require_once '../lib/Predis.php';
 $redis  = new \Predis\Client('redis://127.0.0.1:6379/?read_write_timeout=-1', 'dev');
 
 // Initialize a new pubsub context
-$pubsub = new \Predis\PubSubContext($redis);
+$pubsub = $redis->pubSubContext();
 
 // Subscribe to your channels
 $pubsub->subscribe('control_channel');
