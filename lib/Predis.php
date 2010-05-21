@@ -1541,12 +1541,19 @@ class StandardExecutor implements IPipelineExecutor {
         foreach ($commands as $command) {
             $connection->writeCommand($command);
         }
-        for ($i = 0; $i < $sizeofPipe; $i++) {
-            $response = $connection->readResponse($commands[$i]);
-            $values[] = $response instanceof \Iterator
-                ? iterator_to_array($response)
-                : $response;
-            unset($commands[$i]);
+        try {
+            for ($i = 0; $i < $sizeofPipe; $i++) {
+                $response = $connection->readResponse($commands[$i]);
+                $values[] = $response instanceof \Iterator
+                    ? iterator_to_array($response)
+                    : $response;
+                unset($commands[$i]);
+            }
+        }
+        catch (\Predis\ServerException $exception) {
+            // force disconnection to prevent protocol desynchronization
+            $connection->disconnect();
+            throw $exception;
         }
 
         return $values;
