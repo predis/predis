@@ -1570,7 +1570,7 @@ class SafeExecutor implements IPipelineExecutor {
             try {
                 $connection->writeCommand($command);
             }
-            catch (CommunicationException $exception) {
+            catch (\Predis\CommunicationException $exception) {
                 return array_fill(0, $sizeofPipe, $exception);
             }
         }
