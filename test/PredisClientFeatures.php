@@ -129,7 +129,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('MSET', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
-        $this->assertNull($cmd->getHash(new \Predis\Distribution\HashRing()));
+        $this->assertNotNull($cmd->getHash(new \Predis\Distribution\HashRing()));
         $this->assertEquals("*5\r\n$4\r\nMSET\r\n$4\r\nkey1\r\n$6\r\nvalue1\r\n$4\r\nkey2\r\n$6\r\nvalue2\r\n", $cmd());
     }
 

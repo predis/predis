@@ -363,6 +363,8 @@ abstract class Command {
         }
         else {
             if (isset($this->_arguments[0])) {
+                // TODO: should we throw an exception if the command does 
+                //       not support sharding?
                 $key = $this->_arguments[0];
 
                 $start = strpos($key, '{');
