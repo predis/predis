@@ -421,7 +421,10 @@ abstract class InlineCommand extends Command {
         if (isset($arguments[0]) && is_array($arguments[0])) {
             $arguments[0] = implode($arguments[0], ' ');
         }
-        return $command . ' ' . implode($arguments, ' ') . Protocol::NEWLINE;
+        return $command . (count($arguments) > 0
+            ? ' ' . implode($arguments, ' ') . Protocol::NEWLINE 
+            : Protocol::NEWLINE
+        );
     }
 }
 
