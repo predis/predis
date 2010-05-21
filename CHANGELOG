@@ -4,7 +4,7 @@ v0.6.0
     are now deprecated as they will be removed in future releases of Redis.
 
   * Support for Redis 1.0 is now optional and it is provided by requiring 
-    'Predis_Compatibility.php' before creating an instance of \Predis\Client.
+    'Predis_Compatibility.php' before creating an instance of Predis\Client.
 
   * New commands added to the Redis 2.0 profile since Predis 0.5.1:
       - Strings: SETEX, APPEND, SUBSTR
@@ -24,12 +24,12 @@ v0.6.0
         specifies which server profile to use when connecting to Redis. This 
         option accepts an instance of Predis\RedisServerProfile or a string 
         that indicates the target version.
-      - key_distribution [default: Predis\Utilities\HashRing]
+      - key_distribution [default: Predis\Distribution\HashRing]
         specifies which key distribution algorithm to use to distribute keys 
         among the servers that compose a cluster. This option accepts an 
-        instance of Predis\IDistributionAlgorithm so that users can implement 
-        their own key distribution strategy. Optionally, the new 
-        Predis\Utilities\KetamaPureRing class also provides a pure-PHP 
+        instance of Predis\Distribution\IDistributionAlgorithm so that users 
+        can implement their own key distribution strategy. Optionally, the new 
+        Predis\Distribution\KetamaPureRing class also provides a pure-PHP 
         implementation of the Ketama algorithm.
       - throw_on_error [default: TRUE]
         server errors can optionally be handled "silently": instead of throwing 
@@ -57,6 +57,9 @@ v0.6.0
         the underlying connection resource is left open when a script ends its 
         lifecycle. Persistent connections can lead to unpredictable or strange 
         behaviours, so they should be used with extreme care.
+
+  * Support for PUBSUB is handled by the new Predis\PubSubContext class, which 
+    could also be used to build a callback dispatcher for PUBSUB scenarios.
 
   * Connections now support float values for the connection_timeout parameter 
     to express timeouts with a microsecond resolution.
