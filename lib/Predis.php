@@ -151,6 +151,26 @@ class Client {
         return $this->_responseReader;
     }
 
+    public function getClientFor($connectionAlias) {
+        if (!($this->_connection instanceof ConnectionCluster)) {
+            throw new ClientException(
+                'This method is supported only when the client is connected to a cluster of connections.'
+            );
+        }
+
+        $connection = $this->_connection->getConnectionById($connectionAlias);
+        if ($connection === null) {
+            throw new \InvalidArgumentException(
+                "Invalid connection alias: '$connectionAlias'."
+            );
+        }
+
+        $newClient = new Client();
+        $newClient->setupClient($this->_options);
+        $newClient->setConnection($this->getConnection($connectionAlias));
+        return $newClient;
+    }
+
     public function connect() {
         $this->_connection->connect();
     }
