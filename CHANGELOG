@@ -1,4 +1,4 @@
-v0.6.0
+v0.6.0 (2010-05-??)
   * Switched to the new multi-bulk request protocol for all of the commands 
     in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 
     deprecated as they will be removed in future releases of Redis.
@@ -99,7 +99,7 @@ v0.6.0
   * The GET parameter for the SORT command now accepts also multiple key 
     patterns by passing an array of strings.
 
-v0.5.1
+v0.5.1 (2010-01-27)
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
     1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
     behavior is still available via the ListPopLastPushHeadBulk class so that
@@ -111,5 +111,5 @@ v0.5.1
   * Implemented a factory method for the RedisServerProfile class to ease the 
     creation of new server profile instances based on a version string.
 
-v0.5.0
+v0.5.0 (2010-01-09)
   * First versioned release of Predis
