@@ -17,10 +17,11 @@ to be implemented soon in Predis.
 
 ## Main features ##
 
-- Client-side sharding (support for consistent hashing and custom distribution algorithms)
-- Command pipelining on single and multiple connections (transparent)
-- Lazy connections (connections to Redis instances are only established just in time)
-- Flexible system to define and register your own set of commands to a client instance
+- Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
+- Client-side sharding (support for consistent hashing and custom distribution strategies).
+- Command pipelining on single and multiple connections (transparent).
+- Lazy connections (connections to Redis instances are only established just in time).
+- Flexible system to define and register your own set of commands to a client instance.
 
 
 ## Quick examples ##
@@ -81,7 +82,7 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends Predis_InlineCommand {
+    class BrandNewRedisCommand extends Predis_MultiBulkCommand {
         public function getCommandId() { return 'NEWCMD'; }
     }
 
@@ -105,7 +106,7 @@ they are not the preferred way to contribute to Predis.
 
 When modifying Predis please be sure that no warnings or notices are emitted by PHP 
 by running the interpreter in your development environment with the "error_reporting"
-variable set to E_ALL.
+variable set to E_ALL | E_STRICT.
 
 
 ## Dependencies ##

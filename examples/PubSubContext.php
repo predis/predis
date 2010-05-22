@@ -1,8 +1,11 @@
 <?php
-require_once '../lib/Predis.php';
+require_once 'SharedConfigurations.php';
+
+// Redis 2.0 features new commands that allow clients to subscribe for 
+// events published on certain channels (PUBSUB).
 
 // Create a client and disable r/w timeout on the socket
-$redis  = new Predis_Client('redis://127.0.0.1:6379/?read_write_timeout=-1', 'dev');
+$redis  = new Predis_Client($single_server + array('read_write_timeout' => -1));
 
 // Initialize a new pubsub context
 $pubsub = $redis->pubSubContext();
@@ -27,7 +30,7 @@ foreach ($pubsub as $message) {
                     $pubsub->unsubscribe();
                 }
                 else {
-                    echo "Received an unregognized command: {$message->payload}.\n";
+                    echo "Received an unrecognized command: {$message->payload}.\n";
                 }
             }
             else {

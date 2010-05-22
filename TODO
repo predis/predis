@@ -1,9 +1,7 @@
 * Documentation! The README is obviously not enought to show how to use 
   Predis as it does not cover all of its features.
 
-* The included test suite covers almost all the Redis server commands, but a 
-  full battery of tests targeting specific functions of this library is still 
-  missing.
+* Add more tests targeting specific functions of the library.
 
-* Missing tests for new commands: 
-    PubSub  : PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE
+* Missing tests for commands: 
+    PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE
