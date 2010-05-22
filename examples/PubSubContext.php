@@ -30,7 +30,7 @@ foreach ($pubsub as $message) {
                     $pubsub->unsubscribe();
                 }
                 else {
-                    echo "Received an unregognized command: {$message->payload}.\n";
+                    echo "Received an unrecognized command: {$message->payload}.\n";
                 }
             }
             else {

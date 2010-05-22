@@ -161,7 +161,7 @@ class Client {
         $connection = $this->_connection->getConnectionById($connectionAlias);
         if ($connection === null) {
             throw new \InvalidArgumentException(
-                "Invalid connection alias: '$connectionAlias'."
+                "Invalid connection alias: '$connectionAlias'"
             );
         }
 
