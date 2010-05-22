@@ -1295,7 +1295,8 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     }
 
     public function getConnectionById($id = null) {
-        return $this->_pool[$id ?: 0];
+        $alias = $id ?: 0;
+        return isset($this->_pool[$alias]) ? $this->_pool[$alias] : null;
     }
 
     public function getIterator() {
