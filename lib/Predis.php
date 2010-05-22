@@ -730,12 +730,12 @@ class CommandPipeline {
             if ($block !== null) {
                 $block($this);
             }
+            $this->flushPipeline();
         }
         catch (\Exception $exception) {
             $pipelineBlockException = $exception;
         }
 
-        $this->flushPipeline();
         $this->setRunning(false);
 
         if ($pipelineBlockException !== null) {
