@@ -30,12 +30,12 @@ v0.6.0 (2010-05-??)
         option accepts an instance of Predis\RedisServerProfile or a string 
         that indicates the target version.
       - key_distribution [default: Predis\Distribution\HashRing]
-        specifies which key distribution algorithm to use to distribute keys 
+        specifies which key distribution strategy to use to distribute keys 
         among the servers that compose a cluster. This option accepts an 
-        instance of Predis\Distribution\IDistributionAlgorithm so that users 
+        instance of Predis\Distribution\IDistributionStrategy so that users 
         can implement their own key distribution strategy. Optionally, the new 
         Predis\Distribution\KetamaPureRing class also provides a pure-PHP 
-        implementation of the Ketama algorithm.
+        implementation of the same algorithm used by libketama.
       - throw_on_error [default: TRUE]
         server errors can optionally be handled "silently": instead of throwing 
         an exception, the client returns an error response type.

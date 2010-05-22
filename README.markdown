@@ -18,7 +18,7 @@ to be implemented soon in Predis.
 ## Main features ##
 
 - Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
-- Client-side sharding (support for consistent hashing and custom distribution algorithms).
+- Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
 - Lazy connections (connections to Redis instances are only established just in time).
 - Flexible system to define and register your own set of commands to a client instance.

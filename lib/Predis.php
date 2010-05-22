@@ -279,12 +279,12 @@ class ClientOptionsProfile implements IClientOptionsHandler {
 
 class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     public function validate($option, $value) {
-        if ($value instanceof \Predis\Distribution\IDistributionAlgorithm) {
+        if ($value instanceof \Predis\Distribution\IDistributionStrategy) {
             return $value;
         }
         if (is_string($value)) {
             $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionAlgorithm')) {
+            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionStrategy')) {
                 return new $value;
             }
         }
@@ -389,7 +389,7 @@ abstract class Command {
         return true;
     }
 
-    public function getHash(Distribution\IDistributionAlgorithm $distributor) {
+    public function getHash(Distribution\IDistributionStrategy $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
@@ -1248,7 +1248,7 @@ class Connection implements IConnection {
 class ConnectionCluster implements IConnection, \IteratorAggregate {
     private $_pool, $_distributor;
 
-    public function __construct(Distribution\IDistributionAlgorithm $distributor = null) {
+    public function __construct(Distribution\IDistributionStrategy $distributor = null) {
         $this->_pool = array();
         $this->_distributor = $distributor ?: new Distribution\HashRing();
     }
@@ -1800,7 +1800,7 @@ class SafeClusterExecutor implements IPipelineExecutor {
 
 namespace Predis\Distribution;
 
-interface IDistributionAlgorithm {
+interface IDistributionStrategy {
     public function add($node, $weight = null);
     public function remove($node);
     public function get($key);
@@ -1809,7 +1809,7 @@ interface IDistributionAlgorithm {
 
 class EmptyRingException extends \Exception { }
 
-class HashRing implements IDistributionAlgorithm {
+class HashRing implements IDistributionStrategy {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
     private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
