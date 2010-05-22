@@ -3,7 +3,7 @@ require_once 'SharedConfigurations.php';
 
 // simple set and get scenario
 
-$redis = Predis\Client::create($configurations);
+$redis = new Predis\Client($single_server);
 
 $redis->set('library', 'predis');
 $retval = $redis->get('library');

@@ -1,10 +1,10 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-// when you have a whole set of consecutive commands to send to 
+// When you have a whole set of consecutive commands to send to 
 // a redis server, you can use a pipeline to improve performances.
 
-$redis = Predis\Client::create($configurations);
+$redis = new Predis\Client($single_server);
 
 $replies = $redis->pipeline(function($pipe) {
     $pipe->ping();

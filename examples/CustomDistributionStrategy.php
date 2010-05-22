@@ -1,5 +1,5 @@
 <?php
-require '../lib/Predis.php';
+require_once 'SharedConfigurations.php';
 
 // Developers can customize the distribution strategy used by the client 
 // to distribute keys among a cluster of servers simply by creating a class 
@@ -40,16 +40,11 @@ class NaiveDistributionStrategy
     }
 }
 
-$servers = array(
-    'redis://127.0.0.1:6379?alias=first',
-    'redis://127.0.0.1:6380?alias=second',
-);
-
 $options = array(
     'key_distribution' => new NaiveDistributionStrategy(),
 );
 
-$redis = new Predis\Client($servers, $options);
+$redis = new Predis\Client($multiple_servers, $options);
 
 for ($i = 0; $i < 100; $i++) {
     $redis->set("key:$i", str_pad($i, 4, '0', 0));
@@ -60,6 +55,6 @@ $server1 = $redis->getClientFor('first')->info();
 $server2 = $redis->getClientFor('second')->info();
 
 printf("Server '%s' has %d keys while server '%s' has %d keys.\n", 
-    'first', $server1['db0']['keys'], 'second', $server2['db0']['keys']
+    'first', $server1['db15']['keys'], 'second', $server2['db15']['keys']
 );
 ?>
