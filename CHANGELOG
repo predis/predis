@@ -1,7 +1,12 @@
 v0.6.0
-  * Completely switched to the new multi-bulk request protocol for all of the 
-    commands in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests 
-    are now deprecated as they will be removed in future releases of Redis.
+  * Switched to the new multi-bulk request protocol for all of the commands 
+    in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 
+    deprecated as they will be removed in future releases of Redis.
+
+  * The default server profile is "2.0" (targeting Redis 2.0.x). If you are 
+    using older versions of Redis, it is highly recommended that you specify 
+    which server profile the client should use (e.g. "1.2" when connecting 
+    to instances of Redis 1.2.x).
 
   * Support for Redis 1.0 is now optional and it is provided by requiring 
     'Predis_Compatibility.php' before creating an instance of Predis\Client.
@@ -58,15 +63,6 @@ v0.6.0
         lifecycle. Persistent connections can lead to unpredictable or strange 
         behaviours, so they should be used with extreme care.
 
-  * Support for PUBSUB is handled by the new Predis\PubSubContext class, which 
-    could also be used to build a callback dispatcher for PUBSUB scenarios.
-
-  * Connections now support float values for the connection_timeout parameter 
-    to express timeouts with a microsecond resolution.
-
-  * CommandPipeline and MultiExecBlock return their instances when invoking 
-    commands, thus allowing method chaining in pipelines and multi-exec blocks.
-
   * Introduced the Predis\Pipeline\IExecutor interface. Classes implementing 
     this interface are now used internally by the Predis\CommandPipeline class 
     to change the behaviour of the pipeline when writing/reading commands from 
@@ -85,16 +81,23 @@ v0.6.0
         This executor shares the same behaviour of Predis\Pipeline\SafeExecutor 
         but it is geared towards clustered connections.
 
+  * Support for PUBSUB is handled by the new Predis\PubSubContext class, which 
+    could also be used to build a callback dispatcher for PUBSUB scenarios.
+
+  * When connected to a cluster of connections, it is now possible to get a 
+    new Predis\Client instance for a single connection of the cluster by 
+    passing its alias/index to the new Predis\Client::getClientFor() method.
+
+  * CommandPipeline and MultiExecBlock return their instances when invoking 
+    commands, thus allowing method chaining in pipelines and multi-exec blocks.
+
   * MultiExecBlock instances can handle the new DISCARD command.
+
+  * Connections now support float values for the connection_timeout parameter 
+    to express timeouts with a microsecond resolution.
 
   * The GET parameter for the SORT command now accepts also multiple key 
     patterns by passing an array of strings.
-
-  * KEYS will return a multibulk reply starting from Redis 2.0 (DEV). Predis 
-    handles this change in a backwards-compatible way.
-
-  * Switched to class-based handlers instead of anonymous functions to 
-    handle the various server response types.
 
 v0.5.1
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
