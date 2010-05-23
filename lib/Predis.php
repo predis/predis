@@ -154,7 +154,7 @@ class Client {
     public function getClientFor($connectionAlias) {
         if (!($this->_connection instanceof ConnectionCluster)) {
             throw new ClientException(
-                'This method is supported only when the client is connected to a cluster of connections.'
+                'This method is supported only when the client is connected to a cluster of connections'
             );
         }
 
@@ -1288,7 +1288,7 @@ class ConnectionCluster implements IConnection, \IteratorAggregate {
     public function getConnection(Command $command) {
         if ($command->canBeHashed() === false) {
             throw new ClientException(
-                sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
+                sprintf("Cannot send '%s' commands to a cluster of connections", $command->getCommandId())
             );
         }
         return $this->_distributor->get($command->getHash($this->_distributor));
