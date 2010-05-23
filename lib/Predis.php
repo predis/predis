@@ -1336,6 +1336,10 @@ abstract class RedisServerProfile {
         return self::get('default');
     }
 
+    public static function getDevelopment() {
+        return self::get('dev');
+    }
+
     private static function predisServerProfiles() {
         return array(
             '1.2'     => '\Predis\RedisServer_v1_2',
