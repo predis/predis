@@ -157,7 +157,7 @@ class Predis_Client {
     public function getClientFor($connectionAlias) {
         if (!($this->_connection instanceof Predis_ConnectionCluster)) {
             throw new Predis_ClientException(
-                'This method is supported only when the client is connected to a cluster of connections.'
+                'This method is supported only when the client is connected to a cluster of connections'
             );
         }
 
@@ -1286,7 +1286,7 @@ class Predis_ConnectionCluster implements Predis_IConnection, IteratorAggregate 
     public function getConnection(Predis_Command $command) {
         if ($command->canBeHashed() === false) {
             throw new Predis_ClientException(
-                sprintf("Cannot send '%s' commands to a cluster of connections.", $command->getCommandId())
+                sprintf("Cannot send '%s' commands to a cluster of connections", $command->getCommandId())
             );
         }
         return $this->_distributor->get($command->getHash($this->_distributor));
@@ -1334,6 +1334,10 @@ abstract class Predis_RedisServerProfile {
         return self::get('default');
     }
 
+    public static function getDevelopment() {
+        return self::get('dev');
+    }
+
     private static function predisServerProfiles() {
         return array(
             '1.2'     => 'Predis_RedisServer_v1_2',
@@ -1373,18 +1377,6 @@ abstract class Predis_RedisServerProfile {
         }
         $profile = self::$_serverProfiles[$version];
         return new $profile();
-    }
-
-    public function compareWith($version, $operator = null) {
-        // one could expect that PHP's version_compare would behave 
-        // the same way if invoked with 2 arguments or 3 arguments 
-        // with the third being NULL, but it is not like that.
-        // TODO: since version_compare considers 1 < 1.0 < 1.0.0, 
-        //       we might need to revise the behavior of this method.
-        return ($operator === null 
-            ? version_compare($this, $version)
-            : version_compare($this, $version, $operator)
-        );
     }
 
     public function supportsCommand($command) {
@@ -2026,9 +2018,17 @@ class Predis_Shared_MultiBulkResponseIterator extends Predis_Shared_MultiBulkRes
         $this->sync();
     }
 
-    public function sync() {
-        while ($this->valid()) {
-            $this->next();
+    public function sync($drop = false) {
+        if ($drop == true) {
+            if ($this->valid()) {
+                $this->_position = $this->_replySize;
+                $this->_connection->disconnect();
+            }
+        }
+        else {
+            while ($this->valid()) {
+                $this->next();
+            }
         }
     }
 

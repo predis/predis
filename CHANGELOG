@@ -96,10 +96,19 @@ v0.6.0 (2010-05-??)
   * Connections now support float values for the connection_timeout parameter 
     to express timeouts with a microsecond resolution.
 
-  * The GET parameter for the SORT command now accepts also multiple key 
-    patterns by passing an array of strings.
+  * FIX: TCP connections now respect the read/write timeout parameter when 
+    reading the payload of server responses. Previously, stream_get_contents() 
+    was being used internally to read data from a connection but it looks like 
+    PHP does not honour the specified timeout for socket streams when inside 
+    this function.
 
-v0.5.1 (2010-01-27)
+  * FIX: The GET parameter for the SORT command now accepts also multiple key 
+    patterns by passing an array of strings. (ISSUE #1).
+
+  * FIX: Replies to the DEL command return the number of elements deleted by 
+    the server and not 0 or 1 interpreted as a boolean response. (ISSUE #4).
+
+v0.5.1 (2010-01-23)
   * RPOPLPUSH has been changed from bulk command to inline command in Redis
     1.2.1, so ListPopLastPushHead now extends InlineCommand. The old RPOPLPUSH
     behavior is still available via the ListPopLastPushHeadBulk class so that
