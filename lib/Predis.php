@@ -2022,9 +2022,17 @@ class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
         $this->sync();
     }
 
-    public function sync() {
-        while ($this->valid()) {
-            $this->next();
+    public function sync($drop = false) {
+        if ($drop == true) {
+            if ($this->valid()) {
+                $this->_position = $this->_replySize;
+                $this->_connection->disconnect();
+            }
+        }
+        else {
+            while ($this->valid()) {
+                $this->next();
+            }
         }
     }
 
