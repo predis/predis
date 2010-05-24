@@ -1,4 +1,4 @@
-v0.6.0 (2010-05-??)
+v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
     in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 
     deprecated as they will be removed in future releases of Redis.
