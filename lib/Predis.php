@@ -430,8 +430,7 @@ abstract class Command {
         $this->_hash = null;
     }
 
-    protected function getArguments() {
-        // TODO: why getArguments is protected?
+    public function getArguments() {
         return isset($this->_arguments) ? $this->_arguments : array();
     }
 
