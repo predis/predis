@@ -1697,7 +1697,6 @@ class StandardExecutor implements IPipelineExecutor {
 
 class SafeExecutor implements IPipelineExecutor {
     public function execute(\Predis\IConnection $connection, &$commands) {
-        $firstServerException = null;
         $sizeofPipe = count($commands);
         $values = array();
 
@@ -1724,9 +1723,6 @@ class SafeExecutor implements IPipelineExecutor {
                 $values[] = $exception->toResponseError();
             }
             catch (\Predis\CommunicationException $exception) {
-                if ($throwExceptions) {
-                    throw $exception;
-                }
                 $toAdd  = count($commands) - count($values);
                 $values = array_merge($values, array_fill(0, $toAdd, $exception));
                 break;
