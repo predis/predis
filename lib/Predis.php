@@ -1048,11 +1048,6 @@ class ConnectionParameters {
     }
 
     private static function filterConnectionParams($parameters) {
-        // for compatibility with older versions of Predis
-        if (isset($parameters['scheme']) && $parameters['scheme'] === 'redis') {
-            $parameters['scheme'] = 'tcp';
-        }
-
         return array(
             'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME), 
             'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
@@ -1108,7 +1103,10 @@ class Connection {
 
     private static function getDefaultSchemes() {
         return array(
-            'tcp' => '\Predis\TcpConnection',
+            'tcp'   => '\Predis\TcpConnection',
+
+            // used for compatibility with older versions of Predis
+            'redis' => '\Predis\TcpConnection',
         );
     }
 
@@ -1149,7 +1147,7 @@ class TcpConnection implements IConnectionSingle {
     }
 
     private function checkParameters(ConnectionParameters $parameters) {
-        if ($parameters->scheme != 'tcp') {
+        if ($parameters->scheme != 'tcp' && $parameters->scheme != 'redis') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
         return $parameters;
