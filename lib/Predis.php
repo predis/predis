@@ -113,7 +113,7 @@ class Client {
 
     private function createConnection($parameters) {
         $params     = new ConnectionParameters($parameters);
-        $connection = new TcpConnection($params, $this->_responseReader);
+        $connection = $this->createConnectionInstance($params);
 
         if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommand(
@@ -127,6 +127,11 @@ class Client {
         }
 
         return $connection;
+    }
+
+    private function createConnectionInstance(ConnectionParameters $parameters) {
+        // TODO: check scheme and return the appropriate IConnectionSingle instance
+        return new TcpConnection($parameters, $this->_responseReader);
     }
 
     private function setConnection(IConnection $connection) {
