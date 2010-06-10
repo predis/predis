@@ -113,7 +113,7 @@ class Client {
 
     private function createConnection($parameters) {
         $params     = new ConnectionParameters($parameters);
-        $connection = $this->createConnectionInstance($params);
+        $connection = Connection::create($params, $this->_responseReader);
 
         if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommand(
@@ -127,11 +127,6 @@ class Client {
         }
 
         return $connection;
-    }
-
-    private function createConnectionInstance(ConnectionParameters $parameters) {
-        // TODO: check scheme and return the appropriate IConnectionSingle instance
-        return new TcpConnection($parameters, $this->_responseReader);
     }
 
     private function setConnection(IConnection $connection) {
@@ -1100,6 +1095,42 @@ interface IConnectionSingle extends IConnection {
 interface IConnectionCluster extends IConnection {
     public function getConnection(Command $command);
     public function getConnectionById($connectionId);
+}
+
+class Connection {
+    private static $_registeredSchemes;
+
+    private static function ensureInitialized() {
+        if (!isset(self::$_registeredSchemes)) {
+            self::$_registeredSchemes = self::getDefaultSchemes();
+        }
+    }
+
+    private static function getDefaultSchemes() {
+        return array(
+            'tcp' => '\Predis\TcpConnection',
+        );
+    }
+
+    public static function registerScheme($scheme, $connectionClass) {
+        self::ensureInitialized();
+        $connectionReflection = new \ReflectionClass($connectionClass);
+        if (!$connectionReflection->isSubclassOf('\Predis\IConnectionSingle')) {
+            throw new ClientException(
+                "Cannot register '$connectionClass' as it is not a valid connection class"
+            );
+        }
+        self::$_registeredSchemes[$scheme] = $connectionClass;
+    }
+
+    public static function create(ConnectionParameters $parameters, ResponseReader $reader) {
+        self::ensureInitialized();
+        if (!isset(self::$_registeredSchemes[$parameters->scheme])) {
+            throw new ClientException("Unknown connection scheme: {$parameters->scheme}");
+        }
+        $connection = self::$_registeredSchemes[$parameters->scheme];
+        return new $connection($parameters, $reader);
+    }
 }
 
 class TcpConnection implements IConnectionSingle {
