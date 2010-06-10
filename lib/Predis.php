@@ -113,7 +113,7 @@ class Client {
 
     private function createConnection($parameters) {
         $params     = new ConnectionParameters($parameters);
-        $connection = new Connection($params, $this->_responseReader);
+        $connection = new TcpConnection($params, $this->_responseReader);
 
         if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommand(
@@ -1083,7 +1083,7 @@ interface IConnectionSingle extends IConnection { }
 
 interface IConnectionCluster extends IConnection { }
 
-class Connection implements IConnectionSingle {
+class TcpConnection implements IConnectionSingle {
     private $_params, $_socket, $_initCmds, $_reader;
 
     public function __construct(ConnectionParameters $parameters, ResponseReader $reader = null) {
