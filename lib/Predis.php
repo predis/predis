@@ -986,6 +986,7 @@ class PubSubContext implements \Iterator {
 /* ------------------------------------------------------------------------- */
 
 class ConnectionParameters {
+    const DEFAULT_SCHEME = 'tcp';
     const DEFAULT_HOST = '127.0.0.1';
     const DEFAULT_PORT = 6379;
     const DEFAULT_TIMEOUT = 5;
@@ -1001,7 +1002,7 @@ class ConnectionParameters {
     private static function parseURI($uri) {
         $parsed = @parse_url($uri);
 
-        if ($parsed == false || $parsed['scheme'] != 'redis' || $parsed['host'] == null) {
+        if ($parsed == false || $parsed['host'] == null) {
             throw new ClientException("Invalid URI: $uri");
         }
 
@@ -1047,7 +1048,13 @@ class ConnectionParameters {
     }
 
     private static function filterConnectionParams($parameters) {
+        // for compatibility with older versions of Predis
+        if (isset($parameters['scheme']) && $parameters['scheme'] === 'redis') {
+            $parameters['scheme'] = 'tcp';
+        }
+
         return array(
+            'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME), 
             'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
@@ -1087,7 +1094,7 @@ class TcpConnection implements IConnectionSingle {
     private $_params, $_socket, $_initCmds, $_reader;
 
     public function __construct(ConnectionParameters $parameters, ResponseReader $reader = null) {
-        $this->_params   = $parameters;
+        $this->_params   = $this->checkParameters($parameters);
         $this->_initCmds = array();
         $this->_reader   = $reader ?: new ResponseReader();
     }
@@ -1096,6 +1103,13 @@ class TcpConnection implements IConnectionSingle {
         if (!$this->_params->connection_persistent) {
             $this->disconnect();
         }
+    }
+
+    private function checkParameters(ConnectionParameters $parameters) {
+        if ($parameters->scheme != 'tcp') {
+            throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        }
+        return $parameters;
     }
 
     public function isConnected() {
