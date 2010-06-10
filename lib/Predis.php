@@ -1086,9 +1086,16 @@ interface IConnection {
     public function executeCommand(Command $command);
 }
 
-interface IConnectionSingle extends IConnection { }
+interface IConnectionSingle extends IConnection {
+    public function writeBytes($buffer);
+    public function readBytes($length);
+    public function readLine();
+}
 
-interface IConnectionCluster extends IConnection { }
+interface IConnectionCluster extends IConnection {
+    public function getConnection(Command $command);
+    public function getConnectionById($connectionId);
+}
 
 class TcpConnection implements IConnectionSingle {
     private $_params, $_socket, $_initCmds, $_reader;
