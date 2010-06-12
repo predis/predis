@@ -3,6 +3,7 @@ namespace Predis;
 
 class PredisException extends \Exception { }
 class ClientException extends PredisException { }                   // Client-side errors
+class AbortedMultiExec extends PredisException { }                  // Aborted multi/exec
 
 class ServerException extends PredisException {                     // Server-side errors
     public function toResponseError() {
@@ -908,10 +909,12 @@ class MultiExecBlock {
                 return;
             }
 
-            $execReply = (($reply = $this->_redisClient->exec()) instanceof \Iterator
-                ? iterator_to_array($reply)
-                : $reply
-            );
+            $reply = $this->_redisClient->exec();
+            if ($reply === null) {
+                throw new AbortedMultiExec('The current transaction has been aborted by the server');
+            }
+
+            $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
             $commands  = &$this->_commands;
             $sizeofReplies = count($execReply);
 
