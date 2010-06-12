@@ -2720,6 +2720,18 @@ class Discard extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'DISCARD'; }
 }
 
+class Watch extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'WATCH'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Unwatch extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'UNWATCH'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
 /* publish/subscribe */
 class Subscribe extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
@@ -2744,16 +2756,6 @@ class UnsubscribeByPattern extends \Predis\MultiBulkCommand {
 class Publish extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PUBLISH'; }
-}
-
-class Watch extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'WATCH'; }
-}
-
-class Unwatch extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'UNWATCH'; }
 }
 
 /* persistence control commands */
