@@ -769,14 +769,43 @@ class CommandPipeline {
 class MultiExecBlock {
     private $_initialized, $_discarded, $_insideBlock;
     private $_redisClient, $_options, $_commands;
+    private $_supportsWatch;
 
     public function __construct(Client $redisClient, Array $options = null) {
+        $this->checkCapabilities($redisClient);
         $this->_initialized = false;
         $this->_discarded   = false;
         $this->_insideBlock = false;
         $this->_redisClient = $redisClient;
         $this->_options     = $options ?: array();
         $this->_commands    = array();
+    }
+
+    private function checkCapabilities(Client $redisClient) {
+        $profile = $redisClient->getProfile();
+
+        $canMulti = $profile->supportsCommand('multi') && 
+                    $profile->supportsCommand('exec') &&
+                    $profile->supportsCommand('discard');
+
+        $canWatch = $profile->supportsCommand('watch') && 
+                    $profile->supportsCommand('unwatch');
+
+        if ($canMulti === false) {
+            throw new \Predis\ClientException(
+                'The current profile does not support MULTI, EXEC and DISCARD commands'
+            );
+        }
+
+        $this->_supportsWatch = $canWatch;
+    }
+
+    private function isWatchSupported() {
+        if ($this->_supportsWatch === false) {
+            throw new \Predis\ClientException(
+                'The current profile does not support WATCH and UNWATCH commands'
+            );
+        }
     }
 
     private function initialize() {
@@ -808,6 +837,7 @@ class MultiExecBlock {
     }
 
     public function watch($keys) {
+        $this->isWatchSupported();
         if ($this->_initialized === true) {
             throw new \Predis\ClientException('WATCH inside MULTI is not allowed');
         }
@@ -830,10 +860,8 @@ class MultiExecBlock {
     }
 
     public function unwatch() {
-        $client = $this->_redisClient;
-        if (!$client->getProfile()->supportsCommand('unwatch')) {
-        }
-        $client->unwatch();
+        $this->isWatchSupported();
+        $this->_redisClient->unwatch();
     }
 
     public function discard() {
