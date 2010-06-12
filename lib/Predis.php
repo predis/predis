@@ -767,10 +767,11 @@ class CommandPipeline {
 }
 
 class MultiExecBlock {
-    private $_redisClient, $_commands, $_initialized, $_discarded;
+    private $_redisClient, $_commands, $_initialized, $_discarded, $_options;
 
-    public function __construct(Client $redisClient) {
+    public function __construct(Client $redisClient, Array $options = null) {
         $this->_initialized = false;
+        $this->_options     = $options ?: array();
         $this->_discarded   = false;
         $this->_redisClient = $redisClient;
         $this->_commands    = array();
@@ -778,6 +779,9 @@ class MultiExecBlock {
 
     private function initialize() {
         if ($this->_initialized === false) {
+            if (isset($this->_options['watch'])) {
+                $this->watch($this->_options['watch']);
+            }
             $this->_redisClient->multi();
             $this->_initialized = true;
             $this->_discarded   = false;
@@ -795,6 +799,24 @@ class MultiExecBlock {
         else {
             $this->malformedServerResponse('The server did not respond with a QUEUED status reply');
         }
+    }
+
+    public function watch($keys) {
+        if ($this->_initialized === true) {
+            throw new \Predis\ClientException('WATCH inside MULTI is not allowed');
+        }
+
+        $reply = null;
+        if (is_array($keys)) {
+            $reply = array();
+            foreach ($keys as $key) {
+                $reply = $this->_redisClient->watch($keys);
+            }
+        }
+        else {
+            $reply = $this->_redisClient->watch($keys);
+        }
+        return $reply;
     }
 
     public function discard() {
