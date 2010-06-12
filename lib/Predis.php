@@ -783,21 +783,12 @@ class MultiExecBlock {
 
     private function checkCapabilities(Client $redisClient) {
         $profile = $redisClient->getProfile();
-
-        $canMulti = $profile->supportsCommand('multi') && 
-                    $profile->supportsCommand('exec') &&
-                    $profile->supportsCommand('discard');
-
-        $canWatch = $profile->supportsCommand('watch') && 
-                    $profile->supportsCommand('unwatch');
-
-        if ($canMulti === false) {
+        if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
             throw new \Predis\ClientException(
                 'The current profile does not support MULTI, EXEC and DISCARD commands'
             );
         }
-
-        $this->_supportsWatch = $canWatch;
+        $this->_supportsWatch = $profile->supportsCommands(array('watch', 'unwatch'));
     }
 
     private function isWatchSupported() {
@@ -1459,6 +1450,15 @@ abstract class RedisServerProfile {
         }
         $profile = self::$_serverProfiles[$version];
         return new $profile();
+    }
+
+    public function supportsCommands(Array $commands) {
+        foreach ($commands as $command) {
+            if ($this->supportsCommand($command) === false) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function supportsCommand($command) {
