@@ -1658,6 +1658,13 @@ class RedisServer_v2_0 extends RedisServer_v1_2 {
 
 class RedisServer_vNext extends RedisServer_v2_0 {
     public function getVersion() { return '2.1'; }
+    public function getSupportedCommands() {
+        return array_merge(parent::getSupportedCommands(), array(
+            /* transactions */
+            'watch'                     => '\Predis\Commands\Watch',
+            'unwatch'                   => '\Predis\Commands\Unwatch',
+        ));
+    }
 }
 
 /* ------------------------------------------------------------------------- */
@@ -2646,6 +2653,16 @@ class UnsubscribeByPattern extends \Predis\MultiBulkCommand {
 class Publish extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PUBLISH'; }
+}
+
+class Watch extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'WATCH'; }
+}
+
+class Unwatch extends \Predis\MultiBulkCommand {
+    public function canBeHashed()  { return false; }
+    public function getCommandId() { return 'UNWATCH'; }
 }
 
 /* persistence control commands */
