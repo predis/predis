@@ -943,6 +943,7 @@ class PubSubContext implements \Iterator {
     private $_redisClient, $_subscriptions, $_isStillValid, $_position;
 
     public function __construct(Client $redisClient) {
+        $this->checkCapabilities($redisClient);
         $this->_redisClient   = $redisClient;
         $this->_isStillValid  = true;
         $this->_subscriptions = false;
@@ -952,6 +953,16 @@ class PubSubContext implements \Iterator {
         if ($this->valid()) {
             $this->_redisClient->unsubscribe();
             $this->_redisClient->punsubscribe();
+        }
+    }
+
+    private function checkCapabilities(Client $redisClient) {
+        $profile = $redisClient->getProfile();
+        $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
+        if ($profile->supportsCommands($commands) === false) {
+            throw new \Predis\ClientException(
+                'The current profile does not support PUB/SUB related commands'
+            );
         }
     }
 
