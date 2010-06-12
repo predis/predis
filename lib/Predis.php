@@ -767,13 +767,15 @@ class CommandPipeline {
 }
 
 class MultiExecBlock {
-    private $_redisClient, $_commands, $_initialized, $_discarded, $_options;
+    private $_initialized, $_discarded, $_insideBlock;
+    private $_redisClient, $_options, $_commands;
 
     public function __construct(Client $redisClient, Array $options = null) {
         $this->_initialized = false;
-        $this->_options     = $options ?: array();
         $this->_discarded   = false;
+        $this->_insideBlock = false;
         $this->_redisClient = $redisClient;
+        $this->_options     = $options ?: array();
         $this->_commands    = array();
     }
 
@@ -786,6 +788,10 @@ class MultiExecBlock {
             $this->_initialized = true;
             $this->_discarded   = false;
         }
+    }
+
+    private function setInsideBlock($value) {
+        $this->_insideBlock = $value;
     }
 
     public function __call($method, $arguments) {
@@ -819,6 +825,17 @@ class MultiExecBlock {
         return $reply;
     }
 
+    public function multi() {
+        $this->initialize();
+    }
+
+    public function unwatch() {
+        $client = $this->_redisClient;
+        if (!$client->getProfile()->supportsCommand('unwatch')) {
+        }
+        $client->unwatch();
+    }
+
     public function discard() {
         $this->_redisClient->discard();
         $this->_commands    = array();
@@ -826,7 +843,17 @@ class MultiExecBlock {
         $this->_discarded   = true;
     }
 
+    public function exec() {
+        return $this->execute();
+    }
+
     public function execute($block = null) {
+        if ($this->_insideBlock === true) {
+            throw new \Predis\ClientException(
+                "Cannot invoke 'execute' or 'exec' inside an active client transaction block"
+            );
+        }
+
         if ($block && !is_callable($block)) {
             throw new \InvalidArgumentException('Argument passed must be a callable object');
         }
@@ -836,7 +863,9 @@ class MultiExecBlock {
 
         try {
             if ($block !== null) {
+                $this->setInsideBlock(true);
                 $block($this);
+                $this->setInsideBlock(false);
             }
 
             if ($this->_discarded === true) {
@@ -863,6 +892,7 @@ class MultiExecBlock {
             }
         }
         catch (\Exception $exception) {
+            $this->setInsideBlock(false);
             $blockException = $exception;
         }
 
