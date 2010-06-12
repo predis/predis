@@ -1,3 +1,19 @@
+v0.6.1 (2010-xx-xx)
+  * Minor internal improvements and clean ups.
+
+  * Predis\MultiExecBlock and Predis\PubSubContext will throw an exception 
+    when trying to create their instances when using a profile that does 
+    not support the required Redis commands.
+
+  * Various improvements to Predis\MultiExecBlock:
+      - fixes and more consistent behaviour across various usage cases.
+      - support for WATCH and UNWATCH when using the current development 
+        profile (Redis v2.2) and aborted transactions.
+
+  * New method signature for Predis\Client::multiExec(). Now it is able to 
+    accept an array of options for the underlying Predis\MultiExecBlock, but 
+    it is still backwards compatible with previous releases of Predis.
+
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
     in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 
