@@ -244,9 +244,26 @@ class Client {
         return $block !== null ? $pipeline->execute($block) : $pipeline;
     }
 
-    public function multiExec($multiExecBlock = null) {
-        $multiExec = new MultiExecBlock($this);
-        return $multiExecBlock !== null ? $multiExec->execute($multiExecBlock) : $multiExec;
+    public function multiExec(/* arguments */) {
+        $argv = func_get_args();
+        $argc = func_num_args();
+
+        if ($argc === 0) {
+            return $this->initMultiExec();
+        }
+        else if ($argc === 1) {
+            list($arg0) = $argv;
+            return is_array($arg0) ? $this->initMultiExec($arg0) : $this->initMultiExec(null, $arg0);
+        }
+        else if ($argc === 2) {
+            list($arg0, $arg1) = $argv;
+            return $this->initMultiExec($arg0, $arg1);
+        }
+    }
+
+    private function initMultiExec(Array $options = null, $transBlock = null) {
+        $multi = isset($options) ? new MultiExecBlock($this, $options) : new MultiExecBlock($this);
+        return $transBlock !== null ? $multi->execute($transBlock) : $multi;
     }
 
     public function pubSubContext() {
