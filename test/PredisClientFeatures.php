@@ -236,12 +236,12 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     /* Connection */
 
     function testConnection_StringCastReturnsIPAndPort() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $this->assertEquals(RC::SERVER_HOST . ':' . RC::SERVER_PORT, (string) $connection);
     }
 
     function testConnection_ConnectDisconnect() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $connection->connect();
@@ -252,7 +252,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_WriteAndReadCommand() {
         $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $connection->connect();
 
         $connection->writeCommand($cmd);
@@ -261,7 +261,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_WriteCommandAndCloseConnection() {
         $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('quit');
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $connection->connect();
 
         $this->assertTrue($connection->isConnected());
@@ -274,7 +274,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testConnection_GetSocketOpensConnection() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $this->assertType('resource', $connection->getSocket());
@@ -283,7 +283,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_LazyConnect() {
         $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $connection->writeCommand($cmd);
@@ -292,23 +292,23 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testConnection_RawCommand() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $this->assertEquals('PONG', $connection->rawCommand("PING\r\n"));
     }
 
     function testConnection_Alias() {
-        $connection1 = new \Predis\Connection(RC::getConnectionParameters());
+        $connection1 = new \Predis\TcpConnection(RC::getConnectionParameters());
         $this->assertNull($connection1->getParameters()->alias);
 
         $args = array_merge(RC::getConnectionArguments(), array('alias' => 'servername'));
-        $connection2 = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+        $connection2 = new \Predis\TcpConnection(new \Predis\ConnectionParameters($args));
         $this->assertEquals('servername', $connection2->getParameters()->alias);
     }
 
     function testConnection_ConnectionTimeout() {
         $timeout = 3;
         $args    = array('host' => '1.0.0.1', 'connection_timeout' => $timeout);
-        $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+        $connection = new \Predis\TcpConnection(new \Predis\ConnectionParameters($args));
 
         $start = time();
         RC::testForCommunicationException($this, null, function() use($connection) {
@@ -321,7 +321,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $timeout = 1;
         $args    = array_merge(RC::getConnectionArguments(), array('read_write_timeout' => $timeout));
         $cmdFake = \Predis\RedisServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Connection(new \Predis\ConnectionParameters($args));
+        $connection = new \Predis\TcpConnection(new \Predis\ConnectionParameters($args));
 
         $expectedMessage = 'Error while reading line from the server';
         $start = time();
@@ -335,7 +335,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     /* ResponseReader */
 
     function testResponseReader_OptionIterableMultiBulkReplies() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $responseReader = $connection->getResponseReader();
 
         $responseReader->setHandler(
@@ -352,7 +352,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testResponseReader_OptionExceptionOnError() {
-        $connection = new \Predis\Connection(RC::getConnectionParameters());
+        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $responseReader = $connection->getResponseReader();
         $connection->rawCommand("SET key 5\r\nvalue\r\n");
         $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
