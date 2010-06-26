@@ -14,6 +14,11 @@ v0.6.1 (2010-xx-xx)
     accept an array of options for the underlying Predis\MultiExecBlock, but 
     it is still backwards compatible with previous releases of Predis.
 
+  * New method signature for Predis\Client::pipeline(). Now it is able to 
+    accept an array of options for the underlying Predis\CommandPipeline, 
+    but it is still backwards compatible with previous releases of Predis. 
+    Predis\Client::pipelineSafe() is to be considered obsolete.
+
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
     in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 
