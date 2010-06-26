@@ -228,16 +228,44 @@ class Client {
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
     }
 
-    public function pipeline($pipelineBlock = null) {
-        return $this->pipelineExecute(new CommandPipeline($this), $pipelineBlock);
+    public function pipeline(/* arguments */) {
+        $argv = func_get_args();
+        $argc = func_num_args();
+
+        if ($argc === 0) {
+            return $this->initPipeline();
+        }
+        else if ($argc === 1) {
+            list($arg0) = $argv;
+            return is_array($arg0) ? $this->initPipeline($arg0) : $this->initPipeline(null, $arg0);
+        }
+        else if ($argc === 2) {
+            list($arg0, $arg1) = $argv;
+            return $this->initPipeline($arg0, $arg1);
+        }
     }
 
     public function pipelineSafe($pipelineBlock = null) {
-        $connection = $this->getConnection();
-        $pipeline   = new CommandPipeline($this, $connection instanceof Connection
-            ? new Pipeline\SafeExecutor($connection)
-            : new Pipeline\SafeClusterExecutor($connection)
-        );
+        return $this->initPipeline(array('safe' => true), $pipelineBlock);
+    }
+
+    private function initPipeline(Array $options = null, $pipelineBlock = null) {
+        $pipeline = null;
+        if (isset($options)) {
+            if (isset($options['safe']) && $options['safe'] == true) {
+                $connection = $this->getConnection();
+                $pipeline   = new CommandPipeline($this, $connection instanceof Connection
+                    ? new Pipeline\SafeExecutor($connection)
+                    : new Pipeline\SafeClusterExecutor($connection)
+                );
+            }
+            else {
+                $pipeline = new CommandPipeline($this);
+            }
+        }
+        else {
+            $pipeline = new CommandPipeline($this);
+        }
         return $this->pipelineExecute($pipeline, $pipelineBlock);
     }
 
