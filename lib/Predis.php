@@ -153,7 +153,7 @@ class Client {
     }
 
     public function getClientFor($connectionAlias) {
-        if (!($this->_connection instanceof ConnectionCluster)) {
+        if (!Shared\Utils::isCluster($this->_connection)) {
             throw new ClientException(
                 'This method is supported only when the client is connected to a cluster of connections'
             );
@@ -189,7 +189,7 @@ class Client {
             return $this->_connection;
         }
         else {
-            return $this->_connection instanceof ConnectionCluster 
+            return Shared\Utils::isCluster($this->_connection)
                 ? $this->_connection->getConnectionById($id)
                 : $this->_connection;
         }
@@ -210,7 +210,7 @@ class Client {
 
     public function executeCommandOnShards(Command $command) {
         $replies = array();
-        if ($this->_connection instanceof \Predis\ConnectionCluster) {
+        if (Shared\Utils::isCluster($this->_connection)) {
             foreach($this->_connection as $connection) {
                 $replies[] = $connection->executeCommand($command);
             }
@@ -222,7 +222,7 @@ class Client {
     }
 
     public function rawCommand($rawCommandData, $closesConnection = false) {
-        if ($this->_connection instanceof \Predis\ConnectionCluster) {
+        if (Shared\Utils::isCluster($this->_connection)) {
             throw new ClientException('Cannot send raw commands when connected to a cluster of Redis servers');
         }
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
@@ -2108,6 +2108,10 @@ class KetamaPureRing extends HashRing {
 namespace Predis\Shared;
 
 class Utils {
+    public static function isCluster(\Predis\IConnection $connection) {
+        return $connection instanceof \Predis\ConnectionCluster;
+    }
+
     public static function onCommunicationException(\Predis\CommunicationException $exception) {
         if ($exception->shouldResetConnection()) {
             $connection = $exception->getConnection();
