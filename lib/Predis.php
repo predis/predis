@@ -828,6 +828,11 @@ class MultiExecBlock {
     }
 
     private function checkCapabilities(Client $redisClient) {
+        if (Shared\Utils::isCluster($redisClient->getConnection())) {
+            throw new \Predis\ClientException(
+                'Cannot initialize a MULTI/EXEC context over a cluster of connections'
+            );
+        }
         $profile = $redisClient->getProfile();
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
             throw new \Predis\ClientException(
@@ -1008,6 +1013,11 @@ class PubSubContext implements \Iterator {
     }
 
     private function checkCapabilities(Client $redisClient) {
+        if (Shared\Utils::isCluster($redisClient->getConnection())) {
+            throw new \Predis\ClientException(
+                'Cannot initialize a PUB/SUB context over a cluster of connections'
+            );
+        }
         $profile = $redisClient->getProfile();
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
         if ($profile->supportsCommands($commands) === false) {
