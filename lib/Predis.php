@@ -988,13 +988,16 @@ class PubSubContext implements \Iterator {
     const MESSAGE      = 'message';
     const PMESSAGE     = 'pmessage';
 
+    const STATUS_VALID       = 0x0001;
+    const STATUS_SUBSCRIBED  = 0x0010;
+    const STATUS_PSUBSCRIBED = 0x0100;
+
     private $_redisClient, $_subscriptions, $_isStillValid, $_position;
 
     public function __construct(Client $redisClient) {
         $this->checkCapabilities($redisClient);
-        $this->_redisClient   = $redisClient;
-        $this->_isStillValid  = true;
-        $this->_subscriptions = false;
+        $this->_redisClient = $redisClient;
+        $this->_statusFlags = self::STATUS_VALID;
     }
 
     public function __destruct() {
@@ -1014,9 +1017,13 @@ class PubSubContext implements \Iterator {
         }
     }
 
+    private function isFlagSet($value) {
+        return ($this->_statusFlags & $value) === $value;
+    }
+
     public function subscribe(/* arguments */) {
         $this->writeCommand(self::SUBSCRIBE, func_get_args());
-        $this->_subscriptions = true;
+        $this->_statusFlags |= self::STATUS_SUBSCRIBED;
     }
 
     public function unsubscribe(/* arguments */) {
@@ -1025,7 +1032,7 @@ class PubSubContext implements \Iterator {
 
     public function psubscribe(/* arguments */) {
         $this->writeCommand(self::PSUBSCRIBE, func_get_args());
-        $this->_subscriptions = true;
+        $this->_statusFlags |= self::STATUS_PSUBSCRIBED;
     }
 
     public function punsubscribe(/* arguments */) {
@@ -1034,10 +1041,12 @@ class PubSubContext implements \Iterator {
 
     public function closeContext() {
         if ($this->valid()) {
-            // TODO: as an optimization, we should not send both 
-            //       commands if one of them has not been issued.
-            $this->unsubscribe();
-            $this->punsubscribe();
+            if ($this->isFlagSet(self::STATUS_SUBSCRIBED)) {
+                $this->unsubscribe();
+            }
+            if ($this->isFlagSet(self::STATUS_PSUBSCRIBED)) {
+                $this->punsubscribe();
+            }
         }
     }
 
@@ -1062,19 +1071,20 @@ class PubSubContext implements \Iterator {
     }
 
     public function next() {
-        if ($this->_isStillValid) {
+        if ($this->isFlagSet(self::STATUS_VALID)) {
             $this->_position++;
         }
         return $this->_position;
     }
 
     public function valid() {
-        return $this->_subscriptions && $this->_isStillValid;
+        $subscriptions = self::STATUS_SUBSCRIBED + self::STATUS_PSUBSCRIBED;
+        return $this->isFlagSet(self::STATUS_VALID) 
+            && ($this->_statusFlags & $subscriptions) > 0;
     }
 
     private function invalidate() {
-        $this->_isStillValid = false;
-        $this->_subscriptions = false;
+        $this->_statusFlags = 0x0000;
     }
 
     private function getValue() {
