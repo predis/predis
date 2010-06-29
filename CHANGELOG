@@ -1,4 +1,7 @@
 v0.6.1 (2010-xx-xx)
+  * New commands available in the Redis v2.2 profile (dev):
+      - Misc.  : WATCH, UNWATCH
+
   * Minor internal improvements and clean ups.
 
   * Predis\MultiExecBlock and Predis\PubSubContext will throw an exception 
