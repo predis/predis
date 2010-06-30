@@ -111,7 +111,9 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        $params     = new ConnectionParameters($parameters);
+        $params     = $parameters instanceof ConnectionParameters 
+                          ? $parameters 
+                          : new ConnectionParameters($parameters);
         $connection = new Connection($params, $this->_responseReader);
 
         if ($params->password !== null) {
