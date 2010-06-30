@@ -4,6 +4,9 @@ v0.6.1 (2010-xx-xx)
 
   * Minor internal improvements and clean ups.
 
+  * The constructor of Predis\Client::__construct now accepts also instances 
+    of Predis\ConnectionParameters.
+
   * Predis\MultiExecBlock and Predis\PubSubContext will throw an exception 
     when trying to create their instances using a profile that does not 
     support the required Redis commands or when the client is connected to 
