@@ -1,6 +1,29 @@
 <?php
 namespace Predis;
 
+abstract class InlineCommand extends Command {
+    public function serializeRequest($command, $arguments) {
+        if (isset($arguments[0]) && is_array($arguments[0])) {
+            $arguments[0] = implode($arguments[0], ' ');
+        }
+        return $command . (count($arguments) > 0
+            ? ' ' . implode($arguments, ' ') . Protocol::NEWLINE 
+            : Protocol::NEWLINE
+        );
+    }
+}
+
+abstract class BulkCommand extends Command {
+    public function serializeRequest($command, $arguments) {
+        $data = array_pop($arguments);
+        if (is_array($data)) {
+            $data = implode($data, ' ');
+        }
+        return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) . 
+            Protocol::NEWLINE . $data . Protocol::NEWLINE;
+    }
+}
+
 RedisServerProfile::registerProfile('\Predis\RedisServer_v1_0', '1.0');
 
 class RedisServer_v1_0 extends \Predis\RedisServerProfile {
