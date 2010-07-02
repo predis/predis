@@ -2080,7 +2080,7 @@ namespace Predis\Shared;
 
 class Utils {
     public static function isCluster(\Predis\IConnection $connection) {
-        return $connection instanceof \Predis\ConnectionCluster;
+        return $connection instanceof \Predis\IConnectionCluster;
     }
 
     public static function onCommunicationException(\Predis\CommunicationException $exception) {
