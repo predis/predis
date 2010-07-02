@@ -10,7 +10,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     protected function setUp() { 
         $this->redis = RC::getConnection();
-        $this->redis->flushDatabase();
+        $this->redis->flushdb();
     }
 
     protected function tearDown() { 
