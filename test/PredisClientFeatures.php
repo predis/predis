@@ -5,6 +5,8 @@ require_once 'PHPUnit/Framework.php';
 require_once 'PredisShared.php';
 require_once '../lib/Predis_Compatibility.php';
 
+Predis\Compatibility::loadRedis_v1_0();
+
 class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
