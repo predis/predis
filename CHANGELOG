@@ -1,9 +1,16 @@
 v0.6.1 (2010-xx-xx)
+  * New commands available in the Redis v2.2 profile (dev):
+      - Misc.  : WATCH, UNWATCH
+
   * Minor internal improvements and clean ups.
 
+  * The constructor of Predis\Client::__construct now accepts also instances 
+    of Predis\ConnectionParameters.
+
   * Predis\MultiExecBlock and Predis\PubSubContext will throw an exception 
-    when trying to create their instances when using a profile that does 
-    not support the required Redis commands.
+    when trying to create their instances using a profile that does not 
+    support the required Redis commands or when the client is connected to 
+    a cluster of connections.
 
   * Various improvements to Predis\MultiExecBlock:
       - fixes and more consistent behaviour across various usage cases.
@@ -13,6 +20,11 @@ v0.6.1 (2010-xx-xx)
   * New method signature for Predis\Client::multiExec(). Now it is able to 
     accept an array of options for the underlying Predis\MultiExecBlock, but 
     it is still backwards compatible with previous releases of Predis.
+
+  * New method signature for Predis\Client::pipeline(). Now it is able to 
+    accept an array of options for the underlying Predis\CommandPipeline, 
+    but it is still backwards compatible with previous releases of Predis. 
+    Predis\Client::pipelineSafe() is to be considered obsolete.
 
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
