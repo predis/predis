@@ -1095,6 +1095,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrange('zset', 0, 2, 'withscores')
         );
 
+        $this->assertEquals(
+            array(array('a', -10), array('b', 0), array('c', 10)), 
+            $this->redis->zrange('zset', 0, 2, array('withscores' => true))
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->zrange('foo', 0, -1);
@@ -1149,6 +1154,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrevrange('zset', 0, 2, 'withscores')
         );
 
+        $this->assertEquals(
+            array(array('f', 30), array('e', 20), array('d', 20)), 
+            $this->redis->zrevrange('zset', 0, 2, array('withscores' => true))
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->zrevrange('foo', 0, -1);
@@ -1181,6 +1191,24 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(
             array(array('c', 10), array('d', 20), array('e', 20)), 
             $this->redis->zrangebyscore('zset', 10, 20, 'withscores')
+        );
+
+        $this->assertEquals(
+            array(array('c', 10), array('d', 20), array('e', 20)), 
+            $this->redis->zrangebyscore('zset', 10, 20, array('withscores' => true))
+        );
+
+        $this->assertEquals(
+            array('d', 'e'), 
+            $this->redis->zrangebyscore('zset', 10, 20, array('limit' => array(1, 2)))
+        );
+
+        $this->assertEquals(
+            array(array('d', 20), array('e', 20)), 
+            $this->redis->zrangebyscore('zset', 10, 20, array(
+                'limit'      => array(1, 2), 
+                'withscores' => true, 
+            ))
         );
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
