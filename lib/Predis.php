@@ -2613,6 +2613,16 @@ class ZSetReverseRange extends \Predis\Commands\ZSetRange {
 
 class ZSetRangeByScore extends \Predis\Commands\ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
+    protected function prepareOptions($options) {
+        $opts = array_change_key_case($options, CASE_UPPER);
+        $finalizedOpts = array();
+        if (isset($opts['LIMIT']) && is_array($opts['LIMIT'])) {
+            $finalizedOpts[] = 'LIMIT';
+            $finalizedOpts[] = $opts['LIMIT'][0];
+            $finalizedOpts[] = $opts['LIMIT'][1];
+        }
+        return array_merge($finalizedOpts, parent::prepareOptions($options));
+    }
 }
 
 class ZSetCount extends \Predis\MultiBulkCommand {
