@@ -1,8 +1,13 @@
 v0.6.1 (2010-xx-xx)
+  * Minor internal improvements and clean ups.
+
   * New commands available in the Redis v2.2 profile (dev):
       - Misc.  : WATCH, UNWATCH
 
-  * Minor internal improvements and clean ups.
+  * Optional modifiers for ZRANGE, ZREVRANGE and ZRANGEBYSCORE queries are 
+    now supported using an array instance as the last argument.
+
+  * Added missing support for the LIMIT modifier in ZRANGEBYSCORE.
 
   * The constructor of Predis\Client::__construct now accepts also instances 
     of Predis\ConnectionParameters.
