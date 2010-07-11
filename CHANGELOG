@@ -1,13 +1,21 @@
-v0.6.1 (2010-xx-xx)
+v0.6.1 (2010-07-11)
+  * Minor internal improvements and clean ups.
+
   * New commands available in the Redis v2.2 profile (dev):
       - Misc.  : WATCH, UNWATCH
 
-  * Minor internal improvements and clean ups.
+  * Optional modifiers for ZRANGE, ZREVRANGE and ZRANGEBYSCORE queries are
+    supported using an associative array passed as the last argument of their
+    respective methods.
 
-  * The constructor of Predis_Client::__construct now accepts also instances
-    of Predis_ConnectionParameters.
+  * The LIMIT modifier for ZRANGEBYSCORE can be specified using either:
+      - an indexed array: array($offset, $count)
+      - an associative array: array('offset' => $offset, 'count' => $count)
 
-  * Predis_MultiExecBlock and Predis_PubSubContext will throw an exception
+  * The method Predis_Client::__construct() now accepts also instances of
+    Predis_ConnectionParameters.
+
+  * Predis_MultiExecBlock and Predis_PubSubContext now throw an exception
     when trying to create their instances using a profile that does not
     support the required Redis commands or when the client is connected to
     a cluster of connections.
@@ -17,14 +25,17 @@ v0.6.1 (2010-xx-xx)
       - support for WATCH and UNWATCH when using the current development
         profile (Redis v2.2) and aborted transactions.
 
-  * New method signature for Predis_Client::multiExec(). Now it is able to
-    accept an array of options for the underlying Predis_MultiExecBlock, but
-    it is still backwards compatible with previous releases of Predis.
+  * New signature for Predis_Client::multiExec() which is now able to accept
+    an array of options for the underlying instance of Predis_MultiExecBlock.
+    Backwards compatibility with previous releases of Predis is ensured.
 
-  * New method signature for Predis_Client::pipeline(). Now it is able to
-    accept an array of options for the underlying Predis_CommandPipeline,
-    but it is still backwards compatible with previous releases of Predis.
-    Predis_Client::pipelineSafe() is to be considered obsolete.
+  * New signature for Predis_Client::pipeline() which is now able to accept
+    an array of options for the underlying instance of Predis_CommandPipeline.
+    Backwards compatibility with previous releases of Predis is ensured.
+    The method Predis_Client::pipelineSafe() is to be considered deprecated.
+
+  * FIX: The WEIGHT modifier for ZUNIONSTORE and ZINTERSTORE was handled
+    incorrectly with more than two weights specified.
 
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 

@@ -56,7 +56,7 @@ class Predis_Client {
             throw new Predis_ClientException('Missing connection parameters');
         }
 
-        return new Predis_Client($argc === 1 ? $argv[0] : $argv, $serverProfile);
+        return new Predis_Client($argc === 1 ? $argv[0] : $argv, $options);
     }
 
     private static function filterClientOptions($options) {
@@ -2546,8 +2546,9 @@ class Predis_Commands_ZSetUnionStore extends Predis_MultiBulkCommand {
         $finalizedOpts = array();
         if (isset($opts['WEIGHTS']) && is_array($opts['WEIGHTS'])) {
             $finalizedOpts[] = 'WEIGHTS';
-            $finalizedOpts[] = $opts['WEIGHTS'][0];
-            $finalizedOpts[] = $opts['WEIGHTS'][1];
+            foreach ($opts['WEIGHTS'] as $weight) {
+                $finalizedOpts[] = $weight;
+            }
         }
         if (isset($opts['AGGREGATE'])) {
             $finalizedOpts[] = 'AGGREGATE';
@@ -2562,20 +2563,42 @@ class Predis_Commands_ZSetIntersectionStore extends Predis_Commands_ZSetUnionSto
 }
 
 class Predis_Commands_ZSetRange extends Predis_MultiBulkCommand {
+    private $_withScores = false;
     public function getCommandId() { return 'ZRANGE'; }
-    public function parseResponse($data) {
-        $arguments = $this->getArguments();
+    public function filterArguments(Array $arguments) {
         if (count($arguments) === 4) {
-            if (strtolower($arguments[3]) === 'withscores') {
-                if ($data instanceof Iterator) {
-                    return new Predis_Shared_MultiBulkResponseKVIterator($data);
-                }
-                $result = array();
-                for ($i = 0; $i < count($data); $i++) {
-                    $result[] = array($data[$i], $data[++$i]);
-                }
-                return $result;
+            $lastType = gettype($arguments[3]);
+            if ($lastType === 'string' && strtolower($arguments[3]) === 'withscores') {
+                // used for compatibility with older versions
+                $arguments[3] = array('WITHSCORES' => true);
+                $lastType = 'array';
             }
+            if ($lastType === 'array') {
+                $options = $this->prepareOptions(array_pop($arguments));
+                return array_merge($arguments, $options);
+            }
+        }
+        return $arguments;
+    }
+    protected function prepareOptions($options) {
+        $opts = array_change_key_case($options, CASE_UPPER);
+        $finalizedOpts = array();
+        if (isset($opts['WITHSCORES'])) {
+            $finalizedOpts[] = 'WITHSCORES';
+            $this->_withScores = true;
+        }
+        return $finalizedOpts;
+    }
+    public function parseResponse($data) {
+        if ($this->_withScores) {
+            if ($data instanceof Iterator) {
+                return new Predis_Shared_MultiBulkResponseKVIterator($data);
+            }
+            $result = array();
+            for ($i = 0; $i < count($data); $i++) {
+                $result[] = array($data[$i], $data[++$i]);
+            }
+            return $result;
         }
         return $data;
     }
@@ -2587,6 +2610,17 @@ class Predis_Commands_ZSetReverseRange extends Predis_Commands_ZSetRange {
 
 class Predis_Commands_ZSetRangeByScore extends Predis_Commands_ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
+    protected function prepareOptions($options) {
+        $opts = array_change_key_case($options, CASE_UPPER);
+        $finalizedOpts = array();
+        if (isset($opts['LIMIT']) && is_array($opts['LIMIT'])) {
+            $limit = array_change_key_case($opts['LIMIT'], CASE_UPPER);
+            $finalizedOpts[] = 'LIMIT';
+            $finalizedOpts[] = isset($limit['OFFSET']) ? $limit['OFFSET'] : $limit[0];
+            $finalizedOpts[] = isset($limit['COUNT']) ? $limit['COUNT'] : $limit[1];
+        }
+        return array_merge($finalizedOpts, parent::prepareOptions($options));
+    }
 }
 
 class Predis_Commands_ZSetCount extends Predis_MultiBulkCommand {
