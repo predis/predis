@@ -1,4 +1,4 @@
-v0.6.1 (2010-xx-xx)
+v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
   * New commands available in the Redis v2.2 profile (dev):
