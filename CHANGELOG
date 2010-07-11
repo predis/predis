@@ -5,14 +5,15 @@ v0.6.1 (2010-xx-xx)
       - Misc.  : WATCH, UNWATCH
 
   * Optional modifiers for ZRANGE, ZREVRANGE and ZRANGEBYSCORE queries are 
-    now supported using an array instance as the last argument.
+    supported using an associative array passed as the last argument of their 
+    respective methods.
 
-  * Added missing support for the LIMIT modifier in ZRANGEBYSCORE.
+  * Added missing support for the LIMIT modifier of ZRANGEBYSCORE.
 
-  * The constructor of Predis\Client::__construct now accepts also instances 
-    of Predis\ConnectionParameters.
+  * The method Predis\Client::__construct() now accepts also instances of 
+    Predis\ConnectionParameters.
 
-  * Predis\MultiExecBlock and Predis\PubSubContext will throw an exception 
+  * Predis\MultiExecBlock and Predis\PubSubContext now throw an exception 
     when trying to create their instances using a profile that does not 
     support the required Redis commands or when the client is connected to 
     a cluster of connections.
@@ -22,14 +23,14 @@ v0.6.1 (2010-xx-xx)
       - support for WATCH and UNWATCH when using the current development 
         profile (Redis v2.2) and aborted transactions.
 
-  * New method signature for Predis\Client::multiExec(). Now it is able to 
-    accept an array of options for the underlying Predis\MultiExecBlock, but 
-    it is still backwards compatible with previous releases of Predis.
+  * New signature for Predis\Client::multiExec() which is now able to accept 
+    an array of options for the underlying instance of Predis\MultiExecBlock. 
+    Backwards compatibility with previous releases of Predis is ensured.
 
-  * New method signature for Predis\Client::pipeline(). Now it is able to 
-    accept an array of options for the underlying Predis\CommandPipeline, 
-    but it is still backwards compatible with previous releases of Predis. 
-    Predis\Client::pipelineSafe() is to be considered obsolete.
+  * New signature for Predis\Client::pipeline() which is now able to accept 
+    an array of options for the underlying instance of Predis\CommandPipeline. 
+    Backwards compatibility with previous releases of Predis is ensured. 
+    The method Predis\Client::pipelineSafe() is to be considered deprecated.
 
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
