@@ -34,6 +34,9 @@ v0.6.1 (2010-xx-xx)
     Backwards compatibility with previous releases of Predis is ensured. 
     The method Predis\Client::pipelineSafe() is to be considered deprecated.
 
+  * FIX: The WEIGHT modifier for ZUNIONSTORE and ZINTERSTORE was handled 
+    incorrectly with more than two weights specified.
+
 v0.6.0 (2010-05-24)
   * Switched to the new multi-bulk request protocol for all of the commands 
     in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now 

@@ -2509,8 +2509,9 @@ class ZSetUnionStore extends \Predis\MultiBulkCommand {
         $finalizedOpts = array();
         if (isset($opts['WEIGHTS']) && is_array($opts['WEIGHTS'])) {
             $finalizedOpts[] = 'WEIGHTS';
-            $finalizedOpts[] = $opts['WEIGHTS'][0];
-            $finalizedOpts[] = $opts['WEIGHTS'][1];
+            foreach ($opts['WEIGHTS'] as $weight) {
+                $finalizedOpts[] = $weight;
+            }
         }
         if (isset($opts['AGGREGATE'])) {
             $finalizedOpts[] = 'AGGREGATE';
