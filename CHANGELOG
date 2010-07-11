@@ -10,7 +10,7 @@ v0.6.1 (2010-xx-xx)
 
   * The LIMIT modifier for ZRANGEBYSCORE can be specified using either: 
       - an indexed array: array($offset, $count)
-      - an associative array: array('limit' => $limit, 'count' => $count)
+      - an associative array: array('offset' => $offset, 'count' => $count)
 
   * The method Predis\Client::__construct() now accepts also instances of 
     Predis\ConnectionParameters.
