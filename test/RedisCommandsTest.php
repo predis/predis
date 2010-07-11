@@ -1204,6 +1204,13 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertEquals(
+            array('d', 'e'), 
+            $this->redis->zrangebyscore('zset', 10, 20, array(
+                'limit' => array('offset' => 1, 'count' => 2)
+            ))
+        );
+
+        $this->assertEquals(
             array(array('d', 20), array('e', 20)), 
             $this->redis->zrangebyscore('zset', 10, 20, array(
                 'limit'      => array(1, 2), 
