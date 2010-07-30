@@ -1,3 +1,13 @@
+v0.7.0 (2010-xx-xx)
+  * Support for long aliases (method names) for Redis commands has been dropped.
+
+  * The Predis\IConnection interface has been splitted in two different new 
+    interfaces: Predis\IConnectionSingle and Predis\IConnectionCluster.
+
+  * Developers can now register their own classes that implements the 
+    Predis\IConnectionSingle interface to handle different URI schemes such as 
+    'redis', 'tcp', 'udp' or anything else.
+
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
