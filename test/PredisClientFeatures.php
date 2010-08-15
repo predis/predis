@@ -94,7 +94,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
         $this->assertNull($cmd->getHash(new \Predis\Distribution\HashRing()));
-        $this->assertEquals("PING\r\n", $cmd());
+        $this->assertEquals("PING\r\n", $cmd->serialize());
     }
 
     function testCommand_InlineWithArguments() {
@@ -106,7 +106,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cmd->closesConnection());
         $this->assertTrue($cmd->canBeHashed());
         $this->assertNotNull($cmd->getHash(new \Predis\Distribution\HashRing()));
-        $this->assertEquals("GET key\r\n", $cmd());
+        $this->assertEquals("GET key\r\n", $cmd->serialize());
     }
 
     function testCommand_BulkWithArguments() {
@@ -118,7 +118,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cmd->closesConnection());
         $this->assertTrue($cmd->canBeHashed());
         $this->assertNotNull($cmd->getHash(new \Predis\Distribution\HashRing()));
-        $this->assertEquals("SET key 5\r\nvalue\r\n", $cmd());
+        $this->assertEquals("SET key 5\r\nvalue\r\n", $cmd->serialize());
     }
 
     function testCommand_MultiBulkWithArguments() {
@@ -130,7 +130,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
         $this->assertNotNull($cmd->getHash(new \Predis\Distribution\HashRing()));
-        $this->assertEquals("*5\r\n$4\r\nMSET\r\n$4\r\nkey1\r\n$6\r\nvalue1\r\n$4\r\nkey2\r\n$6\r\nvalue2\r\n", $cmd());
+        $this->assertEquals("*5\r\n$4\r\nMSET\r\n$4\r\nkey1\r\n$6\r\nvalue1\r\n$4\r\nkey2\r\n$6\r\nvalue2\r\n", $cmd->serialize());
     }
 
     function testCommand_ParseResponse() {

@@ -504,7 +504,7 @@ abstract class Command {
         return $data;
     }
 
-    public final function __invoke() {
+    public final function serialize() {
         return $this->serializeRequest($this->getCommandId(), $this->getArguments());
     }
 }
@@ -1328,7 +1328,7 @@ class TcpConnection implements IConnectionSingle {
     }
 
     public function writeCommand(Command $command) {
-        $this->writeBytes($command());
+        $this->writeBytes($command->serialize());
     }
 
     public function readResponse(Command $command) {
