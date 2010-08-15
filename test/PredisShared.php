@@ -65,7 +65,7 @@ class RC {
         $handle = popen('php', 'w');
         fwrite($handle, "<?php
         require '../lib/Predis.php';
-        \$redis = Predis\Client::create('$redisUri');
+        \$redis = new Predis\Client('$redisUri');
         \$redis->rpush('{$op}1', 'a');
         \$redis->rpush('{$op}2', 'b');
         \$redis->rpush('{$op}3', 'c');

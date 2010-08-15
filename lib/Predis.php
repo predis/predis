@@ -38,25 +38,6 @@ class Client {
         $this->setupConnection($parameters);
     }
 
-    public static function create(/* arguments */) {
-        $argv = func_get_args();
-        $argc = func_num_args();
-
-        $options = null;
-        $lastArg = $argv[$argc-1];
-        if ($argc > 0 && !is_string($lastArg) && ($lastArg instanceof ClientOptions ||
-            is_subclass_of($lastArg, '\Predis\RedisServerProfile'))) {
-            $options = array_pop($argv);
-            $argc--;
-        }
-
-        if ($argc === 0) {
-            throw new ClientException('Missing connection parameters');
-        }
-
-        return new Client($argc === 1 ? $argv[0] : $argv, $options);
-    }
-
     private static function filterClientOptions($options) {
         if ($options instanceof ClientOptions) {
             return $options;
