@@ -433,7 +433,19 @@ abstract class Command {
 
     public abstract function getCommandId();
 
-    public abstract function serializeRequest($command, $arguments);
+    public function serializeRequest($command, $arguments) {
+        $newline = Protocol::NEWLINE;
+        $cmdlen  = strlen($command);
+        $reqlen  = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
+        foreach ($arguments as $argument) {
+            $arglen  = strlen($argument);
+            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
+        }
+
+        return $buffer;
+    }
 
     public function canBeHashed() {
         return true;
@@ -494,22 +506,6 @@ abstract class Command {
 
     public final function __invoke() {
         return $this->serializeRequest($this->getCommandId(), $this->getArguments());
-    }
-}
-
-abstract class MultiBulkCommand extends Command {
-    public function serializeRequest($command, $arguments) {
-        $newline = Protocol::NEWLINE;
-        $cmdlen  = strlen($command);
-        $reqlen  = count($arguments) + 1;
-
-        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
-        foreach ($arguments as $argument) {
-            $arglen  = strlen($argument);
-            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
-        }
-
-        return $buffer;
     }
 }
 
@@ -2194,7 +2190,7 @@ class MultiBulkResponseKVIterator extends MultiBulkResponseIteratorBase {
 namespace Predis\Commands;
 
 /* miscellaneous commands */
-class Ping extends  \Predis\MultiBulkCommand {
+class Ping extends  \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PING'; }
     public function parseResponse($data) {
@@ -2202,38 +2198,38 @@ class Ping extends  \Predis\MultiBulkCommand {
     }
 }
 
-class DoEcho extends \Predis\MultiBulkCommand {
+class DoEcho extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'ECHO'; }
 }
 
-class Auth extends \Predis\MultiBulkCommand {
+class Auth extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'AUTH'; }
 }
 
 /* connection handling */
-class Quit extends \Predis\MultiBulkCommand {
+class Quit extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'QUIT'; }
     public function closesConnection() { return true; }
 }
 
 /* commands operating on string values */
-class Set extends \Predis\MultiBulkCommand {
+class Set extends \Predis\Command {
     public function getCommandId() { return 'SET'; }
 }
 
-class SetExpire extends \Predis\MultiBulkCommand {
+class SetExpire extends \Predis\Command {
     public function getCommandId() { return 'SETEX'; }
 }
 
-class SetPreserve extends \Predis\MultiBulkCommand {
+class SetPreserve extends \Predis\Command {
     public function getCommandId() { return 'SETNX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class SetMultiple extends \Predis\MultiBulkCommand {
+class SetMultiple extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MSET'; }
     public function filterArguments(Array $arguments) {
@@ -2256,11 +2252,11 @@ class SetMultiplePreserve extends \Predis\Commands\SetMultiple {
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Get extends \Predis\MultiBulkCommand {
+class Get extends \Predis\Command {
     public function getCommandId() { return 'GET'; }
 }
 
-class GetMultiple extends \Predis\MultiBulkCommand {
+class GetMultiple extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MGET'; }
     public function filterArguments(Array $arguments) {
@@ -2268,52 +2264,52 @@ class GetMultiple extends \Predis\MultiBulkCommand {
     }
 }
 
-class GetSet extends \Predis\MultiBulkCommand {
+class GetSet extends \Predis\Command {
     public function getCommandId() { return 'GETSET'; }
 }
 
-class Increment extends \Predis\MultiBulkCommand {
+class Increment extends \Predis\Command {
     public function getCommandId() { return 'INCR'; }
 }
 
-class IncrementBy extends \Predis\MultiBulkCommand {
+class IncrementBy extends \Predis\Command {
     public function getCommandId() { return 'INCRBY'; }
 }
 
-class Decrement extends \Predis\MultiBulkCommand {
+class Decrement extends \Predis\Command {
     public function getCommandId() { return 'DECR'; }
 }
 
-class DecrementBy extends \Predis\MultiBulkCommand {
+class DecrementBy extends \Predis\Command {
     public function getCommandId() { return 'DECRBY'; }
 }
 
-class Exists extends \Predis\MultiBulkCommand {
+class Exists extends \Predis\Command {
     public function getCommandId() { return 'EXISTS'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Delete extends \Predis\MultiBulkCommand {
+class Delete extends \Predis\Command {
     public function getCommandId() { return 'DEL'; }
     public function filterArguments(Array $arguments) {
         return \Predis\Shared\Utils::filterArrayArguments($arguments);
     }
 }
 
-class Type extends \Predis\MultiBulkCommand {
+class Type extends \Predis\Command {
     public function getCommandId() { return 'TYPE'; }
 }
 
-class Append extends \Predis\MultiBulkCommand {
+class Append extends \Predis\Command {
     public function getCommandId() { return 'APPEND'; }
 }
 
-class Substr extends \Predis\MultiBulkCommand {
+class Substr extends \Predis\Command {
     public function getCommandId() { return 'SUBSTR'; }
 }
 
 /* commands operating on the key space */
-class Keys extends \Predis\MultiBulkCommand {
+class Keys extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'KEYS'; }
     public function parseResponse($data) { 
@@ -2325,137 +2321,137 @@ class Keys extends \Predis\MultiBulkCommand {
     }
 }
 
-class RandomKey extends \Predis\MultiBulkCommand {
+class RandomKey extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RANDOMKEY'; }
     public function parseResponse($data) { return $data !== '' ? $data : null; }
 }
 
-class Rename extends \Predis\MultiBulkCommand {
+class Rename extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RENAME'; }
 }
 
-class RenamePreserve extends \Predis\MultiBulkCommand {
+class RenamePreserve extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'RENAMENX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Expire extends \Predis\MultiBulkCommand {
+class Expire extends \Predis\Command {
     public function getCommandId() { return 'EXPIRE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class ExpireAt extends \Predis\MultiBulkCommand {
+class ExpireAt extends \Predis\Command {
     public function getCommandId() { return 'EXPIREAT'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class DatabaseSize extends \Predis\MultiBulkCommand {
+class DatabaseSize extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DBSIZE'; }
 }
 
-class TimeToLive extends \Predis\MultiBulkCommand {
+class TimeToLive extends \Predis\Command {
     public function getCommandId() { return 'TTL'; }
 }
 
 /* commands operating on lists */
-class ListPushTail extends \Predis\MultiBulkCommand {
+class ListPushTail extends \Predis\Command {
     public function getCommandId() { return 'RPUSH'; }
 }
 
-class ListPushHead extends \Predis\MultiBulkCommand {
+class ListPushHead extends \Predis\Command {
     public function getCommandId() { return 'LPUSH'; }
 }
 
-class ListLength extends \Predis\MultiBulkCommand {
+class ListLength extends \Predis\Command {
     public function getCommandId() { return 'LLEN'; }
 }
 
-class ListRange extends \Predis\MultiBulkCommand {
+class ListRange extends \Predis\Command {
     public function getCommandId() { return 'LRANGE'; }
 }
 
-class ListTrim extends \Predis\MultiBulkCommand {
+class ListTrim extends \Predis\Command {
     public function getCommandId() { return 'LTRIM'; }
 }
 
-class ListIndex extends \Predis\MultiBulkCommand {
+class ListIndex extends \Predis\Command {
     public function getCommandId() { return 'LINDEX'; }
 }
 
-class ListSet extends \Predis\MultiBulkCommand {
+class ListSet extends \Predis\Command {
     public function getCommandId() { return 'LSET'; }
 }
 
-class ListRemove extends \Predis\MultiBulkCommand {
+class ListRemove extends \Predis\Command {
     public function getCommandId() { return 'LREM'; }
 }
 
-class ListPopLastPushHead extends \Predis\MultiBulkCommand {
+class ListPopLastPushHead extends \Predis\Command {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class ListPopLastPushHeadBulk extends \Predis\MultiBulkCommand {
+class ListPopLastPushHeadBulk extends \Predis\Command {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class ListPopFirst extends \Predis\MultiBulkCommand {
+class ListPopFirst extends \Predis\Command {
     public function getCommandId() { return 'LPOP'; }
 }
 
-class ListPopLast extends \Predis\MultiBulkCommand {
+class ListPopLast extends \Predis\Command {
     public function getCommandId() { return 'RPOP'; }
 }
 
-class ListPopFirstBlocking extends \Predis\MultiBulkCommand {
+class ListPopFirstBlocking extends \Predis\Command {
     public function getCommandId() { return 'BLPOP'; }
 }
 
-class ListPopLastBlocking extends \Predis\MultiBulkCommand {
+class ListPopLastBlocking extends \Predis\Command {
     public function getCommandId() { return 'BRPOP'; }
 }
 
 /* commands operating on sets */
-class SetAdd extends \Predis\MultiBulkCommand {
+class SetAdd extends \Predis\Command {
     public function getCommandId() { return 'SADD'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class SetRemove extends \Predis\MultiBulkCommand {
+class SetRemove extends \Predis\Command {
     public function getCommandId() { return 'SREM'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class SetPop  extends \Predis\MultiBulkCommand {
+class SetPop  extends \Predis\Command {
     public function getCommandId() { return 'SPOP'; }
 }
 
-class SetMove extends \Predis\MultiBulkCommand {
+class SetMove extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SMOVE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class SetCardinality extends \Predis\MultiBulkCommand {
+class SetCardinality extends \Predis\Command {
     public function getCommandId() { return 'SCARD'; }
 }
 
-class SetIsMember extends \Predis\MultiBulkCommand {
+class SetIsMember extends \Predis\Command {
     public function getCommandId() { return 'SISMEMBER'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class SetIntersection extends \Predis\MultiBulkCommand {
+class SetIntersection extends \Predis\Command {
     public function getCommandId() { return 'SINTER'; }
     public function filterArguments(Array $arguments) {
         return \Predis\Shared\Utils::filterArrayArguments($arguments);
     }
 }
 
-class SetIntersectionStore extends \Predis\MultiBulkCommand {
+class SetIntersectionStore extends \Predis\Command {
     public function getCommandId() { return 'SINTERSTORE'; }
     public function filterArguments(Array $arguments) {
         return \Predis\Shared\Utils::filterArrayArguments($arguments);
@@ -2478,30 +2474,30 @@ class SetDifferenceStore extends \Predis\Commands\SetIntersectionStore {
     public function getCommandId() { return 'SDIFFSTORE'; }
 }
 
-class SetMembers extends \Predis\MultiBulkCommand {
+class SetMembers extends \Predis\Command {
     public function getCommandId() { return 'SMEMBERS'; }
 }
 
-class SetRandomMember extends \Predis\MultiBulkCommand {
+class SetRandomMember extends \Predis\Command {
     public function getCommandId() { return 'SRANDMEMBER'; }
 }
 
 /* commands operating on sorted sets */
-class ZSetAdd extends \Predis\MultiBulkCommand {
+class ZSetAdd extends \Predis\Command {
     public function getCommandId() { return 'ZADD'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class ZSetIncrementBy extends \Predis\MultiBulkCommand {
+class ZSetIncrementBy extends \Predis\Command {
     public function getCommandId() { return 'ZINCRBY'; }
 }
 
-class ZSetRemove extends \Predis\MultiBulkCommand {
+class ZSetRemove extends \Predis\Command {
     public function getCommandId() { return 'ZREM'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class ZSetUnionStore extends \Predis\MultiBulkCommand {
+class ZSetUnionStore extends \Predis\Command {
     public function getCommandId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
@@ -2533,7 +2529,7 @@ class ZSetIntersectionStore extends \Predis\Commands\ZSetUnionStore {
     public function getCommandId() { return 'ZINTERSTORE'; }
 }
 
-class ZSetRange extends \Predis\MultiBulkCommand {
+class ZSetRange extends \Predis\Command {
     private $_withScores = false;
     public function getCommandId() { return 'ZRANGE'; }
     public function filterArguments(Array $arguments) {
@@ -2594,46 +2590,46 @@ class ZSetRangeByScore extends \Predis\Commands\ZSetRange {
     }
 }
 
-class ZSetCount extends \Predis\MultiBulkCommand {
+class ZSetCount extends \Predis\Command {
     public function getCommandId() { return 'ZCOUNT'; }
 }
 
-class ZSetCardinality extends \Predis\MultiBulkCommand {
+class ZSetCardinality extends \Predis\Command {
     public function getCommandId() { return 'ZCARD'; }
 }
 
-class ZSetScore extends \Predis\MultiBulkCommand {
+class ZSetScore extends \Predis\Command {
     public function getCommandId() { return 'ZSCORE'; }
 }
 
-class ZSetRemoveRangeByScore extends \Predis\MultiBulkCommand {
+class ZSetRemoveRangeByScore extends \Predis\Command {
     public function getCommandId() { return 'ZREMRANGEBYSCORE'; }
 }
 
-class ZSetRank extends \Predis\MultiBulkCommand {
+class ZSetRank extends \Predis\Command {
     public function getCommandId() { return 'ZRANK'; }
 }
 
-class ZSetReverseRank extends \Predis\MultiBulkCommand {
+class ZSetReverseRank extends \Predis\Command {
     public function getCommandId() { return 'ZREVRANK'; }
 }
 
-class ZSetRemoveRangeByRank extends \Predis\MultiBulkCommand {
+class ZSetRemoveRangeByRank extends \Predis\Command {
     public function getCommandId() { return 'ZREMRANGEBYRANK'; }
 }
 
 /* commands operating on hashes */
-class HashSet extends \Predis\MultiBulkCommand {
+class HashSet extends \Predis\Command {
     public function getCommandId() { return 'HSET'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class HashSetPreserve extends \Predis\MultiBulkCommand {
+class HashSetPreserve extends \Predis\Command {
     public function getCommandId() { return 'HSETNX'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class HashSetMultiple extends \Predis\MultiBulkCommand {
+class HashSetMultiple extends \Predis\Command {
     public function getCommandId() { return 'HMSET'; }
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 2 && is_array($arguments[1])) {
@@ -2649,15 +2645,15 @@ class HashSetMultiple extends \Predis\MultiBulkCommand {
     }
 }
 
-class HashIncrementBy extends \Predis\MultiBulkCommand {
+class HashIncrementBy extends \Predis\Command {
     public function getCommandId() { return 'HINCRBY'; }
 }
 
-class HashGet extends \Predis\MultiBulkCommand {
+class HashGet extends \Predis\Command {
     public function getCommandId() { return 'HGET'; }
 }
 
-class HashGetMultiple extends \Predis\MultiBulkCommand {
+class HashGetMultiple extends \Predis\Command {
     public function getCommandId() { return 'HMGET'; }
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 2 && is_array($arguments[1])) {
@@ -2672,29 +2668,29 @@ class HashGetMultiple extends \Predis\MultiBulkCommand {
     }
 }
 
-class HashDelete extends \Predis\MultiBulkCommand {
+class HashDelete extends \Predis\Command {
     public function getCommandId() { return 'HDEL'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class HashExists extends \Predis\MultiBulkCommand {
+class HashExists extends \Predis\Command {
     public function getCommandId() { return 'HEXISTS'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class HashLength extends \Predis\MultiBulkCommand {
+class HashLength extends \Predis\Command {
     public function getCommandId() { return 'HLEN'; }
 }
 
-class HashKeys extends \Predis\MultiBulkCommand {
+class HashKeys extends \Predis\Command {
     public function getCommandId() { return 'HKEYS'; }
 }
 
-class HashValues extends \Predis\MultiBulkCommand {
+class HashValues extends \Predis\Command {
     public function getCommandId() { return 'HVALS'; }
 }
 
-class HashGetAll extends \Predis\MultiBulkCommand {
+class HashGetAll extends \Predis\Command {
     public function getCommandId() { return 'HGETALL'; }
     public function parseResponse($data) {
         if ($data instanceof \Iterator) {
@@ -2709,29 +2705,29 @@ class HashGetAll extends \Predis\MultiBulkCommand {
 }
 
 /* multiple databases handling commands */
-class SelectDatabase extends \Predis\MultiBulkCommand {
+class SelectDatabase extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SELECT'; }
 }
 
-class MoveKey extends \Predis\MultiBulkCommand {
+class MoveKey extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MOVE'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class FlushDatabase extends \Predis\MultiBulkCommand {
+class FlushDatabase extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'FLUSHDB'; }
 }
 
-class FlushAll extends \Predis\MultiBulkCommand {
+class FlushAll extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'FLUSHALL'; }
 }
 
 /* sorting */
-class Sort extends \Predis\MultiBulkCommand {
+class Sort extends \Predis\Command {
     public function getCommandId() { return 'SORT'; }
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
@@ -2780,66 +2776,66 @@ class Sort extends \Predis\MultiBulkCommand {
 }
 
 /* transactions */
-class Multi extends \Predis\MultiBulkCommand {
+class Multi extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MULTI'; }
 }
 
-class Exec extends \Predis\MultiBulkCommand {
+class Exec extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'EXEC'; }
 }
 
-class Discard extends \Predis\MultiBulkCommand {
+class Discard extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DISCARD'; }
 }
 
-class Watch extends \Predis\MultiBulkCommand {
+class Watch extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'WATCH'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
-class Unwatch extends \Predis\MultiBulkCommand {
+class Unwatch extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'UNWATCH'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 
 /* publish/subscribe */
-class Subscribe extends \Predis\MultiBulkCommand {
+class Subscribe extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SUBSCRIBE'; }
 }
 
-class Unsubscribe extends \Predis\MultiBulkCommand {
+class Unsubscribe extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'UNSUBSCRIBE'; }
 }
 
-class SubscribeByPattern extends \Predis\MultiBulkCommand {
+class SubscribeByPattern extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PSUBSCRIBE'; }
 }
 
-class UnsubscribeByPattern extends \Predis\MultiBulkCommand {
+class UnsubscribeByPattern extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PUNSUBSCRIBE'; }
 }
 
-class Publish extends \Predis\MultiBulkCommand {
+class Publish extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PUBLISH'; }
 }
 
 /* persistence control commands */
-class Save extends \Predis\MultiBulkCommand {
+class Save extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SAVE'; }
 }
 
-class BackgroundSave extends \Predis\MultiBulkCommand {
+class BackgroundSave extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'BGSAVE'; }
     public function parseResponse($data) {
@@ -2850,7 +2846,7 @@ class BackgroundSave extends \Predis\MultiBulkCommand {
     }
 }
 
-class BackgroundRewriteAppendOnlyFile extends \Predis\MultiBulkCommand {
+class BackgroundRewriteAppendOnlyFile extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'BGREWRITEAOF'; }
     public function parseResponse($data) {
@@ -2858,19 +2854,19 @@ class BackgroundRewriteAppendOnlyFile extends \Predis\MultiBulkCommand {
     }
 }
 
-class LastSave extends \Predis\MultiBulkCommand {
+class LastSave extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'LASTSAVE'; }
 }
 
-class Shutdown extends \Predis\MultiBulkCommand {
+class Shutdown extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SHUTDOWN'; }
     public function closesConnection() { return true; }
 }
 
 /* remote server control commands */
-class Info extends \Predis\MultiBulkCommand {
+class Info extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'INFO'; }
     public function parseResponse($data) {
@@ -2894,7 +2890,7 @@ class Info extends \Predis\MultiBulkCommand {
     }
 }
 
-class SlaveOf extends \Predis\MultiBulkCommand {
+class SlaveOf extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'SLAVEOF'; }
     public function filterArguments(Array $arguments) {
@@ -2905,7 +2901,7 @@ class SlaveOf extends \Predis\MultiBulkCommand {
     }
 }
 
-class Config extends \Predis\MultiBulkCommand {
+class Config extends \Predis\Command {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'CONFIG'; }
 }
