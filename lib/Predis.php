@@ -433,7 +433,7 @@ abstract class Command {
 
     public abstract function getCommandId();
 
-    public function serializeRequest($command, $arguments) {
+    protected function serializeRequest($command, $arguments) {
         $newline = Protocol::NEWLINE;
         $cmdlen  = strlen($command);
         $reqlen  = count($arguments) + 1;
