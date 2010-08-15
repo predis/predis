@@ -1,12 +1,24 @@
 v0.7.0 (2010-xx-xx)
   * Support for long aliases (method names) for Redis commands has been dropped.
 
+  * The Predis\MultiBulkCommand class has been merged into Predis\Command and 
+    thus removed. If you have code that extends Predis\MultiBulkCommand but 
+    you can not afford to update your code, you can always implement it again 
+    as an abstract class simply by extending Predis\Command.
+
   * The Predis\IConnection interface has been splitted in two different new 
     interfaces: Predis\IConnectionSingle and Predis\IConnectionCluster.
 
   * Developers can now register their own classes that implements the 
     Predis\IConnectionSingle interface to handle different URI schemes such as 
     'redis', 'tcp', 'udp' or anything else.
+
+  * Added the new Predis\ICommand interface. The Predis\Command class now 
+    implements this interface that is used in the core bits of Predis.
+
+  * Implicit extraction of arguments when the only argument passed to a 
+    multibulk command is an array is not supported anymore and must be done 
+    explicitly inside Predis\Command::filterArguments().
 
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
