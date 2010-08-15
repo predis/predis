@@ -125,7 +125,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $cmd = new \Predis\Commands\SetMultiple();
         $cmd->setArgumentsArray(array('key1', 'value1', 'key2', 'value2'));
 
-        $this->assertType('\Predis\MultiBulkCommand', $cmd);
+        $this->assertType('\Predis\Command', $cmd);
         $this->assertEquals('MSET', $cmd->getCommandId());
         $this->assertFalse($cmd->closesConnection());
         $this->assertFalse($cmd->canBeHashed());
