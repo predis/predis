@@ -250,10 +250,6 @@ class Client {
         }
     }
 
-    public function pipelineSafe($pipelineBlock = null) {
-        return $this->initPipeline(array('safe' => true), $pipelineBlock);
-    }
-
     private function initPipeline(Array $options = null, $pipelineBlock = null) {
         $pipeline = null;
         if (isset($options)) {
