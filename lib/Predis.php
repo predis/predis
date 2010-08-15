@@ -314,17 +314,17 @@ interface IClientOptionsHandler {
 
 class ClientOptionsProfile implements IClientOptionsHandler {
     public function validate($option, $value) {
-        if ($value instanceof \Predis\RedisServerProfile) {
+        if ($value instanceof RedisServerProfile) {
             return $value;
         }
         if (is_string($value)) {
-            return \Predis\RedisServerProfile::get($value);
+            return RedisServerProfile::get($value);
         }
         throw new \InvalidArgumentException("Invalid value for option $option");
     }
 
     public function getDefault() {
-        return \Predis\RedisServerProfile::getDefault();
+        return RedisServerProfile::getDefault();
     }
 }
 
@@ -343,7 +343,7 @@ class ClientOptionsKeyDistribution implements IClientOptionsHandler {
     }
 
     public function getDefault() {
-        return new \Predis\Distribution\HashRing();
+        return new Distribution\HashRing();
     }
 }
 
@@ -384,10 +384,10 @@ class ClientOptions {
 
     private static function getOptionsHandlers() {
         return array(
-            'profile'    => new \Predis\ClientOptionsProfile(),
-            'key_distribution' => new \Predis\ClientOptionsKeyDistribution(),
-            'iterable_multibulk' => new \Predis\ClientOptionsIterableMultiBulk(),
-            'throw_on_error' => new \Predis\ClientOptionsThrowOnError(),
+            'profile' => new ClientOptionsProfile(),
+            'key_distribution' => new ClientOptionsKeyDistribution(),
+            'iterable_multibulk' => new ClientOptionsIterableMultiBulk(),
+            'throw_on_error' => new ClientOptionsThrowOnError(),
         );
     }
 
@@ -807,13 +807,13 @@ class MultiExecBlock {
 
     private function checkCapabilities(Client $redisClient) {
         if (Utils::isCluster($redisClient->getConnection())) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 'Cannot initialize a MULTI/EXEC context over a cluster of connections'
             );
         }
         $profile = $redisClient->getProfile();
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 'The current profile does not support MULTI, EXEC and DISCARD commands'
             );
         }
@@ -822,7 +822,7 @@ class MultiExecBlock {
 
     private function isWatchSupported() {
         if ($this->_supportsWatch === false) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 'The current profile does not support WATCH and UNWATCH commands'
             );
         }
@@ -859,7 +859,7 @@ class MultiExecBlock {
     public function watch($keys) {
         $this->isWatchSupported();
         if ($this->_initialized === true) {
-            throw new \Predis\ClientException('WATCH inside MULTI is not allowed');
+            throw new ClientException('WATCH inside MULTI is not allowed');
         }
 
         $reply = null;
@@ -897,7 +897,7 @@ class MultiExecBlock {
 
     public function execute($block = null) {
         if ($this->_insideBlock === true) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 "Cannot invoke 'execute' or 'exec' inside an active client transaction block"
             );
         }
@@ -992,14 +992,14 @@ class PubSubContext implements \Iterator {
 
     private function checkCapabilities(Client $redisClient) {
         if (Utils::isCluster($redisClient->getConnection())) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 'Cannot initialize a PUB/SUB context over a cluster of connections'
             );
         }
         $profile = $redisClient->getProfile();
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
         if ($profile->supportsCommands($commands) === false) {
-            throw new \Predis\ClientException(
+            throw new ClientException(
                 'The current profile does not support PUB/SUB related commands'
             );
         }
@@ -1102,7 +1102,7 @@ class PubSubContext implements \Iterator {
                     'payload' => $response[3],
                 );
             default:
-                throw new \Predis\ClientException(
+                throw new ClientException(
                     "Received an unknown message type {$response[0]} inside of a pubsub context"
                 );
         }
@@ -1230,9 +1230,7 @@ class Connection {
     private static function getDefaultSchemes() {
         return array(
             'tcp'   => '\Predis\TcpConnection',
-
-            // used for compatibility with older versions of Predis
-            'redis' => '\Predis\TcpConnection',
+            'redis' => '\Predis\TcpConnection', // compatibility with older versions
         );
     }
 
@@ -1810,7 +1808,7 @@ class StandardExecutor implements IPipelineExecutor {
                 unset($commands[$i]);
             }
         }
-        catch (\Predis\ServerException $exception) {
+        catch (ServerException $exception) {
             // force disconnection to prevent protocol desynchronization
             $connection->disconnect();
             throw $exception;
