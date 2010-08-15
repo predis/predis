@@ -499,23 +499,12 @@ abstract class Command {
 
 abstract class MultiBulkCommand extends Command {
     public function serializeRequest($command, $arguments) {
-        $cmd_args = null;
-        $argsc    = count($arguments);
-
-        if ($argsc === 1 && is_array($arguments[0])) {
-            $cmd_args = $arguments[0];
-            $argsc = count($cmd_args);
-        }
-        else {
-            $cmd_args = $arguments;
-        }
-
         $newline = Protocol::NEWLINE;
         $cmdlen  = strlen($command);
-        $reqlen  = $argsc + 1;
+        $reqlen  = count($arguments) + 1;
 
         $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
-        foreach ($cmd_args as $argument) {
+        foreach ($arguments as $argument) {
             $arglen  = strlen($argument);
             $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
         }
@@ -2092,6 +2081,13 @@ class Utils {
         }
         throw $exception;
     }
+
+    public static function filterArrayArguments(Array $arguments) {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+        return $arguments;
+    }
 }
 
 abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
@@ -2267,6 +2263,9 @@ class Get extends \Predis\MultiBulkCommand {
 class GetMultiple extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MGET'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class GetSet extends \Predis\MultiBulkCommand {
@@ -2296,6 +2295,9 @@ class Exists extends \Predis\MultiBulkCommand {
 
 class Delete extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'DEL'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Type extends \Predis\MultiBulkCommand {
@@ -2448,25 +2450,31 @@ class SetIsMember extends \Predis\MultiBulkCommand {
 
 class SetIntersection extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SINTER'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class SetIntersectionStore extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SINTERSTORE'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
-class SetUnion extends \Predis\MultiBulkCommand {
+class SetUnion extends \Predis\Commands\SetIntersection {
     public function getCommandId() { return 'SUNION'; }
 }
 
-class SetUnionStore extends \Predis\MultiBulkCommand {
+class SetUnionStore extends \Predis\Commands\SetIntersectionStore {
     public function getCommandId() { return 'SUNIONSTORE'; }
 }
 
-class SetDifference extends \Predis\MultiBulkCommand {
+class SetDifference extends \Predis\Commands\SetIntersection {
     public function getCommandId() { return 'SDIFF'; }
 }
 
-class SetDifferenceStore extends \Predis\MultiBulkCommand {
+class SetDifferenceStore extends \Predis\Commands\SetIntersectionStore {
     public function getCommandId() { return 'SDIFFSTORE'; }
 }
 
