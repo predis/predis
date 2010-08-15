@@ -1102,47 +1102,21 @@ class ConnectionParameters {
             : self::parseURI($parameters);
     }
 
+    private static function paramsExtractor($params, $kv) {
+        list($k, $v) = explode('=', $kv);
+        $params[$k] = $v;
+        return $params;
+    }
+
     private static function parseURI($uri) {
         $parsed = @parse_url($uri);
-
         if ($parsed == false || $parsed['host'] == null) {
             throw new ClientException("Invalid URI: $uri");
         }
-
         if (array_key_exists('query', $parsed)) {
-            $details = array();
-            foreach (explode('&', $parsed['query']) as $kv) {
-                list($k, $v) = explode('=', $kv);
-                switch ($k) {
-                    case 'database':
-                        $details['database'] = $v;
-                        break;
-                    case 'password':
-                        $details['password'] = $v;
-                        break;
-                    case 'connection_async':
-                        $details['connection_async'] = $v;
-                        break;
-                    case 'connection_persistent':
-                        $details['connection_persistent'] = $v;
-                        break;
-                    case 'connection_timeout':
-                        $details['connection_timeout'] = $v;
-                        break;
-                    case 'read_write_timeout':
-                        $details['read_write_timeout'] = $v;
-                        break;
-                    case 'alias':
-                        $details['alias'] = $v;
-                        break;
-                    case 'weight':
-                        $details['weight'] = $v;
-                        break;
-                }
-            }
-            $parsed = array_merge($parsed, $details);
+            $query  = explode('&', $parsed['query']);
+            $parsed = array_reduce($query, 'self::paramsExtractor', $parsed);
         }
-
         return self::filterConnectionParams($parsed);
     }
 
