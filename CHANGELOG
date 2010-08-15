@@ -11,7 +11,8 @@ v0.7.0 (2010-xx-xx)
 
   * Developers can now register their own classes that implements the 
     Predis\IConnectionSingle interface to handle different URI schemes such as 
-    'redis', 'tcp', 'udp' or anything else.
+    'redis', 'tcp', 'udp' or anything else. Everything is handled by the 
+    new Predis\ConnectionFactory class.
 
   * Added the new Predis\ICommand interface. The Predis\Command class now 
     implements this interface that is used in the core bits of Predis.
