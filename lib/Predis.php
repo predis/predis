@@ -117,7 +117,7 @@ class Client {
         $params     = $parameters instanceof ConnectionParameters 
                           ? $parameters 
                           : new ConnectionParameters($parameters);
-        $connection = Connection::create($params, $this->_responseReader);
+        $connection = ConnectionFactory::create($params, $this->_responseReader);
 
         if ($params->password !== null) {
             $connection->pushInitCommand($this->createCommand(
@@ -1218,8 +1218,12 @@ interface IConnectionCluster extends IConnection {
     public function getConnectionById($connectionId);
 }
 
-class Connection {
+final class ConnectionFactory {
     private static $_registeredSchemes;
+
+    private function __construct() {
+        // NOOP
+    }
 
     private static function ensureInitialized() {
         if (!isset(self::$_registeredSchemes)) {
