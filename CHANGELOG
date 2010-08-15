@@ -1,6 +1,14 @@
 v0.7.0 (2010-xx-xx)
   * Support for long aliases (method names) for Redis commands has been dropped.
 
+  * List of the methods removed in this release:
+      - Predis\Client::create()
+        This method has been removed because it was considered redundant 
+        with Predis\Client::__construct() since Predis 0.6.0.
+      - Predis\Client::pipelineSafe()
+        This method was deprecated in Predis 0.6.1 and now it has been finally 
+        removed. Use Predis\Client::pipeline(array('safe' => true)).
+
   * The Predis\MultiBulkCommand class has been merged into Predis\Command and 
     thus removed. If you have code that extends Predis\MultiBulkCommand but 
     you can not afford to update your code, you can always implement it again 
