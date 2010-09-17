@@ -2803,7 +2803,7 @@ class Sort extends \Predis\MultiBulkCommand {
         if (isset($sortParams['alpha']) && $sortParams['alpha'] == true) {
             $query[] = 'ALPHA';
         }
-        if (isset($sortParams['store']) && $sortParams['store'] == true) {
+        if (isset($sortParams['store'])) {
             $query[] = 'STORE';
             $query[] = $sortParams['store'];
         }
