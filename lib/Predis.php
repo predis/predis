@@ -2712,16 +2712,15 @@ class Sort extends Command {
             return $arguments;
         }
 
-        // TODO: add more parameters checks
         $query = array($arguments[0]);
-        $sortParams = $arguments[1];
+        $sortParams = array_change_key_case($arguments[1], CASE_UPPER);
 
-        if (isset($sortParams['by'])) {
+        if (isset($sortParams['BY'])) {
             $query[] = 'BY';
-            $query[] = $sortParams['by'];
+            $query[] = $sortParams['BY'];
         }
-        if (isset($sortParams['get'])) {
-            $getargs = $sortParams['get'];
+        if (isset($sortParams['GET'])) {
+            $getargs = $sortParams['GET'];
             if (is_array($getargs)) {
                 foreach ($getargs as $getarg) {
                     $query[] = 'GET';
@@ -2733,20 +2732,22 @@ class Sort extends Command {
                 $query[] = $getargs;
             }
         }
-        if (isset($sortParams['limit']) && is_array($sortParams['limit'])) {
+        if (isset($sortParams['LIMIT']) && is_array($sortParams['LIMIT']) 
+            && count($sortParams['LIMIT']) == 2) {
+
             $query[] = 'LIMIT';
-            $query[] = $sortParams['limit'][0];
-            $query[] = $sortParams['limit'][1];
+            $query[] = $sortParams['LIMIT'][0];
+            $query[] = $sortParams['LIMIT'][1];
         }
-        if (isset($sortParams['sort'])) {
-            $query[] = strtoupper($sortParams['sort']);
+        if (isset($sortParams['SORT'])) {
+            $query[] = strtoupper($sortParams['SORT']);
         }
-        if (isset($sortParams['alpha']) && $sortParams['alpha'] == true) {
+        if (isset($sortParams['ALPHA']) && $sortParams['ALPHA'] == true) {
             $query[] = 'ALPHA';
         }
-        if (isset($sortParams['store'])) {
+        if (isset($sortParams['STORE'])) {
             $query[] = 'STORE';
-            $query[] = $sortParams['store'];
+            $query[] = $sortParams['STORE'];
         }
 
         return $query;
