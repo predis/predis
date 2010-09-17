@@ -230,21 +230,24 @@ class Client {
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
     }
 
-    public function pipeline(/* arguments */) {
-        $argv = func_get_args();
-        $argc = func_num_args();
-
+    private function sharedInitializer($argv, $initializer) {
+        $argc = count($argv);
         if ($argc === 0) {
-            return $this->initPipeline();
+            return $this->$initializer();
         }
         else if ($argc === 1) {
             list($arg0) = $argv;
-            return is_array($arg0) ? $this->initPipeline($arg0) : $this->initPipeline(null, $arg0);
+            return is_array($arg0) ? $this->$initializer($arg0) : $this->$initializer(null, $arg0);
         }
         else if ($argc === 2) {
             list($arg0, $arg1) = $argv;
-            return $this->initPipeline($arg0, $arg1);
+            return $this->$initializer($arg0, $arg1);
         }
+        return $this->$initializer($this, $arguments);
+    }
+
+    public function pipeline(/* arguments */) {
+        return $this->sharedInitializer(func_get_args(), 'initPipeline');
     }
 
     public function pipelineSafe($pipelineBlock = null) {
@@ -276,20 +279,7 @@ class Client {
     }
 
     public function multiExec(/* arguments */) {
-        $argv = func_get_args();
-        $argc = func_num_args();
-
-        if ($argc === 0) {
-            return $this->initMultiExec();
-        }
-        else if ($argc === 1) {
-            list($arg0) = $argv;
-            return is_array($arg0) ? $this->initMultiExec($arg0) : $this->initMultiExec(null, $arg0);
-        }
-        else if ($argc === 2) {
-            list($arg0, $arg1) = $argv;
-            return $this->initMultiExec($arg0, $arg1);
-        }
+        return $this->sharedInitializer(func_get_args(), 'multiExec');
     }
 
     private function initMultiExec(Array $options = null, $transBlock = null) {
