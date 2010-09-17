@@ -951,10 +951,7 @@ class PubSubContext implements \Iterator {
     }
 
     public function __destruct() {
-        if ($this->valid()) {
-            $this->_redisClient->unsubscribe();
-            $this->_redisClient->punsubscribe();
-        }
+        $this->closeContext();
     }
 
     private function checkCapabilities(Client $redisClient) {
