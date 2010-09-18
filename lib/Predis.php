@@ -164,7 +164,7 @@ class Client {
 
         $newClient = new Client();
         $newClient->setupClient($this->_options);
-        $newClient->setConnection($this->getConnection($connectionAlias));
+        $newClient->setConnection($connection);
         return $newClient;
     }
 
