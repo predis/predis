@@ -29,6 +29,9 @@ v0.7.0 (2010-xx-xx)
     multibulk command is an array is not supported anymore and must be done 
     explicitly inside Predis\Command::filterArguments().
 
+  * It is now possible to pass instances of Predis\ConnectionParameters and 
+    Predis\IConnection as parameters of Predis\Client::__construct().
+
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
