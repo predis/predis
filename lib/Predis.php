@@ -61,7 +61,6 @@ class Client {
     private function setupClient($options) {
         $this->_responseReader = new ResponseReader();
         $this->_options = self::filterClientOptions($options);
-
         $this->setProfile($this->_options->profile);
         if ($this->_options->iterable_multibulk === true) {
             $this->_responseReader->setHandler(
@@ -78,10 +77,15 @@ class Client {
     }
 
     private function setupConnection($parameters) {
-        if ($parameters !== null && !(is_array($parameters) || is_string($parameters))) {
-            throw new ClientException('Invalid parameters type (array or string expected)');
+        if ($parameters === null) {
+            return $this->setConnection($this->createConnection(null));
         }
-
+        if (!(is_array($parameters) || is_string($parameters) || $parameters instanceof IConnection 
+            || $parameters instanceof ConnectionParameters)) {
+            throw new \InvalidArgumentException(
+                'Array, String, Predis\ConnectionParameters or Predis\IConnection expected'
+            );
+        }
         if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new ConnectionCluster($this->_options->key_distribution);
             foreach ($parameters as $shardParams) {
@@ -90,11 +94,17 @@ class Client {
             $this->setConnection($cluster);
         }
         else {
-            $this->setConnection($this->createConnection($parameters));
+            $this->setConnection($parameters instanceof IConnection
+                ? $parameters
+                : $this->createConnection($parameters)
+            );
         }
     }
 
     private function createConnection($parameters) {
+        if ($parameters instanceof IConnectionSingle) {
+            return $parameters;
+        }
         $params     = $parameters instanceof ConnectionParameters 
                           ? $parameters 
                           : new ConnectionParameters($parameters);
@@ -1090,7 +1100,7 @@ class ConnectionParameters {
     }
 
     private static function paramsExtractor($params, $kv) {
-        list($k, $v) = explode('=', $kv);
+        @list($k, $v) = explode('=', $kv);
         $params[$k] = $v;
         return $params;
     }

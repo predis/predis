@@ -190,9 +190,12 @@ class RC {
     public static function getConnectionParametersArgumentsString($arguments = null) {
         // TODO: must be improved
         $args = $arguments ?: RC::getConnectionParametersArgumentsArray();
-        $paramsString = "redis://{$args['host']}:{$args['port']}/";
-        $paramsString .= "?connection_timeout={$args['connection_timeout']}&read_write_timeout={$args['read_write_timeout']}";
-        $paramsString .= "&database={$args['database']}&password={$args['password']}&alias={$args['alias']}";
+        $paramsString = "redis://{$args['host']}:{$args['port']}/?";
+        unset($args['host']);
+        unset($args['port']);
+        foreach($args as $k => $v) {
+            $paramsString .= "$k=$v&";
+        }
         return $paramsString;
     }
 }

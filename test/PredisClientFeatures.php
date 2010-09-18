@@ -22,7 +22,6 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         parent::onNotSuccessfulTest($exception);
     }
 
-
     /* ConnectionParameters */
 
     function testConnectionParametersDefaultValues() {
@@ -376,6 +375,49 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+
+    /* Client initialization */
+
+    function testClientInitialization_SingleConnectionParameters() {
+        $params1 = array_merge(RC::getConnectionArguments(), array(
+            'connection_timeout' => 10,
+            'read_write_timeout' => 30,
+            'alias' => 'connection_alias',
+        ));
+        $params2 = RC::getConnectionParametersArgumentsString($params1);
+        $params3 = new \Predis\ConnectionParameters($params1);
+        $params4 = new \Predis\TcpConnection($params3);
+        foreach (array($params1, $params2, $params3, $params4) as $params) {
+            $client = new \Predis\Client($params);
+            $parameters = $client->getConnection()->getParameters();
+            $this->assertEquals($params1['host'], $parameters->host);
+            $this->assertEquals($params1['port'], $parameters->port);
+            $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
+            $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
+            $this->assertEquals($params1['alias'], $parameters->alias);
+            $this->assertNull($parameters->password);
+        }
+    }
+
+    function testClientInitialization_ClusterConnectionParameters() {
+        $params1 = array_merge(RC::getConnectionArguments(), array(
+            'connection_timeout' => 10,
+            'read_write_timeout' => 30,
+        ));
+        $params2 = RC::getConnectionParametersArgumentsString($params1);
+        $params3 = new \Predis\ConnectionParameters($params1);
+        $params4 = new \Predis\TcpConnection($params3);
+
+        $client = new \Predis\Client(array($params1, $params2, $params3, $params4));
+        foreach ($client->getConnection() as $connection) {
+            $parameters = $connection->getParameters();
+            $this->assertEquals($params1['host'], $parameters->host);
+            $this->assertEquals($params1['port'], $parameters->port);
+            $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
+            $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
+            $this->assertNull($parameters->password);
+        }
+    }
 
     /* Client + CommandPipeline */
 
