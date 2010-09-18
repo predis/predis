@@ -221,13 +221,6 @@ class Client {
         return $replies;
     }
 
-    public function rawCommand($rawCommandData, $closesConnection = false) {
-        if (Utils::isCluster($this->_connection)) {
-            throw new ClientException('Cannot send raw commands when connected to a cluster of Redis servers');
-        }
-        return $this->_connection->rawCommand($rawCommandData, $closesConnection);
-    }
-
     private function sharedInitializer($argv, $initializer) {
         $argc = count($argv);
         if ($argc === 0) {
