@@ -94,33 +94,37 @@ class Client {
             $this->setConnection($cluster);
         }
         else {
-            $this->setConnection($parameters instanceof IConnection
-                ? $parameters
-                : $this->createConnection($parameters)
-            );
+            $this->setConnection($this->createConnection($parameters));
         }
     }
 
     private function createConnection($parameters) {
+        $params = null;
+        $connection = null;
         if ($parameters instanceof IConnectionSingle) {
-            return $parameters;
+            $connection = $parameters;
+            $params = $connection->getParameters();
         }
-        $params     = $parameters instanceof ConnectionParameters 
-                          ? $parameters 
-                          : new ConnectionParameters($parameters);
-        $connection = ConnectionFactory::create($params, $this->_responseReader);
+        else {
+            $params = $parameters instanceof ConnectionParameters 
+                        ? $parameters 
+                        : new ConnectionParameters($parameters);
+            $connection = ConnectionFactory::create($params, $this->_responseReader);
+        }
+        return $this->pushInitCommands($connection, $params);
+    }
 
-        if ($params->password !== null) {
+    private function pushInitCommands(IConnectionSingle $connection, ConnectionParameters $params) {
+        if (isset($params->password)) {
             $connection->pushInitCommand($this->createCommand(
                 'auth', array($params->password)
             ));
         }
-        if ($params->database !== null) {
+        if (isset($params->database)) {
             $connection->pushInitCommand($this->createCommand(
                 'select', array($params->database)
             ));
         }
-
         return $connection;
     }
 
