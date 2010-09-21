@@ -1751,6 +1751,8 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             'strlen'                    => '\Predis\Commands\Strlen',
 
             /* commands operating on lists */
+            'rpushx'                    => '\Predis\Commands\ListPushTailX',
+            'lpushx'                    => '\Predis\Commands\ListPushHeadX',
             'linsert'                   => '\Predis\Commands\ListInsert',
         ));
     }
@@ -2354,8 +2356,16 @@ class ListPushTail extends Command {
     public function getCommandId() { return 'RPUSH'; }
 }
 
+class ListPushTailX extends Command {
+    public function getCommandId() { return 'RPUSHX'; }
+}
+
 class ListPushHead extends Command {
     public function getCommandId() { return 'LPUSH'; }
+}
+
+class ListPushHeadX extends Command {
+    public function getCommandId() { return 'LPUSHX'; }
 }
 
 class ListLength extends Command {

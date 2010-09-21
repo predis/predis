@@ -380,6 +380,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testPushTailX() {
+        $this->assertEquals(0, $this->redis->rpushx('numbers', 1));
+        $this->assertEquals(1, $this->redis->rpush('numbers', 2));
+        $this->assertEquals(2, $this->redis->rpushx('numbers', 3));
+
+        $this->assertEquals(2, $this->redis->llen('numbers'));
+        $this->assertEquals(array(2, 3), $this->redis->lrange('numbers', 0, -1));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->rpushx('foo', 'bar');
+        });
+    }
+
     function testPushHead() {
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertEquals(1, $this->redis->lpush('metavars', 'foo'));
@@ -390,6 +404,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
             $test->redis->lpush('foo', 'bar');
+        });
+    }
+
+    function testPushHeadX() {
+        $this->assertEquals(0, $this->redis->lpushx('numbers', 1));
+        $this->assertEquals(1, $this->redis->lpush('numbers', 2));
+        $this->assertEquals(2, $this->redis->lpushx('numbers', 3));
+
+        $this->assertEquals(2, $this->redis->llen('numbers'));
+        $this->assertEquals(array(3, 2), $this->redis->lrange('numbers', 0, -1));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->lpushx('foo', 'bar');
         });
     }
 
