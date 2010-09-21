@@ -460,12 +460,12 @@ abstract class Command {
 
     public function setArguments(/* arguments */) {
         $this->_arguments = $this->filterArguments(func_get_args());
-        $this->_hash = null;
+        unset($this->_hash);
     }
 
     public function setArgumentsArray(Array $arguments) {
         $this->_arguments = $this->filterArguments($arguments);
-        $this->_hash = null;
+        unset($this->_hash);
     }
 
     public function getArguments() {
