@@ -1746,6 +1746,9 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             /* transactions */
             'watch'                     => '\Predis\Commands\Watch',
             'unwatch'                   => '\Predis\Commands\Unwatch',
+
+            /* commands operating on string values */
+            'strlen'                    => '\Predis\Commands\Strlen',
         ));
     }
 }
@@ -2288,6 +2291,10 @@ class Append extends Command {
 
 class Substr extends Command {
     public function getCommandId() { return 'SUBSTR'; }
+}
+
+class Strlen extends Command {
+    public function getCommandId() { return 'STRLEN'; }
 }
 
 /* commands operating on the key space */
