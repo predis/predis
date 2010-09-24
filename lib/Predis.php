@@ -279,7 +279,7 @@ class Client {
     }
 
     public function multiExec(/* arguments */) {
-        return $this->sharedInitializer(func_get_args(), 'multiExec');
+        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
     }
 
     private function initMultiExec(Array $options = null, $transBlock = null) {
