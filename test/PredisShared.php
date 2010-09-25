@@ -1,9 +1,19 @@
 <?php
-require_once '../lib/Predis.php';
+// -------------------------------------------------------------------------- //
+
+define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
+
+// -------------------------------------------------------------------------- //
 
 if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
-    exit('Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE constant to TRUE if you want to proceed.');
+    exit(
+        "Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE " . 
+        "constant to TRUE in PredisShared.php if you want to proceed.\n"
+    );
 }
+
+require_once 'PHPUnit/Framework.php';
+require_once '../lib/Predis.php';
 
 if (!function_exists('array_union')) {
     function array_union(Array $a, Array $b) { 

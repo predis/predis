@@ -1,7 +1,4 @@
 <?php
-define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
-
-require_once 'PHPUnit/Framework.php';
 require_once 'PredisShared.php';
 require_once '../lib/addons/RedisVersion1_0.php';
 
