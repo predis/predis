@@ -693,6 +693,22 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), 2, '', 1);
     }
 
+    function testListInsert() {
+        $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
+
+        $this->assertEquals(11, $this->redis->linsert('numbers', 'before', 0, -2));
+        $this->assertEquals(12, $this->redis->linsert('numbers', 'after', -2, -1));
+        $this->assertEquals(array(-2, -1, 0, 1), $this->redis->lrange('numbers', 0, 3));
+
+        $this->assertEquals(-1, $this->redis->linsert('numbers', 'after', 100, 200));
+        $this->assertEquals(-1, $this->redis->linsert('numbers', 'before', 100, 50));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->lset('foo', 0, 0);
+        });
+    }
+
 
     /* commands operating on sets */
 

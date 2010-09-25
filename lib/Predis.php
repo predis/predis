@@ -1814,6 +1814,9 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
             /* commands operating on string values */
             'strlen'                    => '\Predis\Commands\Strlen',
+
+            /* commands operating on lists */
+            'linsert'                   => '\Predis\Commands\ListInsert',
         ));
     }
 }
@@ -2449,6 +2452,10 @@ class ListPopFirstBlocking extends \Predis\MultiBulkCommand {
 
 class ListPopLastBlocking extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'BRPOP'; }
+}
+
+class ListInsert extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'LINSERT'; }
 }
 
 /* commands operating on sets */
