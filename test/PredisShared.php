@@ -44,7 +44,10 @@ class RC {
         return $connection;
     }
 
-    public static function getConnection() {
+    public static function getConnection($new = false) {
+        if ($new == true) {
+            return self::createConnection();
+        }
         if (self::$_connection === null || !self::$_connection->isConnected()) {
             self::$_connection = self::createConnection();
         }
@@ -147,6 +150,17 @@ class RC {
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
+    }
+
+    public static function testForAbortedMultiExecException($testcaseInstance, $wrapFunction) {
+        $thrownException = null;
+        try {
+            $wrapFunction($testcaseInstance);
+        }
+        catch (Predis\AbortedMultiExec $exception) {
+            $thrownException = $exception;
+        }
+        $testcaseInstance->assertType('Predis\AbortedMultiExec', $thrownException);
     }
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
