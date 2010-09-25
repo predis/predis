@@ -8,6 +8,9 @@ v0.7.0 (2010-xx-xx)
       - Predis\Client::pipelineSafe()
         This method was deprecated in Predis 0.6.1 and now it has been finally 
         removed. Use Predis\Client::pipeline(array('safe' => true)).
+      - Predis\Client::rawCommand()
+        This method was removed due to interface inconsistencies with the 
+        underlying connection class used internally by the client instance.
 
   * The Predis\MultiBulkCommand class has been merged into Predis\Command and 
     thus removed. If you have code that extends Predis\MultiBulkCommand but 
