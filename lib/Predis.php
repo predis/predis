@@ -923,45 +923,52 @@ class MultiExecBlock {
         $blockException = null;
         $returnValues   = array();
 
-        try {
-            if ($block !== null) {
-                $this->setInsideBlock(true);
+        if ($block !== null) {
+            $this->setInsideBlock(true);
+            try {
                 $block($this);
-                $this->setInsideBlock(false);
             }
-
-            if ($this->_discarded === true) {
-                return;
+            catch (CommunicationException $exception) {
+                $blockException = $exception;
             }
-
-            $reply = $this->_redisClient->exec();
-            if ($reply === null) {
-                throw new AbortedMultiExec('The current transaction has been aborted by the server');
+            catch (ServerException $exception) {
+                $blockException = $exception;
             }
-
-            $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
-            $commands  = &$this->_commands;
-            $sizeofReplies = count($execReply);
-
-            if ($sizeofReplies !== count($commands)) {
-                $this->malformedServerResponse('Unexpected number of responses for a MultiExecBlock');
+            catch (\Exception $exception) {
+                $blockException = $exception;
+                if ($this->_initialized === true) {
+                    $this->discard();
+                }
             }
-
-            for ($i = 0; $i < $sizeofReplies; $i++) {
-                $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
-                    ? iterator_to_array($execReply[$i])
-                    : $execReply[$i]
-                );
-                unset($commands[$i]);
-            }
-        }
-        catch (\Exception $exception) {
             $this->setInsideBlock(false);
-            $blockException = $exception;
+            if ($blockException !== null) {
+                throw $blockException;
+            }
         }
 
-        if ($blockException !== null) {
-            throw $blockException;
+        if ($this->_initialized === false) {
+            return;
+        }
+
+        $reply = $this->_redisClient->exec();
+        if ($reply === null) {
+            throw new AbortedMultiExec('The current transaction has been aborted by the server');
+        }
+
+        $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
+        $commands  = &$this->_commands;
+        $sizeofReplies = count($execReply);
+
+        if ($sizeofReplies !== count($commands)) {
+            $this->malformedServerResponse('Unexpected number of responses for a MultiExecBlock');
+        }
+
+        for ($i = 0; $i < $sizeofReplies; $i++) {
+            $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
+                ? iterator_to_array($execReply[$i])
+                : $execReply[$i]
+            );
+            unset($commands[$i]);
         }
 
         return $returnValues;
