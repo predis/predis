@@ -1,3 +1,17 @@
+v0.6.2 (2010-xx-xx)
+  * Minor internal improvements and clean ups.
+
+  * New commands available in the Redis v2.2 profile (dev):
+      - Strings: STRLEN
+      - Lists  : LINSERT, RPUSHX, LPUSHX
+
+  * Improved the behaviour of Predis\MultiExecBlock in certain corner cases.
+
+  * Improved parameters checking for the SORT command.
+
+  * FIX: the STORE parameter for the SORT command didn't work correctly when 
+    using '0' as the target key (ISSUE #13).
+
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
