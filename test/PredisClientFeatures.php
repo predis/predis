@@ -471,5 +471,120 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $replies[3][0]);
         $this->assertEquals('piyo', $replies[3][1]);
     }
+
+
+    /* Client + MultiExecBlock  */
+
+    function testMultiExecBlock_Simple() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $multi = $client->multiExec();
+
+        $this->assertType('\Predis\MultiExecBlock', $multi);
+        $this->assertType('\Predis\MultiExecBlock', $multi->set('foo', 'bar'));
+        $this->assertType('\Predis\MultiExecBlock', $multi->set('hoge', 'piyo'));
+        $this->assertType('\Predis\MultiExecBlock', $multi->mset(array(
+            'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
+        )));
+        $this->assertType('\Predis\MultiExecBlock', $multi->mget(array(
+            'foo', 'hoge', 'foofoo', 'hogehoge'
+        )));
+
+        $replies = $multi->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals(4, count($replies));
+        $this->assertEquals(4, count($replies[3]));
+        $this->assertEquals('barbar', $replies[3][2]);
+    }
+
+    function testMultiExecBlock_FluentInterface() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec()->ping()->set('foo', 'bar')->get('foo')->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testMultiExecBlock_CallableAnonymousBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(function($multi) { 
+            $multi->ping();
+            $multi->set('foo', 'bar');
+            $multi->get('foo');
+        });
+
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testMultiExecBlock_EmptyCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(function($multi) { });
+
+        $this->assertEquals(0, count($replies));
+    }
+
+    function testMultiExecBlock_ClientExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        RC::testForClientException($this, 'TEST', function() use($client) {
+            $client->multiExec(function($multi) { 
+                $multi->ping();
+                $multi->set('foo', 'bar');
+                throw new \Predis\ClientException("TEST");
+            });
+        });
+        $this->assertFalse($client->exists('foo'));
+    }
+
+    function testMultiExecBlock_ServerExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+        $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
+
+        $replies = $client->multiExec(function($multi) { 
+            $multi->set('foo', 'bar');
+            $multi->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
+            $multi->set('hoge', 'piyo');
+        });
+
+        $this->assertType('array', $replies);
+        $this->assertType('\Predis\ResponseError', $replies[1]);
+        $this->assertTrue($client->exists('foo'));
+        $this->assertTrue($client->exists('hoge'));
+    }
+
+    function testMultiExecBlock_Discard() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(function($multi) { 
+            $multi->set('foo', 'bar');
+            $multi->discard();
+            $multi->set('hoge', 'piyo');
+        });
+
+        $this->assertEquals(1, count($replies));
+        $this->assertFalse($client->exists('foo'));
+        $this->assertTrue($client->exists('hoge'));
+    }
+
+    function testMultiExecBlock_DiscardEmpty() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(function($multi) { 
+            $multi->discard();
+        });
+
+        $this->assertEquals(0, count($replies));
+    }
 }
 ?>
