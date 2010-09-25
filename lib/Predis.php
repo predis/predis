@@ -890,7 +890,7 @@ class MultiExecBlock {
                 $this->setInsideBlock(false);
             }
 
-            if ($this->_discarded === true) {
+            if ($this->_initialized === false || $this->_discarded === true) {
                 return;
             }
 
