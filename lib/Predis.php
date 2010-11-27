@@ -1761,6 +1761,9 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             'rpushx'                    => '\Predis\Commands\ListPushTailX',
             'lpushx'                    => '\Predis\Commands\ListPushHeadX',
             'linsert'                   => '\Predis\Commands\ListInsert',
+
+            /* commands operating on sorted sets */
+            'zrevrangebyscore'          => '\Predis\Commands\ZSetReverseRangeByScore',
         ));
     }
 }
@@ -2601,6 +2604,10 @@ class ZSetRangeByScore extends ZSetRange {
         }
         return array_merge($finalizedOpts, parent::prepareOptions($options));
     }
+}
+
+class ZSetReverseRangeByScore extends ZSetRangeByScore {
+    public function getCommandId() { return 'ZREVRANGEBYSCORE'; }
 }
 
 class ZSetCount extends Command {
