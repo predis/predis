@@ -4,6 +4,8 @@ v0.6.2 (2010-xx-xx)
   * New commands available in the Redis v2.2 profile (dev):
       - Strings: STRLEN
       - Lists  : LINSERT, RPUSHX, LPUSHX
+      - ZSets  : ZREVRANGEBYSCORE
+      - Misc.  : PERSIST
 
   * WATCH also accepts a single array parameter with the keys that should be 
     monitored during a transaction.
