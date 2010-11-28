@@ -257,16 +257,19 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_WriteCommandAndCloseConnection() {
         $cmd = \Predis\RedisServerProfile::getDefault()->createCommand('quit');
-        $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
-        $connection->connect();
+        $connection = new \Predis\TcpConnection(new \Predis\ConnectionParameters(
+            RC::getConnectionArguments() + array('read_write_timeout' => 0.5)
+        ));
 
+        $connection->connect();
         $this->assertTrue($connection->isConnected());
         $connection->writeCommand($cmd);
+        $connection->disconnect();
+
         $exceptionMessage = 'Error while reading line from the server';
         RC::testForCommunicationException($this, $exceptionMessage, function() use($connection, $cmd) {
             $connection->readResponse($cmd);
         });
-        //$this->assertFalse($connection->isConnected());
     }
 
     function testConnection_GetSocketOpensConnection() {
@@ -350,8 +353,8 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseReader_OptionExceptionOnError() {
         $connection = new \Predis\TcpConnection(RC::getConnectionParameters());
         $responseReader = $connection->getResponseReader();
-        $connection->rawCommand("SET key 5\r\nvalue\r\n");
-        $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
+        $connection->rawCommand("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n");
+        $rawCmdUnexpected = "*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n";
 
         $responseReader->setHandler(
             \Predis\Protocol::PREFIX_ERROR,  
