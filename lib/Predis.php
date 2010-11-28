@@ -856,6 +856,7 @@ class MultiExecBlock {
     public function unwatch() {
         $this->isWatchSupported();
         $this->_redisClient->unwatch();
+        return $this;
     }
 
     public function discard() {
@@ -863,6 +864,7 @@ class MultiExecBlock {
         $this->_commands    = array();
         $this->_initialized = false;
         $this->_discarded   = true;
+        return $this;
     }
 
     public function exec() {
