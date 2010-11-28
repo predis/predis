@@ -38,6 +38,28 @@ v0.7.0 (2010-xx-xx)
   * It is now possible to pass instances of Predis\ConnectionParameters and 
     Predis\IConnection as parameters of Predis\Client::__construct().
 
+v0.6.2 (2010-11-28)
+  * Minor internal improvements and clean ups.
+
+  * New commands available in the Redis v2.2 profile (dev):
+      - Strings: STRLEN
+      - Lists  : LINSERT, RPUSHX, LPUSHX
+      - ZSets  : ZREVRANGEBYSCORE
+      - Misc.  : PERSIST
+
+  * WATCH also accepts a single array parameter with the keys that should be 
+    monitored during a transaction.
+
+  * Improved the behaviour of Predis\MultiExecBlock in certain corner cases.
+
+  * Improved parameters checking for the SORT command.
+
+  * FIX: the STORE parameter for the SORT command didn't work correctly when 
+    using '0' as the target key (ISSUE #13).
+
+  * FIX: the methods for UNWATCH and DISCARD do not break anymore method 
+    chaining with Predis\MultiExecBlock.
+
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
