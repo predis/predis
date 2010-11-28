@@ -22,8 +22,11 @@ v0.7.0 (2010-xx-xx)
 
   * Developers can now register their own classes that implements the 
     Predis\IConnectionSingle interface to handle different URI schemes such as 
-    'redis', 'tcp', 'udp' or anything else. Everything is handled by the 
-    new Predis\ConnectionFactory class.
+    'tcp', 'unix', 'udp' or anything else. Everything is handled by the new 
+    Predis\ConnectionFactory class.
+
+  * Added support for UNIX domain sockets (supported by Redis 2.2) with the new 
+    Predis\UnixDomainSocketConnection class and the 'unix' scheme.
 
   * Added the new Predis\ICommand interface. The Predis\Command class now 
     implements this interface that is used in the core bits of Predis.
