@@ -17,6 +17,9 @@ v0.6.2 (2010-xx-xx)
   * FIX: the STORE parameter for the SORT command didn't work correctly when 
     using '0' as the target key (ISSUE #13).
 
+  * FIX: the methods for UNWATCH and DISCARD do not break anymore method 
+    chaining with Predis\MultiExecBlock.
+
 v0.6.1 (2010-07-11)
   * Minor internal improvements and clean ups.
 
