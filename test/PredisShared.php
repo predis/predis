@@ -48,7 +48,10 @@ class RC {
         return $connection;
     }
 
-    public static function getConnection() {
+    public static function getConnection($new = false) {
+        if ($new == true) {
+            return self::createConnection();
+        }
         if (self::$_connection === null || !self::$_connection->isConnected()) {
             self::$_connection = self::createConnection();
         }

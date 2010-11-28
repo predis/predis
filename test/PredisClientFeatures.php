@@ -260,11 +260,15 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testConnection_WriteCommandAndCloseConnection() {
         $cmd = Predis_RedisServerProfile::getDefault()->createCommand('quit');
-        $connection = new Predis_Connection(RC::getConnectionParameters());
-        $connection->connect();
+        $connection = new Predis_Connection(new Predis_ConnectionParameters(
+            RC::getConnectionArguments() + array('read_write_timeout' => 0.5)
+        ));
 
+        $connection->connect();
         $this->assertTrue($connection->isConnected());
         $connection->writeCommand($cmd);
+        $connection->disconnect();
+
         $expectedMessage = 'Error while reading line from the server';
         $thrownException = null;
         try {
@@ -275,7 +279,6 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         }
         $this->assertType('Predis_CommunicationException', $thrownException);
         $this->assertEquals($expectedMessage, $thrownException->getMessage());
-        //$this->assertFalse($connection->isConnected());
     }
 
     function testConnection_GetSocketOpensConnection() {
@@ -370,8 +373,8 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseReader_OptionExceptionOnError() {
         $connection = new Predis_Connection(RC::getConnectionParameters());
         $responseReader = $connection->getResponseReader();
-        $connection->rawCommand("SET key 5\r\nvalue\r\n");
-        $rawCmdUnexpected = "LPUSH key 5\r\nvalue\r\n";
+        $connection->rawCommand("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n");
+        $rawCmdUnexpected = "*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n";
 
         $responseReader->setHandler(
             Predis_Protocol::PREFIX_ERROR,  
@@ -498,6 +501,148 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(4, count($replies));
         $this->assertEquals('bar', $replies[3][0]);
         $this->assertEquals('piyo', $replies[3][1]);
+    }
+
+
+    /* Client + MultiExecBlock  */
+
+    function testMultiExecBlock_Simple() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $multi = $client->multiExec();
+
+        $this->assertType('Predis_MultiExecBlock', $multi);
+        $this->assertType('Predis_MultiExecBlock', $multi->set('foo', 'bar'));
+        $this->assertType('Predis_MultiExecBlock', $multi->set('hoge', 'piyo'));
+        $this->assertType('Predis_MultiExecBlock', $multi->mset(array(
+            'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
+        )));
+        $this->assertType('Predis_MultiExecBlock', $multi->mget(array(
+            'foo', 'hoge', 'foofoo', 'hogehoge'
+        )));
+
+        $replies = $multi->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals(4, count($replies));
+        $this->assertEquals(4, count($replies[3]));
+        $this->assertEquals('barbar', $replies[3][2]);
+    }
+
+    function testMultiExecBlock_FluentInterface() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec()->ping()->set('foo', 'bar')->get('foo')->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testMultiExecBlock_CallableAnonymousBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(p_anon("\$multi", "
+            \$multi->ping();
+            \$multi->set('foo', 'bar');
+            \$multi->get('foo');
+        "));
+
+        $this->assertType('array', $replies);
+        $this->assertEquals('bar', $replies[2]);
+    }
+
+    function testMultiExecBlock_EmptyCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec(p_anon("\$multi", ""));
+
+        $this->assertEquals(0, count($replies));
+    }
+
+    function testMultiExecBlock_ClientExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $expectedMessage = 'TEST';
+        $thrownException = null;
+        try {
+            $client->multiExec(p_anon("\$multi", " 
+                \$multi->ping();
+                \$multi->set('foo', 'bar');
+                throw new Predis_ClientException('$expectedMessage');
+            "));
+        }
+        catch (Predis_ClientException $exception) {
+            $thrownException = $exception;
+        }
+        $this->assertType('Predis_ClientException', $thrownException);
+        $this->assertEquals($expectedMessage, $thrownException->getMessage());
+
+        $this->assertFalse($client->exists('foo'));
+    }
+
+    function testMultiExecBlock_ServerExceptionInCallableBlock() {
+        $client = RC::getConnection();
+        $client->flushdb();
+        $client->getResponseReader()->setHandler('-', new Predis_ResponseErrorSilentHandler());
+
+        $multi = $client->multiExec();
+        $multi->set('foo', 'bar');
+        $multi->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
+        $multi->set('hoge', 'piyo');
+        $replies = $multi->execute();
+
+        $this->assertType('array', $replies);
+        $this->assertType('Predis_ResponseError', $replies[1]);
+        $this->assertTrue($client->exists('foo'));
+        $this->assertTrue($client->exists('hoge'));
+    }
+
+    function testMultiExecBlock_Discard() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $multi = $client->multiExec();
+        $multi->set('foo', 'bar');
+        $multi->discard();
+        $multi->set('hoge', 'piyo');
+        $replies = $multi->execute();
+
+        $this->assertEquals(1, count($replies));
+        $this->assertFalse($client->exists('foo'));
+        $this->assertTrue($client->exists('hoge'));
+    }
+
+    function testMultiExecBlock_DiscardEmpty() {
+        $client = RC::getConnection();
+        $client->flushdb();
+
+        $replies = $client->multiExec()->discard()->execute();
+        $this->assertEquals(0, count($replies));
+    }
+
+    function testMultiExecBlock_Watch() {
+        $client1 = RC::getConnection();
+        $client2 = RC::getConnection(true);
+        $client1->flushdb();
+
+        $thrownException = null;
+        try {
+            $multi = $client1->multiExec(array('watch' => 'sentinel'));
+            $multi->set('sentinel', 'client1');
+            $multi->get('sentinel');
+            $client2->set('sentinel', 'client2');
+            $multi->execute();
+        }
+        catch (PredisException $exception) {
+            $thrownException = $exception;
+        }
+        $this->assertType('Predis_AbortedMultiExec', $thrownException);
+        $this->assertEquals('The current transaction has been aborted by the server', $thrownException->getMessage());
+
+        $this->assertEquals('client2', $client1->get('sentinel'));
     }
 }
 ?>

@@ -241,6 +241,18 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         "));
     }
 
+    function testStrlen() {
+        $this->redis->set('var', 'foobar');
+        $this->assertEquals(6, $this->redis->strlen('var'));
+        $this->assertEquals(9, $this->redis->append('var', '___'));
+        $this->assertEquals(9, $this->redis->strlen('var'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->rpush('metavars', 'foo');
+            \$test->redis->strlen('metavars');
+        "));
+    }
+
 
     /* commands operating on the key space */
 
@@ -369,6 +381,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         "));
     }
 
+    function testPushTailX() {
+        $this->assertEquals(0, $this->redis->rpushx('numbers', 1));
+        $this->assertEquals(1, $this->redis->rpush('numbers', 2));
+        $this->assertEquals(2, $this->redis->rpushx('numbers', 3));
+
+        $this->assertEquals(2, $this->redis->llen('numbers'));
+        $this->assertEquals(array(2, 3), $this->redis->lrange('numbers', 0, -1));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->rpushx('foo', 'bar');
+        "));
+    }
+
     function testPushHead() {
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertEquals(1, $this->redis->lpush('metavars', 'foo'));
@@ -379,6 +405,20 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
             \$test->redis->set('foo', 'bar');
             \$test->redis->lpush('foo', 'bar');
+        "));
+    }
+
+    function testPushHeadX() {
+        $this->assertEquals(0, $this->redis->lpushx('numbers', 1));
+        $this->assertEquals(1, $this->redis->lpush('numbers', 2));
+        $this->assertEquals(2, $this->redis->lpushx('numbers', 3));
+
+        $this->assertEquals(2, $this->redis->llen('numbers'));
+        $this->assertEquals(array(3, 2), $this->redis->lrange('numbers', 0, -1));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->lpushx('foo', 'bar');
         "));
     }
 
@@ -680,6 +720,22 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $start = time();
         $this->redis->brpop('brpop4', 2);
         $this->assertEquals((float)(time() - $start), 2, '', 1);
+    }
+
+    function testListInsert() {
+        $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
+
+        $this->assertEquals(11, $this->redis->linsert('numbers', 'before', 0, -2));
+        $this->assertEquals(12, $this->redis->linsert('numbers', 'after', -2, -1));
+        $this->assertEquals(array(-2, -1, 0, 1), $this->redis->lrange('numbers', 0, 3));
+
+        $this->assertEquals(-1, $this->redis->linsert('numbers', 'after', 100, 200));
+        $this->assertEquals(-1, $this->redis->linsert('numbers', 'before', 100, 50));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->lset('foo', 0, 0);
+        "));
     }
 
 
@@ -1161,31 +1217,6 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrevrange('zset', 0, 2, array('withscores' => true))
         );
 
-        $this->assertEquals(
-            array(array('c', 10), array('d', 20), array('e', 20)), 
-            $this->redis->zrangebyscore('zset', 10, 20, array('withscores' => true))
-        );
-
-        $this->assertEquals(
-            array('d', 'e'), 
-            $this->redis->zrangebyscore('zset', 10, 20, array('limit' => array(1, 2)))
-        );
-
-        $this->assertEquals(
-            array('d', 'e'), 
-            $this->redis->zrangebyscore('zset', 10, 20, array(
-                'limit' => array('offset' => 1, 'count' => 2)
-            ))
-        );
-
-        $this->assertEquals(
-            array(array('d', 20), array('e', 20)), 
-            $this->redis->zrangebyscore('zset', 10, 20, array(
-                'limit'      => array(1, 2), 
-                'withscores' => true, 
-            ))
-        );
-
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
             \$test->redis->set('foo', 'bar');
             \$test->redis->zrevrange('foo', 0, -1);
@@ -1220,9 +1251,93 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrangebyscore('zset', 10, 20, 'withscores')
         );
 
+        $this->assertEquals(
+            array(array('c', 10), array('d', 20), array('e', 20)), 
+            $this->redis->zrangebyscore('zset', 10, 20, array('withscores' => true))
+        );
+
+        $this->assertEquals(
+            array('d', 'e'), 
+            $this->redis->zrangebyscore('zset', 10, 20, array('limit' => array(1, 2)))
+        );
+
+        $this->assertEquals(
+            array('d', 'e'), 
+            $this->redis->zrangebyscore('zset', 10, 20, array(
+                'limit' => array('offset' => 1, 'count' => 2)
+            ))
+        );
+
+        $this->assertEquals(
+            array(array('d', 20), array('e', 20)), 
+            $this->redis->zrangebyscore('zset', 10, 20, array(
+                'limit'      => array(1, 2), 
+                'withscores' => true, 
+            ))
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
             \$test->redis->set('foo', 'bar');
             \$test->redis->zrangebyscore('foo', 0, 0);
+        "));
+    }
+
+    function testZsetReverseRangeByScore() {
+        $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+
+        $this->assertEquals(
+            array('a'), 
+            $this->redis->zrevrangebyscore('zset', -10, -10)
+        );
+
+        $this->assertEquals(
+            array('b', 'a'), 
+            $this->redis->zrevrangebyscore('zset', 0, -10)
+        );
+
+        $this->assertEquals(
+            array('e', 'd'), 
+            $this->redis->zrevrangebyscore('zset', 20, 20)
+        );
+
+        $this->assertEquals(
+            array('f', 'e', 'd', 'c', 'b'), 
+            $this->redis->zrevrangebyscore('zset', 30, 0)
+        );
+
+        $this->assertEquals(
+            array(array('e', 20), array('d', 20), array('c', 10)), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, 'withscores')
+        );
+
+        $this->assertEquals(
+            array(array('e', 20), array('d', 20), array('c', 10)), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array('withscores' => true))
+        );
+
+        $this->assertEquals(
+            array('d', 'c'), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array('limit' => array(1, 2)))
+        );
+
+        $this->assertEquals(
+            array('d', 'c'), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array(
+                'limit' => array('offset' => 1, 'count' => 2)
+            ))
+        );
+
+        $this->assertEquals(
+            array(array('d', 20), array('c', 10)),  
+            $this->redis->zrevrangebyscore('zset', 20, 10, array(
+                'limit'      => array(1, 2), 
+                'withscores' => true, 
+            ))
+        );
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->set('foo', 'bar');
+            \$test->redis->zrevrangebyscore('foo', 0, 0);
         "));
     }
 

@@ -175,7 +175,7 @@ class Predis_Client {
 
         $newClient = new Predis_Client();
         $newClient->setupClient($this->_options);
-        $newClient->setConnection($this->getConnection($connectionAlias));
+        $newClient->setConnection($connection);
         return $newClient;
     }
 
@@ -235,21 +235,25 @@ class Predis_Client {
         return $this->_connection->rawCommand($rawCommandData, $closesConnection);
     }
 
-    public function pipeline(/* arguments */) {
-        $argv = func_get_args();
-        $argc = func_num_args();
-
+    private function sharedInitializer($argv, $initializer) {
+        $argc = count($argv);
         if ($argc === 0) {
-            return $this->initPipeline();
+            return $this->$initializer();
         }
         else if ($argc === 1) {
             list($arg0) = $argv;
-            return is_array($arg0) ? $this->initPipeline($arg0) : $this->initPipeline(null, $arg0);
+            return is_array($arg0) ? $this->$initializer($arg0) : $this->$initializer(null, $arg0);
         }
         else if ($argc === 2) {
             list($arg0, $arg1) = $argv;
-            return $this->initPipeline($arg0, $arg1);
+            return $this->$initializer($arg0, $arg1);
         }
+        return $this->$initializer($this, $arguments);
+    }
+
+    public function pipeline(/* arguments */) {
+        $args = func_get_args();
+        return $this->sharedInitializer($args, 'initPipeline');
     }
 
     public function pipelineSafe($pipelineBlock = null) {
@@ -281,20 +285,8 @@ class Predis_Client {
     }
 
     public function multiExec(/* arguments */) {
-        $argv = func_get_args();
-        $argc = func_num_args();
-
-        if ($argc === 0) {
-            return $this->initMultiExec();
-        }
-        else if ($argc === 1) {
-            list($arg0) = $argv;
-            return is_array($arg0) ? $this->initMultiExec($arg0) : $this->initMultiExec(null, $arg0);
-        }
-        else if ($argc === 2) {
-            list($arg0, $arg1) = $argv;
-            return $this->initMultiExec($arg0, $arg1);
-        }
+        $args = func_get_args();
+        return $this->sharedInitializer($args, 'initMultiExec');
     }
 
     private function initMultiExec(Array $options = null, $transBlock = null) {
@@ -475,12 +467,12 @@ abstract class Predis_Command {
 
     public function setArguments(/* arguments */) {
         $this->_arguments = $this->filterArguments(func_get_args());
-        $this->_hash = null;
+        unset($this->_hash);
     }
 
     public function setArgumentsArray(Array $arguments) {
         $this->_arguments = $this->filterArguments($arguments);
-        $this->_hash = null;
+        unset($this->_hash);
     }
 
     public function getArguments() {
@@ -938,45 +930,52 @@ class Predis_MultiExecBlock {
         $blockException = null;
         $returnValues   = array();
 
-        try {
-            if ($block !== null) {
-                $this->setInsideBlock(true);
+        if ($block !== null) {
+            $this->setInsideBlock(true);
+            try {
                 $block($this);
-                $this->setInsideBlock(false);
             }
-
-            if ($this->_discarded === true) {
-                return;
+            catch (Predis_CommunicationException $exception) {
+                $blockException = $exception;
             }
-
-            $reply = $this->_redisClient->exec();
-            if ($reply === null) {
-                throw new Predis_AbortedMultiExec('The current transaction has been aborted by the server');
+            catch (Predis_ServerException $exception) {
+                $blockException = $exception;
             }
-
-            $execReply = $reply instanceof Iterator ? iterator_to_array($reply) : $reply;
-            $commands  = &$this->_commands;
-            $sizeofReplies = count($execReply);
-
-            if ($sizeofReplies !== count($commands)) {
-                $this->malformedServerResponse('Unexpected number of responses for a MultiExecBlock');
+            catch (Exception $exception) {
+                $blockException = $exception;
+                if ($this->_initialized === true) {
+                    $this->discard();
+                }
             }
-
-            for ($i = 0; $i < $sizeofReplies; $i++) {
-                $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof Iterator
-                    ? iterator_to_array($execReply[$i])
-                    : $execReply[$i]
-                );
-                unset($commands[$i]);
-            }
-        }
-        catch (Exception $exception) {
             $this->setInsideBlock(false);
-            $blockException = $exception;
+            if ($blockException !== null) {
+                throw $blockException;
+            }
         }
 
-        if ($blockException !== null) {
-            throw $blockException;
+        if ($this->_initialized === false) {
+            return;
+        }
+
+        $reply = $this->_redisClient->exec();
+        if ($reply === null) {
+            throw new Predis_AbortedMultiExec('The current transaction has been aborted by the server');
+        }
+
+        $execReply = $reply instanceof Iterator ? iterator_to_array($reply) : $reply;
+        $commands  = &$this->_commands;
+        $sizeofReplies = count($execReply);
+
+        if ($sizeofReplies !== count($commands)) {
+            $this->malformedServerResponse('Unexpected number of responses for a Predis_MultiExecBlock');
+        }
+
+        for ($i = 0; $i < $sizeofReplies; $i++) {
+            $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof Iterator
+                ? iterator_to_array($execReply[$i])
+                : $execReply[$i]
+            );
+            unset($commands[$i]);
         }
 
         return $returnValues;
@@ -1005,8 +1004,7 @@ class Predis_PubSubContext implements Iterator {
 
     public function __destruct() {
         if ($this->valid()) {
-            $this->_redisClient->unsubscribe();
-            $this->_redisClient->punsubscribe();
+            $this->closeContext();
         }
     }
 
@@ -1824,6 +1822,20 @@ class Predis_RedisServer_vNext extends Predis_RedisServer_v2_0 {
             /* transactions */
             'watch'                     => 'Predis_Commands_Watch',
             'unwatch'                   => 'Predis_Commands_Unwatch',
+
+            /* commands operating on string values */
+            'strlen'                    => 'Predis_Commands_Strlen',
+
+            /* commands operating on the key space */
+            'persist'                   => 'Predis_Commands_Persist',
+
+            /* commands operating on lists */
+            'rpushx'                    => 'Predis_Commands_ListPushTailX',
+            'lpushx'                    => 'Predis_Commands_ListPushHeadX',
+            'linsert'                   => 'Predis_Commands_ListInsert',
+
+            /* commands operating on sorted sets */
+            'zrevrangebyscore'          => 'Predis_Commands_ZSetReverseRangeByScore',
         ));
     }
 }
@@ -2347,6 +2359,10 @@ class Predis_Commands_Substr extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SUBSTR'; }
 }
 
+class Predis_Commands_Strlen extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'STRLEN'; }
+}
+
 /* commands operating on the key space */
 class Predis_Commands_Keys extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
@@ -2387,6 +2403,11 @@ class Predis_Commands_ExpireAt extends Predis_MultiBulkCommand {
     public function parseResponse($data) { return (bool) $data; }
 }
 
+class Predis_Commands_Persist extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'PERSIST'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
 class Predis_Commands_DatabaseSize extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'DBSIZE'; }
@@ -2401,8 +2422,16 @@ class Predis_Commands_ListPushTail extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'RPUSH'; }
 }
 
+class Predis_Commands_ListPushTailX extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'RPUSHX'; }
+}
+
 class Predis_Commands_ListPushHead extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'LPUSH'; }
+}
+
+class Predis_Commands_ListPushHeadX extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'LPUSHX'; }
 }
 
 class Predis_Commands_ListLength extends Predis_MultiBulkCommand {
@@ -2451,6 +2480,10 @@ class Predis_Commands_ListPopFirstBlocking extends Predis_MultiBulkCommand {
 
 class Predis_Commands_ListPopLastBlocking extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'BRPOP'; }
+}
+
+class Predis_Commands_ListInsert extends Predis_MultiBulkCommand {
+    public function getCommandId() { return 'LINSERT'; }
 }
 
 /* commands operating on sets */
@@ -2623,6 +2656,10 @@ class Predis_Commands_ZSetRangeByScore extends Predis_Commands_ZSetRange {
     }
 }
 
+class Predis_Commands_ZSetReverseRangeByScore extends Predis_Commands_ZSetRangeByScore {
+    public function getCommandId() { return 'ZREVRANGEBYSCORE'; }
+}
+
 class Predis_Commands_ZSetCount extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZCOUNT'; }
 }
@@ -2767,16 +2804,15 @@ class Predis_Commands_Sort extends Predis_MultiBulkCommand {
             return $arguments;
         }
 
-        // TODO: add more parameters checks
         $query = array($arguments[0]);
-        $sortParams = $arguments[1];
+        $sortParams = array_change_key_case($arguments[1], CASE_UPPER);
 
-        if (isset($sortParams['by'])) {
+        if (isset($sortParams['BY'])) {
             $query[] = 'BY';
-            $query[] = $sortParams['by'];
+            $query[] = $sortParams['BY'];
         }
-        if (isset($sortParams['get'])) {
-            $getargs = $sortParams['get'];
+        if (isset($sortParams['GET'])) {
+            $getargs = $sortParams['GET'];
             if (is_array($getargs)) {
                 foreach ($getargs as $getarg) {
                     $query[] = 'GET';
@@ -2788,20 +2824,22 @@ class Predis_Commands_Sort extends Predis_MultiBulkCommand {
                 $query[] = $getargs;
             }
         }
-        if (isset($sortParams['limit']) && is_array($sortParams['limit'])) {
+        if (isset($sortParams['LIMIT']) && is_array($sortParams['LIMIT']) 
+            && count($sortParams['LIMIT']) == 2) {
+
             $query[] = 'LIMIT';
-            $query[] = $sortParams['limit'][0];
-            $query[] = $sortParams['limit'][1];
+            $query[] = $sortParams['LIMIT'][0];
+            $query[] = $sortParams['LIMIT'][1];
         }
-        if (isset($sortParams['sort'])) {
-            $query[] = strtoupper($sortParams['sort']);
+        if (isset($sortParams['SORT'])) {
+            $query[] = strtoupper($sortParams['SORT']);
         }
-        if (isset($sortParams['alpha']) && $sortParams['alpha'] == true) {
+        if (isset($sortParams['ALPHA']) && $sortParams['ALPHA'] == true) {
             $query[] = 'ALPHA';
         }
-        if (isset($sortParams['store']) && $sortParams['store'] == true) {
+        if (isset($sortParams['STORE'])) {
             $query[] = 'STORE';
-            $query[] = $sortParams['store'];
+            $query[] = $sortParams['STORE'];
         }
 
         return $query;
@@ -2853,6 +2891,12 @@ class Predis_Commands_Publish extends Predis_MultiBulkCommand {
 class Predis_Commands_Watch extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'WATCH'; }
+    public function filterArguments(Array $arguments) {
+        if (isset($arguments[0]) && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+        return $arguments;
+    }
     public function parseResponse($data) { return (bool) $data; }
 }
 
