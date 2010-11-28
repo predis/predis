@@ -1822,6 +1822,9 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             /* commands operating on string values */
             'strlen'                    => '\Predis\Commands\Strlen',
 
+            /* commands operating on the key space */
+            'persist'                   => '\Predis\Commands\Persist',
+
             /* commands operating on lists */
             'rpushx'                    => '\Predis\Commands\ListPushTailX',
             'lpushx'                    => '\Predis\Commands\ListPushHeadX',
@@ -2397,6 +2400,11 @@ class Expire extends \Predis\MultiBulkCommand {
 
 class ExpireAt extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'EXPIREAT'; }
+    public function parseResponse($data) { return (bool) $data; }
+}
+
+class Persist extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'PERSIST'; }
     public function parseResponse($data) { return (bool) $data; }
 }
 

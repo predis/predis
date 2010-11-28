@@ -337,6 +337,18 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-1, $this->redis->ttl('foo'));
     }
 
+    function testPersist() {
+        $this->redis->set('foo', 'bar');
+
+        $this->assertTrue($this->redis->expire('foo', 1));
+        $this->assertEquals(1, $this->redis->ttl('foo'));
+        $this->assertTrue($this->redis->persist('foo'));
+        $this->assertEquals(-1, $this->redis->ttl('foo'));
+
+        $this->assertFalse($this->redis->persist('foo'));
+        $this->assertFalse($this->redis->persist('foobar'));
+    }
+
     function testSetExpire() {
         $this->assertTrue($this->redis->setex('foo', 10, 'bar'));
         $this->assertTrue($this->redis->exists('foo'));
