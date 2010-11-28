@@ -1110,6 +1110,10 @@ class ConnectionParameters {
     }
 
     private static function parseURI($uri) {
+        if (stripos($uri, 'unix') === 0) {
+            // hack to support URIs for UNIX sockets with minimal effort
+            $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
+        }
         $parsed = @parse_url($uri);
         if ($parsed == false || $parsed['host'] == null) {
             throw new ClientException("Invalid URI: $uri");
@@ -1130,6 +1134,7 @@ class ConnectionParameters {
             'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME), 
             'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
             'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
+            'path' => self::getParamOrDefault($parameters, 'path'), 
             'database' => self::getParamOrDefault($parameters, 'database'), 
             'password' => self::getParamOrDefault($parameters, 'password'), 
             'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
@@ -1187,6 +1192,7 @@ final class ConnectionFactory {
         return array(
             'tcp'   => '\Predis\TcpConnection',
             'redis' => '\Predis\TcpConnection', // compatibility with older versions
+            'unix'  => '\Predis\UnixDomainSocketConnection',
         );
     }
 
@@ -1292,7 +1298,7 @@ class TcpConnection extends Connection implements IConnectionSingle {
         }
     }
 
-    private function checkParameters(ConnectionParameters $parameters) {
+    protected function checkParameters(ConnectionParameters $parameters) {
         if ($parameters->scheme != 'tcp' && $parameters->scheme != 'redis') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
@@ -1402,6 +1408,37 @@ class TcpConnection extends Connection implements IConnectionSingle {
         }
         while (substr($value, -2) !== Protocol::NEWLINE);
         return substr($value, 0, -2);
+    }
+}
+
+class UnixDomainSocketConnection extends TcpConnection {
+    public function __construct(ConnectionParameters $parameters, ResponseReader $reader = null) {
+        parent::__construct($this->checkParameters($parameters), $reader);
+    }
+
+    protected function checkParameters(ConnectionParameters $parameters) {
+        if ($parameters->scheme != 'unix') {
+            throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        }
+        if (!file_exists($parameters->path)) {
+            throw new \InvalidArgumentException("Could not find {$parameters->path}");
+        }
+        return $parameters;
+    }
+
+    protected function createResource() {
+        $uri = sprintf('unix:///%s', $this->_params->path);
+        $connectFlags = STREAM_CLIENT_CONNECT;
+        if ($this->_params->connection_persistent) {
+            $connectFlags |= STREAM_CLIENT_PERSISTENT;
+        }
+        $this->_socket = @stream_socket_client(
+            $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
+        );
+
+        if (!$this->_socket) {
+            $this->onCommunicationException(trim($errstr), $errno);
+        }
     }
 }
 
