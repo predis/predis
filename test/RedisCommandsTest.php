@@ -1281,6 +1281,65 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testZsetReverseRangeByScore() {
+        $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
+
+        $this->assertEquals(
+            array('a'), 
+            $this->redis->zrevrangebyscore('zset', -10, -10)
+        );
+
+        $this->assertEquals(
+            array('b', 'a'), 
+            $this->redis->zrevrangebyscore('zset', 0, -10)
+        );
+
+        $this->assertEquals(
+            array('e', 'd'), 
+            $this->redis->zrevrangebyscore('zset', 20, 20)
+        );
+
+        $this->assertEquals(
+            array('f', 'e', 'd', 'c', 'b'), 
+            $this->redis->zrevrangebyscore('zset', 30, 0)
+        );
+
+        $this->assertEquals(
+            array(array('e', 20), array('d', 20), array('c', 10)), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, 'withscores')
+        );
+
+        $this->assertEquals(
+            array(array('e', 20), array('d', 20), array('c', 10)), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array('withscores' => true))
+        );
+
+        $this->assertEquals(
+            array('d', 'c'), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array('limit' => array(1, 2)))
+        );
+
+        $this->assertEquals(
+            array('d', 'c'), 
+            $this->redis->zrevrangebyscore('zset', 20, 10, array(
+                'limit' => array('offset' => 1, 'count' => 2)
+            ))
+        );
+
+        $this->assertEquals(
+            array(array('d', 20), array('c', 10)),  
+            $this->redis->zrevrangebyscore('zset', 20, 10, array(
+                'limit'      => array(1, 2), 
+                'withscores' => true, 
+            ))
+        );
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->set('foo', 'bar');
+            $test->redis->zrevrangebyscore('foo', 0, 0);
+        });
+    }
+
     function testZsetUnionStore() {
         $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
         $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
