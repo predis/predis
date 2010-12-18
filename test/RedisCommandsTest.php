@@ -223,6 +223,28 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testSetRange() {
+        $this->assertEquals(6, $this->redis->setrange('var', 0, 'foobar'));
+        $this->assertEquals('foobar', $this->redis->get('var'));
+        $this->assertEquals(6, $this->redis->setrange('var', 3, 'foo'));
+        $this->assertEquals('foofoo', $this->redis->get('var'));
+        $this->assertEquals(16, $this->redis->setrange('var', 10, 'barbar'));
+        $this->assertEquals("foofoo\x00\x00\x00\x00barbar", $this->redis->get('var'));
+
+        $this->assertEquals(4, $this->redis->setrange('binary', 0, pack('l', -2147483648)));
+        list($unpacked) = array_values(unpack('l', $this->redis->get('binary')));
+        $this->assertEquals(-2147483648, $unpacked);
+
+        RC::testForServerException($this, RC::EXCEPTION_OFFSET_RANGE, function($test) {
+            $test->redis->setrange('var', -1, 'bogus');
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->rpush('metavars', 'foo');
+            $test->redis->setrange('metavars', 0, 'hoge');
+        });
+    }
+
     function testSubstr() {
         $this->redis->set('var', 'foobar');
         $this->assertEquals('foo', $this->redis->substr('var', 0, 2));

@@ -1823,6 +1823,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
             /* commands operating on string values */
             'strlen'                    => '\Predis\Commands\Strlen',
+            'setrange'                  => '\Predis\Commands\SetRange',
             'getrange'                  => '\Predis\Commands\Substr',
 
             /* commands operating on the key space */
@@ -2356,6 +2357,10 @@ class Type extends \Predis\MultiBulkCommand {
 
 class Append extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'APPEND'; }
+}
+
+class SetRange extends \Predis\MultiBulkCommand {
+    public function getCommandId() { return 'SETRANGE'; }
 }
 
 class Substr extends \Predis\MultiBulkCommand {
