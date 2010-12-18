@@ -259,6 +259,38 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testSetBit() {
+        $this->assertEquals(0, $this->redis->setbit('binary', 31, 1));
+        $this->assertEquals(0, $this->redis->setbit('binary', 0, 1));
+        $this->assertEquals(4, $this->redis->strlen('binary'));
+        $this->assertEquals("\x80\x00\00\x01", $this->redis->get('binary'));
+
+        $this->assertEquals(1, $this->redis->setbit('binary', 0, 0));
+        $this->assertEquals(0, $this->redis->setbit('binary', 0, 0));
+        $this->assertEquals("\x00\x00\00\x01", $this->redis->get('binary'));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, function($test) {
+            $test->redis->setbit('binary', -1, 1);
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, function($test) {
+            $test->redis->setbit('binary', 'invalid', 1);
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_VALUE, function($test) {
+            $test->redis->setbit('binary', 15, 255);
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_VALUE, function($test) {
+            $test->redis->setbit('binary', 15, 'invalid');
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->rpush('metavars', 'foo');
+            $test->redis->setbit('metavars', 0, 1);
+        });
+    }
+
     function testStrlen() {
         $this->redis->set('var', 'foobar');
         $this->assertEquals(6, $this->redis->strlen('var'));

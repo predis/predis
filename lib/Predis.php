@@ -1797,6 +1797,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             'strlen'                    => '\Predis\Commands\Strlen',
             'setrange'                  => '\Predis\Commands\SetRange',
             'getrange'                  => '\Predis\Commands\GetRange',
+            'setbit'                    => '\Predis\Commands\SetBit',
 
             /* commands operating on the key space */
             'persist'                   => '\Predis\Commands\Persist',
@@ -2358,6 +2359,10 @@ class GetRange extends Command {
 
 class Substr extends Command {
     public function getCommandId() { return 'SUBSTR'; }
+}
+
+class SetBit extends Command {
+    public function getCommandId() { return 'SETBIT'; }
 }
 
 class Strlen extends Command {
