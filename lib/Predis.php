@@ -2474,10 +2474,6 @@ class ListPopLastPushHead extends Command {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class ListPopLastPushHeadBulk extends Command {
-    public function getCommandId() { return 'RPOPLPUSH'; }
-}
-
 class ListPopLastPushHeadBlocking extends Command {
     public function getCommandId() { return 'BRPOPLPUSH'; }
 }
