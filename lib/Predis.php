@@ -1823,6 +1823,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
             /* commands operating on string values */
             'strlen'                    => '\Predis\Commands\Strlen',
+            'getrange'                  => '\Predis\Commands\Substr',
 
             /* commands operating on the key space */
             'persist'                   => '\Predis\Commands\Persist',
