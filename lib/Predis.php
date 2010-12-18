@@ -2481,10 +2481,6 @@ class ListPopLastPushHead extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'RPOPLPUSH'; }
 }
 
-class ListPopLastPushHeadBulk extends \Predis\MultiBulkCommand {
-    public function getCommandId() { return 'RPOPLPUSH'; }
-}
-
 class ListPopLastPushHeadBlocking extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'BRPOPLPUSH'; }
 }
