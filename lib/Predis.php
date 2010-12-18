@@ -1795,6 +1795,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
 
             /* commands operating on string values */
             'strlen'                    => '\Predis\Commands\Strlen',
+            'setrange'                  => '\Predis\Commands\SetRange',
             'getrange'                  => '\Predis\Commands\GetRange',
 
             /* commands operating on the key space */
@@ -2345,6 +2346,10 @@ class Type extends Command {
 
 class Append extends Command {
     public function getCommandId() { return 'APPEND'; }
+}
+
+class SetRange extends Command {
+    public function getCommandId() { return 'SETRANGE'; }
 }
 
 class GetRange extends Command {
