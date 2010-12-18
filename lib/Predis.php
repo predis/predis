@@ -1807,6 +1807,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             'rpushx'                    => '\Predis\Commands\ListPushTailX',
             'lpushx'                    => '\Predis\Commands\ListPushHeadX',
             'linsert'                   => '\Predis\Commands\ListInsert',
+            'brpoplpush'                => '\Predis\Commands\ListPopLastPushHeadBlocking',
 
             /* commands operating on sorted sets */
             'zrevrangebyscore'          => '\Predis\Commands\ZSetReverseRangeByScore',
@@ -2475,6 +2476,10 @@ class ListPopLastPushHead extends Command {
 
 class ListPopLastPushHeadBulk extends Command {
     public function getCommandId() { return 'RPOPLPUSH'; }
+}
+
+class ListPopLastPushHeadBlocking extends Command {
+    public function getCommandId() { return 'BRPOPLPUSH'; }
 }
 
 class ListPopFirst extends Command {

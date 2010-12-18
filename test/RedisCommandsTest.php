@@ -807,6 +807,31 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), 2, '', 1);
     }
 
+    function testListBlockingPopLastPushHead() {
+        // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it
+        //       does not run with a concurrent client pushing items on lists.
+        $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(1, 2, 3));
+        $src_count = count($numbers);
+        $dst_count = 0;
+
+        while ($item = $this->redis->brpoplpush('numbers', 'temporary', 1)) {
+            $this->assertEquals(--$src_count, $this->redis->llen('numbers'));
+            $this->assertEquals(++$dst_count, $this->redis->llen('temporary'));
+            $this->assertEquals(array_pop($numbers), $this->redis->lindex('temporary', 0));
+        }
+
+        $start = time();
+        $this->assertNull($this->redis->brpoplpush('numbers', 'temporary', 2));
+        $this->assertEquals(2, (float)(time() - $start), '', 1);
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->del('numbers');
+            $test->redis->del('temporary');
+            $test->redis->set('numbers', 'foobar');
+            $test->redis->brpoplpush('numbers', 'temporary', 1);
+        });
+    }
+
     function testListInsert() {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
