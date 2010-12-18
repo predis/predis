@@ -259,6 +259,18 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testStrlen() {
+        $this->redis->set('var', 'foobar');
+        $this->assertEquals(6, $this->redis->strlen('var'));
+        $this->assertEquals(9, $this->redis->append('var', '___'));
+        $this->assertEquals(9, $this->redis->strlen('var'));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->rpush('metavars', 'foo');
+            $test->redis->strlen('metavars');
+        });
+    }
+
     function testSetBit() {
         $this->assertEquals(0, $this->redis->setbit('binary', 31, 1));
         $this->assertEquals(0, $this->redis->setbit('binary', 0, 1));
@@ -313,17 +325,6 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testStrlen() {
-        $this->redis->set('var', 'foobar');
-        $this->assertEquals(6, $this->redis->strlen('var'));
-        $this->assertEquals(9, $this->redis->append('var', '___'));
-        $this->assertEquals(9, $this->redis->strlen('var'));
-
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
-            $test->redis->rpush('metavars', 'foo');
-            $test->redis->strlen('metavars');
-        });
-    }
 
 
     /* commands operating on the key space */
