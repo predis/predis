@@ -26,6 +26,8 @@ class RC {
     const EXCEPTION_EXEC_NO_MULTI  = 'EXEC without MULTI';
     const EXCEPTION_SETEX_TTL      = 'invalid expire time in SETEX';
     const EXCEPTION_HASH_VALNOTINT = 'hash value is not an integer';
+    const EXCEPTION_BIT_VALUE      = 'bit is not an integer or out of range';
+    const EXCEPTION_BIT_OFFSET     = 'bit offset is not an integer or out of range';
 
     private static $_connection;
 
