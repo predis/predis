@@ -845,7 +845,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('foo', 'bar');
-            $test->redis->lset('foo', 0, 0);
+            $test->redis->linsert('foo', 0, 0);
         });
     }
 
