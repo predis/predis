@@ -676,5 +676,23 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertType('array', $replies);
         $this->assertEquals(array(true, array('bar', 'bar')), $replies);
     }
+
+    function testMultiExecBlock_CheckAndSet_Discard() {
+        $client = RC::getConnection();
+        $client->flushdb();
+        $client->set('foo', 'bar');
+
+        $options = array('watch' => 'foo', 'cas' => true);
+        $replies = $client->multiExec($options, function($tx) {
+            $tx->watch('foobar');
+            $foo = $tx->get('foo');
+            $tx->multi();
+            $tx->set('foobar', $foo);
+            $tx->discard();
+            $tx->mget('foo', 'foobar');
+        });
+        $this->assertType('array', $replies);
+        $this->assertEquals(array(array('bar', null)), $replies);
+    }
 }
 ?>
