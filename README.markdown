@@ -20,6 +20,7 @@ to be implemented soon in Predis.
 - Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
+- Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
 - Lazy connections (connections to Redis instances are only established just in time).
 - Flexible system to define and register your own set of commands to a client instance.
 
