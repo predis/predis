@@ -850,8 +850,11 @@ class MultiExecBlock {
             if (isset($options['watch'])) {
                 $this->watch($options['watch']);
             }
-            if (!$this->_checkAndSet) {
+            if (!$this->_checkAndSet || ($this->_discarded && $this->_checkAndSet)) {
                 $this->_redisClient->multi();
+                if ($this->_discarded) {
+                    $this->_checkAndSet = false;
+                }
             }
             $this->_initialized = true;
             $this->_discarded   = false;
