@@ -569,7 +569,16 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         $replies = $client->multiExec(function($multi) { });
+        $this->assertEquals(0, count($replies));
 
+        $options = array('cas' => true);
+        $replies = $client->multiExec($options, function($multi) { });
+        $this->assertEquals(0, count($replies));
+
+        $options = array('cas' => true);
+        $replies = $client->multiExec($options, function($multi) {
+            $multi->multi();
+        });
         $this->assertEquals(0, count($replies));
     }
 

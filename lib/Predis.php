@@ -922,7 +922,7 @@ class MultiExecBlock {
                 }
             }
 
-            if ($this->_initialized === false) {
+            if ($this->_initialized === false || count($this->_commands) == 0) {
                 return;
             }
 
