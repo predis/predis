@@ -773,6 +773,7 @@ class MultiExecBlock {
         $this->checkCapabilities($redisClient);
         $this->_initialized = false;
         $this->_discarded   = false;
+        $this->_checkAndSet = false;
         $this->_insideBlock = false;
         $this->_redisClient = $redisClient;
         $this->_options     = $options ?: array();
@@ -804,10 +805,14 @@ class MultiExecBlock {
 
     private function initialize() {
         if ($this->_initialized === false) {
-            if (isset($this->_options['watch'])) {
-                $this->watch($this->_options['watch']);
+            $options = &$this->_options;
+            $this->_checkAndSet = isset($options['cas']) && $options['cas'];
+            if (isset($options['watch'])) {
+                $this->watch($options['watch']);
             }
-            $this->_redisClient->multi();
+            if (!$this->_checkAndSet) {
+                $this->_redisClient->multi();
+            }
             $this->_initialized = true;
             $this->_discarded   = false;
         }
@@ -819,8 +824,14 @@ class MultiExecBlock {
 
     public function __call($method, $arguments) {
         $this->initialize();
-        $command  = $this->_redisClient->createCommand($method, $arguments);
-        $response = $this->_redisClient->executeCommand($command);
+        $client = $this->_redisClient;
+
+        if ($this->_checkAndSet) {
+            return call_user_func_array(array($client, $method), $arguments);
+        }
+
+        $command  = $client->createCommand($method, $arguments);
+        $response = $client->executeCommand($command);
         if (isset($response->queued)) {
             $this->_commands[] = $command;
             return $this;
@@ -850,6 +861,11 @@ class MultiExecBlock {
     }
 
     public function multi() {
+        if ($this->_initialized && $this->_checkAndSet) {
+            $this->_checkAndSet = false;
+            $this->_redisClient->multi();
+            return $this;
+        }
         $this->initialize();
     }
 
