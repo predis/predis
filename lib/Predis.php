@@ -890,21 +890,10 @@ class MultiExecBlock {
 
     public function watch($keys) {
         $this->isWatchSupported();
-        if ($this->_initialized === true) {
-            throw new \Predis\ClientException('WATCH inside MULTI is not allowed');
+        if ($this->_initialized && !$this->_checkAndSet) {
+            throw new ClientException('WATCH inside MULTI is not allowed');
         }
-
-        $reply = null;
-        if (is_array($keys)) {
-            $reply = array();
-            foreach ($keys as $key) {
-                $reply = $this->_redisClient->watch($keys);
-            }
-        }
-        else {
-            $reply = $this->_redisClient->watch($keys);
-        }
-        return $reply;
+        return $this->_redisClient->watch($keys);
     }
 
     public function multi() {
