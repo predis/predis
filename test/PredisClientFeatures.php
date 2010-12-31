@@ -637,11 +637,60 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(true, array('bar', 'bar')), $replies);
     }
 
+    function testMultiExecBlock_RetryOnServerAbort() {
+        $client1 = RC::getConnection();
+        $client2 = RC::getConnection(true);
+        $client1->flushdb();
+
+        $retry = 3;
+        $attempts = 0;
+        RC::testForAbortedMultiExecException($this, function()
+            use($client1, $client2, $retry, &$attempts) {
+
+            $options = array('watch' => 'sentinel', 'retry' => $retry);
+            $client1->multiExec($options, function($tx)
+                use ($client2, &$attempts) {
+
+                $attempts++;
+                $tx->set('sentinel', 'client1');
+                $tx->get('sentinel');
+                $client2->set('sentinel', 'client2');
+            });
+        });
+        $this->assertEquals('client2', $client1->get('sentinel'));
+        $this->assertEquals($retry + 1, $attempts);
+
+        $retry = 3;
+        $attempts = 0;
+        RC::testForAbortedMultiExecException($this, function()
+            use($client1, $client2, $retry, &$attempts) {
+
+            $options = array(
+                'watch' => 'sentinel',
+                'cas'   => true,
+                'retry' => $retry
+            );
+            $client1->multiExec($options, function($tx)
+                use ($client2, &$attempts) {
+
+                $attempts++;
+                $tx->incr('attempts');
+                $tx->multi();
+                $tx->set('sentinel', 'client1');
+                $tx->get('sentinel');
+                $client2->set('sentinel', 'client2');
+            });
+        });
+        $this->assertEquals('client2', $client1->get('sentinel'));
+        $this->assertEquals($retry + 1, $attempts);
+        $this->assertEquals($attempts, $client1->get('attempts'));
+    }
+
     function testMultiExecBlock_CheckAndSet_Discard() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->set('foo', 'bar');
 
+        $client->set('foo', 'bar');
         $options = array('watch' => 'foo', 'cas' => true);
         $replies = $client->multiExec($options, function($tx) {
             $tx->watch('foobar');
@@ -653,6 +702,26 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         });
         $this->assertType('array', $replies);
         $this->assertEquals(array(array('bar', null)), $replies);
+
+        $hijack = true;
+        $client->set('foo', 'bar');
+        $client2 = RC::getConnection(true);
+        $options = array('watch' => 'foo', 'cas' => true, 'retry' => 1);
+        $replies = $client->multiExec($options, function($tx)
+            use ($client2, &$hijack) {
+
+            $foo = $tx->get('foo');
+            $tx->multi();
+            $tx->set('foobar', $foo);
+            $tx->discard();
+            if ($hijack) {
+                $hijack = false;
+                $client2->set('foo', 'hijacked!');
+            }
+            $tx->mget('foo', 'foobar');
+        });
+        $this->assertType('array', $replies);
+        $this->assertEquals(array(array('hijacked!', null)), $replies);
     }
 }
 ?>

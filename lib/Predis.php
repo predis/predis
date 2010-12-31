@@ -805,19 +805,15 @@ class CommandPipeline {
 }
 
 class MultiExecBlock {
-    private $_initialized, $_discarded, $_insideBlock;
+    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
     private $_redisClient, $_options, $_commands;
     private $_supportsWatch;
 
     public function __construct(Client $redisClient, Array $options = null) {
         $this->checkCapabilities($redisClient);
-        $this->_initialized = false;
-        $this->_discarded   = false;
-        $this->_checkAndSet = false;
-        $this->_insideBlock = false;
+        $this->reset();
         $this->_redisClient = $redisClient;
         $this->_options     = $options ?: array();
-        $this->_commands    = array();
     }
 
     private function checkCapabilities(Client $redisClient) {
@@ -841,6 +837,14 @@ class MultiExecBlock {
                 'The current profile does not support WATCH and UNWATCH commands'
             );
         }
+    }
+
+    private function reset() {
+        $this->_initialized = false;
+        $this->_discarded   = false;
+        $this->_checkAndSet = false;
+        $this->_insideBlock = false;
+        $this->_commands    = array();
     }
 
     private function initialize() {
@@ -920,8 +924,7 @@ class MultiExecBlock {
 
     public function discard() {
         $this->_redisClient->discard();
-        $this->_commands    = array();
-        $this->_initialized = false;
+        $this->reset();
         $this->_discarded   = true;
         return $this;
     }
@@ -941,40 +944,51 @@ class MultiExecBlock {
             throw new \InvalidArgumentException('Argument passed must be a callable object');
         }
 
-        $blockException = null;
-        $returnValues   = array();
+        $reply = null;
+        $returnValues = array();
+        $attemptsLeft = isset($this->_options['retry']) ? (int)$this->_options['retry'] : 0;
+        do {
+            $blockException = null;
 
-        if ($block !== null) {
-            $this->setInsideBlock(true);
-            try {
-                $block($this);
-            }
-            catch (CommunicationException $exception) {
-                $blockException = $exception;
-            }
-            catch (ServerException $exception) {
-                $blockException = $exception;
-            }
-            catch (\Exception $exception) {
-                $blockException = $exception;
-                if ($this->_initialized === true) {
-                    $this->discard();
+            if ($block !== null) {
+                $this->setInsideBlock(true);
+                try {
+                    $block($this);
+                }
+                catch (CommunicationException $exception) {
+                    $blockException = $exception;
+                }
+                catch (ServerException $exception) {
+                    $blockException = $exception;
+                }
+                catch (\Exception $exception) {
+                    $blockException = $exception;
+                    if ($this->_initialized === true) {
+                        $this->discard();
+                    }
+                }
+                $this->setInsideBlock(false);
+                if ($blockException !== null) {
+                    throw $blockException;
                 }
             }
-            $this->setInsideBlock(false);
-            if ($blockException !== null) {
-                throw $blockException;
+
+            if ($this->_initialized === false) {
+                return;
             }
-        }
 
-        if ($this->_initialized === false) {
-            return;
-        }
-
-        $reply = $this->_redisClient->exec();
-        if ($reply === null) {
-            throw new AbortedMultiExec('The current transaction has been aborted by the server');
-        }
+            $reply = $this->_redisClient->exec();
+            if ($reply === null) {
+                if ($attemptsLeft === 0) {
+                    throw new AbortedMultiExec(
+                        'The current transaction has been aborted by the server'
+                    );
+                }
+                $this->reset();
+                continue;
+            }
+            break;
+        } while ($attemptsLeft-- > 0);
 
         $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
         $commands  = &$this->_commands;
