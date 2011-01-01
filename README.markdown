@@ -61,10 +61,10 @@ Furthermore, a pipeline can be initialized on a cluster of redis instances in th
 same exact way they are created on single connection. Sharding is still transparent 
 to the user:
 
-    $redis = Predis\Client::create(
+    $redis = new Predis\Client(array(
         array('host' => '10.0.0.1', 'port' => 6379),
         array('host' => '10.0.0.2', 'port' => 6379)
-    );
+    ));
 
     $replies = $redis->pipeline(function($pipe) {
         for ($i = 0; $i < 1000; $i++) {
