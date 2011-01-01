@@ -61,10 +61,10 @@ Furthermore, a pipeline can be initialized on a cluster of redis instances in th
 same exact way they are created on single connection. Sharding is still transparent 
 to the user:
 
-    $redis = Predis\Client::create(
+    $redis = new Predis\Client(array(
         array('host' => '10.0.0.1', 'port' => 6379),
         array('host' => '10.0.0.2', 'port' => 6379)
-    );
+    ));
 
     $replies = $redis->pipeline(function($pipe) {
         for ($i = 0; $i < 1000; $i++) {
@@ -83,7 +83,7 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends \Predis\MultiBulkCommand {
+    class BrandNewRedisCommand extends \Predis\Command {
         public function getCommandId() { return 'NEWCMD'; }
     }
 
