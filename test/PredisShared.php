@@ -24,11 +24,14 @@ class RC {
     const EXCEPTION_WRONG_TYPE     = 'Operation against a key holding the wrong kind of value';
     const EXCEPTION_NO_SUCH_KEY    = 'no such key';
     const EXCEPTION_OUT_OF_RANGE   = 'index out of range';
+    const EXCEPTION_OFFSET_RANGE   = 'offset is out of range';
     const EXCEPTION_INVALID_DB_IDX = 'invalid DB index';
     const EXCEPTION_VALUE_NOT_INT  = 'value is not an integer';
     const EXCEPTION_EXEC_NO_MULTI  = 'EXEC without MULTI';
     const EXCEPTION_SETEX_TTL      = 'invalid expire time in SETEX';
     const EXCEPTION_HASH_VALNOTINT = 'hash value is not an integer';
+    const EXCEPTION_BIT_VALUE      = 'bit is not an integer or out of range';
+    const EXCEPTION_BIT_OFFSET     = 'bit offset is not an integer or out of range';
 
     private static $_connection;
 

@@ -20,6 +20,7 @@ to be implemented soon in Predis.
 - Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
+- Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
 - Lazy connections (connections to Redis instances are only established just in time).
 - Flexible system to define and register your own set of commands to a client instance.
 
@@ -60,10 +61,10 @@ Furthermore, a pipeline can be initialized on a cluster of redis instances in th
 same exact way they are created on single connection. Sharding is still transparent 
 to the user:
 
-    $redis = Predis_Client::create(
+    $redis = new Predis_Client(array(
         array('host' => '10.0.0.1', 'port' => 6379),
         array('host' => '10.0.0.2', 'port' => 6379)
-    );
+    ));
 
     $pipe = $redis->pipeline();
     for ($i = 0; $i < 1000; $i++) {

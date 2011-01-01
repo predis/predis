@@ -224,6 +224,28 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         "));
     }
 
+    function testSetRange() {
+        $this->assertEquals(6, $this->redis->setrange('var', 0, 'foobar'));
+        $this->assertEquals('foobar', $this->redis->get('var'));
+        $this->assertEquals(6, $this->redis->setrange('var', 3, 'foo'));
+        $this->assertEquals('foofoo', $this->redis->get('var'));
+        $this->assertEquals(16, $this->redis->setrange('var', 10, 'barbar'));
+        $this->assertEquals("foofoo\x00\x00\x00\x00barbar", $this->redis->get('var'));
+
+        $this->assertEquals(4, $this->redis->setrange('binary', 0, pack('l', -2147483648)));
+        list($unpacked) = array_values(unpack('l', $this->redis->get('binary')));
+        $this->assertEquals(-2147483648, $unpacked);
+
+        RC::testForServerException($this, RC::EXCEPTION_OFFSET_RANGE, p_anon("\$test", "
+            \$test->redis->setrange('var', -1, 'bogus');
+        "));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->rpush('metavars', 'foo');
+            \$test->redis->setrange('metavars', 0, 'hoge');
+        "));
+    }
+
     function testSubstr() {
         $this->redis->set('var', 'foobar');
         $this->assertEquals('foo', $this->redis->substr('var', 0, 2));
@@ -251,6 +273,60 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             \$test->redis->rpush('metavars', 'foo');
             \$test->redis->strlen('metavars');
         "));
+    }
+
+    function testSetBit() {
+        $this->assertEquals(0, $this->redis->setbit('binary', 31, 1));
+        $this->assertEquals(0, $this->redis->setbit('binary', 0, 1));
+        $this->assertEquals(4, $this->redis->strlen('binary'));
+        $this->assertEquals("\x80\x00\00\x01", $this->redis->get('binary'));
+
+        $this->assertEquals(1, $this->redis->setbit('binary', 0, 0));
+        $this->assertEquals(0, $this->redis->setbit('binary', 0, 0));
+        $this->assertEquals("\x00\x00\00\x01", $this->redis->get('binary'));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, p_anon("\$test", "
+            \$test->redis->setbit('binary', -1, 1);
+        "));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, p_anon("\$test", "
+            \$test->redis->setbit('binary', 'invalid', 1);
+        "));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_VALUE, p_anon("\$test", "
+            \$test->redis->setbit('binary', 15, 255);
+        "));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_VALUE, p_anon("\$test", "
+            \$test->redis->setbit('binary', 15, 'invalid');
+        "));
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->rpush('metavars', 'foo');
+            \$test->redis->setbit('metavars', 0, 1);
+        "));
+    }
+
+    function testGetBit() {
+        $this->redis->set('binary', "\x80\x00\00\x01");
+
+        $this->assertEquals(1, $this->redis->getbit('binary', 0));
+        $this->assertEquals(0, $this->redis->getbit('binary', 15));
+        $this->assertEquals(1, $this->redis->getbit('binary', 31));
+        $this->assertEquals(0, $this->redis->getbit('binary', 63));
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, function($test) {
+            $test->redis->getbit('binary', -1);
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_BIT_OFFSET, function($test) {
+            $test->redis->getbit('binary', 'invalid');
+        });
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
+            $test->redis->rpush('metavars', 'foo');
+            $test->redis->getbit('metavars', 0);
+        });
     }
 
 
@@ -347,7 +423,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         sleep(2);
         $this->assertFalse($this->redis->exists('hoge'));
 
-        RC::testForServerException($this, RC::EXCEPTION_VALUE_NOT_INT, p_anon("\$test", "
+        // TODO: do not check the error message RC::EXCEPTION_VALUE_NOT_INT for now
+        RC::testForServerException($this, null, p_anon("\$test", "
             \$test->redis->setex('hoge', 2.5, 'piyo');
         "));
         RC::testForServerException($this, RC::EXCEPTION_SETEX_TTL, p_anon("\$test", "
@@ -722,6 +799,31 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), 2, '', 1);
     }
 
+    function testListBlockingPopLastPushHead() {
+        // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it
+        //       does not run with a concurrent client pushing items on lists.
+        $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(1, 2, 3));
+        $src_count = count($numbers);
+        $dst_count = 0;
+
+        while ($item = $this->redis->brpoplpush('numbers', 'temporary', 1)) {
+            $this->assertEquals(--$src_count, $this->redis->llen('numbers'));
+            $this->assertEquals(++$dst_count, $this->redis->llen('temporary'));
+            $this->assertEquals(array_pop($numbers), $this->redis->lindex('temporary', 0));
+        }
+
+        $start = time();
+        $this->assertNull($this->redis->brpoplpush('numbers', 'temporary', 2));
+        $this->assertEquals(2, (float)(time() - $start), '', 1);
+
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
+            \$test->redis->del('numbers');
+            \$test->redis->del('temporary');
+            \$test->redis->set('numbers', 'foobar');
+            \$test->redis->brpoplpush('numbers', 'temporary', 1);
+        "));
+    }
+
     function testListInsert() {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
@@ -734,7 +836,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
             \$test->redis->set('foo', 'bar');
-            \$test->redis->lset('foo', 0, 0);
+            \$test->redis->linsert('foo', 'before', 0, 0);
         "));
     }
 

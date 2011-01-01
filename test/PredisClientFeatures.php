@@ -552,12 +552,29 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $replies[2]);
     }
 
+    /**
+     * @expectedException Predis_ClientException
+     */
+    function testMultiExecBlock_CannotMixFluentInterfaceAndAnonymousBlock() {
+        $emptyBlock = p_anon("\$tx", "");
+        $tx = RC::getConnection()->multiExec()->get('foo')->execute($emptyBlock);
+    }
+
     function testMultiExecBlock_EmptyCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
 
         $replies = $client->multiExec(p_anon("\$multi", ""));
+        $this->assertEquals(0, count($replies));
 
+        $options = array('cas' => true);
+        $replies = $client->multiExec($options, p_anon("\$multi", ""));
+        $this->assertEquals(0, count($replies));
+
+        $options = array('cas' => true);
+        $replies = $client->multiExec($options, p_anon("\$multi", "
+            \$multi->multi();
+        "));
         $this->assertEquals(0, count($replies));
     }
 
@@ -643,6 +660,83 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('The current transaction has been aborted by the server', $thrownException->getMessage());
 
         $this->assertEquals('client2', $client1->get('sentinel'));
+    }
+
+    function testMultiExecBlock_CheckAndSet() {
+        $client = RC::getConnection();
+        $client->flushdb();
+        $client->set('foo', 'bar');
+
+        $options = array('watch' => 'foo', 'cas' => true);
+        $replies = $client->multiExec($options, p_anon("\$tx", "
+            \$tx->watch('foobar');
+            \$foo = \$tx->get('foo');
+            \$tx->multi();
+            \$tx->set('foobar', \$foo);
+            \$tx->mget('foo', 'foobar');
+        "));
+        $this->assertType('array', $replies);
+        $this->assertEquals(array(true, array('bar', 'bar')), $replies);
+
+        $tx = $client->multiExec($options);
+        $tx->watch('foobar');
+        $foo = $tx->get('foo');
+        $replies = $tx->multi()
+                      ->set('foobar', $foo)
+                      ->mget('foo', 'foobar')
+                      ->execute();
+        $this->assertType('array', $replies);
+        $this->assertEquals(array(true, array('bar', 'bar')), $replies);
+    }
+
+    function testMultiExecBlock_RetryOnServerAbort() {
+        $client1 = RC::getConnection();
+        $client1->flushdb();
+
+        $retry = 3;
+        $thrownException = null;
+        try {
+            $options = array('watch' => 'sentinel', 'retry' => $retry);
+            $client1->multiExec($options, p_anon("\$tx", "
+                \$tx->set('sentinel', 'client1');
+                \$tx->get('sentinel');
+                \$client2 = RC::getConnection(true);
+                \$client2->incr('attempts');
+                \$client2->set('sentinel', 'client2');
+            "));
+        }
+        catch (Predis_AbortedMultiExec $exception) {
+            $thrownException = $exception;
+        }
+        $this->assertType('Predis_AbortedMultiExec', $thrownException);
+        $this->assertEquals('The current transaction has been aborted by the server', $thrownException->getMessage());
+        $this->assertEquals('client2', $client1->get('sentinel'));
+        $this->assertEquals($retry + 1, $client1->get('attempts'));
+
+        $client1->del('attempts', 'sentinel');
+        $thrownException = null;
+        try {
+            $options = array(
+                'watch' => 'sentinel',
+                'cas'   => true,
+                'retry' => $retry
+            );
+            $client1->multiExec($options, p_anon("\$tx", "
+                \$tx->incr('attempts');
+                \$tx->multi();
+                \$tx->set('sentinel', 'client1');
+                \$tx->get('sentinel');
+                \$client2 = RC::getConnection(true);
+                \$client2->set('sentinel', 'client2');
+            "));
+        }
+        catch (Predis_AbortedMultiExec $exception) {
+            $thrownException = $exception;
+        }
+        $this->assertType('Predis_AbortedMultiExec', $thrownException);
+        $this->assertEquals('The current transaction has been aborted by the server', $thrownException->getMessage());
+        $this->assertEquals('client2', $client1->get('sentinel'));
+        $this->assertEquals($retry + 1, $client1->get('attempts'));
     }
 }
 ?>
