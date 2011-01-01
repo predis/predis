@@ -132,7 +132,7 @@ class Client {
         $this->_connection = $connection;
     }
 
-    public function setProfile($serverProfile) {
+    private function setProfile($serverProfile) {
         if (!($serverProfile instanceof RedisServerProfile || is_string($serverProfile))) {
             throw new \InvalidArgumentException(
                 "Invalid type for server profile, \Predis\RedisServerProfile or string expected"
