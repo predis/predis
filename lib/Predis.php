@@ -863,6 +863,7 @@ class MultiExecBlock {
             return $this;
         }
         $this->initialize();
+        return $this;
     }
 
     public function unwatch() {
