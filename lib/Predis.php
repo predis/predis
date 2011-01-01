@@ -922,16 +922,25 @@ class MultiExecBlock {
         return $this->execute();
     }
 
-    public function execute($block = null) {
+    private function checkBeforeExecution($block) {
         if ($this->_insideBlock === true) {
             throw new \Predis\ClientException(
                 "Cannot invoke 'execute' or 'exec' inside an active client transaction block"
             );
         }
-
         if ($block && !is_callable($block)) {
             throw new \InvalidArgumentException('Argument passed must be a callable object');
         }
+        if (isset($this->_options['retry']) && !isset($block)) {
+            $this->discard();
+            throw new \InvalidArgumentException(
+                'Automatic retries can be used only when a transaction block is provided'
+            );
+        }
+    }
+
+    public function execute($block = null) {
+        $this->checkBeforeExecution($block);
 
         $reply = null;
         $returnValues = array();

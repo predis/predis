@@ -695,6 +695,16 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals($attempts, $client1->get('attempts'));
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    function testMultiExecBlock_RetryNotAvailableWithoutBlock() {
+        $options = array('watch' => 'foo', 'retry' => 1);
+        $tx = RC::getConnection()->multiExec($options);
+        $tx->multi();
+        $tx->get('foo')->exec();
+    }
+
     function testMultiExecBlock_CheckAndSet_Discard() {
         $client = RC::getConnection();
         $client->flushdb();
