@@ -40,6 +40,17 @@ v0.7.0 (2010-xx-xx)
   * It is now possible to pass instances of Predis\ConnectionParameters and 
     Predis\IConnection as parameters of Predis\Client::__construct().
 
+v0.6.3 (2011-01-01)
+  * New commands available in the Redis v2.2 profile (dev):
+      - Strings: SETRANGE, GETRANGE, SETBIT, GETBIT
+      - Lists  : BRPOPLPUSH
+
+  * The abstraction for MULTI/EXEC transactions has been dramatically improved 
+    by providing support for check-and-set (CAS) operations when using Redis >= 
+    2.2. Aborted transactions can also be optionally replayed in automatic up 
+    to a user-defined number of times, after which a Predis\AbortedMultiExec 
+    exception is thrown.
+
 v0.6.2 (2010-11-28)
   * Minor internal improvements and clean ups.
 
