@@ -889,8 +889,15 @@ class MultiExecBlock {
                 "Cannot invoke 'execute' or 'exec' inside an active client transaction block"
             );
         }
-        if ($block && !is_callable($block)) {
-            throw new \InvalidArgumentException('Argument passed must be a callable object');
+        if ($block) {
+            if (!is_callable($block)) {
+                throw new \InvalidArgumentException('Argument passed must be a callable object');
+            }
+            if (count($this->_commands) > 0) {
+                throw new ClientException(
+                    'Cannot execute a transaction block after using fluent interface'
+                );
+            }
         }
         if (isset($this->_options['retry']) && !isset($block)) {
             $this->discard();

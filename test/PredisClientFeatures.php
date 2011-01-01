@@ -564,6 +564,14 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $replies[2]);
     }
 
+    /**
+     * @expectedException Predis\ClientException
+     */
+    function testMultiExecBlock_CannotMixFluentInterfaceAndAnonymousBlock() {
+        $emptyBlock = function($tx) { };
+        $tx = RC::getConnection()->multiExec()->get('foo')->execute($emptyBlock);
+    }
+
     function testMultiExecBlock_EmptyCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
