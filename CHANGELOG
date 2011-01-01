@@ -1,4 +1,4 @@
-v0.6.3 (201x-xx-xx)
+v0.6.3 (2011-01-01)
   * New commands available in the Redis v2.2 profile (dev):
       - Strings: SETRANGE, GETRANGE, SETBIT, GETBIT
       - Lists  : BRPOPLPUSH
