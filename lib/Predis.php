@@ -811,9 +811,9 @@ class MultiExecBlock {
 
     public function __construct(Client $redisClient, Array $options = null) {
         $this->checkCapabilities($redisClient);
-        $this->reset();
+        $this->_options = $options ?: array();
         $this->_redisClient = $redisClient;
-        $this->_options     = $options ?: array();
+        $this->reset();
     }
 
     private function checkCapabilities(Client $redisClient) {
@@ -848,44 +848,39 @@ class MultiExecBlock {
     }
 
     private function initialize() {
-        if ($this->_initialized === false) {
-            $options = &$this->_options;
-            $this->_checkAndSet = isset($options['cas']) && $options['cas'];
-            if (isset($options['watch'])) {
-                $this->watch($options['watch']);
-            }
-            if (!$this->_checkAndSet || ($this->_discarded && $this->_checkAndSet)) {
-                $this->_redisClient->multi();
-                if ($this->_discarded) {
-                    $this->_checkAndSet = false;
-                }
-            }
-            $this->_initialized = true;
-            $this->_discarded   = false;
+        if ($this->_initialized === true) {
+            return;
         }
-    }
-
-    private function setInsideBlock($value) {
-        $this->_insideBlock = $value;
+        $options = &$this->_options;
+        $this->_checkAndSet = isset($options['cas']) && $options['cas'];
+        if (isset($options['watch'])) {
+            $this->watch($options['watch']);
+        }
+        if (!$this->_checkAndSet || ($this->_discarded && $this->_checkAndSet)) {
+            $this->_redisClient->multi();
+            if ($this->_discarded) {
+                $this->_checkAndSet = false;
+            }
+        }
+        $this->_initialized = true;
+        $this->_discarded   = false;
     }
 
     public function __call($method, $arguments) {
         $this->initialize();
         $client = $this->_redisClient;
-
         if ($this->_checkAndSet) {
             return call_user_func_array(array($client, $method), $arguments);
         }
-
         $command  = $client->createCommand($method, $arguments);
         $response = $client->executeCommand($command);
-        if (isset($response->queued)) {
-            $this->_commands[] = $command;
-            return $this;
+        if (!isset($response->queued)) {
+            $this->malformedServerResponse(
+                'The server did not respond with a QUEUED status reply'
+            );
         }
-        else {
-            $this->malformedServerResponse('The server did not respond with a QUEUED status reply');
-        }
+        $this->_commands[] = $command;
+        return $this;
     }
 
     public function watch($keys) {
@@ -915,7 +910,7 @@ class MultiExecBlock {
     public function discard() {
         $this->_redisClient->discard();
         $this->reset();
-        $this->_discarded   = true;
+        $this->_discarded = true;
         return $this;
     }
 
@@ -931,7 +926,9 @@ class MultiExecBlock {
         }
         if ($block) {
             if (!is_callable($block)) {
-                throw new \InvalidArgumentException('Argument passed must be a callable object');
+                throw new \InvalidArgumentException(
+                    'Argument passed must be a callable object'
+                );
             }
             if (count($this->_commands) > 0) {
                 throw new ClientException(
@@ -955,9 +952,8 @@ class MultiExecBlock {
         $attemptsLeft = isset($this->_options['retry']) ? (int)$this->_options['retry'] : 0;
         do {
             $blockException = null;
-
             if ($block !== null) {
-                $this->setInsideBlock(true);
+                $this->_insideBlock = true;
                 try {
                     $block($this);
                 }
@@ -973,7 +969,7 @@ class MultiExecBlock {
                         $this->discard();
                     }
                 }
-                $this->setInsideBlock(false);
+                $this->_insideBlock = false;
                 if ($blockException !== null) {
                     throw $blockException;
                 }
@@ -997,13 +993,14 @@ class MultiExecBlock {
         } while ($attemptsLeft-- > 0);
 
         $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
-        $commands  = &$this->_commands;
         $sizeofReplies = count($execReply);
 
+        $commands = &$this->_commands;
         if ($sizeofReplies !== count($commands)) {
-            $this->malformedServerResponse('Unexpected number of responses for a MultiExecBlock');
+            $this->malformedServerResponse(
+                'Unexpected number of responses for a MultiExecBlock'
+            );
         }
-
         for ($i = 0; $i < $sizeofReplies; $i++) {
             $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
                 ? iterator_to_array($execReply[$i])
@@ -1016,10 +1013,10 @@ class MultiExecBlock {
     }
 
     private function malformedServerResponse($message) {
-        // NOTE: a MULTI/EXEC block cannot be initialized on a clustered 
-        //       connection, which means that Predis\Client::getConnection 
-        //       will always return an instance of Predis\Connection.
-        Shared\Utils::onCommunicationException(new MalformedServerResponse(
+        // Since a MULTI/EXEC block cannot be initialized over a clustered 
+        // connection, we can safely assume that Predis\Client::getConnection() 
+        // will always return an instance of Predis\Connection.
+        Utils::onCommunicationException(new MalformedServerResponse(
             $this->_redisClient->getConnection(), $message
         ));
     }
