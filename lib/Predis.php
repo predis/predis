@@ -529,7 +529,8 @@ abstract class MultiBulkCommand extends Command {
         $reqlen  = $argsc + 1;
 
         $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
-        foreach ($cmd_args as $argument) {
+        for ($i = 0; $i < $reqlen - 1; $i++) {
+            $argument = $cmd_args[$i];
             $arglen  = strlen($argument);
             $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
         }
