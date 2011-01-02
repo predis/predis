@@ -688,16 +688,13 @@ class ResponseReader {
         }
 
         $prefix  = $header[0];
-        $payload = strlen($header) > 1 ? substr($header, 1) : '';
-
         if (!isset($this->_prefixHandlers[$prefix])) {
             Shared\Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Unknown prefix '$prefix'"
             ));
         }
-
         $handler = $this->_prefixHandlers[$prefix];
-        return $handler->handle($connection, $payload);
+        return $handler->handle($connection, substr($header, 1));
     }
 }
 
