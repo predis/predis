@@ -415,7 +415,8 @@ interface ICommand {
 }
 
 abstract class Command implements ICommand {
-    private $_arguments, $_hash;
+    private $_hash;
+    private $_arguments = array();
 
     protected function serializeRequest($command, $arguments) {
         $newline = Protocol::NEWLINE;
@@ -477,11 +478,13 @@ abstract class Command implements ICommand {
     }
 
     public function getArguments() {
-        return isset($this->_arguments) ? $this->_arguments : array();
+        return $this->_arguments;
     }
 
     public function getArgument($index = 0) {
-        return isset($this->_arguments[$index]) ? $this->_arguments[$index] : null;
+        if (isset($this->_arguments[$index]) === true) {
+            return $this->_arguments[$index];
+        }
     }
 
     public function parseResponse($data) {
