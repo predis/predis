@@ -508,7 +508,7 @@ class ResponseStatusHandler implements IResponseHandler {
         if ($status === Protocol::OK) {
             return true;
         }
-        else if ($status === Protocol::QUEUED) {
+        if ($status === Protocol::QUEUED) {
             return new ResponseQueued();
         }
         return $status;
