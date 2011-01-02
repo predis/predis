@@ -424,7 +424,8 @@ abstract class Command implements ICommand {
         $reqlen  = count($arguments) + 1;
 
         $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
-        foreach ($arguments as $argument) {
+        for ($i = 0; $i < $reqlen - 1;  $i++) {
+            $argument = $arguments[$i];
             $arglen  = strlen($argument);
             $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
         }
