@@ -417,7 +417,8 @@ class Protocol {
 }
 
 abstract class Command {
-    private $_arguments, $_hash;
+    private $_hash;
+    private $_arguments = array();
 
     public abstract function getCommandId();
 
@@ -469,11 +470,13 @@ abstract class Command {
     }
 
     public function getArguments() {
-        return isset($this->_arguments) ? $this->_arguments : array();
+        return $this->_arguments;
     }
 
     public function getArgument($index = 0) {
-        return isset($this->_arguments[$index]) ? $this->_arguments[$index] : null;
+        if (isset($this->_arguments[$index]) === true) {
+            return $this->_arguments[$index];
+        }
     }
 
     public function parseResponse($data) {
