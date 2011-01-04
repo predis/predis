@@ -1407,7 +1407,7 @@ class Connection implements IConnection {
         $value  = '';
         do {
             $chunk = fgets($socket);
-            if ($chunk === false || strlen($chunk) == 0) {
+            if ($chunk === false || $chunk === '') {
                 $this->onCommunicationException('Error while reading line from the server');
             }
             $value .= $chunk;
