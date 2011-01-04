@@ -611,7 +611,9 @@ class ResponseMultiBulkHandler implements IResponseHandler {
         if ($listLength > 0) {
             $reader = $connection->getResponseReader();
             for ($i = 0; $i < $listLength; $i++) {
-                $list[$i] = $reader->read($connection);
+                $header = $connection->readLine();
+                $handler = $reader->getHandler($header[0]);
+                $list[$i] = $handler->handle($connection, substr($header, 1));
             }
         }
 
