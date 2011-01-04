@@ -686,19 +686,21 @@ class ResponseReader {
     public function read(Connection $connection) {
         $header = $connection->readLine();
         if ($header === '') {
-            Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, 'Unexpected empty header'
-            ));
+            $this->throwMalformedResponse($connection, 'Unexpected empty header');
         }
 
         $prefix  = $header[0];
         if (!isset($this->_prefixHandlers[$prefix])) {
-            Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Unknown prefix '$prefix'"
-            ));
+            $this->throwMalformedResponse($connection, "Unknown prefix '$prefix'");
         }
         $handler = $this->_prefixHandlers[$prefix];
         return $handler->handle($connection, substr($header, 1));
+    }
+
+    private function throwMalformedResponse(Connection $connection, $message) {
+        Shared\Utils::onCommunicationException(new MalformedServerResponse(
+            $connection, $message
+        ));
     }
 }
 
