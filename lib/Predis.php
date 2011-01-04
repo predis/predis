@@ -1662,7 +1662,7 @@ class RedisServer_v1_2 extends RedisServerProfile {
             'type'                    => '\Predis\Commands\Type',
 
             /* commands operating on the key space */
-            'keys'               => '\Predis\Commands\Keys',
+            'keys'               => '\Predis\Commands\Keys_v1_2',
             'randomkey'          => '\Predis\Commands\RandomKey',
                 'randomKey'      => '\Predis\Commands\RandomKey',
             'rename'             => '\Predis\Commands\Rename',
@@ -1795,6 +1795,9 @@ class RedisServer_v2_0 extends RedisServer_v1_2 {
                 'setExpire'             => '\Predis\Commands\SetExpire',
             'append'                    => '\Predis\Commands\Append',
             'substr'                    => '\Predis\Commands\Substr',
+
+            /* commands operating on the key space */
+            'keys'                      => '\Predis\Commands\Keys',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
@@ -2429,12 +2432,11 @@ class Strlen extends \Predis\MultiBulkCommand {
 class Keys extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'KEYS'; }
-    public function parseResponse($data) { 
-        // TODO: is this behaviour correct?
-        if (is_array($data) || $data instanceof \Iterator) {
-            return $data;
-        }
-        return strlen($data) > 0 ? explode(' ', $data) : array();
+}
+
+class Keys_v1_2 extends Keys {
+    public function parseResponse($data) {
+        return explode(' ', $data);
     }
 }
 
