@@ -408,17 +408,32 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $params3 = new \Predis\ConnectionParameters($params1);
         $params4 = new \Predis\TcpConnection($params3);
 
-        $client = new \Predis\Client(array($params1, $params2, $params3, $params4));
-        foreach ($client->getConnection() as $connection) {
-            $parameters = $connection->getParameters();
-            $this->assertEquals($params1['host'], $parameters->host);
-            $this->assertEquals($params1['port'], $parameters->port);
-            $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
-            $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
-            $this->assertNull($parameters->password);
+        $connectionCluster1 = array($params1, $params2, $params3, $params4);
+        $connectionCluster2 = array($params4);
+        $connectionCluster3 = new \Predis\ConnectionCluster();
+        $connectionCluster3->add($params4);
+
+        foreach (array($connectionCluster1, $connectionCluster2, $connectionCluster3) as $connectionCluster) {
+            $client = new \Predis\Client($connectionCluster);
+
+            foreach ($client->getConnection() as $connection) {
+                $parameters = $connection->getParameters();
+                $this->assertEquals($params1['host'], $parameters->host);
+                $this->assertEquals($params1['port'], $parameters->port);
+                $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
+                $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
+                $this->assertNull($parameters->password);
+            }
+        }
+
+        foreach (array($connectionCluster2, $connectionCluster3) as $connectionCluster) {
+            $client = new \Predis\Client($connectionCluster);
+
+            foreach ($client->getConnection() as $connection) {
+                $this->assertSame($params4, $connection);
+            }
         }
     }
-
 
     /* Client + CommandPipeline */
 
