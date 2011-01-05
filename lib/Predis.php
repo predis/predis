@@ -93,6 +93,9 @@ class Client {
             }
             $this->setConnection($cluster);
         }
+        else if ($parameters instanceof IConnectionCluster) {
+            $this->setConnection($parameters);
+        }
         else {
             $this->setConnection($this->createConnection($parameters));
         }
@@ -721,10 +724,6 @@ class CommandPipeline {
         $this->_pipelineBuffer[] = $command;
     }
 
-    private function getRecordedCommands() {
-        return $this->_pipelineBuffer;
-    }
-
     public function flushPipeline() {
         if (count($this->_pipelineBuffer) > 0) {
             $connection = $this->_redisClient->getConnection();
@@ -1215,6 +1214,9 @@ interface IConnectionSingle extends IConnection {
     public function writeBytes($buffer);
     public function readBytes($length);
     public function readLine();
+    public function getParameters();
+    public function pushInitCommand(ICommand $command);
+    public function __toString();
 }
 
 interface IConnectionCluster extends IConnection {

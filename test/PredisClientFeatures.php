@@ -408,8 +408,8 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $params3 = new \Predis\ConnectionParameters($params1);
         $params4 = new \Predis\TcpConnection($params3);
 
-        $client = new \Predis\Client(array($params1, $params2, $params3, $params4));
-        foreach ($client->getConnection() as $connection) {
+        $client1 = new \Predis\Client(array($params1, $params2, $params3, $params4));
+        foreach ($client1->getConnection() as $connection) {
             $parameters = $connection->getParameters();
             $this->assertEquals($params1['host'], $parameters->host);
             $this->assertEquals($params1['port'], $parameters->port);
@@ -417,6 +417,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
             $this->assertNull($parameters->password);
         }
+
+        $connectionCluster = $client1->getConnection();
+        $client2 = new \Predis\Client($connectionCluster);
+        $this->assertSame($connectionCluster, $client2->getConnection());
     }
 
 
