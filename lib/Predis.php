@@ -449,7 +449,7 @@ abstract class Command implements ICommand {
 
                 $start = strpos($key, '{');
                 if ($start !== false) {
-                    $end = strpos($key, '}');
+                    $end = strpos($key, '}', $start);
                     if ($end !== false) {
                         $key = substr($key, ++$start, $end - $start);
                     }
