@@ -1025,7 +1025,7 @@ class MultiExecBlock {
         // Since a MULTI/EXEC block cannot be initialized over a clustered 
         // connection, we can safely assume that Predis\Client::getConnection() 
         // will always return an instance of Predis\Connection.
-        Utils::onCommunicationException(new MalformedServerResponse(
+        Shared\Utils::onCommunicationException(new MalformedServerResponse(
             $this->_redisClient->getConnection(), $message
         ));
     }
