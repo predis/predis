@@ -5,12 +5,12 @@ require_once '../lib/addons/RedisVersion1_0.php';
 class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
-    protected function setUp() { 
+    protected function setUp() {
         $this->redis = RC::getConnection();
         $this->redis->flushdb();
     }
 
-    protected function tearDown() { 
+    protected function tearDown() {
     }
 
     protected function onNotSuccessfulTest(Exception $exception) {
@@ -189,7 +189,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
         $bogusCommand    = 'not_existing_command';
         $expectedMessage = "'$bogusCommand' is not a registered Redis command";
-        RC::testForClientException($this, $expectedMessage, function() 
+        RC::testForClientException($this, $expectedMessage, function()
             use($profile, $bogusCommand) {
 
             $profile->createCommand($bogusCommand);
@@ -338,13 +338,13 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $responseReader = $connection->getResponseReader();
 
         $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_MULTI_BULK, 
+            \Predis\Protocol::PREFIX_MULTI_BULK,
             new \Predis\ResponseMultiBulkHandler()
         );
         $this->assertType('array', $connection->rawCommand("KEYS *\r\n"));
 
         $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_MULTI_BULK, 
+            \Predis\Protocol::PREFIX_MULTI_BULK,
             new \Predis\ResponseMultiBulkStreamHandler()
         );
         $this->assertType('\Iterator', $connection->rawCommand("KEYS *\r\n"));
@@ -357,7 +357,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $rawCmdUnexpected = "*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n";
 
         $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_ERROR,  
+            \Predis\Protocol::PREFIX_ERROR,
             new \Predis\ResponseErrorSilentHandler()
         );
         $errorReply = $connection->rawCommand($rawCmdUnexpected);
@@ -365,10 +365,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
         $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_ERROR, 
+            \Predis\Protocol::PREFIX_ERROR,
             new \Predis\ResponseErrorHandler()
         );
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function()
             use ($connection, $rawCmdUnexpected) {
 
             $connection->rawCommand($rawCmdUnexpected);
@@ -397,6 +397,9 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $this->assertEquals($params1['alias'], $parameters->alias);
             $this->assertNull($parameters->password);
         }
+
+        $client = new \Predis\Client($params4);
+        $this->assertSame($params4, $client->getConnection());
     }
 
     function testClientInitialization_ClusterConnectionParameters() {
@@ -408,14 +411,30 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $params3 = new \Predis\ConnectionParameters($params1);
         $params4 = new \Predis\TcpConnection($params3);
 
-        $client = new \Predis\Client(array($params1, $params2, $params3, $params4));
-        foreach ($client->getConnection() as $connection) {
-            $parameters = $connection->getParameters();
-            $this->assertEquals($params1['host'], $parameters->host);
-            $this->assertEquals($params1['port'], $parameters->port);
-            $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
-            $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
-            $this->assertNull($parameters->password);
+        $connectionCluster1 = array($params1, $params2, $params3, $params4);
+        $connectionCluster2 = array($params4);
+        $connectionCluster3 = new \Predis\ConnectionCluster();
+        $connectionCluster3->add($params4);
+
+        foreach (array($connectionCluster1, $connectionCluster2, $connectionCluster3) as $connectionCluster) {
+            $client = new \Predis\Client($connectionCluster);
+
+            foreach ($client->getConnection() as $connection) {
+                $parameters = $connection->getParameters();
+                $this->assertEquals($params1['host'], $parameters->host);
+                $this->assertEquals($params1['port'], $parameters->port);
+                $this->assertEquals($params1['connection_timeout'], $parameters->connection_timeout);
+                $this->assertEquals($params1['read_write_timeout'], $parameters->read_write_timeout);
+                $this->assertNull($parameters->password);
+            }
+        }
+
+        foreach (array($connectionCluster2, $connectionCluster3) as $connectionCluster) {
+            $client = new \Predis\Client($connectionCluster);
+
+            foreach ($client->getConnection() as $connection) {
+                $this->assertSame($params4, $connection);
+            }
         }
     }
 
@@ -458,7 +477,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->pipeline(function($pipe) { 
+        $replies = $client->pipeline(function($pipe) {
             $pipe->ping();
             $pipe->set('foo', 'bar');
             $pipe->get('foo');
@@ -473,7 +492,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         RC::testForClientException($this, 'TEST', function() use($client) {
-            $client->pipeline(function($pipe) { 
+            $client->pipeline(function($pipe) {
                 $pipe->ping();
                 $pipe->set('foo', 'bar');
                 throw new \Predis\ClientException("TEST");
@@ -487,7 +506,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
         $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
 
-        $replies = $client->pipeline(function($pipe) { 
+        $replies = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
             $pipe->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
             $pipe->set('hoge', 'piyo');
@@ -554,7 +573,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->ping();
             $multi->set('foo', 'bar');
             $multi->get('foo');
@@ -595,7 +614,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         RC::testForClientException($this, 'TEST', function() use($client) {
-            $client->multiExec(function($multi) { 
+            $client->multiExec(function($multi) {
                 $multi->ping();
                 $multi->set('foo', 'bar');
                 throw new \Predis\ClientException("TEST");
@@ -609,7 +628,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
         $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');
             $multi->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
             $multi->set('hoge', 'piyo');
@@ -625,7 +644,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');
             $multi->discard();
             $multi->set('hoge', 'piyo');
@@ -640,7 +659,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->discard();
         });
 
@@ -652,10 +671,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client2 = RC::getConnection(true);
         $client1->flushdb();
 
-        RC::testForAbortedMultiExecException($this, function() 
+        RC::testForAbortedMultiExecException($this, function()
             use($client1, $client2) {
 
-            $client1->multiExec(array('watch' => 'sentinel'), function($multi) 
+            $client1->multiExec(array('watch' => 'sentinel'), function($multi)
                 use ($client2) {
 
                 $multi->set('sentinel', 'client1');
