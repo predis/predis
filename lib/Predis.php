@@ -647,9 +647,6 @@ class ResponseReader {
         $header = $connection->readLine();
         if ($header === '') {
             $this->throwMalformedResponse('Unexpected empty header');
-            Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, 'Unexpected empty header'
-            ));
         }
 
         $prefix  = $header[0];
