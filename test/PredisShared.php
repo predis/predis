@@ -7,7 +7,7 @@ define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
 
 if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
     exit(
-        "Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE " . 
+        "Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE " .
         "constant to TRUE in PredisShared.php if you want to proceed.\n"
     );
 }
@@ -16,7 +16,7 @@ require_once 'PHPUnit/Framework.php';
 require_once '../lib/Predis.php';
 
 if (!function_exists('array_union')) {
-    function array_union(Array $a, Array $b) { 
+    function array_union(Array $a, Array $b) {
         return array_merge($a, array_diff($b, $a));
     }
 }
@@ -41,11 +41,11 @@ class RC {
 
     private static $_connection;
 
-    public static function getConnectionArguments() { 
+    public static function getConnectionArguments() {
         return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
     }
 
-    public static function getConnectionParameters() { 
+    public static function getConnectionParameters() {
         return new Predis\ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
     }
 
@@ -75,7 +75,7 @@ class RC {
     }
 
     public static function helperForBlockingPops($op) {
-        // TODO: I admit that this helper is kinda lame and it does not run 
+        // TODO: I admit that this helper is kinda lame and it does not run
         //       in a separate process to properly test BLPOP/BRPOP
         $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
         $handle = popen('php', 'w');
@@ -96,17 +96,17 @@ class RC {
 
     public static function getKeyValueArray() {
         return array(
-            'foo'      => 'bar', 
-            'hoge'     => 'piyo', 
-            'foofoo'   => 'barbar', 
+            'foo'      => 'bar',
+            'hoge'     => 'piyo',
+            'foofoo'   => 'barbar',
         );
     }
 
     public static function getNamespacedKeyValueArray() {
         return array(
-            'metavar:foo'      => 'bar', 
-            'metavar:hoge'     => 'piyo', 
-            'metavar:foofoo'   => 'barbar', 
+            'metavar:foo'      => 'bar',
+            'metavar:hoge'     => 'piyo',
+            'metavar:foofoo'   => 'barbar',
         );
     }
 
@@ -209,7 +209,7 @@ class RC {
 
     public static function getConnectionParametersArgumentsArray() {
         return array(
-            'host' => '10.0.0.1', 'port' => 6380, 'connection_timeout' => 10, 'read_write_timeout' => 30, 
+            'host' => '10.0.0.1', 'port' => 6380, 'connection_timeout' => 10, 'read_write_timeout' => 30,
             'database' => 5, 'password' => 'dbpassword', 'alias' => 'connection_alias'
         );
     }

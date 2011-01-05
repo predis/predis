@@ -2,8 +2,8 @@
 require_once 'SharedConfigurations.php';
 
 /*
-This is an implementation of an atomic client-side ZPOP using the support for 
-check-and-set (CAS) operations with MULTI/EXEC transactions, as described in 
+This is an implementation of an atomic client-side ZPOP using the support for
+check-and-set (CAS) operations with MULTI/EXEC transactions, as described in
 "WATCH explained" from http://redis.io/topics/transactions
 
 First, populate your database with a tiny sample data set:
@@ -24,7 +24,7 @@ function zpop($client, $zsetKey) {
                              // which the client bails out with an exception.
     );
 
-    $txReply = $client->multiExec($options, function($tx) 
+    $txReply = $client->multiExec($options, function($tx)
         use ($zsetKey, &$element) {
         @list($element) = $tx->zrange($zsetKey, 0, 0);
         if (isset($element)) {

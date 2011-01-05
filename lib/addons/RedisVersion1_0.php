@@ -9,7 +9,7 @@ abstract class InlineCommand extends Command {
             $arguments[0] = implode($arguments[0], ' ');
         }
         return $command . (count($arguments) > 0
-            ? ' ' . implode($arguments, ' ') . Protocol::NEWLINE 
+            ? ' ' . implode($arguments, ' ') . Protocol::NEWLINE
             : Protocol::NEWLINE
         );
     }
@@ -21,7 +21,7 @@ abstract class BulkCommand extends Command {
         if (is_array($data)) {
             $data = implode($data, ' ');
         }
-        return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) . 
+        return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) .
             Protocol::NEWLINE . $data . Protocol::NEWLINE;
     }
 }
@@ -75,38 +75,38 @@ class RedisServer_v1_0 extends \Predis\RedisServerProfile {
             'rpop'            => '\Predis\Compatibility\v1_0\Commands\ListPopLast',
 
             /* commands operating on sets */
-            'sadd'            => '\Predis\Compatibility\v1_0\Commands\SetAdd', 
-            'srem'            => '\Predis\Compatibility\v1_0\Commands\SetRemove', 
+            'sadd'            => '\Predis\Compatibility\v1_0\Commands\SetAdd',
+            'srem'            => '\Predis\Compatibility\v1_0\Commands\SetRemove',
             'spop'            => '\Predis\Compatibility\v1_0\Commands\SetPop',
-            'smove'           => '\Predis\Compatibility\v1_0\Commands\SetMove', 
-            'scard'           => '\Predis\Compatibility\v1_0\Commands\SetCardinality', 
-            'sismember'       => '\Predis\Compatibility\v1_0\Commands\SetIsMember', 
-            'sinter'          => '\Predis\Compatibility\v1_0\Commands\SetIntersection', 
-            'sinterstore'     => '\Predis\Compatibility\v1_0\Commands\SetIntersectionStore', 
-            'sunion'          => '\Predis\Compatibility\v1_0\Commands\SetUnion', 
-            'sunionstore'     => '\Predis\Compatibility\v1_0\Commands\SetUnionStore', 
-            'sdiff'           => '\Predis\Compatibility\v1_0\Commands\SetDifference', 
-            'sdiffstore'      => '\Predis\Compatibility\v1_0\Commands\SetDifferenceStore', 
-            'smembers'        => '\Predis\Compatibility\v1_0\Commands\SetMembers', 
-            'srandmember'     => '\Predis\Compatibility\v1_0\Commands\SetRandomMember', 
+            'smove'           => '\Predis\Compatibility\v1_0\Commands\SetMove',
+            'scard'           => '\Predis\Compatibility\v1_0\Commands\SetCardinality',
+            'sismember'       => '\Predis\Compatibility\v1_0\Commands\SetIsMember',
+            'sinter'          => '\Predis\Compatibility\v1_0\Commands\SetIntersection',
+            'sinterstore'     => '\Predis\Compatibility\v1_0\Commands\SetIntersectionStore',
+            'sunion'          => '\Predis\Compatibility\v1_0\Commands\SetUnion',
+            'sunionstore'     => '\Predis\Compatibility\v1_0\Commands\SetUnionStore',
+            'sdiff'           => '\Predis\Compatibility\v1_0\Commands\SetDifference',
+            'sdiffstore'      => '\Predis\Compatibility\v1_0\Commands\SetDifferenceStore',
+            'smembers'        => '\Predis\Compatibility\v1_0\Commands\SetMembers',
+            'srandmember'     => '\Predis\Compatibility\v1_0\Commands\SetRandomMember',
 
             /* multiple databases handling commands */
-            'select'          => '\Predis\Compatibility\v1_0\Commands\SelectDatabase', 
-            'move'            => '\Predis\Compatibility\v1_0\Commands\MoveKey', 
-            'flushdb'         => '\Predis\Compatibility\v1_0\Commands\FlushDatabase', 
-            'flushall'        => '\Predis\Compatibility\v1_0\Commands\FlushAll', 
+            'select'          => '\Predis\Compatibility\v1_0\Commands\SelectDatabase',
+            'move'            => '\Predis\Compatibility\v1_0\Commands\MoveKey',
+            'flushdb'         => '\Predis\Compatibility\v1_0\Commands\FlushDatabase',
+            'flushall'        => '\Predis\Compatibility\v1_0\Commands\FlushAll',
 
             /* sorting */
             'sort'            => '\Predis\Compatibility\v1_0\Commands\Sort',
 
             /* remote server control commands */
             'info'            => '\Predis\Compatibility\v1_0\Commands\Info',
-            'slaveof'         => '\Predis\Compatibility\v1_0\Commands\SlaveOf', 
+            'slaveof'         => '\Predis\Compatibility\v1_0\Commands\SlaveOf',
 
             /* persistence control commands */
             'save'            => '\Predis\Compatibility\v1_0\Commands\Save',
-            'bgsave'          => '\Predis\Compatibility\v1_0\Commands\BackgroundSave', 
-            'lastsave'        => '\Predis\Compatibility\v1_0\Commands\LastSave', 
+            'bgsave'          => '\Predis\Compatibility\v1_0\Commands\BackgroundSave',
+            'lastsave'        => '\Predis\Compatibility\v1_0\Commands\LastSave',
             'shutdown'        => '\Predis\Compatibility\v1_0\Commands\Shutdown',
         );
     }
@@ -196,7 +196,7 @@ class Type extends \Predis\InlineCommand {
 class Keys extends \Predis\InlineCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'KEYS'; }
-    public function parseResponse($data) { 
+    public function parseResponse($data) {
         return strlen($data) > 0 ? explode(' ', $data) : array();
     }
 }

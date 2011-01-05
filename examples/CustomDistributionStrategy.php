@@ -1,8 +1,8 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-// Developers can customize the distribution strategy used by the client 
-// to distribute keys among a cluster of servers simply by creating a class 
+// Developers can customize the distribution strategy used by the client
+// to distribute keys among a cluster of servers simply by creating a class
 // that implements the Predis\Distribution\IDistributionAlgorithm interface.
 
 class NaiveDistributionStrategy
@@ -54,7 +54,7 @@ for ($i = 0; $i < 100; $i++) {
 $server1 = $redis->getClientFor('first')->info();
 $server2 = $redis->getClientFor('second')->info();
 
-printf("Server '%s' has %d keys while server '%s' has %d keys.\n", 
+printf("Server '%s' has %d keys while server '%s' has %d keys.\n",
     'first', $server1['db15']['keys'], 'second', $server2['db15']['keys']
 );
 ?>
