@@ -99,14 +99,16 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        if ($parameters instanceof IConnection) {
-            return $parameters;
-        }
+        $connection = null;
 
-        $params = $parameters instanceof ConnectionParameters
-                     ? $parameters
-                     : new ConnectionParameters($parameters);
-        $connection = ConnectionFactory::create($params, $this->_responseReader);
+        if ($parameters instanceof IConnection) {
+            $connection = $parameters;
+        } else {
+            $params = $parameters instanceof ConnectionParameters
+                         ? $parameters
+                         : new ConnectionParameters($parameters);
+            $connection = ConnectionFactory::create($params, $this->_responseReader);
+        }
 
         return $this->pushInitCommands($connection, $params);
     }
