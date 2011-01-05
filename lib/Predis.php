@@ -441,25 +441,25 @@ abstract class Command implements ICommand {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
-        else {
-            if (isset($this->_arguments[0])) {
-                // TODO: should we throw an exception if the command does 
-                //       not support sharding?
-                $key = $this->_arguments[0];
 
-                $start = strpos($key, '{');
-                if ($start !== false) {
-                    $end = strpos($key, '}', $start);
-                    if ($end !== false) {
-                        $key = substr($key, ++$start, $end - $start);
-                    }
+        if (isset($this->_arguments[0])) {
+            // TODO: should we throw an exception if the command does 
+            //       not support sharding?
+            $key = $this->_arguments[0];
+
+            $start = strpos($key, '{');
+            if ($start !== false) {
+                $end = strpos($key, '}', $start);
+                if ($end !== false) {
+                    $key = substr($key, ++$start, $end - $start);
                 }
-
-                $this->_hash = $distributor->generateKey($key);
-                return $this->_hash;
             }
+
+            $this->_hash = $distributor->generateKey($key);
+            return $this->_hash;
         }
-        return null;
+
+      return null;
     }
 
     public function closesConnection() {
