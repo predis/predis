@@ -439,9 +439,11 @@ abstract class Command {
                 $key = $this->_arguments[0];
 
                 $start = strpos($key, '{');
-                $end   = strpos($key, '}');
-                if ($start !== false && $end !== false) {
-                    $key = substr($key, ++$start, $end - $start);
+                if ($start !== false) {
+                    $end = strpos($key, '}');
+                    if ($end !== false) {
+                        $key = substr($key, ++$start, $end - $start);
+                    }
                 }
 
                 $this->_hash = $distributor->generateKey($key);
