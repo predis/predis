@@ -715,10 +715,6 @@ class CommandPipeline {
         $this->_pipelineBuffer[] = $command;
     }
 
-    private function getRecordedCommands() {
-        return $this->_pipelineBuffer;
-    }
-
     public function flushPipeline() {
         if (count($this->_pipelineBuffer) > 0) {
             $connection = $this->_redisClient->getConnection();
