@@ -50,7 +50,7 @@ class RC {
     }
 
     private static function createConnection() {
-        $serverProfile = Predis\RedisServerProfile::get('dev');
+        $serverProfile = Predis\Profiles\ServerProfile::get('dev');
         $connection = new Predis\Client(RC::getConnectionArguments(), $serverProfile);
         $connection->connect();
         $connection->select(RC::DEFAULT_DATABASE);

@@ -1,7 +1,7 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-class SimpleDebuggableConnection extends Predis\TcpConnection {
+class SimpleDebuggableConnection extends Predis\Network\TcpConnection {
     private $_debugBuffer = array();
     private $_tstart = 0;
 

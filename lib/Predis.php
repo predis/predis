@@ -1,46 +1,13 @@
 <?php
 namespace Predis;
-use Predis\Shared\Utils, Predis\Distribution\IDistributionStrategy;
 
-abstract class PredisException extends \Exception {
-    // Base Predis exception class
-}
-
-class ClientException extends PredisException {
-    // Client-side errors
-}
-
-class AbortedMultiExec extends PredisException {
-    // Aborted MULTI/EXEC transactions
-}
-
-class ServerException extends PredisException {
-    // Server-side errors
-    public function toResponseError() {
-        return new ResponseError($this->getMessage());
-    }
-}
-
-class CommunicationException extends PredisException {
-    // Communication errors
-    private $_connection;
-
-    public function __construct(IConnectionSingle $connection, 
-        $message = null, $code = null) {
-
-        $this->_connection = $connection;
-        parent::__construct($message, $code);
-    }
-
-    public function getConnection() { return $this->_connection; }
-    public function shouldResetConnection() {  return true; }
-}
-
-class MalformedServerResponse extends CommunicationException {
-    // Unexpected responses
-}
-
-/* ------------------------------------------------------------------------- */
+use Predis\Network\IConnection;
+use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionCluster;
+use Predis\Network\ConnectionCluster;
+use Predis\Profiles\ServerProfile;
+use Predis\Pipeline\IPipelineExecutor;
+use Predis\Distribution\IDistributionStrategy;
 
 class Client {
     private $_options, $_profile, $_connection;
@@ -62,11 +29,11 @@ class Client {
         if (is_array($options)) {
             return new ClientOptions($options);
         }
-        if ($options instanceof RedisServerProfile) {
+        if ($options instanceof ServerProfile) {
             return new ClientOptions(array('profile' => $options));
         }
         if (is_string($options)) {
-            $profile = RedisServerProfile::get($options);
+            $profile = ServerProfile::get($options);
             return new ClientOptions(array('profile' => $profile));
         }
         throw new \InvalidArgumentException("Invalid type for client options");
@@ -76,10 +43,11 @@ class Client {
         if ($parameters === null) {
             return $this->createConnection(null);
         }
-        if (!(is_array($parameters) || is_string($parameters) || $parameters instanceof IConnection 
+        if (!(is_array($parameters) || is_string($parameters)
+            || $parameters instanceof IConnection
             || $parameters instanceof ConnectionParameters)) {
             throw new \InvalidArgumentException(
-                'Array, String, Predis\ConnectionParameters or Predis\IConnection expected'
+                'Array, String, Predis\ConnectionParameters or Predis\Network\IConnection expected'
             );
         }
         if (is_array($parameters) && isset($parameters[0])) {
@@ -106,8 +74,8 @@ class Client {
             $params = $connection->getParameters();
         }
         else {
-            $params = $parameters instanceof ConnectionParameters 
-                        ? $parameters 
+            $params = $parameters instanceof ConnectionsParameters
+                        ? $parameters
                         : new ConnectionParameters($parameters);
             $connection = ConnectionFactory::create($params);
         }
@@ -139,12 +107,12 @@ class Client {
     }
 
     private function setProfile($profile) {
-        if (!($profile instanceof RedisServerProfile || is_string($profile))) {
+        if (!($profile instanceof ServerProfile || is_string($profile))) {
             throw new \InvalidArgumentException(
-                "Invalid type for server profile, \Predis\RedisServerProfile or string expected"
+                "Invalid type for server profile, \Predis\Profiles\ServerProfile or string expected"
             );
         }
-        $this->_profile = is_string($profile) ? RedisServerProfile::get($profile) : $profile;
+        $this->_profile = is_string($profile) ? ServerProfile::get($profile) : $profile;
     }
 
     public function getProfile() {
@@ -265,7 +233,7 @@ class Client {
     }
 
     private function initMultiExec(Array $options = null, $transBlock = null) {
-        $multi = isset($options) ? new MultiExecBlock($this, $options) : new MultiExecBlock($this);
+        $multi = isset($options) ? new MultiExecContext($this, $options) : new MultiExecContext($this);
         return $transBlock !== null ? $multi->execute($transBlock) : $multi;
     }
 
@@ -273,511 +241,6 @@ class Client {
         return new PubSubContext($this);
     }
 }
-
-/* ------------------------------------------------------------------------- */
-
-interface IClientOptionsHandler {
-    public function validate($option, $value);
-    public function getDefault();
-}
-
-class ClientOptionsProfile implements IClientOptionsHandler {
-    public function validate($option, $value) {
-        if ($value instanceof RedisServerProfile) {
-            return $value;
-        }
-        if (is_string($value)) {
-            return RedisServerProfile::get($value);
-        }
-        throw new \InvalidArgumentException("Invalid value for option $option");
-    }
-
-    public function getDefault() {
-        return RedisServerProfile::getDefault();
-    }
-}
-
-class ClientOptionsKeyDistribution implements IClientOptionsHandler {
-    public function validate($option, $value) {
-        if ($value instanceof IDistributionStrategy) {
-            return $value;
-        }
-        if (is_string($value)) {
-            $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionStrategy')) {
-                return new $value;
-            }
-        }
-        throw new \InvalidArgumentException("Invalid value for option $option");
-    }
-
-    public function getDefault() {
-        return new Distribution\HashRing();
-    }
-}
-
-class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
-    public function validate($option, $value) {
-        return (bool) $value;
-    }
-
-    public function getDefault() {
-        return false;
-    }
-}
-
-class ClientOptionsThrowOnError implements IClientOptionsHandler {
-    public function validate($option, $value) {
-        return (bool) $value;
-    }
-
-    public function getDefault() {
-        return true;
-    }
-}
-
-class ClientOptions {
-    private static $_optionsHandlers;
-    private $_options;
-
-    public function __construct($options = null) {
-        self::initializeOptionsHandlers();
-        $this->initializeOptions($options ?: array());
-    }
-
-    private static function initializeOptionsHandlers() {
-        if (!isset(self::$_optionsHandlers)) {
-            self::$_optionsHandlers = self::getOptionsHandlers();
-        }
-    }
-
-    private static function getOptionsHandlers() {
-        return array(
-            'profile' => new ClientOptionsProfile(),
-            'key_distribution' => new ClientOptionsKeyDistribution(),
-            'iterable_multibulk' => new ClientOptionsIterableMultiBulk(),
-            'throw_on_error' => new ClientOptionsThrowOnError(),
-        );
-    }
-
-    private function initializeOptions($options) {
-        foreach ($options as $option => $value) {
-            if (isset(self::$_optionsHandlers[$option])) {
-                $handler = self::$_optionsHandlers[$option];
-                $this->_options[$option] = $handler->validate($option, $value);
-            }
-        }
-    }
-
-    public function __get($option) {
-        if (!isset($this->_options[$option])) {
-            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
-            $this->_options[$option] = $defaultValue;
-        }
-        return $this->_options[$option];
-    }
-
-    public function __isset($option) {
-        return isset(self::$_optionsHandlers[$option]);
-    }
-}
-
-/* ------------------------------------------------------------------------- */
-
-interface IRedisProtocol {
-    public function setSerializer(ICommandSerializer $serializer);
-    public function getSerializer();
-    public function setReader(IResponseReader $reader);
-    public function getReader();
-}
-
-interface ICommandSerializer {
-    public function serialize(ICommand $command);
-}
-
-interface IResponseReader {
-    public function setHandler($prefix, IResponseHandler $handler);
-    public function getHandler($prefix);
-}
-
-interface IResponseHandler {
-    function handle(IConnectionSingle $connection, $payload);
-}
-
-/* ------------------------------------------------------------------------- */
-
-class TextProtocol implements IRedisProtocol {
-    const NEWLINE = "\r\n";
-    const OK      = 'OK';
-    const ERROR   = 'ERR';
-    const QUEUED  = 'QUEUED';
-    const NULL    = 'nil';
-
-    const PREFIX_STATUS     = '+';
-    const PREFIX_ERROR      = '-';
-    const PREFIX_INTEGER    = ':';
-    const PREFIX_BULK       = '$';
-    const PREFIX_MULTI_BULK = '*';
-
-    private $_serializer, $_reader;
-
-    public function __construct(Array $options = array()) {
-        $this->setSerializer(new TextCommandSerializer());
-        $this->setReader(new TextResponseReader());
-        $this->initializeOptions($options);
-    }
-
-    private function getDefaultOptions() {
-        return array(
-            'iterable_multibulk' => false,
-            'throw_on_error'     => false,
-        );
-    }
-
-    private function initializeOptions(Array $options) {
-        $options = array_merge($this->getDefaultOptions(), $options);
-        foreach ($options as $k => $v) {
-            $this->setOption($k, $v);
-        }
-    }
-
-    public function setOption($option, $value) {
-        switch ($option) {
-            case 'iterable_multibulk':
-                $handler = $value ? new ResponseMultiBulkStreamHandler() : new ResponseMultiBulkHandler();
-                $this->_reader->setHandler(self::PREFIX_MULTI_BULK, $handler);
-                break;
-            case 'throw_on_error':
-                $handler = $value ? new ResponseErrorHandler() : new ResponseErrorSilentHandler();
-                $this->_reader->setHandler(self::PREFIX_ERROR, $handler);
-                break;
-            default:
-                throw new \InvalidArgumentException(
-                    "The option $option is not supported by the current protocol"
-                );
-        }
-    }
-
-    public function serialize(ICommand $command) {
-        return $this->_serializer->serialize($command);
-    }
-
-    public function write(IConnectionSingle $connection, ICommand $command) {
-        $connection->writeBytes($this->_serializer->serialize($command));
-    }
-
-    public function read(IConnectionSingle $connection) {
-        return $this->_reader->read($connection);
-    }
-
-    public function setSerializer(ICommandSerializer $serializer) {
-        $this->_serializer = $serializer;
-    }
-
-    public function getSerializer() {
-        return $this->_serializer;
-    }
-
-    public function setReader(IResponseReader $reader) {
-        $this->_reader = $reader;
-    }
-
-    public function getReader() {
-        return $this->_reader;
-    }
-}
-
-class TextCommandSerializer implements ICommandSerializer {
-    public function serialize(ICommand $command) {
-        $commandId = $command->getCommandId();
-        $arguments = $command->getArguments();
-
-        $newline = TextProtocol::NEWLINE;
-        $cmdlen  = strlen($commandId);
-        $reqlen  = count($arguments) + 1;
-
-        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$commandId}{$newline}";
-        for ($i = 0; $i < $reqlen - 1;  $i++) {
-            $argument = $arguments[$i];
-            $arglen  = strlen($argument);
-            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
-        }
-
-        return $buffer;
-    }
-}
-
-class TextResponseReader implements IResponseReader {
-    private $_prefixHandlers;
-
-    public function __construct() {
-        $this->_prefixHandlers = $this->getDefaultHandlers();
-    }
-
-    private function getDefaultHandlers() {
-        return array(
-            TextProtocol::PREFIX_STATUS     => new ResponseStatusHandler(),
-            TextProtocol::PREFIX_ERROR      => new ResponseErrorHandler(),
-            TextProtocol::PREFIX_INTEGER    => new ResponseIntegerHandler(),
-            TextProtocol::PREFIX_BULK       => new ResponseBulkHandler(),
-            TextProtocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(),
-        );
-    }
-
-    public function setHandler($prefix, IResponseHandler $handler) {
-        $this->_prefixHandlers[$prefix] = $handler;
-    }
-
-    public function getHandler($prefix) {
-        if (isset($this->_prefixHandlers[$prefix])) {
-            return $this->_prefixHandlers[$prefix];
-        }
-    }
-
-    public function read(IConnectionSingle $connection) {
-        $header = $connection->readLine();
-        if ($header === '') {
-            $this->throwMalformedResponse('Unexpected empty header');
-        }
-
-        $prefix = $header[0];
-        if (!isset($this->_prefixHandlers[$prefix])) {
-            $this->throwMalformedResponse("Unknown prefix '$prefix'");
-        }
-        $handler = $this->_prefixHandlers[$prefix];
-        return $handler->handle($connection, substr($header, 1));
-    }
-
-    private function throwMalformedResponse($message) {
-        Utils::onCommunicationException(new MalformedServerResponse(
-            $connection, $message
-        ));
-    }
-}
-
-class ResponseStatusHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $status) {
-        if ($status === TextProtocol::OK) {
-            return true;
-        }
-        if ($status === TextProtocol::QUEUED) {
-            return new ResponseQueued();
-        }
-        return $status;
-    }
-}
-
-class ResponseErrorHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $errorMessage) {
-        throw new ServerException(substr($errorMessage, 4));
-    }
-}
-
-class ResponseErrorSilentHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $errorMessage) {
-        return new ResponseError(substr($errorMessage, 4));
-    }
-}
-
-class ResponseBulkHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
-            Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$length' as data length"
-            ));
-        }
-
-        $length = (int) $length;
-        if ($length >= 0) {
-            $value = $length > 0 ? $connection->readBytes($length) : '';
-            if ($connection->readBytes(2) !== TextProtocol::NEWLINE) {
-                Utils::onCommunicationException(new MalformedServerResponse(
-                    $connection, 'Did not receive a new-line at the end of a bulk response'
-                ));
-            }
-            return $value;
-        }
-        if ($length == -1) {
-            return null;
-        }
-    }
-}
-
-class ResponseMultiBulkHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
-            Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$length' as data length"
-            ));
-        }
-
-        $length = (int) $length;
-        if ($length === -1) {
-            return null;
-        }
-
-        $list = array();
-        if ($length > 0) {
-            $handlersCache = array();
-            $reader = $connection->getProtocol()->getReader();
-            for ($i = 0; $i < $length; $i++) {
-                $header = $connection->readLine();
-                $prefix = $header[0];
-                if (isset($handlersCache[$prefix])) {
-                    $handler = $handlersCache[$prefix];
-                }
-                else {
-                    $handler = $reader->getHandler($prefix);
-                    $handlersCache[$prefix] = $handler;
-                }
-                $list[$i] = $handler->handle($connection, substr($header, 1));
-            }
-        }
-        return $list;
-    }
-}
-
-class ResponseMultiBulkStreamHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
-            Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$length' as data length"
-            ));
-        }
-        return new Shared\MultiBulkResponseIterator($connection, (int) $length);
-    }
-}
-
-class ResponseIntegerHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $number) {
-        if (is_numeric($number)) {
-            return (int) $number;
-        }
-        else {
-            if ($number !== TextProtocol::NULL) {
-                Utils::onCommunicationException(new MalformedServerResponse(
-                    $connection, "Cannot parse '$number' as numeric response"
-                ));
-            }
-            return null;
-        }
-    }
-}
-
-/* ------------------------------------------------------------------------- */
-
-interface ICommand {
-    public function getCommandId();
-    public function canBeHashed();
-    public function closesConnection();
-    public function getHash(IDistributionStrategy $distributor);
-    public function setArgumentsArray(Array $arguments);
-    public function getArguments();
-    public function parseResponse($data);
-}
-
-abstract class Command implements ICommand {
-    private $_hash;
-    private $_arguments = array();
-
-    public function canBeHashed() {
-        return true;
-    }
-
-    public function getHash(IDistributionStrategy $distributor) {
-        if (isset($this->_hash)) {
-            return $this->_hash;
-        }
-        if (isset($this->_arguments[0])) {
-            // TODO: should we throw an exception if the command does not
-            // support sharding?
-            $key = $this->_arguments[0];
-
-            $start = strpos($key, '{');
-            if ($start !== false) {
-                $end = strpos($key, '}', $start);
-                if ($end !== false) {
-                    $key = substr($key, ++$start, $end - $start);
-                }
-            }
-
-            $this->_hash = $distributor->generateKey($key);
-            return $this->_hash;
-        }
-        return null;
-    }
-
-    public function closesConnection() {
-        return false;
-    }
-
-    protected function filterArguments(Array $arguments) {
-        return $arguments;
-    }
-
-    public function setArguments(/* arguments */) {
-        $this->_arguments = $this->filterArguments(func_get_args());
-        unset($this->_hash);
-    }
-
-    public function setArgumentsArray(Array $arguments) {
-        $this->_arguments = $this->filterArguments($arguments);
-        unset($this->_hash);
-    }
-
-    public function getArguments() {
-        return $this->_arguments;
-    }
-
-    public function getArgument($index = 0) {
-        if (isset($this->_arguments[$index]) === true) {
-            return $this->_arguments[$index];
-        }
-    }
-
-    public function parseResponse($data) {
-        return $data;
-    }
-}
-
-/* ------------------------------------------------------------------------- */
-
-class ResponseError {
-    private $_message;
-
-    public function __construct($message) {
-        $this->_message = $message;
-    }
-
-    public function __get($property) {
-        if ($property == 'error') {
-            return true;
-        }
-        if ($property == 'message') {
-            return $this->_message;
-        }
-    }
-
-    public function __isset($property) {
-        return $property === 'error';
-    }
-
-    public function __toString() {
-        return $this->_message;
-    }
-}
-
-class ResponseQueued {
-    public $queued = true;
-
-    public function __toString() {
-        return TextProtocol::QUEUED;
-    }
-}
-
-/* ------------------------------------------------------------------------- */
-
-use Predis\Pipeline\IPipelineExecutor;
 
 class CommandPipeline {
     private $_redisClient, $_pipelineBuffer, $_returnValues, $_running, $_executor;
@@ -803,7 +266,7 @@ class CommandPipeline {
         if (count($this->_pipelineBuffer) > 0) {
             $connection = $this->_redisClient->getConnection();
             $this->_returnValues = array_merge(
-                $this->_returnValues, 
+                $this->_returnValues,
                 $this->_executor->execute($connection, $this->_pipelineBuffer)
             );
             $this->_pipelineBuffer = array();
@@ -846,7 +309,7 @@ class CommandPipeline {
     }
 }
 
-class MultiExecBlock {
+class MultiExecContext {
     private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
     private $_redisClient, $_options, $_commands;
     private $_supportsWatch;
@@ -1040,7 +503,7 @@ class MultiExecBlock {
         $commands = &$this->_commands;
         if ($sizeofReplies !== count($commands)) {
             $this->malformedServerResponse(
-                'Unexpected number of responses for a MultiExecBlock'
+                'Unexpected number of responses for a MultiExecContext'
             );
         }
         for ($i = 0; $i < $sizeofReplies; $i++) {
@@ -1208,7 +671,198 @@ class PubSubContext implements \Iterator {
     }
 }
 
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
+abstract class PredisException extends \Exception {
+    // Base Predis exception class
+}
+
+class ClientException extends PredisException {
+    // Client-side errors
+}
+
+class AbortedMultiExec extends PredisException {
+    // Aborted MULTI/EXEC transactions
+}
+
+class ServerException extends PredisException {
+    // Server-side errors
+    public function toResponseError() {
+        return new ResponseError($this->getMessage());
+    }
+}
+
+class CommunicationException extends PredisException {
+    // Communication errors
+    private $_connection;
+
+    public function __construct(IConnectionSingle $connection, 
+        $message = null, $code = null) {
+
+        $this->_connection = $connection;
+        parent::__construct($message, $code);
+    }
+
+    public function getConnection() { return $this->_connection; }
+    public function shouldResetConnection() {  return true; }
+}
+
+class MalformedServerResponse extends CommunicationException {
+    // Unexpected responses
+}
+
+/* -------------------------------------------------------------------------- */
+
+interface ICommand {
+    public function getCommandId();
+    public function canBeHashed();
+    public function closesConnection();
+    public function getHash(IDistributionStrategy $distributor);
+    public function setArgumentsArray(Array $arguments);
+    public function getArguments();
+    public function parseResponse($data);
+}
+
+abstract class Command implements ICommand {
+    private $_hash;
+    private $_arguments = array();
+
+    public function canBeHashed() {
+        return true;
+    }
+
+    public function getHash(IDistributionStrategy $distributor) {
+        if (isset($this->_hash)) {
+            return $this->_hash;
+        }
+        if (isset($this->_arguments[0])) {
+            // TODO: should we throw an exception if the command does not
+            // support sharding?
+            $key = $this->_arguments[0];
+
+            $start = strpos($key, '{');
+            if ($start !== false) {
+                $end = strpos($key, '}', $start);
+                if ($end !== false) {
+                    $key = substr($key, ++$start, $end - $start);
+                }
+            }
+
+            $this->_hash = $distributor->generateKey($key);
+            return $this->_hash;
+        }
+        return null;
+    }
+
+    public function closesConnection() {
+        return false;
+    }
+
+    protected function filterArguments(Array $arguments) {
+        return $arguments;
+    }
+
+    public function setArguments(/* arguments */) {
+        $this->_arguments = $this->filterArguments(func_get_args());
+        unset($this->_hash);
+    }
+
+    public function setArgumentsArray(Array $arguments) {
+        $this->_arguments = $this->filterArguments($arguments);
+        unset($this->_hash);
+    }
+
+    public function getArguments() {
+        return $this->_arguments;
+    }
+
+    public function getArgument($index = 0) {
+        if (isset($this->_arguments[$index]) === true) {
+            return $this->_arguments[$index];
+        }
+    }
+
+    public function parseResponse($data) {
+        return $data;
+    }
+}
+
+class ResponseError {
+    private $_message;
+
+    public function __construct($message) {
+        $this->_message = $message;
+    }
+
+    public function __get($property) {
+        if ($property == 'error') {
+            return true;
+        }
+        if ($property == 'message') {
+            return $this->_message;
+        }
+    }
+
+    public function __isset($property) {
+        return $property === 'error';
+    }
+
+    public function __toString() {
+        return $this->_message;
+    }
+}
+
+class ResponseQueued {
+    public $queued = true;
+
+    public function __toString() {
+        return TextProtocol::QUEUED;
+    }
+}
+
+final class ConnectionFactory {
+    private static $_registeredSchemes;
+
+    private function __construct() {
+        // NOOP
+    }
+
+    private static function ensureInitialized() {
+        if (!isset(self::$_registeredSchemes)) {
+            self::$_registeredSchemes = self::getDefaultSchemes();
+        }
+    }
+
+    private static function getDefaultSchemes() {
+        return array(
+            'tcp'   => '\Predis\Network\TcpConnection',
+            'unix'  => '\Predis\Network\UnixDomainSocketConnection',
+
+            // Compatibility with older versions.
+            'redis' => '\Predis\Network\TcpConnection',
+        );
+    }
+
+    public static function registerScheme($scheme, $connectionClass) {
+        self::ensureInitialized();
+        $connectionReflection = new \ReflectionClass($connectionClass);
+        if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
+            throw new ClientException(
+                "Cannot register '$connectionClass' as it is not a valid connection class"
+            );
+        }
+        self::$_registeredSchemes[$scheme] = $connectionClass;
+    }
+
+    public static function create(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
+        self::ensureInitialized();
+        if (!isset(self::$_registeredSchemes[$parameters->scheme])) {
+            throw new ClientException("Unknown connection scheme: {$parameters->scheme}");
+        }
+        $connection = self::$_registeredSchemes[$parameters->scheme];
+        return new $connection($parameters, $protocol);
+    }
+}
 
 class ConnectionParameters {
     const DEFAULT_SCHEME = 'tcp';
@@ -1220,8 +874,8 @@ class ConnectionParameters {
 
     public function __construct($parameters = null) {
         $parameters = $parameters ?: array();
-        $this->_parameters = is_array($parameters) 
-            ? self::filterConnectionParams($parameters) 
+        $this->_parameters = is_array($parameters)
+            ? self::filterConnectionParams($parameters)
             : self::parseURI($parameters);
     }
 
@@ -1253,18 +907,18 @@ class ConnectionParameters {
 
     private static function filterConnectionParams($parameters) {
         return array(
-            'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME), 
-            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
-            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
-            'path' => self::getParamOrDefault($parameters, 'path'), 
-            'database' => self::getParamOrDefault($parameters, 'database'), 
-            'password' => self::getParamOrDefault($parameters, 'password'), 
-            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
-            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false), 
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
-            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
-            'alias'  => self::getParamOrDefault($parameters, 'alias'), 
-            'weight' => self::getParamOrDefault($parameters, 'weight'), 
+            'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME),
+            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST),
+            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT),
+            'path' => self::getParamOrDefault($parameters, 'path'),
+            'database' => self::getParamOrDefault($parameters, 'database'),
+            'password' => self::getParamOrDefault($parameters, 'password'),
+            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false),
+            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false),
+            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT),
+            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'),
+            'alias'  => self::getParamOrDefault($parameters, 'alias'),
+            'weight' => self::getParamOrDefault($parameters, 'weight'),
         );
     }
 
@@ -1276,6 +930,147 @@ class ConnectionParameters {
         return isset($this->_parameters[$parameter]);
     }
 }
+
+class ClientOptions {
+    private static $_optionsHandlers;
+    private $_options;
+
+    public function __construct($options = null) {
+        self::initializeOptionsHandlers();
+        $this->initializeOptions($options ?: array());
+    }
+
+    private static function initializeOptionsHandlers() {
+        if (!isset(self::$_optionsHandlers)) {
+            self::$_optionsHandlers = self::getOptionsHandlers();
+        }
+    }
+
+    private static function getOptionsHandlers() {
+        return array(
+            'profile' => new ClientOptionsProfile(),
+            'key_distribution' => new ClientOptionsKeyDistribution(),
+            'iterable_multibulk' => new ClientOptionsIterableMultiBulk(),
+            'throw_on_error' => new ClientOptionsThrowOnError(),
+        );
+    }
+
+    private function initializeOptions($options) {
+        foreach ($options as $option => $value) {
+            if (isset(self::$_optionsHandlers[$option])) {
+                $handler = self::$_optionsHandlers[$option];
+                $this->_options[$option] = $handler->validate($option, $value);
+            }
+        }
+    }
+
+    public function __get($option) {
+        if (!isset($this->_options[$option])) {
+            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
+            $this->_options[$option] = $defaultValue;
+        }
+        return $this->_options[$option];
+    }
+
+    public function __isset($option) {
+        return isset(self::$_optionsHandlers[$option]);
+    }
+}
+
+class Utils {
+    public static function isCluster(IConnection $connection) {
+        return $connection instanceof IConnectionCluster;
+    }
+
+    public static function onCommunicationException(CommunicationException $exception) {
+        if ($exception->shouldResetConnection()) {
+            $connection = $exception->getConnection();
+            if ($connection->isConnected()) {
+                $connection->disconnect();
+            }
+        }
+        throw $exception;
+    }
+
+    public static function filterArrayArguments(Array $arguments) {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+        return $arguments;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+interface IClientOptionsHandler {
+    public function validate($option, $value);
+    public function getDefault();
+}
+
+class ClientOptionsProfile implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof ServerProfile) {
+            return $value;
+        }
+        if (is_string($value)) {
+            return ServerProfile::get($value);
+        }
+        throw new \InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return ServerProfile::getDefault();
+    }
+}
+
+class ClientOptionsKeyDistribution implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof IDistributionStrategy) {
+            return $value;
+        }
+        if (is_string($value)) {
+            $valueReflection = new \ReflectionClass($value);
+            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionStrategy')) {
+                return new $value;
+            }
+        }
+        throw new \InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return new Distribution\HashRing();
+    }
+}
+
+class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return false;
+    }
+}
+
+class ClientOptionsThrowOnError implements IClientOptionsHandler {
+    public function validate($option, $value) {
+        return (bool) $value;
+    }
+
+    public function getDefault() {
+        return true;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+namespace Predis\Network;
+
+use Predis\ICommand;
+use Predis\ConnectionParameters;
+use Predis\Protocols\IRedisProtocol;
+use Predis\Protocols\TextProtocol;
+use Predis\Distribution\IDistributionStrategy;
 
 interface IConnection {
     public function connect();
@@ -1301,51 +1096,7 @@ interface IConnectionCluster extends IConnection {
     public function getConnectionById($connectionId);
 }
 
-final class ConnectionFactory {
-    private static $_registeredSchemes;
-
-    private function __construct() {
-        // NOOP
-    }
-
-    private static function ensureInitialized() {
-        if (!isset(self::$_registeredSchemes)) {
-            self::$_registeredSchemes = self::getDefaultSchemes();
-        }
-    }
-
-    private static function getDefaultSchemes() {
-        return array(
-            'tcp'   => '\Predis\TcpConnection',
-            'unix'  => '\Predis\UnixDomainSocketConnection',
-
-            // Compatibility with older versions.
-            'redis' => '\Predis\TcpConnection',
-        );
-    }
-
-    public static function registerScheme($scheme, $connectionClass) {
-        self::ensureInitialized();
-        $connectionReflection = new \ReflectionClass($connectionClass);
-        if (!$connectionReflection->isSubclassOf('\Predis\IConnectionSingle')) {
-            throw new ClientException(
-                "Cannot register '$connectionClass' as it is not a valid connection class"
-            );
-        }
-        self::$_registeredSchemes[$scheme] = $connectionClass;
-    }
-
-    public static function create(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
-        self::ensureInitialized();
-        if (!isset(self::$_registeredSchemes[$parameters->scheme])) {
-            throw new ClientException("Unknown connection scheme: {$parameters->scheme}");
-        }
-        $connection = self::$_registeredSchemes[$parameters->scheme];
-        return new $connection($parameters, $protocol);
-    }
-}
-
-abstract class Connection implements IConnectionSingle {
+abstract class ConnectionBase implements IConnectionSingle {
     protected $_params, $_socket, $_initCmds, $_protocol;
 
     public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol) {
@@ -1415,7 +1166,7 @@ abstract class Connection implements IConnectionSingle {
     }
 }
 
-class TcpConnection extends Connection implements IConnectionSingle {
+class TcpConnection extends ConnectionBase implements IConnectionSingle {
     public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
         parent::__construct($this->checkParameters($parameters), $protocol ?: new TextProtocol());
     }
@@ -1559,7 +1310,6 @@ class UnixDomainSocketConnection extends TcpConnection {
         $this->_socket = @stream_socket_client(
             $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
         );
-
         if (!$this->_socket) {
             $this->onCommunicationException(trim($errstr), $errno);
         }
@@ -1639,9 +1389,300 @@ class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {
     }
 }
 
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
-abstract class RedisServerProfile {
+namespace Predis\Protocols;
+
+use Predis\ICommand;
+use Predis\Iterators;
+use Predis\MalformedServerResponse;
+use Predis\Network\IConnectionSingle;
+
+interface IRedisProtocol {
+    public function setSerializer(ICommandSerializer $serializer);
+    public function getSerializer();
+    public function setReader(IResponseReader $reader);
+    public function getReader();
+}
+
+interface ICommandSerializer {
+    public function serialize(ICommand $command);
+}
+
+interface IResponseReader {
+    public function setHandler($prefix, IResponseHandler $handler);
+    public function getHandler($prefix);
+}
+
+interface IResponseHandler {
+    function handle(IConnectionSingle $connection, $payload);
+}
+
+class TextProtocol implements IRedisProtocol {
+    const NEWLINE = "\r\n";
+    const OK      = 'OK';
+    const ERROR   = 'ERR';
+    const QUEUED  = 'QUEUED';
+    const NULL    = 'nil';
+
+    const PREFIX_STATUS     = '+';
+    const PREFIX_ERROR      = '-';
+    const PREFIX_INTEGER    = ':';
+    const PREFIX_BULK       = '$';
+    const PREFIX_MULTI_BULK = '*';
+
+    private $_serializer, $_reader;
+
+    public function __construct(Array $options = array()) {
+        $this->setSerializer(new TextCommandSerializer());
+        $this->setReader(new TextResponseReader());
+        $this->initializeOptions($options);
+    }
+
+    private function getDefaultOptions() {
+        return array(
+            'iterable_multibulk' => false,
+            'throw_on_error'     => false,
+        );
+    }
+
+    private function initializeOptions(Array $options) {
+        $options = array_merge($this->getDefaultOptions(), $options);
+        foreach ($options as $k => $v) {
+            $this->setOption($k, $v);
+        }
+    }
+
+    public function setOption($option, $value) {
+        switch ($option) {
+            case 'iterable_multibulk':
+                $handler = $value ? new ResponseMultiBulkStreamHandler() : new ResponseMultiBulkHandler();
+                $this->_reader->setHandler(self::PREFIX_MULTI_BULK, $handler);
+                break;
+            case 'throw_on_error':
+                $handler = $value ? new ResponseErrorHandler() : new ResponseErrorSilentHandler();
+                $this->_reader->setHandler(self::PREFIX_ERROR, $handler);
+                break;
+            default:
+                throw new \InvalidArgumentException(
+                    "The option $option is not supported by the current protocol"
+                );
+        }
+    }
+
+    public function serialize(ICommand $command) {
+        return $this->_serializer->serialize($command);
+    }
+
+    public function write(IConnectionSingle $connection, ICommand $command) {
+        $connection->writeBytes($this->_serializer->serialize($command));
+    }
+
+    public function read(IConnectionSingle $connection) {
+        return $this->_reader->read($connection);
+    }
+
+    public function setSerializer(ICommandSerializer $serializer) {
+        $this->_serializer = $serializer;
+    }
+
+    public function getSerializer() {
+        return $this->_serializer;
+    }
+
+    public function setReader(IResponseReader $reader) {
+        $this->_reader = $reader;
+    }
+
+    public function getReader() {
+        return $this->_reader;
+    }
+}
+
+class TextCommandSerializer implements ICommandSerializer {
+    public function serialize(ICommand $command) {
+        $commandId = $command->getCommandId();
+        $arguments = $command->getArguments();
+
+        $newline = TextProtocol::NEWLINE;
+        $cmdlen  = strlen($commandId);
+        $reqlen  = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$commandId}{$newline}";
+        for ($i = 0; $i < $reqlen - 1;  $i++) {
+            $argument = $arguments[$i];
+            $arglen  = strlen($argument);
+            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
+        }
+
+        return $buffer;
+    }
+}
+
+class TextResponseReader implements IResponseReader {
+    private $_prefixHandlers;
+
+    public function __construct() {
+        $this->_prefixHandlers = $this->getDefaultHandlers();
+    }
+
+    private function getDefaultHandlers() {
+        return array(
+            TextProtocol::PREFIX_STATUS     => new ResponseStatusHandler(),
+            TextProtocol::PREFIX_ERROR      => new ResponseErrorHandler(),
+            TextProtocol::PREFIX_INTEGER    => new ResponseIntegerHandler(),
+            TextProtocol::PREFIX_BULK       => new ResponseBulkHandler(),
+            TextProtocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(),
+        );
+    }
+
+    public function setHandler($prefix, IResponseHandler $handler) {
+        $this->_prefixHandlers[$prefix] = $handler;
+    }
+
+    public function getHandler($prefix) {
+        if (isset($this->_prefixHandlers[$prefix])) {
+            return $this->_prefixHandlers[$prefix];
+        }
+    }
+
+    public function read(IConnectionSingle $connection) {
+        $header = $connection->readLine();
+        if ($header === '') {
+            $this->throwMalformedResponse('Unexpected empty header');
+        }
+
+        $prefix = $header[0];
+        if (!isset($this->_prefixHandlers[$prefix])) {
+            $this->throwMalformedResponse("Unknown prefix '$prefix'");
+        }
+        $handler = $this->_prefixHandlers[$prefix];
+        return $handler->handle($connection, substr($header, 1));
+    }
+
+    private function throwMalformedResponse($message) {
+        Utils::onCommunicationException(new MalformedServerResponse(
+            $connection, $message
+        ));
+    }
+}
+
+class ResponseStatusHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $status) {
+        if ($status === TextProtocol::OK) {
+            return true;
+        }
+        if ($status === TextProtocol::QUEUED) {
+            return new \Predis\ResponseQueued();
+        }
+        return $status;
+    }
+}
+
+class ResponseErrorHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $errorMessage) {
+        throw new \Predis\ServerException(substr($errorMessage, 4));
+    }
+}
+
+class ResponseErrorSilentHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $errorMessage) {
+        return new \Predis\ResponseError(substr($errorMessage, 4));
+    }
+}
+
+class ResponseBulkHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $length) {
+        if (!is_numeric($length)) {
+            Utils::onCommunicationException(new MalformedServerResponse(
+                $connection, "Cannot parse '$length' as data length"
+            ));
+        }
+
+        $length = (int) $length;
+        if ($length >= 0) {
+            $value = $length > 0 ? $connection->readBytes($length) : '';
+            if ($connection->readBytes(2) !== TextProtocol::NEWLINE) {
+                Utils::onCommunicationException(new MalformedServerResponse(
+                    $connection, 'Did not receive a new-line at the end of a bulk response'
+                ));
+            }
+            return $value;
+        }
+        if ($length == -1) {
+            return null;
+        }
+    }
+}
+
+class ResponseMultiBulkHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $length) {
+        if (!is_numeric($length)) {
+            Utils::onCommunicationException(new MalformedServerResponse(
+                $connection, "Cannot parse '$length' as data length"
+            ));
+        }
+
+        $length = (int) $length;
+        if ($length === -1) {
+            return null;
+        }
+
+        $list = array();
+        if ($length > 0) {
+            $handlersCache = array();
+            $reader = $connection->getProtocol()->getReader();
+            for ($i = 0; $i < $length; $i++) {
+                $header = $connection->readLine();
+                $prefix = $header[0];
+                if (isset($handlersCache[$prefix])) {
+                    $handler = $handlersCache[$prefix];
+                }
+                else {
+                    $handler = $reader->getHandler($prefix);
+                    $handlersCache[$prefix] = $handler;
+                }
+                $list[$i] = $handler->handle($connection, substr($header, 1));
+            }
+        }
+        return $list;
+    }
+}
+
+class ResponseMultiBulkStreamHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $length) {
+        if (!is_numeric($length)) {
+            Utils::onCommunicationException(new MalformedServerResponse(
+                $connection, "Cannot parse '$length' as data length"
+            ));
+        }
+        return new Iterators\MultiBulkResponseSimple($connection, (int) $length);
+    }
+}
+
+class ResponseIntegerHandler implements IResponseHandler {
+    public function handle(IConnectionSingle $connection, $number) {
+        if (is_numeric($number)) {
+            return (int) $number;
+        }
+        else {
+            if ($number !== TextProtocol::NULL) {
+                Utils::onCommunicationException(new MalformedServerResponse(
+                    $connection, "Cannot parse '$number' as numeric response"
+                ));
+            }
+            return null;
+        }
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+namespace Predis\Profiles;
+
+use Predis\ClientException;
+
+abstract class ServerProfile {
     private static $_profiles;
     private $_registeredCommands;
 
@@ -1661,23 +1702,25 @@ abstract class RedisServerProfile {
         return self::get('dev');
     }
 
-    private static function predisServerProfiles() {
+    private static function getDefaultProfiles() {
         return array(
-            '1.2'     => '\Predis\RedisServer_v1_2',
-            '2.0'     => '\Predis\RedisServer_v2_0',
-            'default' => '\Predis\RedisServer_v2_0',
-            'dev'     => '\Predis\RedisServer_vNext',
+            '1.2'     => '\Predis\Profiles\Server_v1_2',
+            '2.0'     => '\Predis\Profiles\Server_v2_0',
+            'default' => '\Predis\Profiles\Server_v2_0',
+            'dev'     => '\Predis\Profiles\Server_vNext',
         );
     }
 
     public static function registerProfile($profileClass, $aliases) {
         if (!isset(self::$_profiles)) {
-            self::$_profiles = self::predisServerProfiles();
+            self::$_profiles = self::getDefaultProfiles();
         }
 
         $profileReflection = new \ReflectionClass($profileClass);
-        if (!$profileReflection->isSubclassOf('\Predis\RedisServerProfile')) {
-            throw new ClientException("Cannot register '$profileClass' as it is not a valid profile class");
+        if (!$profileReflection->isSubclassOf('\Predis\Profiles\ServerProfile')) {
+            throw new ClientException(
+                "Cannot register '$profileClass' as it is not a valid profile class"
+            );
         }
 
         if (is_array($aliases)) {
@@ -1692,7 +1735,7 @@ abstract class RedisServerProfile {
 
     public static function get($version) {
         if (!isset(self::$_profiles)) {
-            self::$_profiles = self::predisServerProfiles();
+            self::$_profiles = self::getDefaultProfiles();
         }
         if (!isset(self::$_profiles[$version])) {
             throw new ClientException("Unknown server profile: $version");
@@ -1733,7 +1776,7 @@ abstract class RedisServerProfile {
     public function registerCommand($command, $aliases) {
         $commandReflection = new \ReflectionClass($command);
 
-        if (!$commandReflection->isSubclassOf('\Predis\Command')) {
+        if (!$commandReflection->isSubclassOf('\Predis\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
 
@@ -1752,7 +1795,7 @@ abstract class RedisServerProfile {
     }
 }
 
-class RedisServer_v1_2 extends RedisServerProfile {
+class Server_v1_2 extends ServerProfile {
     public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array(
@@ -1848,12 +1891,12 @@ class RedisServer_v1_2 extends RedisServerProfile {
             'bgsave'                    => '\Predis\Commands\BackgroundSave',
             'lastsave'                  => '\Predis\Commands\LastSave',
             'shutdown'                  => '\Predis\Commands\Shutdown',
-            'bgrewriteaof'              =>  '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
+            'bgrewriteaof'              => '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
         );
     }
 }
 
-class RedisServer_v2_0 extends RedisServer_v1_2 {
+class Server_v2_0 extends Server_v1_2 {
     public function getVersion() { return '2.0'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
@@ -1909,7 +1952,7 @@ class RedisServer_v2_0 extends RedisServer_v1_2 {
     }
 }
 
-class RedisServer_vNext extends RedisServer_v2_0 {
+class Server_vNext extends Server_v2_0 {
     public function getVersion() { return '2.1'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
@@ -1939,132 +1982,7 @@ class RedisServer_vNext extends RedisServer_v2_0 {
     }
 }
 
-/* ------------------------------------------------------------------------- */
-
-namespace Predis\Pipeline;
-use Predis\IConnection, Predis\ServerException, Predis\CommunicationException;
-
-interface IPipelineExecutor {
-    public function execute(IConnection $connection, &$commands);
-}
-
-class StandardExecutor implements IPipelineExecutor {
-    public function execute(IConnection $connection, &$commands) {
-        $sizeofPipe = count($commands);
-        $values = array();
-
-        foreach ($commands as $command) {
-            $connection->writeCommand($command);
-        }
-        try {
-            for ($i = 0; $i < $sizeofPipe; $i++) {
-                $response = $connection->readResponse($commands[$i]);
-                $values[] = $response instanceof \Iterator
-                    ? iterator_to_array($response)
-                    : $response;
-                unset($commands[$i]);
-            }
-        }
-        catch (ServerException $exception) {
-            // Force disconnection to prevent protocol desynchronization.
-            $connection->disconnect();
-            throw $exception;
-        }
-
-        return $values;
-    }
-}
-
-class SafeExecutor implements IPipelineExecutor {
-    public function execute(IConnection $connection, &$commands) {
-        $sizeofPipe = count($commands);
-        $values = array();
-
-        foreach ($commands as $command) {
-            try {
-                $connection->writeCommand($command);
-            }
-            catch (CommunicationException $exception) {
-                return array_fill(0, $sizeofPipe, $exception);
-            }
-        }
-
-        for ($i = 0; $i < $sizeofPipe; $i++) {
-            $command = $commands[$i];
-            unset($commands[$i]);
-            try {
-                $response = $connection->readResponse($command);
-                $values[] = ($response instanceof \Iterator
-                    ? iterator_to_array($response)
-                    : $response
-                );
-            }
-            catch (ServerException $exception) {
-                $values[] = $exception->toResponseError();
-            }
-            catch (CommunicationException $exception) {
-                $toAdd  = count($commands) - count($values);
-                $values = array_merge($values, array_fill(0, $toAdd, $exception));
-                break;
-            }
-        }
-
-        return $values;
-    }
-}
-
-class SafeClusterExecutor implements IPipelineExecutor {
-    public function execute(IConnection $connection, &$commands) {
-        $connectionExceptions = array();
-        $sizeofPipe = count($commands);
-        $values = array();
-
-        foreach ($commands as $command) {
-            $cmdConnection = $connection->getConnection($command);
-            if (isset($connectionExceptions[spl_object_hash($cmdConnection)])) {
-                continue;
-            }
-            try {
-                $cmdConnection->writeCommand($command);
-            }
-            catch (CommunicationException $exception) {
-                $connectionExceptions[spl_object_hash($cmdConnection)] = $exception;
-            }
-        }
-
-        for ($i = 0; $i < $sizeofPipe; $i++) {
-            $command = $commands[$i];
-            unset($commands[$i]);
-
-            $cmdConnection = $connection->getConnection($command);
-            $connectionObjectHash = spl_object_hash($cmdConnection);
-
-            if (isset($connectionExceptions[$connectionObjectHash])) {
-                $values[] = $connectionExceptions[$connectionObjectHash];
-                continue;
-            }
-
-            try {
-                $response = $cmdConnection->readResponse($command);
-                $values[] = ($response instanceof \Iterator
-                    ? iterator_to_array($response)
-                    : $response
-                );
-            }
-            catch (ServerException $exception) {
-                $values[] = $exception->toResponseError();
-            }
-            catch (CommunicationException $exception) {
-                $values[] = $exception;
-                $connectionExceptions[$connectionObjectHash] = $exception;
-            }
-        }
-
-        return $values;
-    }
-}
-
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
 namespace Predis\Distribution;
 
@@ -2226,36 +2144,141 @@ class KetamaPureRing extends HashRing {
     }
 }
 
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
-namespace Predis\Shared;
-use Predis\IConnection, Predis\IConnectionSingle, Predis\IConnectionCluster, 
-    Predis\CommunicationException;
+namespace Predis\Pipeline;
 
-class Utils {
-    public static function isCluster(IConnection $connection) {
-        return $connection instanceof IConnectionCluster;
-    }
+use Predis\Network\IConnection;
 
-    public static function onCommunicationException(CommunicationException $exception) {
-        if ($exception->shouldResetConnection()) {
-            $connection = $exception->getConnection();
-            if ($connection->isConnected()) {
-                $connection->disconnect();
+interface IPipelineExecutor {
+    public function execute(IConnection $connection, &$commands);
+}
+
+class StandardExecutor implements IPipelineExecutor {
+    public function execute(IConnection $connection, &$commands) {
+        $sizeofPipe = count($commands);
+        $values = array();
+
+        foreach ($commands as $command) {
+            $connection->writeCommand($command);
+        }
+        try {
+            for ($i = 0; $i < $sizeofPipe; $i++) {
+                $response = $connection->readResponse($commands[$i]);
+                $values[] = $response instanceof Iterator
+                    ? iterator_to_array($response)
+                    : $response;
+                unset($commands[$i]);
             }
         }
-        throw $exception;
-    }
-
-    public static function filterArrayArguments(Array $arguments) {
-        if (count($arguments) === 1 && is_array($arguments[0])) {
-            return $arguments[0];
+        catch (\Predis\ServerException $exception) {
+            // Force disconnection to prevent protocol desynchronization.
+            $connection->disconnect();
+            throw $exception;
         }
-        return $arguments;
+
+        return $values;
     }
 }
 
-abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
+class SafeExecutor implements IPipelineExecutor {
+    public function execute(IConnection $connection, &$commands) {
+        $sizeofPipe = count($commands);
+        $values = array();
+
+        foreach ($commands as $command) {
+            try {
+                $connection->writeCommand($command);
+            }
+            catch (\Predis\CommunicationException $exception) {
+                return array_fill(0, $sizeofPipe, $exception);
+            }
+        }
+
+        for ($i = 0; $i < $sizeofPipe; $i++) {
+            $command = $commands[$i];
+            unset($commands[$i]);
+            try {
+                $response = $connection->readResponse($command);
+                $values[] = ($response instanceof \Iterator
+                    ? iterator_to_array($response)
+                    : $response
+                );
+            }
+            catch (\Predis\ServerException $exception) {
+                $values[] = $exception->toResponseError();
+            }
+            catch (\Predis\CommunicationException $exception) {
+                $toAdd  = count($commands) - count($values);
+                $values = array_merge($values, array_fill(0, $toAdd, $exception));
+                break;
+            }
+        }
+
+        return $values;
+    }
+}
+
+class SafeClusterExecutor implements IPipelineExecutor {
+    public function execute(IConnection $connection, &$commands) {
+        $connectionExceptions = array();
+        $sizeofPipe = count($commands);
+        $values = array();
+
+        foreach ($commands as $command) {
+            $cmdConnection = $connection->getConnection($command);
+            if (isset($connectionExceptions[spl_object_hash($cmdConnection)])) {
+                continue;
+            }
+            try {
+                $cmdConnection->writeCommand($command);
+            }
+            catch (\Predis\CommunicationException $exception) {
+                $connectionExceptions[spl_object_hash($cmdConnection)] = $exception;
+            }
+        }
+
+        for ($i = 0; $i < $sizeofPipe; $i++) {
+            $command = $commands[$i];
+            unset($commands[$i]);
+
+            $cmdConnection = $connection->getConnection($command);
+            $connectionObjectHash = spl_object_hash($cmdConnection);
+
+            if (isset($connectionExceptions[$connectionObjectHash])) {
+                $values[] = $connectionExceptions[$connectionObjectHash];
+                continue;
+            }
+
+            try {
+                $response = $cmdConnection->readResponse($command);
+                $values[] = ($response instanceof \Iterator
+                    ? iterator_to_array($response)
+                    : $response
+                );
+            }
+            catch (\Predis\ServerException $exception) {
+                $values[] = $exception->toResponseError();
+            }
+            catch (\Predis\CommunicationException $exception) {
+                $values[] = $exception;
+                $connectionExceptions[$connectionObjectHash] = $exception;
+            }
+        }
+
+        return $values;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+
+namespace Predis\Iterators;
+
+use Predis\CommunicationException;
+use Predis\Network\IConnection;
+use Predis\Network\IConnectionSingle;
+
+abstract class MultiBulkResponse implements \Iterator, \Countable {
     protected $_position, $_current, $_replySize;
 
     public function rewind() {
@@ -2291,7 +2314,7 @@ abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
     protected abstract function getValue();
 }
 
-class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
+class MultiBulkResponseSimple extends MultiBulkResponse {
     private $_connection;
 
     public function __construct(IConnectionSingle $connection, $size) {
@@ -2329,12 +2352,11 @@ class MultiBulkResponseIterator extends MultiBulkResponseIteratorBase {
     }
 }
 
-class MultiBulkResponseKVIterator extends MultiBulkResponseIteratorBase {
+class MultiBulkResponseTuple extends MultiBulkResponse {
     private $_iterator;
 
-    public function __construct(MultiBulkResponseIterator $iterator) {
+    public function __construct(MultiBulkResponseSimple $iterator) {
         $virtualSize = count($iterator) / 2;
-
         $this->_iterator   = $iterator;
         $this->_position   = 0;
         $this->_current    = $virtualSize > 0 ? $this->getValue() : null;
@@ -2354,10 +2376,13 @@ class MultiBulkResponseKVIterator extends MultiBulkResponseIteratorBase {
     }
 }
 
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
 namespace Predis\Commands;
-use Predis\Command, Predis\Shared\Utils, Predis\Shared\MultiBulkResponseKVIterator;
+
+use Predis\Utils;
+use Predis\Command;
+use Predis\Iterators\MultiBulkResponseTuple;
 
 /* miscellaneous commands */
 class Ping extends Command {
@@ -2765,7 +2790,7 @@ class ZSetRange extends Command {
     public function parseResponse($data) {
         if ($this->_withScores) {
             if ($data instanceof \Iterator) {
-                return new MultiBulkResponseKVIterator($data);
+                return new MultiBulkResponseTuple($data);
             }
             $result = array();
             for ($i = 0; $i < count($data); $i++) {
@@ -2904,7 +2929,7 @@ class HashGetAll extends Command {
     public function getCommandId() { return 'HGETALL'; }
     public function parseResponse($data) {
         if ($data instanceof \Iterator) {
-            return new MultiBulkResponseKVIterator($data);
+            return new MultiBulkResponseTuple($data);
         }
         $result = array();
         for ($i = 0; $i < count($data); $i++) {
