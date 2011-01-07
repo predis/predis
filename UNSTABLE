@@ -1,0 +1,8 @@
+*** ATTENTION ***
+
+The library code in this branch is currently undergoing a major rewrite and it 
+is marked as UNOPTIMIZED, HIGHLY UNSTABLE and will most likely FAIL from time 
+to time. The internal API is still subject to frequent changes since its 
+design has not been fully finalized yet.
+
+Feedback is obviously appreciated, but use it at your own risk!
