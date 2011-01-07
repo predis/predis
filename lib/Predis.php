@@ -43,7 +43,7 @@ class MalformedServerResponse extends CommunicationException {
 /* ------------------------------------------------------------------------- */
 
 class Client {
-    private $_options, $_profile, $_connection, $_protocol;
+    private $_options, $_profile, $_connection;
 
     public function __construct($parameters = null, $clientOptions = null) {
         $this->setupClient($clientOptions ?: new ClientOptions());
@@ -63,14 +63,11 @@ class Client {
             return new ClientOptions($options);
         }
         if ($options instanceof RedisServerProfile) {
-            return new ClientOptions(array(
-                'profile' => $options
-            ));
+            return new ClientOptions(array('profile' => $options));
         }
         if (is_string($options)) {
-            return new ClientOptions(array(
-                'profile' => RedisServerProfile::get($options)
-            ));
+            $profile = RedisServerProfile::get($options);
+            return new ClientOptions(array('profile' => $profile));
         }
         throw new \InvalidArgumentException("Invalid type for client options");
     }
@@ -154,10 +151,6 @@ class Client {
         return $this->_profile;
     }
 
-    public function getProtocol() {
-        return $this->_protocol;
-    }
-
     public function getClientFor($connectionAlias) {
         if (!Utils::isCluster($this->_connection)) {
             throw new ClientException(
@@ -191,14 +184,12 @@ class Client {
     }
 
     public function getConnection($id = null) {
+        $connection = $this->_connection;
         if (!isset($id)) {
-            return $this->_connection;
+            return $connection;
         }
-        else {
-            return Utils::isCluster($this->_connection)
-                ? $this->_connection->getConnectionById($id)
-                : $this->_connection;
-        }
+        $isCluster = Utils::isCluster($connection);
+        return $isCluster ? $connection->getConnectionById($id) : $connection;
     }
 
     public function __call($method, $arguments) {
@@ -215,16 +206,14 @@ class Client {
     }
 
     public function executeCommandOnShards(ICommand $command) {
-        $replies = array();
         if (Utils::isCluster($this->_connection)) {
-            foreach($this->_connection as $connection) {
+            $replies = array();
+            foreach ($this->_connection as $connection) {
                 $replies[] = $connection->executeCommand($command);
             }
+            return $replies;
         }
-        else {
-            $replies[] = $this->_connection->executeCommand($command);
-        }
-        return $replies;
+        return array($this->_connection->executeCommand($command));
     }
 
     private function sharedInitializer($argv, $initializer) {
@@ -251,20 +240,20 @@ class Client {
         $pipeline = null;
         if (isset($options)) {
             if (isset($options['safe']) && $options['safe'] == true) {
-                $connection = $this->getConnection();
-                $pipeline   = new CommandPipeline($this, $connection instanceof Connection
-                    ? new Pipeline\SafeExecutor($connection)
-                    : new Pipeline\SafeClusterExecutor($connection)
+                $connection = $this->_connection;
+                $pipeline = new CommandPipeline($this, 
+                    Utils::isCluster($connection)
+                        ? new Pipeline\SafeClusterExecutor($connection)
+                        : new Pipeline\SafeExecutor($connection)
                 );
             }
             else {
                 $pipeline = new CommandPipeline($this);
             }
         }
-        else {
-            $pipeline = new CommandPipeline($this);
-        }
-        return $this->pipelineExecute($pipeline, $pipelineBlock);
+        return $this->pipelineExecute(
+            $pipeline ?: new CommandPipeline($this), $pipelineBlock
+        );
     }
 
     private function pipelineExecute(CommandPipeline $pipeline, $block) {
@@ -396,7 +385,9 @@ class ClientOptions {
 /* ------------------------------------------------------------------------- */
 
 interface IRedisProtocol {
+    public function setSerializer(ICommandSerializer $serializer);
     public function getSerializer();
+    public function setReader(IResponseReader $reader);
     public function getReader();
 }
 
@@ -431,9 +422,9 @@ class TextProtocol implements IRedisProtocol {
     private $_serializer, $_reader;
 
     public function __construct(Array $options = array()) {
-        $this->_reader = new TextResponseReader();
-        $this->_serializer = new TextCommandSerializer();
-        $this->setupOptions($options);
+        $this->setSerializer(new TextCommandSerializer());
+        $this->setReader(new TextResponseReader());
+        $this->initializeOptions($options);
     }
 
     private function getDefaultOptions() {
@@ -443,7 +434,7 @@ class TextProtocol implements IRedisProtocol {
         );
     }
 
-    private function setupOptions(Array $options) {
+    private function initializeOptions(Array $options) {
         $options = array_merge($this->getDefaultOptions(), $options);
         foreach ($options as $k => $v) {
             $this->setOption($k, $v);
@@ -467,14 +458,6 @@ class TextProtocol implements IRedisProtocol {
         }
     }
 
-    public function getSerializer() {
-        return $this->_serializer;
-    }
-
-    public function getReader() {
-        return $this->_reader;
-    }
-
     public function serialize(ICommand $command) {
         return $this->_serializer->serialize($command);
     }
@@ -485,6 +468,22 @@ class TextProtocol implements IRedisProtocol {
 
     public function read(IConnectionSingle $connection) {
         return $this->_reader->read($connection);
+    }
+
+    public function setSerializer(ICommandSerializer $serializer) {
+        $this->_serializer = $serializer;
+    }
+
+    public function getSerializer() {
+        return $this->_serializer;
+    }
+
+    public function setReader(IResponseReader $reader) {
+        $this->_reader = $reader;
+    }
+
+    public function getReader() {
+        return $this->_reader;
     }
 }
 
@@ -1350,8 +1349,8 @@ abstract class Connection implements IConnectionSingle {
     protected $_params, $_socket, $_initCmds, $_protocol;
 
     public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol) {
-        $this->_params   = $parameters;
         $this->_initCmds = array();
+        $this->_params   = $parameters;
         $this->_protocol = $protocol;
     }
 
@@ -2076,7 +2075,8 @@ interface IDistributionStrategy {
     public function generateKey($value);
 }
 
-class EmptyRingException extends \Exception { }
+class EmptyRingException extends \Exception {
+}
 
 class HashRing implements IDistributionStrategy {
     const DEFAULT_REPLICAS = 128;
