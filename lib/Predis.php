@@ -1483,6 +1483,8 @@ use Predis\MalformedServerResponse;
 use Predis\Network\IConnectionSingle;
 
 interface IRedisProtocol {
+    public function write(IConnectionSingle $connection, ICommand $command);
+    public function read(IConnectionSingle $connection);
     public function setSerializer(ICommandSerializer $serializer);
     public function getSerializer();
     public function setReader(IResponseReader $reader);
