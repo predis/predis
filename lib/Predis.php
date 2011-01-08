@@ -923,48 +923,54 @@ class ConnectionParameters {
 }
 
 class ClientOptions {
-    private static $_optionsHandlers;
-    private $_options;
+    private $_handlers, $_options;
+    private static $_sharedOptions;
 
     public function __construct($options = null) {
-        self::initializeOptionsHandlers();
-        $this->initializeOptions($options ?: array());
+        $this->initialize($options ?: array());
     }
 
-    private static function initializeOptionsHandlers() {
-        if (!isset(self::$_optionsHandlers)) {
-            self::$_optionsHandlers = self::getOptionsHandlers();
+    private static function getSharedOptions() {
+        if (isset(self::$_sharedOptions)) {
+            return self::$_sharedOptions;
         }
-    }
-
-    private static function getOptionsHandlers() {
-        return array(
-            'profile' => new ClientOptionsProfile(),
-            'key_distribution' => new ClientOptionsKeyDistribution(),
-            'iterable_multibulk' => new ClientOptionsIterableMultiBulk(),
-            'throw_on_error' => new ClientOptionsThrowOnError(),
+        self::$_sharedOptions = array(
+            'profile' => new Options\ClientProfile(),
+            'key_distribution' => new Options\ClientKeyDistribution(),
+            'iterable_multibulk' => new Options\ClientIterableMultiBulk(),
+            'throw_on_error' => new Options\ClientThrowOnError(),
         );
+        return self::$_sharedOptions;
     }
 
-    private function initializeOptions($options) {
+    private function initialize($options) {
+        $this->_handlers = $this->getOptions();
         foreach ($options as $option => $value) {
-            if (isset(self::$_optionsHandlers[$option])) {
-                $handler = self::$_optionsHandlers[$option];
-                $this->_options[$option] = $handler->validate($option, $value);
+            if (isset($this->_handlers[$option])) {
+                $handler = $this->_handlers[$option];
+                $this->_options[$option] = $handler($value);
             }
         }
     }
 
+    private function getOptions() {
+        return self::getSharedOptions();
+    }
+
+    protected function defineOption($name, Options\IOption $option) {
+        $this->_handlers[$name] = $option;
+    }
+
     public function __get($option) {
         if (!isset($this->_options[$option])) {
-            $defaultValue = self::$_optionsHandlers[$option]->getDefault();
-            $this->_options[$option] = $defaultValue;
+            $handler = $this->_handlers[$option];
+            $this->_options[$option] = $handler->getDefault();
         }
         return $this->_options[$option];
     }
 
     public function __isset($option) {
-        return isset(self::$_optionsHandlers[$option]);
+        return isset(self::$_sharedOptions[$option]);
     }
 }
 
@@ -993,20 +999,67 @@ class Utils {
 
 /* -------------------------------------------------------------------------- */
 
-interface IClientOptionsHandler {
-    public function validate($option, $value);
+namespace Predis\Options;
+
+use Predis\Profiles\ServerProfile;
+
+interface IOption {
+    public function validate($value);
     public function getDefault();
+    public function __invoke($value);
 }
 
-class ClientOptionsProfile implements IClientOptionsHandler {
-    public function validate($option, $value) {
+class Option implements IOption {
+    public function validate($value) {
+        return $value;
+    }
+
+    public function getDefault() {
+        return null;
+    }
+
+    public function __invoke($value) {
+        return $this->validate($value ?: $this->getDefault());
+    }
+}
+
+class CustomOption extends Option {
+    private $__validate, $_default;
+
+    public function __construct(Array $options) {
+        $validate = isset($options['validate']) ? $options['validate'] : 'parent::validate';
+        $default  = isset($options['default']) ? $options['default'] : 'parent::getDefault';
+        if (!is_callable($validate) || !is_callable($default)) {
+            throw new \InvalidArgumentException("Validate and default must be callable");
+        }
+        $this->_validate = $validate;
+        $this->_default  = $default;
+    }
+
+    public function validate($value) {
+        return call_user_func($this->_validate, $value);
+    }
+
+    public function getDefault() {
+        return $this->validate(call_user_func($this->_default));
+    }
+
+    public function __invoke($value) {
+        return $this->validate($value ?: $this->getDefault());
+    }
+}
+
+class ClientProfile extends Option {
+    public function validate($value) {
         if ($value instanceof ServerProfile) {
             return $value;
         }
         if (is_string($value)) {
             return ServerProfile::get($value);
         }
-        throw new \InvalidArgumentException("Invalid value for option $option");
+        throw new \InvalidArgumentException(
+            "Invalid value for the profile option"
+        );
     }
 
     public function getDefault() {
@@ -1014,9 +1067,9 @@ class ClientOptionsProfile implements IClientOptionsHandler {
     }
 }
 
-class ClientOptionsKeyDistribution implements IClientOptionsHandler {
-    public function validate($option, $value) {
-        if ($value instanceof IDistributionStrategy) {
+class ClientKeyDistribution extends Option {
+    public function validate($value) {
+        if ($value instanceof \Predis\Distribution\IDistributionStrategy) {
             return $value;
         }
         if (is_string($value)) {
@@ -1025,16 +1078,16 @@ class ClientOptionsKeyDistribution implements IClientOptionsHandler {
                 return new $value;
             }
         }
-        throw new \InvalidArgumentException("Invalid value for option $option");
+        throw new \InvalidArgumentException("Invalid value for key distribution");
     }
 
     public function getDefault() {
-        return new Distribution\HashRing();
+        return new \Predis\Distribution\HashRing();
     }
 }
 
-class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
-    public function validate($option, $value) {
+class ClientIterableMultiBulk extends Option {
+    public function validate($value) {
         return (bool) $value;
     }
 
@@ -1043,8 +1096,8 @@ class ClientOptionsIterableMultiBulk implements IClientOptionsHandler {
     }
 }
 
-class ClientOptionsThrowOnError implements IClientOptionsHandler {
-    public function validate($option, $value) {
+class ClientThrowOnError extends Option {
+    public function validate($value) {
         return (bool) $value;
     }
 
