@@ -856,18 +856,14 @@ final class ConnectionFactory {
 }
 
 class ConnectionParameters {
-    const DEFAULT_SCHEME = 'tcp';
-    const DEFAULT_HOST = '127.0.0.1';
-    const DEFAULT_PORT = 6379;
-    const DEFAULT_TIMEOUT = 5;
-
     private $_parameters;
+    private static $_sharedOptions;
 
     public function __construct($parameters = null) {
         $parameters = $parameters ?: array();
         $this->_parameters = is_array($parameters)
-            ? self::filterConnectionParams($parameters)
-            : self::parseURI($parameters);
+            ? $this->filter($parameters)
+            : $this->parseURI($parameters);
     }
 
     private static function paramsExtractor($params, $kv) {
@@ -876,7 +872,45 @@ class ConnectionParameters {
         return $params;
     }
 
-    private static function parseURI($uri) {
+    private static function getSharedOptions() {
+        if (isset(self::$_sharedOptions)) {
+            return self::$_sharedOptions;
+        }
+
+        $optEmpty   = new Options\Option();
+        $optBoolean = new Options\CustomOption(array(
+            'validate' => function($value) { return (bool) $value; },
+            'default'  => function() { return false; },
+        ));
+
+        self::$_sharedOptions = array(
+            'scheme' => new Options\CustomOption(array(
+                'default'  => function() { return 'tcp'; },
+            )),
+            'host' => new Options\CustomOption(array(
+                'default'  => function() { return '127.0.0.1'; },
+            )),
+            'port' => new Options\CustomOption(array(
+                'validate' => function($value) { return (int) $value; },
+                'default'  => function() { return 6379; },
+            )),
+            'path' => $optEmpty,
+            'database' => $optEmpty,
+            'password' => $optEmpty,
+            'connection_async' => $optBoolean,
+            'connection_persistent' => $optBoolean,
+            'connection_timeout' => new Options\CustomOption(array(
+                'default'  => function() { return 5; },
+            )),
+            'read_write_timeout' => $optEmpty,
+            'alias' => $optEmpty,
+            'weight' => $optEmpty,
+        );
+
+        return self::$_sharedOptions;
+    }
+
+    protected function parseURI($uri) {
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
@@ -889,36 +923,40 @@ class ConnectionParameters {
             $query  = explode('&', $parsed['query']);
             $parsed = array_reduce($query, 'self::paramsExtractor', $parsed);
         }
-        return self::filterConnectionParams($parsed);
+        return $this->filter($parsed);
     }
 
-    private static function getParamOrDefault(Array $parameters, $param, $default = null) {
-        return array_key_exists($param, $parameters) ? $parameters[$param] : $default;
+    protected function filter($parameters) {
+        $handlers = self::getSharedOptions();
+        foreach ($parameters as $parameter => $value) {
+            if (isset($handlers[$parameter])) {
+                $parameters[$parameter] = $handlers[$parameter]($value);
+            }
+        }
+        return $parameters;
     }
 
-    private static function filterConnectionParams($parameters) {
-        return array(
-            'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME),
-            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST),
-            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT),
-            'path' => self::getParamOrDefault($parameters, 'path'),
-            'database' => self::getParamOrDefault($parameters, 'database'),
-            'password' => self::getParamOrDefault($parameters, 'password'),
-            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false),
-            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false),
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT),
-            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'),
-            'alias'  => self::getParamOrDefault($parameters, 'alias'),
-            'weight' => self::getParamOrDefault($parameters, 'weight'),
-        );
+    private function tryInitializeValue($parameter) {
+        if (isset(self::$_sharedOptions[$parameter])) {
+            $value = self::$_sharedOptions[$parameter]->getDefault();
+            $this->_parameters[$parameter] = $value;
+            return $value;
+        }
     }
 
     public function __get($parameter) {
-        return $this->_parameters[$parameter];
+        if (isset($this->_parameters[$parameter])) {
+            return $this->_parameters[$parameter];
+        }
+        return $this->tryInitializeValue($parameter);
     }
 
     public function __isset($parameter) {
-        return isset($this->_parameters[$parameter]);
+        if (isset($this->_parameters[$parameter])) {
+            return true;
+        }
+        $value = $this->tryInitializeValue($parameter);
+        return isset($value);
     }
 }
 
