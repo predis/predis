@@ -19,7 +19,7 @@ class Client {
 
     private function setupClient($options) {
         $this->_options = $this->filterClientOptions($options);
-        $this->setProfile($this->_options->profile);
+        $this->_profile = $this->_options->profile;
     }
 
     private function filterClientOptions($options) {
@@ -104,15 +104,6 @@ class Client {
 
     private function setConnection(IConnection $connection) {
         $this->_connection = $connection;
-    }
-
-    private function setProfile($profile) {
-        if (!($profile instanceof ServerProfile || is_string($profile))) {
-            throw new \InvalidArgumentException(
-                "Invalid type for server profile, \Predis\Profiles\ServerProfile or string expected"
-            );
-        }
-        $this->_profile = is_string($profile) ? ServerProfile::get($profile) : $profile;
     }
 
     public function getProfile() {
