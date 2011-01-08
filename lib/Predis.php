@@ -1234,8 +1234,8 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
         return $skipparse ? $response : $command->parseResponse($response);
     }
 
-    public function rawCommand($serializedCommand) {
-        $this->writeBytes($rawCommandData);
+    public function rawCommand($buffer) {
+        $this->writeBytes($buffer);
         return $this->_protocol->read($this);
     }
 
