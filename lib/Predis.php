@@ -1148,8 +1148,10 @@ class ClientThrowOnError extends Option {
 
 namespace Predis\Network;
 
+use Predis\Utils;
 use Predis\ICommand;
 use Predis\ConnectionParameters;
+use Predis\CommunicationException;
 use Predis\Protocols\IRedisProtocol;
 use Predis\Protocols\TextProtocol;
 use Predis\Distribution\IDistributionStrategy;
