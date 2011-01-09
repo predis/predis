@@ -905,12 +905,15 @@ class ConnectionParameters {
     }
 
     protected function parseURI($uri) {
+        if (!is_string($uri)) {
+            throw new \InvalidArgumentException('URI must be a string');
+        }
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
         $parsed = @parse_url($uri);
-        if ($parsed == false || $parsed['host'] == null) {
+        if ($parsed == false || !isset($parsed['host'])) {
             throw new ClientException("Invalid URI: $uri");
         }
         if (array_key_exists('query', $parsed)) {
@@ -1262,8 +1265,9 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
     }
 
     protected function checkParameters(ConnectionParameters $parameters) {
-        if ($parameters->scheme != 'tcp' && $parameters->scheme != 'redis') {
-            throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        $scheme = $parameters->scheme;
+        if ($scheme != 'tcp' && $scheme != 'redis') {
+            throw new \InvalidArgumentException("Invalid scheme: {$scheme}");
         }
         return $parameters;
     }
