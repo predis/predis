@@ -40,48 +40,38 @@ class Client {
         throw new \InvalidArgumentException("Invalid type for client options");
     }
 
-    private function initializeConnection($parameters) {
+    private function initializeConnection($parameters = array()) {
         if ($parameters === null) {
-            return $this->createConnection(null);
+            return $this->createConnection(array());
         }
-        if (!(is_array($parameters) || is_string($parameters)
-            || $parameters instanceof IConnection
-            || $parameters instanceof ConnectionParameters)) {
-            throw new \InvalidArgumentException(
-                'Array, String, Predis\ConnectionParameters or Predis\Network\IConnection expected'
-            );
+        if ($parameters instanceof IConnection) {
+            return $parameters;
         }
         if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new ConnectionCluster($this->_options->key_distribution);
-            foreach ($parameters as $shardParams) {
-                $cluster->add($this->createConnection($shardParams));
+            foreach ($parameters as $single) {
+                $cluster->add($single instanceof IConnectionSingle
+                    ? $single : $this->createConnection($single)
+                );
             }
             return $cluster;
         }
-        else if ($parameters instanceof IConnectionCluster) {
-            return $parameters;
-        }
-        else {
-            return $this->createConnection($parameters);
-        }
+        return $this->createConnection($parameters);
     }
 
     private function createConnection($parameters) {
-        $params = null;
-        $connection = null;
-
-        if ($parameters instanceof IConnectionSingle) {
-            $connection = $parameters;
-            $params = $connection->getParameters();
+        if (is_array($parameters) || is_string($parameters)) {
+            $parameters = new ConnectionParameters($parameters);
         }
-        else {
-            $params = $parameters instanceof ConnectionsParameters
-                        ? $parameters
-                        : new ConnectionParameters($parameters);
-            $connection = ConnectionFactory::create($params);
+        else if (!$parameters instanceof ConnectionParameters) {
+            $type = is_object($parameters) ? get_class($parameters) : gettype($parameters);
+            throw new \InvalidArgumentException(
+                "Cannot create a connection using an argument of type $type"
+            );
         }
 
         $options = $this->_options;
+        $connection = ConnectionFactory::create($parameters);
         $protocol = $connection->getProtocol();
         $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
         $protocol->setOption('throw_on_error', $options->throw_on_error);
