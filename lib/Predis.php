@@ -123,7 +123,9 @@ class Client {
     }
 
     public function connect() {
-        $this->_connection->connect();
+        if (!$this->_connection->isConnected()) {
+            $this->_connection->connect();
+        }
     }
 
     public function disconnect() {
