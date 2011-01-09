@@ -1375,8 +1375,12 @@ class UnixDomainSocketConnection extends TcpConnection {
         if ($parameters->scheme != 'unix') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
-        if (!file_exists($parameters->path)) {
-            throw new \InvalidArgumentException("Could not find {$parameters->path}");
+        $pathToSocket = $parameters->path;
+        if (!isset($pathToSocket)) {
+            throw new \InvalidArgumentException('Missing UNIX domain socket path');
+        }
+        if (!file_exists($pathToSocket)) {
+            throw new \InvalidArgumentException("Could not find $pathToSocket");
         }
         return $parameters;
     }
