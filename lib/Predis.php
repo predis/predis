@@ -1177,6 +1177,7 @@ interface IConnectionCluster extends IConnection {
 }
 
 abstract class ConnectionBase implements IConnectionSingle {
+    private $_cachedId;
     protected $_params, $_socket, $_initCmds, $_protocol;
 
     public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol) {
@@ -1242,7 +1243,10 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function __toString() {
-        return sprintf('%s:%d', $this->_params->host, $this->_params->port);
+        if (!isset($this->_cachedId)) {
+            $this->_cachedId = "{$this->_params->host}:{$this->_params->port}";
+        }
+        return $this->_cachedId;
     }
 }
 
