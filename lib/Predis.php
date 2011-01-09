@@ -111,6 +111,10 @@ class Client {
         return $this->_profile;
     }
 
+    public function getOptions() {
+        return $this->_options;
+    }
+
     public function getClientFor($connectionAlias) {
         if (!Utils::isCluster($this->_connection)) {
             throw new ClientException(
