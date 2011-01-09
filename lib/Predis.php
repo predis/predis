@@ -11,6 +11,7 @@ use Predis\Pipeline\IPipelineExecutor;
 use Predis\Distribution\IDistributionStrategy;
 
 class Client {
+    private static $_connectionSchemes;
     private $_options, $_profile, $_connection;
 
     public function __construct($parameters = null, $options = null) {
@@ -67,7 +68,7 @@ class Client {
         }
 
         $options = $this->_options;
-        $connection = ConnectionFactory::create($parameters);
+        $connection = self::newConnection($parameters);
         $protocol = $connection->getProtocol();
         $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
         $protocol->setOption('throw_on_error', $options->throw_on_error);
@@ -216,6 +217,49 @@ class Client {
 
     public function pubSubContext() {
         return new PubSubContext($this);
+    }
+
+    private static function ensureDefaultSchemes() {
+        if (!isset(self::$_connectionSchemes)) {
+            self::$_connectionSchemes = array(
+                'tcp'   => '\Predis\Network\TcpConnection',
+                'unix'  => '\Predis\Network\UnixDomainSocketConnection',
+                // Compatibility with older versions.
+                'redis' => '\Predis\Network\TcpConnection',
+            );
+        }
+    }
+
+    public static function registerScheme($scheme, $connectionClass) {
+        self::ensureDefaultSchemes();
+        $connectionReflection = new \ReflectionClass($connectionClass);
+        if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
+            throw new ClientException(
+                "Cannot register '$connectionClass' as it is not a valid connection class"
+            );
+        }
+        self::$_connectionSchemes[$scheme] = $connectionClass;
+    }
+
+    public static function getConnectionClass($scheme) {
+        self::ensureDefaultSchemes();
+        if (!isset(self::$_connectionSchemes[$scheme])) {
+            throw new ClientException("Unknown connection scheme: $scheme");
+        }
+        return self::$_connectionSchemes[$scheme];
+    }
+
+    private static function newConnection(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
+        $connection = self::getConnectionClass($parameters->scheme);
+        return new $connection($parameters, $protocol);
+    }
+
+    public static function newConnectionByScheme($scheme, $parameters = array()) {
+        $connection = self::getConnectionClass($scheme);
+        if (!$parameters instanceof ConnectionParameters) {
+            $parameters = new ConnectionParameters($parameters);
+        }
+        return self::newConnection($parameters);
     }
 }
 
@@ -794,50 +838,6 @@ class ResponseQueued {
 
     public function __toString() {
         return TextProtocol::QUEUED;
-    }
-}
-
-final class ConnectionFactory {
-    private static $_registeredSchemes;
-
-    private function __construct() {
-        // NOOP
-    }
-
-    private static function ensureInitialized() {
-        if (!isset(self::$_registeredSchemes)) {
-            self::$_registeredSchemes = self::getDefaultSchemes();
-        }
-    }
-
-    private static function getDefaultSchemes() {
-        return array(
-            'tcp'   => '\Predis\Network\TcpConnection',
-            'unix'  => '\Predis\Network\UnixDomainSocketConnection',
-
-            // Compatibility with older versions.
-            'redis' => '\Predis\Network\TcpConnection',
-        );
-    }
-
-    public static function registerScheme($scheme, $connectionClass) {
-        self::ensureInitialized();
-        $connectionReflection = new \ReflectionClass($connectionClass);
-        if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
-            throw new ClientException(
-                "Cannot register '$connectionClass' as it is not a valid connection class"
-            );
-        }
-        self::$_registeredSchemes[$scheme] = $connectionClass;
-    }
-
-    public static function create(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
-        self::ensureInitialized();
-        if (!isset(self::$_registeredSchemes[$parameters->scheme])) {
-            throw new ClientException("Unknown connection scheme: {$parameters->scheme}");
-        }
-        $connection = self::$_registeredSchemes[$parameters->scheme];
-        return new $connection($parameters, $protocol);
     }
 }
 
