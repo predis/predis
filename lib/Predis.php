@@ -15,7 +15,7 @@ class Client {
 
     public function __construct($parameters = null, $clientOptions = null) {
         $this->setupClient($clientOptions ?: new ClientOptions());
-        $this->setConnection($this->initializeConnection($parameters));
+        $this->_connection = $this->initializeConnection($parameters);
     }
 
     private function setupClient($options) {
@@ -92,10 +92,6 @@ class Client {
             ));
         }
         return $connection;
-    }
-
-    private function setConnection(IConnection $connection) {
-        $this->_connection = $connection;
     }
 
     public function getProfile() {
