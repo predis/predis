@@ -119,11 +119,7 @@ class Client {
                 "Invalid connection alias: '$connectionAlias'"
             );
         }
-
-        $newClient = new Client();
-        $newClient->setupClient($this->_options);
-        $newClient->setConnection($connection);
-        return $newClient;
+        return new Client($connection, $this->_options);
     }
 
     public function connect() {
