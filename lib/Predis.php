@@ -1371,10 +1371,6 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
 }
 
 class UnixDomainSocketConnection extends TcpConnection {
-    public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
-        parent::__construct($this->checkParameters($parameters), $protocol);
-    }
-
     protected function checkParameters(ConnectionParameters $parameters) {
         if ($parameters->scheme != 'unix') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
