@@ -1319,11 +1319,6 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
         return $skipparse ? $response : $command->parseResponse($response);
     }
 
-    public function rawCommand($buffer) {
-        $this->writeBytes($buffer);
-        return $this->_protocol->read($this);
-    }
-
     public function writeBytes($value) {
         $socket = $this->getResource();
         while (($length = strlen($value)) > 0) {
