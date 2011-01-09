@@ -1158,6 +1158,7 @@ interface IConnection {
 interface IConnectionSingle extends IConnection {
     public function getParameters();
     public function getProtocol();
+    public function setProtocol(IRedisProtocol $protocol);
     public function __toString();
     public function writeBytes($buffer);
     public function readBytes($length);
@@ -1235,6 +1236,10 @@ abstract class ConnectionBase implements IConnectionSingle {
 
     public function getProtocol() {
         return $this->_protocol;
+    }
+
+    public function setProtocol(IRedisProtocol $protocol) {
+        $this->_protocol = $protocol;
     }
 
     public function __toString() {
