@@ -86,10 +86,11 @@ class Client {
         $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
         $protocol->setOption('throw_on_error', $options->throw_on_error);
 
-        return $this->pushInitCommands($connection, $params);
+        return $this->pushInitCommands($connection);
     }
 
-    private function pushInitCommands(IConnectionSingle $connection, ConnectionParameters $params) {
+    private function pushInitCommands(IConnectionSingle $connection) {
+        $params = $connection->getParameters();
         if (isset($params->password)) {
             $connection->pushInitCommand($this->createCommand(
                 'auth', array($params->password)
