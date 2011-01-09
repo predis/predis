@@ -13,17 +13,13 @@ use Predis\Distribution\IDistributionStrategy;
 class Client {
     private $_options, $_profile, $_connection;
 
-    public function __construct($parameters = null, $clientOptions = null) {
-        $this->setupClient($clientOptions ?: new ClientOptions());
+    public function __construct($parameters = null, $options = null) {
+        $this->_options = $this->filterOptions($options ?: new ClientOptions());
+        $this->_profile = $this->_options->profile;
         $this->_connection = $this->initializeConnection($parameters);
     }
 
-    private function setupClient($options) {
-        $this->_options = $this->filterClientOptions($options);
-        $this->_profile = $this->_options->profile;
-    }
-
-    private function filterClientOptions($options) {
+    private function filterOptions($options) {
         if ($options instanceof ClientOptions) {
             return $options;
         }
@@ -41,7 +37,7 @@ class Client {
     }
 
     private function initializeConnection($parameters = array()) {
-        if ($parameters === null) {
+        if (!isset($parameters)) {
             return $this->createConnection(array());
         }
         if ($parameters instanceof IConnection) {
