@@ -6,6 +6,7 @@ use Predis\Network\IConnectionSingle;
 use Predis\Network\IConnectionCluster;
 use Predis\Network\ConnectionCluster;
 use Predis\Profiles\ServerProfile;
+use Predis\Profiles\IServerProfile;
 use Predis\Pipeline\IPipelineExecutor;
 use Predis\Distribution\IDistributionStrategy;
 
@@ -29,7 +30,7 @@ class Client {
         if (is_array($options)) {
             return new ClientOptions($options);
         }
-        if ($options instanceof ServerProfile) {
+        if ($options instanceof IServerProfile) {
             return new ClientOptions(array('profile' => $options));
         }
         if (is_string($options)) {
@@ -1040,6 +1041,7 @@ class Utils {
 namespace Predis\Options;
 
 use Predis\Profiles\ServerProfile;
+use Predis\Profiles\IServerProfile;
 
 interface IOption {
     public function validate($value);
@@ -1089,7 +1091,7 @@ class CustomOption extends Option {
 
 class ClientProfile extends Option {
     public function validate($value) {
-        if ($value instanceof ServerProfile) {
+        if ($value instanceof IServerProfile) {
             return $value;
         }
         if (is_string($value)) {
@@ -1768,15 +1770,22 @@ namespace Predis\Profiles;
 
 use Predis\ClientException;
 
-abstract class ServerProfile {
+interface IServerProfile {
+    public function getVersion();
+    public function supportsCommand($command);
+    public function supportsCommands(Array $commands);
+    public function registerCommand($command, $aliases);
+    public function registerCommands(Array $commands);
+    public function createCommand($method, $arguments = array());
+}
+
+abstract class ServerProfile implements IServerProfile {
     private static $_profiles;
     private $_registeredCommands;
 
     public function __construct() {
         $this->_registeredCommands = $this->getSupportedCommands();
     }
-
-    public abstract function getVersion();
 
     protected abstract function getSupportedCommands();
 
@@ -1803,7 +1812,7 @@ abstract class ServerProfile {
         }
 
         $profileReflection = new \ReflectionClass($profileClass);
-        if (!$profileReflection->isSubclassOf('\Predis\Profiles\ServerProfile')) {
+        if (!$profileReflection->isSubclassOf('\Predis\Profiles\IServerProfile')) {
             throw new ClientException(
                 "Cannot register '$profileClass' as it is not a valid profile class"
             );
