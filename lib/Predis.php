@@ -1485,6 +1485,10 @@ use Predis\Network\IConnectionSingle;
 interface IRedisProtocol {
     public function write(IConnectionSingle $connection, ICommand $command);
     public function read(IConnectionSingle $connection);
+    public function setOption($option, $value);
+}
+
+interface IRedisProtocolExtended extends IRedisProtocol {
     public function setSerializer(ICommandSerializer $serializer);
     public function getSerializer();
     public function setReader(IResponseReader $reader);
@@ -1504,7 +1508,7 @@ interface IResponseHandler {
     function handle(IConnectionSingle $connection, $payload);
 }
 
-class TextProtocol implements IRedisProtocol {
+class TextProtocol implements IRedisProtocolExtended {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
     const ERROR   = 'ERR';
