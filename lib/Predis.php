@@ -72,8 +72,14 @@ class Client {
         $protocol = $connection->getProtocol();
         $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
         $protocol->setOption('throw_on_error', $options->throw_on_error);
+        $this->pushInitCommands($connection);
 
-        return $this->pushInitCommands($connection);
+        $callback = $this->_options->on_connection_initialized;
+        if (isset($callback)) {
+            $callback($this, $connection);
+        }
+
+        return $connection;
     }
 
     private function pushInitCommands(IConnectionSingle $connection) {
@@ -88,7 +94,6 @@ class Client {
                 'select', array($params->database)
             ));
         }
-        return $connection;
     }
 
     public function getProfile() {
@@ -966,6 +971,13 @@ class ClientOptions {
             'key_distribution' => new Options\ClientKeyDistribution(),
             'iterable_multibulk' => new Options\ClientIterableMultiBulk(),
             'throw_on_error' => new Options\ClientThrowOnError(),
+            'on_connection_initialized' => new Options\CustomOption(array(
+                'validate' => function($value) {
+                    if (isset($value) && is_callable($value)) {
+                        return $value;
+                    }
+                },
+            )),
         );
         return self::$_sharedOptions;
     }
