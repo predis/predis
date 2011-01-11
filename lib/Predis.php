@@ -1534,18 +1534,12 @@ class TextProtocol implements IRedisProtocolExtended {
     public function __construct(Array $options = array()) {
         $this->setSerializer(new TextCommandSerializer());
         $this->setReader(new TextResponseReader());
-        $this->initializeOptions($options);
-    }
-
-    private function getDefaultOptions() {
-        return array(
-            'iterable_multibulk' => false,
-            'throw_on_error'     => false,
-        );
+        if (count($options) > 0) {
+            $this->initializeOptions($options);
+        }
     }
 
     private function initializeOptions(Array $options) {
-        $options = array_merge($this->getDefaultOptions(), $options);
         foreach ($options as $k => $v) {
             $this->setOption($k, $v);
         }
