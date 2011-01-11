@@ -301,7 +301,7 @@ class CommandPipeline {
     }
 
     private function setRunning($bool) {
-        if ($bool == true && $this->_running == true) {
+        if ($bool === true && $this->_running === true) {
             throw new ClientException("This pipeline is already opened");
         }
         $this->_running = $bool;
@@ -821,10 +821,10 @@ class ResponseError {
     }
 
     public function __get($property) {
-        if ($property == 'error') {
+        if ($property === 'error') {
             return true;
         }
-        if ($property == 'message') {
+        if ($property === 'message') {
             return $this->_message;
         }
     }
@@ -906,7 +906,7 @@ class ConnectionParameters {
             throw new \InvalidArgumentException('URI must be a string');
         }
         if (stripos($uri, 'unix') === 0) {
-            // Hack to support URIs for UNIX sockets with minimal effort
+            // Hack to support URIs for UNIX sockets with minimal effort.
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
         $parsed = @parse_url($uri);
@@ -1082,10 +1082,6 @@ class CustomOption extends Option {
 
     public function getDefault() {
         return $this->validate(call_user_func($this->_default));
-    }
-
-    public function __invoke($value) {
-        return $this->validate($value ?: $this->getDefault());
     }
 }
 
@@ -1601,7 +1597,7 @@ class TextCommandSerializer implements ICommandSerializer {
         $reqlen  = count($arguments) + 1;
 
         $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$commandId}{$newline}";
-        for ($i = 0; $i < $reqlen - 1;  $i++) {
+        for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $arguments[$i];
             $arglen  = strlen($argument);
             $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
@@ -1757,14 +1753,12 @@ class ResponseIntegerHandler implements IResponseHandler {
         if (is_numeric($number)) {
             return (int) $number;
         }
-        else {
-            if ($number !== TextProtocol::NULL) {
-                Utils::onCommunicationException(new MalformedServerResponse(
-                    $connection, "Cannot parse '$number' as numeric response"
-                ));
-            }
-            return null;
+        if ($number !== TextProtocol::NULL) {
+            Utils::onCommunicationException(new MalformedServerResponse(
+                $connection, "Cannot parse '$number' as numeric response"
+            ));
         }
+        return null;
     }
 }
 
