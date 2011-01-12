@@ -60,7 +60,7 @@ class FastTextProtocol implements IRedisProtocol {
                     return null;
                 }
                 $bulkData = '';
-                $bytesLeft = $size;
+                $bytesLeft = ($size += 2);
                 do {
                     $chunk = fread($socket, min($bytesLeft, $bufferSize));
                     if ($chunk === false || $chunk === '') {
@@ -71,8 +71,7 @@ class FastTextProtocol implements IRedisProtocol {
                     $bulkData .= $chunk;
                     $bytesLeft = $size - strlen($bulkData);
                 } while ($bytesLeft > 0);
-                fread($socket, 2); // discard CRLF
-                return $bulkData;
+                return substr($bulkData, 0, -2);
 
             case '*':    // multi bulk
                 $count = (int) $payload;
@@ -95,7 +94,7 @@ class FastTextProtocol implements IRedisProtocol {
                         return $multibulk;
                     }
                     $bulkData = '';
-                    $bytesLeft = $size;
+                    $bytesLeft = ($size += 2);
                     do {
                         $chunk = fread($socket, min($bytesLeft, $bufferSize));
                         if ($chunk === false || $chunk === '') {
@@ -106,8 +105,7 @@ class FastTextProtocol implements IRedisProtocol {
                         $bulkData .= $chunk;
                         $bytesLeft = $size - strlen($bulkData);
                     } while ($bytesLeft > 0);
-                    $multibulk[$i] = $bulkData;
-                    fread($socket, 2); // discard CRLF
+                    $multibulk[$i] = substr($bulkData, 0, -2);
                 }
                 return $multibulk;
 
