@@ -113,10 +113,11 @@ class FastTextProtocol implements IRedisProtocol {
                 return (int) $payload;
 
             case '-':    // error
+                $errorMessage = substr($payload, 4);
                 if ($this->_throwErrors) {
-                    throw new Exception($payload);
+                    throw new \Predis\ServerException($errorMessage);
                 }
-                return new Predis\ResponseError($payload);
+                return new \Predis\ResponseError($errorMessage);
 
             default:
                 throw new CommunicationException(
