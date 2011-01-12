@@ -382,7 +382,7 @@ class MultiExecContext {
         if ($this->_initialized === true) {
             return;
         }
-        $options = &$this->_options;
+        $options = $this->_options;
         $this->_checkAndSet = isset($options['cas']) && $options['cas'];
         if (isset($options['watch'])) {
             $this->watch($options['watch']);
@@ -2523,7 +2523,7 @@ class SetMultiple extends Command {
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 1 && is_array($arguments[0])) {
             $flattenedKVs = array();
-            $args = &$arguments[0];
+            $args = $arguments[0];
             foreach ($args as $k => $v) {
                 $flattenedKVs[] = $k;
                 $flattenedKVs[] = $v;
@@ -2962,7 +2962,7 @@ class HashSetMultiple extends Command {
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $flattenedKVs = array($arguments[0]);
-            $args = &$arguments[1];
+            $args = $arguments[1];
             foreach ($args as $k => $v) {
                 $flattenedKVs[] = $k;
                 $flattenedKVs[] = $v;
@@ -2986,7 +2986,7 @@ class HashGetMultiple extends Command {
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $flattenedKVs = array($arguments[0]);
-            $args = &$arguments[1];
+            $args = $arguments[1];
             foreach ($args as $v) {
                 $flattenedKVs[] = $v;
             }
