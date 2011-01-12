@@ -518,6 +518,10 @@ class MultiExecContext {
                     );
                 }
                 $this->reset();
+                if (isset($this->_options['on_retry']) && is_callable($this->_options['on_retry'])) {
+                    $retryCallback = $this->_options['on_retry'];
+                    call_user_func($retryCallback, $this, $attemptsLeft);
+                }
                 continue;
             }
             break;
