@@ -565,7 +565,7 @@ class PubSubContext implements \Iterator {
     const STATUS_SUBSCRIBED  = 0x0010;
     const STATUS_PSUBSCRIBED = 0x0100;
 
-    private $_redisClient, $_subscriptions, $_isStillValid, $_position;
+    private $_redisClient, $_position;
 
     public function __construct(Client $redisClient) {
         $this->checkCapabilities($redisClient);
