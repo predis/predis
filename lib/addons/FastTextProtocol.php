@@ -8,6 +8,7 @@ use Predis\Network\IConnectionSingle;
 use Predis\Iterators\MultiBulkResponseSimple;
 
 class FastTextProtocol implements IRedisProtocol {
+    const BUFFER_SIZE = 8192;
     private $_mbiterable, $_throwErrors;
 
     public function __construct() {
@@ -33,7 +34,6 @@ class FastTextProtocol implements IRedisProtocol {
     }
 
     public function read(IConnectionSingle $connection) {
-        $bufferSize = 8192;
         $socket = $connection->getResource();
         $chunk  = fgets($socket);
         if ($chunk === false || $chunk === '') {
@@ -42,17 +42,16 @@ class FastTextProtocol implements IRedisProtocol {
             );
         }
         $prefix  = $chunk[0];
-        $payload = substr($chunk, 1);
+        $payload = substr($chunk, 1, -2);
         switch ($prefix) {
             case '+':    // inline
-                $status = substr($payload, 0, -2);
-                if ($status === 'OK') {
+                if ($payload === 'OK') {
                     return true;
                 }
-                if ($status === 'QUEUED') {
+                if ($payload === 'QUEUED') {
                     return new \Predis\ResponseQueued();
                 }
-                return $status;
+                return $payload;
 
             case '$':    // bulk
                 $size = (int) $payload;
@@ -62,7 +61,7 @@ class FastTextProtocol implements IRedisProtocol {
                 $bulkData = '';
                 $bytesLeft = ($size += 2);
                 do {
-                    $chunk = fread($socket, min($bytesLeft, $bufferSize));
+                    $chunk = fread($socket, min($bytesLeft, self::BUFFER_SIZE));
                     if ($chunk === false || $chunk === '') {
                         throw new CommunicationException(
                             $connection, 'Error while reading bytes from the server'
@@ -83,29 +82,7 @@ class FastTextProtocol implements IRedisProtocol {
                 }
                 $multibulk = array();
                 for ($i = 0; $i < $count; $i++) {
-                    $chunk = fgets($socket);
-                    if ($chunk === false || $chunk === '') {
-                        throw new CommunicationException(
-                            $connection, 'Error while reading line from the server'
-                        );
-                    }
-                    $size = (int) substr($chunk, 1);
-                    if ($size === -1) {
-                        return $multibulk;
-                    }
-                    $bulkData = '';
-                    $bytesLeft = ($size += 2);
-                    do {
-                        $chunk = fread($socket, min($bytesLeft, $bufferSize));
-                        if ($chunk === false || $chunk === '') {
-                            throw new CommunicationException(
-                                $connection, 'Error while reading bytes from the server'
-                            );
-                        }
-                        $bulkData .= $chunk;
-                        $bytesLeft = $size - strlen($bulkData);
-                    } while ($bytesLeft > 0);
-                    $multibulk[$i] = substr($bulkData, 0, -2);
+                    $multibulk[$i] = $this->read($connection);
                 }
                 return $multibulk;
 
