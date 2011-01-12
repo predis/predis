@@ -3,7 +3,7 @@ namespace Predis\Protocols;
 
 use Predis\Utils;
 use Predis\ICommand;
-use Predis\MalformedServerResponse;
+use Predis\CommunicationException;
 use Predis\Network\IConnectionSingle;
 use Predis\Iterators\MultiBulkResponseSimple;
 
@@ -34,10 +34,15 @@ class FastTextProtocol implements IRedisProtocol {
 
     public function read(IConnectionSingle $connection) {
         $bufferSize = 8192;
-        $socket  = $connection->getResource();
-        $header  = fgets($socket);
-        $prefix  = $header[0];
-        $payload = substr($header, 1);
+        $socket = $connection->getResource();
+        $chunk  = fgets($socket);
+        if ($chunk === false || $chunk === '') {
+            throw new CommunicationException(
+                $connection, 'Error while reading line from the server'
+            );
+        }
+        $prefix  = $chunk[0];
+        $payload = substr($chunk, 1);
         switch ($prefix) {
             case '+':    // inline
                 $status = substr($payload, 0, -2);
@@ -57,7 +62,13 @@ class FastTextProtocol implements IRedisProtocol {
                 $bulkData = '';
                 $bytesLeft = $size;
                 do {
-                    $bulkData .= fread($socket, min($bytesLeft, $bufferSize));
+                    $chunk = fread($socket, min($bytesLeft, $bufferSize));
+                    if ($chunk === false || $chunk === '') {
+                        throw new CommunicationException(
+                            $connection, 'Error while reading bytes from the server'
+                        );
+                    }
+                    $bulkData .= $chunk;
                     $bytesLeft = $size - strlen($bulkData);
                 } while ($bytesLeft > 0);
                 fread($socket, 2); // discard CRLF
@@ -73,14 +84,26 @@ class FastTextProtocol implements IRedisProtocol {
                 }
                 $multibulk = array();
                 for ($i = 0; $i < $count; $i++) {
-                    $size = (int) substr(fgets($socket), 1);
+                    $chunk = fgets($socket);
+                    if ($chunk === false || $chunk === '') {
+                        throw new CommunicationException(
+                            $connection, 'Error while reading line from the server'
+                        );
+                    }
+                    $size = (int) substr($chunk, 1);
                     if ($size === -1) {
                         return $multibulk;
                     }
                     $bulkData = '';
                     $bytesLeft = $size;
                     do {
-                        $bulkData .= fread($socket, min($bytesLeft, $bufferSize));
+                        $chunk = fread($socket, min($bytesLeft, $bufferSize));
+                        if ($chunk === false || $chunk === '') {
+                            throw new CommunicationException(
+                                $connection, 'Error while reading bytes from the server'
+                            );
+                        }
+                        $bulkData .= $chunk;
                         $bytesLeft = $size - strlen($bulkData);
                     } while ($bytesLeft > 0);
                     $multibulk[$i] = $bulkData;
@@ -98,9 +121,9 @@ class FastTextProtocol implements IRedisProtocol {
                 return new Predis\ResponseError($payload);
 
             default:
-                Utils::onCommunicationException(new MalformedServerResponse(
+                throw new CommunicationException(
                     $connection, "Unknown prefix: '$prefix'"
-                ));
+                );
         }
     }
 
