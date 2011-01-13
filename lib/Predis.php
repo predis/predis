@@ -1682,14 +1682,13 @@ class ResponseErrorSilentHandler implements IResponseHandler {
 }
 
 class ResponseBulkHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
+    public function handle(IConnectionSingle $connection, $lengthString) {
+        $length = (int) $lengthString;
+        if ($length != $lengthString) {
             Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$length' as data length"
             ));
         }
-
-        $length = (int) $length;
         if ($length >= 0) {
           return $length > 0 ? substr($connection->readBytes($length + 2), 0, -2) : '';
         }
@@ -1700,14 +1699,14 @@ class ResponseBulkHandler implements IResponseHandler {
 }
 
 class ResponseMultiBulkHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
+    public function handle(IConnectionSingle $connection, $lengthString) {
+        $length = (int) $lengthString;
+        if ($length != $lengthString) {
             Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$length' as data length"
             ));
         }
 
-        $length = (int) $length;
         if ($length === -1) {
             return null;
         }
@@ -1734,13 +1733,14 @@ class ResponseMultiBulkHandler implements IResponseHandler {
 }
 
 class ResponseMultiBulkStreamHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $length) {
-        if (!is_numeric($length)) {
+    public function handle(IConnectionSingle $connection, $lengthString) {
+        $length = (int) $lengthString;
+        if ($length != $lengthString) {
             Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$length' as data length"
             ));
         }
-        return new Iterators\MultiBulkResponseSimple($connection, (int) $length);
+        return new Iterators\MultiBulkResponseSimple($connection, $length);
     }
 }
 
