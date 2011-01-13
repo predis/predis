@@ -1795,7 +1795,8 @@ abstract class ServerProfile implements IServerProfile {
         return array(
             '1.2'     => '\Predis\Profiles\Server_v1_2',
             '2.0'     => '\Predis\Profiles\Server_v2_0',
-            'default' => '\Predis\Profiles\Server_v2_0',
+            '2.2'     => '\Predis\Profiles\Server_v2_2',
+            'default' => '\Predis\Profiles\Server_v2_2',
             'dev'     => '\Predis\Profiles\Server_vNext',
         );
     }
@@ -2041,8 +2042,8 @@ class Server_v2_0 extends Server_v1_2 {
     }
 }
 
-class Server_vNext extends Server_v2_0 {
-    public function getVersion() { return '2.1'; }
+class Server_v2_2 extends Server_v2_0 {
+    public function getVersion() { return '2.2'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* transactions */
@@ -2069,6 +2070,10 @@ class Server_vNext extends Server_v2_0 {
             'zrevrangebyscore'          => '\Predis\Commands\ZSetReverseRangeByScore',
         ));
     }
+}
+
+class Server_vNext extends Server_v2_2 {
+    public function getVersion() { return 'DEV'; }
 }
 
 /* -------------------------------------------------------------------------- */
