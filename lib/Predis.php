@@ -1692,13 +1692,7 @@ class ResponseBulkHandler implements IResponseHandler {
 
         $length = (int) $length;
         if ($length >= 0) {
-            $value = $length > 0 ? $connection->readBytes($length) : '';
-            if ($connection->readBytes(2) !== TextProtocol::NEWLINE) {
-                Utils::onCommunicationException(new MalformedServerResponse(
-                    $connection, 'Did not receive a new-line at the end of a bulk response'
-                ));
-            }
-            return $value;
+          return $length > 0 ? substr($connection->readBytes($length + 2), 0, -2) : '';
         }
         if ($length == -1) {
             return null;
