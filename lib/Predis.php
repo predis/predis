@@ -990,6 +990,9 @@ class MultiExecBlock {
                     );
                 }
                 $this->reset();
+                if (isset($this->_options['on_retry']) && is_callable($this->_options['on_retry'])) {
+                    call_user_func($this->_options['on_retry'], $this, $attemptsLeft);
+                }
                 continue;
             }
             break;
