@@ -708,10 +708,10 @@ class ResponseError {
     }
 
     public function __get($property) {
-        if ($property == 'error') {
+        if ($property === 'error') {
             return true;
         }
-        if ($property == 'message') {
+        if ($property === 'message') {
             return $this->_message;
         }
     }
