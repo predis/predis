@@ -845,7 +845,7 @@ class ResponseQueued {
     public $queued = true;
 
     public function __toString() {
-        return TextProtocol::QUEUED;
+        return 'QUEUED';
     }
 }
 
@@ -1372,7 +1372,7 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
             }
             $value .= $chunk;
         }
-        while (substr($value, -2) !== TextProtocol::NEWLINE);
+        while (substr($value, -2) !== "\r\n");
         return substr($value, 0, -2);
     }
 }
@@ -1595,15 +1595,14 @@ class TextCommandSerializer implements ICommandSerializer {
         $commandId = $command->getCommandId();
         $arguments = $command->getArguments();
 
-        $newline = TextProtocol::NEWLINE;
         $cmdlen  = strlen($commandId);
         $reqlen  = count($arguments) + 1;
 
-        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$commandId}{$newline}";
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
         for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $arguments[$i];
             $arglen  = strlen($argument);
-            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
         return $buffer;
@@ -1660,10 +1659,10 @@ class TextResponseReader implements IResponseReader {
 
 class ResponseStatusHandler implements IResponseHandler {
     public function handle(IConnectionSingle $connection, $status) {
-        if ($status === TextProtocol::OK) {
+        if ($status === 'OK') {
             return true;
         }
-        if ($status === TextProtocol::QUEUED) {
+        if ($status === 'QUEUED') {
             return new \Predis\ResponseQueued();
         }
         return $status;
@@ -1750,7 +1749,7 @@ class ResponseIntegerHandler implements IResponseHandler {
         if (is_numeric($number)) {
             return (int) $number;
         }
-        if ($number !== TextProtocol::NULL) {
+        if ($number !== 'nil') {
             Utils::onCommunicationException(new MalformedServerResponse(
                 $connection, "Cannot parse '$number' as numeric response"
             ));
