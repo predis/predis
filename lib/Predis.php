@@ -570,32 +570,31 @@ class ResponseErrorSilentHandler implements IResponseHandler {
 }
 
 class ResponseBulkHandler implements IResponseHandler {
-    public function handle(Connection $connection, $dataLength) {
-        if (!is_numeric($dataLength)) {
+    public function handle(Connection $connection, $lengthString) {
+        $length = (int) $lengthString;
+        if ($length != $lengthString) {
             Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$dataLength' as data length"
+                $connection, "Cannot parse '$length' as data length"
             ));
         }
-
-        $dataLength = (int) $dataLength;
-        if ($dataLength >= 0) {
-            return $dataLength > 0 ? substr($connection->readBytes($dataLength + 2), 0, -2) : '';
+        if ($length >= 0) {
+            return $length > 0 ? substr($connection->readBytes($length + 2), 0, -2) : '';
         }
-        if ($dataLength == -1) {
+        if ($length == -1) {
             return null;
         }
     }
 }
 
 class ResponseMultiBulkHandler implements IResponseHandler {
-    public function handle(Connection $connection, $rawLength) {
-        if (!is_numeric($rawLength)) {
+    public function handle(Connection $connection, $lengthString) {
+        $listLength = (int) $lengthString;
+        if ($listLength != $lengthString) {
             Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$rawLength' as data length"
+                $connection, "Cannot parse '$lengthString' as data length"
             ));
         }
 
-        $listLength = (int) $rawLength;
         if ($listLength === -1) {
             return null;
         }
@@ -624,13 +623,14 @@ class ResponseMultiBulkHandler implements IResponseHandler {
 }
 
 class ResponseMultiBulkStreamHandler implements IResponseHandler {
-    public function handle(Connection $connection, $rawLength) {
-        if (!is_numeric($rawLength)) {
+    public function handle(Connection $connection, $lengthString) {
+        $listLength = (int) $lengthString;
+        if ($listLength != $lengthString) {
             Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                $connection, "Cannot parse '$rawLength' as data length"
+                $connection, "Cannot parse '$lengthString' as data length"
             ));
         }
-        return new Shared\MultiBulkResponseIterator($connection, (int)$rawLength);
+        return new Shared\MultiBulkResponseIterator($connection, $lengthString);
     }
 }
 
