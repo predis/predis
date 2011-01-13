@@ -1530,6 +1530,7 @@ abstract class RedisServerProfile {
         return array(
             '1.2'     => '\Predis\RedisServer_v1_2',
             '2.0'     => '\Predis\RedisServer_v2_0',
+            '2.2'     => '\Predis\RedisServer_v2_2',
             'default' => '\Predis\RedisServer_v2_0',
             'dev'     => '\Predis\RedisServer_vNext',
         );
