@@ -1854,8 +1854,8 @@ class RedisServer_v2_0 extends RedisServer_v1_2 {
     }
 }
 
-class RedisServer_vNext extends RedisServer_v2_0 {
-    public function getVersion() { return '2.1'; }
+class RedisServer_v2_2 extends RedisServer_v2_0 {
+    public function getVersion() { return '2.2'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* transactions */
@@ -1882,6 +1882,10 @@ class RedisServer_vNext extends RedisServer_v2_0 {
             'zrevrangebyscore'          => '\Predis\Commands\ZSetReverseRangeByScore',
         ));
     }
+}
+
+class RedisServer_vNext extends RedisServer_v2_2 {
+    public function getVersion() { return 'DEV'; }
 }
 
 /* ------------------------------------------------------------------------- */
