@@ -496,8 +496,7 @@ abstract class InlineCommand extends Command {
             $arguments[0] = implode($arguments[0], ' ');
         }
         return $command . (count($arguments) > 0
-            ? ' ' . implode($arguments, ' ') . Protocol::NEWLINE 
-            : Protocol::NEWLINE
+            ? ' ' . implode($arguments, ' ') . "\r\n" : "\r\n"
         );
     }
 }
@@ -509,7 +508,7 @@ abstract class BulkCommand extends Command {
             $data = implode($data, ' ');
         }
         return $command . ' ' . implode($arguments, ' ') . ' ' . strlen($data) . 
-            Protocol::NEWLINE . $data . Protocol::NEWLINE;
+            "\r\n" . $data . "\r\n";
     }
 }
 
@@ -526,15 +525,14 @@ abstract class MultiBulkCommand extends Command {
             $cmd_args = $arguments;
         }
 
-        $newline = Protocol::NEWLINE;
         $cmdlen  = strlen($command);
         $reqlen  = $argsc + 1;
 
-        $buffer = "*{$reqlen}{$newline}\${$cmdlen}{$newline}{$command}{$newline}";
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$command}\r\n";
         for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $cmd_args[$i];
             $arglen  = strlen($argument);
-            $buffer .= "\${$arglen}{$newline}{$argument}{$newline}";
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
         return $buffer;
@@ -549,10 +547,10 @@ interface IResponseHandler {
 
 class ResponseStatusHandler implements IResponseHandler {
     public function handle(Connection $connection, $status) {
-        if ($status === Protocol::OK) {
+        if ($status === 'OK') {
             return true;
         }
-        if ($status === Protocol::QUEUED) {
+        if ($status === 'QUEUED') {
             return new ResponseQueued();
         }
         return $status;
@@ -641,14 +639,12 @@ class ResponseIntegerHandler implements IResponseHandler {
         if (is_numeric($number)) {
             return (int) $number;
         }
-        else {
-            if ($number !== Protocol::NULL) {
-                Shared\Utils::onCommunicationException(new MalformedServerResponse(
-                    $connection, "Cannot parse '$number' as numeric response"
-                ));
-            }
-            return null;
+        if ($number !== 'nil') {
+            Shared\Utils::onCommunicationException(new MalformedServerResponse(
+                $connection, "Cannot parse '$number' as numeric response"
+            ));
         }
+        return null;
     }
 }
 
@@ -1411,7 +1407,7 @@ class Connection implements IConnection {
             }
             $value .= $chunk;
         }
-        while (substr($value, -2) !== Protocol::NEWLINE);
+        while (substr($value, -2) !== "\r\n");
         return substr($value, 0, -2);
     }
 
