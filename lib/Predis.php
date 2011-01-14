@@ -405,7 +405,7 @@ class MultiExecContext {
         }
         $command  = $client->createCommand($method, $arguments);
         $response = $client->executeCommand($command);
-        if (!isset($response->queued)) {
+        if (!$response instanceof ResponseQueued) {
             $this->malformedServerResponse(
                 'The server did not respond with a QUEUED status reply'
             );
@@ -817,6 +817,7 @@ abstract class Command implements ICommand {
 }
 
 class ResponseError {
+    public $skipParse = true;
     private $_message;
 
     public function __construct($message) {
@@ -842,10 +843,20 @@ class ResponseError {
 }
 
 class ResponseQueued {
-    public $queued = true;
+    public $skipParse = true;
 
     public function __toString() {
         return 'QUEUED';
+    }
+
+    public function __get($property) {
+        if ($property === 'queued') {
+            return true;
+        }
+    }
+
+    public function __isset($property) {
+        return $property === 'queued';
     }
 }
 
@@ -1326,8 +1337,7 @@ class TcpConnection extends ConnectionBase implements IConnectionSingle {
 
     public function readResponse(ICommand $command) {
         $response = $this->_protocol->read($this);
-        $skipparse = isset($response->queued) || isset($response->error);
-        return $skipparse ? $response : $command->parseResponse($response);
+        return isset($response->skipParse) ? $response : $command->parseResponse($response);
     }
 
     public function writeBytes($value) {
