@@ -697,6 +697,7 @@ class ResponseReader {
 }
 
 class ResponseError {
+    public $skipParse = true;
     private $_message;
 
     public function __construct($message) {
@@ -722,10 +723,20 @@ class ResponseError {
 }
 
 class ResponseQueued {
-    public $queued = true;
+    public $skipParse = true;
 
     public function __toString() {
         return Protocol::QUEUED;
+    }
+
+    public function __get($property) {
+        if ($property === 'queued') {
+            return true;
+        }
+    }
+
+    public function __isset($property) {
+        return $property === 'queued';
     }
 }
 
@@ -873,7 +884,7 @@ class MultiExecBlock {
         }
         $command  = $client->createCommand($method, $arguments);
         $response = $client->executeCommand($command);
-        if (!isset($response->queued)) {
+        if (!$response instanceof \Predis\ResponseQueued) {
             $this->malformedServerResponse(
                 'The server did not respond with a QUEUED status reply'
             );
@@ -1344,8 +1355,7 @@ class Connection implements IConnection {
 
     public function readResponse(Command $command) {
         $response = $this->_reader->read($this);
-        $skipparse = isset($response->queued) || isset($response->error);
-        return $skipparse ? $response : $command->parseResponse($response);
+        return isset($response->skipParse) ? $response : $command->parseResponse($response);
     }
 
     public function executeCommand(Command $command) {
