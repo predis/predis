@@ -1,3 +1,7 @@
+v0.6.4 (2011-??-??)
+  * Various performance improvements (15% ~ 25%) especially when dealing with 
+    long multibulk replies or when using clustered connections.
+
 v0.6.3 (2011-01-01)
   * New commands available in the Redis v2.2 profile (dev):
       - Strings: SETRANGE, GETRANGE, SETBIT, GETBIT

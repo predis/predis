@@ -215,6 +215,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testResponseQueued() {
         $response = new Predis_ResponseQueued();
+        $this->assertTrue($response->skipParse);
         $this->assertTrue($response->queued);
         $this->assertEquals(Predis_Protocol::QUEUED, (string)$response);
     }
@@ -226,6 +227,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $errorMessage = 'ERROR MESSAGE';
         $response = new Predis_ResponseError($errorMessage);
 
+        $this->assertTrue($response->skipParse);
         $this->assertTrue($response->error);
         $this->assertEquals($errorMessage, $response->message);
         $this->assertEquals($errorMessage, (string)$response);

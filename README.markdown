@@ -17,7 +17,7 @@ to be implemented soon in Predis.
 
 ## Main features ##
 
-- Full support for Redis 2.0. Different versions of Redis are supported via server profiles.
+- Full support for Redis 2.0 and 2.2. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections (transparent).
 - Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
