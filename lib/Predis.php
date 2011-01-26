@@ -450,7 +450,7 @@ abstract class Command {
             return $this->_hash;
         }
 
-      return null;
+        return null;
     }
 
     public function closesConnection() {
