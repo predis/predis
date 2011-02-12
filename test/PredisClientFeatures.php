@@ -335,6 +335,14 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testResponseReader_EmptyBulkResponse() {
+        $client = new \Predis\Client();
+        $client->getConnection()->setProtocol(new \Predis\Protocols\ComposableTextProtocol());
+
+        $this->assertTrue($client->set('foo', ''));
+        $this->assertEquals('', $client->get('foo'));
+        $this->assertEquals('', $client->get('foo'));
+    }
 
     /* Client initialization */
 
