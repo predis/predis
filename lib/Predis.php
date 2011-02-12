@@ -1893,7 +1893,7 @@ class ResponseMultiBulkStreamHandler implements IResponseHandler {
                 $connection, "Cannot parse '$length' as data length"
             ));
         }
-        return new Iterators\MultiBulkResponseSimple($connection, $length);
+        return new MultiBulkResponseSimple($connection, $length);
     }
 }
 
