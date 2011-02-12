@@ -381,6 +381,12 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
+    function testResponseReader_EmptyBulkResponse() {
+        $this->assertTrue($this->redis->set('foo', ''));
+        $this->assertEquals('', $this->redis->get('foo'));
+        $this->assertEquals('', $this->redis->get('foo'));
+    }
+
 
     /* Client + CommandPipeline */
 

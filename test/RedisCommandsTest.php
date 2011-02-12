@@ -89,8 +89,11 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testGet() {
         $this->redis->set('foo', 'bar');
-
         $this->assertEquals('bar', $this->redis->get('foo'));
+
+        $this->assertTrue($this->redis->set('foo', ''));
+        $this->assertEquals('', $this->redis->get('foo'));
+
         $this->assertNull($this->redis->get('fooDoesNotExist'));
 
         // should throw an exception when trying to do a GET on non-string types
