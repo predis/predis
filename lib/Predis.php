@@ -1581,7 +1581,17 @@ class TextProtocol implements IRedisProtocol {
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
-        fwrite($connection->getResource(), $buffer);
+        $socket = $connection->getResource();
+        while (($length = strlen($buffer)) > 0) {
+            $written = fwrite($socket, $buffer);
+            if ($length === $written) {
+                return;
+            }
+            if ($written === false || $written === 0) {
+                $this->onCommunicationException('Error while writing bytes to the server');
+            }
+            $value = substr($buffer, $written);
+        }
     }
 
     public function read(IConnectionSingle $connection) {
