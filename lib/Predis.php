@@ -1781,18 +1781,18 @@ class TextResponseReader implements IResponseReader {
     public function read(IConnectionSingle $connection) {
         $header = $connection->readLine();
         if ($header === '') {
-            $this->throwMalformedResponse('Unexpected empty header');
+            $this->throwMalformedResponse($connection, 'Unexpected empty header');
         }
 
         $prefix = $header[0];
         if (!isset($this->_prefixHandlers[$prefix])) {
-            $this->throwMalformedResponse("Unknown prefix '$prefix'");
+            $this->throwMalformedResponse($connection, "Unknown prefix '$prefix'");
         }
         $handler = $this->_prefixHandlers[$prefix];
         return $handler->handle($connection, substr($header, 1));
     }
 
-    private function throwMalformedResponse($message) {
+    private function throwMalformedResponse(IConnectionSingle $connection, $message) {
         Utils::onCommunicationException(new MalformedServerResponse(
             $connection, $message
         ));
