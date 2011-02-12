@@ -1,7 +1,7 @@
+* Add more granular tests in the client features test suite.
+
 * Documentation! The README is obviously not enought to show how to use 
   Predis as it does not cover all of its features.
-
-* Add more tests targeting specific functions of the library.
 
 * Missing tests for commands: 
     PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE
