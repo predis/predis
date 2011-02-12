@@ -1588,7 +1588,9 @@ class TextProtocol implements IRedisProtocol {
                 return;
             }
             if ($written === false || $written === 0) {
-                $this->onCommunicationException('Error while writing bytes to the server');
+                throw new CommunicationException(
+                    $connection, 'Error while writing bytes to the server'
+                );
             }
             $value = substr($buffer, $written);
         }
