@@ -3,7 +3,7 @@ require_once 'SharedConfigurations.php';
 
 // Developers can customize the distribution strategy used by the client 
 // to distribute keys among a cluster of servers simply by creating a class 
-// that implements the Predis\Distribution\IDistributionAlgorithm interface.
+// that implements the Predis\Distribution\IDistributionStrategy interface.
 
 class NaiveDistributionStrategy
     implements Predis\Distribution\IDistributionStrategy {
