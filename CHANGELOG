@@ -40,6 +40,11 @@ v0.7.0 (2010-xx-xx)
   * It is now possible to pass instances of Predis\ConnectionParameters and 
     Predis\IConnection as parameters of Predis\Client::__construct().
 
+v0.6.5 (2011-02-12)
+  * FIX: due to an untested internal change introduced in v0.6.4, a wrong
+    handling of bulk reads of zero-length values was producing protocol
+    desynchronization errors (ISSUE #20).
+
 v0.6.4 (2011-02-12)
   * Various performance improvements (15% ~ 25%) especially when dealing with 
     long multibulk replies or when using clustered connections.
