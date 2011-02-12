@@ -40,6 +40,17 @@ v0.7.0 (2010-xx-xx)
   * It is now possible to pass instances of Predis\ConnectionParameters and 
     Predis\IConnection as parameters of Predis\Client::__construct().
 
+v0.6.4 (2011-02-12)
+  * Various performance improvements (15% ~ 25%) especially when dealing with 
+    long multibulk replies or when using clustered connections.
+
+  * Added the "on_retry" option to Predis\MultiExecBlock that can be used to 
+    specify an external callback (or any callable object) that gets invoked 
+    whenever a transaction is aborted by the server.
+
+  * Added inline (p)subscribtion via options when initializing an instance of 
+    Predis\PubSubContext.
+
 v0.6.3 (2011-01-01)
   * New commands available in the Redis v2.2 profile (dev):
       - Strings: SETRANGE, GETRANGE, SETBIT, GETBIT
