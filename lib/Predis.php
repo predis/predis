@@ -1560,27 +1560,16 @@ class TextProtocol implements IRedisProtocol {
 
     const BUFFER_SIZE = 8192;
 
-    private $_mbiterable, $_throwErrors;
+    private $_mbiterable, $_throwErrors, $_serializer;
 
     public function __construct() {
         $this->_mbiterable  = false;
         $this->_throwErrors = true;
+        $this->_serializer  = new TextCommandSerializer();
     }
 
     public function write(IConnectionSingle $connection, ICommand $command) {
-        $commandId = $command->getCommandId();
-        $arguments = $command->getArguments();
-
-        $cmdlen  = strlen($commandId);
-        $reqlen  = count($arguments) + 1;
-
-        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
-        for ($i = 0; $i < $reqlen - 1;  $i++) {
-            $argument = $arguments[$i];
-            $arglen  = strlen($argument);
-            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
-        }
-
+        $buffer = $this->_serializer->serialize($command);
         $socket = $connection->getResource();
         while (($length = strlen($buffer)) > 0) {
             $written = fwrite($socket, $buffer);
