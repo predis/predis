@@ -401,6 +401,12 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $thrownException->getMessage());
     }
 
+    function testResponseReader_EmptyBulkResponse() {
+        $this->assertTrue($this->redis->set('foo', ''));
+        $this->assertEquals('', $this->redis->get('foo'));
+        $this->assertEquals('', $this->redis->get('foo'));
+    }
+
 
     /* Client + CommandPipeline */
 

@@ -585,7 +585,7 @@ class Predis_ResponseBulkHandler implements Predis_IResponseHandler {
             ));
         }
         if ($length >= 0) {
-            return $length > 0 ? substr($connection->readBytes($length + 2), 0, -2) : '';
+            return substr($connection->readBytes($length + 2), 0, -2);
         }
         if ($length == -1) {
             return null;
