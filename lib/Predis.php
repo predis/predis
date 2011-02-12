@@ -287,8 +287,8 @@ class Client {
         return $transBlock !== null ? $multi->execute($transBlock) : $multi;
     }
 
-    public function pubSubContext() {
-        return new PubSubContext($this);
+    public function pubSubContext(Array $options = null) {
+        return new PubSubContext($this, $options);
     }
 }
 
@@ -1047,12 +1047,16 @@ class PubSubContext implements \Iterator {
     const STATUS_SUBSCRIBED  = 0x0010;
     const STATUS_PSUBSCRIBED = 0x0100;
 
-    private $_redisClient, $_position;
+    private $_redisClient, $_position, $_options;
 
-    public function __construct(Client $redisClient) {
+    public function __construct(Client $redisClient, Array $options = null) {
         $this->checkCapabilities($redisClient);
+        $this->_options = $options ?: array();
         $this->_redisClient = $redisClient;
         $this->_statusFlags = self::STATUS_VALID;
+
+        $this->genericSubscribeInit('subscribe');
+        $this->genericSubscribeInit('psubscribe');
     }
 
     public function __destruct() {
@@ -1071,6 +1075,19 @@ class PubSubContext implements \Iterator {
             throw new \Predis\ClientException(
                 'The current profile does not support PUB/SUB related commands'
             );
+        }
+    }
+
+    private function genericSubscribeInit($subscribeAction) {
+        if (isset($this->_options[$subscribeAction])) {
+            if (is_array($this->_options[$subscribeAction])) {
+                foreach ($this->_options[$subscribeAction] as $subscription) {
+                    $this->$subscribeAction($subscription);
+                }
+            }
+            else {
+                $this->$subscribeAction($this->_options[$subscribeAction]);
+            }
         }
     }
 

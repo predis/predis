@@ -6,6 +6,9 @@ v0.6.4 (2011-??-??)
     specify an external callback (or any callable object) that gets invoked 
     whenever a transaction is aborted by the server.
 
+  * Added inline (p)subscribtion via options when initializing an instance of 
+    Predis\PubSubContext.
+
 v0.6.3 (2011-01-01)
   * New commands available in the Redis v2.2 profile (dev):
       - Strings: SETRANGE, GETRANGE, SETBIT, GETBIT
