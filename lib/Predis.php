@@ -1278,6 +1278,9 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function setProtocol(IRedisProtocol $protocol) {
+        if ($protocol === null) {
+            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
+        }
         $this->_protocol = $protocol;
     }
 
