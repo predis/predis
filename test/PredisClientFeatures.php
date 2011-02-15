@@ -457,7 +457,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testCommandPipeline_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getConnection()->getProtocol()->setOption('throw_on_error', false);
+        $client->getConnection()->getProtocol()->setOption('throw_errors', false);
 
         $replies = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
@@ -579,7 +579,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testMultiExecContext_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getConnection()->getProtocol()->setOption('throw_on_error', false);
+        $client->getConnection()->getProtocol()->setOption('throw_errors', false);
 
         $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');

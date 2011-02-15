@@ -71,7 +71,7 @@ class Client {
         $connection = self::newConnection($parameters);
         $protocol = $connection->getProtocol();
         $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
-        $protocol->setOption('throw_on_error', $options->throw_on_error);
+        $protocol->setOption('throw_errors', $options->throw_errors);
         $this->pushInitCommands($connection);
 
         $callback = $this->_options->on_connection_initialized;
@@ -1000,7 +1000,7 @@ class ClientOptions {
             'profile' => new Options\ClientProfile(),
             'key_distribution' => new Options\ClientKeyDistribution(),
             'iterable_multibulk' => new Options\ClientIterableMultiBulk(),
-            'throw_on_error' => new Options\ClientThrowOnError(),
+            'throw_errors' => new Options\ClientThrowOnError(),
             'on_connection_initialized' => new Options\CustomOption(array(
                 'validate' => function($value) {
                     if (isset($value) && is_callable($value)) {
@@ -1663,7 +1663,6 @@ class TextProtocol implements IRedisProtocol {
                 $this->_mbiterable = (bool) $value;
                 break;
             case 'throw_errors':
-            case 'throw_on_error':
                 $this->_throwErrors = (bool) $value;
                 break;
         }
@@ -1694,7 +1693,6 @@ class ComposableTextProtocol implements IRedisProtocolExtended {
                 $this->_reader->setHandler(TextProtocol::PREFIX_MULTI_BULK, $handler);
                 break;
             case 'throw_errors':
-            case 'throw_on_error':
                 $handler = $value ? new ResponseErrorHandler() : new ResponseErrorSilentHandler();
                 $this->_reader->setHandler(TextProtocol::PREFIX_ERROR, $handler);
                 break;
