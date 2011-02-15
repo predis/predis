@@ -346,13 +346,13 @@ class MultiExecContext {
         $this->reset();
     }
 
-    private function checkCapabilities(Client $redisClient) {
-        if (Utils::isCluster($redisClient->getConnection())) {
+    private function checkCapabilities(Client $client) {
+        if (Utils::isCluster($client->getConnection())) {
             throw new ClientException(
                 'Cannot initialize a MULTI/EXEC context over a cluster of connections'
             );
         }
-        $profile = $redisClient->getProfile();
+        $profile = $client->getProfile();
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
             throw new ClientException(
                 'The current profile does not support MULTI, EXEC and DISCARD commands'
@@ -570,7 +570,7 @@ class PubSubContext implements \Iterator {
     private $_client, $_position, $_options;
 
     public function __construct(Client $client, Array $options = null) {
-        $this->checkCapabilities($redisClient);
+        $this->checkCapabilities($client);
         $this->_options = $options ?: array();
         $this->_client  = $client;
         $this->_statusFlags = self::STATUS_VALID;
@@ -583,13 +583,13 @@ class PubSubContext implements \Iterator {
         $this->closeContext();
     }
 
-    private function checkCapabilities(Client $redisClient) {
-        if (Utils::isCluster($redisClient->getConnection())) {
+    private function checkCapabilities(Client $client) {
+        if (Utils::isCluster($client->getConnection())) {
             throw new ClientException(
                 'Cannot initialize a PUB/SUB context over a cluster of connections'
             );
         }
-        $profile = $redisClient->getProfile();
+        $profile = $client->getProfile();
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
         if ($profile->supportsCommands($commands) === false) {
             throw new ClientException(
