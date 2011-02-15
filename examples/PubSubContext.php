@@ -1,7 +1,7 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-// Redis 2.0 features new commands that allow clients to subscribe for 
+// Redis 2.0 features new commands that allow clients to subscribe for
 // events published on certain channels (PUBSUB).
 
 // Create a client and disable r/w timeout on the socket
@@ -14,7 +14,7 @@ $pubsub = $redis->pubSubContext();
 $pubsub->subscribe('control_channel');
 $pubsub->subscribe('notifications');
 
-// Start processing the pubsup messages. Open a terminal and use redis-cli 
+// Start processing the pubsup messages. Open a terminal and use redis-cli
 // to push messages to the channels. Examples:
 //   ./redis-cli PUBLISH notifications "this is a test"
 //   ./redis-cli PUBLISH control_channel quit_loop
@@ -41,8 +41,8 @@ foreach ($pubsub as $message) {
     }
 }
 
-// Always unset the pubsub context instance when you are done! The 
-// class destructor will take care of cleanups and prevent protocol 
+// Always unset the pubsub context instance when you are done! The
+// class destructor will take care of cleanups and prevent protocol
 // desynchronizations between the client and the server.
 unset($pubsub);
 

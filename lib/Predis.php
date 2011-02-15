@@ -192,7 +192,7 @@ class Client {
         if (isset($options)) {
             if (isset($options['safe']) && $options['safe'] == true) {
                 $connection = $this->_connection;
-                $pipeline = new CommandPipeline($this, 
+                $pipeline = new CommandPipeline($this,
                     Utils::isCluster($connection)
                         ? new Pipeline\SafeClusterExecutor($connection)
                         : new Pipeline\SafeExecutor($connection)
@@ -741,7 +741,7 @@ class CommunicationException extends PredisException {
     // Communication errors
     private $_connection;
 
-    public function __construct(IConnectionSingle $connection, 
+    public function __construct(IConnectionSingle $connection,
         $message = null, $code = null) {
 
         $this->_connection = $connection;
@@ -3224,7 +3224,7 @@ class Sort extends Command {
                 $query[] = $getargs;
             }
         }
-        if (isset($sortParams['LIMIT']) && is_array($sortParams['LIMIT']) 
+        if (isset($sortParams['LIMIT']) && is_array($sortParams['LIMIT'])
             && count($sortParams['LIMIT']) == 2) {
 
             $query[] = 'LIMIT';

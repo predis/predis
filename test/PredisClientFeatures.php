@@ -4,12 +4,12 @@ require_once 'PredisShared.php';
 class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
-    protected function setUp() { 
+    protected function setUp() {
         $this->redis = RC::getConnection();
         $this->redis->flushdb();
     }
 
-    protected function tearDown() { 
+    protected function tearDown() {
     }
 
     protected function onNotSuccessfulTest(Exception $exception) {
@@ -141,7 +141,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
         $bogusCommand    = 'not_existing_command';
         $expectedMessage = "'$bogusCommand' is not a registered Redis command";
-        RC::testForClientException($this, $expectedMessage, function() 
+        RC::testForClientException($this, $expectedMessage, function()
             use($profile, $bogusCommand) {
 
             $profile->createCommand($bogusCommand);
@@ -291,7 +291,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters(), $protocol);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK, 
+            \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK,
             new \Predis\Protocols\ResponseMultiBulkHandler()
         );
         $connection->writeBytes("KEYS *\r\n");
@@ -315,7 +315,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $reader->read($connection);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_ERROR,  
+            \Predis\Protocols\TextProtocol::PREFIX_ERROR,
             new \Predis\Protocols\ResponseErrorSilentHandler()
         );
         $connection->writeBytes($rawCmdUnexpected);
@@ -324,10 +324,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_ERROR, 
+            \Predis\Protocols\TextProtocol::PREFIX_ERROR,
             new \Predis\Protocols\ResponseErrorHandler()
         );
-        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
+        RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function()
             use ($connection, $rawCmdUnexpected) {
 
             $connection->writeBytes($rawCmdUnexpected);
@@ -430,7 +430,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->pipeline(function($pipe) { 
+        $replies = $client->pipeline(function($pipe) {
             $pipe->ping();
             $pipe->set('foo', 'bar');
             $pipe->get('foo');
@@ -459,7 +459,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
         $client->getConnection()->getProtocol()->setOption('throw_on_error', false);
 
-        $replies = $client->pipeline(function($pipe) { 
+        $replies = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
             $pipe->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
             $pipe->set('hoge', 'piyo');
@@ -526,7 +526,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->ping();
             $multi->set('foo', 'bar');
             $multi->get('foo');
@@ -567,7 +567,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         RC::testForClientException($this, 'TEST', function() use($client) {
-            $client->multiExec(function($multi) { 
+            $client->multiExec(function($multi) {
                 $multi->ping();
                 $multi->set('foo', 'bar');
                 throw new \Predis\ClientException("TEST");
@@ -581,7 +581,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
         $client->getConnection()->getProtocol()->setOption('throw_on_error', false);
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');
             $multi->lpush('foo', 'piyo'); // LIST operation on STRING type returns an ERROR
             $multi->set('hoge', 'piyo');
@@ -597,7 +597,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');
             $multi->discard();
             $multi->set('hoge', 'piyo');
@@ -612,7 +612,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client = RC::getConnection();
         $client->flushdb();
 
-        $replies = $client->multiExec(function($multi) { 
+        $replies = $client->multiExec(function($multi) {
             $multi->discard();
         });
 
@@ -624,10 +624,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client2 = RC::getConnection(true);
         $client1->flushdb();
 
-        RC::testForAbortedMultiExecException($this, function() 
+        RC::testForAbortedMultiExecException($this, function()
             use($client1, $client2) {
 
-            $client1->multiExec(array('watch' => 'sentinel'), function($multi) 
+            $client1->multiExec(array('watch' => 'sentinel'), function($multi)
                 use ($client2) {
 
                 $multi->set('sentinel', 'client1');
