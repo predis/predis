@@ -269,17 +269,17 @@ class Client {
 }
 
 class CommandPipeline {
-    private $_redisClient, $_pipelineBuffer, $_returnValues, $_running, $_executor;
+    private $_client, $_pipelineBuffer, $_returnValues, $_running, $_executor;
 
-    public function __construct(Client $redisClient, IPipelineExecutor $executor = null) {
-        $this->_redisClient    = $redisClient;
+    public function __construct(Client $client, IPipelineExecutor $executor = null) {
+        $this->_client         = $client;
         $this->_executor       = $executor ?: new Pipeline\StandardExecutor();
         $this->_pipelineBuffer = array();
         $this->_returnValues   = array();
     }
 
     public function __call($method, $arguments) {
-        $command = $this->_redisClient->createCommand($method, $arguments);
+        $command = $this->_client->createCommand($method, $arguments);
         $this->recordCommand($command);
         return $this;
     }
@@ -290,7 +290,7 @@ class CommandPipeline {
 
     public function flushPipeline() {
         if (count($this->_pipelineBuffer) > 0) {
-            $connection = $this->_redisClient->getConnection();
+            $connection = $this->_client->getConnection();
             $this->_returnValues = array_merge(
                 $this->_returnValues,
                 $this->_executor->execute($connection, $this->_pipelineBuffer)
@@ -337,13 +337,12 @@ class CommandPipeline {
 
 class MultiExecContext {
     private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
-    private $_redisClient, $_options, $_commands;
-    private $_supportsWatch;
+    private $_client, $_options, $_commands, $_supportsWatch;
 
-    public function __construct(Client $redisClient, Array $options = null) {
-        $this->checkCapabilities($redisClient);
+    public function __construct(Client $client, Array $options = null) {
+        $this->checkCapabilities($client);
         $this->_options = $options ?: array();
-        $this->_redisClient = $redisClient;
+        $this->_client  = $client;
         $this->reset();
     }
 
@@ -388,7 +387,7 @@ class MultiExecContext {
             $this->watch($options['watch']);
         }
         if (!$this->_checkAndSet || ($this->_discarded && $this->_checkAndSet)) {
-            $this->_redisClient->multi();
+            $this->_client->multi();
             if ($this->_discarded) {
                 $this->_checkAndSet = false;
             }
@@ -399,7 +398,7 @@ class MultiExecContext {
 
     public function __call($method, $arguments) {
         $this->initialize();
-        $client = $this->_redisClient;
+        $client = $this->_client;
         if ($this->_checkAndSet) {
             return call_user_func_array(array($client, $method), $arguments);
         }
@@ -419,13 +418,13 @@ class MultiExecContext {
         if ($this->_initialized && !$this->_checkAndSet) {
             throw new ClientException('WATCH inside MULTI is not allowed');
         }
-        return $this->_redisClient->watch($keys);
+        return $this->_client->watch($keys);
     }
 
     public function multi() {
         if ($this->_initialized && $this->_checkAndSet) {
             $this->_checkAndSet = false;
-            $this->_redisClient->multi();
+            $this->_client->multi();
             return $this;
         }
         $this->initialize();
@@ -434,12 +433,12 @@ class MultiExecContext {
 
     public function unwatch() {
         $this->isWatchSupported();
-        $this->_redisClient->unwatch();
+        $this->_client->unwatch();
         return $this;
     }
 
     public function discard() {
-        $this->_redisClient->discard();
+        $this->_client->discard();
         $this->reset();
         $this->_discarded = true;
         return $this;
@@ -510,7 +509,7 @@ class MultiExecContext {
                 return;
             }
 
-            $reply = $this->_redisClient->exec();
+            $reply = $this->_client->exec();
             if ($reply === null) {
                 if ($attemptsLeft === 0) {
                     throw new AbortedMultiExec(
@@ -551,7 +550,7 @@ class MultiExecContext {
         // connection, we can safely assume that Predis\Client::getConnection()
         // will always return an instance of Predis\Connection.
         Utils::onCommunicationException(new MalformedServerResponse(
-            $this->_redisClient->getConnection(), $message
+            $this->_client->getConnection(), $message
         ));
     }
 }
@@ -568,12 +567,12 @@ class PubSubContext implements \Iterator {
     const STATUS_SUBSCRIBED  = 0x0010;
     const STATUS_PSUBSCRIBED = 0x0100;
 
-    private $_redisClient, $_position, $_options;
+    private $_client, $_position, $_options;
 
-    public function __construct(Client $redisClient, Array $options = null) {
+    public function __construct(Client $client, Array $options = null) {
         $this->checkCapabilities($redisClient);
         $this->_options = $options ?: array();
-        $this->_redisClient = $redisClient;
+        $this->_client  = $client;
         $this->_statusFlags = self::STATUS_VALID;
 
         $this->genericSubscribeInit('subscribe');
@@ -650,8 +649,8 @@ class PubSubContext implements \Iterator {
         if (count($arguments) === 1 && is_array($arguments[0])) {
             $arguments = $arguments[0];
         }
-        $command = $this->_redisClient->createCommand($method, $arguments);
-        $this->_redisClient->getConnection()->writeCommand($command);
+        $command = $this->_client->createCommand($method, $arguments);
+        $this->_client->getConnection()->writeCommand($command);
     }
 
     public function rewind() {
@@ -684,7 +683,7 @@ class PubSubContext implements \Iterator {
     }
 
     private function getValue() {
-        $connection = $this->_redisClient->getConnection();
+        $connection = $this->_client->getConnection();
         $protocol   = $connection->getProtocol();
         $response   = $protocol->read($connection);
 
