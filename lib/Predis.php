@@ -1737,8 +1737,8 @@ class TextCommandSerializer implements ICommandSerializer {
         $commandId = $command->getCommandId();
         $arguments = $command->getArguments();
 
-        $cmdlen  = strlen($commandId);
-        $reqlen  = count($arguments) + 1;
+        $cmdlen = strlen($commandId);
+        $reqlen = count($arguments) + 1;
 
         $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
         for ($i = 0; $i < $reqlen - 1; $i++) {
