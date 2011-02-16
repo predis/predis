@@ -6,3 +6,6 @@ to time. The internal API is still subject to frequent changes since its
 design has not been fully finalized yet.
 
 Feedback is obviously appreciated, but use it at your own risk!
+
+If you need to use Predis in a production environment please use a tagged 
+release or checkout the version-0.6 branch from the Git repository.
