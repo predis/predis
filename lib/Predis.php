@@ -2274,7 +2274,6 @@ class HashRing implements IDistributionStrategy {
     }
 
     private function computeTotalWeight() {
-        // TODO: array_reduce + lambda for PHP 5.3
         $totalWeight = 0;
         foreach ($this->_nodes as $node) {
             $totalWeight += $node['weight'];
