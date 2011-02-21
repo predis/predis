@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="test/bootstrap.php">
+    <testsuites>
+        <testsuite name="Predis Test Suite">
+            <directory>test/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">lib/Predis/</directory>
+        </whitelist>
+    </filter>
+</phpunit>

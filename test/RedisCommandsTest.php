@@ -1,5 +1,4 @@
 <?php
-require_once 'PredisShared.php';
 
 class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;

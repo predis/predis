@@ -13,7 +13,6 @@ if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
 }
 
 require_once 'PHPUnit/Framework.php';
-require_once '../lib/Predis.php';
 
 if (!function_exists('array_union')) {
     function array_union(Array $a, Array $b) {
@@ -80,7 +79,7 @@ class RC {
         $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
         $handle = popen('php', 'w');
         fwrite($handle, "<?php
-        require '../lib/Predis.php';
+        require 'bootstrap.php';
         \$redis = new Predis\Client('$redisUri');
         \$redis->rpush('{$op}1', 'a');
         \$redis->rpush('{$op}2', 'b');
