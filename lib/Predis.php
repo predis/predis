@@ -2968,10 +2968,17 @@ class ZSetUnionStore extends Command {
     public function filterArguments(Array $arguments) {
         $options = array();
         $argc    = count($arguments);
-        if ($argc > 1 && is_array($arguments[$argc - 1])) {
+        $args    = is_array($arguments[0]) ? $arguments[0] : $arguments;
+        
+        if ($argc > 1 && is_string($arguments[0]) && is_array($arguments[1])) {
+        	$args = array_merge(array($arguments[0], count($arguments[1])), $arguments[1]);
+        }
+        
+        $argsc = count($args);
+        
+        if ($argsc > 1 && is_array($args[$argsc - 1])) {
             $options = $this->prepareOptions(array_pop($arguments));
         }
-        $args = is_array($arguments[0]) ? $arguments[0] : $arguments;
         return  array_merge($args, $options);
     }
     private function prepareOptions($options) {
