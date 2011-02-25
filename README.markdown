@@ -10,7 +10,7 @@ Please refer to the TODO file to see which issues are still pending and what is 
 
 ## Main features ##
 
-- Full support for Redis 2.0 and 2.2. Different versions of Redis are supported via server profiles.
+- Full support for Redis 1.2, 2.0 and 2.2. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
 - Command pipelining on single and multiple connections.
 - Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
@@ -32,13 +32,13 @@ for interoperability with the major frameworks and libraries.
 
 When used in simple projects or scripts you might need to define an autoloader function:
 
-spl_autoload_register(function($class) {
-    $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
-    if (file_exists($file)) {
-        require $file;
-        return true;
-    }
-});
+    spl_autoload_register(function($class) {
+        $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
+        if (file_exists($file)) {
+            require $file;
+            return true;
+        }
+    });
 
 
 ### Connecting to a local instance of Redis ###
