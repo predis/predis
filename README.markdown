@@ -141,12 +141,12 @@ too, even though they are not the preferred way to contribute to Predis.
 
 ## Author ##
 
-[Daniele Alessandri](mailto:suppakilla@gmail.com) - ([twitter](http://twitter.com/JoL1hAHN))
+- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
 
 ## Contributors ##
 
-[Lorenzo Castelli](http://github.com/lcastelli)
-[Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
+- [Lorenzo Castelli](http://github.com/lcastelli)
+- [Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
 
 ## License ##
 
