@@ -27,7 +27,7 @@ complete coverage of all the features available in Predis.
 ### Loading Predis
 
 Predis relies on the autoloading features of PHP and complies with the 
-(PSR-0 standard)[http://groups.google.com/group/php-standards/web/psr-0-final-proposal] 
+[PSR-0 standard](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) 
 for interoperability with the major frameworks and libraries.
 
 When used in simple projects or scripts you might need to define an autoloader function:
@@ -141,12 +141,12 @@ too, even though they are not the preferred way to contribute to Predis.
 
 ## Author ##
 
-[Daniele Alessandri](mailto:suppakilla@gmail.com) - [twitter](http://twitter.com/JoL1hAHN)
+[Daniele Alessandri](mailto:suppakilla@gmail.com) - ([twitter](http://twitter.com/JoL1hAHN))
 
 ## Contributors ##
 
 [Lorenzo Castelli](http://github.com/lcastelli)
-[Jordi Boggiano](http://github.com/Seldaek) - [twitter](http://twitter.com/seldaek)
+[Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
 
 ## License ##
 
