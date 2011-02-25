@@ -2,24 +2,17 @@
 
 ## About ##
 
-Predis is a flexible and feature-complete PHP client library for the Redis key-value 
-database. It currently comes in two flavors:
+Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
- - the mainline client library, which targets PHP 5.3.x and leverages a lot of the 
-   features introduced in this new version of the PHP interpreter.
- - a backport to PHP 5.2.x for those who can not upgrade their environment yet 
-   (it admittedly has a lower priority compared to the mainline library, although we 
-   try to keep the two versions aligned as much as possible).
-
-Please refer to the TODO file to see which issues are still pending and what is due 
-to be implemented soon in Predis.
+For a version compatible with PHP 5.2 you must use the backported version of latest release in the 0.6.x series.
+Please refer to the TODO file to see which issues are still pending and what is due to be implemented soon in Predis.
 
 
 ## Main features ##
 
 - Full support for Redis 2.0 and 2.2. Different versions of Redis are supported via server profiles.
 - Client-side sharding (support for consistent hashing and custom distribution strategies).
-- Command pipelining on single and multiple connections (transparent).
+- Command pipelining on single and multiple connections.
 - Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
 - Lazy connections (connections to Redis instances are only established just in time).
 - Flexible system to define and register your own set of commands to a client instance.
@@ -29,6 +22,24 @@ to be implemented soon in Predis.
 
 See the [official wiki](http://wiki.github.com/nrk/predis) of the project for a more 
 complete coverage of all the features available in Predis.
+
+
+### Loading Predis
+
+Predis relies on the autoloading features of PHP and complies with the 
+(PSR-0 standard)[http://groups.google.com/group/php-standards/web/psr-0-final-proposal] 
+for interoperability with the major frameworks and libraries.
+
+When used in simple projects or scripts you might need to define an autoloader function:
+
+spl_autoload_register(function($class) {
+    $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
+    if (file_exists($file)) {
+        require $file;
+        return true;
+    }
+});
+
 
 ### Connecting to a local instance of Redis ###
 
@@ -83,7 +94,7 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends \Predis\Command {
+    class BrandNewRedisCommand extends Predis\Command {
         public function getCommandId() { return 'NEWCMD'; }
     }
 
@@ -99,21 +110,20 @@ client library and the interaction of every single command with a Redis server. 
 want to work on Predis, it is highly recommended that you first run the test suite to 
 be sure that everything is OK, and report strange behaviours or bugs.
 
-The recommended way to contribute to Predis is to fork the project on GitHub, fix or 
-add features on your newly created repository and then submit issues on the Predis 
-issue tracker with a link to your repository. Obviously, you can use any other Git 
-hosting provider of you preference. Diff patches will be accepted too, even though 
-they are not the preferred way to contribute to Predis.
-
 When modifying Predis please be sure that no warnings or notices are emitted by PHP 
 by running the interpreter in your development environment with the "error_reporting"
 variable set to E_ALL | E_STRICT.
 
+The recommended way to contribute to Predis is to fork the project on GitHub, create 
+new topic branches on your newly created repository to fix or add features and then 
+open a new pull request with a description of the applied changes. Obviously, you can 
+use any other Git hosting provider of your preference. Diff patches will be accepted 
+too, even though they are not the preferred way to contribute to Predis.
+
 
 ## Dependencies ##
 
-- PHP >= 5.3.0 (for the mainline client library)
-- PHP >= 5.2.6 (for the backported client library)
+- PHP >= 5.3.0
 - PHPUnit (needed to run the test suite)
 
 ## Links ##
@@ -131,11 +141,12 @@ variable set to E_ALL | E_STRICT.
 
 ## Author ##
 
-[Daniele Alessandri](mailto:suppakilla@gmail.com)
+[Daniele Alessandri](mailto:suppakilla@gmail.com) - [twitter](http://twitter.com/JoL1hAHN)
 
 ## Contributors ##
 
 [Lorenzo Castelli](http://github.com/lcastelli)
+[Jordi Boggiano](http://github.com/Seldaek) - [twitter](http://twitter.com/seldaek)
 
 ## License ##
 
