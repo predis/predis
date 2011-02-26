@@ -29,7 +29,6 @@ complete coverage of all the features available in Predis.
 Predis relies on the autoloading features of PHP and complies with the 
 [PSR-0 standard](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) 
 for interoperability with the major frameworks and libraries.
-
 When used in simple projects or scripts you might need to define an autoloader function:
 
     spl_autoload_register(function($class) {
@@ -39,6 +38,10 @@ When used in simple projects or scripts you might need to define an autoloader f
             return true;
         }
     });
+
+Optionally, you can generate a single PHP file that holds every class (just like older versions of Predis) 
+by launching the _createSingleFile.php_ script from the _bin_ directory of the repository. In this way 
+you can load Predis in your scripts simply by using functions such as _require_ and _include_.
 
 
 ### Connecting to a local instance of Redis ###
