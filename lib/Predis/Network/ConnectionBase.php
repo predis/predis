@@ -5,6 +5,7 @@ namespace Predis\Network;
 use Predis\Utils;
 use Predis\ICommand;
 use Predis\ConnectionParameters;
+use Predis\ClientException;
 use Predis\CommunicationException;
 use Predis\Protocols\IRedisProtocol;
 
