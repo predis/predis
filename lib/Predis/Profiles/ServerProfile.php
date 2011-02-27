@@ -24,11 +24,11 @@ abstract class ServerProfile implements IServerProfile {
 
     private static function getDefaultProfiles() {
         return array(
-            '1.2'     => '\Predis\Profiles\Server_v1_2',
-            '2.0'     => '\Predis\Profiles\Server_v2_0',
-            '2.2'     => '\Predis\Profiles\Server_v2_2',
-            'default' => '\Predis\Profiles\Server_v2_2',
-            'dev'     => '\Predis\Profiles\Server_vNext',
+            '1.2'     => '\Predis\Profiles\ServerVersion12',
+            '2.0'     => '\Predis\Profiles\ServerVersion20',
+            '2.2'     => '\Predis\Profiles\ServerVersion22',
+            'default' => '\Predis\Profiles\ServerVersion22',
+            'dev'     => '\Predis\Profiles\ServerVersionNext',
         );
     }
 

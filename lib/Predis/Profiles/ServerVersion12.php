@@ -2,7 +2,7 @@
 
 namespace Predis\Profiles;
 
-class Server_v1_2 extends ServerProfile {
+class ServerVersion12 extends ServerProfile {
     public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array(
@@ -31,7 +31,7 @@ class Server_v1_2 extends ServerProfile {
             'type'                      => '\Predis\Commands\Type',
 
             /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\Keys_v1_2',
+            'keys'                      => '\Predis\Commands\KeysV12x',
             'randomkey'                 => '\Predis\Commands\RandomKey',
             'rename'                    => '\Predis\Commands\Rename',
             'renamenx'                  => '\Predis\Commands\RenamePreserve',

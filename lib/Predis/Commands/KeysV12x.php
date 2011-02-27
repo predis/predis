@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-class Keys_v1_2 extends Keys {
+class KeysV12x extends Keys {
     public function parseResponse($data) {
         return explode(' ', $data);
     }

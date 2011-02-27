@@ -2,7 +2,7 @@
 
 namespace Predis\Profiles;
 
-class Server_v2_2 extends Server_v2_0 {
+class ServerVersion22 extends ServerVersion20 {
     public function getVersion() { return '2.2'; }
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(

@@ -102,10 +102,10 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     /* Predis\Profiles\ServerProfile and derivates */
 
     function testServerProfile_GetSpecificVersions() {
-        $this->assertType('\Predis\Profiles\Server_v1_2', \Predis\Profiles\ServerProfile::get('1.2'));
-        $this->assertType('\Predis\Profiles\Server_v2_0', \Predis\Profiles\ServerProfile::get('2.0'));
-        $this->assertType('\Predis\Profiles\Server_v2_2', \Predis\Profiles\ServerProfile::get('2.2'));
-        $this->assertType('\Predis\Profiles\Server_vNext', \Predis\Profiles\ServerProfile::get('dev'));
+        $this->assertType('\Predis\Profiles\ServerVersion12', \Predis\Profiles\ServerProfile::get('1.2'));
+        $this->assertType('\Predis\Profiles\ServerVersion20', \Predis\Profiles\ServerProfile::get('2.0'));
+        $this->assertType('\Predis\Profiles\ServerVersion22', \Predis\Profiles\ServerProfile::get('2.2'));
+        $this->assertType('\Predis\Profiles\ServerVersionNext', \Predis\Profiles\ServerProfile::get('dev'));
         $this->assertType('\Predis\Profiles\ServerProfile', \Predis\Profiles\ServerProfile::get('default'));
         $this->assertEquals(\Predis\Profiles\ServerProfile::get('default'), \Predis\Profiles\ServerProfile::getDefault());
     }
