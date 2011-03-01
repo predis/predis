@@ -22,6 +22,7 @@ to be implemented soon in Predis.
 - Command pipelining on single and multiple connections (transparent).
 - Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
 - Lazy connections (connections to Redis instances are only established just in time).
+- Ability to connect to Redis using TCP/IP or UNIX domain sockets.
 - Flexible system to define and register your own set of commands to a client instance.
 
 
