@@ -3,12 +3,11 @@
 namespace Predis\Protocols;
 
 use Predis\Utils;
-use Predis\CommunicationException;
 use Predis\MalformedServerResponse;
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 
 class ResponseIntegerHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $number) {
+    public function handle(IConnectionComposable $connection, $number) {
         if (is_numeric($number)) {
             return (int) $number;
         }

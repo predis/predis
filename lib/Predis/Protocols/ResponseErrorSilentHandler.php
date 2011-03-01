@@ -2,10 +2,11 @@
 
 namespace Predis\Protocols;
 
-use Predis\Network\IConnectionSingle;
+use Predis\ResponseError;
+use Predis\Network\IConnectionComposable;
 
 class ResponseErrorSilentHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $errorMessage) {
-        return new \Predis\ResponseError(substr($errorMessage, 4));
+    public function handle(IConnectionComposable $connection, $errorMessage) {
+        return new ResponseError(substr($errorMessage, 4));
     }
 }

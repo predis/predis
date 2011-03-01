@@ -74,7 +74,7 @@ class RC {
     public static function helperForBlockingPops($op) {
         // TODO: I admit that this helper is kinda lame and it does not run
         //       in a separate process to properly test BLPOP/BRPOP
-        $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
+        $redisUri = sprintf('tcp://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
         $handle = popen('php', 'w');
         fwrite($handle, "<?php
         require __DIR__.'/test/bootstrap.php';

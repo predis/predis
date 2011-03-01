@@ -2,10 +2,11 @@
 
 namespace Predis\Protocols;
 
-use Predis\Network\IConnectionSingle;
+use Predis\ServerException;
+use Predis\Network\IConnectionComposable;
 
 class ResponseErrorHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $errorMessage) {
-        throw new \Predis\ServerException(substr($errorMessage, 4));
+    public function handle(IConnectionComposable $connection, $errorMessage) {
+        throw new ServerException(substr($errorMessage, 4));
     }
 }

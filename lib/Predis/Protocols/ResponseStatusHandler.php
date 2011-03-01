@@ -2,16 +2,18 @@
 
 namespace Predis\Protocols;
 
-use Predis\Network\IConnectionSingle;
+use Predis\ResponseQueued;
+use Predis\Network\IConnectionComposable;
 
 class ResponseStatusHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $status) {
-        if ($status === 'OK') {
-            return true;
+    public function handle(IConnectionComposable $connection, $status) {
+        switch ($status) {
+            case 'OK':
+                return true;
+            case 'QUEUED':
+                return new ResponseQueued();
+            default:
+                return $status;
         }
-        if ($status === 'QUEUED') {
-            return new \Predis\ResponseQueued();
-        }
-        return $status;
     }
 }

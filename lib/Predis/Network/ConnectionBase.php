@@ -7,16 +7,14 @@ use Predis\ICommand;
 use Predis\ConnectionParameters;
 use Predis\ClientException;
 use Predis\CommunicationException;
-use Predis\Protocols\IRedisProtocol;
 
 abstract class ConnectionBase implements IConnectionSingle {
-    private $_cachedId;
-    protected $_params, $_socket, $_initCmds, $_protocol;
+    private $_cachedId, $_resource;
+    protected $_params, $_initCmds;
 
-    public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol) {
+    public function __construct(ConnectionParameters $parameters) {
         $this->_initCmds = array();
         $this->_params   = $parameters;
-        $this->_protocol = $protocol;
     }
 
     public function __destruct() {
@@ -24,7 +22,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function isConnected() {
-        return is_resource($this->_socket);
+        return is_resource($this->_resource);
     }
 
     protected abstract function createResource();
@@ -33,13 +31,7 @@ abstract class ConnectionBase implements IConnectionSingle {
         if ($this->isConnected()) {
             throw new ClientException('Connection already estabilished');
         }
-        $this->createResource();
-    }
-
-    public function disconnect() {
-        if ($this->isConnected()) {
-            fclose($this->_socket);
-        }
+        $this->_resource = $this->createResource();
     }
 
     public function pushInitCommand(ICommand $command){
@@ -64,22 +56,11 @@ abstract class ConnectionBase implements IConnectionSingle {
         if (!$this->isConnected()) {
             $this->connect();
         }
-        return $this->_socket;
+        return $this->_resource;
     }
 
     public function getParameters() {
         return $this->_params;
-    }
-
-    public function getProtocol() {
-        return $this->_protocol;
-    }
-
-    public function setProtocol(IRedisProtocol $protocol) {
-        if ($protocol === null) {
-            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
-        }
-        $this->_protocol = $protocol;
     }
 
     public function __toString() {

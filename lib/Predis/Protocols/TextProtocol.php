@@ -4,7 +4,7 @@ namespace Predis\Protocols;
 
 use Predis\ICommand;
 use Predis\CommunicationException;
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
 class TextProtocol implements IRedisProtocol {
@@ -20,7 +20,7 @@ class TextProtocol implements IRedisProtocol {
     const PREFIX_BULK       = '$';
     const PREFIX_MULTI_BULK = '*';
 
-    const BUFFER_SIZE = 8192;
+    const BUFFER_SIZE = 4096;
 
     private $_mbiterable, $_throwErrors, $_serializer;
 
@@ -30,61 +30,31 @@ class TextProtocol implements IRedisProtocol {
         $this->_serializer  = new TextCommandSerializer();
     }
 
-    public function write(IConnectionSingle $connection, ICommand $command) {
-        $buffer = $this->_serializer->serialize($command);
-        $socket = $connection->getResource();
-        while (($length = strlen($buffer)) > 0) {
-            $written = fwrite($socket, $buffer);
-            if ($length === $written) {
-                return;
-            }
-            if ($written === false || $written === 0) {
-                throw new CommunicationException(
-                    $connection, 'Error while writing bytes to the server'
-                );
-            }
-            $value = substr($buffer, $written);
-        }
+    public function write(IConnectionComposable $connection, ICommand $command) {
+        $connection->writeBytes($this->_serializer->serialize($command));
     }
 
-    public function read(IConnectionSingle $connection) {
-        $socket = $connection->getResource();
-        $chunk  = fgets($socket);
-        if ($chunk === false || $chunk === '') {
-            throw new CommunicationException(
-                $connection, 'Error while reading line from the server'
-            );
-        }
-        $prefix  = $chunk[0];
-        $payload = substr($chunk, 1, -2);
+    public function read(IConnectionComposable $connection) {
+        $chunk = $connection->readLine();
+        $prefix = $chunk[0];
+        $payload = substr($chunk, 1);
         switch ($prefix) {
             case '+':    // inline
-                if ($payload === 'OK') {
-                    return true;
+                switch ($payload) {
+                    case 'OK':
+                        return true;
+                    case 'QUEUED':
+                        return new ResponseQueued();
+                    default:
+                        return $payload;
                 }
-                if ($payload === 'QUEUED') {
-                    return new \Predis\ResponseQueued();
-                }
-                return $payload;
 
             case '$':    // bulk
                 $size = (int) $payload;
                 if ($size === -1) {
                     return null;
                 }
-                $bulkData = '';
-                $bytesLeft = ($size += 2);
-                do {
-                    $chunk = fread($socket, min($bytesLeft, self::BUFFER_SIZE));
-                    if ($chunk === false || $chunk === '') {
-                        throw new CommunicationException(
-                            $connection, 'Error while reading bytes from the server'
-                        );
-                    }
-                    $bulkData .= $chunk;
-                    $bytesLeft = $size - strlen($bulkData);
-                } while ($bytesLeft > 0);
-                return substr($bulkData, 0, -2);
+                return substr($connection->readBytes($size + 2), 0, -2);
 
             case '*':    // multi bulk
                 $count = (int) $payload;

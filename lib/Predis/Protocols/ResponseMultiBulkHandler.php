@@ -3,12 +3,11 @@
 namespace Predis\Protocols;
 
 use Predis\Utils;
-use Predis\CommunicationException;
 use Predis\MalformedServerResponse;
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 
 class ResponseMultiBulkHandler implements IResponseHandler {
-    public function handle(IConnectionSingle $connection, $lengthString) {
+    public function handle(IConnectionComposable $connection, $lengthString) {
         $length = (int) $lengthString;
         if ($length != $lengthString) {
             Utils::onCommunicationException(new MalformedServerResponse(

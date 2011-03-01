@@ -67,9 +67,8 @@ class Client {
 
         $options = $this->_options;
         $connection = self::newConnection($parameters);
-        $protocol = $connection->getProtocol();
-        $protocol->setOption('iterable_multibulk', $options->iterable_multibulk);
-        $protocol->setOption('throw_errors', $options->throw_errors);
+        $connection->setProtocolOption('iterable_multibulk', $options->iterable_multibulk);
+        $connection->setProtocolOption('throw_errors', $options->throw_errors);
         $this->pushInitCommands($connection);
 
         $callback = $this->_options->on_connection_initialized;
@@ -225,10 +224,8 @@ class Client {
     private static function ensureDefaultSchemes() {
         if (!isset(self::$_connectionSchemes)) {
             self::$_connectionSchemes = array(
-                'tcp'   => '\Predis\Network\TcpConnection',
-                'unix'  => '\Predis\Network\UnixDomainSocketConnection',
-                // Compatibility with older versions.
-                'redis' => '\Predis\Network\TcpConnection',
+                'tcp'   => '\Predis\Network\StreamConnection',
+                'unix'  => '\Predis\Network\StreamConnection',
             );
         }
     }
@@ -252,9 +249,9 @@ class Client {
         return self::$_connectionSchemes[$scheme];
     }
 
-    private static function newConnection(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
+    private static function newConnection(ConnectionParameters $parameters) {
         $connection = self::getConnectionClass($parameters->scheme);
-        return new $connection($parameters, $protocol);
+        return new $connection($parameters);
     }
 
     public static function newConnectionByScheme($scheme, $parameters = array()) {

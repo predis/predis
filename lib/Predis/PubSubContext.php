@@ -130,10 +130,7 @@ class PubSubContext implements \Iterator {
     }
 
     private function getValue() {
-        $connection = $this->_client->getConnection();
-        $protocol   = $connection->getProtocol();
-        $response   = $protocol->read($connection);
-
+        $response = $this->_client->getConnection()->read();
         switch ($response[0]) {
             case self::SUBSCRIBE:
             case self::UNSUBSCRIBE:

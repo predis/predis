@@ -10,7 +10,6 @@ class MultiBulkResponseSimple extends MultiBulkResponse {
 
     public function __construct(IConnectionSingle $connection, $size) {
         $this->_connection = $connection;
-        $this->_protocol   = $connection->getProtocol();
         $this->_position   = 0;
         $this->_current    = $size > 0 ? $this->getValue() : null;
         $this->_replySize  = $size;
@@ -39,6 +38,6 @@ class MultiBulkResponseSimple extends MultiBulkResponse {
     }
 
     protected function getValue() {
-        return $this->_protocol->read($this->_connection);
+        return $this->_connection->read();
     }
 }

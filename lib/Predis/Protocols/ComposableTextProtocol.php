@@ -3,7 +3,7 @@
 namespace Predis\Protocols;
 
 use Predis\ICommand;
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 
 class ComposableTextProtocol implements IRedisProtocolExtended {
     private $_serializer, $_reader;
@@ -43,11 +43,11 @@ class ComposableTextProtocol implements IRedisProtocolExtended {
         return $this->_serializer->serialize($command);
     }
 
-    public function write(IConnectionSingle $connection, ICommand $command) {
+    public function write(IConnectionComposable $connection, ICommand $command) {
         $connection->writeBytes($this->_serializer->serialize($command));
     }
 
-    public function read(IConnectionSingle $connection) {
+    public function read(IConnectionComposable $connection) {
         return $this->_reader->read($connection);
     }
 

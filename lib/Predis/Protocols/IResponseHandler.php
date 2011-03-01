@@ -2,8 +2,8 @@
 
 namespace Predis\Protocols;
 
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 
 interface IResponseHandler {
-    function handle(IConnectionSingle $connection, $payload);
+    function handle(IConnectionComposable $connection, $payload);
 }

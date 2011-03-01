@@ -3,10 +3,10 @@
 namespace Predis\Protocols;
 
 use Predis\ICommand;
-use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionComposable;
 
 interface IRedisProtocol {
-    public function write(IConnectionSingle $connection, ICommand $command);
-    public function read(IConnectionSingle $connection);
+    public function write(IConnectionComposable $connection, ICommand $command);
+    public function read(IConnectionComposable $connection);
     public function setOption($option, $value);
 }
