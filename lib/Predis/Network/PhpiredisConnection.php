@@ -1,4 +1,20 @@
 <?php
+/*
+This class provides the implementation of a Predis connection that internally
+uses the PHP socket extension for network communication and wraps the phpiredis
+C extension (PHP bindings for hiredis) to parse the Redis protocol. Everything
+is *highly experimental* (even the very same phpiredis since it is quite new),
+so use it at your own risk.
+
+This class is mainly intended to provide an optional low-overhead alternative
+for processing replies from Redis compared to the standard pure-PHP classes.
+Differences in speed when dealing with short inline replies are practically
+nonexistent, the actual speed boost is for long multibulk replies when this
+protocol processor can parse and return replies very fast.
+
+For instructions on how to build and install the phpiredis extension, please
+consult the repository of the project at http://github.com/seppo0010/phpiredis
+*/
 
 namespace Predis\Network;
 
