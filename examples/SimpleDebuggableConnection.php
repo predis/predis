@@ -1,7 +1,11 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-class SimpleDebuggableConnection extends Predis\Network\TcpConnection {
+use Predis\ICommand;
+use Predis\ConnectionParameters;
+use Predis\Network\StreamConnection;
+
+class SimpleDebuggableConnection extends StreamConnection {
     private $_debugBuffer = array();
     private $_tstart = 0;
 
@@ -10,7 +14,7 @@ class SimpleDebuggableConnection extends Predis\Network\TcpConnection {
         parent::connect();
     }
 
-    private function storeDebug(Predis\ICommand $command, $direction) {
+    private function storeDebug(ICommand $command, $direction) {
         $firtsArg  = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->_tstart, 4);
         $debug  = $command->getCommandId();
@@ -20,12 +24,12 @@ class SimpleDebuggableConnection extends Predis\Network\TcpConnection {
         $this->_debugBuffer[] = $debug;
     }
 
-    public function writeCommand(Predis\ICommand $command) {
+    public function writeCommand(ICommand $command) {
         parent::writeCommand($command);
         $this->storeDebug($command, '->');
     }
 
-    public function readResponse(Predis\ICommand $command) {
+    public function readResponse(ICommand $command) {
         $reply = parent::readResponse($command);
         $this->storeDebug($command, '<-');
         return $reply;
@@ -36,7 +40,7 @@ class SimpleDebuggableConnection extends Predis\Network\TcpConnection {
     }
 }
 
-$parameters = new Predis\ConnectionParameters($single_server);
+$parameters = new ConnectionParameters($single_server);
 $connection = new SimpleDebuggableConnection($parameters);
 
 $redis = new Predis\Client($connection);
