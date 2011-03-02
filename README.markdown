@@ -4,7 +4,7 @@
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
-For a version compatible with PHP 5.2 you must use the backported version of latest release in the 0.6.x series.
+For a version compatible with PHP 5.2 you must use the backported version of the latest release in the 0.6.x series.
 Please refer to the TODO file to see which issues are still pending and what is due to be implemented soon in Predis.
 
 
@@ -15,6 +15,7 @@ Please refer to the TODO file to see which issues are still pending and what is 
 - Command pipelining on single and multiple connections.
 - Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
 - Lazy connections (connections to Redis instances are only established just in time).
+- Ability to connect to Redis using TCP/IP or UNIX domain sockets by default.
 - Flexible system to define and register your own set of commands to a client instance.
 
 
@@ -28,7 +29,7 @@ complete coverage of all the features available in Predis.
 
 Predis relies on the autoloading features of PHP and complies with the 
 [PSR-0 standard](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) 
-for interoperability with the major frameworks and libraries.
+for interoperability with most of the major frameworks and libraries.
 When used in simple projects or scripts you might need to define an autoloader function:
 
     spl_autoload_register(function($class) {
