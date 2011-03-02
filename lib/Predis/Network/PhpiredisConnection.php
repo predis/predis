@@ -28,6 +28,12 @@ class PhpiredisConnection extends ConnectionBase {
     private $_reader, $_throwErrors;
 
     public function __construct(ConnectionParameters $parameters) {
+        if (!function_exists('socket_create')) {
+            throw new ClientException(
+                'The socket extension must be loaded in order to be able to ' .
+                'use this connection class'
+            );
+        }
         parent::__construct($this->checkParameters($parameters));
         $this->_throwErrors = true;
         $this->initializeReader();
@@ -63,8 +69,8 @@ class PhpiredisConnection extends ConnectionBase {
     private function initializeReader() {
         if (!function_exists('phpiredis_reader_create')) {
             throw new ClientException(
-                'The phpiredis extension must be loaded in order to ' .
-                'be able to use this protocol processor'
+                'The phpiredis extension must be loaded in order to be able to ' .
+                'use this connection class'
             );
         }
         $this->_reader = phpiredis_reader_create();
