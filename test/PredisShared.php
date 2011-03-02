@@ -214,7 +214,7 @@ class RC {
     public static function getConnectionParametersArgumentsString($arguments = null) {
         // TODO: must be improved
         $args = $arguments ?: RC::getConnectionParametersArgumentsArray();
-        $paramsString = "redis://{$args['host']}:{$args['port']}/?";
+        $paramsString = "tcp://{$args['host']}:{$args['port']}/?";
         unset($args['host']);
         unset($args['port']);
         foreach($args as $k => $v) {

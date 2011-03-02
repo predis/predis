@@ -180,15 +180,15 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
 
-    /* Predis\Network\TcpConnection */
+    /* Predis\Network\StreamConnection */
 
-    function testTcpConnection_StringCastReturnsIPAndPort() {
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+    function testStreamConnection_StringCastReturnsIPAndPort() {
+        $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
         $this->assertEquals(RC::SERVER_HOST . ':' . RC::SERVER_PORT, (string) $connection);
     }
 
-    function testTcpConnection_ConnectDisconnect() {
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+    function testStreamConnection_ConnectDisconnect() {
+        $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $connection->connect();
@@ -197,18 +197,18 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($connection->isConnected());
     }
 
-    function testTcpConnection_WriteAndReadCommand() {
+    function testStreamConnection_WriteAndReadCommand() {
         $cmd = \Predis\Profiles\ServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+        $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
         $connection->connect();
 
         $connection->writeCommand($cmd);
         $this->assertTrue($connection->readResponse($cmd));
     }
 
-    function testTcpConnection_WriteCommandAndCloseConnection() {
+    function testStreamConnection_WriteCommandAndCloseConnection() {
         $cmd = \Predis\Profiles\ServerProfile::getDefault()->createCommand('quit');
-        $connection = new \Predis\Network\TcpConnection(new \Predis\ConnectionParameters(
+        $connection = new \Predis\Network\StreamConnection(new \Predis\ConnectionParameters(
             RC::getConnectionArguments() + array('read_write_timeout' => 0.5)
         ));
 
@@ -223,17 +223,17 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testTcpConnection_GetSocketOpensConnection() {
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+    function testStreamConnection_GetSocketOpensConnection() {
+        $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $this->assertType('resource', $connection->getResource());
         $this->assertTrue($connection->isConnected());
     }
 
-    function testTcpConnection_LazyConnect() {
+    function testStreamConnection_LazyConnect() {
         $cmd = \Predis\Profiles\ServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+        $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
         $connection->writeCommand($cmd);
@@ -241,24 +241,19 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($connection->readResponse($cmd));
     }
 
-    function testTcpConnection_WriteBytes() {
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
-        $this->assertEquals('PONG', $connection->writeBytes("PING\r\n"));
-    }
-
-    function testTcpConnection_Alias() {
-        $connection1 = new \Predis\Network\TcpConnection(RC::getConnectionParameters());
+    function testStreamConnection_Alias() {
+        $connection1 = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
         $this->assertNull($connection1->getParameters()->alias);
 
         $args = array_merge(RC::getConnectionArguments(), array('alias' => 'servername'));
-        $connection2 = new \Predis\Network\TcpConnection(new \Predis\ConnectionParameters($args));
+        $connection2 = new \Predis\Network\StreamConnection(new \Predis\ConnectionParameters($args));
         $this->assertEquals('servername', $connection2->getParameters()->alias);
     }
 
-    function testTcpConnection_ConnectionTimeout() {
+    function testStreamConnection_ConnectionTimeout() {
         $timeout = 3;
         $args    = array('host' => '1.0.0.1', 'connection_timeout' => $timeout);
-        $connection = new \Predis\Network\TcpConnection(new \Predis\ConnectionParameters($args));
+        $connection = new \Predis\Network\StreamConnection(new \Predis\ConnectionParameters($args));
 
         $start = time();
         RC::testForCommunicationException($this, null, function() use($connection) {
@@ -267,11 +262,11 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), $timeout, '', 1);
     }
 
-    function testTcpConnection_ReadTimeout() {
+    function testStreamConnection_ReadTimeout() {
         $timeout = 1;
         $args    = array_merge(RC::getConnectionArguments(), array('read_write_timeout' => $timeout));
         $cmdFake = \Predis\Profiles\ServerProfile::getDefault()->createCommand('ping');
-        $connection = new \Predis\Network\TcpConnection(new \Predis\ConnectionParameters($args));
+        $connection = new \Predis\Network\StreamConnection(new \Predis\ConnectionParameters($args));
 
         $expectedMessage = 'Error while reading line from the server';
         $start = time();
@@ -287,7 +282,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseReader_OptionIterableMultiBulkReplies() {
         $protocol = new Predis\Protocols\ComposableTextProtocol();
         $reader = $protocol->getReader();
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters(), $protocol);
+        $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
 
         $reader->setHandler(
             \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK,
@@ -307,7 +302,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseReader_OptionExceptionOnError() {
         $protocol = new Predis\Protocols\ComposableTextProtocol();
         $reader = $protocol->getReader();
-        $connection = new \Predis\Network\TcpConnection(RC::getConnectionParameters(), $protocol);
+        $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
 
         $rawCmdUnexpected = "*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n";
         $connection->writeBytes("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n");
@@ -335,8 +330,9 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testResponseReader_EmptyBulkResponse() {
-        $client = new \Predis\Client();
-        $client->getConnection()->setProtocol(new \Predis\Protocols\ComposableTextProtocol());
+        $protocol = new \Predis\Protocols\ComposableTextProtocol();
+        $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
+        $client = new \Predis\Client($connection);
 
         $this->assertTrue($client->set('foo', ''));
         $this->assertEquals('', $client->get('foo'));
@@ -353,7 +349,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         ));
         $params2 = RC::getConnectionParametersArgumentsString($params1);
         $params3 = new \Predis\ConnectionParameters($params1);
-        $params4 = new \Predis\Network\TcpConnection($params3);
+        $params4 = new \Predis\Network\StreamConnection($params3);
         foreach (array($params1, $params2, $params3, $params4) as $params) {
             $client = new \Predis\Client($params);
             $parameters = $client->getConnection()->getParameters();
@@ -373,7 +369,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         ));
         $params2 = RC::getConnectionParametersArgumentsString($params1);
         $params3 = new \Predis\ConnectionParameters($params1);
-        $params4 = new \Predis\Network\TcpConnection($params3);
+        $params4 = new \Predis\Network\StreamConnection($params3);
 
         $client1 = new \Predis\Client(array($params1, $params2, $params3, $params4));
         foreach ($client1->getConnection() as $connection) {
@@ -456,7 +452,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testCommandPipeline_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getConnection()->getProtocol()->setOption('throw_errors', false);
+        $client->getConnection()->setProtocolOption('throw_errors', false);
 
         $replies = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
@@ -578,7 +574,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testMultiExecContext_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getConnection()->getProtocol()->setOption('throw_errors', false);
+        $client->getConnection()->setProtocolOption('throw_errors', false);
 
         $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');
