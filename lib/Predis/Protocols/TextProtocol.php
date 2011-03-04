@@ -3,6 +3,9 @@
 namespace Predis\Protocols;
 
 use Predis\ICommand;
+use Predis\ResponseError;
+use Predis\ResponseQueued;
+use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
@@ -76,9 +79,9 @@ class TextProtocol implements IRedisProtocol {
             case '-':    // error
                 $errorMessage = substr($payload, 4);
                 if ($this->_throwErrors) {
-                    throw new \Predis\ServerException($errorMessage);
+                    throw new ServerException($errorMessage);
                 }
-                return new \Predis\ResponseError($errorMessage);
+                return new ResponseError($errorMessage);
 
             default:
                 throw new CommunicationException(
