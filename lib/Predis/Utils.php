@@ -4,7 +4,6 @@ namespace Predis;
 
 use Predis\Network\IConnection;
 use Predis\Network\IConnectionCluster;
-use Predis\Network\ConnectionCluster;
 
 class Utils {
     public static function isCluster(IConnection $connection) {
