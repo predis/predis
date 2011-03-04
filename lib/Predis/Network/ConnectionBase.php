@@ -9,8 +9,8 @@ use Predis\ClientException;
 use Predis\CommunicationException;
 
 abstract class ConnectionBase implements IConnectionSingle {
-    private $_cachedId, $_resource;
-    protected $_params, $_initCmds;
+    private $_cachedId;
+    protected $_params, $_initCmds, $_resource;
 
     public function __construct(ConnectionParameters $parameters) {
         $this->_initCmds = array();
