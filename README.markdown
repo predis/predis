@@ -151,6 +151,7 @@ too, even though they are not the preferred way to contribute to Predis.
 
 - [Lorenzo Castelli](http://github.com/lcastelli)
 - [Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
+- [Sebastian Waisbrot](http://github.com/seppo0010) for his work on extending [phpiredis](http://github.com/seppo0010/phpiredis) for Predis
 
 ## License ##
 
