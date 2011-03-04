@@ -35,10 +35,6 @@ abstract class Command implements ICommand {
         return null;
     }
 
-    public function closesConnection() {
-        return false;
-    }
-
     protected function filterArguments(Array $arguments) {
         return $arguments;
     }

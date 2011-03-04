@@ -40,9 +40,6 @@ abstract class ConnectionBase implements IConnectionSingle {
 
     public function executeCommand(ICommand $command) {
         $this->writeCommand($command);
-        if ($command->closesConnection()) {
-            return $this->disconnect();
-        }
         return $this->readResponse($command);
     }
 

@@ -127,6 +127,10 @@ class Client {
         $this->_connection->disconnect();
     }
 
+    public function quit() {
+        $this->disconnect();
+    }
+
     public function isConnected() {
         return $this->_connection->isConnected();
     }
