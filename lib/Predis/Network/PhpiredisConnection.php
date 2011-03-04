@@ -21,6 +21,7 @@ namespace Predis\Network;
 use Predis\ICommand;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
+use Predis\ClientException;
 use Predis\ServerException;
 use Predis\ConnectionParameters;
 
