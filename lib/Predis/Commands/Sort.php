@@ -2,8 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Command;
-
 class Sort extends Command {
     public function getCommandId() { return 'SORT'; }
     public function filterArguments(Array $arguments) {

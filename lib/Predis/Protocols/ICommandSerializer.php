@@ -2,7 +2,7 @@
 
 namespace Predis\Protocols;
 
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 
 interface ICommandSerializer {
     public function serialize(ICommand $command);

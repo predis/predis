@@ -2,8 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Command;
-
 class HashSetMultiple extends Command {
     public function getCommandId() { return 'HMSET'; }
     public function filterArguments(Array $arguments) {

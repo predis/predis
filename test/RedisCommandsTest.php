@@ -43,9 +43,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testMultiExec() {
         // NOTE: due to a limitation in the current implementation of Predis\Client,
-        //       the replies returned by Predis\Command\Exec are not parsed by their
-        //       respective Predis\Command::parseResponse methods. If you need that
-        //       kind of behaviour, you should use an instance of Predis\MultiExecBlock.
+        //       the replies returned by Predis\Commands\Exec are not parsed by their
+        //       respective Predis\Commands\Command::parseResponse methods. If you
+        //       need that kind of behaviour, you should use an instance of
+        //       Predis\MultiExecBlock.
         $this->assertTrue($this->redis->multi());
         $this->assertType('Predis\ResponseQueued', $this->redis->ping());
         $this->assertType('Predis\ResponseQueued', $this->redis->echo('hello'));

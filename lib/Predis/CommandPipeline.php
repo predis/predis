@@ -2,6 +2,7 @@
 
 namespace Predis;
 
+use Predis\Commands\ICommand;
 use Predis\Pipeline\IPipelineExecutor;
 
 class CommandPipeline {

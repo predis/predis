@@ -2,8 +2,8 @@
 
 namespace Predis\Network;
 
-use Predis\ICommand;
 use Predis\ClientException;
+use Predis\Commands\ICommand;
 use Predis\Distribution\IDistributionStrategy;
 
 class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {

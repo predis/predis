@@ -2,6 +2,7 @@
 
 namespace Predis;
 
+use Predis\Commands\ICommand;
 use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
 use Predis\Network\ConnectionCluster;

@@ -2,7 +2,7 @@
 
 namespace Predis\Network;
 
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 
 interface IConnectionSingle extends IConnection {
     public function __toString();

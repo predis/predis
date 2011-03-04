@@ -2,8 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Command;
-
 class ZSetUnionStore extends Command {
     public function getCommandId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {

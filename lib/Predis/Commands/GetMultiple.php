@@ -3,7 +3,6 @@
 namespace Predis\Commands;
 
 use Predis\Utils;
-use Predis\Command;
 
 class GetMultiple extends Command {
     public function canBeHashed()  { return false; }

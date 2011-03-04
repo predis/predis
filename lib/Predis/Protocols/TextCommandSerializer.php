@@ -2,7 +2,7 @@
 
 namespace Predis\Protocols;
 
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 
 class TextCommandSerializer implements ICommandSerializer {
     public function serialize(ICommand $command) {

@@ -2,7 +2,7 @@
 
 namespace Predis\Network;
 
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 
 interface IConnectionCluster extends IConnection {
     public function add(IConnectionSingle $connection);

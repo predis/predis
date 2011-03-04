@@ -2,8 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Command;
-
 class ZSetRangeByScore extends ZSetRange {
     public function getCommandId() { return 'ZRANGEBYSCORE'; }
     protected function prepareOptions($options) {

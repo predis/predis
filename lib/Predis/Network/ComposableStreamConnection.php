@@ -2,9 +2,9 @@
 
 namespace Predis\Network;
 
-use Predis\ICommand;
 use Predis\ConnectionParameters;
 use Predis\CommunicationException;
+use Predis\Commands\ICommand;
 use Predis\Protocols\IProtocolProcessor;
 use Predis\Protocols\TextProtocol;
 

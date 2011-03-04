@@ -3,7 +3,6 @@
 namespace Predis\Commands;
 
 use Predis\Utils;
-use Predis\Command;
 
 class SetIntersectionStore extends Command {
     public function getCommandId() { return 'SINTERSTORE'; }

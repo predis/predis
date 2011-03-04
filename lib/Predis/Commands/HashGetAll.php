@@ -2,7 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Command;
 use Predis\Iterators\MultiBulkResponseTuple;
 
 class HashGetAll extends Command {

@@ -98,7 +98,7 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends Predis\Command {
+    class BrandNewRedisCommand extends Predis\Commands\Command {
         public function getCommandId() { return 'NEWCMD'; }
     }
 

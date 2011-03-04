@@ -2,12 +2,12 @@
 
 namespace Predis\Network;
 
-use Predis\ICommand;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\ConnectionParameters;
 use Predis\CommunicationException;
+use Predis\Commands\ICommand;
 use Predis\Protocols\TextCommandSerializer;
 use Predis\Iterators\MultiBulkResponseSimple;
 

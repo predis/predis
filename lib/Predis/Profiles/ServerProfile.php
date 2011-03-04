@@ -97,7 +97,7 @@ abstract class ServerProfile implements IServerProfile {
     public function registerCommand($command, $aliases) {
         $commandReflection = new \ReflectionClass($command);
 
-        if (!$commandReflection->isSubclassOf('\Predis\ICommand')) {
+        if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis;
+namespace Predis\Commands;
 
 use Predis\Distribution\IDistributionStrategy;
 

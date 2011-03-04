@@ -1,8 +1,8 @@
 <?php
 require_once 'SharedConfigurations.php';
 
-use Predis\ICommand;
 use Predis\ConnectionParameters;
+use Predis\Commands\ICommand;
 use Predis\Network\StreamConnection;
 
 class SimpleDebuggableConnection extends StreamConnection {

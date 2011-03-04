@@ -59,7 +59,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
 
-    /* Predis\Command and derivates */
+    /* Predis\Commands\Command and derivates */
 
     function testCommand_TestArguments() {
         $cmdArgs = array('key1', 'key2', 'key3');

@@ -18,12 +18,12 @@ consult the repository of the project at http://github.com/seppo0010/phpiredis
 
 namespace Predis\Network;
 
-use Predis\ICommand;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
 use Predis\ConnectionParameters;
+use Predis\Commands\ICommand;
 
 class PhpiredisConnection extends ConnectionBase {
     private $_reader, $_throwErrors;

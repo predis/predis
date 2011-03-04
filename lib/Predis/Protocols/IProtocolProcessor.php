@@ -2,7 +2,7 @@
 
 namespace Predis\Protocols;
 
-use Predis\ICommand;
+use Predis\Commands\ICommand;
 use Predis\Network\IConnectionComposable;
 
 interface IProtocolProcessor {

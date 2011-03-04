@@ -2,11 +2,11 @@
 
 namespace Predis\Protocols;
 
-use Predis\ICommand;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\CommunicationException;
+use Predis\Commands\ICommand;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
