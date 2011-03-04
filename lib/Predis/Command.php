@@ -62,4 +62,15 @@ abstract class Command implements ICommand {
     public function parseResponse($data) {
         return $data;
     }
+
+    public function __toString() {
+        $reducer = function($acc, $arg) {
+            if (strlen($arg) > 32) {
+                $arg = substr($arg, 0, 32) . '[...]';
+            }
+            $acc .= " $arg";
+            return $acc;
+        };
+        return array_reduce($this->getArguments(), $reducer, $this->getCommandId());
+    }
 }
