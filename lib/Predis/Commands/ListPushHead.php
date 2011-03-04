@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ListPushHead extends Command {
-    public function getCommandId() { return 'LPUSH'; }
+    public function getId() { return 'LPUSH'; }
 }

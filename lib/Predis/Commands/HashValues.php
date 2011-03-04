@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class HashValues extends Command {
-    public function getCommandId() { return 'HVALS'; }
+    public function getId() { return 'HVALS'; }
 }

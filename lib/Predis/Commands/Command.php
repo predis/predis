@@ -71,6 +71,6 @@ abstract class Command implements ICommand {
             $acc .= " $arg";
             return $acc;
         };
-        return array_reduce($this->getArguments(), $reducer, $this->getCommandId());
+        return array_reduce($this->getArguments(), $reducer, $this->getId());
     }
 }

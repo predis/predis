@@ -6,7 +6,7 @@ use Predis\Utils;
 
 class GetMultiple extends Command {
     public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'MGET'; }
+    public function getId() { return 'MGET'; }
     public function filterArguments(Array $arguments) {
         return Utils::filterArrayArguments($arguments);
     }

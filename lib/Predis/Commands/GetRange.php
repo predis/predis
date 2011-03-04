@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class GetRange extends Command {
-    public function getCommandId() { return 'GETRANGE'; }
+    public function getId() { return 'GETRANGE'; }
 }

@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ZSetIncrementBy extends Command {
-    public function getCommandId() { return 'ZINCRBY'; }
+    public function getId() { return 'ZINCRBY'; }
 }

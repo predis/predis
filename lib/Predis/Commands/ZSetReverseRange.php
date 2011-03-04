@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ZSetReverseRange extends ZSetRange {
-    public function getCommandId() { return 'ZREVRANGE'; }
+    public function getId() { return 'ZREVRANGE'; }
 }

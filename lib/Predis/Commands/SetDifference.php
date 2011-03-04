@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetDifference extends SetIntersection {
-    public function getCommandId() { return 'SDIFF'; }
+    public function getId() { return 'SDIFF'; }
 }

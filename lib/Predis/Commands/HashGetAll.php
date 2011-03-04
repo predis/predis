@@ -5,7 +5,7 @@ namespace Predis\Commands;
 use Predis\Iterators\MultiBulkResponseTuple;
 
 class HashGetAll extends Command {
-    public function getCommandId() { return 'HGETALL'; }
+    public function getId() { return 'HGETALL'; }
     public function parseResponse($data) {
         if ($data instanceof \Iterator) {
             return new MultiBulkResponseTuple($data);

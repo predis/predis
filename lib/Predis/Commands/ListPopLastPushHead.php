@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ListPopLastPushHead extends Command {
-    public function getCommandId() { return 'RPOPLPUSH'; }
+    public function getId() { return 'RPOPLPUSH'; }
 }

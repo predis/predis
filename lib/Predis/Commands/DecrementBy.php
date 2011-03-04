@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class DecrementBy extends Command {
-    public function getCommandId() { return 'DECRBY'; }
+    public function getId() { return 'DECRBY'; }
 }

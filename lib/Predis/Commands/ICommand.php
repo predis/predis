@@ -5,7 +5,7 @@ namespace Predis\Commands;
 use Predis\Distribution\IDistributionStrategy;
 
 interface ICommand {
-    public function getCommandId();
+    public function getId();
     public function canBeHashed();
     public function getHash(IDistributionStrategy $distributor);
     public function setArgumentsArray(Array $arguments);

@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetRandomMember extends Command {
-    public function getCommandId() { return 'SRANDMEMBER'; }
+    public function getId() { return 'SRANDMEMBER'; }
 }

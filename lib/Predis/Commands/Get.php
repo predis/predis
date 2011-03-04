@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class Get extends Command {
-    public function getCommandId() { return 'GET'; }
+    public function getId() { return 'GET'; }
 }

@@ -249,7 +249,7 @@ class PhpiredisConnection extends ConnectionBase {
 
     public function writeCommand(ICommand $command) {
         $cmdargs = $command->getArguments();
-        array_unshift($cmdargs, $command->getCommandId());
+        array_unshift($cmdargs, $command->getId());
         $this->write(phpiredis_format_command($cmdargs));
     }
 

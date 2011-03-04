@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ZSetRemoveRangeByScore extends Command {
-    public function getCommandId() { return 'ZREMRANGEBYSCORE'; }
+    public function getId() { return 'ZREMRANGEBYSCORE'; }
 }

@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetUnion extends SetIntersection {
-    public function getCommandId() { return 'SUNION'; }
+    public function getId() { return 'SUNION'; }
 }

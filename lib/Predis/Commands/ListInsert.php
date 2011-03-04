@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ListInsert extends Command {
-    public function getCommandId() { return 'LINSERT'; }
+    public function getId() { return 'LINSERT'; }
 }

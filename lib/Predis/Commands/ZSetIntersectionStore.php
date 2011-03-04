@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ZSetIntersectionStore extends ZSetUnionStore {
-    public function getCommandId() { return 'ZINTERSTORE'; }
+    public function getId() { return 'ZINTERSTORE'; }
 }

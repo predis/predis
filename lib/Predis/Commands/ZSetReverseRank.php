@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ZSetReverseRank extends Command {
-    public function getCommandId() { return 'ZREVRANK'; }
+    public function getId() { return 'ZREVRANK'; }
 }

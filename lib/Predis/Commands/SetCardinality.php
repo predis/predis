@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetCardinality extends Command {
-    public function getCommandId() { return 'SCARD'; }
+    public function getId() { return 'SCARD'; }
 }

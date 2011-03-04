@@ -17,7 +17,7 @@ class SimpleDebuggableConnection extends StreamConnection {
     private function storeDebug(ICommand $command, $direction) {
         $firtsArg  = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->_tstart, 4);
-        $debug  = $command->getCommandId();
+        $debug  = $command->getId();
         $debug .= isset($firtsArg) ? " $firtsArg " : ' ';
         $debug .= "$direction $this";
         $debug .= " [{$timestamp}s]";

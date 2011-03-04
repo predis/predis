@@ -6,7 +6,7 @@ use Predis\Iterators\MultiBulkResponseTuple;
 
 class ZSetRange extends Command {
     private $_withScores = false;
-    public function getCommandId() { return 'ZRANGE'; }
+    public function getId() { return 'ZRANGE'; }
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);

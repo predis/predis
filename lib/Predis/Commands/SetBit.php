@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetBit extends Command {
-    public function getCommandId() { return 'SETBIT'; }
+    public function getId() { return 'SETBIT'; }
 }

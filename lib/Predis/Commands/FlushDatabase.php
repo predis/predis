@@ -4,5 +4,5 @@ namespace Predis\Commands;
 
 class FlushDatabase extends Command {
     public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'FLUSHDB'; }
+    public function getId() { return 'FLUSHDB'; }
 }

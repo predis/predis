@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class HashIncrementBy extends Command {
-    public function getCommandId() { return 'HINCRBY'; }
+    public function getId() { return 'HINCRBY'; }
 }

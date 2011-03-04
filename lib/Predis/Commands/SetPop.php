@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class SetPop  extends Command {
-    public function getCommandId() { return 'SPOP'; }
+    public function getId() { return 'SPOP'; }
 }

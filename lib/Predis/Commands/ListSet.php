@@ -3,5 +3,5 @@
 namespace Predis\Commands;
 
 class ListSet extends Command {
-    public function getCommandId() { return 'LSET'; }
+    public function getId() { return 'LSET'; }
 }

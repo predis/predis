@@ -3,7 +3,7 @@
 namespace Predis\Commands;
 
 class ZSetUnionStore extends Command {
-    public function getCommandId() { return 'ZUNIONSTORE'; }
+    public function getId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
         $argc    = count($arguments);

@@ -6,7 +6,7 @@ use Predis\Commands\ICommand;
 
 class TextCommandSerializer implements ICommandSerializer {
     public function serialize(ICommand $command) {
-        $commandId = $command->getCommandId();
+        $commandId = $command->getId();
         $arguments = $command->getArguments();
 
         $cmdlen = strlen($commandId);
