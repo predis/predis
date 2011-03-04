@@ -57,14 +57,14 @@ class ConnectionParameters {
         return self::$_sharedOptions;
     }
 
-    public static function define($name, Options\IOption $option) {
+    public static function define($parameter, Options\IOption $handler) {
         self::getSharedOptions();
-        self::$_sharedOptions[$name] = $option;
+        self::$_sharedOptions[$parameter] = $handler;
     }
 
-    public static function undefine($name) {
+    public static function undefine($parameter) {
         self::getSharedOptions();
-        unset(self::$_sharedOptions[$name]);
+        unset(self::$_sharedOptions[$parameter]);
     }
 
     protected function parseURI($uri) {

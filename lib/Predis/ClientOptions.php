@@ -56,6 +56,9 @@ class ClientOptions {
 
     public function __get($option) {
         if (!isset($this->_options[$option])) {
+            if (!isset($this->_handlers[$option])) {
+                return null;
+            }
             $handler = $this->_handlers[$option];
             $this->_options[$option] = $handler->getDefault();
         }
