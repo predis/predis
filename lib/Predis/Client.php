@@ -66,7 +66,7 @@ class Client {
         }
 
         $options = $this->_options;
-        $connection = self::newConnection($parameters);
+        $connection = self::newConnectionInternal($parameters);
         $connection->setProtocolOption('iterable_multibulk', $options->iterable_multibulk);
         $connection->setProtocolOption('throw_errors', $options->throw_errors);
         $this->pushInitCommands($connection);
@@ -234,7 +234,7 @@ class Client {
         }
     }
 
-    public static function registerScheme($scheme, $connectionClass) {
+    public static function defineConnection($scheme, $connectionClass) {
         self::ensureDefaultSchemes();
         $connectionReflection = new \ReflectionClass($connectionClass);
         if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
@@ -253,9 +253,16 @@ class Client {
         return self::$_connectionSchemes[$scheme];
     }
 
-    private static function newConnection(ConnectionParameters $parameters) {
+    private static function newConnectionInternal(ConnectionParameters $parameters) {
         $connection = self::getConnectionClass($parameters->scheme);
         return new $connection($parameters);
+    }
+
+    public static function newConnection($parameters) {
+        if (!$parameters instanceof ConnectionParameters) {
+            $parameters = new ConnectionParameters($parameters);
+        }
+        return self::newConnectionInternal($parameters);
     }
 
     public static function newConnectionByScheme($scheme, $parameters = array()) {
