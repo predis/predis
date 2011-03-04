@@ -10,7 +10,7 @@ use Predis\CommunicationException;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
-class TextProtocol implements IRedisProtocol {
+class TextProtocol implements IProtocolProcessor {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
     const ERROR   = 'ERR';

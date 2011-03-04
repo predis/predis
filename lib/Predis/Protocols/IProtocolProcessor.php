@@ -5,7 +5,7 @@ namespace Predis\Protocols;
 use Predis\ICommand;
 use Predis\Network\IConnectionComposable;
 
-interface IRedisProtocol {
+interface IProtocolProcessor {
     public function write(IConnectionComposable $connection, ICommand $command);
     public function read(IConnectionComposable $connection);
     public function setOption($option, $value);

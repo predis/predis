@@ -2,10 +2,10 @@
 
 namespace Predis\Network;
 
-use Predis\Protocols\IRedisProtocol;
+use Predis\Protocols\IProtocolProcessor;
 
 interface IConnectionComposable extends IConnectionSingle {
-    public function setProtocol(IRedisProtocol $protocol);
+    public function setProtocol(IProtocolProcessor $protocol);
     public function getProtocol();
     public function writeBytes($buffer);
     public function readBytes($length);

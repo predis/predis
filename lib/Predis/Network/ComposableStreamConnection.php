@@ -5,18 +5,18 @@ namespace Predis\Network;
 use Predis\ICommand;
 use Predis\ConnectionParameters;
 use Predis\CommunicationException;
-use Predis\Protocols\IRedisProtocol;
+use Predis\Protocols\IProtocolProcessor;
 use Predis\Protocols\TextProtocol;
 
 class ComposableStreamConnection extends StreamConnection implements IConnectionComposable {
     private $_protocol;
 
-    public function __construct(ConnectionParameters $parameters, IRedisProtocol $protocol = null) {
+    public function __construct(ConnectionParameters $parameters, IProtocolProcessor $protocol = null) {
         parent::__construct($parameters);
         $this->_protocol = $protocol ?: new TextProtocol();
     }
 
-    public function setProtocol(IRedisProtocol $protocol) {
+    public function setProtocol(IProtocolProcessor $protocol) {
         if ($protocol === null) {
             throw new \InvalidArgumentException("The protocol instance cannot be a null value");
         }

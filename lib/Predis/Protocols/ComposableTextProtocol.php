@@ -5,7 +5,7 @@ namespace Predis\Protocols;
 use Predis\ICommand;
 use Predis\Network\IConnectionComposable;
 
-class ComposableTextProtocol implements IRedisProtocolExtended {
+class ComposableTextProtocol implements IProtocolProcessorExtended {
     private $_serializer, $_reader;
 
     public function __construct(Array $options = array()) {
