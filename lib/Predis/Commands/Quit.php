@@ -5,5 +5,4 @@ namespace Predis\Commands;
 class Quit extends Command {
     public function canBeHashed()  { return false; }
     public function getId() { return 'QUIT'; }
-    public function closesConnection() { return true; }
 }
