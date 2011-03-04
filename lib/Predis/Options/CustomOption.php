@@ -3,7 +3,7 @@
 namespace Predis\Options;
 
 class CustomOption extends Option {
-    private $__validate, $_default;
+    private $_validate, $_default;
 
     public function __construct(Array $options) {
         $validate = isset($options['validate']) ? $options['validate'] : 'parent::validate';
