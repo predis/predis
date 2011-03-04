@@ -30,6 +30,16 @@ class ClientOptions {
         return self::$_sharedOptions;
     }
 
+    public static function define($option, Options\IOption $handler) {
+        self::getSharedOptions();
+        self::$_sharedOptions[$option] = $handler;
+    }
+
+    public static function undefine($option) {
+        self::getSharedOptions();
+        unset(self::$_sharedOptions[$option]);
+    }
+
     private function initialize($options) {
         $this->_handlers = $this->getOptions();
         foreach ($options as $option => $value) {
@@ -42,10 +52,6 @@ class ClientOptions {
 
     private function getOptions() {
         return self::getSharedOptions();
-    }
-
-    protected function defineOption($name, Options\IOption $option) {
-        $this->_handlers[$name] = $option;
     }
 
     public function __get($option) {

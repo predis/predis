@@ -57,6 +57,16 @@ class ConnectionParameters {
         return self::$_sharedOptions;
     }
 
+    public static function define($name, Options\IOption $option) {
+        self::getSharedOptions();
+        self::$_sharedOptions[$name] = $option;
+    }
+
+    public static function undefine($name) {
+        self::getSharedOptions();
+        unset(self::$_sharedOptions[$name]);
+    }
+
     protected function parseURI($uri) {
         if (!is_string($uri)) {
             throw new \InvalidArgumentException('URI must be a string');
