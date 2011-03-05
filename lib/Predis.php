@@ -1292,27 +1292,23 @@ class ConnectionParameters {
 
     public function __toString() {
         $str = null;
-        $query = array();
-        $allowed = array('database', 'alias', 'weight');
-
         if ($this->scheme === 'unix') {
             $str = "{$this->scheme}://{$this->path}";
         }
         else {
-            $str = "{$this->scheme}://{$this->host}:{$this->port}/?";
-            $allowed = array_merge($allowed, array(
-                'connection_async', 'connection_persistent',
-                'connection_timeout', 'read_write_timeout',
-            ));
+            $str = "{$this->scheme}://{$this->host}:{$this->port}";
         }
 
+        $query = array();
+        $reject = array('scheme', 'host', 'port', 'password', 'path');
         foreach ($this->_parameters as $k => $v) {
-            if (in_array($k, $allowed) && $v !== null) {
-                $v = $v === false ? '0' : $v;
-                $query[] = $k . '=' . ($v === false ? '0' : $v);
+            if (in_array($k, $reject) || $v === null) {
+                continue;
             }
+            $v = $v === false ? '0' : $v;
+            $query[] = $k . '=' . ($v === false ? '0' : $v);
         }
-        return $str . implode('&', $query);
+        return count($query) > 0 ? ($str . '/?' . implode('&', $query)) : $str;
     }
 }
 
