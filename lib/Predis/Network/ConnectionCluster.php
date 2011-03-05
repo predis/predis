@@ -73,8 +73,6 @@ class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {
     }
 
     public function executeCommand(ICommand $command) {
-        $connection = $this->getConnection($command);
-        $connection->writeCommand($command);
-        return $connection->readResponse($command);
+        return $this->getConnection($command)->executeCommand($command);
     }
 }
