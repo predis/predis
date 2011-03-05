@@ -11,10 +11,10 @@ Please refer to the TODO file to see which issues are still pending and what is 
 ## Main features ##
 
 - Full support for Redis 1.2, 2.0 and 2.2. Different versions of Redis are supported via server profiles.
-- Client-side sharding (support for consistent hashing and custom distribution strategies).
-- Command pipelining on single and multiple connections.
-- Abstraction for Redis transactions (>= 2.0) with support for CAS operations (>= 2.2).
-- Lazy connections (connections to Redis instances are only established just in time).
+- Client-side sharding with support for consistent hashing and custom distribution strategies.
+- Command pipelining on single and aggregated connections.
+- Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
+- Lazy connections to Redis instances are automatically estabilished upon the first call to a command.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets by default.
 - Flexible system to define and register your own set of commands to a client instance.
 
@@ -47,34 +47,30 @@ you can load Predis in your scripts simply by using functions such as _require_ 
 
 ### Connecting to a local instance of Redis ###
 
-You don't have to specify a tcp host and port when connecting to Redis instances 
-running on the localhost on the default port:
+You don't have to specify a tcp host and port when connecting to Redis instances running on the 
+localhost on the default port:
 
     $redis = new Predis\Client();
     $redis->set('library', 'predis');
     $value = $redis->get('library');
 
+You can also use an URI string or an array-based dictionary to specify the connection parameters:
 
-### Pipelining multiple commands to a remote instance of Redis ##
-
-Pipelining helps with performances when there is the need to issue many commands 
-to a server in one go:
-
-    $redis   = new Predis\Client('redis://10.0.0.1:6379/');
-    $replies = $redis->pipeline(function($pipe) {
-        $pipe->ping();
-        $pipe->incrby('counter', 10);
-        $pipe->incrby('counter', 30);
-        $pipe->get('counter');
-    });
+    $redis = new Predis\Client('tcp://10.0.0.1:6379');
+    // is equivalent to:
+    $redis = new Predis\Client(array(
+        'scheme' => 'tcp',
+        'host'   => '10.0.0.1',
+        'port' => 6379,
+    ));
 
 
-### Pipelining multiple commands to multiple instances of Redis (sharding) ##
+### Pipelining multiple commands to multiple instances of Redis with client-side sharding ###
 
-Predis supports data sharding using consistent-hashing on keys on the client side. 
-Furthermore, a pipeline can be initialized on a cluster of redis instances in the 
-same exact way they are created on single connection. Sharding is still transparent 
-to the user:
+Pipelining helps with performances when there is the need to issue many commands to a server 
+in one go. Furthermore, pipelining works transparently even on aggregated connections. Predis,
+in fact, supports client-side sharding of data using consistent-hashing on keys and clustered 
+connections are supported natively by the client class.
 
     $redis = new Predis\Client(array(
         array('host' => '10.0.0.1', 'port' => 6379),
@@ -87,6 +83,23 @@ to the user:
             $pipe->get("key:$i");
         }
     });
+
+
+### Overriding standard connection classes with custom ones ###
+
+Predis allows developers to create new connection classes to add support for new protocols 
+or override the existing ones to provide a different implementation compared to the default 
+classes. This can be obtained by subclassing the Predis\Network\IConnectionSingle interface.
+
+    class MyConnectionClass implements Predis\Network\IConnectionSingle {
+        // implementation goes here
+    }
+
+    // Let Predis automatically use your own class to handle the default TCP connection
+    Predis\Client::defineConnection('tcp', 'MyConnectionClass');
+
+
+You can have a look at the Predis\Network namespace for working examples.
 
 
 ### Definition and runtime registration of new commands on the client ###
