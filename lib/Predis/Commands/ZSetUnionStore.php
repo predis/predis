@@ -6,12 +6,17 @@ class ZSetUnionStore extends Command {
     public function getId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
-        $argc    = count($arguments);
-        if ($argc > 1 && is_array($arguments[$argc - 1])) {
+        $argc = count($arguments);
+        if ($argc > 2 && is_array($arguments[$argc - 1])) {
             $options = $this->prepareOptions(array_pop($arguments));
         }
-        $args = is_array($arguments[0]) ? $arguments[0] : $arguments;
-        return  array_merge($args, $options);
+        if (is_array($arguments[1])) {
+            $arguments = array_merge(
+                array($arguments[0], count($arguments[1])),
+                $arguments[1]
+            );
+        }
+        return array_merge($arguments, $options);
     }
     private function prepareOptions($options) {
         $opts = array_change_key_case($options, CASE_UPPER);
