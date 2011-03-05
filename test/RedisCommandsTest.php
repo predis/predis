@@ -1507,6 +1507,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
+        // using an array to pass the list of source keys
+        $sourceKeys = array('zseta', 'zsetb');
+
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', $sourceKeys));
+        $this->assertEquals(
+            array(array('a', 1), array('b', 3), array('d', 3), array('c', 5)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys + options array
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', $sourceKeys, $options));
+        $this->assertEquals(
+            array(array('a', 2), array('b', 7), array('d', 9), array('c', 12)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
             $test->redis->set('zsetFake', 'fake');
             $test->redis->zunionstore('zsetc', 2, 'zseta', 'zsetFake');
@@ -1549,6 +1566,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 2), array('c', 3)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys
+        $sourceKeys = array('zseta', 'zsetb');
+
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', $sourceKeys));
+        $this->assertEquals(
+            array(array('b', 3), array('c', 5)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys + options array
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', $sourceKeys, $options));
+        $this->assertEquals(
+            array(array('b', 7), array('c', 12)),
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 

@@ -1,6 +1,9 @@
 v0.6.6 (2011-xx-xx)
   * Add support for connecting to Redis using UNIX domain sockets (ISSUE #25).
 
+  * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
+    source keys to be used to populate the destination key.
+
 v0.6.5 (2011-02-12)
   * FIX: due to an untested internal change introduced in v0.6.4, a wrong 
     handling of bulk reads of zero-length values was producing protocol 
