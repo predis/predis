@@ -1976,6 +1976,12 @@ class RedisServer_v2_2 extends RedisServer_v2_0 {
 
 class RedisServer_vNext extends RedisServer_v2_2 {
     public function getVersion() { return 'DEV'; }
+    public function getSupportedCommands() {
+        return array_merge(parent::getSupportedCommands(), array(
+            /* remote server control commands */
+            'info'                  => '\Predis\Commands\Info_v24',
+        ));
+    }
 }
 
 /* ------------------------------------------------------------------------- */
@@ -3119,6 +3125,37 @@ class Info extends \Predis\MultiBulkCommand {
                     $db[trim($dbvk)] = $dbvv;
                 }
                 $info[$k] = $db;
+            }
+        }
+        return $info;
+    }
+}
+
+class Info_v24 extends Info {
+    public function parseResponse($data) {
+        $info      = array();
+        $current   = null;
+        $infoLines = explode("\r\n", $data, -1);
+        foreach ($infoLines as $row) {
+            if ($row === '') {
+                continue;
+            }
+            if (preg_match('/^# (\w+)$/', $row, $matches)) {
+                $info[$matches[1]] = array();
+                $current = &$info[$matches[1]];
+                continue;
+            }
+            list($k, $v) = explode(':', $row);
+            if (!preg_match('/^db\d+$/', $k)) {
+                $current[$k] = $v;
+            }
+            else {
+                $db = array();
+                foreach (explode(',', $v) as $dbvar) {
+                    list($dbvk, $dbvv) = explode('=', $dbvar);
+                    $db[trim($dbvk)] = $dbvv;
+                }
+                $current[$k] = $db;
             }
         }
         return $info;
