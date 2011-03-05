@@ -1289,6 +1289,31 @@ class ConnectionParameters {
     public function __isset($parameter) {
         return isset($this->_parameters[$parameter]);
     }
+
+    public function __toString() {
+        $str = null;
+        $query = array();
+        $allowed = array('database', 'alias', 'weight');
+
+        if ($this->scheme === 'unix') {
+            $str = "{$this->scheme}://{$this->path}";
+        }
+        else {
+            $str = "{$this->scheme}://{$this->host}:{$this->port}/?";
+            $allowed = array_merge($allowed, array(
+                'connection_async', 'connection_persistent',
+                'connection_timeout', 'read_write_timeout',
+            ));
+        }
+
+        foreach ($this->_parameters as $k => $v) {
+            if (in_array($k, $allowed) && $v !== null) {
+                $v = $v === false ? '0' : $v;
+                $query[] = $k . '=' . ($v === false ? '0' : $v);
+            }
+        }
+        return $str . implode('&', $query);
+    }
 }
 
 interface IConnection {
