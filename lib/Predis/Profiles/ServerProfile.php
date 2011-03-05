@@ -88,13 +88,13 @@ abstract class ServerProfile implements IServerProfile {
         return $command;
     }
 
-    public function registerCommands(Array $commands) {
+    public function defineCommands(Array $commands) {
         foreach ($commands as $command => $aliases) {
-            $this->registerCommand($command, $aliases);
+            $this->defineCommand($command, $aliases);
         }
     }
 
-    public function registerCommand($command, $aliases) {
+    public function defineCommand($command, $aliases) {
         $commandReflection = new \ReflectionClass($command);
 
         if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {

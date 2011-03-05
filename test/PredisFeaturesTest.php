@@ -153,7 +153,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $cmdClass = '\Predis\Commands\Multi';
 
         $this->assertFalse($profile->supportsCommand($cmdId));
-        $profile->registerCommand(new $cmdClass(), $cmdId);
+        $profile->defineCommand(new $cmdClass(), $cmdId);
         $this->assertTrue($profile->supportsCommand($cmdId));
         $this->assertType($cmdClass, $profile->createCommand($cmdId));
     }
