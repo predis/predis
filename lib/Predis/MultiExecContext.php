@@ -215,7 +215,7 @@ class MultiExecContext {
     private function malformedServerResponse($message) {
         // Since a MULTI/EXEC block cannot be initialized over a clustered
         // connection, we can safely assume that Predis\Client::getConnection()
-        // will always return an instance of Predis\Connection.
+        // will always return an instance of Predis\Network\IConnectionSingle.
         Utils::onCommunicationException(new MalformedServerResponse(
             $this->_client->getConnection(), $message
         ));
