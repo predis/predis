@@ -64,8 +64,10 @@ class StreamConnection extends ConnectionBase {
             $this->onCommunicationException(trim($errstr), $errno);
         }
         if (isset($parameters->read_write_timeout)) {
-            $timeoutSeconds  = floor($parameters->read_write_timeout);
-            $timeoutUSeconds = ($parameters->read_write_timeout - $timeoutSeconds) * 1000000;
+            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
         return $resource;
