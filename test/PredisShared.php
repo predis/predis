@@ -19,6 +19,7 @@ if (!function_exists('array_union')) {
 }
 
 class RC {
+    const SERVER_VERSION   = '2.2';
     const SERVER_HOST      = '127.0.0.1';
     const SERVER_PORT      = 6379;
     const DEFAULT_DATABASE = 15;
@@ -47,7 +48,7 @@ class RC {
     }
 
     private static function createConnection() {
-        $serverProfile = Predis\Profiles\ServerProfile::get('dev');
+        $serverProfile = Predis\Profiles\ServerProfile::get(self::SERVER_VERSION);
         $connection = new Predis\Client(RC::getConnectionArguments(), $serverProfile);
         $connection->connect();
         $connection->select(RC::DEFAULT_DATABASE);
