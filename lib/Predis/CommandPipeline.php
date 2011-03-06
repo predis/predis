@@ -21,7 +21,7 @@ class CommandPipeline {
         return $this;
     }
 
-    private function recordCommand(ICommand $command) {
+    protected function recordCommand(ICommand $command) {
         $this->_pipelineBuffer[] = $command;
     }
 
