@@ -4,6 +4,10 @@ v0.6.6 (2011-xx-xx)
   * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
     source keys to be used to populate the destination key.
 
+  * The "read_write_timeout" connection parameter can now be set to 0 or false 
+    to disable read and write timeouts on connections. The old behaviour of -1 
+    is still intact.
+
 v0.6.5 (2011-02-12)
   * FIX: due to an untested internal change introduced in v0.6.4, a wrong 
     handling of bulk reads of zero-length values was producing protocol 

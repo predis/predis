@@ -1377,9 +1377,11 @@ class Connection implements IConnection {
         }
 
         if (isset($parameters->read_write_timeout)) {
+            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
             $timeoutSeconds  = floor($parameters->read_write_timeout);
-            $timeoutUSeconds = ($parameters->read_write_timeout - $timeoutSeconds) * 1000000;
-            stream_set_timeout($socket, $timeoutSeconds, $timeoutUSeconds);
+            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
+            stream_set_timeout($socket, $rwtimeout, $timeoutUSeconds);
         }
         return $socket;
     }
