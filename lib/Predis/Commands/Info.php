@@ -9,7 +9,10 @@ class Info extends Command {
         $info      = array();
         $infoLines = explode("\r\n", $data, -1);
         foreach ($infoLines as $row) {
-            list($k, $v) = explode(':', $row);
+            @list($k, $v) = explode(':', $row);
+            if ($row === '' || !isset($v)) {
+                continue;
+            }
             if (!preg_match('/^db\d+$/', $k)) {
                 if ($k === 'allocation_stats') {
                     $info[$k] = $this->parseAllocationStats($v);
@@ -31,7 +34,7 @@ class Info extends Command {
     protected function parseAllocationStats($str) {
         $stats = array();
         foreach (explode(',', $str) as $kv) {
-            list($size, $objects, $extra) = explode('=', $kv);
+            @list($size, $objects, $extra) = explode('=', $kv);
             // hack to prevent incorrect values when parsing the >=256 key
             if (isset($extra)) {
                 $size = ">=$objects";
