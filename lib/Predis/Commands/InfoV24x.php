@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-class InfoV24x extends Command {
+class InfoV24x extends Info {
     public function canBeHashed()  { return false; }
     public function getId() { return 'INFO'; }
     public function parseResponse($data) {
@@ -20,6 +20,10 @@ class InfoV24x extends Command {
             }
             list($k, $v) = explode(':', $row);
             if (!preg_match('/^db\d+$/', $k)) {
+                if ($k === 'allocation_stats') {
+                    $current[$k] = $this->parseAllocationStats($v);
+                    continue;
+                }
                 $current[$k] = $v;
             }
             else {
