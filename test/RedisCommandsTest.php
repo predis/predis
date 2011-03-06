@@ -251,7 +251,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $this->redis->substr('var', 3, 5));
         $this->assertEquals('bar', $this->redis->substr('var', -3, -1));
 
-        $this->assertNull($this->redis->substr('var', 5, 0));
+        $this->assertEquals('', $this->redis->substr('var', 5, 0));
 
         $this->redis->set('numeric', 123456789);
         $this->assertEquals(12345, $this->redis->substr('numeric', 0, 4));
