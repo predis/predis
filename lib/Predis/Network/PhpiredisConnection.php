@@ -26,7 +26,7 @@ use Predis\ConnectionParameters;
 use Predis\Commands\ICommand;
 
 class PhpiredisConnection extends ConnectionBase {
-    private $_reader, $_throwErrors;
+    private $_reader;
 
     public function __construct(ConnectionParameters $parameters) {
         if (!function_exists('socket_create')) {
@@ -36,8 +36,7 @@ class PhpiredisConnection extends ConnectionBase {
             );
         }
         parent::__construct($this->checkParameters($parameters));
-        $this->_throwErrors = true;
-        $this->initializeReader();
+        $this->_reader = $this->initializeReader();
     }
 
     public function __destruct() {
@@ -74,9 +73,10 @@ class PhpiredisConnection extends ConnectionBase {
                 'use this connection class'
             );
         }
-        $this->_reader = phpiredis_reader_create();
-        phpiredis_reader_set_status_handler($this->_reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($this->_reader, $this->getErrorHandler());
+        $reader = phpiredis_reader_create();
+        phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler(true));
+        return $reader;
     }
 
     private function getStatusHandler() {
@@ -92,8 +92,8 @@ class PhpiredisConnection extends ConnectionBase {
         };
     }
 
-    private function getErrorHandler() {
-        if ($this->_throwErrors) {
+    private function getErrorHandler($throwErrors) {
+        if ($throwErrors) {
             return function($errorMessage) {
                 throw new ServerException(substr($errorMessage, 4));
             };
@@ -264,8 +264,10 @@ class PhpiredisConnection extends ConnectionBase {
                 // TODO: iterable multibulk replies cannot be supported
                 break;
             case 'throw_errors':
-                $this->_throwErrors = (bool) $value;
-                phpiredis_reader_set_error_handler($this->_reader, $this->getErrorHandler());
+                phpiredis_reader_set_error_handler(
+                    $this->_reader,
+                    $this->getErrorHandler((bool) $value)
+                );
                 break;
         }
     }
