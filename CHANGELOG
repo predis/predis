@@ -1,4 +1,7 @@
 v0.6.6 (2011-xx-xx)
+  * Some performance improvements for multibulk replies (parsing them is about 
+    16% faster than the previous version).
+
   * Add support for connecting to Redis using UNIX domain sockets (ISSUE #25).
 
   * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
