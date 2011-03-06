@@ -1333,7 +1333,7 @@ class Connection implements IConnection {
     }
 
     public function isConnected() {
-        return is_resource($this->_socket);
+        return isset($this->_socket);
     }
 
     public function connect() {
@@ -1395,6 +1395,7 @@ class Connection implements IConnection {
     public function disconnect() {
         if ($this->isConnected()) {
             fclose($this->_socket);
+            unset($this->_socket);
         }
     }
 
@@ -1490,9 +1491,10 @@ class Connection implements IConnection {
     }
 
     public function getSocket() {
-        if (!$this->isConnected()) {
-            $this->connect();
+        if (isset($this->_socket)) {
+            return $this->_socket;
         }
+        $this->connect();
         return $this->_socket;
     }
 
