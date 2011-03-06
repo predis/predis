@@ -4,7 +4,6 @@ namespace Predis\Commands;
 
 class InfoV24x extends Info {
     public function canBeHashed()  { return false; }
-    public function getId() { return 'INFO'; }
     public function parseResponse($data) {
         $info      = array();
         $current   = null;
