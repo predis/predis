@@ -488,6 +488,18 @@ abstract class Command {
     public final function __invoke() {
         return $this->serializeRequest($this->getCommandId(), $this->getArguments());
     }
+
+    private static function reduceArguments($str, $arg) {
+        if (strlen($arg) > 32) {
+            $arg = substr($arg, 0, 32) . '[...]';
+        }
+        $str .= " $arg";
+        return $str;
+    }
+
+    public function __toString() {
+        return array_reduce($this->getArguments(), 'self::reduceArguments', $this->getCommandId());
+    }
 }
 
 abstract class InlineCommand extends Command {
