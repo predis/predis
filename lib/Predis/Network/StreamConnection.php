@@ -98,6 +98,7 @@ class StreamConnection extends ConnectionBase {
     public function disconnect() {
         if ($this->isConnected()) {
             fclose($this->getResource());
+            parent::disconnect();
         }
     }
 

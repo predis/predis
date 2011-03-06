@@ -40,8 +40,8 @@ class PhpiredisConnection extends ConnectionBase {
     }
 
     public function __destruct() {
-        $this->disconnect();
         phpiredis_reader_destroy($this->_reader);
+        parent::__destruct();
     }
 
     protected function checkParameters(ConnectionParameters $parameters) {
@@ -202,8 +202,8 @@ class PhpiredisConnection extends ConnectionBase {
 
     public function disconnect() {
         if ($this->isConnected()) {
-            socket_close($this->_resource);
-            $this->_resource = null;
+            socket_close($this->getResource());
+            parent::disconnect();
         }
     }
 

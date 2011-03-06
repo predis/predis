@@ -9,8 +9,8 @@ use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 
 abstract class ConnectionBase implements IConnectionSingle {
-    private $_cachedId;
-    protected $_params, $_initCmds, $_resource;
+    private $_cachedId, $_resource;
+    protected $_params, $_initCmds;
 
     public function __construct(ConnectionParameters $parameters) {
         $this->_initCmds = array();
@@ -22,7 +22,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function isConnected() {
-        return is_resource($this->_resource);
+        return isset($this->_resource);
     }
 
     protected abstract function createResource();
@@ -32,6 +32,10 @@ abstract class ConnectionBase implements IConnectionSingle {
             throw new ClientException('Connection already estabilished');
         }
         $this->_resource = $this->createResource();
+    }
+
+    public function disconnect() {
+        unset($this->_resource);
     }
 
     public function pushInitCommand(ICommand $command){
@@ -50,9 +54,10 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function getResource() {
-        if (!$this->isConnected()) {
-            $this->connect();
+        if (isset($this->_resource)) {
+            return $this->_resource;
         }
+        $this->connect();
         return $this->_resource;
     }
 
