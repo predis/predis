@@ -123,10 +123,6 @@ class PhpiredisConnection extends ConnectionBase {
         if (!is_resource($socket)) {
             $this->emitSocketError();
         }
-        $addressLong = ip2long($parameters->host);
-        if ($addressLong == -1 || $addressLong === false) {
-            $host = gethostbyname($parameters->host);
-        }
         return $socket;
     }
 
@@ -162,10 +158,24 @@ class PhpiredisConnection extends ConnectionBase {
         }
     }
 
+    private function getAddress(ConnectionParameters $parameters) {
+        if ($parameters->scheme === 'unix') {
+            return $parameters->path;
+        }
+        $host = $parameters->host;
+        if (ip2long($host) === false) {
+            if (($address = gethostbyname($host)) === $host) {
+                $this->onCommunicationException("Cannot resolve the address of $host");
+            }
+            return $address;
+        }
+        return $host;
+    }
+
     private function connectWithTimeout(ConnectionParameters $parameters) {
-        $socket = $this->_resource;
+        $host = self::getAddress($parameters);
+        $socket = $this->getResource();
         socket_set_nonblock($socket);
-        $host = $parameters->scheme === 'unix' ? $parameters->path : $parameters->host;
         if (@socket_connect($socket, $host, $parameters->port) === false) {
             $error = socket_last_error();
             if ($error != SOCKET_EINPROGRESS && $error != SOCKET_EALREADY) {
