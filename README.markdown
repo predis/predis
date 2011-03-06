@@ -57,18 +57,20 @@ localhost on the default port:
 You can also use an URI string or an array-based dictionary to specify the connection parameters:
 
     $redis = new Predis\Client('tcp://10.0.0.1:6379');
+
     // is equivalent to:
+
     $redis = new Predis\Client(array(
         'scheme' => 'tcp',
         'host'   => '10.0.0.1',
-        'port' => 6379,
+        'port'   => 6379,
     ));
 
 
 ### Pipelining multiple commands to multiple instances of Redis with client-side sharding ###
 
 Pipelining helps with performances when there is the need to issue many commands to a server 
-in one go. Furthermore, pipelining works transparently even on aggregated connections. Predis,
+in one go. Furthermore, pipelining works transparently even on aggregated connections. Predis, 
 in fact, supports client-side sharding of data using consistent-hashing on keys and clustered 
 connections are supported natively by the client class.
 
@@ -96,10 +98,12 @@ classes. This can be obtained by subclassing the Predis\Network\IConnectionSingl
     }
 
     // Let Predis automatically use your own class to handle the default TCP connection
+
     Predis\Client::defineConnection('tcp', 'MyConnectionClass');
 
 
-You can have a look at the Predis\Network namespace for working examples.
+You can have a look at the Predis\Network namespace for some actual code that gives a better 
+insight about how to create new connection classes.
 
 
 ### Definition and runtime registration of new commands on the client ###
