@@ -27,12 +27,7 @@ class InfoV24x extends Info {
                 $current[$k] = $v;
             }
             else {
-                $db = array();
-                foreach (explode(',', $v) as $dbvar) {
-                    list($dbvk, $dbvv) = explode('=', $dbvar);
-                    $db[trim($dbvk)] = $dbvv;
-                }
-                $current[$k] = $db;
+                $current[$k] = $this->parseDatabaseStats($v);
             }
         }
         return $info;

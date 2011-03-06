@@ -21,15 +21,18 @@ class Info extends Command {
                 $info[$k] = $v;
             }
             else {
-                $db = array();
-                foreach (explode(',', $v) as $dbvar) {
-                    list($dbvk, $dbvv) = explode('=', $dbvar);
-                    $db[trim($dbvk)] = $dbvv;
-                }
-                $info[$k] = $db;
+                $info[$k] = $this->parseDatabaseStats($v);
             }
         }
         return $info;
+    }
+    protected function parseDatabaseStats($str) {
+        $db = array();
+        foreach (explode(',', $str) as $dbvar) {
+            list($dbvk, $dbvv) = explode('=', $dbvar);
+            $db[trim($dbvk)] = $dbvv;
+        }
+        return $db;
     }
     protected function parseAllocationStats($str) {
         $stats = array();
