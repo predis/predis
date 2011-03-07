@@ -72,7 +72,7 @@ class Client {
         $connection->setProtocolOption('throw_errors', $options->throw_errors);
         $this->pushInitCommands($connection);
 
-        $callback = $this->_options->on_connection_initialized;
+        $callback = $options->on_connection_initialized;
         if (isset($callback)) {
             $callback($this, $connection);
         }
