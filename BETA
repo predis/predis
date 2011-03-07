@@ -1,0 +1,10 @@
+*** PLEASE READ ***
+
+The library code in this branch is the result of a major rewrite of Predis 0.6 
+and is considered of BETA quality, which means that there should not be any 
+known outstanding bug and that the internal API is almost finalized and fixed 
+(but it could still be subject to slight changes if needed).
+
+Feedback is obviously appreciated and even if things should just work, use it 
+at your own risk! If you need to use Predis in a production environment please 
+use a tagged release or checkout the version-0.6 branch from the repository.
