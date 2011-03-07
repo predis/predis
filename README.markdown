@@ -4,8 +4,8 @@
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
-For a version compatible with PHP 5.2 you must use the backported version of the latest release in the 0.6.x series.
-Please refer to the TODO file to see which issues are still pending and what is due to be implemented soon in Predis.
+For a list of frequently asked questions about Predis, see the __FAQ__ file in the root of the repository.
+For a version compatible with PHP 5.2 you must use the backported version from the latest release in the 0.6.x series.
 
 
 ## Main features ##
