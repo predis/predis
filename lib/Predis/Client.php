@@ -10,6 +10,7 @@ use Predis\Profiles\ServerProfile;
 use Predis\Profiles\IServerProfile;
 
 class Client {
+    const VERSION = '0.7.0-dev';
     private static $_connectionSchemes;
     private $_options, $_profile, $_connection;
 
