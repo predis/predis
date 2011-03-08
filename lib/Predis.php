@@ -28,6 +28,7 @@ class MalformedServerResponse extends CommunicationException { }    // Unexpecte
 /* ------------------------------------------------------------------------- */
 
 class Client {
+    const VERSION = '0.6.6-dev';
     private $_options, $_connection, $_serverProfile, $_responseReader;
 
     public function __construct($parameters = null, $clientOptions = null) {
