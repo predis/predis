@@ -12,8 +12,8 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
     private $_protocol;
 
     public function __construct(ConnectionParameters $parameters, IProtocolProcessor $protocol = null) {
+        $this->setProtocol($protocol ?: new TextProtocol());
         parent::__construct($parameters);
-        $this->_protocol = $protocol ?: new TextProtocol();
     }
 
     public function setProtocol(IProtocolProcessor $protocol) {

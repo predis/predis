@@ -35,8 +35,7 @@ class PhpiredisConnection extends ConnectionBase {
                 'use this connection class'
             );
         }
-        parent::__construct($this->checkParameters($parameters));
-        $this->_reader = $this->initializeReader();
+        parent::__construct($parameters);
     }
 
     public function __destruct() {
@@ -45,25 +44,13 @@ class PhpiredisConnection extends ConnectionBase {
     }
 
     protected function checkParameters(ConnectionParameters $parameters) {
-        switch ($parameters->scheme) {
-            case 'unix':
-                $pathToSocket = $parameters->path;
-                if (!isset($pathToSocket)) {
-                    throw new \InvalidArgumentException('Missing UNIX domain socket path');
-                }
-                if (!file_exists($pathToSocket)) {
-                    throw new \InvalidArgumentException("Could not find $pathToSocket");
-                }
-            case 'tcp':
-                return $parameters;
-            default:
-                throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        if (isset($parameters->iterable_multibulk)) {
+            $this->onInvalidOption('iterable_multibulk', $parameters);
         }
-        if ($parameters->connection_persistent == true) {
-            throw new \InvalidArgumentException(
-                'Persistent connections are not supported by this connection class.'
-            );
+        if (isset($parameters->connection_persistent)) {
+            $this->onInvalidOption('connection_persistent', $parameters);
         }
+        return parent::checkParameters($parameters);
     }
 
     private function initializeReader() {
@@ -75,8 +62,13 @@ class PhpiredisConnection extends ConnectionBase {
         }
         $reader = phpiredis_reader_create();
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler(true));
-        return $reader;
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
+        $this->_reader = $reader;
+    }
+
+    protected function initializeProtocol(ConnectionParameters $parameters) {
+        $this->initializeReader();
+        $this->setProtocolOption('throw_errors', $parameters->throw_errors);
     }
 
     private function getStatusHandler() {
@@ -92,7 +84,7 @@ class PhpiredisConnection extends ConnectionBase {
         };
     }
 
-    private function getErrorHandler($throwErrors) {
+    private function getErrorHandler($throwErrors = true) {
         if ($throwErrors) {
             return function($errorMessage) {
                 throw new ServerException(substr($errorMessage, 4));
@@ -231,7 +223,7 @@ class PhpiredisConnection extends ConnectionBase {
         while (($length = strlen($buffer)) > 0) {
             $written = socket_write($socket, $buffer, $length);
             if ($length === $written) {
-                return true;
+                return;
             }
             if ($written === false) {
                 $this->onCommunicationException('Error while writing bytes to the server');
@@ -270,15 +262,14 @@ class PhpiredisConnection extends ConnectionBase {
 
     public function setProtocolOption($option, $value) {
         switch ($option) {
-            case 'iterable_multibulk':
-                // TODO: iterable multibulk replies cannot be supported
-                break;
             case 'throw_errors':
                 phpiredis_reader_set_error_handler(
                     $this->_reader,
                     $this->getErrorHandler((bool) $value)
                 );
                 break;
+            default:
+                $this->onInvalidOption($option, $this->getParameters());
         }
     }
 }

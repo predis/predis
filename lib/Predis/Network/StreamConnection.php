@@ -14,32 +14,15 @@ use Predis\Iterators\MultiBulkResponseSimple;
 class StreamConnection extends ConnectionBase {
     private $_commandSerializer, $_mbiterable, $_throwErrors;
 
-    public function __construct(ConnectionParameters $parameters) {
-        parent::__construct($this->checkParameters($parameters));
-        $this->_commandSerializer = new TextCommandSerializer();
-    }
-
     public function __destruct() {
         if (!$this->_params->connection_persistent) {
             $this->disconnect();
         }
     }
 
-    protected function checkParameters(ConnectionParameters $parameters) {
-        switch ($parameters->scheme) {
-            case 'unix':
-                $pathToSocket = $parameters->path;
-                if (!isset($pathToSocket)) {
-                    throw new \InvalidArgumentException('Missing UNIX domain socket path');
-                }
-                if (!file_exists($pathToSocket)) {
-                    throw new \InvalidArgumentException("Could not find $pathToSocket");
-                }
-            case 'tcp':
-                return $parameters;
-            default:
-                throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
-        }
+    protected function initializeProtocol(ConnectionParameters $parameters) {
+        $this->_commandSerializer = new TextCommandSerializer();
+        parent::initializeProtocol($parameters);
     }
 
     protected function createResource() {
@@ -213,6 +196,8 @@ class StreamConnection extends ConnectionBase {
             case 'throw_errors':
                 $this->_throwErrors = (bool) $value;
                 break;
+            default:
+                $this->onInvalidOption($option, $this->getParameters());
         }
     }
 }

@@ -17,8 +17,6 @@ class ClientOptions {
         self::$_sharedOptions = array(
             'profile' => new Options\ClientProfile(),
             'key_distribution' => new Options\ClientKeyDistribution(),
-            'iterable_multibulk' => new Options\ClientIterableMultiBulk(),
-            'throw_errors' => new Options\ClientThrowOnError(),
             'on_connection_initialized' => new Options\CustomOption(array(
                 'validate' => function($value) {
                     if (isset($value) && is_callable($value)) {

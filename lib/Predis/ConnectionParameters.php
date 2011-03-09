@@ -2,15 +2,19 @@
 
 namespace Predis;
 
+use Predis\Options\IOption;
+use Predis\Options\Option;
+use Predis\Options\CustomOption;
+
 class ConnectionParameters {
     private $_parameters;
+    private $_userDefined;
     private static $_sharedOptions;
 
-    public function __construct($parameters = null) {
-        $parameters = $parameters ?: array();
-        $this->_parameters = is_array($parameters)
-            ? $this->filter($parameters)
-            : $this->parseURI($parameters);
+    public function __construct($parameters = array()) {
+        $extractor = is_array($parameters) ? 'filter' : 'parseURI';
+        $this->_parameters = $this->$extractor($parameters);
+        $this->_userDefined = array_fill_keys(array_keys($this->_parameters), true);
     }
 
     private static function paramsExtractor($params, $kv) {
@@ -24,40 +28,49 @@ class ConnectionParameters {
             return self::$_sharedOptions;
         }
 
-        $optEmpty   = new Options\Option();
-        $optBoolean = new Options\CustomOption(array(
+        $optEmpty   = new Option();
+        $optBoolFalse = new CustomOption(array(
             'validate' => function($value) { return (bool) $value; },
             'default'  => function() { return false; },
         ));
+        $optBoolTrue = new CustomOption(array(
+            'validate' => function($value) { return (bool) $value; },
+            'default'  => function() { return true; },
+        ));
 
         self::$_sharedOptions = array(
-            'scheme' => new Options\CustomOption(array(
+            'scheme' => new CustomOption(array(
                 'default'  => function() { return 'tcp'; },
             )),
-            'host' => new Options\CustomOption(array(
+            'host' => new CustomOption(array(
                 'default'  => function() { return '127.0.0.1'; },
             )),
-            'port' => new Options\CustomOption(array(
+            'port' => new CustomOption(array(
                 'validate' => function($value) { return (int) $value; },
                 'default'  => function() { return 6379; },
             )),
             'path' => $optEmpty,
             'database' => $optEmpty,
             'password' => $optEmpty,
-            'connection_async' => $optBoolean,
-            'connection_persistent' => $optBoolean,
-            'connection_timeout' => new Options\CustomOption(array(
+            'connection_async' => $optBoolFalse,
+            'connection_persistent' => $optBoolFalse,
+            'connection_timeout' => new CustomOption(array(
+                'validate' => function($value) { return (float) $value; },
                 'default'  => function() { return 5; },
             )),
-            'read_write_timeout' => $optEmpty,
+            'read_write_timeout' => new CustomOption(array(
+                'validate' => function($value) { return (float) $value; },
+            )),
             'alias' => $optEmpty,
             'weight' => $optEmpty,
+            'iterable_multibulk' => $optBoolFalse,
+            'throw_errors' => $optBoolTrue,
         );
 
         return self::$_sharedOptions;
     }
 
-    public static function define($parameter, Options\IOption $handler) {
+    public static function define($parameter, IOption $handler) {
         self::getSharedOptions();
         self::$_sharedOptions[$parameter] = $handler;
     }
@@ -77,7 +90,7 @@ class ConnectionParameters {
         }
         $parsed = @parse_url($uri);
         if ($parsed == false || !isset($parsed['host'])) {
-            throw new ClientException("Invalid URI: $uri");
+            throw new \InvalidArgumentException("Invalid URI: $uri");
         }
         if (array_key_exists('query', $parsed)) {
             $query  = explode('&', $parsed['query']);
@@ -113,11 +126,7 @@ class ConnectionParameters {
     }
 
     public function __isset($parameter) {
-        if (isset($this->_parameters[$parameter])) {
-            return true;
-        }
-        $value = $this->tryInitializeValue($parameter);
-        return isset($value);
+        return isset($this->_userDefined[$parameter]);
     }
 
     public function __toString() {
@@ -132,10 +141,9 @@ class ConnectionParameters {
         $query = array();
         $reject = array('scheme', 'host', 'port', 'password', 'path');
         foreach ($this->_parameters as $k => $v) {
-            if (in_array($k, $reject) || $v === null) {
+            if (in_array($k, $reject) || !isset($this->_userDefined[$k])) {
                 continue;
             }
-            $v = $v === false ? '0' : $v;
             $query[] = $k . '=' . ($v === false ? '0' : $v);
         }
         return count($query) > 0 ? ($str . '/?' . implode('&', $query)) : $str;

@@ -2,6 +2,7 @@
 
 namespace Predis\Network;
 
+use \InvalidArgumentException;
 use Predis\Utils;
 use Predis\ConnectionParameters;
 use Predis\ClientException;
@@ -14,18 +15,42 @@ abstract class ConnectionBase implements IConnectionSingle {
 
     public function __construct(ConnectionParameters $parameters) {
         $this->_initCmds = array();
-        $this->_params   = $parameters;
+        $this->_params = $this->checkParameters($parameters);
+        $this->initializeProtocol($parameters);
     }
 
     public function __destruct() {
         $this->disconnect();
     }
 
-    public function isConnected() {
-        return isset($this->_resource);
+    protected function checkParameters(ConnectionParameters $parameters) {
+        switch ($parameters->scheme) {
+            case 'unix':
+                $pathToSocket = $parameters->path;
+                if (!isset($pathToSocket)) {
+                    throw new InvalidArgumentException('Missing UNIX domain socket path');
+                }
+                if (!file_exists($pathToSocket)) {
+                    throw new InvalidArgumentException("Could not find $pathToSocket");
+                }
+            case 'tcp':
+                return $parameters;
+            default:
+                throw new InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        }
+        return $parameters;
+    }
+
+    protected function initializeProtocol(ConnectionParameters $parameters) {
+        $this->setProtocolOption('throw_errors', $parameters->throw_errors);
+        $this->setProtocolOption('iterable_multibulk', $parameters->iterable_multibulk);
     }
 
     protected abstract function createResource();
+
+    public function isConnected() {
+        return isset($this->_resource);
+    }
 
     public function connect() {
         if ($this->isConnected()) {
@@ -38,7 +63,7 @@ abstract class ConnectionBase implements IConnectionSingle {
         unset($this->_resource);
     }
 
-    public function pushInitCommand(ICommand $command){
+    public function pushInitCommand(ICommand $command) {
         $this->_initCmds[] = $command;
     }
 
@@ -51,6 +76,14 @@ abstract class ConnectionBase implements IConnectionSingle {
         Utils::onCommunicationException(
             new CommunicationException($this, $message, $code)
         );
+    }
+
+    protected function onInvalidOption($option, $parameters = null) {
+        $message = "Invalid option: $option";
+        if (isset($parameters)) {
+            $message .= " [$parameters]";
+        }
+        throw new InvalidArgumentException($message);
     }
 
     public function getResource() {
