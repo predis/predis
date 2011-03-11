@@ -89,7 +89,7 @@ class ConnectionParameters {
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
         $parsed = @parse_url($uri);
-        if ($parsed == false || !isset($parsed['host'])) {
+        if ($parsed === false || !isset($parsed['host'])) {
             throw new \InvalidArgumentException("Invalid URI: $uri");
         }
         if (array_key_exists('query', $parsed)) {
@@ -100,7 +100,7 @@ class ConnectionParameters {
         return $this->filter($parsed);
     }
 
-    protected function filter($parameters) {
+    protected function filter(Array $parameters) {
         $handlers = self::getSharedOptions();
         foreach ($parameters as $parameter => $value) {
             if (isset($handlers[$parameter])) {
@@ -147,5 +147,13 @@ class ConnectionParameters {
             $query[] = $k . '=' . ($v === false ? '0' : $v);
         }
         return count($query) > 0 ? ($str . '/?' . implode('&', $query)) : $str;
+    }
+
+    public function toArray() {
+        $parameters = array();
+        foreach ($this->_parameters as $k => $v) {
+            $parameters[$k] = $v;
+        }
+        return $parameters;
     }
 }

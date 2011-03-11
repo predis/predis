@@ -38,7 +38,7 @@ class Client {
     }
 
     private function initializeConnection($parameters = array()) {
-        if (!isset($parameters)) {
+        if ($parameters === null) {
             return $this->createConnection(array());
         }
         if ($parameters instanceof IConnection) {
@@ -57,21 +57,11 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        if (is_array($parameters) || is_string($parameters)) {
-            $parameters = new ConnectionParameters($parameters);
-        }
-        else if (!$parameters instanceof ConnectionParameters) {
-            $type = is_object($parameters) ? get_class($parameters) : gettype($parameters);
-            throw new \InvalidArgumentException(
-                "Cannot create a connection using an argument of type $type"
-            );
-        }
-
-        $connection = self::newConnectionInternal($parameters);
+        $connection = self::newConnection($parameters);
         $this->pushInitCommands($connection);
 
         $callback = $this->_options->on_connection_initialized;
-        if (isset($callback)) {
+        if ($callback !== null) {
             $callback($this, $connection);
         }
 
@@ -117,9 +107,7 @@ class Client {
     }
 
     public function connect() {
-        if (!$this->_connection->isConnected()) {
-            $this->_connection->connect();
-        }
+        $this->_connection->connect();
     }
 
     public function disconnect() {
@@ -135,10 +123,10 @@ class Client {
     }
 
     public function getConnection($id = null) {
-        $connection = $this->_connection;
-        if (!isset($id)) {
-            return $connection;
+        if ($id === null) {
+            return $this->_connection;
         }
+        $connection = $this->_connection;
         $isCluster = Utils::isCluster($connection);
         return $isCluster ? $connection->getConnectionById($id) : $connection;
     }
@@ -265,10 +253,13 @@ class Client {
     }
 
     public static function newConnectionByScheme($scheme, $parameters = array()) {
-        $connection = self::getConnectionClass($scheme);
-        if (!$parameters instanceof ConnectionParameters) {
-            $parameters = new ConnectionParameters($parameters);
+        if ($parameters instanceof ConnectionParameters) {
+            $parameters = $parameters->toArray();
         }
-        return self::newConnection($parameters);
+        if (is_array($parameters)) {
+            $parameters['scheme'] = $scheme;
+            return self::newConnection($parameters);
+        }
+        throw new \InvalidArgumentException("Invalid type for connection parameters");
     }
 }

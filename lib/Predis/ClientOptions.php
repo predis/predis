@@ -6,8 +6,8 @@ class ClientOptions {
     private $_handlers, $_options;
     private static $_sharedOptions;
 
-    public function __construct($options = null) {
-        $this->initialize($options ?: array());
+    public function __construct(Array $options = array()) {
+        $this->initialize($options);
     }
 
     private static function getSharedOptions() {
@@ -19,7 +19,7 @@ class ClientOptions {
             'key_distribution' => new Options\ClientKeyDistribution(),
             'on_connection_initialized' => new Options\CustomOption(array(
                 'validate' => function($value) {
-                    if (isset($value) && is_callable($value)) {
+                    if (is_callable($value)) {
                         return $value;
                     }
                 },
