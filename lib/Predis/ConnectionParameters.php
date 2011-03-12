@@ -150,10 +150,6 @@ class ConnectionParameters {
     }
 
     public function toArray() {
-        $parameters = array();
-        foreach ($this->_parameters as $k => $v) {
-            $parameters[$k] = $v;
-        }
-        return $parameters;
+        return $this->_parameters;
     }
 }
