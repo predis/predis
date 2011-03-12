@@ -10,9 +10,7 @@ class ResponseQueued {
     }
 
     public function __get($property) {
-        if ($property === 'queued') {
-            return true;
-        }
+        return $property === 'queued';
     }
 
     public function __isset($property) {

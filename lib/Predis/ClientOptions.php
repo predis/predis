@@ -2,6 +2,11 @@
 
 namespace Predis;
 
+use Predis\Options\IOption;
+use Predis\Options\CustomOption;
+use Predis\Options\ClientProfile;
+use Predis\Options\ClientKeyDistribution;
+
 class ClientOptions {
     private $_handlers, $_options;
     private static $_sharedOptions;
@@ -15,9 +20,9 @@ class ClientOptions {
             return self::$_sharedOptions;
         }
         self::$_sharedOptions = array(
-            'profile' => new Options\ClientProfile(),
-            'key_distribution' => new Options\ClientKeyDistribution(),
-            'on_connection_initialized' => new Options\CustomOption(array(
+            'profile' => new ClientProfile(),
+            'key_distribution' => new ClientKeyDistribution(),
+            'on_connection_initialized' => new CustomOption(array(
                 'validate' => function($value) {
                     if (is_callable($value)) {
                         return $value;
@@ -28,7 +33,7 @@ class ClientOptions {
         return self::$_sharedOptions;
     }
 
-    public static function define($option, Options\IOption $handler) {
+    public static function define($option, IOption $handler) {
         self::getSharedOptions();
         self::$_sharedOptions[$option] = $handler;
     }

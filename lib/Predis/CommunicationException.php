@@ -2,7 +2,6 @@
 
 namespace Predis;
 
-use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
 
 class CommunicationException extends PredisException {
