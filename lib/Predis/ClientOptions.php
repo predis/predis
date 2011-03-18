@@ -29,6 +29,19 @@ class ClientOptions {
                     }
                 },
             )),
+            'connections' => new CustomOption(array(
+                'default'  => function() {
+                    return new ConnectionSchemes();
+                },
+                'validate' => function($value) {
+                    if ($value instanceof IConnectionSchemes) {
+                        return $value;
+                    }
+                    if (is_array($value)) {
+                        return new ConnectionSchemes($value);
+                    }
+                },
+            )),
         );
         return self::$_sharedOptions;
     }

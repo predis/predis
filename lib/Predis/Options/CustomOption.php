@@ -22,6 +22,6 @@ class CustomOption extends Option {
     }
 
     public function getDefault() {
-        return $this->validate(call_user_func($this->_default));
+        return call_user_func($this->_default);
     }
 }

@@ -11,12 +11,13 @@ use Predis\Profiles\IServerProfile;
 
 class Client {
     const VERSION = '0.7.0-dev';
-    private static $_connectionSchemes;
-    private $_options, $_profile, $_connection;
+    private $_options, $_schemes, $_profile, $_connection;
 
     public function __construct($parameters = null, $options = null) {
-        $this->_options = $this->filterOptions($options ?: new ClientOptions());
-        $this->_profile = $this->_options->profile;
+        $options = $this->filterOptions($options ?: new ClientOptions());
+        $this->_options = $options;
+        $this->_profile = $options->profile;
+        $this->_schemes = $options->connections;
         $this->_connection = $this->initializeConnection($parameters);
     }
 
@@ -57,7 +58,7 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        $connection = self::newConnection($parameters);
+        $connection = $this->_schemes->newConnection($parameters);
         $this->pushInitCommands($connection);
 
         $callback = $this->_options->on_connection_initialized;
@@ -88,6 +89,10 @@ class Client {
 
     public function getOptions() {
         return $this->_options;
+    }
+
+    public function getSchemes() {
+        return $this->_schemes;
     }
 
     public function getClientFor($connectionAlias) {
@@ -210,56 +215,5 @@ class Client {
 
     public function pubSubContext(Array $options = null) {
         return new PubSubContext($this, $options);
-    }
-
-    private static function ensureDefaultSchemes() {
-        if (!isset(self::$_connectionSchemes)) {
-            self::$_connectionSchemes = array(
-                'tcp'   => '\Predis\Network\StreamConnection',
-                'unix'  => '\Predis\Network\StreamConnection',
-            );
-        }
-    }
-
-    public static function defineConnection($scheme, $connectionClass) {
-        self::ensureDefaultSchemes();
-        $connectionReflection = new \ReflectionClass($connectionClass);
-        if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
-            throw new ClientException(
-                "Cannot register '$connectionClass' as it is not a valid connection class"
-            );
-        }
-        self::$_connectionSchemes[$scheme] = $connectionClass;
-    }
-
-    public static function getConnectionClass($scheme) {
-        self::ensureDefaultSchemes();
-        if (!isset(self::$_connectionSchemes[$scheme])) {
-            throw new ClientException("Unknown connection scheme: $scheme");
-        }
-        return self::$_connectionSchemes[$scheme];
-    }
-
-    private static function newConnectionInternal(ConnectionParameters $parameters) {
-        $connection = self::getConnectionClass($parameters->scheme);
-        return new $connection($parameters);
-    }
-
-    public static function newConnection($parameters) {
-        if (!$parameters instanceof ConnectionParameters) {
-            $parameters = new ConnectionParameters($parameters);
-        }
-        return self::newConnectionInternal($parameters);
-    }
-
-    public static function newConnectionByScheme($scheme, $parameters = array()) {
-        if ($parameters instanceof ConnectionParameters) {
-            $parameters = $parameters->toArray();
-        }
-        if (is_array($parameters)) {
-            $parameters['scheme'] = $scheme;
-            return self::newConnection($parameters);
-        }
-        throw new \InvalidArgumentException("Invalid type for connection parameters");
     }
 }
