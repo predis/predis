@@ -2,26 +2,41 @@
 
 namespace Predis\Options;
 
-class CustomOption extends Option {
+class CustomOption implements IOption {
     private $_validate, $_default;
 
     public function __construct(Array $options) {
-        $validate = isset($options['validate']) ? $options['validate'] : 'parent::validate';
-        $default  = isset($options['default']) ? $options['default'] : 'parent::getDefault';
-        if (!is_callable($validate) || !is_callable($default)) {
-            throw new \InvalidArgumentException("Validate and default must be callable");
+        $this->_validate = $this->filterCallable($options, 'validate');
+        $this->_default  = $this->filterCallable($options, 'default');
+    }
+
+    private function filterCallable($options, $key) {
+        if (!isset($options[$key])) {
+            return;
         }
-        $this->_validate = $validate;
-        $this->_default  = $default;
+        $callable = $options[$key];
+        if (is_callable($callable)) {
+            return $callable;
+        }
+        throw new \InvalidArgumentException("The parameter $key must be callable");
     }
 
     public function validate($value) {
         if (isset($value)) {
+            if ($this->_validate === null) {
+                return $value;
+            }
             return call_user_func($this->_validate, $value);
         }
     }
 
     public function getDefault() {
-        return call_user_func($this->_default);
+        if ($this->_default !== null) {
+            return call_user_func($this->_default);
+        }
+    }
+
+    public function __invoke($value) {
+        return isset($value) ? $this->validate($value) : $this->getDefault();
     }
 }
