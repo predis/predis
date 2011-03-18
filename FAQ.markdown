@@ -25,7 +25,7 @@ a couple of easy numbers using a single Predis client with PHP 5.3.5 (custom bui
     18100 GET/sec while retrieving the very same values
     0.210 seconds to fetch 30000 keys using _KEYS *_.
 
-How does it compare with a nice C-based extension such as [__phpredis__](http://github.com/owlient/phpredis)?
+How does it compare with a nice C-based extension such as [__phpredis__](http://github.com/nicolasff/phpredis)?
 
     29000 SET/sec using 12 bytes for both key and value
     30000 GET/sec while retrieving the very same values
