@@ -32,8 +32,7 @@ class Client {
             return new ClientOptions(array('profile' => $options));
         }
         if (is_string($options)) {
-            $profile = ServerProfile::get($options);
-            return new ClientOptions(array('profile' => $profile));
+            return new ClientOptions(array('profile' => ServerProfile::get($options)));
         }
         throw new \InvalidArgumentException("Invalid type for client options");
     }
