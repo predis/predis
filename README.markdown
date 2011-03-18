@@ -99,7 +99,7 @@ classes. This can be obtained by subclassing the Predis\Network\IConnectionSingl
 
     // Let Predis automatically use your own class to handle the default TCP connection
 
-    Predis\Client::defineConnection('tcp', 'MyConnectionClass');
+    Predis\ConnectionSchemes::define('tcp', 'MyConnectionClass');
 
 
 You can have a look at the Predis\Network namespace for some actual code that gives a better 

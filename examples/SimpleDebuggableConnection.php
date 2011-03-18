@@ -40,15 +40,18 @@ class SimpleDebuggableConnection extends StreamConnection {
     }
 }
 
-$parameters = new ConnectionParameters($single_server);
-$connection = new SimpleDebuggableConnection($parameters);
+$options = array(
+    'connections' => array(
+        'tcp' => 'SimpleDebuggableConnection',
+    ),
+);
 
-$redis = new Predis\Client($connection);
+$redis = new Predis\Client($single_server, $options);
 $redis->set('foo', 'bar');
 $redis->get('foo');
 $redis->info();
 
-print_r($connection->getDebugBuffer());
+print_r($redis->getConnection()->getDebugBuffer());
 
 /* OUTPUT:
 Array
