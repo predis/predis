@@ -22,13 +22,6 @@ class ClientOptions {
         self::$_sharedOptions = array(
             'profile' => new ClientProfile(),
             'key_distribution' => new ClientKeyDistribution(),
-            'on_connection_initialized' => new CustomOption(array(
-                'validate' => function($value) {
-                    if (is_callable($value)) {
-                        return $value;
-                    }
-                },
-            )),
             'connections' => new CustomOption(array(
                 'default'  => function() {
                     return new ConnectionSchemes();

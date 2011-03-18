@@ -59,12 +59,6 @@ class Client {
     private function createConnection($parameters) {
         $connection = $this->_schemes->newConnection($parameters);
         $this->pushInitCommands($connection);
-
-        $callback = $this->_options->on_connection_initialized;
-        if ($callback !== null) {
-            $callback($this, $connection);
-        }
-
         return $connection;
     }
 
