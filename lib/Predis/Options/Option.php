@@ -12,6 +12,6 @@ class Option implements IOption {
     }
 
     public function __invoke($value) {
-        return $this->validate(isset($value) ? $value : $this->getDefault());
+        return isset($value) ? $this->validate($value) : $this->getDefault();
     }
 }
