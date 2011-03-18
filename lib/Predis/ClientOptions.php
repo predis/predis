@@ -57,7 +57,7 @@ class ClientOptions {
     }
 
     private function initialize($options) {
-        $this->_handlers = $this->getOptions();
+        $this->_handlers = self::getSharedOptions();
         foreach ($options as $option => $value) {
             if (isset($this->_handlers[$option])) {
                 $handler = $this->_handlers[$option];
@@ -66,22 +66,19 @@ class ClientOptions {
         }
     }
 
-    private function getOptions() {
-        return self::getSharedOptions();
+    private function tryInitializeValue($option) {
+        if (isset($this->_handlers[$option])) {
+            $opts = self::getSharedOptions();
+            $value = $opts[$option]->getDefault();
+            $this->_options[$option] = $value;
+            return $value;
+        }
     }
 
     public function __get($option) {
-        if (!isset($this->_options[$option])) {
-            if (!isset($this->_handlers[$option])) {
-                return null;
-            }
-            $handler = $this->_handlers[$option];
-            $this->_options[$option] = $handler->getDefault();
+        if (isset($this->_options[$option])) {
+            return $this->_options[$option];
         }
-        return $this->_options[$option];
-    }
-
-    public function __isset($option) {
-        return isset(self::$_sharedOptions[$option]);
+        return $this->tryInitializeValue($option);
     }
 }
