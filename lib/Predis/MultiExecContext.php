@@ -3,7 +3,7 @@
 namespace Predis;
 
 class MultiExecContext {
-    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
+    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet, $_watchedKeys;
     private $_client, $_options, $_commands, $_supportsWatch;
 
     public function __construct(Client $client, Array $options = null) {
@@ -41,6 +41,7 @@ class MultiExecContext {
         $this->_discarded   = false;
         $this->_checkAndSet = false;
         $this->_insideBlock = false;
+        $this->_watchedKeys = false;
         $this->_commands    = array();
     }
 
@@ -82,6 +83,7 @@ class MultiExecContext {
 
     public function watch($keys) {
         $this->isWatchSupported();
+        $this->_watchedKeys = true;
         if ($this->_initialized && !$this->_checkAndSet) {
             throw new ClientException('WATCH inside MULTI is not allowed');
         }
@@ -100,12 +102,13 @@ class MultiExecContext {
 
     public function unwatch() {
         $this->isWatchSupported();
+        $this->_watchedKeys = false;
         $this->_client->unwatch();
         return $this;
     }
 
     public function discard() {
-        if ($this->_initialized) {
+        if ($this->_initialized === true || $this->_checkAndSet) {
             $this->_client->discard();
             $this->reset();
             $this->_discarded = true;
@@ -165,9 +168,7 @@ class MultiExecContext {
                 }
                 catch (\Exception $exception) {
                     $blockException = $exception;
-                    if ($this->_initialized === true) {
-                        $this->discard();
-                    }
+                    $this->discard();
                 }
                 $this->_insideBlock = false;
                 if ($blockException !== null) {
@@ -175,7 +176,11 @@ class MultiExecContext {
                 }
             }
 
-            if ($this->_initialized === false || count($this->_commands) == 0) {
+            if (count($this->_commands) === 0) {
+                if ($this->_watchedKeys) {
+                    $this->_client->discard();
+                    return;
+                }
                 return;
             }
 
