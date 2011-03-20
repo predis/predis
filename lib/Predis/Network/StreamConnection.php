@@ -12,17 +12,12 @@ use Predis\Protocols\TextCommandSerializer;
 use Predis\Iterators\MultiBulkResponseSimple;
 
 class StreamConnection extends ConnectionBase {
-    private $_commandSerializer, $_mbiterable, $_throwErrors;
+    private $_mbiterable, $_throwErrors;
 
     public function __destruct() {
         if (!$this->_params->connection_persistent) {
             $this->disconnect();
         }
-    }
-
-    protected function initializeProtocol(ConnectionParameters $parameters) {
-        $this->_commandSerializer = new TextCommandSerializer();
-        parent::initializeProtocol($parameters);
     }
 
     protected function createResource() {
@@ -180,7 +175,19 @@ class StreamConnection extends ConnectionBase {
     }
 
     public function writeCommand(ICommand $command) {
-        $this->write($this->_commandSerializer->serialize($command));
+        $commandId = $command->getId();
+        $arguments = $command->getArguments();
+
+        $cmdlen = strlen($commandId);
+        $reqlen = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
+        for ($i = 0; $i < $reqlen - 1; $i++) {
+            $argument = $arguments[$i];
+            $arglen  = strlen($argument);
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
+        }
+        $this->write($buffer);
     }
 
     public function readResponse(ICommand $command) {
