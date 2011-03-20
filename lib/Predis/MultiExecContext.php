@@ -105,9 +105,11 @@ class MultiExecContext {
     }
 
     public function discard() {
-        $this->_client->discard();
-        $this->reset();
-        $this->_discarded = true;
+        if ($this->_initialized) {
+            $this->_client->discard();
+            $this->reset();
+            $this->_discarded = true;
+        }
         return $this;
     }
 
@@ -128,6 +130,7 @@ class MultiExecContext {
                 );
             }
             if (count($this->_commands) > 0) {
+                $this->discard();
                 throw new ClientException(
                     'Cannot execute a transaction block after using fluent interface'
                 );
