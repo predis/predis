@@ -1,4 +1,7 @@
 v0.6.6 (2011-xx-xx)
+  * Switched to Redis 2.2 as the default server profile (there are no changes 
+    that would break compatibility with previous releases).
+
   * Added a VERSION constant to Predis\Client.
 
   * Some performance improvements for multibulk replies (parsing them is about 
