@@ -53,7 +53,7 @@ class PhpiredisConnection extends ConnectionBase {
         return parent::checkParameters($parameters);
     }
 
-    private function initializeReader() {
+    private function initializeReader($throw_errors = true) {
         if (!function_exists('phpiredis_reader_create')) {
             throw new ClientException(
                 'The phpiredis extension must be loaded in order to be able to ' .
@@ -62,13 +62,12 @@ class PhpiredisConnection extends ConnectionBase {
         }
         $reader = phpiredis_reader_create();
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($throw_errors));
         $this->_reader = $reader;
     }
 
     protected function initializeProtocol(ConnectionParameters $parameters) {
-        $this->initializeReader();
-        $this->setProtocolOption('throw_errors', $parameters->throw_errors);
+        $this->initializeReader($parameters->throw_errors);
     }
 
     private function getStatusHandler() {
@@ -258,18 +257,5 @@ class PhpiredisConnection extends ConnectionBase {
     public function readResponse(ICommand $command) {
         $reply = $this->read();
         return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
-    }
-
-    public function setProtocolOption($option, $value) {
-        switch ($option) {
-            case 'throw_errors':
-                phpiredis_reader_set_error_handler(
-                    $this->_reader,
-                    $this->getErrorHandler((bool) $value)
-                );
-                break;
-            default:
-                $this->onInvalidOption($option, $this->getParameters());
-        }
     }
 }

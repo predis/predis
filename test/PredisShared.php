@@ -39,17 +39,17 @@ class RC {
 
     private static $_connection;
 
-    public static function getConnectionArguments() {
-        return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
+    public static function getConnectionArguments(Array $additional = array()) {
+        return array_merge(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT), $additional);
     }
 
-    public static function getConnectionParameters() {
-        return new Predis\ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
+    public static function getConnectionParameters(Array $additional = array()) {
+        return new Predis\ConnectionParameters(self::getConnectionArguments($additional));
     }
 
-    private static function createConnection() {
+    public static function createConnection(Array $additional = array()) {
         $serverProfile = Predis\Profiles\ServerProfile::get(self::SERVER_VERSION);
-        $connection = new Predis\Client(RC::getConnectionArguments(), $serverProfile);
+        $connection = new Predis\Client(RC::getConnectionArguments($additional), $serverProfile);
         $connection->connect();
         $connection->select(RC::DEFAULT_DATABASE);
         return $connection;

@@ -195,7 +195,7 @@ class StreamConnection extends ConnectionBase {
         return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
     }
 
-    public function setProtocolOption($option, $value) {
+    protected function setProtocolOption($option, $value) {
         switch ($option) {
             case 'iterable_multibulk':
                 $this->_mbiterable = (bool) $value;

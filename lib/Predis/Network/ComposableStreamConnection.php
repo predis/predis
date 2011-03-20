@@ -27,7 +27,7 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         return $this->_protocol;
     }
 
-    public function setProtocolOption($option, $value) {
+    protected function setProtocolOption($option, $value) {
         return $this->_protocol->setOption($option, $value);
     }
 
