@@ -828,7 +828,7 @@ class CommandPipeline {
 }
 
 class MultiExecBlock {
-    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
+    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet, $_watchedKeys;
     private $_redisClient, $_options, $_commands;
     private $_supportsWatch;
 
@@ -867,6 +867,7 @@ class MultiExecBlock {
         $this->_discarded   = false;
         $this->_checkAndSet = false;
         $this->_insideBlock = false;
+        $this->_watchedKeys = false;
         $this->_commands    = array();
     }
 
@@ -911,6 +912,7 @@ class MultiExecBlock {
         if ($this->_initialized && !$this->_checkAndSet) {
             throw new ClientException('WATCH inside MULTI is not allowed');
         }
+        $this->_watchedKeys = true;
         return $this->_redisClient->watch($keys);
     }
 
@@ -926,14 +928,17 @@ class MultiExecBlock {
 
     public function unwatch() {
         $this->isWatchSupported();
+        $this->_watchedKeys = false;
         $this->_redisClient->unwatch();
         return $this;
     }
 
     public function discard() {
-        $this->_redisClient->discard();
-        $this->reset();
-        $this->_discarded = true;
+        if ($this->_initialized === true || $this->_checkAndSet) {
+            $this->_redisClient->discard();
+            $this->reset();
+            $this->_discarded = true;
+        }
         return $this;
     }
 
@@ -954,6 +959,7 @@ class MultiExecBlock {
                 );
             }
             if (count($this->_commands) > 0) {
+                $this->discard();
                 throw new ClientException(
                     'Cannot execute a transaction block after using fluent interface'
                 );
@@ -988,9 +994,7 @@ class MultiExecBlock {
                 }
                 catch (\Exception $exception) {
                     $blockException = $exception;
-                    if ($this->_initialized === true) {
-                        $this->discard();
-                    }
+                    $this->discard();
                 }
                 $this->_insideBlock = false;
                 if ($blockException !== null) {
@@ -998,7 +1002,11 @@ class MultiExecBlock {
                 }
             }
 
-            if ($this->_initialized === false || count($this->_commands) == 0) {
+            if (count($this->_commands) === 0) {
+                if ($this->_watchedKeys) {
+                    $this->_redisClient->discard();
+                    return;
+                }
                 return;
             }
 

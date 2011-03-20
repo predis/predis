@@ -13,6 +13,9 @@ v0.6.6 (2011-xx-xx)
     to disable read and write timeouts on connections. The old behaviour of -1 
     is still intact.
 
+  * FIX: some client-side clean-ups for MULTI/EXEC were handled incorrectly in 
+    a couple of corner cases.
+
 v0.6.5 (2011-02-12)
   * FIX: due to an untested internal change introduced in v0.6.4, a wrong 
     handling of bulk reads of zero-length values was producing protocol 
