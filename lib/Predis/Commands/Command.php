@@ -12,27 +12,30 @@ abstract class Command implements ICommand {
         return true;
     }
 
+    protected function getHashablePart($key) {
+        $start = strpos($key, '{');
+        if ($start !== false) {
+            $end = strpos($key, '}', $start);
+            if ($end !== false) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+        return $key;
+    }
+
     public function getHash(IDistributionStrategy $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
-        if (isset($this->_arguments[0])) {
-            // TODO: should we throw an exception if the command does not
-            // support sharding?
-            $key = $this->_arguments[0];
-
-            $start = strpos($key, '{');
-            if ($start !== false) {
-                $end = strpos($key, '}', $start);
-                if ($end !== false) {
-                    $key = substr($key, ++$start, $end - $start);
-                }
-            }
-
-            $this->_hash = $distributor->generateKey($key);
-            return $this->_hash;
+        if ($this->canBeHashed() === false) {
+            return null;
         }
-        return null;
+        if (!isset($this->_arguments[0])) {
+            return null;
+        }
+        $key = $this->getHashablePart($this->_arguments[0]);
+        $this->_hash = $distributor->generateKey($key);
+        return $this->_hash;
     }
 
     protected function filterArguments(Array $arguments) {
