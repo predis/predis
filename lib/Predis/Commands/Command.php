@@ -27,7 +27,7 @@ abstract class Command implements ICommand {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
-        if ($this->canBeHashed() === false) {
+        if (!$this->canBeHashed()) {
             return null;
         }
         if (!isset($this->_arguments[0])) {

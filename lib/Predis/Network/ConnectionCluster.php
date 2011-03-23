@@ -48,12 +48,12 @@ class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {
 
     public function getConnection(ICommand $command) {
         $cmdHash = $command->getHash($this->_distributor);
-        if (isset($cmdHash) === false) {
-            throw new ClientException(
-                sprintf("Cannot send '%s' commands to a cluster of connections", $command->getId())
-            );
+        if (isset($cmdHash)) {
+            return $this->_distributor->get($cmdHash);
         }
-        return $this->_distributor->get($cmdHash);
+        throw new ClientException(
+            sprintf("Cannot send '%s' commands to a cluster of connections", $command->getId())
+        );
     }
 
     public function getConnectionById($id = null) {
