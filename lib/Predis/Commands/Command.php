@@ -8,8 +8,8 @@ abstract class Command implements ICommand {
     private $_hash;
     private $_arguments = array();
 
-    public function canBeHashed() {
-        return true;
+    protected function canBeHashed() {
+        return isset($this->_arguments[0]);
     }
 
     protected function getHashablePart($key) {
@@ -27,15 +27,12 @@ abstract class Command implements ICommand {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
-        if (!$this->canBeHashed()) {
-            return null;
+        if ($this->canBeHashed()) {
+            $key = $this->getHashablePart($this->_arguments[0]);
+            $this->_hash = $distributor->generateKey($key);
+            return $this->_hash;
         }
-        if (!isset($this->_arguments[0])) {
-            return null;
-        }
-        $key = $this->getHashablePart($this->_arguments[0]);
-        $this->_hash = $distributor->generateKey($key);
-        return $this->_hash;
+        return null;
     }
 
     protected function filterArguments(Array $arguments) {

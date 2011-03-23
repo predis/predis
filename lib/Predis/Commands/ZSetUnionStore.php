@@ -3,6 +3,7 @@
 namespace Predis\Commands;
 
 class ZSetUnionStore extends Command {
+    protected function canBeHashed() { return false; }
     public function getId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
