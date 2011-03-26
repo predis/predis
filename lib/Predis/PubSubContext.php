@@ -47,14 +47,7 @@ class PubSubContext implements \Iterator {
 
     private function genericSubscribeInit($subscribeAction) {
         if (isset($this->_options[$subscribeAction])) {
-            if (is_array($this->_options[$subscribeAction])) {
-                foreach ($this->_options[$subscribeAction] as $subscription) {
-                    $this->$subscribeAction($subscription);
-                }
-            }
-            else {
-                $this->$subscribeAction($this->_options[$subscribeAction]);
-            }
+            $this->$subscribeAction($this->_options[$subscribeAction]);
         }
     }
 
