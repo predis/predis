@@ -9,12 +9,14 @@ v0.6.6 (2011-xx-xx)
 
   * Added support for connecting to Redis using UNIX domain sockets (ISSUE #25).
 
-  * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
-    source keys to be used to populate the destination key.
-
   * The "read_write_timeout" connection parameter can now be set to 0 or false 
     to disable read and write timeouts on connections. The old behaviour of -1 
     is still intact.
+
+  * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
+    source keys to be used to populate the destination key.
+
+  * MGET, SINTER and SUNION can accept an array to specify the list of keys.
 
   * SUBSCRIBE and PSUBSCRIBE can accept a list of channels for subscription.
 

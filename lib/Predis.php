@@ -2464,6 +2464,9 @@ class Get extends \Predis\MultiBulkCommand {
 class GetMultiple extends \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MGET'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class GetSet extends \Predis\MultiBulkCommand {
@@ -2677,13 +2680,16 @@ class SetIsMember extends \Predis\MultiBulkCommand {
 
 class SetIntersection extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SINTER'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class SetIntersectionStore extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SINTERSTORE'; }
 }
 
-class SetUnion extends \Predis\MultiBulkCommand {
+class SetUnion extends SetIntersection {
     public function getCommandId() { return 'SUNION'; }
 }
 
