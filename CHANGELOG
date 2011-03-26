@@ -16,6 +16,8 @@ v0.6.6 (2011-xx-xx)
     to disable read and write timeouts on connections. The old behaviour of -1 
     is still intact.
 
+  * SUBSCRIBE and PSUBSCRIBE can accept a list of channels for subscription.
+
   * FIX: some client-side clean-ups for MULTI/EXEC were handled incorrectly in 
     a couple of corner cases.
 

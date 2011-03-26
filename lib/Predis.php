@@ -1101,14 +1101,7 @@ class PubSubContext implements \Iterator {
 
     private function genericSubscribeInit($subscribeAction) {
         if (isset($this->_options[$subscribeAction])) {
-            if (is_array($this->_options[$subscribeAction])) {
-                foreach ($this->_options[$subscribeAction] as $subscription) {
-                    $this->$subscribeAction($subscription);
-                }
-            }
-            else {
-                $this->$subscribeAction($this->_options[$subscribeAction]);
-            }
+            $this->$subscribeAction($this->_options[$subscribeAction]);
         }
     }
 
@@ -2289,6 +2282,13 @@ class Utils {
         }
         throw $exception;
     }
+
+    public static function filterArrayArguments(Array $arguments) {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+        return $arguments;
+    }
 }
 
 abstract class MultiBulkResponseIteratorBase implements \Iterator, \Countable {
@@ -3046,8 +3046,11 @@ class Unwatch extends \Predis\MultiBulkCommand {
 
 /* publish/subscribe */
 class Subscribe extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
+    public function canBeHashed() { return false; }
     public function getCommandId() { return 'SUBSCRIBE'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Unsubscribe extends \Predis\MultiBulkCommand {
@@ -3056,8 +3059,11 @@ class Unsubscribe extends \Predis\MultiBulkCommand {
 }
 
 class SubscribeByPattern extends \Predis\MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'PSUBSCRIBE'; }
+    public function canBeHashed() { return false; }
+    public function getCommandId() { return 'UNSUBSCRIBE'; }
+    public function filterArguments(Array $arguments) {
+        return \Predis\Shared\Utils::filterArrayArguments($arguments);
+    }
 }
 
 class UnsubscribeByPattern extends \Predis\MultiBulkCommand {
