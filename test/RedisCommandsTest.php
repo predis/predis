@@ -1013,6 +1013,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->redis->set('foo', 'bar');
         $this->assertEquals(count($setA), $this->redis->sinterstore('foo', 'setA'));
 
+        // accepts an array for the list of source keys
+        $this->assertEquals(4, $this->redis->sinterstore('setC', array('setA', 'setB')));
+
         // wrong type
         $this->redis->set('foo', 'bar');
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function($test) {
@@ -1075,6 +1078,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         // existing keys are replaced by SUNIONSTORE
         $this->redis->set('foo', 'bar');
         $this->assertEquals(count($setA), $this->redis->sunionstore('foo', 'setA'));
+
+        // accepts an array for the list of source keys
+        $this->assertEquals(9, $this->redis->sunionstore('setC', array('setA', 'setB')));
 
         // wrong type
         $this->redis->set('foo', 'bar');
