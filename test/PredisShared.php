@@ -129,7 +129,7 @@ class RC {
         catch (Predis\ServerException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\ServerException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\ServerException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -143,7 +143,7 @@ class RC {
         catch (Predis\ClientException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\ClientException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\ClientException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -157,7 +157,7 @@ class RC {
         catch (Predis\CommunicationException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\CommunicationException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\CommunicationException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -171,7 +171,7 @@ class RC {
         catch (Predis\AbortedMultiExec $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\AbortedMultiExec', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\AbortedMultiExec', $thrownException);
     }
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {

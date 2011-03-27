@@ -102,11 +102,11 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     /* Predis\Profiles\ServerProfile and derivates */
 
     function testServerProfile_GetSpecificVersions() {
-        $this->assertType('\Predis\Profiles\ServerVersion12', \Predis\Profiles\ServerProfile::get('1.2'));
-        $this->assertType('\Predis\Profiles\ServerVersion20', \Predis\Profiles\ServerProfile::get('2.0'));
-        $this->assertType('\Predis\Profiles\ServerVersion22', \Predis\Profiles\ServerProfile::get('2.2'));
-        $this->assertType('\Predis\Profiles\ServerVersionNext', \Predis\Profiles\ServerProfile::get('dev'));
-        $this->assertType('\Predis\Profiles\ServerProfile', \Predis\Profiles\ServerProfile::get('default'));
+        $this->assertInstanceOf('\Predis\Profiles\ServerVersion12', \Predis\Profiles\ServerProfile::get('1.2'));
+        $this->assertInstanceOf('\Predis\Profiles\ServerVersion20', \Predis\Profiles\ServerProfile::get('2.0'));
+        $this->assertInstanceOf('\Predis\Profiles\ServerVersion22', \Predis\Profiles\ServerProfile::get('2.2'));
+        $this->assertInstanceOf('\Predis\Profiles\ServerVersionNext', \Predis\Profiles\ServerProfile::get('dev'));
+        $this->assertInstanceOf('\Predis\Profiles\ServerProfile', \Predis\Profiles\ServerProfile::get('default'));
         $this->assertEquals(\Predis\Profiles\ServerProfile::get('default'), \Predis\Profiles\ServerProfile::getDefault());
     }
 
@@ -128,12 +128,12 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $profile = \Predis\Profiles\ServerProfile::get('2.0');
 
         $cmdNoArgs = $profile->createCommand('info');
-        $this->assertType('\Predis\Commands\Info', $cmdNoArgs);
+        $this->assertInstanceOf('\Predis\Commands\Info', $cmdNoArgs);
         $this->assertNull($cmdNoArgs->getArgument());
 
         $args = array('key1', 'key2');
         $cmdWithArgs = $profile->createCommand('mget', $args);
-        $this->assertType('\Predis\Commands\GetMultiple', $cmdWithArgs);
+        $this->assertInstanceOf('\Predis\Commands\GetMultiple', $cmdWithArgs);
         $this->assertEquals($args[0], $cmdWithArgs->getArgument()); // TODO: why?
         $this->assertEquals($args[0], $cmdWithArgs->getArgument(0));
         $this->assertEquals($args[1], $cmdWithArgs->getArgument(1));
@@ -155,7 +155,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($profile->supportsCommand($cmdId));
         $profile->defineCommand(new $cmdClass(), $cmdId);
         $this->assertTrue($profile->supportsCommand($cmdId));
-        $this->assertType($cmdClass, $profile->createCommand($cmdId));
+        $this->assertInstanceOf($cmdClass, $profile->createCommand($cmdId));
     }
 
 
@@ -227,7 +227,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $connection = new \Predis\Network\StreamConnection(RC::getConnectionParameters());
 
         $this->assertFalse($connection->isConnected());
-        $this->assertType('resource', $connection->getResource());
+        $this->assertInternalType('resource', $connection->getResource());
         $this->assertTrue($connection->isConnected());
     }
 
@@ -289,14 +289,14 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             new \Predis\Protocols\ResponseMultiBulkHandler()
         );
         $connection->writeBytes("KEYS *\r\n");
-        $this->assertType('array', $reader->read($connection));
+        $this->assertInternalType('array', $reader->read($connection));
 
         $reader->setHandler(
             \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK, 
             new \Predis\Protocols\ResponseMultiBulkStreamHandler()
         );
         $connection->writeBytes("KEYS *\r\n");
-        $this->assertType('\Iterator', $reader->read($connection));
+        $this->assertInstanceOf('\Iterator', $reader->read($connection));
     }
 
     function testResponseReader_OptionExceptionOnError() {
@@ -314,7 +314,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         );
         $connection->writeBytes($rawCmdUnexpected);
         $errorReply = $reader->read($connection);
-        $this->assertType('\Predis\ResponseError', $errorReply);
+        $this->assertInstanceOf('\Predis\ResponseError', $errorReply);
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
         $reader->setHandler(
@@ -395,18 +395,18 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
         $pipe = $client->pipeline();
 
-        $this->assertType('\Predis\CommandPipeline', $pipe);
-        $this->assertType('\Predis\CommandPipeline', $pipe->set('foo', 'bar'));
-        $this->assertType('\Predis\CommandPipeline', $pipe->set('hoge', 'piyo'));
-        $this->assertType('\Predis\CommandPipeline', $pipe->mset(array(
+        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe);
+        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->set('foo', 'bar'));
+        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->set('hoge', 'piyo'));
+        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->mset(array(
             'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
         )));
-        $this->assertType('\Predis\CommandPipeline', $pipe->mget(array(
+        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->mget(array(
             'foo', 'hoge', 'foofoo', 'hogehoge'
         )));
 
         $replies = $pipe->execute();
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(4, count($replies));
         $this->assertEquals(4, count($replies[3]));
         $this->assertEquals('barbar', $replies[3][2]);
@@ -417,7 +417,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         $replies = $client->pipeline()->ping()->set('foo', 'bar')->get('foo')->execute();
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals('bar', $replies[2]);
     }
 
@@ -431,7 +431,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $pipe->get('foo');
         });
 
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals('bar', $replies[2]);
     }
 
@@ -459,8 +459,8 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $pipe->set('hoge', 'piyo');
         });
 
-        $this->assertType('array', $replies);
-        $this->assertType('\Predis\ResponseError', $replies[1]);
+        $this->assertInternalType('array', $replies);
+        $this->assertInstanceOf('\Predis\ResponseError', $replies[1]);
         $this->assertTrue($client->exists('foo'));
         $this->assertTrue($client->exists('hoge'));
     }
@@ -475,7 +475,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $pipe->ping()->mget(array('foo', 'hoge'));
         $replies = $pipe->execute();
 
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(4, count($replies));
         $this->assertEquals('bar', $replies[3][0]);
         $this->assertEquals('piyo', $replies[3][1]);
@@ -490,18 +490,18 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
         $multi = $client->multiExec();
 
-        $this->assertType('\Predis\MultiExecContext', $multi);
-        $this->assertType('\Predis\MultiExecContext', $multi->set('foo', 'bar'));
-        $this->assertType('\Predis\MultiExecContext', $multi->set('hoge', 'piyo'));
-        $this->assertType('\Predis\MultiExecContext', $multi->mset(array(
+        $this->assertInstanceOf('\Predis\MultiExecContext', $multi);
+        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->set('foo', 'bar'));
+        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->set('hoge', 'piyo'));
+        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->mset(array(
             'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
         )));
-        $this->assertType('\Predis\MultiExecContext', $multi->mget(array(
+        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->mget(array(
             'foo', 'hoge', 'foofoo', 'hogehoge'
         )));
 
         $replies = $multi->execute();
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(4, count($replies));
         $this->assertEquals(4, count($replies[3]));
         $this->assertEquals('barbar', $replies[3][2]);
@@ -512,7 +512,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         $replies = $client->multiExec()->ping()->set('foo', 'bar')->get('foo')->execute();
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals('bar', $replies[2]);
     }
 
@@ -526,7 +526,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $multi->get('foo');
         });
 
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals('bar', $replies[2]);
     }
 
@@ -580,8 +580,8 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $multi->set('hoge', 'piyo');
         });
 
-        $this->assertType('array', $replies);
-        $this->assertType('\Predis\ResponseError', $replies[1]);
+        $this->assertInternalType('array', $replies);
+        $this->assertInstanceOf('\Predis\ResponseError', $replies[1]);
         $this->assertTrue($client->exists('foo'));
         $this->assertTrue($client->exists('hoge'));
     }
@@ -645,7 +645,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $tx->set('foobar', $foo);
             $tx->mget('foo', 'foobar');
         });
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(array(true, array('bar', 'bar')), $replies);
 
         $tx = $client->multiExec($options);
@@ -655,7 +655,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
                       ->set('foobar', $foo)
                       ->mget('foo', 'foobar')
                       ->execute();
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(array(true, array('bar', 'bar')), $replies);
     }
 
@@ -731,7 +731,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             $tx->discard();
             $tx->mget('foo', 'foobar');
         });
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(array(array('bar', null)), $replies);
 
         $hijack = true;
@@ -751,7 +751,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
             }
             $tx->mget('foo', 'foobar');
         });
-        $this->assertType('array', $replies);
+        $this->assertInternalType('array', $replies);
         $this->assertEquals(array(array('hijacked!', null)), $replies);
     }
 }

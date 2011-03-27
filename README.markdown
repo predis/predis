@@ -145,7 +145,7 @@ too, even though they are not the preferred way to contribute to Predis.
 ## Dependencies ##
 
 - PHP >= 5.3.0
-- PHPUnit (needed to run the test suite)
+- PHPUnit >= 3.5.0 (needed to run the test suite)
 
 ## Links ##
 
