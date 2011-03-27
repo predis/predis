@@ -2687,6 +2687,12 @@ class SetIntersection extends \Predis\MultiBulkCommand {
 
 class SetIntersectionStore extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SINTERSTORE'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            return array_merge(array($arguments[0]), $arguments[1]);
+        }
+        return $arguments;
+    }
 }
 
 class SetUnion extends SetIntersection {
@@ -2695,6 +2701,12 @@ class SetUnion extends SetIntersection {
 
 class SetUnionStore extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SUNIONSTORE'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            return array_merge(array($arguments[0]), $arguments[1]);
+        }
+        return $arguments;
+    }
 }
 
 class SetDifference extends \Predis\MultiBulkCommand {

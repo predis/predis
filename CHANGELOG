@@ -16,7 +16,9 @@ v0.6.6 (2011-xx-xx)
   * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
     source keys to be used to populate the destination key.
 
-  * MGET, SINTER and SUNION can accept an array to specify the list of keys.
+  * MGET, SINTER and SUNION can accept an array to specify the list of keys. 
+    SINTERSTORE and SUNIONSTORE can also accept an array to specify the list 
+    of source keys.
 
   * SUBSCRIBE and PSUBSCRIBE can accept a list of channels for subscription.
 
