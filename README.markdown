@@ -40,9 +40,13 @@ When used in simple projects or scripts you might need to define an autoloader f
         }
     });
 
-Optionally, you can generate a single PHP file that holds every class (just like older versions of Predis) 
-by launching the _createSingleFile.php_ script from the _bin_ directory of the repository. In this way 
-you can load Predis in your scripts simply by using functions such as _require_ and _include_.
+You can also create a single Phar archive from the repository just by launching the _createPhar.php_ 
+script located in the _bin_ directory. The generated Phar ships with a stub that defines an autoloader 
+function for Predis, so you just need to require the Phar archive in order to be able to use the library.
+
+Alternatively you can generate a single PHP file that holds every class, just like older versions of Predis, 
+using the _createSingleFile.php_ script located in the _bin_ directory. In this way you can load Predis in 
+your scripts simply by using functions such as _require_ and _include_, but this practice is not encouraged.
 
 
 ### Connecting to a local instance of Redis ###
