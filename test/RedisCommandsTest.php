@@ -1,6 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
-require_once 'PredisShared.php';
 
 class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
@@ -12,12 +10,12 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     //       should be provided.
     // TODO: missing test with float values for a few commands
 
-    protected function setUp() { 
+    protected function setUp() {
         $this->redis = RC::getConnection();
         $this->redis->flushdb();
     }
 
-    protected function tearDown() { 
+    protected function tearDown() {
     }
 
     protected function onNotSuccessfulTest(Exception $exception) {
@@ -49,9 +47,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         //       respective Predis\Command::parseResponse methods. If you need that 
         //       kind of behaviour, you should use an instance of Predis\MultiExecBlock.
         $this->assertTrue($this->redis->multi());
-        $this->assertType('Predis\ResponseQueued', $this->redis->ping());
-        $this->assertType('Predis\ResponseQueued', $this->redis->echo('hello'));
-        $this->assertType('Predis\ResponseQueued', $this->redis->echo('redis'));
+        $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->ping());
+        $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->echo('hello'));
+        $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->echo('redis'));
         $this->assertEquals(array('PONG', 'hello', 'redis'), $this->redis->exec());
 
         $this->assertTrue($this->redis->multi());
@@ -65,8 +63,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testDiscard() {
         $this->assertTrue($this->redis->multi());
-        $this->assertType('Predis\ResponseQueued', $this->redis->set('foo', 'bar'));
-        $this->assertType('Predis\ResponseQueued', $this->redis->set('hoge', 'piyo'));
+        $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->set('foo', 'bar'));
+        $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->set('hoge', 'piyo'));
         $this->assertEquals(true, $this->redis->discard());
 
         // should throw an exception when trying to EXEC after a DISCARD
@@ -2033,7 +2031,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     function testInfo() {
         $serverInfo = $this->redis->info();
 
-        $this->assertType('array', $serverInfo);
+        $this->assertInternalType('array', $serverInfo);
         $this->assertNotNull($serverInfo['redis_version']);
         $this->assertGreaterThan(0, $serverInfo['uptime_in_seconds']);
         $this->assertGreaterThan(0, $serverInfo['total_connections_received']);

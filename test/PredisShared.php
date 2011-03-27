@@ -12,10 +12,8 @@ if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
     );
 }
 
-require_once '../lib/Predis.php';
-
 if (!function_exists('array_union')) {
-    function array_union(Array $a, Array $b) { 
+    function array_union(Array $a, Array $b) {
         return array_merge($a, array_diff($b, $a));
     }
 }
@@ -40,11 +38,11 @@ class RC {
 
     private static $_connection;
 
-    public static function getConnectionArguments() { 
+    public static function getConnectionArguments() {
         return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
     }
 
-    public static function getConnectionParameters() { 
+    public static function getConnectionParameters() {
         return new Predis\ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
     }
 
@@ -78,8 +76,9 @@ class RC {
         //       in a separate process to properly test BLPOP/BRPOP
         $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
         $handle = popen('php', 'w');
+        $dir = __DIR__;
         fwrite($handle, "<?php
-        require '../lib/Predis.php';
+        require '{$dir}/../lib/Predis.php';
         \$redis = Predis\Client::create('$redisUri');
         \$redis->rpush('{$op}1', 'a');
         \$redis->rpush('{$op}2', 'b');
@@ -130,7 +129,7 @@ class RC {
         catch (Predis\ServerException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\ServerException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\ServerException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -144,7 +143,7 @@ class RC {
         catch (Predis\ClientException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\ClientException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\ClientException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -158,7 +157,7 @@ class RC {
         catch (Predis\CommunicationException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\CommunicationException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\CommunicationException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -172,7 +171,7 @@ class RC {
         catch (Predis\AbortedMultiExec $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis\AbortedMultiExec', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\AbortedMultiExec', $thrownException);
     }
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {
