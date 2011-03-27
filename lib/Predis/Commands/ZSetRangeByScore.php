@@ -3,7 +3,10 @@
 namespace Predis\Commands;
 
 class ZSetRangeByScore extends ZSetRange {
-    public function getId() { return 'ZRANGEBYSCORE'; }
+    public function getId() {
+        return 'ZRANGEBYSCORE';
+    }
+
     protected function prepareOptions($options) {
         $opts = array_change_key_case($options, CASE_UPPER);
         $finalizedOpts = array();

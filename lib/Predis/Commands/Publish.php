@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Publish extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'PUBLISH'; }
+    public function getId() {
+        return 'PUBLISH';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

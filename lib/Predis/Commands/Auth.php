@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Auth extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'AUTH'; }
+    public function getId() {
+        return 'AUTH';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

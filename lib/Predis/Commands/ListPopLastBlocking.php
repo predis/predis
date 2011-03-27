@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class ListPopLastBlocking extends ListPopFirstBlocking {
-    public function getId() { return 'BRPOP'; }
+    public function getId() {
+        return 'BRPOP';
+    }
 }

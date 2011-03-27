@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class ListRange extends Command {
-    public function getId() { return 'LRANGE'; }
+    public function getId() {
+        return 'LRANGE';
+    }
 }

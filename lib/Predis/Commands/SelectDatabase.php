@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class SelectDatabase extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'SELECT'; }
+    public function getId() {
+        return 'SELECT';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

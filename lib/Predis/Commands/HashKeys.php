@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class HashKeys extends Command {
-    public function getId() { return 'HKEYS'; }
+    public function getId() {
+        return 'HKEYS';
+    }
 }

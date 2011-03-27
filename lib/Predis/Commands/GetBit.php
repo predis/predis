@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class GetBit extends Command {
-    public function getId() { return 'GETBIT'; }
+    public function getId() {
+        return 'GETBIT';
+    }
 }

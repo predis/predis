@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class DoEcho extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'ECHO'; }
+    public function getId() {
+        return 'ECHO';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

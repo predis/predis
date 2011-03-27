@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class UnsubscribeByPattern extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'PUNSUBSCRIBE'; }
+    public function getId() {
+        return 'PUNSUBSCRIBE';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

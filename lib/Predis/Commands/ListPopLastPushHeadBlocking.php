@@ -3,10 +3,13 @@
 namespace Predis\Commands;
 
 class ListPopLastPushHeadBlocking extends Command {
+    public function getId() {
+        return 'BRPOPLPUSH';
+    }
+
     protected function canBeHashed() {
         return $this->checkSameHashForKeys(
             array_slice($args = $this->getArguments(), 0, count($args) - 1)
         );
     }
-    public function getId() { return 'BRPOPLPUSH'; }
 }

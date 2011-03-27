@@ -3,7 +3,10 @@
 namespace Predis\Commands;
 
 class Sort extends Command {
-    public function getId() { return 'SORT'; }
+    public function getId() {
+        return 'SORT';
+    }
+
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
             return $arguments;

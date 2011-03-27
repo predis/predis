@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class Set extends Command {
-    public function getId() { return 'SET'; }
+    public function getId() {
+        return 'SET';
+    }
 }

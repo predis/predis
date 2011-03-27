@@ -8,6 +8,30 @@ abstract class Command implements ICommand {
     private $_hash;
     private $_arguments = array();
 
+    protected function filterArguments(Array $arguments) {
+        return $arguments;
+    }
+
+    public function setArguments(/* arguments */) {
+        $this->_arguments = $this->filterArguments(func_get_args());
+        unset($this->_hash);
+    }
+
+    public function setArgumentsArray(Array $arguments) {
+        $this->_arguments = $this->filterArguments($arguments);
+        unset($this->_hash);
+    }
+
+    public function getArguments() {
+        return $this->_arguments;
+    }
+
+    public function getArgument($index = 0) {
+        if (isset($this->_arguments[$index]) === true) {
+            return $this->_arguments[$index];
+        }
+    }
+
     protected function canBeHashed() {
         return isset($this->_arguments[0]);
     }
@@ -48,30 +72,6 @@ abstract class Command implements ICommand {
             return $this->_hash;
         }
         return null;
-    }
-
-    protected function filterArguments(Array $arguments) {
-        return $arguments;
-    }
-
-    public function setArguments(/* arguments */) {
-        $this->_arguments = $this->filterArguments(func_get_args());
-        unset($this->_hash);
-    }
-
-    public function setArgumentsArray(Array $arguments) {
-        $this->_arguments = $this->filterArguments($arguments);
-        unset($this->_hash);
-    }
-
-    public function getArguments() {
-        return $this->_arguments;
-    }
-
-    public function getArgument($index = 0) {
-        if (isset($this->_arguments[$index]) === true) {
-            return $this->_arguments[$index];
-        }
     }
 
     public function parseResponse($data) {

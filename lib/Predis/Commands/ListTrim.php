@@ -3,5 +3,7 @@
 namespace Predis\Commands;
 
 class ListTrim extends Command {
-    public function getId() { return 'LTRIM'; }
+    public function getId() {
+        return 'LTRIM';
+    }
 }

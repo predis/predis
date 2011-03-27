@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class LastSave extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'LASTSAVE'; }
+    public function getId() {
+        return 'LASTSAVE';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

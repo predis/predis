@@ -3,8 +3,14 @@
 namespace Predis\Commands;
 
 class Info extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'INFO'; }
+    public function getId() {
+        return 'INFO';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
+
     public function parseResponse($data) {
         $info      = array();
         $infoLines = explode("\r\n", $data, -1);
@@ -26,6 +32,7 @@ class Info extends Command {
         }
         return $info;
     }
+
     protected function parseDatabaseStats($str) {
         $db = array();
         foreach (explode(',', $str) as $dbvar) {
@@ -34,6 +41,7 @@ class Info extends Command {
         }
         return $db;
     }
+
     protected function parseAllocationStats($str) {
         $stats = array();
         foreach (explode(',', $str) as $kv) {

@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Quit extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'QUIT'; }
+    public function getId() {
+        return 'QUIT';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

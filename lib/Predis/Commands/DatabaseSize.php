@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class DatabaseSize extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'DBSIZE'; }
+    public function getId() {
+        return 'DBSIZE';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

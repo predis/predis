@@ -3,13 +3,10 @@
 namespace Predis\Commands;
 
 class ZSetUnionStore extends Command {
-    protected function canBeHashed() {
-        $args = $this->getArguments();
-        return $this->checkSameHashForKeys(
-            array_merge(array($args[0]), array_slice($args, 2, $args[1]))
-        );
+    public function getId() {
+        return 'ZUNIONSTORE';
     }
-    public function getId() { return 'ZUNIONSTORE'; }
+
     public function filterArguments(Array $arguments) {
         $options = array();
         $argc = count($arguments);
@@ -24,6 +21,7 @@ class ZSetUnionStore extends Command {
         }
         return array_merge($arguments, $options);
     }
+
     private function prepareOptions($options) {
         $opts = array_change_key_case($options, CASE_UPPER);
         $finalizedOpts = array();
@@ -38,5 +36,12 @@ class ZSetUnionStore extends Command {
             $finalizedOpts[] = $opts['AGGREGATE'];
         }
         return $finalizedOpts;
+    }
+
+    protected function canBeHashed() {
+        $args = $this->getArguments();
+        return $this->checkSameHashForKeys(
+            array_merge(array($args[0]), array_slice($args, 2, $args[1]))
+        );
     }
 }

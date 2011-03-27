@@ -6,7 +6,11 @@ use Predis\Iterators\MultiBulkResponseTuple;
 
 class ZSetRange extends Command {
     private $_withScores = false;
-    public function getId() { return 'ZRANGE'; }
+
+    public function getId() {
+        return 'ZRANGE';
+    }
+
     public function filterArguments(Array $arguments) {
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);
@@ -22,6 +26,7 @@ class ZSetRange extends Command {
         }
         return $arguments;
     }
+
     protected function prepareOptions($options) {
         $opts = array_change_key_case($options, CASE_UPPER);
         $finalizedOpts = array();
@@ -31,6 +36,7 @@ class ZSetRange extends Command {
         }
         return $finalizedOpts;
     }
+
     public function parseResponse($data) {
         if ($this->_withScores) {
             if ($data instanceof \Iterator) {

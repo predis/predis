@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Shutdown extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'SHUTDOWN'; }
+    public function getId() {
+        return 'SHUTDOWN';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Discard extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'DISCARD'; }
+    public function getId() {
+        return 'DISCARD';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }

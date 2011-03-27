@@ -3,6 +3,11 @@
 namespace Predis\Commands;
 
 class Multi extends Command {
-    protected function canBeHashed() { return false; }
-    public function getId() { return 'MULTI'; }
+    public function getId() {
+        return 'MULTI';
+    }
+
+    protected function canBeHashed() {
+        return false;
+    }
 }
