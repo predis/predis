@@ -23,6 +23,21 @@ abstract class Command implements ICommand {
         return $key;
     }
 
+    protected function checkSameHashForKeys(Array $keys) {
+        if (($count = count($keys)) === 0) {
+            return false;
+        }
+        $currentKey = $this->getHashablePart($keys[0]);
+        for ($i = 1; $i < $count; $i++) {
+            $nextKey = $this->getHashablePart($keys[$i]);
+            if ($currentKey !== $nextKey) {
+                return false;
+            }
+            $currentKey = $nextKey;
+        }
+        return true;
+    }
+
     public function getHash(IDistributionStrategy $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
