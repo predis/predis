@@ -8,7 +8,33 @@ abstract class Command implements ICommand {
     private $_hash;
     private $_arguments = array();
 
-    public function canBeHashed() {
+    protected function canBeHashed() {
+        return isset($this->_arguments[0]);
+    }
+
+    protected function getHashablePart($key) {
+        $start = strpos($key, '{');
+        if ($start !== false) {
+            $end = strpos($key, '}', $start);
+            if ($end !== false) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+        return $key;
+    }
+
+    protected function checkSameHashForKeys(Array $keys) {
+        if (($count = count($keys)) === 0) {
+            return false;
+        }
+        $currentKey = $this->getHashablePart($keys[0]);
+        for ($i = 1; $i < $count; $i++) {
+            $nextKey = $this->getHashablePart($keys[$i]);
+            if ($currentKey !== $nextKey) {
+                return false;
+            }
+            $currentKey = $nextKey;
+        }
         return true;
     }
 
@@ -16,19 +42,8 @@ abstract class Command implements ICommand {
         if (isset($this->_hash)) {
             return $this->_hash;
         }
-        if (isset($this->_arguments[0])) {
-            // TODO: should we throw an exception if the command does not
-            // support sharding?
-            $key = $this->_arguments[0];
-
-            $start = strpos($key, '{');
-            if ($start !== false) {
-                $end = strpos($key, '}', $start);
-                if ($end !== false) {
-                    $key = substr($key, ++$start, $end - $start);
-                }
-            }
-
+        if ($this->canBeHashed()) {
+            $key = $this->getHashablePart($this->_arguments[0]);
             $this->_hash = $distributor->generateKey($key);
             return $this->_hash;
         }

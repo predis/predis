@@ -2,6 +2,6 @@
 
 namespace Predis\Commands;
 
-class ListPopLastBlocking extends Command {
+class ListPopLastBlocking extends ListPopFirstBlocking {
     public function getId() { return 'BRPOP'; }
 }

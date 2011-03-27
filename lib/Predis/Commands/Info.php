@@ -3,7 +3,7 @@
 namespace Predis\Commands;
 
 class Info extends Command {
-    public function canBeHashed()  { return false; }
+    protected function canBeHashed() { return false; }
     public function getId() { return 'INFO'; }
     public function parseResponse($data) {
         $info      = array();
