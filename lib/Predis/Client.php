@@ -37,21 +37,24 @@ class Client {
         throw new \InvalidArgumentException("Invalid type for client options");
     }
 
-    private function initializeConnection($parameters = array()) {
+    private function initializeConnection($parameters = null) {
         if ($parameters === null) {
-            return $this->createConnection(array());
+            return $this->createConnection(new ConnectionParameters());
+        }
+        if (is_array($parameters)) {
+            if (isset($parameters[0])) {
+                $cluster = new ConnectionCluster($this->_options->key_distribution);
+                foreach ($parameters as $single) {
+                    $cluster->add($single instanceof IConnectionSingle
+                        ? $single : $this->createConnection($single)
+                    );
+                }
+                return $cluster;
+            }
+            return $this->createConnection($parameters);
         }
         if ($parameters instanceof IConnection) {
             return $parameters;
-        }
-        if (is_array($parameters) && isset($parameters[0])) {
-            $cluster = new ConnectionCluster($this->_options->key_distribution);
-            foreach ($parameters as $single) {
-                $cluster->add($single instanceof IConnectionSingle
-                    ? $single : $this->createConnection($single)
-                );
-            }
-            return $cluster;
         }
         return $this->createConnection($parameters);
     }

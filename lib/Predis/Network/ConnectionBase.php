@@ -42,8 +42,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     protected function initializeProtocol(ConnectionParameters $parameters) {
-        $this->setProtocolOption('throw_errors', $parameters->throw_errors);
-        $this->setProtocolOption('iterable_multibulk', $parameters->iterable_multibulk);
+        // NOOP
     }
 
     protected abstract function createResource();

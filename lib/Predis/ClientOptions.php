@@ -59,19 +59,16 @@ class ClientOptions {
         }
     }
 
-    private function tryInitializeValue($option) {
+    public function __get($option) {
+        if (isset($this->_options[$option])) {
+            return $this->_options[$option];
+        }
         if (isset($this->_handlers[$option])) {
             $opts = self::getSharedOptions();
             $value = $opts[$option]->getDefault();
             $this->_options[$option] = $value;
             return $value;
         }
-    }
-
-    public function __get($option) {
-        if (isset($this->_options[$option])) {
-            return $this->_options[$option];
-        }
-        return $this->tryInitializeValue($option);
+        return null;
     }
 }

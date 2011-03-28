@@ -16,6 +16,11 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         parent::__construct($parameters);
     }
 
+    protected function initializeProtocol(ConnectionParameters $parameters) {
+        $this->_protocol->setOption('throw_errors', $parameters->throw_errors);
+        $this->_protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
+    }
+
     public function setProtocol(IProtocolProcessor $protocol) {
         if ($protocol === null) {
             throw new \InvalidArgumentException("The protocol instance cannot be a null value");
@@ -25,10 +30,6 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
 
     public function getProtocol() {
         return $this->_protocol;
-    }
-
-    protected function setProtocolOption($option, $value) {
-        return $this->_protocol->setOption($option, $value);
     }
 
     public function writeBytes($value) {

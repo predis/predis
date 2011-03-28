@@ -20,6 +20,11 @@ class StreamConnection extends ConnectionBase {
         }
     }
 
+    protected function initializeProtocol(ConnectionParameters $parameters) {
+        $this->_throwErrors = $parameters->throw_errors;
+        $this->_mbiterable = $parameters->iterable_multibulk;
+    }
+
     protected function createResource() {
         $parameters = $this->_params;
         $initializer = array($this, "{$parameters->scheme}StreamInitializer");
@@ -193,18 +198,5 @@ class StreamConnection extends ConnectionBase {
     public function readResponse(ICommand $command) {
         $reply = $this->read();
         return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
-    }
-
-    protected function setProtocolOption($option, $value) {
-        switch ($option) {
-            case 'iterable_multibulk':
-                $this->_mbiterable = (bool) $value;
-                break;
-            case 'throw_errors':
-                $this->_throwErrors = (bool) $value;
-                break;
-            default:
-                $this->onInvalidOption($option, $this->getParameters());
-        }
     }
 }

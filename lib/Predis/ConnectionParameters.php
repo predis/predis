@@ -92,11 +92,11 @@ class ConnectionParameters {
         if ($parsed === false || !isset($parsed['host'])) {
             throw new \InvalidArgumentException("Invalid URI: $uri");
         }
-        if (array_key_exists('query', $parsed)) {
+        if (isset($parsed['query'])) {
             $query  = explode('&', $parsed['query']);
             $parsed = array_reduce($query, 'self::paramsExtractor', $parsed);
+            unset($parsed['query']);
         }
-        unset($parsed['query']);
         return $this->filter($parsed);
     }
 
@@ -110,19 +110,16 @@ class ConnectionParameters {
         return $parameters;
     }
 
-    private function tryInitializeValue($parameter) {
+    public function __get($parameter) {
+        if (isset($this->_parameters[$parameter])) {
+            return $this->_parameters[$parameter];
+        }
         if (isset(self::$_sharedOptions[$parameter])) {
             $value = self::$_sharedOptions[$parameter]->getDefault();
             $this->_parameters[$parameter] = $value;
             return $value;
         }
-    }
-
-    public function __get($parameter) {
-        if (isset($this->_parameters[$parameter])) {
-            return $this->_parameters[$parameter];
-        }
-        return $this->tryInitializeValue($parameter);
+        return null;
     }
 
     public function __isset($parameter) {

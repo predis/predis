@@ -4,14 +4,16 @@ namespace Predis;
 
 class ConnectionSchemes implements IConnectionSchemes {
     private static $_globalSchemes;
-    private $_instanceSchemes;
+    private $_instanceSchemes = array();
 
-    public function __construct(Array $schemesMap = array()) {
+    public function __construct(Array $schemesMap = null) {
         self::ensureDefaultSchemes();
-        foreach ($schemesMap as $connectionClass) {
-            self::checkConnectionClass($connectionClass);
+        if (isset($schemesMap)) {
+            foreach ($schemesMap as $connectionClass) {
+                self::checkConnectionClass($connectionClass);
+            }
+            $this->_instanceSchemes = $schemesMap;
         }
-        $this->_instanceSchemes = $schemesMap;
     }
 
     private static function ensureDefaultSchemes() {
