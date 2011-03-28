@@ -6,6 +6,8 @@ class ServerVersion12 extends ServerProfile {
     public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array(
+            /* ---------------- Redis 1.2 ---------------- */
+
             /* miscellaneous commands */
             'ping'                      => '\Predis\Commands\Ping',
             'echo'                      => '\Predis\Commands\DoEcho',
