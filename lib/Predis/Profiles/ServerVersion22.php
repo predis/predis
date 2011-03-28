@@ -33,7 +33,7 @@ class ServerVersion22 extends ServerProfile {
             'type'                      => '\Predis\Commands\Type',
 
             /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\KeysV12x',
+            'keys'                      => '\Predis\Commands\Keys',
             'randomkey'                 => '\Predis\Commands\RandomKey',
             'rename'                    => '\Predis\Commands\Rename',
             'renamenx'                  => '\Predis\Commands\RenamePreserve',
