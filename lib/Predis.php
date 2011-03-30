@@ -92,7 +92,6 @@ class Client {
         if ($parameters !== null && !(is_array($parameters) || is_string($parameters))) {
             throw new ClientException('Invalid parameters type (array or string expected)');
         }
-
         if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new ConnectionCluster($this->_options->key_distribution);
             foreach ($parameters as $shardParams) {
@@ -106,19 +105,19 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        $params     = $parameters instanceof ConnectionParameters
-                          ? $parameters
-                          : new ConnectionParameters($parameters);
-        $connection = new Connection($params, $this->_responseReader);
+        if (!$parameters instanceof ConnectionParameters) {
+            $parameters = new ConnectionParameters($parameters);
+        }
 
-        if ($params->password !== null) {
+        $connection = new Connection($parameters, $this->_responseReader);
+        if ($parameters->password !== null) {
             $connection->pushInitCommand($this->createCommand(
-                'auth', array($params->password)
+                'auth', array($parameters->password)
             ));
         }
-        if ($params->database !== null) {
+        if ($parameters->database !== null) {
             $connection->pushInitCommand($this->createCommand(
-                'select', array($params->database)
+                'select', array($parameters->database)
             ));
         }
 
@@ -130,15 +129,17 @@ class Client {
     }
 
     public function setProfile($serverProfile) {
-        if (!($serverProfile instanceof RedisServerProfile || is_string($serverProfile))) {
+        if ($serverProfile instanceof RedisServerProfile) {
+            $this->_serverProfile = $serverProfile;
+        }
+        else if (is_string($serverProfile)) {
+            $this->_serverProfile = RedisServerProfile::get($serverProfile);
+        }
+        else {
             throw new \InvalidArgumentException(
                 "Invalid type for server profile, \Predis\RedisServerProfile or string expected"
             );
         }
-        $this->_serverProfile = (is_string($serverProfile)
-            ? RedisServerProfile::get($serverProfile)
-            : $serverProfile
-        );
     }
 
     public function getProfile() {
@@ -1409,12 +1410,12 @@ interface IConnection {
 }
 
 class Connection implements IConnection {
+    private static $_allowedSchemes = array('redis', 'tcp', 'unix');
     private $_params, $_socket, $_initCmds, $_reader, $_initializer;
 
     public function __construct(ConnectionParameters $parameters, IResponseReader $reader = null) {
-        $scheme = $parameters->scheme;
-        if ($scheme !== 'redis' && $scheme !== 'tcp' && $scheme !== 'unix') {
-            throw new \InvalidArgumentException("Invalid scheme: $scheme");
+        if (!in_array($parameters->scheme, self::$_allowedSchemes)) {
+            throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
         $this->_initializer = array($this, "{$parameters->scheme}StreamInitializer");
         $this->_params   = $parameters;
@@ -2493,7 +2494,7 @@ class Ping extends  \Predis\MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PING'; }
     public function parseResponse($data) {
-        return $data === 'PONG' ? true : false;
+        return $data === 'PONG';
     }
 }
 
@@ -2789,25 +2790,19 @@ class SetIntersectionStore extends \Predis\MultiBulkCommand {
     }
 }
 
-class SetUnion extends SetIntersection {
+class SetUnion extends \Predis\Commands\SetIntersection {
     public function getCommandId() { return 'SUNION'; }
 }
 
-class SetUnionStore extends \Predis\MultiBulkCommand {
+class SetUnionStore extends \Predis\Commands\SetIntersectionStore {
     public function getCommandId() { return 'SUNIONSTORE'; }
-    public function filterArguments(Array $arguments) {
-        if (count($arguments) === 2 && is_array($arguments[1])) {
-            return array_merge(array($arguments[0]), $arguments[1]);
-        }
-        return $arguments;
-    }
 }
 
 class SetDifference extends \Predis\MultiBulkCommand {
     public function getCommandId() { return 'SDIFF'; }
 }
 
-class SetDifferenceStore extends \Predis\MultiBulkCommand {
+class SetDifferenceStore extends \Predis\Commands\SetIntersectionStore {
     public function getCommandId() { return 'SDIFFSTORE'; }
 }
 
