@@ -17,12 +17,6 @@ class ConnectionParameters {
         $this->_userDefined = array_fill_keys(array_keys($this->_parameters), true);
     }
 
-    private static function paramsExtractor($params, $kv) {
-        @list($k, $v) = explode('=', $kv);
-        $params[$k] = $v;
-        return $params;
-    }
-
     private static function getSharedOptions() {
         if (isset(self::$_sharedOptions)) {
             return self::$_sharedOptions;
@@ -93,8 +87,10 @@ class ConnectionParameters {
             throw new \InvalidArgumentException("Invalid URI: $uri");
         }
         if (isset($parsed['query'])) {
-            $query  = explode('&', $parsed['query']);
-            $parsed = array_reduce($query, 'self::paramsExtractor', $parsed);
+            foreach (explode('&', $parsed['query']) as $kv) {
+                @list($k, $v) = explode('=', $kv);
+                $parsed[$k] = $v;
+            }
             unset($parsed['query']);
         }
         return $this->filter($parsed);
