@@ -7,6 +7,10 @@ v0.6.6 (2011-xx-xx)
   * Some performance improvements for multibulk replies (parsing them is about 
     16% faster than the previous version).
 
+  * Added a new and optional protocol reader, more lightweight and faster than 
+    the default handlers-based one. Users can also specify a custom protocol 
+    reader using the new 'reader' client option.
+
   * Added support for connecting to Redis using UNIX domain sockets (ISSUE #25).
 
   * The "read_write_timeout" connection parameter can now be set to 0 or false 
