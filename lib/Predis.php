@@ -359,7 +359,7 @@ class ClientOptionsReader implements IClientOptionsHandler {
                 return new \Predis\FastResponseReader();
             }
             $valueReflection = new \ReflectionClass($value);
-            if ($valueReflection->isSubclassOf('\Predis\Distribution\IDistributionStrategy')) {
+            if ($valueReflection->isSubclassOf('\Predis\IResponseReader')) {
                 return new $value;
             }
         }
