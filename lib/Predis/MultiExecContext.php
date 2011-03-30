@@ -108,8 +108,9 @@ class MultiExecContext {
     }
 
     public function discard() {
-        if ($this->_initialized === true || $this->_checkAndSet) {
-            $this->_client->discard();
+        if ($this->_initialized === true) {
+            $command = $this->_checkAndSet ? 'unwatch' : 'discard';
+            $this->_client->$command();
             $this->reset();
             $this->_discarded = true;
         }
@@ -178,7 +179,7 @@ class MultiExecContext {
 
             if (count($this->_commands) === 0) {
                 if ($this->_watchedKeys) {
-                    $this->_client->discard();
+                    $this->discard();
                     return;
                 }
                 return;
