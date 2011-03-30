@@ -1062,8 +1062,9 @@ class MultiExecBlock {
     }
 
     public function discard() {
-        if ($this->_initialized === true || $this->_checkAndSet) {
-            $this->_redisClient->discard();
+        if ($this->_initialized === true) {
+            $command = $this->_checkAndSet ? 'unwatch' : 'discard';
+            $this->_redisClient->$command();
             $this->reset();
             $this->_discarded = true;
         }
@@ -1132,7 +1133,7 @@ class MultiExecBlock {
 
             if (count($this->_commands) === 0) {
                 if ($this->_watchedKeys) {
-                    $this->_redisClient->discard();
+                    $this->discard();
                     return;
                 }
                 return;

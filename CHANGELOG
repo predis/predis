@@ -27,7 +27,7 @@ v0.6.6 (2011-xx-xx)
   * SUBSCRIBE and PSUBSCRIBE can accept a list of channels for subscription.
 
   * FIX: some client-side clean-ups for MULTI/EXEC were handled incorrectly in 
-    a couple of corner cases.
+    a couple of corner cases. See also ISSUE #27.
 
 v0.6.5 (2011-02-12)
   * FIX: due to an untested internal change introduced in v0.6.4, a wrong 
