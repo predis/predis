@@ -1343,6 +1343,22 @@ class ConnectionParameters {
     const DEFAULT_HOST = '127.0.0.1';
     const DEFAULT_PORT = 6379;
     const DEFAULT_TIMEOUT = 5;
+
+    private static $_standardParameters = array(
+        'scheme' => self::DEFAULT_SCHEME,
+        'host' => self::DEFAULT_HOST,
+        'port' => self::DEFAULT_PORT,
+        'database' => null,
+        'password' => null,
+        'connection_async' => false,
+        'connection_persistent' => false,
+        'connection_timeout' => self::DEFAULT_TIMEOUT,
+        'read_write_timeout' => null,
+        'alias' => null,
+        'weight' => null,
+        'path' => null,
+    );
+
     private $_parameters;
 
     public function __construct($parameters = null) {
@@ -1357,70 +1373,21 @@ class ConnectionParameters {
             // Hack to support URIs for UNIX sockets with minimal effort.
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
-        $parsed = @parse_url($uri);
-        if ($parsed == false) {
+        if (($parsed = @parse_url($uri)) === false) {
             throw new ClientException("Invalid URI: $uri");
         }
-
-        if (array_key_exists('query', $parsed)) {
-            $details = array();
+        if (isset($parsed['query'])) {
             foreach (explode('&', $parsed['query']) as $kv) {
-                list($k, $v) = explode('=', $kv);
-                switch ($k) {
-                    case 'database':
-                        $details['database'] = $v;
-                        break;
-                    case 'password':
-                        $details['password'] = $v;
-                        break;
-                    case 'connection_async':
-                        $details['connection_async'] = $v;
-                        break;
-                    case 'connection_persistent':
-                        $details['connection_persistent'] = $v;
-                        break;
-                    case 'connection_timeout':
-                        $details['connection_timeout'] = $v;
-                        break;
-                    case 'read_write_timeout':
-                        $details['read_write_timeout'] = $v;
-                        break;
-                    case 'alias':
-                        $details['alias'] = $v;
-                        break;
-                    case 'weight':
-                        $details['weight'] = $v;
-                        break;
-                    case 'path':
-                        $details['path'] = $v;
-                        break;
-                }
+                @list($k, $v) = explode('=', $kv);
+                $parsed[$k] = $v;
             }
-            $parsed = array_merge($parsed, $details);
+            unset($parsed['query']);
         }
-
         return self::filterConnectionParams($parsed);
     }
 
-    private static function getParamOrDefault(Array $parameters, $param, $default = null) {
-        return array_key_exists($param, $parameters) ? $parameters[$param] : $default;
-    }
-
     private static function filterConnectionParams($parameters) {
-        return array(
-            'scheme' => self::getParamOrDefault($parameters, 'scheme', self::DEFAULT_SCHEME),
-            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST),
-            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT),
-            'database' => self::getParamOrDefault($parameters, 'database'),
-            'password' => self::getParamOrDefault($parameters, 'password'),
-            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false),
-            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false),
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT),
-            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'),
-            'alias'  => self::getParamOrDefault($parameters, 'alias'),
-            'weight' => self::getParamOrDefault($parameters, 'weight'),
-            'path' => self::getParamOrDefault($parameters, 'path'),
-        );
+        return array_merge(self::$_standardParameters, $parameters);
     }
 
     public function __get($parameter) {
