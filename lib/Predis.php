@@ -1365,20 +1365,16 @@ class ConnectionParameters {
 
     public function __construct($parameters = null) {
         $parameters = $parameters ?: array();
-        if (is_array($parameters)) {
-            $this->_parameters = self::filterConnectionParams($parameters);
-        }
-        else {
-            $this->_parameters = self::parseURI($parameters);
-        }
+        $extractor = is_array($parameters) ? 'filter' : 'parseURI';
+        $this->_parameters = $this->$extractor($parameters);
     }
 
-    private static function parseURI($uri) {
+    private function parseURI($uri) {
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort.
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
-        if (($parsed = @parse_url($uri)) === false) {
+        if (($parsed = @parse_url($uri)) === false || !isset($parsed['host'])) {
             throw new ClientException("Invalid URI: $uri");
         }
         if (isset($parsed['query'])) {
@@ -1388,10 +1384,10 @@ class ConnectionParameters {
             }
             unset($parsed['query']);
         }
-        return self::filterConnectionParams($parsed);
+        return $this->filter($parsed);
     }
 
-    private static function filterConnectionParams($parameters) {
+    private function filter($parameters) {
         return array_merge(self::$_defaultParameters, $parameters);
     }
 
