@@ -356,8 +356,8 @@ class ClientOptionsReader implements IClientOptionsHandler {
             return $value;
         }
         if (is_string($value)) {
-            if ($value === 'fast') {
-                return new \Predis\FastResponseReader();
+            if ($value === 'composable') {
+                return new \Predis\ResponseReader();
             }
             $valueReflection = new \ReflectionClass($value);
             if ($valueReflection->isSubclassOf('\Predis\IResponseReader')) {
@@ -368,7 +368,7 @@ class ClientOptionsReader implements IClientOptionsHandler {
     }
 
     public function getDefault() {
-        return new \Predis\ResponseReader();
+        return new \Predis\FastResponseReader();
     }
 }
 
@@ -721,7 +721,7 @@ class FastResponseReader implements IResponseReader {
                     return null;
                 }
                 if ($this->_iterableMultibulk) {
-                    return new MultiBulkResponseSimple($connection, $count);
+                    return new \Predis\Shared\MultiBulkResponseIterator($connection, $count);
                 }
                 $multibulk = array();
                 for ($i = 0; $i < $count; $i++) {
@@ -1421,7 +1421,7 @@ class Connection implements IConnection {
         $this->_initializer = array($this, "{$parameters->scheme}StreamInitializer");
         $this->_params   = $parameters;
         $this->_initCmds = array();
-        $this->_reader   = $reader ?: new ResponseReader();
+        $this->_reader   = $reader ?: new FastResponseReader();
     }
 
     public function __destruct() {

@@ -336,18 +336,11 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testResponseReader_OptionIterableMultiBulkReplies() {
         $connection = new \Predis\Connection(RC::getConnectionParameters());
-        $responseReader = $connection->getResponseReader();
 
-        $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_MULTI_BULK, 
-            new \Predis\ResponseMultiBulkHandler()
-        );
+        $connection->getResponseReader()->setOption('iterable_multibulk', false);
         $this->assertInternalType('array', $connection->rawCommand("KEYS *\r\n"));
 
-        $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_MULTI_BULK, 
-            new \Predis\ResponseMultiBulkStreamHandler()
-        );
+        $connection->getResponseReader()->setOption('iterable_multibulk', true);
         $this->assertInstanceOf('\Iterator', $connection->rawCommand("KEYS *\r\n"));
     }
 
@@ -357,18 +350,12 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $connection->rawCommand("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n");
         $rawCmdUnexpected = "*3\r\n$5\r\nLPUSH\r\n$3\r\nkey\r\n$5\r\nvalue\r\n";
 
-        $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_ERROR,  
-            new \Predis\ResponseErrorSilentHandler()
-        );
+        $responseReader->setOption('throw_on_error', false);
         $errorReply = $connection->rawCommand($rawCmdUnexpected);
         $this->assertInstanceOf('\Predis\ResponseError', $errorReply);
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
-        $responseReader->setHandler(
-            \Predis\Protocol::PREFIX_ERROR, 
-            new \Predis\ResponseErrorHandler()
-        );
+        $responseReader->setOption('throw_on_error', true);
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function() 
             use ($connection, $rawCmdUnexpected) {
 
@@ -448,7 +435,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testCommandPipeline_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
+        $client->getResponseReader()->setOption('throw_on_error', false);
 
         $replies = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
@@ -570,7 +557,7 @@ class PredisClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testMultiExecBlock_ServerExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
-        $client->getResponseReader()->setHandler('-', new \Predis\ResponseErrorSilentHandler());
+        $client->getResponseReader()->setOption('throw_on_error', false);
 
         $replies = $client->multiExec(function($multi) {
             $multi->set('foo', 'bar');

@@ -7,9 +7,11 @@ v0.6.6 (2011-xx-xx)
   * Some performance improvements for multibulk replies (parsing them is about 
     16% faster than the previous version).
 
-  * Added a new and optional protocol reader, more lightweight and faster than 
-    the default handlers-based one. Users can also specify a custom protocol 
-    reader using the new 'reader' client option.
+  * Predis now uses by default a new protocol reader, more lightweight and 
+    faster than the default handler-based one. Users can revert to the old 
+    protocol reader with the 'reader' client option set to 'composable'.
+    This client option can also accept custom reader classes implementing the 
+    new Predis\IResponseReader interface.
 
   * Added support for connecting to Redis using UNIX domain sockets (ISSUE #25).
 
