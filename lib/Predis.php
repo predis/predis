@@ -1346,7 +1346,7 @@ class ConnectionParameters {
     const DEFAULT_PORT = 6379;
     const DEFAULT_TIMEOUT = 5;
 
-    private static $_standardParameters = array(
+    private static $_defaultParameters = array(
         'scheme' => self::DEFAULT_SCHEME,
         'host' => self::DEFAULT_HOST,
         'port' => self::DEFAULT_PORT,
@@ -1392,7 +1392,7 @@ class ConnectionParameters {
     }
 
     private static function filterConnectionParams($parameters) {
-        return array_merge(self::$_standardParameters, $parameters);
+        return array_merge(self::$_defaultParameters, $parameters);
     }
 
     public function __get($parameter) {
