@@ -1365,9 +1365,12 @@ class ConnectionParameters {
 
     public function __construct($parameters = null) {
         $parameters = $parameters ?: array();
-        $this->_parameters = is_array($parameters)
-            ? self::filterConnectionParams($parameters)
-            : self::parseURI($parameters);
+        if (is_array($parameters)) {
+            $this->_parameters = self::filterConnectionParams($parameters);
+        }
+        else {
+            $this->_parameters = self::parseURI($parameters);
+        }
     }
 
     private static function parseURI($uri) {
