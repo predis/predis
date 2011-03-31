@@ -90,7 +90,7 @@ class ConnectionParameters implements IConnectionParameters {
     }
 
     public function __isset($parameter) {
-        return isset($this->_parameters[$parameter]);
+        return in_array($parameter, $this->_userDefined);
     }
 
     public function __toString() {

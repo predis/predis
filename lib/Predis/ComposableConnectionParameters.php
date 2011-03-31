@@ -51,7 +51,7 @@ class ComposableConnectionParameters implements IConnectionParameters {
             'connection_persistent' => $optBoolFalse,
             'connection_timeout' => new CustomOption(array(
                 'validate' => function($value) { return (float) $value; },
-                'default'  => function() { return 5; },
+                'default'  => function() { return 5.0; },
             )),
             'read_write_timeout' => new CustomOption(array(
                 'validate' => function($value) { return (float) $value; },
@@ -120,7 +120,7 @@ class ComposableConnectionParameters implements IConnectionParameters {
     }
 
     public function __isset($parameter) {
-        return isset($this->_userDefined[$parameter]);
+        return in_array($parameter, $this->_userDefined);
     }
 
     public function __toString() {
