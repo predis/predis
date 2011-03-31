@@ -3,89 +3,65 @@
 namespace Predis;
 
 use Predis\IConnectionParameters;
-use Predis\Options\IOption;
-use Predis\Options\Option;
-use Predis\Options\CustomOption;
 
 class ConnectionParameters implements IConnectionParameters {
+    private static $_defaultParameters;
+    private static $_validators;
+
     private $_parameters;
     private $_userDefined;
-    private static $_sharedOptions;
 
     public function __construct($parameters = array()) {
+        self::ensureDefaults();
         $extractor = is_array($parameters) ? 'filter' : 'parseURI';
-        $this->_parameters = $this->$extractor($parameters);
-        $this->_userDefined = array_fill_keys(array_keys($this->_parameters), true);
+        $parameters = $this->$extractor($parameters);
+        $this->_userDefined = array_keys($parameters);
+        $this->_parameters = array_merge(self::$_defaultParameters, $parameters);
     }
 
-    private static function getSharedOptions() {
-        if (isset(self::$_sharedOptions)) {
-            return self::$_sharedOptions;
+    private static function ensureDefaults() {
+        if (!isset(self::$_defaultParameters)) {
+            self::$_defaultParameters = array(
+                'scheme' => 'tcp',
+                'host' => '127.0.0.1',
+                'port' => 6379,
+                'database' => null,
+                'password' => null,
+                'connection_async' => false,
+                'connection_persistent' => false,
+                'connection_timeout' => 5.0,
+                'read_write_timeout' => null,
+                'alias' => null,
+                'weight' => null,
+                'path' => null,
+                'iterable_multibulk' => false,
+                'throw_errors' => true,
+            );
         }
+        if (!isset(self::$_validators)) {
+            $boolValidator = function($value) { return (bool) $value; };
+            $floatValidator = function($value) { return (float) $value; };
+            $intValidator = function($value) { return (int) $value; };
 
-        $optEmpty   = new Option();
-        $optBoolFalse = new CustomOption(array(
-            'validate' => function($value) { return (bool) $value; },
-            'default'  => function() { return false; },
-        ));
-        $optBoolTrue = new CustomOption(array(
-            'validate' => function($value) { return (bool) $value; },
-            'default'  => function() { return true; },
-        ));
-
-        self::$_sharedOptions = array(
-            'scheme' => new CustomOption(array(
-                'default'  => function() { return 'tcp'; },
-            )),
-            'host' => new CustomOption(array(
-                'default'  => function() { return '127.0.0.1'; },
-            )),
-            'port' => new CustomOption(array(
-                'validate' => function($value) { return (int) $value; },
-                'default'  => function() { return 6379; },
-            )),
-            'path' => $optEmpty,
-            'database' => $optEmpty,
-            'password' => $optEmpty,
-            'connection_async' => $optBoolFalse,
-            'connection_persistent' => $optBoolFalse,
-            'connection_timeout' => new CustomOption(array(
-                'validate' => function($value) { return (float) $value; },
-                'default'  => function() { return 5; },
-            )),
-            'read_write_timeout' => new CustomOption(array(
-                'validate' => function($value) { return (float) $value; },
-            )),
-            'alias' => $optEmpty,
-            'weight' => $optEmpty,
-            'iterable_multibulk' => $optBoolFalse,
-            'throw_errors' => $optBoolTrue,
-        );
-
-        return self::$_sharedOptions;
-    }
-
-    public static function define($parameter, IOption $handler) {
-        self::getSharedOptions();
-        self::$_sharedOptions[$parameter] = $handler;
-    }
-
-    public static function undefine($parameter) {
-        self::getSharedOptions();
-        unset(self::$_sharedOptions[$parameter]);
-    }
-
-    protected function parseURI($uri) {
-        if (!is_string($uri)) {
-            throw new \InvalidArgumentException('URI must be a string');
+            self::$_validators = array(
+                'port' => $intValidator,
+                'connection_async' => $boolValidator,
+                'connection_persistent' => $boolValidator,
+                'connection_timeout' => $floatValidator,
+                'read_write_timeout' => $floatValidator,
+                'iterable_multibulk' => $boolValidator,
+                'throw_errors' => $boolValidator,
+            );
         }
+    }
+
+    private function parseURI($uri) {
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort.
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
-        $parsed = @parse_url($uri);
-        if ($parsed === false || !isset($parsed['host'])) {
-            throw new \InvalidArgumentException("Invalid URI: $uri");
+        if (($parsed = @parse_url($uri)) === false || !isset($parsed['host'])) {
+            throw new ClientException("Invalid URI: $uri");
         }
         if (isset($parsed['query'])) {
             foreach (explode('&', $parsed['query']) as $kv) {
@@ -97,30 +73,24 @@ class ConnectionParameters implements IConnectionParameters {
         return $this->filter($parsed);
     }
 
-    protected function filter(Array $parameters) {
-        $handlers = self::getSharedOptions();
-        foreach ($parameters as $parameter => $value) {
-            if (isset($handlers[$parameter])) {
-                $parameters[$parameter] = $handlers[$parameter]($value);
+    private function filter(Array $parameters) {
+        if (count($parameters) > 0) {
+            $validators = self::$_validators;
+            foreach ($parameters as $parameter => $value) {
+                if (isset($validators[$parameter])) {
+                    $parameters[$parameter] = $validators[$parameter]($value);
+                }
             }
         }
         return $parameters;
     }
 
     public function __get($parameter) {
-        if (isset($this->_parameters[$parameter])) {
-            return $this->_parameters[$parameter];
-        }
-        if (isset(self::$_sharedOptions[$parameter])) {
-            $value = self::$_sharedOptions[$parameter]->getDefault();
-            $this->_parameters[$parameter] = $value;
-            return $value;
-        }
-        return null;
+        return $this->_parameters[$parameter];
     }
 
     public function __isset($parameter) {
-        return isset($this->_userDefined[$parameter]);
+        return isset($this->_parameters[$parameter]);
     }
 
     public function __toString() {
@@ -134,10 +104,11 @@ class ConnectionParameters implements IConnectionParameters {
 
         $query = array();
         $reject = array('scheme', 'host', 'port', 'password', 'path');
-        foreach ($this->_parameters as $k => $v) {
-            if (in_array($k, $reject) || !isset($this->_userDefined[$k])) {
+        foreach ($this->_userDefined as $k) {
+            if (in_array($k, $reject) || !isset($this->_parameters[$k])) {
                 continue;
             }
+            $v = $this->_parameters[$k];
             $query[] = $k . '=' . ($v === false ? '0' : $v);
         }
         return count($query) > 0 ? ($str . '/?' . implode('&', $query)) : $str;
