@@ -26,17 +26,23 @@ class CustomOption implements IOption {
             if ($this->_validate === null) {
                 return $value;
             }
-            return call_user_func($this->_validate, $value);
+            $validator = $this->_validate;
+            return $validator($value);
         }
     }
 
     public function getDefault() {
-        if ($this->_default !== null) {
-            return call_user_func($this->_default);
+        if (!isset($this->_default)) {
+            return;
         }
+        $default = $this->_default;
+        return $default();
     }
 
     public function __invoke($value) {
-        return isset($value) ? $this->validate($value) : $this->getDefault();
+        if (isset($value)) {
+            return $this->validate($value);
+        }
+        return $this->getDefault();
     }
 }
