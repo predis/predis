@@ -5,7 +5,7 @@ namespace Predis\Network;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
-use Predis\ConnectionParameters;
+use Predis\IConnectionParameters;
 use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 use Predis\Protocols\TextCommandSerializer;
@@ -20,7 +20,7 @@ class StreamConnection extends ConnectionBase {
         }
     }
 
-    protected function initializeProtocol(ConnectionParameters $parameters) {
+    protected function initializeProtocol(IConnectionParameters $parameters) {
         $this->_throwErrors = $parameters->throw_errors;
         $this->_mbiterable = $parameters->iterable_multibulk;
     }
@@ -31,7 +31,7 @@ class StreamConnection extends ConnectionBase {
         return call_user_func($initializer, $parameters);
     }
 
-    private function tcpStreamInitializer(ConnectionParameters $parameters) {
+    private function tcpStreamInitializer(IConnectionParameters $parameters) {
         $uri = sprintf('tcp://%s:%d/', $parameters->host, $parameters->port);
         $flags = STREAM_CLIENT_CONNECT;
         if ($parameters->connection_async) {
@@ -56,7 +56,7 @@ class StreamConnection extends ConnectionBase {
         return $resource;
     }
 
-    private function unixStreamInitializer(ConnectionParameters $parameters) {
+    private function unixStreamInitializer(IConnectionParameters $parameters) {
         $uri = sprintf('unix:///%s', $parameters->path);
         $flags = STREAM_CLIENT_CONNECT;
         if ($parameters->connection_persistent) {

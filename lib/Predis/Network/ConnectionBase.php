@@ -4,7 +4,7 @@ namespace Predis\Network;
 
 use \InvalidArgumentException;
 use Predis\Utils;
-use Predis\ConnectionParameters;
+use Predis\IConnectionParameters;
 use Predis\ClientException;
 use Predis\CommunicationException;
 use Predis\Commands\ICommand;
@@ -13,7 +13,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     private $_cachedId, $_resource;
     protected $_params, $_initCmds;
 
-    public function __construct(ConnectionParameters $parameters) {
+    public function __construct(IConnectionParameters $parameters) {
         $this->_initCmds = array();
         $this->_params = $this->checkParameters($parameters);
         $this->initializeProtocol($parameters);
@@ -23,7 +23,7 @@ abstract class ConnectionBase implements IConnectionSingle {
         $this->disconnect();
     }
 
-    protected function checkParameters(ConnectionParameters $parameters) {
+    protected function checkParameters(IConnectionParameters $parameters) {
         switch ($parameters->scheme) {
             case 'unix':
                 $pathToSocket = $parameters->path;
@@ -41,7 +41,7 @@ abstract class ConnectionBase implements IConnectionSingle {
         return $parameters;
     }
 
-    protected function initializeProtocol(ConnectionParameters $parameters) {
+    protected function initializeProtocol(IConnectionParameters $parameters) {
         // NOOP
     }
 

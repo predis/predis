@@ -22,13 +22,13 @@ use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\ConnectionParameters;
+use Predis\IConnectionParameters;
 use Predis\Commands\ICommand;
 
 class PhpiredisConnection extends ConnectionBase {
     private $_reader;
 
-    public function __construct(ConnectionParameters $parameters) {
+    public function __construct(IConnectionParameters $parameters) {
         if (!function_exists('socket_create')) {
             throw new ClientException(
                 'The socket extension must be loaded in order to be able to ' .

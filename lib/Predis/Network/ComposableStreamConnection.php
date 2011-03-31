@@ -2,7 +2,7 @@
 
 namespace Predis\Network;
 
-use Predis\ConnectionParameters;
+use Predis\IConnectionParameters;
 use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 use Predis\Protocols\IProtocolProcessor;
@@ -11,12 +11,12 @@ use Predis\Protocols\TextProtocol;
 class ComposableStreamConnection extends StreamConnection implements IConnectionComposable {
     private $_protocol;
 
-    public function __construct(ConnectionParameters $parameters, IProtocolProcessor $protocol = null) {
+    public function __construct(IConnectionParameters $parameters, IProtocolProcessor $protocol = null) {
         $this->setProtocol($protocol ?: new TextProtocol());
         parent::__construct($parameters);
     }
 
-    protected function initializeProtocol(ConnectionParameters $parameters) {
+    protected function initializeProtocol(IConnectionParameters $parameters) {
         $this->_protocol->setOption('throw_errors', $parameters->throw_errors);
         $this->_protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
     }

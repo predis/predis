@@ -2,11 +2,12 @@
 
 namespace Predis;
 
+use Predis\IConnectionParameters;
 use Predis\Options\IOption;
 use Predis\Options\Option;
 use Predis\Options\CustomOption;
 
-class ConnectionParameters {
+class ConnectionParameters implements IConnectionParameters {
     private $_parameters;
     private $_userDefined;
     private static $_sharedOptions;

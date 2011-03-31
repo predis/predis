@@ -41,7 +41,7 @@ class ConnectionSchemes implements IConnectionSchemes {
     }
 
     public function newConnection($parameters) {
-        if (!$parameters instanceof ConnectionParameters) {
+        if (!$parameters instanceof IConnectionParameters) {
             $parameters = new ConnectionParameters($parameters);
         }
 
@@ -60,7 +60,7 @@ class ConnectionSchemes implements IConnectionSchemes {
     }
 
     public function newConnectionByScheme($scheme, $parameters = array()) {
-        if ($parameters instanceof ConnectionParameters) {
+        if ($parameters instanceof IConnectionParameters) {
             $parameters = $parameters->toArray();
         }
         if (is_array($parameters)) {
