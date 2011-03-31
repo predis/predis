@@ -41,13 +41,6 @@ running on the localhost on the default port:
     $value = $redis->get('library');
 
 
-The default server profile with this version of Predis is set to Redis 2.0, so if 
-you want to connect to a Redis 2.2 instance and leverage some of its new commands 
-you should initialize the client by specifying the correct profile:
-
-    $redis = new Predis\Client('127.0.0.1', '2.2');
-
-
 ### Pipelining multiple commands to a remote instance of Redis ##
 
 Pipelining helps with performances when there is the need to issue many commands 
