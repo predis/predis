@@ -1412,13 +1412,12 @@ interface IConnection {
 
 class Connection implements IConnection {
     private static $_allowedSchemes = array('redis', 'tcp', 'unix');
-    private $_params, $_socket, $_initCmds, $_reader, $_initializer;
+    private $_params, $_socket, $_initCmds, $_reader;
 
     public function __construct(ConnectionParameters $parameters, IResponseReader $reader = null) {
         if (!in_array($parameters->scheme, self::$_allowedSchemes)) {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
-        $this->_initializer = array($this, "{$parameters->scheme}StreamInitializer");
         $this->_params   = $parameters;
         $this->_initCmds = array();
         $this->_reader   = $reader ?: new FastResponseReader();
@@ -1438,7 +1437,8 @@ class Connection implements IConnection {
         if ($this->isConnected()) {
             throw new ClientException('Connection already estabilished');
         }
-        $this->_socket = call_user_func($this->_initializer, $this->_params);
+        $initializer = "{$this->_params->scheme}StreamInitializer";
+        $this->_socket = $this->$initializer($this->_params);
         if (count($this->_initCmds) > 0){
             $this->sendInitializationCommands();
         }
