@@ -1,6 +1,6 @@
 <?php
 
-class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
+class RedisCommandsTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
     // TODO: instead of an boolean assertion against the return value 

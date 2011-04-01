@@ -1930,7 +1930,7 @@ class RedisServer_v2_0 extends RedisServerProfile {
             'type'                      => '\Predis\Commands\Type',
 
             /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\Keys_v1_2',
+            'keys'                      => '\Predis\Commands\Keys',
             'randomkey'                 => '\Predis\Commands\RandomKey',
             'rename'                    => '\Predis\Commands\Rename',
             'renamenx'                  => '\Predis\Commands\RenamePreserve',
@@ -2011,9 +2011,6 @@ class RedisServer_v2_0 extends RedisServerProfile {
             'setex'                     => '\Predis\Commands\SetExpire',
             'append'                    => '\Predis\Commands\Append',
             'substr'                    => '\Predis\Commands\Substr',
-
-            /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\Keys',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',
@@ -2085,7 +2082,7 @@ class RedisServer_v2_2 extends RedisServerProfile {
             'type'                      => '\Predis\Commands\Type',
 
             /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\Keys_v1_2',
+            'keys'                      => '\Predis\Commands\Keys',
             'randomkey'                 => '\Predis\Commands\RandomKey',
             'rename'                    => '\Predis\Commands\Rename',
             'renamenx'                  => '\Predis\Commands\RenamePreserve',
@@ -2166,9 +2163,6 @@ class RedisServer_v2_2 extends RedisServerProfile {
             'setex'                     => '\Predis\Commands\SetExpire',
             'append'                    => '\Predis\Commands\Append',
             'substr'                    => '\Predis\Commands\Substr',
-
-            /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\Keys',
 
             /* commands operating on lists */
             'blpop'                     => '\Predis\Commands\ListPopFirstBlocking',

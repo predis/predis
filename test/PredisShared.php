@@ -12,6 +12,10 @@ if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
     );
 }
 
+Predis\RedisServerProfile::registerProfile('\Predis\RedisServer_v1_2', '1.2');
+Predis\RedisServerProfile::registerProfile('\Predis\RedisServer_v2_0', '2.0');
+Predis\RedisServerProfile::registerProfile('\Predis\RedisServer_v2_2', '2.2');
+
 if (!function_exists('array_union')) {
     function array_union(Array $a, Array $b) {
         return array_merge($a, array_diff($b, $a));
