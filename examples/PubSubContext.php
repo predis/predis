@@ -5,7 +5,7 @@ require_once 'SharedConfigurations.php';
 // events published on certain channels (PUBSUB).
 
 // Create a client and disable r/w timeout on the socket
-$redis  = new Predis_Client($single_server + array('read_write_timeout' => -1));
+$redis  = new Predis_Client($single_server + array('read_write_timeout' => 0));
 
 // Initialize a new pubsub context
 $pubsub = $redis->pubSubContext();

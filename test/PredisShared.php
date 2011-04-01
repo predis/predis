@@ -1,12 +1,23 @@
 <?php
-require_once '../lib/Predis.php';
+// -------------------------------------------------------------------------- //
+
+define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
+
+// -------------------------------------------------------------------------- //
+
+Predis_RedisServerProfile::registerProfile('Predis_RedisServer_v1_2', '1.2');
+Predis_RedisServerProfile::registerProfile('Predis_RedisServer_v2_0', '2.0');
+Predis_RedisServerProfile::registerProfile('Predis_RedisServer_v2_2', '2.2');
 
 if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
-    exit('Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE constant to TRUE if you want to proceed.');
+    exit(
+        "Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE " .
+        "constant to TRUE in PredisShared.php if you want to proceed.\n"
+    );
 }
 
 if (!function_exists('array_union')) {
-    function array_union(Array $a, Array $b) { 
+    function array_union(Array $a, Array $b) {
         return array_merge($a, array_diff($b, $a));
     }
 }
@@ -35,16 +46,16 @@ class RC {
 
     private static $_connection;
 
-    public static function getConnectionArguments() { 
+    public static function getConnectionArguments() {
         return array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT);
     }
 
-    public static function getConnectionParameters() { 
+    public static function getConnectionParameters() {
         return new Predis_ConnectionParameters(array('host' => RC::SERVER_HOST, 'port' => RC::SERVER_PORT));
     }
 
     private static function createConnection() {
-        $serverProfile = Predis_RedisServerProfile::get('dev');
+        $serverProfile = Predis_RedisServerProfile::get('2.2');
         $connection = new Predis_Client(RC::getConnectionArguments(), $serverProfile);
         $connection->connect();
         $connection->select(RC::DEFAULT_DATABASE);
@@ -73,8 +84,9 @@ class RC {
         //       in a separate process to properly test BLPOP/BRPOP
         $redisUri = sprintf('redis://%s:%d/?database=%d', RC::SERVER_HOST, RC::SERVER_PORT, RC::DEFAULT_DATABASE);
         $handle = popen('php', 'w');
+        $dir = __DIR__;
         fwrite($handle, "<?php
-        require '../lib/Predis.php';
+        require '{$dir}/../lib/Predis.php';
         \$redis = Predis_Client::create('$redisUri');
         \$redis->rpush('{$op}1', 'a');
         \$redis->rpush('{$op}2', 'b');
@@ -125,7 +137,7 @@ class RC {
         catch (Predis_ServerException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis_ServerException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis_ServerException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -139,7 +151,7 @@ class RC {
         catch (Predis_ClientException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis_ClientException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis_ClientException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }
@@ -153,7 +165,7 @@ class RC {
         catch (Predis_CommunicationException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertType('Predis_CommunicationException', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis_CommunicationException', $thrownException);
         if (isset($expectedMessage)) {
             $testcaseInstance->assertEquals($expectedMessage, $thrownException->getMessage());
         }

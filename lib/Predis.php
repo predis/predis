@@ -33,6 +33,7 @@ class Predis_MalformedServerResponse extends Predis_CommunicationException { }
 /* ------------------------------------------------------------------------- */
 
 class Predis_Client {
+    const VERSION = '0.6.6-dev';
     private $_options, $_connection, $_serverProfile, $_responseReader;
 
     public function __construct($parameters = null, $clientOptions = null) {
@@ -80,29 +81,22 @@ class Predis_Client {
     }
 
     private function setupClient($options) {
-        $this->_responseReader = new Predis_ResponseReader();
-        $this->_options = self::filterClientOptions($options);
+        $options = self::filterClientOptions($options);
 
-        $this->setProfile($this->_options->profile);
-        if ($this->_options->iterable_multibulk === true) {
-            $this->_responseReader->setHandler(
-                Predis_Protocol::PREFIX_MULTI_BULK, 
-                new Predis_ResponseMultiBulkStreamHandler()
-            );
-        }
-        if ($this->_options->throw_on_error === false) {
-            $this->_responseReader->setHandler(
-                Predis_Protocol::PREFIX_ERROR, 
-                new Predis_ResponseErrorSilentHandler()
-            );
-        }
+        $this->setProfile($options->profile);
+
+        $reader = $options->reader;
+        $reader->setOption('iterable_multibulk', $options->iterable_multibulk);
+        $reader->setOption('throw_on_error', $options->throw_on_error);
+
+        $this->_options = $options;
+        $this->_responseReader = $reader;
     }
 
     private function setupConnection($parameters) {
         if ($parameters !== null && !(is_array($parameters) || is_string($parameters))) {
             throw new Predis_ClientException('Invalid parameters type (array or string expected)');
         }
-
         if (is_array($parameters) && isset($parameters[0])) {
             $cluster = new Predis_ConnectionCluster($this->_options->key_distribution);
             foreach ($parameters as $shardParams) {
@@ -116,19 +110,19 @@ class Predis_Client {
     }
 
     private function createConnection($parameters) {
-        $params     = $parameters instanceof Predis_ConnectionParameters
-                          ? $parameters
-                          : new Predis_ConnectionParameters($parameters);
-        $connection = new Predis_Connection($params, $this->_responseReader);
+        if (!$parameters instanceof Predis_ConnectionParameters) {
+            $parameters = new Predis_ConnectionParameters($parameters);
+        }
 
-        if ($params->password !== null) {
+        $connection = new Predis_Connection($parameters, $this->_responseReader);
+        if ($parameters->password !== null) {
             $connection->pushInitCommand($this->createCommand(
-                'auth', array($params->password)
+                'auth', array($parameters->password)
             ));
         }
-        if ($params->database !== null) {
+        if ($parameters->database !== null) {
             $connection->pushInitCommand($this->createCommand(
-                'select', array($params->database)
+                'select', array($parameters->database)
             ));
         }
 
@@ -140,15 +134,17 @@ class Predis_Client {
     }
 
     public function setProfile($serverProfile) {
-        if (!($serverProfile instanceof Predis_RedisServerProfile || is_string($serverProfile))) {
+        if ($serverProfile instanceof Predis_RedisServerProfile) {
+            $this->_serverProfile = $serverProfile;
+        }
+        else if (is_string($serverProfile)) {
+            $this->_serverProfile = Predis_RedisServerProfile::get($serverProfile);
+        }
+        else {
             throw new InvalidArgumentException(
                 "Invalid type for server profile, Predis_RedisServerProfile or string expected"
             );
         }
-        $this->_serverProfile = (is_string($serverProfile) 
-            ? Predis_RedisServerProfile::get($serverProfile)
-            : $serverProfile
-        );
     }
 
     public function getProfile() {
@@ -361,6 +357,28 @@ class Predis_ClientOptionsThrowOnError implements Predis_IClientOptionsHandler {
     }
 }
 
+class Predis_ClientOptionsReader implements Predis_IClientOptionsHandler {
+    public function validate($option, $value) {
+        if ($value instanceof Predis_IResponseReader) {
+            return $value;
+        }
+        if (is_string($value)) {
+            if ($value === 'composable') {
+                return new Predis_ResponseReader();
+            }
+            $valueReflection = new ReflectionClass($value);
+            if ($valueReflection->isSubclassOf('Predis_IResponseReader')) {
+                return new $value;
+            }
+        }
+        throw new InvalidArgumentException("Invalid value for option $option");
+    }
+
+    public function getDefault() {
+        return new Predis_FastResponseReader();
+    }
+}
+
 class Predis_ClientOptions {
     private static $_optionsHandlers;
     private $_options;
@@ -382,6 +400,7 @@ class Predis_ClientOptions {
             'key_distribution' => new Predis_ClientOptionsKeyDistribution(),
             'iterable_multibulk' => new Predis_ClientOptionsIterableMultiBulk(),
             'throw_on_error' => new Predis_ClientOptionsThrowOnError(),
+            'reader' => new Predis_ClientOptionsReader(),
         );
     }
 
@@ -657,7 +676,95 @@ class Predis_ResponseIntegerHandler implements Predis_IResponseHandler {
     }
 }
 
-class Predis_ResponseReader {
+interface Predis_IResponseReader {
+    public function read(Predis_Connection $connection);
+    public function setOption($option, $value);
+    public function getOption($option);
+}
+
+class Predis_FastResponseReader implements Predis_IResponseReader {
+    private $_iterableMultibulk, $_throwErrors;
+
+    public function __construct() {
+        $this->_iterableMultibulk = false;
+        $this->_throwErrors = true;
+    }
+
+    public function read(Predis_Connection $connection) {
+        $chunk = $connection->readLine();
+        $prefix = $chunk[0];
+        $payload = substr($chunk, 1);
+        switch ($prefix) {
+            case '+':    // inline
+                switch ($payload) {
+                    case 'OK':
+                        return true;
+                    case 'QUEUED':
+                        return new Predis_ResponseQueued();
+                    default:
+                        return $payload;
+                }
+
+            case '$':    // bulk
+                $size = (int) $payload;
+                if ($size === -1) {
+                    return null;
+                }
+                return substr($connection->readBytes($size + 2), 0, -2);
+
+            case '*':    // multi bulk
+                $count = (int) $payload;
+                if ($count === -1) {
+                    return null;
+                }
+                if ($this->_iterableMultibulk) {
+                    return new Predis_Shared_MultiBulkResponseIterator($connection, $count);
+                }
+                $multibulk = array();
+                for ($i = 0; $i < $count; $i++) {
+                    $multibulk[$i] = $this->read($connection);
+                }
+                return $multibulk;
+
+            case ':':    // integer
+                return (int) $payload;
+
+            case '-':    // error
+                $errorMessage = substr($payload, 4);
+                if ($this->_throwErrors) {
+                    throw new Predis_ServerException($errorMessage);
+                }
+                return new Predis_ResponseError($errorMessage);
+
+            default:
+                throw new Predis_CommunicationException(
+                    $connection, "Unknown prefix: '$prefix'"
+                );
+        }
+    }
+
+    public function setOption($option, $value) {
+        switch ($option) {
+            case 'iterable_multibulk':
+                $this->_iterableMultibulk = (bool) $value;
+                break;
+            case 'throw_on_error':
+                $this->_throwErrors = (bool) $value;
+                break;
+        }
+    }
+
+    public function getOption($option) {
+        switch ($option) {
+            case 'iterable_multibulk':
+                return $this->_iterableMultibulk;
+            case 'throw_on_error':
+                return $this->_throwErrors;
+        }
+    }
+}
+
+class Predis_ResponseReader implements Predis_IResponseReader {
     private $_prefixHandlers;
 
     public function __construct() {
@@ -703,6 +810,28 @@ class Predis_ResponseReader {
         Predis_Shared_Utils::onCommunicationException(new Predis_MalformedServerResponse(
             $connection, $message
         ));
+    }
+
+    public function setOption($option, $value) {
+        switch ($option) {
+            case 'iterable_multibulk':
+                $handler = $value ? 'Predis_ResponseMultiBulkStreamHandler' : 'Predis_ResponseMultiBulkHandler';
+                $this->_prefixHandlers[Predis_Protocol::PREFIX_MULTI_BULK] = new $handler();
+                break;
+            case 'throw_on_error':
+                $handler = $value ? 'Predis_ResponseErrorHandler' : 'Predis_ResponseErrorSilentHandler';
+                $this->_prefixHandlers[Predis_Protocol::PREFIX_ERROR] = new $handler();
+                break;
+        }
+    }
+
+    public function getOption($option) {
+        switch ($option) {
+            case 'iterable_multibulk':
+                return $this->_prefixHandlers[Predis_Protocol::PREFIX_MULTI_BULK] instanceof Predis_ResponseMultiBulkStreamHandler;
+            case 'throw_on_error':
+                return $this->_prefixHandlers[Predis_Protocol::PREFIX_ERROR] instanceof Predis_ResponseErrorHandler;
+        }
     }
 }
 
@@ -825,7 +954,7 @@ class Predis_CommandPipeline {
 }
 
 class Predis_MultiExecBlock {
-    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet;
+    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet, $_watchedKeys;
     private $_redisClient, $_options, $_commands;
     private $_supportsWatch;
 
@@ -864,6 +993,7 @@ class Predis_MultiExecBlock {
         $this->_discarded   = false;
         $this->_checkAndSet = false;
         $this->_insideBlock = false;
+        $this->_watchedKeys = false;
         $this->_commands    = array();
     }
 
@@ -908,6 +1038,7 @@ class Predis_MultiExecBlock {
         if ($this->_initialized && !$this->_checkAndSet) {
             throw new Predis_ClientException('WATCH inside MULTI is not allowed');
         }
+        $this->_watchedKeys = true;
         return $this->_redisClient->watch($keys);
     }
 
@@ -923,14 +1054,18 @@ class Predis_MultiExecBlock {
 
     public function unwatch() {
         $this->isWatchSupported();
+        $this->_watchedKeys = false;
         $this->_redisClient->unwatch();
         return $this;
     }
 
     public function discard() {
-        $this->_redisClient->discard();
-        $this->reset();
-        $this->_discarded = true;
+        if ($this->_initialized === true) {
+            $command = $this->_checkAndSet ? 'unwatch' : 'discard';
+            $this->_redisClient->$command();
+            $this->reset();
+            $this->_discarded = true;
+        }
         return $this;
     }
 
@@ -951,6 +1086,7 @@ class Predis_MultiExecBlock {
                 );
             }
             if (count($this->_commands) > 0) {
+                $this->discard();
                 throw new Predis_ClientException(
                     'Cannot execute a transaction block after using fluent interface'
                 );
@@ -985,9 +1121,7 @@ class Predis_MultiExecBlock {
                 }
                 catch (Exception $exception) {
                     $blockException = $exception;
-                    if ($this->_initialized === true) {
-                        $this->discard();
-                    }
+                    $this->discard();
                 }
                 $this->_insideBlock = false;
                 if ($blockException !== null) {
@@ -995,7 +1129,11 @@ class Predis_MultiExecBlock {
                 }
             }
 
-            if ($this->_initialized === false || count($this->_commands) == 0) {
+            if (count($this->_commands) === 0) {
+                if ($this->_watchedKeys) {
+                    $this->discard();
+                    return;
+                }
                 return;
             }
 
@@ -1014,7 +1152,6 @@ class Predis_MultiExecBlock {
             }
             break;
         } while ($attemptsLeft-- > 0);
-
 
         $execReply = $reply instanceof Iterator ? iterator_to_array($reply) : $reply;
         $sizeofReplies = count($execReply);
@@ -1095,14 +1232,7 @@ class Predis_PubSubContext implements Iterator {
 
     private function genericSubscribeInit($subscribeAction) {
         if (isset($this->_options[$subscribeAction])) {
-            if (is_array($this->_options[$subscribeAction])) {
-                foreach ($this->_options[$subscribeAction] as $subscription) {
-                    $this->$subscribeAction($subscription);
-                }
-            }
-            else {
-                $this->$subscribeAction($this->_options[$subscribeAction]);
-            }
+            $this->$subscribeAction($this->_options[$subscribeAction]);
         }
     }
 
@@ -1217,79 +1347,54 @@ class Predis_PubSubContext implements Iterator {
 /* ------------------------------------------------------------------------- */
 
 class Predis_ConnectionParameters {
+    const DEFAULT_SCHEME = 'redis';
     const DEFAULT_HOST = '127.0.0.1';
     const DEFAULT_PORT = 6379;
     const DEFAULT_TIMEOUT = 5;
+
+    private static $_defaultParameters = array(
+        'scheme' => self::DEFAULT_SCHEME,
+        'host' => self::DEFAULT_HOST,
+        'port' => self::DEFAULT_PORT,
+        'database' => null,
+        'password' => null,
+        'connection_async' => false,
+        'connection_persistent' => false,
+        'connection_timeout' => self::DEFAULT_TIMEOUT,
+        'read_write_timeout' => null,
+        'alias' => null,
+        'weight' => null,
+        'path' => null,
+    );
+
     private $_parameters;
 
     public function __construct($parameters = null) {
         $parameters = $parameters !== null ? $parameters : array();
-        $this->_parameters = is_array($parameters) 
-            ? self::filterConnectionParams($parameters) 
-            : self::parseURI($parameters);
+        $extractor = is_array($parameters) ? 'filter' : 'parseURI';
+        $this->_parameters = $this->$extractor($parameters);
     }
 
-    private static function parseURI($uri) {
-        $parsed = @parse_url($uri);
-
-        if ($parsed == false || $parsed['scheme'] != 'redis' || $parsed['host'] == null) {
+    private function parseURI($uri) {
+        if (stripos($uri, 'unix') === 0) {
+            // Hack to support URIs for UNIX sockets with minimal effort.
+            $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
+        }
+        if (($parsed = @parse_url($uri)) === false || !isset($parsed['host'])) {
             throw new Predis_ClientException("Invalid URI: $uri");
         }
-
-        if (array_key_exists('query', $parsed)) {
-            $details = array();
+        if (isset($parsed['query'])) {
             foreach (explode('&', $parsed['query']) as $kv) {
-                list($k, $v) = explode('=', $kv);
-                switch ($k) {
-                    case 'database':
-                        $details['database'] = $v;
-                        break;
-                    case 'password':
-                        $details['password'] = $v;
-                        break;
-                    case 'connection_async':
-                        $details['connection_async'] = $v;
-                        break;
-                    case 'connection_persistent':
-                        $details['connection_persistent'] = $v;
-                        break;
-                    case 'connection_timeout':
-                        $details['connection_timeout'] = $v;
-                        break;
-                    case 'read_write_timeout':
-                        $details['read_write_timeout'] = $v;
-                        break;
-                    case 'alias':
-                        $details['alias'] = $v;
-                        break;
-                    case 'weight':
-                        $details['weight'] = $v;
-                        break;
-                }
+                @list($k, $v) = explode('=', $kv);
+                $parsed[$k] = $v;
             }
-            $parsed = array_merge($parsed, $details);
+            unset($parsed['query']);
         }
-
-        return self::filterConnectionParams($parsed);
+        return $this->filter($parsed);
     }
 
-    private static function getParamOrDefault(Array $parameters, $param, $default = null) {
-        return array_key_exists($param, $parameters) ? $parameters[$param] : $default;
-    }
-
-    private static function filterConnectionParams($parameters) {
-        return array(
-            'host' => self::getParamOrDefault($parameters, 'host', self::DEFAULT_HOST), 
-            'port' => (int) self::getParamOrDefault($parameters, 'port', self::DEFAULT_PORT), 
-            'database' => self::getParamOrDefault($parameters, 'database'), 
-            'password' => self::getParamOrDefault($parameters, 'password'), 
-            'connection_async'   => self::getParamOrDefault($parameters, 'connection_async', false), 
-            'connection_persistent' => self::getParamOrDefault($parameters, 'connection_persistent', false), 
-            'connection_timeout' => self::getParamOrDefault($parameters, 'connection_timeout', self::DEFAULT_TIMEOUT), 
-            'read_write_timeout' => self::getParamOrDefault($parameters, 'read_write_timeout'), 
-            'alias'  => self::getParamOrDefault($parameters, 'alias'), 
-            'weight' => self::getParamOrDefault($parameters, 'weight'), 
-        );
+    private function filter($parameters) {
+        return array_merge(self::$_defaultParameters, $parameters);
     }
 
     public function __get($parameter) {
@@ -1311,12 +1416,16 @@ interface Predis_IConnection {
 }
 
 class Predis_Connection implements Predis_IConnection {
+    private static $_allowedSchemes = array('redis', 'tcp', 'unix');
     private $_params, $_socket, $_initCmds, $_reader;
 
-    public function __construct(Predis_ConnectionParameters $parameters, Predis_ResponseReader $reader = null) {
+    public function __construct(Predis_ConnectionParameters $parameters, Predis_IResponseReader $reader = null) {
+        if (!in_array($parameters->scheme, self::$_allowedSchemes)) {
+            throw new InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        }
         $this->_params   = $parameters;
         $this->_initCmds = array();
-        $this->_reader   = $reader !== null ? $reader : new Predis_ResponseReader();
+        $this->_reader   = $reader !== null ? $reader : new Predis_FastResponseReader();
     }
 
     public function __destruct() {
@@ -1326,43 +1435,70 @@ class Predis_Connection implements Predis_IConnection {
     }
 
     public function isConnected() {
-        return is_resource($this->_socket);
+        return isset($this->_socket);
     }
 
     public function connect() {
         if ($this->isConnected()) {
             throw new Predis_ClientException('Connection already estabilished');
         }
-        $uri = sprintf('tcp://%s:%d/', $this->_params->host, $this->_params->port);
-        $connectFlags = STREAM_CLIENT_CONNECT;
-        if ($this->_params->connection_async) {
-            $connectFlags |= STREAM_CLIENT_ASYNC_CONNECT;
-        }
-        if ($this->_params->connection_persistent) {
-            $connectFlags |= STREAM_CLIENT_PERSISTENT;
-        }
-        $this->_socket = @stream_socket_client(
-            $uri, $errno, $errstr, $this->_params->connection_timeout, $connectFlags
-        );
-
-        if (!$this->_socket) {
-            $this->onCommunicationException(trim($errstr), $errno);
-        }
-
-        if (isset($this->_params->read_write_timeout)) {
-            $timeoutSeconds  = floor($this->_params->read_write_timeout);
-            $timeoutUSeconds = ($this->_params->read_write_timeout - $timeoutSeconds) * 1000000;
-            stream_set_timeout($this->_socket, $timeoutSeconds, $timeoutUSeconds);
-        }
-
+        $initializer = "{$this->_params->scheme}StreamInitializer";
+        $this->_socket = $this->$initializer($this->_params);
         if (count($this->_initCmds) > 0){
             $this->sendInitializationCommands();
         }
     }
 
+    private function tcpStreamInitializer(Predis_ConnectionParameters $parameters) {
+        return $this->redisStreamInitializer($parameters);
+    }
+
+    private function redisStreamInitializer(Predis_ConnectionParameters $parameters) {
+        $uri = sprintf('tcp://%s:%d/', $parameters->host, $parameters->port);
+        $connectFlags = STREAM_CLIENT_CONNECT;
+        if ($parameters->connection_async) {
+            $connectFlags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+        if ($parameters->connection_persistent) {
+            $connectFlags |= STREAM_CLIENT_PERSISTENT;
+        }
+        $socket = @stream_socket_client(
+            $uri, $errno, $errstr, $parameters->connection_timeout, $connectFlags
+        );
+
+        if (!$socket) {
+            $this->onCommunicationException(trim($errstr), $errno);
+        }
+
+        if (isset($parameters->read_write_timeout)) {
+            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+            $timeoutSeconds  = floor($parameters->read_write_timeout);
+            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
+            stream_set_timeout($socket, $rwtimeout, $timeoutUSeconds);
+        }
+        return $socket;
+    }
+
+    private function unixStreamInitializer(Predis_ConnectionParameters $parameters) {
+        $uri = sprintf('unix:///%s', $parameters->path);
+        $connectFlags = STREAM_CLIENT_CONNECT;
+        if ($parameters->connection_persistent) {
+            $connectFlags |= STREAM_CLIENT_PERSISTENT;
+        }
+        $socket = @stream_socket_client(
+            $uri, $errno, $errstr, $parameters->connection_timeout, $connectFlags
+        );
+        if (!$socket) {
+            $this->onCommunicationException(trim($errstr), $errno);
+        }
+        return $socket;
+    }
+
     public function disconnect() {
         if ($this->isConnected()) {
             fclose($this->_socket);
+            unset($this->_socket);
         }
     }
 
@@ -1458,9 +1594,10 @@ class Predis_Connection implements Predis_IConnection {
     }
 
     public function getSocket() {
-        if (!$this->isConnected()) {
-            $this->connect();
+        if (isset($this->_socket)) {
+            return $this->_socket;
         }
+        $this->connect();
         return $this->_socket;
     }
 
@@ -1577,7 +1714,7 @@ abstract class Predis_RedisServerProfile {
             '1.2'     => 'Predis_RedisServer_v1_2',
             '2.0'     => 'Predis_RedisServer_v2_0',
             '2.2'     => 'Predis_RedisServer_v2_2',
-            'default' => 'Predis_RedisServer_v2_0',
+            'default' => 'Predis_RedisServer_v2_2',
             'dev'     => 'Predis_RedisServer_vNext',
         );
     }
@@ -1669,164 +1806,208 @@ class Predis_RedisServer_v1_2 extends Predis_RedisServerProfile {
     public function getVersion() { return '1.2'; }
     public function getSupportedCommands() {
         return array(
+            /* ---------------- Redis 1.2 ---------------- */
+
             /* miscellaneous commands */
-            'ping'      => 'Predis_Commands_Ping',
-            'echo'      => 'Predis_Commands_DoEcho',
-            'auth'      => 'Predis_Commands_Auth',
+            'ping'                      => 'Predis_Commands_Ping',
+            'echo'                      => 'Predis_Commands_DoEcho',
+            'auth'                      => 'Predis_Commands_Auth',
 
             /* connection handling */
-            'quit'      => 'Predis_Commands_Quit',
+            'quit'                      => 'Predis_Commands_Quit',
 
             /* commands operating on string values */
-            'set'                     => 'Predis_Commands_Set',
-            'setnx'                   => 'Predis_Commands_SetPreserve',
-                'setPreserve'         => 'Predis_Commands_SetPreserve',
-            'mset'                    => 'Predis_Commands_SetMultiple',
-                'setMultiple'         => 'Predis_Commands_SetMultiple',
-            'msetnx'                  => 'Predis_Commands_SetMultiplePreserve',
-                'setMultiplePreserve' => 'Predis_Commands_SetMultiplePreserve',
-            'get'                     => 'Predis_Commands_Get',
-            'mget'                    => 'Predis_Commands_GetMultiple',
-                'getMultiple'         => 'Predis_Commands_GetMultiple',
-            'getset'                  => 'Predis_Commands_GetSet',
-                'getSet'              => 'Predis_Commands_GetSet',
-            'incr'                    => 'Predis_Commands_Increment',
-                'increment'           => 'Predis_Commands_Increment',
-            'incrby'                  => 'Predis_Commands_IncrementBy',
-                'incrementBy'         => 'Predis_Commands_IncrementBy',
-            'decr'                    => 'Predis_Commands_Decrement',
-                'decrement'           => 'Predis_Commands_Decrement',
-            'decrby'                  => 'Predis_Commands_DecrementBy',
-                'decrementBy'         => 'Predis_Commands_DecrementBy',
-            'exists'                  => 'Predis_Commands_Exists',
-            'del'                     => 'Predis_Commands_Delete',
-                'delete'              => 'Predis_Commands_Delete',
-            'type'                    => 'Predis_Commands_Type',
+            'set'                       => 'Predis_Commands_Set',
+            'setnx'                     => 'Predis_Commands_SetPreserve',
+            'mset'                      => 'Predis_Commands_SetMultiple',
+            'msetnx'                    => 'Predis_Commands_SetMultiplePreserve',
+            'get'                       => 'Predis_Commands_Get',
+            'mget'                      => 'Predis_Commands_GetMultiple',
+            'getset'                    => 'Predis_Commands_GetSet',
+            'incr'                      => 'Predis_Commands_Increment',
+            'incrby'                    => 'Predis_Commands_IncrementBy',
+            'decr'                      => 'Predis_Commands_Decrement',
+            'decrby'                    => 'Predis_Commands_DecrementBy',
+            'exists'                    => 'Predis_Commands_Exists',
+            'del'                       => 'Predis_Commands_Delete',
+            'type'                      => 'Predis_Commands_Type',
 
             /* commands operating on the key space */
-            'keys'               => 'Predis_Commands_Keys_v1_2',
-            'randomkey'          => 'Predis_Commands_RandomKey',
-                'randomKey'      => 'Predis_Commands_RandomKey',
-            'rename'             => 'Predis_Commands_Rename',
-            'renamenx'           => 'Predis_Commands_RenamePreserve',
-                'renamePreserve' => 'Predis_Commands_RenamePreserve',
-            'expire'             => 'Predis_Commands_Expire',
-            'expireat'           => 'Predis_Commands_ExpireAt',
-                'expireAt'       => 'Predis_Commands_ExpireAt',
-            'dbsize'             => 'Predis_Commands_DatabaseSize',
-                'databaseSize'   => 'Predis_Commands_DatabaseSize',
-            'ttl'                => 'Predis_Commands_TimeToLive',
-                'timeToLive'     => 'Predis_Commands_TimeToLive',
+            'keys'                      => 'Predis_Commands_Keys_v1_2',
+            'randomkey'                 => 'Predis_Commands_RandomKey',
+            'rename'                    => 'Predis_Commands_Rename',
+            'renamenx'                  => 'Predis_Commands_RenamePreserve',
+            'expire'                    => 'Predis_Commands_Expire',
+            'expireat'                  => 'Predis_Commands_ExpireAt',
+            'dbsize'                    => 'Predis_Commands_DatabaseSize',
+            'ttl'                       => 'Predis_Commands_TimeToLive',
 
             /* commands operating on lists */
-            'rpush'            => 'Predis_Commands_ListPushTail',
-                'pushTail'     => 'Predis_Commands_ListPushTail',
-            'lpush'            => 'Predis_Commands_ListPushHead',
-                'pushHead'     => 'Predis_Commands_ListPushHead',
-            'llen'             => 'Predis_Commands_ListLength',
-                'listLength'   => 'Predis_Commands_ListLength',
-            'lrange'           => 'Predis_Commands_ListRange',
-                'listRange'    => 'Predis_Commands_ListRange',
-            'ltrim'            => 'Predis_Commands_ListTrim',
-                'listTrim'     => 'Predis_Commands_ListTrim',
-            'lindex'           => 'Predis_Commands_ListIndex',
-                'listIndex'    => 'Predis_Commands_ListIndex',
-            'lset'             => 'Predis_Commands_ListSet',
-                'listSet'      => 'Predis_Commands_ListSet',
-            'lrem'             => 'Predis_Commands_ListRemove',
-                'listRemove'   => 'Predis_Commands_ListRemove',
-            'lpop'             => 'Predis_Commands_ListPopFirst',
-                'popFirst'     => 'Predis_Commands_ListPopFirst',
-            'rpop'             => 'Predis_Commands_ListPopLast',
-                'popLast'      => 'Predis_Commands_ListPopLast',
-            'rpoplpush'        => 'Predis_Commands_ListPopLastPushHead',
-                'listPopLastPushHead'  => 'Predis_Commands_ListPopLastPushHead',
+            'rpush'                     => 'Predis_Commands_ListPushTail',
+            'lpush'                     => 'Predis_Commands_ListPushHead',
+            'llen'                      => 'Predis_Commands_ListLength',
+            'lrange'                    => 'Predis_Commands_ListRange',
+            'ltrim'                     => 'Predis_Commands_ListTrim',
+            'lindex'                    => 'Predis_Commands_ListIndex',
+            'lset'                      => 'Predis_Commands_ListSet',
+            'lrem'                      => 'Predis_Commands_ListRemove',
+            'lpop'                      => 'Predis_Commands_ListPopFirst',
+            'rpop'                      => 'Predis_Commands_ListPopLast',
+            'rpoplpush'                 => 'Predis_Commands_ListPopLastPushHead',
 
             /* commands operating on sets */
-            'sadd'                      => 'Predis_Commands_SetAdd', 
-                'setAdd'                => 'Predis_Commands_SetAdd',
-            'srem'                      => 'Predis_Commands_SetRemove', 
-                'setRemove'             => 'Predis_Commands_SetRemove',
+            'sadd'                      => 'Predis_Commands_SetAdd',
+            'srem'                      => 'Predis_Commands_SetRemove',
             'spop'                      => 'Predis_Commands_SetPop',
-                'setPop'                => 'Predis_Commands_SetPop',
-            'smove'                     => 'Predis_Commands_SetMove', 
-                'setMove'               => 'Predis_Commands_SetMove',
-            'scard'                     => 'Predis_Commands_SetCardinality', 
-                'setCardinality'        => 'Predis_Commands_SetCardinality',
-            'sismember'                 => 'Predis_Commands_SetIsMember', 
-                'setIsMember'           => 'Predis_Commands_SetIsMember',
-            'sinter'                    => 'Predis_Commands_SetIntersection', 
-                'setIntersection'       => 'Predis_Commands_SetIntersection',
-            'sinterstore'               => 'Predis_Commands_SetIntersectionStore', 
-                'setIntersectionStore'  => 'Predis_Commands_SetIntersectionStore',
-            'sunion'                    => 'Predis_Commands_SetUnion', 
-                'setUnion'              => 'Predis_Commands_SetUnion',
-            'sunionstore'               => 'Predis_Commands_SetUnionStore', 
-                'setUnionStore'         => 'Predis_Commands_SetUnionStore',
-            'sdiff'                     => 'Predis_Commands_SetDifference', 
-                'setDifference'         => 'Predis_Commands_SetDifference',
-            'sdiffstore'                => 'Predis_Commands_SetDifferenceStore', 
-                'setDifferenceStore'    => 'Predis_Commands_SetDifferenceStore',
-            'smembers'                  => 'Predis_Commands_SetMembers', 
-                'setMembers'            => 'Predis_Commands_SetMembers',
-            'srandmember'               => 'Predis_Commands_SetRandomMember', 
-                'setRandomMember'       => 'Predis_Commands_SetRandomMember',
+            'smove'                     => 'Predis_Commands_SetMove',
+            'scard'                     => 'Predis_Commands_SetCardinality',
+            'sismember'                 => 'Predis_Commands_SetIsMember',
+            'sinter'                    => 'Predis_Commands_SetIntersection',
+            'sinterstore'               => 'Predis_Commands_SetIntersectionStore',
+            'sunion'                    => 'Predis_Commands_SetUnion',
+            'sunionstore'               => 'Predis_Commands_SetUnionStore',
+            'sdiff'                     => 'Predis_Commands_SetDifference',
+            'sdiffstore'                => 'Predis_Commands_SetDifferenceStore',
+            'smembers'                  => 'Predis_Commands_SetMembers',
+            'srandmember'               => 'Predis_Commands_SetRandomMember',
 
             /* commands operating on sorted sets */
-            'zadd'                          => 'Predis_Commands_ZSetAdd',
-                'zsetAdd'                   => 'Predis_Commands_ZSetAdd',
-            'zincrby'                       => 'Predis_Commands_ZSetIncrementBy',
-                'zsetIncrementBy'           => 'Predis_Commands_ZSetIncrementBy',
-            'zrem'                          => 'Predis_Commands_ZSetRemove',
-                'zsetRemove'                => 'Predis_Commands_ZSetRemove',
-            'zrange'                        => 'Predis_Commands_ZSetRange',
-                'zsetRange'                 => 'Predis_Commands_ZSetRange',
-            'zrevrange'                     => 'Predis_Commands_ZSetReverseRange',
-                'zsetReverseRange'          => 'Predis_Commands_ZSetReverseRange',
-            'zrangebyscore'                 => 'Predis_Commands_ZSetRangeByScore',
-                'zsetRangeByScore'          => 'Predis_Commands_ZSetRangeByScore',
-            'zcard'                         => 'Predis_Commands_ZSetCardinality',
-                'zsetCardinality'           => 'Predis_Commands_ZSetCardinality',
-            'zscore'                        => 'Predis_Commands_ZSetScore',
-                'zsetScore'                 => 'Predis_Commands_ZSetScore',
-            'zremrangebyscore'              => 'Predis_Commands_ZSetRemoveRangeByScore',
-                'zsetRemoveRangeByScore'    => 'Predis_Commands_ZSetRemoveRangeByScore',
+            'zadd'                      => 'Predis_Commands_ZSetAdd',
+            'zincrby'                   => 'Predis_Commands_ZSetIncrementBy',
+            'zrem'                      => 'Predis_Commands_ZSetRemove',
+            'zrange'                    => 'Predis_Commands_ZSetRange',
+            'zrevrange'                 => 'Predis_Commands_ZSetReverseRange',
+            'zrangebyscore'             => 'Predis_Commands_ZSetRangeByScore',
+            'zcard'                     => 'Predis_Commands_ZSetCardinality',
+            'zscore'                    => 'Predis_Commands_ZSetScore',
+            'zremrangebyscore'          => 'Predis_Commands_ZSetRemoveRangeByScore',
 
             /* multiple databases handling commands */
-            'select'                => 'Predis_Commands_SelectDatabase', 
-                'selectDatabase'    => 'Predis_Commands_SelectDatabase',
-            'move'                  => 'Predis_Commands_MoveKey', 
-                'moveKey'           => 'Predis_Commands_MoveKey',
-            'flushdb'               => 'Predis_Commands_FlushDatabase', 
-                'flushDatabase'     => 'Predis_Commands_FlushDatabase',
-            'flushall'              => 'Predis_Commands_FlushAll', 
-                'flushDatabases'    => 'Predis_Commands_FlushAll',
+            'select'                    => 'Predis_Commands_SelectDatabase',
+            'move'                      => 'Predis_Commands_MoveKey',
+            'flushdb'                   => 'Predis_Commands_FlushDatabase',
+            'flushall'                  => 'Predis_Commands_FlushAll',
 
             /* sorting */
-            'sort'                  => 'Predis_Commands_Sort',
+            'sort'                      => 'Predis_Commands_Sort',
 
             /* remote server control commands */
-            'info'                  => 'Predis_Commands_Info',
-            'slaveof'               => 'Predis_Commands_SlaveOf', 
-                'slaveOf'           => 'Predis_Commands_SlaveOf',
+            'info'                      => 'Predis_Commands_Info',
+            'slaveof'                   => 'Predis_Commands_SlaveOf',
 
             /* persistence control commands */
-            'save'                  => 'Predis_Commands_Save',
-            'bgsave'                => 'Predis_Commands_BackgroundSave', 
-                'backgroundSave'    => 'Predis_Commands_BackgroundSave',
-            'lastsave'              => 'Predis_Commands_LastSave', 
-                'lastSave'          => 'Predis_Commands_LastSave',
-            'shutdown'              => 'Predis_Commands_Shutdown',
-            'bgrewriteaof'                      =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
-            'backgroundRewriteAppendOnlyFile'   =>  'Predis_Commands_BackgroundRewriteAppendOnlyFile',
+            'save'                      => 'Predis_Commands_Save',
+            'bgsave'                    => 'Predis_Commands_BackgroundSave',
+            'lastsave'                  => 'Predis_Commands_LastSave',
+            'shutdown'                  => 'Predis_Commands_Shutdown',
+            'bgrewriteaof'              => 'Predis_Commands_BackgroundRewriteAppendOnlyFile',
         );
     }
 }
 
-class Predis_RedisServer_v2_0 extends Predis_RedisServer_v1_2 {
+class Predis_RedisServer_v2_0 extends Predis_RedisServerProfile {
     public function getVersion() { return '2.0'; }
     public function getSupportedCommands() {
-        return array_merge(parent::getSupportedCommands(), array(
+        return array(
+            /* ---------------- Redis 1.2 ---------------- */
+
+            /* miscellaneous commands */
+            'ping'                      => 'Predis_Commands_Ping',
+            'echo'                      => 'Predis_Commands_DoEcho',
+            'auth'                      => 'Predis_Commands_Auth',
+
+            /* connection handling */
+            'quit'                      => 'Predis_Commands_Quit',
+
+            /* commands operating on string values */
+            'set'                       => 'Predis_Commands_Set',
+            'setnx'                     => 'Predis_Commands_SetPreserve',
+            'mset'                      => 'Predis_Commands_SetMultiple',
+            'msetnx'                    => 'Predis_Commands_SetMultiplePreserve',
+            'get'                       => 'Predis_Commands_Get',
+            'mget'                      => 'Predis_Commands_GetMultiple',
+            'getset'                    => 'Predis_Commands_GetSet',
+            'incr'                      => 'Predis_Commands_Increment',
+            'incrby'                    => 'Predis_Commands_IncrementBy',
+            'decr'                      => 'Predis_Commands_Decrement',
+            'decrby'                    => 'Predis_Commands_DecrementBy',
+            'exists'                    => 'Predis_Commands_Exists',
+            'del'                       => 'Predis_Commands_Delete',
+            'type'                      => 'Predis_Commands_Type',
+
+            /* commands operating on the key space */
+            'keys'                      => 'Predis_Commands_Keys',
+            'randomkey'                 => 'Predis_Commands_RandomKey',
+            'rename'                    => 'Predis_Commands_Rename',
+            'renamenx'                  => 'Predis_Commands_RenamePreserve',
+            'expire'                    => 'Predis_Commands_Expire',
+            'expireat'                  => 'Predis_Commands_ExpireAt',
+            'dbsize'                    => 'Predis_Commands_DatabaseSize',
+            'ttl'                       => 'Predis_Commands_TimeToLive',
+
+            /* commands operating on lists */
+            'rpush'                     => 'Predis_Commands_ListPushTail',
+            'lpush'                     => 'Predis_Commands_ListPushHead',
+            'llen'                      => 'Predis_Commands_ListLength',
+            'lrange'                    => 'Predis_Commands_ListRange',
+            'ltrim'                     => 'Predis_Commands_ListTrim',
+            'lindex'                    => 'Predis_Commands_ListIndex',
+            'lset'                      => 'Predis_Commands_ListSet',
+            'lrem'                      => 'Predis_Commands_ListRemove',
+            'lpop'                      => 'Predis_Commands_ListPopFirst',
+            'rpop'                      => 'Predis_Commands_ListPopLast',
+            'rpoplpush'                 => 'Predis_Commands_ListPopLastPushHead',
+
+            /* commands operating on sets */
+            'sadd'                      => 'Predis_Commands_SetAdd',
+            'srem'                      => 'Predis_Commands_SetRemove',
+            'spop'                      => 'Predis_Commands_SetPop',
+            'smove'                     => 'Predis_Commands_SetMove',
+            'scard'                     => 'Predis_Commands_SetCardinality',
+            'sismember'                 => 'Predis_Commands_SetIsMember',
+            'sinter'                    => 'Predis_Commands_SetIntersection',
+            'sinterstore'               => 'Predis_Commands_SetIntersectionStore',
+            'sunion'                    => 'Predis_Commands_SetUnion',
+            'sunionstore'               => 'Predis_Commands_SetUnionStore',
+            'sdiff'                     => 'Predis_Commands_SetDifference',
+            'sdiffstore'                => 'Predis_Commands_SetDifferenceStore',
+            'smembers'                  => 'Predis_Commands_SetMembers',
+            'srandmember'               => 'Predis_Commands_SetRandomMember',
+
+            /* commands operating on sorted sets */
+            'zadd'                      => 'Predis_Commands_ZSetAdd',
+            'zincrby'                   => 'Predis_Commands_ZSetIncrementBy',
+            'zrem'                      => 'Predis_Commands_ZSetRemove',
+            'zrange'                    => 'Predis_Commands_ZSetRange',
+            'zrevrange'                 => 'Predis_Commands_ZSetReverseRange',
+            'zrangebyscore'             => 'Predis_Commands_ZSetRangeByScore',
+            'zcard'                     => 'Predis_Commands_ZSetCardinality',
+            'zscore'                    => 'Predis_Commands_ZSetScore',
+            'zremrangebyscore'          => 'Predis_Commands_ZSetRemoveRangeByScore',
+
+            /* multiple databases handling commands */
+            'select'                    => 'Predis_Commands_SelectDatabase',
+            'move'                      => 'Predis_Commands_MoveKey',
+            'flushdb'                   => 'Predis_Commands_FlushDatabase',
+            'flushall'                  => 'Predis_Commands_FlushAll',
+
+            /* sorting */
+            'sort'                      => 'Predis_Commands_Sort',
+
+            /* remote server control commands */
+            'info'                      => 'Predis_Commands_Info',
+            'slaveof'                   => 'Predis_Commands_SlaveOf',
+
+            /* persistence control commands */
+            'save'                      => 'Predis_Commands_Save',
+            'bgsave'                    => 'Predis_Commands_BackgroundSave',
+            'lastsave'                  => 'Predis_Commands_LastSave',
+            'shutdown'                  => 'Predis_Commands_Shutdown',
+            'bgrewriteaof'              => 'Predis_Commands_BackgroundRewriteAppendOnlyFile',
+
+
+            /* ---------------- Redis 2.0 ---------------- */
+
             /* transactions */
             'multi'                     => 'Predis_Commands_Multi',
             'exec'                      => 'Predis_Commands_Exec',
@@ -1834,58 +2015,34 @@ class Predis_RedisServer_v2_0 extends Predis_RedisServer_v1_2 {
 
             /* commands operating on string values */
             'setex'                     => 'Predis_Commands_SetExpire',
-                'setExpire'             => 'Predis_Commands_SetExpire',
             'append'                    => 'Predis_Commands_Append',
             'substr'                    => 'Predis_Commands_Substr',
 
-             /* commands operating on the key space */
-            'keys'                      => 'Predis_Commands_Keys',
-
             /* commands operating on lists */
             'blpop'                     => 'Predis_Commands_ListPopFirstBlocking',
-                'popFirstBlocking'      => 'Predis_Commands_ListPopFirstBlocking',
             'brpop'                     => 'Predis_Commands_ListPopLastBlocking',
-                'popLastBlocking'       => 'Predis_Commands_ListPopLastBlocking',
 
             /* commands operating on sorted sets */
             'zunionstore'               => 'Predis_Commands_ZSetUnionStore',
-                'zsetUnionStore'        => 'Predis_Commands_ZSetUnionStore',
             'zinterstore'               => 'Predis_Commands_ZSetIntersectionStore',
-                'zsetIntersectionStore' => 'Predis_Commands_ZSetIntersectionStore',
             'zcount'                    => 'Predis_Commands_ZSetCount',
-                'zsetCount'             => 'Predis_Commands_ZSetCount',
             'zrank'                     => 'Predis_Commands_ZSetRank',
-                'zsetRank'              => 'Predis_Commands_ZSetRank',
             'zrevrank'                  => 'Predis_Commands_ZSetReverseRank',
-                'zsetReverseRank'       => 'Predis_Commands_ZSetReverseRank',
             'zremrangebyrank'           => 'Predis_Commands_ZSetRemoveRangeByRank',
-                'zsetRemoveRangeByRank' => 'Predis_Commands_ZSetRemoveRangeByRank',
 
             /* commands operating on hashes */
             'hset'                      => 'Predis_Commands_HashSet',
-                'hashSet'               => 'Predis_Commands_HashSet',
             'hsetnx'                    => 'Predis_Commands_HashSetPreserve',
-                'hashSetPreserve'       => 'Predis_Commands_HashSetPreserve',
             'hmset'                     => 'Predis_Commands_HashSetMultiple',
-                'hashSetMultiple'       => 'Predis_Commands_HashSetMultiple',
             'hincrby'                   => 'Predis_Commands_HashIncrementBy',
-                'hashIncrementBy'       => 'Predis_Commands_HashIncrementBy',
             'hget'                      => 'Predis_Commands_HashGet',
-                'hashGet'               => 'Predis_Commands_HashGet',
             'hmget'                     => 'Predis_Commands_HashGetMultiple',
-                'hashGetMultiple'       => 'Predis_Commands_HashGetMultiple',
             'hdel'                      => 'Predis_Commands_HashDelete',
-                'hashDelete'            => 'Predis_Commands_HashDelete',
             'hexists'                   => 'Predis_Commands_HashExists',
-                'hashExists'            => 'Predis_Commands_HashExists',
             'hlen'                      => 'Predis_Commands_HashLength',
-                'hashLength'            => 'Predis_Commands_HashLength',
             'hkeys'                     => 'Predis_Commands_HashKeys',
-                'hashKeys'              => 'Predis_Commands_HashKeys',
             'hvals'                     => 'Predis_Commands_HashValues',
-                'hashValues'            => 'Predis_Commands_HashValues',
             'hgetall'                   => 'Predis_Commands_HashGetAll',
-                'hashGetAll'            => 'Predis_Commands_HashGetAll',
 
             /* publish - subscribe */
             'subscribe'                 => 'Predis_Commands_Subscribe',
@@ -1896,15 +2053,162 @@ class Predis_RedisServer_v2_0 extends Predis_RedisServer_v1_2 {
 
             /* remote server control commands */
             'config'                    => 'Predis_Commands_Config',
-                'configuration'         => 'Predis_Commands_Config',
-        ));
+        );
     }
 }
 
-class Predis_RedisServer_v2_2 extends Predis_RedisServer_v2_0 {
+class Predis_RedisServer_v2_2 extends Predis_RedisServerProfile {
     public function getVersion() { return '2.2'; }
     public function getSupportedCommands() {
-        return array_merge(parent::getSupportedCommands(), array(
+        return array(
+            /* ---------------- Redis 1.2 ---------------- */
+
+            /* miscellaneous commands */
+            'ping'                      => 'Predis_Commands_Ping',
+            'echo'                      => 'Predis_Commands_DoEcho',
+            'auth'                      => 'Predis_Commands_Auth',
+
+            /* connection handling */
+            'quit'                      => 'Predis_Commands_Quit',
+
+            /* commands operating on string values */
+            'set'                       => 'Predis_Commands_Set',
+            'setnx'                     => 'Predis_Commands_SetPreserve',
+            'mset'                      => 'Predis_Commands_SetMultiple',
+            'msetnx'                    => 'Predis_Commands_SetMultiplePreserve',
+            'get'                       => 'Predis_Commands_Get',
+            'mget'                      => 'Predis_Commands_GetMultiple',
+            'getset'                    => 'Predis_Commands_GetSet',
+            'incr'                      => 'Predis_Commands_Increment',
+            'incrby'                    => 'Predis_Commands_IncrementBy',
+            'decr'                      => 'Predis_Commands_Decrement',
+            'decrby'                    => 'Predis_Commands_DecrementBy',
+            'exists'                    => 'Predis_Commands_Exists',
+            'del'                       => 'Predis_Commands_Delete',
+            'type'                      => 'Predis_Commands_Type',
+
+            /* commands operating on the key space */
+            'keys'                      => 'Predis_Commands_Keys',
+            'randomkey'                 => 'Predis_Commands_RandomKey',
+            'rename'                    => 'Predis_Commands_Rename',
+            'renamenx'                  => 'Predis_Commands_RenamePreserve',
+            'expire'                    => 'Predis_Commands_Expire',
+            'expireat'                  => 'Predis_Commands_ExpireAt',
+            'dbsize'                    => 'Predis_Commands_DatabaseSize',
+            'ttl'                       => 'Predis_Commands_TimeToLive',
+
+            /* commands operating on lists */
+            'rpush'                     => 'Predis_Commands_ListPushTail',
+            'lpush'                     => 'Predis_Commands_ListPushHead',
+            'llen'                      => 'Predis_Commands_ListLength',
+            'lrange'                    => 'Predis_Commands_ListRange',
+            'ltrim'                     => 'Predis_Commands_ListTrim',
+            'lindex'                    => 'Predis_Commands_ListIndex',
+            'lset'                      => 'Predis_Commands_ListSet',
+            'lrem'                      => 'Predis_Commands_ListRemove',
+            'lpop'                      => 'Predis_Commands_ListPopFirst',
+            'rpop'                      => 'Predis_Commands_ListPopLast',
+            'rpoplpush'                 => 'Predis_Commands_ListPopLastPushHead',
+
+            /* commands operating on sets */
+            'sadd'                      => 'Predis_Commands_SetAdd',
+            'srem'                      => 'Predis_Commands_SetRemove',
+            'spop'                      => 'Predis_Commands_SetPop',
+            'smove'                     => 'Predis_Commands_SetMove',
+            'scard'                     => 'Predis_Commands_SetCardinality',
+            'sismember'                 => 'Predis_Commands_SetIsMember',
+            'sinter'                    => 'Predis_Commands_SetIntersection',
+            'sinterstore'               => 'Predis_Commands_SetIntersectionStore',
+            'sunion'                    => 'Predis_Commands_SetUnion',
+            'sunionstore'               => 'Predis_Commands_SetUnionStore',
+            'sdiff'                     => 'Predis_Commands_SetDifference',
+            'sdiffstore'                => 'Predis_Commands_SetDifferenceStore',
+            'smembers'                  => 'Predis_Commands_SetMembers',
+            'srandmember'               => 'Predis_Commands_SetRandomMember',
+
+            /* commands operating on sorted sets */
+            'zadd'                      => 'Predis_Commands_ZSetAdd',
+            'zincrby'                   => 'Predis_Commands_ZSetIncrementBy',
+            'zrem'                      => 'Predis_Commands_ZSetRemove',
+            'zrange'                    => 'Predis_Commands_ZSetRange',
+            'zrevrange'                 => 'Predis_Commands_ZSetReverseRange',
+            'zrangebyscore'             => 'Predis_Commands_ZSetRangeByScore',
+            'zcard'                     => 'Predis_Commands_ZSetCardinality',
+            'zscore'                    => 'Predis_Commands_ZSetScore',
+            'zremrangebyscore'          => 'Predis_Commands_ZSetRemoveRangeByScore',
+
+            /* multiple databases handling commands */
+            'select'                    => 'Predis_Commands_SelectDatabase',
+            'move'                      => 'Predis_Commands_MoveKey',
+            'flushdb'                   => 'Predis_Commands_FlushDatabase',
+            'flushall'                  => 'Predis_Commands_FlushAll',
+
+            /* sorting */
+            'sort'                      => 'Predis_Commands_Sort',
+
+            /* remote server control commands */
+            'info'                      => 'Predis_Commands_Info',
+            'slaveof'                   => 'Predis_Commands_SlaveOf',
+
+            /* persistence control commands */
+            'save'                      => 'Predis_Commands_Save',
+            'bgsave'                    => 'Predis_Commands_BackgroundSave',
+            'lastsave'                  => 'Predis_Commands_LastSave',
+            'shutdown'                  => 'Predis_Commands_Shutdown',
+            'bgrewriteaof'              => 'Predis_Commands_BackgroundRewriteAppendOnlyFile',
+
+
+            /* ---------------- Redis 2.0 ---------------- */
+
+            /* transactions */
+            'multi'                     => 'Predis_Commands_Multi',
+            'exec'                      => 'Predis_Commands_Exec',
+            'discard'                   => 'Predis_Commands_Discard',
+
+            /* commands operating on string values */
+            'setex'                     => 'Predis_Commands_SetExpire',
+            'append'                    => 'Predis_Commands_Append',
+            'substr'                    => 'Predis_Commands_Substr',
+
+            /* commands operating on lists */
+            'blpop'                     => 'Predis_Commands_ListPopFirstBlocking',
+            'brpop'                     => 'Predis_Commands_ListPopLastBlocking',
+
+            /* commands operating on sorted sets */
+            'zunionstore'               => 'Predis_Commands_ZSetUnionStore',
+            'zinterstore'               => 'Predis_Commands_ZSetIntersectionStore',
+            'zcount'                    => 'Predis_Commands_ZSetCount',
+            'zrank'                     => 'Predis_Commands_ZSetRank',
+            'zrevrank'                  => 'Predis_Commands_ZSetReverseRank',
+            'zremrangebyrank'           => 'Predis_Commands_ZSetRemoveRangeByRank',
+
+            /* commands operating on hashes */
+            'hset'                      => 'Predis_Commands_HashSet',
+            'hsetnx'                    => 'Predis_Commands_HashSetPreserve',
+            'hmset'                     => 'Predis_Commands_HashSetMultiple',
+            'hincrby'                   => 'Predis_Commands_HashIncrementBy',
+            'hget'                      => 'Predis_Commands_HashGet',
+            'hmget'                     => 'Predis_Commands_HashGetMultiple',
+            'hdel'                      => 'Predis_Commands_HashDelete',
+            'hexists'                   => 'Predis_Commands_HashExists',
+            'hlen'                      => 'Predis_Commands_HashLength',
+            'hkeys'                     => 'Predis_Commands_HashKeys',
+            'hvals'                     => 'Predis_Commands_HashValues',
+            'hgetall'                   => 'Predis_Commands_HashGetAll',
+
+            /* publish - subscribe */
+            'subscribe'                 => 'Predis_Commands_Subscribe',
+            'unsubscribe'               => 'Predis_Commands_Unsubscribe',
+            'psubscribe'                => 'Predis_Commands_SubscribeByPattern',
+            'punsubscribe'              => 'Predis_Commands_UnsubscribeByPattern',
+            'publish'                   => 'Predis_Commands_Publish',
+
+            /* remote server control commands */
+            'config'                    => 'Predis_Commands_Config',
+
+
+            /* ---------------- Redis 2.2 ---------------- */
+
             /* transactions */
             'watch'                     => 'Predis_Commands_Watch',
             'unwatch'                   => 'Predis_Commands_Unwatch',
@@ -1927,12 +2231,18 @@ class Predis_RedisServer_v2_2 extends Predis_RedisServer_v2_0 {
 
             /* commands operating on sorted sets */
             'zrevrangebyscore'          => 'Predis_Commands_ZSetReverseRangeByScore',
-        ));
+        );
     }
 }
 
 class Predis_RedisServer_vNext extends Predis_RedisServer_v2_2 {
     public function getVersion() { return 'DEV'; }
+    public function getSupportedCommands() {
+        return array_merge(parent::getSupportedCommands(), array(
+            /* remote server control commands */
+            'info'                      => 'Predis_Commands_Info_v24',
+        ));
+    }
 }
 
 /* ------------------------------------------------------------------------- */
@@ -2238,6 +2548,13 @@ class Predis_Shared_Utils {
         }
         throw $exception;
     }
+
+    public static function filterArrayArguments(Array $arguments) {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+        return $arguments;
+    }
 }
 
 abstract class Predis_Shared_MultiBulkResponseIteratorBase implements Iterator, Countable {
@@ -2346,7 +2663,7 @@ class Predis_Commands_Ping extends  Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'PING'; }
     public function parseResponse($data) {
-        return $data === 'PONG' ? true : false;
+        return $data === 'PONG';
     }
 }
 
@@ -2411,6 +2728,9 @@ class Predis_Commands_Get extends Predis_MultiBulkCommand {
 class Predis_Commands_GetMultiple extends Predis_MultiBulkCommand {
     public function canBeHashed()  { return false; }
     public function getCommandId() { return 'MGET'; }
+    public function filterArguments(Array $arguments) {
+        return Predis_Shared_Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Predis_Commands_GetSet extends Predis_MultiBulkCommand {
@@ -2624,17 +2944,26 @@ class Predis_Commands_SetIsMember extends Predis_MultiBulkCommand {
 
 class Predis_Commands_SetIntersection extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SINTER'; }
+    public function filterArguments(Array $arguments) {
+        return Predis_Shared_Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Predis_Commands_SetIntersectionStore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'SINTERSTORE'; }
+    public function filterArguments(Array $arguments) {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            return array_merge(array($arguments[0]), $arguments[1]);
+        }
+        return $arguments;
+    }
 }
 
-class Predis_Commands_SetUnion extends Predis_MultiBulkCommand {
+class Predis_Commands_SetUnion extends Predis_Commands_SetIntersection {
     public function getCommandId() { return 'SUNION'; }
 }
 
-class Predis_Commands_SetUnionStore extends Predis_MultiBulkCommand {
+class Predis_Commands_SetUnionStore extends Predis_Commands_SetIntersectionStore {
     public function getCommandId() { return 'SUNIONSTORE'; }
 }
 
@@ -2673,12 +3002,17 @@ class Predis_Commands_ZSetUnionStore extends Predis_MultiBulkCommand {
     public function getCommandId() { return 'ZUNIONSTORE'; }
     public function filterArguments(Array $arguments) {
         $options = array();
-        $argc    = count($arguments);
-        if ($argc > 1 && is_array($arguments[$argc - 1])) {
+        $argc = count($arguments);
+        if ($argc > 2 && is_array($arguments[$argc - 1])) {
             $options = $this->prepareOptions(array_pop($arguments));
         }
-        $args = is_array($arguments[0]) ? $arguments[0] : $arguments;
-        return  array_merge($args, $options);
+        if (is_array($arguments[1])) {
+            $arguments = array_merge(
+                array($arguments[0], count($arguments[1])),
+                $arguments[1]
+            );
+        }
+        return array_merge($arguments, $options);
     }
     private function prepareOptions($options) {
         $opts = array_change_key_case($options, CASE_UPPER);
@@ -2970,8 +3304,11 @@ class Predis_Commands_Discard extends Predis_MultiBulkCommand {
 
 /* publish/subscribe */
 class Predis_Commands_Subscribe extends Predis_MultiBulkCommand {
-    public function canBeHashed()  { return false; }
+    public function canBeHashed() { return false; }
     public function getCommandId() { return 'SUBSCRIBE'; }
+    public function filterArguments(Array $arguments) {
+        return Predis_Shared_Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Predis_Commands_Unsubscribe extends Predis_MultiBulkCommand {
@@ -2980,8 +3317,11 @@ class Predis_Commands_Unsubscribe extends Predis_MultiBulkCommand {
 }
 
 class Predis_Commands_SubscribeByPattern extends Predis_MultiBulkCommand {
-    public function canBeHashed()  { return false; }
-    public function getCommandId() { return 'PSUBSCRIBE'; }
+    public function canBeHashed() { return false; }
+    public function getCommandId() { return 'UNSUBSCRIBE'; }
+    public function filterArguments(Array $arguments) {
+        return Predis_Shared_Utils::filterArrayArguments($arguments);
+    }
 }
 
 class Predis_Commands_UnsubscribeByPattern extends Predis_MultiBulkCommand {
@@ -3056,17 +3396,70 @@ class Predis_Commands_Info extends Predis_MultiBulkCommand {
         $info      = array();
         $infoLines = explode("\r\n", $data, -1);
         foreach ($infoLines as $row) {
-            list($k, $v) = explode(':', $row);
+            @list($k, $v) = explode(':', $row);
+            if ($row === '' || !isset($v)) {
+                continue;
+            }
             if (!preg_match('/^db\d+$/', $k)) {
+                if ($k === 'allocation_stats') {
+                    $info[$k] = $this->parseAllocationStats($v);
+                    continue;
+                }
                 $info[$k] = $v;
             }
             else {
-                $db = array();
-                foreach (explode(',', $v) as $dbvar) {
-                    list($dbvk, $dbvv) = explode('=', $dbvar);
-                    $db[trim($dbvk)] = $dbvv;
+                $info[$k] = $this->parseDatabaseStats($v);
+            }
+        }
+        return $info;
+    }
+    protected function parseDatabaseStats($str) {
+        $db = array();
+        foreach (explode(',', $str) as $dbvar) {
+            list($dbvk, $dbvv) = explode('=', $dbvar);
+            $db[trim($dbvk)] = $dbvv;
+        }
+        return $db;
+    }
+    protected function parseAllocationStats($str) {
+        $stats = array();
+        foreach (explode(',', $str) as $kv) {
+            @list($size, $objects, $extra) = explode('=', $kv);
+            // hack to prevent incorrect values when parsing the >=256 key
+            if (isset($extra)) {
+                $size = ">=$objects";
+                $objects = $extra;
+            }
+            $stats[$size] = $objects;
+        }
+        return $stats;
+    }
+}
+
+class Predis_Commands_Info_v24 extends Predis_Commands_Info {
+    public function parseResponse($data) {
+        $info      = array();
+        $current   = null;
+        $infoLines = explode("\r\n", $data, -1);
+        foreach ($infoLines as $row) {
+            if ($row === '') {
+                continue;
+            }
+            if (preg_match('/^# (\w+)$/', $row, $matches)) {
+                $info[$matches[1]] = array();
+                $current = &$info[$matches[1]];
+                continue;
+            }
+            list($k, $v) = explode(':', $row);
+            if (!preg_match('/^db\d+$/', $k)) {
+                if ($k === 'allocation_stats') {
+                    $current[$k] = $this->parseAllocationStats($v);
+                    continue;
                 }
-                $info[$k] = $db;
+                $current[$k] = $v;
+            }
+            else {
+                $current[$k] = $this->parseDatabaseStats($v);
             }
         }
         return $info;

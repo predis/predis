@@ -1,3 +1,39 @@
+v0.6.6 (2011-xx-xx)
+  * Switched to Redis 2.2 as the default server profile (there are no changes 
+    that would break compatibility with previous releases). Long command names 
+    are no more supported by default but if you need them you can still require 
+    Predis_Compatibility.php to avoid breaking compatibility.
+
+  * Added a VERSION constant to Predis\Client.
+
+  * Some performance improvements for multibulk replies (parsing them is about 
+    16% faster than the previous version). A few core classes have been heavily 
+    optimized to reduce overhead when creating new instances.
+
+  * Predis now uses by default a new protocol reader, more lightweight and 
+    faster than the default handler-based one. Users can revert to the old 
+    protocol reader with the 'reader' client option set to 'composable'.
+    This client option can also accept custom reader classes implementing the 
+    new Predis\IResponseReader interface.
+
+  * Added support for connecting to Redis using UNIX domain sockets (ISSUE #25).
+
+  * The "read_write_timeout" connection parameter can now be set to 0 or false 
+    to disable read and write timeouts on connections. The old behaviour of -1 
+    is still intact.
+
+  * ZUNIONSTORE and ZINTERSTORE can accept an array to specify a list of the 
+    source keys to be used to populate the destination key.
+
+  * MGET, SINTER, SUNION and SDIFF can accept an array to specify the list of 
+    keys. SINTERSTORE, SUNIONSTORE and SDIFFSTORE can also accept an array to 
+    specify the list of source keys.
+
+  * SUBSCRIBE and PSUBSCRIBE can accept a list of channels for subscription.
+
+  * FIX: some client-side clean-ups for MULTI/EXEC were handled incorrectly in 
+    a couple of corner cases. See also ISSUE #27.
+
 v0.6.5 (2011-02-12)
   * FIX: due to an untested internal change introduced in v0.6.4, a wrong
     handling of bulk reads of zero-length values was producing protocol

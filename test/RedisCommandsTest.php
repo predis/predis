@@ -1,10 +1,6 @@
 <?php
-define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
 
-require_once 'PHPUnit/Framework.php';
-require_once 'PredisShared.php';
-
-class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
+class RedisCommandsTestSuite extends PHPUnit_Framework_TestCase {
     public $redis;
 
     // TODO: instead of an boolean assertion against the return value 
@@ -51,9 +47,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         //       respective Predis_Command::parseResponse methods. If you need that 
         //       kind of behaviour, you should use an instance of Predis_MultiExecBlock.
         $this->assertTrue($this->redis->multi());
-        $this->assertType('Predis_ResponseQueued', $this->redis->ping());
-        $this->assertType('Predis_ResponseQueued', $this->redis->echo('hello'));
-        $this->assertType('Predis_ResponseQueued', $this->redis->echo('redis'));
+        $this->assertInstanceOf('Predis_ResponseQueued', $this->redis->ping());
+        $this->assertInstanceOf('Predis_ResponseQueued', $this->redis->echo('hello'));
+        $this->assertInstanceOf('Predis_ResponseQueued', $this->redis->echo('redis'));
         $this->assertEquals(array('PONG', 'hello', 'redis'), $this->redis->exec());
 
         $this->assertTrue($this->redis->multi());
@@ -67,8 +63,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     function testDiscard() {
         $this->assertTrue($this->redis->multi());
-        $this->assertType('Predis_ResponseQueued', $this->redis->set('foo', 'bar'));
-        $this->assertType('Predis_ResponseQueued', $this->redis->set('hoge', 'piyo'));
+        $this->assertInstanceOf('Predis_ResponseQueued', $this->redis->set('foo', 'bar'));
+        $this->assertInstanceOf('Predis_ResponseQueued', $this->redis->set('hoge', 'piyo'));
         $this->assertEquals(true, $this->redis->discard());
 
         // should throw an exception when trying to EXEC after a DISCARD
@@ -255,7 +251,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $this->redis->substr('var', 3, 5));
         $this->assertEquals('bar', $this->redis->substr('var', -3, -1));
 
-        $this->assertNull($this->redis->substr('var', 5, 0));
+        $this->assertEquals($this->redis->substr('var', 5, 0), '');
 
         $this->redis->set('numeric', 123456789);
         $this->assertEquals(12345, $this->redis->substr('numeric', 0, 4));
@@ -1004,6 +1000,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->redis->set('foo', 'bar');
         $this->assertEquals(count($setA), $this->redis->sinterstore('foo', 'setA'));
 
+        // accepts an array for the list of source keys
+        $this->assertEquals(4, $this->redis->sinterstore('setC', array('setA', 'setB')));
+
         // wrong type
         $this->redis->set('foo', 'bar');
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
@@ -1066,6 +1065,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         // existing keys are replaced by SUNIONSTORE
         $this->redis->set('foo', 'bar');
         $this->assertEquals(count($setA), $this->redis->sunionstore('foo', 'setA'));
+
+        // accepts an array for the list of source keys
+        $this->assertEquals(9, $this->redis->sunionstore('setC', array('setA', 'setB')));
 
         // wrong type
         $this->redis->set('foo', 'bar');
@@ -1495,6 +1497,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
+        // using an array to pass the list of source keys
+        $sourceKeys = array('zseta', 'zsetb');
+
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', $sourceKeys));
+        $this->assertEquals(
+            array(array('a', 1), array('b', 3), array('d', 3), array('c', 5)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys + options array
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(4, $this->redis->zunionstore('zsetc', $sourceKeys, $options));
+        $this->assertEquals(
+            array(array('a', 2), array('b', 7), array('d', 9), array('c', 12)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, p_anon("\$test", "
             \$test->redis->set('zsetFake', 'fake');
             \$test->redis->zunionstore('zsetc', 2, 'zseta', 'zsetFake');
@@ -1537,6 +1556,23 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $this->redis->zinterstore('zsetc', 2, 'zseta', 'zsetb', $options));
         $this->assertEquals(
             array(array('b', 2), array('c', 3)), 
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys
+        $sourceKeys = array('zseta', 'zsetb');
+
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', $sourceKeys));
+        $this->assertEquals(
+            array(array('b', 3), array('c', 5)),
+            $this->redis->zrange('zsetc', 0, -1, 'withscores')
+        );
+
+        // using an array to pass the list of source keys + options array
+        $options = array('weights' => array(2, 3));
+        $this->assertEquals(2, $this->redis->zinterstore('zsetc', $sourceKeys, $options));
+        $this->assertEquals(
+            array(array('b', 7), array('c', 12)),
             $this->redis->zrange('zsetc', 0, -1, 'withscores')
         );
 
@@ -1989,7 +2025,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     function testInfo() {
         $serverInfo = $this->redis->info();
 
-        $this->assertType('array', $serverInfo);
+        $this->assertInternalType('array', $serverInfo);
         $this->assertNotNull($serverInfo['redis_version']);
         $this->assertGreaterThan(0, $serverInfo['uptime_in_seconds']);
         $this->assertGreaterThan(0, $serverInfo['total_connections_received']);
