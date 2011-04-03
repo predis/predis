@@ -124,4 +124,12 @@ class ConnectionParameters implements IConnectionParameters {
         }
         return $this->getBaseURI() . '/?' . implode('&', $query);
     }
+
+    public function __sleep() {
+        return array('_parameters', '_userDefined');
+    }
+
+    public function __wakeup() {
+        self::ensureDefaults();
+    }
 }
