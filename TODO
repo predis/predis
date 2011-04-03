@@ -1,3 +1,5 @@
+* Implement smart and transparent support for redis-cluster.
+
 * The internals of Predis\MultiExecContext should be refactored since the code
   has become a bit too convoluted.
 
