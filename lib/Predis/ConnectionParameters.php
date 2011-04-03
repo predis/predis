@@ -18,7 +18,7 @@ class ConnectionParameters implements IConnectionParameters {
             $parameters = $this->parseURI($parameters);
         }
         $this->_userDefined = array_keys($parameters);
-        $this->_parameters = array_merge(self::$_defaultParameters, $parameters);
+        $this->_parameters = $this->filter($parameters) + self::$_defaultParameters;
     }
 
     private static function ensureDefaults() {
@@ -101,11 +101,9 @@ class ConnectionParameters implements IConnectionParameters {
 
     private function filter(Array $parameters) {
         if (count($parameters) > 0) {
-            $validators = self::$_validators;
-            foreach ($parameters as $parameter => $value) {
-                if (isset($validators[$parameter])) {
-                    $parameters[$parameter] = $validators[$parameter]($value);
-                }
+            $validators = array_intersect_key(self::$_validators, $parameters);
+            foreach ($validators as $parameter => $validator) {
+                $parameters[$parameter] = $validator($parameters[$parameter]);
             }
         }
         return $parameters;
