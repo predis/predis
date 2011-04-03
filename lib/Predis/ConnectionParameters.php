@@ -93,28 +93,35 @@ class ConnectionParameters implements IConnectionParameters {
         return in_array($parameter, $this->_userDefined);
     }
 
-    public function __toString() {
-        $str = null;
+    protected function getBaseURI() {
         if ($this->scheme === 'unix') {
-            $str = "{$this->scheme}://{$this->path}";
+            return "{$this->scheme}://{$this->path}";
         }
-        else {
-            $str = "{$this->scheme}://{$this->host}:{$this->port}";
-        }
+        return "{$this->scheme}://{$this->host}:{$this->port}";
+    }
 
-        $query = array();
-        $reject = array('scheme', 'host', 'port', 'password', 'path');
-        foreach ($this->_userDefined as $k) {
-            if (in_array($k, $reject) || !isset($this->_parameters[$k])) {
-                continue;
-            }
-            $v = $this->_parameters[$k];
-            $query[] = $k . '=' . ($v === false ? '0' : $v);
-        }
-        return count($query) > 0 ? ($str . '/?' . implode('&', $query)) : $str;
+    protected function getDisallowedURIParts() {
+        return array('scheme', 'host', 'port', 'password', 'path');
     }
 
     public function toArray() {
         return $this->_parameters;
+    }
+
+    public function __toString() {
+        $query = array();
+        $parameters = $this->toArray();
+        $reject = $this->getDisallowedURIParts();
+        foreach ($this->_userDefined as $param) {
+            if (in_array($param, $reject) || !isset($parameters[$param])) {
+                continue;
+            }
+            $value = $parameters[$param];
+            $query[] = "$param=" . ($value === false ? '0' : $value);
+        }
+        if (count($query) === 0) {
+            return $this->getBaseURI();
+        }
+        return $this->getBaseURI() . '/?' . implode('&', $query);
     }
 }
