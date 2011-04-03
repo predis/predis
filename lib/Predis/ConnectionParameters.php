@@ -14,8 +14,9 @@ class ConnectionParameters implements IConnectionParameters {
 
     public function __construct($parameters = array()) {
         self::ensureDefaults();
-        $extractor = is_array($parameters) ? 'filter' : 'parseURI';
-        $parameters = $this->$extractor($parameters);
+        if (!is_array($parameters)) {
+            $parameters = $this->parseURI($parameters);
+        }
         $this->_userDefined = array_keys($parameters);
         $this->_parameters = array_merge(self::$_defaultParameters, $parameters);
     }
@@ -95,7 +96,7 @@ class ConnectionParameters implements IConnectionParameters {
             }
             unset($parsed['query']);
         }
-        return $this->filter($parsed);
+        return $parsed;
     }
 
     private function filter(Array $parameters) {
