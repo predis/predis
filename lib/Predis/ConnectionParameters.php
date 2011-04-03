@@ -3,6 +3,7 @@
 namespace Predis;
 
 use Predis\IConnectionParameters;
+use Predis\Options\IOption;
 
 class ConnectionParameters implements IConnectionParameters {
     private static $_defaultParameters;
@@ -58,6 +59,10 @@ class ConnectionParameters implements IConnectionParameters {
     public static function define($parameter, $default, $callable = null) {
         self::ensureDefaults();
         self::$_defaultParameters[$parameter] = $default;
+        if ($default instanceof IOption) {
+            self::$_validators[$parameter] = $default;
+            return;
+        }
         if (!isset($callable)) {
             unset(self::$_validators[$parameter]);
             return;
@@ -101,7 +106,11 @@ class ConnectionParameters implements IConnectionParameters {
     }
 
     public function __get($parameter) {
-        return $this->_parameters[$parameter];
+        $value = $this->_parameters[$parameter];
+        if ($value instanceof IOption) {
+            $this->_parameters[$parameter] = ($value = $value->getDefault());
+        }
+        return $value;
     }
 
     public function __isset($parameter) {
