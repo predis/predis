@@ -97,9 +97,16 @@ abstract class ConnectionBase implements IConnectionSingle {
         return $this->_params;
     }
 
+    protected function getIdentifier() {
+        if ($this->_params->scheme === 'unix') {
+            return $this->_params->path;
+        }
+        return "{$this->_params->host}:{$this->_params->port}";
+    }
+
     public function __toString() {
         if (!isset($this->_cachedId)) {
-            $this->_cachedId = "{$this->_params->host}:{$this->_params->port}";
+            $this->_cachedId = $this->getIdentifier();
         }
         return $this->_cachedId;
     }
