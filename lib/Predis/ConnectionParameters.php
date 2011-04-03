@@ -55,6 +55,21 @@ class ConnectionParameters implements IConnectionParameters {
         }
     }
 
+    public static function define($parameter, $default, $callable = null) {
+        self::ensureDefaults();
+        self::$_defaultParameters[$parameter] = $default;
+        if (!isset($callable)) {
+            unset(self::$_validators[$parameter]);
+            return;
+        }
+        if (!is_callable($callable)) {
+            throw new \InvalidArgumentException(
+                "The validator for $parameter must be a callable object"
+            );
+        }
+        self::$_validators[$parameter] = $callable;
+    }
+
     private function parseURI($uri) {
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort.
