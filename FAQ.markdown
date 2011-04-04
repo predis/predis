@@ -99,3 +99,20 @@ even officially supported anymore (aside from security patches). PHP 5.3 is not 
 its current present. Furthermore, most of the existing frameworks out there are also making the switch
 with their respective new major versions. If you still insist on using PHP 5.2, you can get any recent
 backported release of Predis 0.6.x, or just use a different library.
+
+
+### Why so many files for just one library? ###
+
+Before v0.7, Predis used the one-big-file approach to distribute the library. As much as you prefer having
+just one file for everything, this kind of solution is actually not that good. Predis now complies with the
+[PSR-0](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) standard to play nice with
+the major recent frameworks and libraries, so it needs an autoloader function to be defined. If you still
+want to have just one file grouping all the classes for whatever reason, then __bin/createSingleFile.php__
+script in the repository can generate it for you. There is also the __bin/createPhar.php__ script that
+generates a single [Phar archive](http://www.php.net/manual/en/intro.phar.php) for the whole library.
+
+
+### Does Predis support UNIX domain sockets and persistent connections? ###
+
+Yes. Obviously, persistent connections actually work when using PHP configured as a persistent process that
+gets recycled between requests (see [PHP-FPM](http://php-fpm.org/)).
