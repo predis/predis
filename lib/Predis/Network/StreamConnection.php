@@ -194,9 +194,4 @@ class StreamConnection extends ConnectionBase {
         }
         $this->write($buffer);
     }
-
-    public function readResponse(ICommand $command) {
-        $reply = $this->read();
-        return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
-    }
 }

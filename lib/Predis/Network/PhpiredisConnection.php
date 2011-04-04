@@ -253,9 +253,4 @@ class PhpiredisConnection extends ConnectionBase {
         array_unshift($cmdargs, $command->getId());
         $this->write(phpiredis_format_command($cmdargs));
     }
-
-    public function readResponse(ICommand $command) {
-        $reply = $this->read();
-        return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
-    }
 }

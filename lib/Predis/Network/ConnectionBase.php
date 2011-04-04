@@ -71,6 +71,14 @@ abstract class ConnectionBase implements IConnectionSingle {
         return $this->readResponse($command);
     }
 
+    public function readResponse(ICommand $command) {
+        $reply = $this->read();
+        if (isset($reply->skipParse)) {
+            return $reply;
+        }
+        return $command->parseResponse($reply);
+    }
+
     protected function onCommunicationException($message, $code = null) {
         Utils::onCommunicationException(
             new CommunicationException($this, $message, $code)
