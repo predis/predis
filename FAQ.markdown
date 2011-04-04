@@ -43,8 +43,8 @@ Redis, but how these numbers change when we hit the network by connecting to ins
 reside on other servers?
 
     Using Predis:
-    3150 SET/sec using 12 bytes for both key and value
-    3150 GET/sec while retrieving the very same values
+    3300 SET/sec using 12 bytes for both key and value
+    3300 GET/sec while retrieving the very same values
     0.212 seconds to fetch 30000 keys using "KEYS *".
 
     Using phpredis:
