@@ -21,9 +21,9 @@ It really depends, but most of the times the answer is: _yes, it is fast enough_
 a couple of easy numbers using a single Predis client with PHP 5.3.5 (custom build) and Redis 2.2
 (localhost) under Ubuntu 10.10 (running on a Intel Q6600):
 
-    18900 SET/sec using 12 bytes for both key and value
-    18300 GET/sec while retrieving the very same values
-    0.210 seconds to fetch 30000 keys using _KEYS *_.
+    19100 SET/sec using 12 bytes for both key and value
+    18600 GET/sec while retrieving the very same values
+    0.200 seconds to fetch 30000 keys using _KEYS *_.
 
 How does it compare with a nice C-based extension such as [__phpredis__](http://github.com/nicolasff/phpredis)?
 
