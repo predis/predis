@@ -43,7 +43,7 @@ class PhpiredisConnection extends ConnectionBase {
         parent::__destruct();
     }
 
-    protected function checkParameters(ConnectionParameters $parameters) {
+    protected function checkParameters(IConnectionParameters $parameters) {
         if (isset($parameters->iterable_multibulk)) {
             $this->onInvalidOption('iterable_multibulk', $parameters);
         }
@@ -66,7 +66,7 @@ class PhpiredisConnection extends ConnectionBase {
         $this->_reader = $reader;
     }
 
-    protected function initializeProtocol(ConnectionParameters $parameters) {
+    protected function initializeProtocol(IConnectionParameters $parameters) {
         $this->initializeReader($parameters->throw_errors);
     }
 
@@ -109,7 +109,7 @@ class PhpiredisConnection extends ConnectionBase {
         return $socket;
     }
 
-    private function tcpSocketInitializer(ConnectionParameters $parameters) {
+    private function tcpSocketInitializer(IConnectionParameters $parameters) {
         $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (!is_resource($socket)) {
             $this->emitSocketError();
@@ -117,7 +117,7 @@ class PhpiredisConnection extends ConnectionBase {
         return $socket;
     }
 
-    private function unixSocketInitializer(ConnectionParameters $parameters) {
+    private function unixSocketInitializer(IConnectionParameters $parameters) {
         $socket = @socket_create(AF_UNIX, SOCK_STREAM, 0);
         if (!is_resource($socket)) {
             $this->emitSocketError();
@@ -125,7 +125,7 @@ class PhpiredisConnection extends ConnectionBase {
         return $socket;
     }
 
-    private function setSocketOptions($socket, ConnectionParameters $parameters) {
+    private function setSocketOptions($socket, IConnectionParameters $parameters) {
         if ($parameters->scheme !== 'tcp') {
             return;
         }
@@ -149,7 +149,7 @@ class PhpiredisConnection extends ConnectionBase {
         }
     }
 
-    private function getAddress(ConnectionParameters $parameters) {
+    private function getAddress(IConnectionParameters $parameters) {
         if ($parameters->scheme === 'unix') {
             return $parameters->path;
         }
@@ -163,7 +163,7 @@ class PhpiredisConnection extends ConnectionBase {
         return $host;
     }
 
-    private function connectWithTimeout(ConnectionParameters $parameters) {
+    private function connectWithTimeout(IConnectionParameters $parameters) {
         $host = self::getAddress($parameters);
         $socket = $this->getResource();
         socket_set_nonblock($socket);
