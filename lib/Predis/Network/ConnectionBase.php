@@ -6,7 +6,8 @@ use \InvalidArgumentException;
 use Predis\Utils;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
-use Predis\CommunicationException;
+use Predis\ProtocolException;
+use Predis\ConnectionException;
 use Predis\Commands\ICommand;
 
 abstract class ConnectionBase implements IConnectionSingle {
@@ -79,9 +80,15 @@ abstract class ConnectionBase implements IConnectionSingle {
         return $command->parseResponse($reply);
     }
 
-    protected function onCommunicationException($message, $code = null) {
+    protected function onConnectionError($message, $code = null) {
         Utils::onCommunicationException(
-            new CommunicationException($this, $message, $code)
+            new ConnectionException($this, $message, $code)
+        );
+    }
+
+    protected function onProtocolError($message) {
+        Utils::onCommunicationException(
+            new ProtocolException($this, $message)
         );
     }
 

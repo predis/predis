@@ -73,9 +73,7 @@ class MultiExecContext {
         $command  = $client->createCommand($method, $arguments);
         $response = $client->executeCommand($command);
         if (!$response instanceof ResponseQueued) {
-            $this->malformedServerResponse(
-                'The server did not respond with a QUEUED status reply'
-            );
+            $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
         $this->_commands[] = $command;
         return $this;
@@ -206,9 +204,7 @@ class MultiExecContext {
 
         $commands = &$this->_commands;
         if ($sizeofReplies !== count($commands)) {
-            $this->malformedServerResponse(
-                'Unexpected number of responses for a MultiExecContext'
-            );
+            $this->onProtocolError('Unexpected number of responses for a MultiExecContext');
         }
         for ($i = 0; $i < $sizeofReplies; $i++) {
             $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
@@ -221,11 +217,11 @@ class MultiExecContext {
         return $returnValues;
     }
 
-    private function malformedServerResponse($message) {
+    private function onProtocolError($message) {
         // Since a MULTI/EXEC block cannot be initialized over a clustered
         // connection, we can safely assume that Predis\Client::getConnection()
         // will always return an instance of Predis\Network\IConnectionSingle.
-        Utils::onCommunicationException(new MalformedServerResponse(
+        Utils::onCommunicationException(new ProtocolException(
             $this->_client->getConnection(), $message
         ));
     }

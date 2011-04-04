@@ -3,8 +3,7 @@
 namespace Predis\Protocols;
 
 use Predis\Utils;
-use Predis\CommunicationException;
-use Predis\MalformedServerResponse;
+use Predis\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
 class TextResponseReader implements IResponseReader {
@@ -37,7 +36,7 @@ class TextResponseReader implements IResponseReader {
     public function read(IConnectionComposable $connection) {
         $header = $connection->readLine();
         if ($header === '') {
-            $this->throwMalformedResponse($connection, 'Unexpected empty header');
+            $this->protocolError($connection, 'Unexpected empty header');
         }
 
         $prefix = $header[0];
@@ -48,9 +47,7 @@ class TextResponseReader implements IResponseReader {
         return $handler->handle($connection, substr($header, 1));
     }
 
-    private function throwMalformedResponse(IConnectionComposable $connection, $message) {
-        Utils::onCommunicationException(new MalformedServerResponse(
-            $connection, $message
-        ));
+    private function protocolError(IConnectionComposable $connection, $message) {
+        Utils::onCommunicationException(new ProtocolException($connection, $message));
     }
 }

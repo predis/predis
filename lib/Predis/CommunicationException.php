@@ -4,15 +4,15 @@ namespace Predis;
 
 use Predis\Network\IConnectionSingle;
 
-class CommunicationException extends PredisException {
+abstract class CommunicationException extends PredisException {
     // Communication errors
     private $_connection;
 
-    public function __construct(IConnectionSingle $connection,
-        $message = null, $code = null) {
+    public function __construct(IConnectionSingle $connection, $message = null,
+        $code = null, \Exception $innerException = null) {
 
         $this->_connection = $connection;
-        parent::__construct($message, $code);
+        parent::__construct($message, $code, $innerException);
     }
 
     public function getConnection() { return $this->_connection; }

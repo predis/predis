@@ -98,7 +98,7 @@ class PhpiredisConnection extends ConnectionBase {
         $errno  = socket_last_error();
         $errstr = socket_strerror($errno);
         $this->disconnect();
-        $this->onCommunicationException(trim($errstr), $errno);
+        $this->onConnectionError(trim($errstr), $errno);
     }
 
     protected function createResource() {
@@ -156,7 +156,7 @@ class PhpiredisConnection extends ConnectionBase {
         $host = $parameters->host;
         if (ip2long($host) === false) {
             if (($address = gethostbyname($host)) === $host) {
-                $this->onCommunicationException("Cannot resolve the address of $host");
+                $this->onConnectionError("Cannot resolve the address of $host");
             }
             return $address;
         }
@@ -183,10 +183,10 @@ class PhpiredisConnection extends ConnectionBase {
 
         $selected = socket_select($selectable, $selectable, $null, $timeoutSecs, $timeoutUSecs);
         if ($selected === 2) {
-            $this->onCommunicationException('Connection refused', SOCKET_ECONNREFUSED);
+            $this->onConnectionError('Connection refused', SOCKET_ECONNREFUSED);
         }
         if ($selected === 0) {
-            $this->onCommunicationException('Connection timed out', SOCKET_ETIMEDOUT);
+            $this->onConnectionError('Connection timed out', SOCKET_ETIMEDOUT);
         }
         if ($selected === false) {
             $this->emitSocketError();
@@ -225,7 +225,7 @@ class PhpiredisConnection extends ConnectionBase {
                 return;
             }
             if ($written === false) {
-                $this->onCommunicationException('Error while writing bytes to the server');
+                $this->onConnectionError('Error while writing bytes to the server');
             }
             $buffer = substr($buffer, $written);
         }
@@ -244,7 +244,7 @@ class PhpiredisConnection extends ConnectionBase {
             return phpiredis_reader_get_reply($reader);
         }
         else {
-            $this->onCommunicationException(phpiredis_reader_get_error($reader));
+            $this->onProtocolError(phpiredis_reader_get_error($reader));
         }
     }
 

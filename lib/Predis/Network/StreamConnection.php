@@ -6,7 +6,6 @@ use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\IConnectionParameters;
-use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 use Predis\Protocols\TextCommandSerializer;
 use Predis\Iterators\MultiBulkResponseSimple;
@@ -44,7 +43,7 @@ class StreamConnection extends ConnectionBase {
             $uri, $errno, $errstr, $parameters->connection_timeout, $flags
         );
         if (!$resource) {
-            $this->onCommunicationException(trim($errstr), $errno);
+            $this->onConnectionError(trim($errstr), $errno);
         }
         if (isset($parameters->read_write_timeout)) {
             $rwtimeout = $parameters->read_write_timeout;
@@ -66,7 +65,7 @@ class StreamConnection extends ConnectionBase {
             $uri, $errno, $errstr, $parameters->connection_timeout, $flags
         );
         if (!$resource) {
-            $this->onCommunicationException(trim($errstr), $errno);
+            $this->onConnectionError(trim($errstr), $errno);
         }
         return $resource;
     }
@@ -102,9 +101,7 @@ class StreamConnection extends ConnectionBase {
                 return;
             }
             if ($written === false || $written === 0) {
-                $this->onCommunicationException(
-                    'Error while writing bytes to the server'
-                );
+                $this->onConnectionError('Error while writing bytes to the server');
             }
             $value = substr($buffer, $written);
         }
@@ -114,9 +111,7 @@ class StreamConnection extends ConnectionBase {
         $socket = $this->getResource();
         $chunk  = fgets($socket);
         if ($chunk === false || $chunk === '') {
-            $this->onCommunicationException(
-                'Error while reading line from the server'
-            );
+            $this->onConnectionError('Error while reading line from the server');
         }
         $prefix  = $chunk[0];
         $payload = substr($chunk, 1, -2);
@@ -141,7 +136,7 @@ class StreamConnection extends ConnectionBase {
                 do {
                     $chunk = fread($socket, min($bytesLeft, 4096));
                     if ($chunk === false || $chunk === '') {
-                        $this->onCommunicationException(
+                        $this->onConnectionError(
                             'Error while reading bytes from the server'
                         );
                     }
@@ -175,7 +170,7 @@ class StreamConnection extends ConnectionBase {
                 return new ResponseError($errorMessage);
 
             default:
-                $this->onCommunicationException("Unknown prefix: '$prefix'");
+                $this->onProtocolError("Unknown prefix: '$prefix'");
         }
     }
 

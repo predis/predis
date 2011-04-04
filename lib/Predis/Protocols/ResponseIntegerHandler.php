@@ -3,7 +3,7 @@
 namespace Predis\Protocols;
 
 use Predis\Utils;
-use Predis\MalformedServerResponse;
+use Predis\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
 class ResponseIntegerHandler implements IResponseHandler {
@@ -12,7 +12,7 @@ class ResponseIntegerHandler implements IResponseHandler {
             return (int) $number;
         }
         if ($number !== 'nil') {
-            Utils::onCommunicationException(new MalformedServerResponse(
+            Utils::onCommunicationException(new ProtocolException(
                 $connection, "Cannot parse '$number' as numeric response"
             ));
         }
