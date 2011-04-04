@@ -2,6 +2,8 @@
 
 namespace Predis\Pipeline;
 
+use Predis\ServerException;
+use Predis\CommunicationException;
 use Predis\Network\IConnection;
 
 class SafeClusterExecutor implements IPipelineExecutor {
@@ -18,7 +20,7 @@ class SafeClusterExecutor implements IPipelineExecutor {
             try {
                 $cmdConnection->writeCommand($command);
             }
-            catch (\Predis\CommunicationException $exception) {
+            catch (CommunicationException $exception) {
                 $connectionExceptions[spl_object_hash($cmdConnection)] = $exception;
             }
         }
@@ -42,10 +44,10 @@ class SafeClusterExecutor implements IPipelineExecutor {
                     : $response
                 );
             }
-            catch (\Predis\ServerException $exception) {
+            catch (ServerException $exception) {
                 $values[] = $exception->toResponseError();
             }
-            catch (\Predis\CommunicationException $exception) {
+            catch (CommunicationException $exception) {
                 $values[] = $exception;
                 $connectionExceptions[$connectionObjectHash] = $exception;
             }

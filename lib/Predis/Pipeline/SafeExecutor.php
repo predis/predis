@@ -2,6 +2,8 @@
 
 namespace Predis\Pipeline;
 
+use Predis\ServerException;
+use Predis\CommunicationException;
 use Predis\Network\IConnection;
 
 class SafeExecutor implements IPipelineExecutor {
@@ -13,7 +15,7 @@ class SafeExecutor implements IPipelineExecutor {
             try {
                 $connection->writeCommand($command);
             }
-            catch (\Predis\CommunicationException $exception) {
+            catch (CommunicationException $exception) {
                 return array_fill(0, $sizeofPipe, $exception);
             }
         }
@@ -28,10 +30,10 @@ class SafeExecutor implements IPipelineExecutor {
                     : $response
                 );
             }
-            catch (\Predis\ServerException $exception) {
+            catch (ServerException $exception) {
                 $values[] = $exception->toResponseError();
             }
-            catch (\Predis\CommunicationException $exception) {
+            catch (CommunicationException $exception) {
                 $toAdd  = count($commands) - count($values);
                 $values = array_merge($values, array_fill(0, $toAdd, $exception));
                 break;

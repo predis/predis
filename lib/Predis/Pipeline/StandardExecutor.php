@@ -2,6 +2,7 @@
 
 namespace Predis\Pipeline;
 
+use Predis\ServerException;
 use Predis\Network\IConnection;
 
 class StandardExecutor implements IPipelineExecutor {
@@ -15,13 +16,13 @@ class StandardExecutor implements IPipelineExecutor {
         try {
             for ($i = 0; $i < $sizeofPipe; $i++) {
                 $response = $connection->readResponse($commands[$i]);
-                $values[] = $response instanceof Iterator
+                $values[] = $response instanceof \Iterator
                     ? iterator_to_array($response)
                     : $response;
                 unset($commands[$i]);
             }
         }
-        catch (\Predis\ServerException $exception) {
+        catch (ServerException $exception) {
             // Force disconnection to prevent protocol desynchronization.
             $connection->disconnect();
             throw $exception;
