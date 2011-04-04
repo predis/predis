@@ -32,26 +32,17 @@ abstract class ServerProfile implements IServerProfile {
         );
     }
 
-    public static function registerProfile($profileClass, $aliases) {
+    public static function define($alias, $profileClass) {
         if (!isset(self::$_profiles)) {
             self::$_profiles = self::getDefaultProfiles();
         }
-
         $profileReflection = new \ReflectionClass($profileClass);
         if (!$profileReflection->isSubclassOf('\Predis\Profiles\IServerProfile')) {
             throw new ClientException(
                 "Cannot register '$profileClass' as it is not a valid profile class"
             );
         }
-
-        if (is_array($aliases)) {
-            foreach ($aliases as $alias) {
-                self::$_profiles[$alias] = $profileClass;
-            }
-        }
-        else {
-            self::$_profiles[$aliases] = $profileClass;
-        }
+        self::$_profiles[$alias] = $profileClass;
     }
 
     public static function get($version) {
