@@ -181,22 +181,22 @@ class Client {
         if (isset($options)) {
             if (isset($options['safe']) && $options['safe'] == true) {
                 $connection = $this->_connection;
-                $pipeline = new CommandPipeline($this,
+                $pipeline = new PipelineContext($this,
                     Utils::isCluster($connection)
                         ? new Pipeline\SafeClusterExecutor($connection)
                         : new Pipeline\SafeExecutor($connection)
                 );
             }
             else {
-                $pipeline = new CommandPipeline($this);
+                $pipeline = new PipelineContext($this);
             }
         }
         return $this->pipelineExecute(
-            $pipeline ?: new CommandPipeline($this), $pipelineBlock
+            $pipeline ?: new PipelineContext($this), $pipelineBlock
         );
     }
 
-    private function pipelineExecute(CommandPipeline $pipeline, $block) {
+    private function pipelineExecute(PipelineContext $pipeline, $block) {
         return $block !== null ? $pipeline->execute($block) : $pipeline;
     }
 

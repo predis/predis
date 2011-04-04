@@ -387,21 +387,21 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
 
-    /* Client + CommandPipeline */
+    /* Client + PipelineContext */
 
-    function testCommandPipeline_Simple() {
+    function testPipelineContext_Simple() {
         $client = RC::getConnection();
         $client->flushdb();
 
         $pipe = $client->pipeline();
 
-        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe);
-        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->set('foo', 'bar'));
-        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->set('hoge', 'piyo'));
-        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->mset(array(
+        $this->assertInstanceOf('\Predis\PipelineContext', $pipe);
+        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->set('foo', 'bar'));
+        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->set('hoge', 'piyo'));
+        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->mset(array(
             'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
         )));
-        $this->assertInstanceOf('\Predis\CommandPipeline', $pipe->mget(array(
+        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->mget(array(
             'foo', 'hoge', 'foofoo', 'hogehoge'
         )));
 
@@ -412,7 +412,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('barbar', $replies[3][2]);
     }
 
-    function testCommandPipeline_FluentInterface() {
+    function testPipelineContext_FluentInterface() {
         $client = RC::getConnection();
         $client->flushdb();
 
@@ -421,7 +421,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $replies[2]);
     }
 
-    function testCommandPipeline_CallableAnonymousBlock() {
+    function testPipelineContext_CallableAnonymousBlock() {
         $client = RC::getConnection();
         $client->flushdb();
 
@@ -435,7 +435,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $replies[2]);
     }
 
-    function testCommandPipeline_ClientExceptionInCallableBlock() {
+    function testPipelineContext_ClientExceptionInCallableBlock() {
         $client = RC::getConnection();
         $client->flushdb();
 
@@ -449,7 +449,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($client->exists('foo'));
     }
 
-    function testCommandPipeline_ServerExceptionInCallableBlock() {
+    function testPipelineContext_ServerExceptionInCallableBlock() {
         $client = RC::createConnection(array('throw_errors' => false));
         $client->flushdb();
 
@@ -465,7 +465,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($client->exists('hoge'));
     }
 
-    function testCommandPipeline_Flush() {
+    function testPipelineContext_Flush() {
         $client = RC::getConnection();
         $client->flushdb();
 

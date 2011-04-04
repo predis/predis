@@ -5,7 +5,7 @@ namespace Predis;
 use Predis\Commands\ICommand;
 use Predis\Pipeline\IPipelineExecutor;
 
-class CommandPipeline {
+class PipelineContext {
     private $_client, $_pipelineBuffer, $_returnValues, $_running, $_executor;
 
     public function __construct(Client $client, IPipelineExecutor $executor = null) {
