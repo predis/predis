@@ -32,19 +32,8 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         return $this->_protocol;
     }
 
-    public function writeBytes($value) {
-        $socket = $this->getResource();
-        while (($length = strlen($value)) > 0) {
-            $written = fwrite($socket, $value);
-            if ($length === $written) {
-                return true;
-            }
-            if ($written === false || $written === 0) {
-                $this->onCommunicationException('Error while writing bytes to the server');
-            }
-            $value = substr($value, $written);
-        }
-        return true;
+    public function writeBytes($buffer) {
+        parent::writeBytes($buffer);
     }
 
     public function readBytes($length) {

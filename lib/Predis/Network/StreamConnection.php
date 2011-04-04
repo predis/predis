@@ -94,7 +94,7 @@ class StreamConnection extends ConnectionBase {
         }
     }
 
-    private function write($buffer) {
+    protected function writeBytes($buffer) {
         $socket = $this->getResource();
         while (($length = strlen($buffer)) > 0) {
             $written = fwrite($socket, $buffer);
@@ -192,6 +192,6 @@ class StreamConnection extends ConnectionBase {
             $arglen  = strlen($argument);
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
-        $this->write($buffer);
+        $this->writeBytes($buffer);
     }
 }
