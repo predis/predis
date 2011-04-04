@@ -27,12 +27,12 @@ class StreamConnection extends ConnectionBase {
 
     protected function createResource() {
         $parameters = $this->_params;
-        $initializer = array($this, "{$parameters->scheme}StreamInitializer");
-        return call_user_func($initializer, $parameters);
+        $initializer = "{$parameters->scheme}StreamInitializer";
+        return $this->$initializer($parameters);
     }
 
     private function tcpStreamInitializer(IConnectionParameters $parameters) {
-        $uri = sprintf('tcp://%s:%d/', $parameters->host, $parameters->port);
+        $uri = "tcp://{$parameters->host}:{$parameters->port}/";
         $flags = STREAM_CLIENT_CONNECT;
         if ($parameters->connection_async) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
@@ -57,7 +57,7 @@ class StreamConnection extends ConnectionBase {
     }
 
     private function unixStreamInitializer(IConnectionParameters $parameters) {
-        $uri = sprintf('unix:///%s', $parameters->path);
+        $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
         if ($parameters->connection_persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
