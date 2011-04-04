@@ -153,7 +153,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $cmdClass = '\Predis\Commands\Multi';
 
         $this->assertFalse($profile->supportsCommand($cmdId));
-        $profile->defineCommand(new $cmdClass(), $cmdId);
+        $profile->defineCommand($cmdId, new $cmdClass());
         $this->assertTrue($profile->supportsCommand($cmdId));
         $this->assertInstanceOf($cmdClass, $profile->createCommand($cmdId));
     }

@@ -124,7 +124,7 @@ client instance at runtime. Actually, it is easier done than said:
     }
 
     $redis = new Predis\Client();
-    $redis->getProfile()->defineCommand('BrandNewRedisCommand', 'newcmd');
+    $redis->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
     $redis->newcmd();
 
 

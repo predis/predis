@@ -89,26 +89,17 @@ abstract class ServerProfile implements IServerProfile {
     }
 
     public function defineCommands(Array $commands) {
-        foreach ($commands as $command => $aliases) {
-            $this->defineCommand($command, $aliases);
+        foreach ($commands as $alias => $command) {
+            $this->defineCommand($alias, $command);
         }
     }
 
-    public function defineCommand($command, $aliases) {
+    public function defineCommand($alias, $command) {
         $commandReflection = new \ReflectionClass($command);
-
         if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
-
-        if (is_array($aliases)) {
-            foreach ($aliases as $alias) {
-                $this->_registeredCommands[$alias] = $command;
-            }
-        }
-        else {
-            $this->_registeredCommands[$aliases] = $command;
-        }
+        $this->_registeredCommands[$alias] = $command;
     }
 
     public function __toString() {
