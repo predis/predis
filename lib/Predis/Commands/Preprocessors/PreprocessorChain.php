@@ -16,7 +16,10 @@ class PreprocessorChain implements ICommandPreprocessorChain, \ArrayAccess {
     }
 
     public function remove(ICommandPreprocessor $preprocessor) {
-        // TODO: find index of value
+        $index = array_search($preprocessor, $this->_preprocessors, true);
+        if ($index !== false) {
+            unset($this->_preprocessors);
+        }
     }
 
     public function process(&$method, &$arguments) {
