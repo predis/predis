@@ -5,7 +5,7 @@ namespace Predis\Commands\Preprocessors;
 use Predis\ClientException;
 use Predis\Profiles\IServerProfile;
 
-class NamespacingPreprocessor implements ICommandPreprocessor {
+class KeyPrefixPreprocessor implements ICommandPreprocessor {
     private $_prefix;
     private $_strategies;
 
