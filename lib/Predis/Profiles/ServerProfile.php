@@ -3,10 +3,13 @@
 namespace Predis\Profiles;
 
 use Predis\ClientException;
+use Predis\Commands\Preprocessors\ICommandPreprocessor;
+use Predis\Commands\Preprocessors\IPreprocessingSupport;
 
-abstract class ServerProfile implements IServerProfile {
+abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
     private static $_profiles;
     private $_registeredCommands;
+    private $_preprocessor;
 
     public function __construct() {
         $this->_registeredCommands = $this->getSupportedCommands();
@@ -70,6 +73,9 @@ abstract class ServerProfile implements IServerProfile {
     }
 
     public function createCommand($method, $arguments = array()) {
+        if (isset($this->_preprocessor)) {
+            $this->_preprocessor->process($method, $arguments);
+        }
         if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
@@ -91,6 +97,18 @@ abstract class ServerProfile implements IServerProfile {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
         $this->_registeredCommands[$alias] = $command;
+    }
+
+    public function setPreprocessor(ICommandPreprocessor $preprocessor) {
+        if (!isset($preprocessor)) {
+            unset($this->_preprocessor);
+            return;
+        }
+        $this->_preprocessor = $preprocessor;
+    }
+
+    public function getPreprocessor() {
+        return $this->_preprocessor;
     }
 
     public function __toString() {
