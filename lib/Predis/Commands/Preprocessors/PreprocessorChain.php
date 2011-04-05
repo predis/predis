@@ -22,7 +22,7 @@ class PreprocessorChain implements ICommandPreprocessorChain, \ArrayAccess {
         }
     }
 
-    public function process(&$method, &$arguments) {
+    public function process($method, &$arguments) {
         $count = count($this->_preprocessors);
         for ($i = 0; $i < $count; $i++) {
             $this->_preprocessors[$i]->process($method, $arguments);

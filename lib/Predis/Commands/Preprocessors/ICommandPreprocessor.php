@@ -3,5 +3,5 @@
 namespace Predis\Commands\Preprocessors;
 
 interface ICommandPreprocessor {
-    public function process(&$method, &$arguments);
+    public function process($method, &$arguments);
 }

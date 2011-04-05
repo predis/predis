@@ -169,7 +169,7 @@ class KeyPrefixPreprocessor implements ICommandPreprocessor {
         return $this->_prefix;
     }
 
-    public function process(&$method, &$arguments) {
+    public function process($method, &$arguments) {
         if (isset($this->_strategies[$method])) {
             $this->_strategies[$method]($arguments, $this->_prefix);
         }
