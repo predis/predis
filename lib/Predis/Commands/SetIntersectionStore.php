@@ -2,8 +2,6 @@
 
 namespace Predis\Commands;
 
-use Predis\Utils;
-
 class SetIntersectionStore extends Command {
     public function getId() {
         return 'SINTERSTORE';

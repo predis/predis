@@ -3,7 +3,7 @@
 namespace Predis\Network;
 
 use \InvalidArgumentException;
-use Predis\Utils;
+use Predis\Helpers;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
 use Predis\ProtocolException;
@@ -81,13 +81,13 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     protected function onConnectionError($message, $code = null) {
-        Utils::onCommunicationException(
+        Helpers::onCommunicationException(
             new ConnectionException($this, $message, $code)
         );
     }
 
     protected function onProtocolError($message) {
-        Utils::onCommunicationException(
+        Helpers::onCommunicationException(
             new ProtocolException($this, $message)
         );
     }

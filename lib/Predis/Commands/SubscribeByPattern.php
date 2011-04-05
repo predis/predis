@@ -2,13 +2,15 @@
 
 namespace Predis\Commands;
 
+use Predis\Helpers;
+
 class SubscribeByPattern extends Command {
     public function getId() {
         return 'PSUBSCRIBE';
     }
 
     public function filterArguments(Array $arguments) {
-        return Utils::filterArrayArguments($arguments);
+        return Helpers::filterArrayArguments($arguments);
     }
 
     protected function canBeHashed() {

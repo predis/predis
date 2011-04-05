@@ -2,6 +2,7 @@
 
 namespace Predis\Protocols;
 
+use Predis\Helpers;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
@@ -84,7 +85,7 @@ class TextProtocol implements IProtocolProcessor {
                 return new ResponseError($errorMessage);
 
             default:
-                Utils::onCommunicationException(new ProtocolException(
+                Helpers::onCommunicationException(new ProtocolException(
                     $connection, "Unknown prefix: '$prefix'"
                 ));
         }

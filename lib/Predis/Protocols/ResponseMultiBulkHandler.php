@@ -2,7 +2,7 @@
 
 namespace Predis\Protocols;
 
-use Predis\Utils;
+use Predis\Helpers;
 use Predis\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
@@ -10,7 +10,7 @@ class ResponseMultiBulkHandler implements IResponseHandler {
     public function handle(IConnectionComposable $connection, $lengthString) {
         $length = (int) $lengthString;
         if ($length != $lengthString) {
-            Utils::onCommunicationException(new ProtocolException(
+            Helpers::onCommunicationException(new ProtocolException(
                 $connection, "Cannot parse '$length' as data length"
             ));
         }

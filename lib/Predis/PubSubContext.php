@@ -31,7 +31,7 @@ class PubSubContext implements \Iterator {
     }
 
     private function checkCapabilities(Client $client) {
-        if (Utils::isCluster($client->getConnection())) {
+        if (Helpers::isCluster($client->getConnection())) {
             throw new ClientException(
                 'Cannot initialize a PUB/SUB context over a cluster of connections'
             );

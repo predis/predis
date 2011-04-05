@@ -92,7 +92,7 @@ class Client {
     }
 
     public function getClientFor($connectionAlias) {
-        if (!Utils::isCluster($this->_connection)) {
+        if (!Helpers::isCluster($this->_connection)) {
             throw new ClientException(
                 'This method is supported only when the client is connected to a cluster of connections'
             );
@@ -128,7 +128,7 @@ class Client {
             return $this->_connection;
         }
         $connection = $this->_connection;
-        $isCluster = Utils::isCluster($connection);
+        $isCluster = Helpers::isCluster($connection);
         return $isCluster ? $connection->getConnectionById($id) : $connection;
     }
 
@@ -146,7 +146,7 @@ class Client {
     }
 
     public function executeCommandOnShards(ICommand $command) {
-        if (Utils::isCluster($this->_connection)) {
+        if (Helpers::isCluster($this->_connection)) {
             $replies = array();
             foreach ($this->_connection as $connection) {
                 $replies[] = $connection->executeCommand($command);
@@ -182,7 +182,7 @@ class Client {
             if (isset($options['safe']) && $options['safe'] == true) {
                 $connection = $this->_connection;
                 $pipeline = new PipelineContext($this,
-                    Utils::isCluster($connection)
+                    Helpers::isCluster($connection)
                         ? new Pipeline\SafeClusterExecutor($connection)
                         : new Pipeline\SafeExecutor($connection)
                 );

@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-use Predis\Utils;
+use Predis\Helpers;
 
 class SetIntersection extends Command {
     public function getId() {
@@ -10,7 +10,7 @@ class SetIntersection extends Command {
     }
 
     public function filterArguments(Array $arguments) {
-        return Utils::filterArrayArguments($arguments);
+        return Helpers::filterArrayArguments($arguments);
     }
 
     protected function canBeHashed() {

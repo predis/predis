@@ -2,7 +2,7 @@
 
 namespace Predis\Protocols;
 
-use Predis\Utils;
+use Predis\Helpers;
 use Predis\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
@@ -48,6 +48,6 @@ class TextResponseReader implements IResponseReader {
     }
 
     private function protocolError(IConnectionComposable $connection, $message) {
-        Utils::onCommunicationException(new ProtocolException($connection, $message));
+        Helpers::onCommunicationException(new ProtocolException($connection, $message));
     }
 }

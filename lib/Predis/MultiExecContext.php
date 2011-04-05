@@ -14,7 +14,7 @@ class MultiExecContext {
     }
 
     private function checkCapabilities(Client $client) {
-        if (Utils::isCluster($client->getConnection())) {
+        if (Helpers::isCluster($client->getConnection())) {
             throw new ClientException(
                 'Cannot initialize a MULTI/EXEC context over a cluster of connections'
             );
@@ -221,7 +221,7 @@ class MultiExecContext {
         // Since a MULTI/EXEC block cannot be initialized over a clustered
         // connection, we can safely assume that Predis\Client::getConnection()
         // will always return an instance of Predis\Network\IConnectionSingle.
-        Utils::onCommunicationException(new ProtocolException(
+        Helpers::onCommunicationException(new ProtocolException(
             $this->_client->getConnection(), $message
         ));
     }
