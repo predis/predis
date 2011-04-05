@@ -73,11 +73,11 @@ abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
     }
 
     public function createCommand($method, $arguments = array()) {
-        if (isset($this->_preprocessor)) {
-            $this->_preprocessor->process($method, $arguments);
-        }
         if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
+        }
+        if (isset($this->_preprocessor)) {
+            $this->_preprocessor->process($method, $arguments);
         }
         $commandClass = $this->_registeredCommands[$method];
         $command = new $commandClass();
