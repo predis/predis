@@ -47,6 +47,12 @@ class PreprocessorChain implements ICommandPreprocessorChain, \ArrayAccess {
     }
 
     public function offsetSet($index, $preprocessor) {
+        if (!$preprocessor instanceof ICommandPreprocessor) {
+            throw new \InvalidArgumentException(
+                'A preprocessor chain can hold only instances of classes implementing '.
+                'the Predis\Commands\Preprocessors\ICommandPreprocessor interface'
+            );
+        }
         $this->_preprocessors[$index] = $preprocessor;
     }
 
