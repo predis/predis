@@ -157,19 +157,20 @@ class Client {
     }
 
     private function sharedInitializer($argv, $initializer) {
-        $argc = count($argv);
-        if ($argc === 0) {
-            return $this->$initializer();
+        switch (count($argv)) {
+            case 0:
+                return $this->$initializer();
+            case 1:
+                list($arg0) = $argv;
+                return is_array($arg0)
+                    ? $this->$initializer($arg0)
+                    : $this->$initializer(null, $arg0);
+            case 2:
+                list($arg0, $arg1) = $argv;
+                return $this->$initializer($arg0, $arg1);
+            default:
+                return $this->$initializer($this, $argv);
         }
-        else if ($argc === 1) {
-            list($arg0) = $argv;
-            return is_array($arg0) ? $this->$initializer($arg0) : $this->$initializer(null, $arg0);
-        }
-        else if ($argc === 2) {
-            list($arg0, $arg1) = $argv;
-            return $this->$initializer($arg0, $arg1);
-        }
-        return $this->$initializer($this, $arguments);
     }
 
     public function pipeline(/* arguments */) {
