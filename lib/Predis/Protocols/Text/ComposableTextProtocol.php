@@ -1,8 +1,11 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocols\Text;
 
 use Predis\Commands\ICommand;
+use Predis\Protocols\IResponseReader;
+use Predis\Protocols\ICommandSerializer;
+use Predis\Protocols\IProtocolProcessorExtended;
 use Predis\Network\IConnectionComposable;
 
 class ComposableTextProtocol implements IProtocolProcessorExtended {

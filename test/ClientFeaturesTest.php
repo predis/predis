@@ -164,7 +164,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testResponseQueued() {
         $response = new \Predis\ResponseQueued();
         $this->assertTrue($response->queued);
-        $this->assertEquals(\Predis\Protocols\TextProtocol::QUEUED, (string)$response);
+        $this->assertEquals(\Predis\Protocols\Text\TextProtocol::QUEUED, (string)$response);
     }
 
 
@@ -280,27 +280,27 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     /* Predis\Protocols\TextResponseReader */
 
     function testResponseReader_OptionIterableMultiBulkReplies() {
-        $protocol = new Predis\Protocols\ComposableTextProtocol();
+        $protocol = new Predis\Protocols\Text\ComposableTextProtocol();
         $reader = $protocol->getReader();
         $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK,
-            new \Predis\Protocols\ResponseMultiBulkHandler()
+            \Predis\Protocols\Text\TextProtocol::PREFIX_MULTI_BULK,
+            new \Predis\Protocols\Text\ResponseMultiBulkHandler()
         );
         $connection->writeBytes("KEYS *\r\n");
         $this->assertInternalType('array', $reader->read($connection));
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_MULTI_BULK, 
-            new \Predis\Protocols\ResponseMultiBulkStreamHandler()
+            \Predis\Protocols\Text\TextProtocol::PREFIX_MULTI_BULK,
+            new \Predis\Protocols\Text\ResponseMultiBulkStreamHandler()
         );
         $connection->writeBytes("KEYS *\r\n");
         $this->assertInstanceOf('\Iterator', $reader->read($connection));
     }
 
     function testResponseReader_OptionExceptionOnError() {
-        $protocol = new Predis\Protocols\ComposableTextProtocol();
+        $protocol = new Predis\Protocols\Text\ComposableTextProtocol();
         $reader = $protocol->getReader();
         $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
 
@@ -309,8 +309,8 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $reader->read($connection);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_ERROR,
-            new \Predis\Protocols\ResponseErrorSilentHandler()
+            \Predis\Protocols\Text\TextProtocol::PREFIX_ERROR,
+            new \Predis\Protocols\Text\ResponseErrorSilentHandler()
         );
         $connection->writeBytes($rawCmdUnexpected);
         $errorReply = $reader->read($connection);
@@ -318,8 +318,8 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
 
         $reader->setHandler(
-            \Predis\Protocols\TextProtocol::PREFIX_ERROR,
-            new \Predis\Protocols\ResponseErrorHandler()
+            \Predis\Protocols\Text\TextProtocol::PREFIX_ERROR,
+            new \Predis\Protocols\Text\ResponseErrorHandler()
         );
         RC::testForServerException($this, RC::EXCEPTION_WRONG_TYPE, function()
             use ($connection, $rawCmdUnexpected) {
@@ -330,7 +330,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     }
 
     function testResponseReader_EmptyBulkResponse() {
-        $protocol = new \Predis\Protocols\ComposableTextProtocol();
+        $protocol = new \Predis\Protocols\Text\ComposableTextProtocol();
         $connection = new \Predis\Network\ComposableStreamConnection(RC::getConnectionParameters(), $protocol);
         $client = new \Predis\Client($connection);
 

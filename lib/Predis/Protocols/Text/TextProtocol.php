@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocols\Text;
 
 use Predis\Helpers;
 use Predis\ResponseError;
@@ -8,6 +8,7 @@ use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\ProtocolException;
 use Predis\Commands\ICommand;
+use Predis\Protocols\IProtocolProcessor;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
