@@ -8,6 +8,7 @@ class ServerVersionNext extends ServerVersion22 {
         return array_merge(parent::getSupportedCommands(), array(
             /* remote server control commands */
             'info'                  => '\Predis\Commands\InfoV24x',
+            'object'                => '\Predis\Commands\DebugObject',
         ));
     }
 }

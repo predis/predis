@@ -10,4 +10,4 @@
   as it does not cover all of its features.
 
 * Missing tests for commands:
-    PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE
+    PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE, DEBUG, OBJECT
