@@ -176,6 +176,9 @@ class ServerVersion22 extends ServerProfile {
 
             /* commands operating on sorted sets */
             'zrevrangebyscore'          => '\Predis\Commands\ZSetReverseRangeByScore',
+
+            /* remote server control commands */
+            'object'                => '\Predis\Commands\DebugObject',
         );
     }
 }
