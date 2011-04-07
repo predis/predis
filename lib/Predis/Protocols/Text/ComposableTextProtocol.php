@@ -5,10 +5,10 @@ namespace Predis\Protocols\Text;
 use Predis\Commands\ICommand;
 use Predis\Protocols\IResponseReader;
 use Predis\Protocols\ICommandSerializer;
-use Predis\Protocols\IProtocolProcessorExtended;
+use Predis\Protocols\IComposableProtocolProcessor;
 use Predis\Network\IConnectionComposable;
 
-class ComposableTextProtocol implements IProtocolProcessorExtended {
+class ComposableTextProtocol implements IComposableProtocolProcessor {
     private $_serializer, $_reader;
 
     public function __construct(Array $options = array()) {
