@@ -1,8 +1,9 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocols\Text;
 
 use Predis\Commands\ICommand;
+use Predis\Protocols\ICommandSerializer;
 
 class TextCommandSerializer implements ICommandSerializer {
     public function serialize(ICommand $command) {

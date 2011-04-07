@@ -6,7 +6,7 @@ use Predis\IConnectionParameters;
 use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 use Predis\Protocols\IProtocolProcessor;
-use Predis\Protocols\TextProtocol;
+use Predis\Protocols\Text\TextProtocol;
 
 class ComposableStreamConnection extends StreamConnection implements IConnectionComposable {
     private $_protocol;

@@ -1,8 +1,9 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocols\Text;
 
 use Predis\ResponseQueued;
+use Predis\Protocols\IResponseHandler;
 use Predis\Network\IConnectionComposable;
 
 class ResponseStatusHandler implements IResponseHandler {

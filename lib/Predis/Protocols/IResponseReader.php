@@ -2,7 +2,8 @@
 
 namespace Predis\Protocols;
 
+use Predis\Network\IConnectionComposable;
+
 interface IResponseReader {
-    public function setHandler($prefix, IResponseHandler $handler);
-    public function getHandler($prefix);
+    public function read(IConnectionComposable $connection);
 }

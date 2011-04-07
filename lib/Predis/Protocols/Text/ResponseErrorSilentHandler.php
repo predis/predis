@@ -1,8 +1,9 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocols\Text;
 
 use Predis\ResponseError;
+use Predis\Protocols\IResponseHandler;
 use Predis\Network\IConnectionComposable;
 
 class ResponseErrorSilentHandler implements IResponseHandler {
