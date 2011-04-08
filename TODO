@@ -1,5 +1,8 @@
 * Update the CHANGELOG before releasing v0.7.0 (it is completely out of sync).
 
+* Implement a client option to let users specify a prefix for keys, or a custom
+  strategy used for key prefixing.
+
 * Implement smart and transparent support for redis-cluster.
 
 * The internals of Predis\MultiExecContext should be refactored since the code
