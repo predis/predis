@@ -60,7 +60,7 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        $connection = $this->_connectionFactory->newConnection($parameters);
+        $connection = $this->_connectionFactory->create($parameters);
         $this->pushInitCommands($connection);
         return $connection;
     }

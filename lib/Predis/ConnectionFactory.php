@@ -40,7 +40,7 @@ class ConnectionFactory implements IConnectionFactory {
         self::$_globalSchemes[$scheme] = $connectionClass;
     }
 
-    public function newConnection($parameters) {
+    public function create($parameters) {
         if (!$parameters instanceof IConnectionParameters) {
             $parameters = new ConnectionParameters($parameters);
         }
@@ -59,13 +59,13 @@ class ConnectionFactory implements IConnectionFactory {
         return new $connection($parameters);
     }
 
-    public function newConnectionByScheme($scheme, $parameters = array()) {
+    public function createByScheme($scheme, $parameters = array()) {
         if ($parameters instanceof IConnectionParameters) {
             $parameters = $parameters->toArray();
         }
         if (is_array($parameters)) {
             $parameters['scheme'] = $scheme;
-            return $this->newConnection($parameters);
+            return $this->create($parameters);
         }
         throw new \InvalidArgumentException("Invalid type for connection parameters");
     }
