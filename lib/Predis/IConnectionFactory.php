@@ -2,6 +2,6 @@
 
 namespace Predis;
 
-interface IConnectionSchemes {
+interface IConnectionFactory {
     public function newConnection($parameters);
 }

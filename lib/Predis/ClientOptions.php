@@ -24,14 +24,14 @@ class ClientOptions {
             'key_distribution' => new ClientKeyDistribution(),
             'connections' => new CustomOption(array(
                 'default'  => function() {
-                    return new ConnectionSchemes();
+                    return new ConnectionFactory();
                 },
                 'validate' => function($value) {
-                    if ($value instanceof IConnectionSchemes) {
+                    if ($value instanceof IConnectionFactory) {
                         return $value;
                     }
                     if (is_array($value)) {
-                        return new ConnectionSchemes($value);
+                        return new ConnectionFactory($value);
                     }
                 },
             )),

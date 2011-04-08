@@ -11,13 +11,13 @@ use Predis\Profiles\IServerProfile;
 
 class Client {
     const VERSION = '0.7.0-dev';
-    private $_options, $_schemes, $_profile, $_connection;
+    private $_options, $_connectionFactory, $_profile, $_connection;
 
     public function __construct($parameters = null, $options = null) {
         $options = $this->filterOptions($options ?: new ClientOptions());
         $this->_options = $options;
         $this->_profile = $options->profile;
-        $this->_schemes = $options->connections;
+        $this->_connectionFactory = $options->connections;
         $this->_connection = $this->initializeConnection($parameters);
     }
 
@@ -60,7 +60,7 @@ class Client {
     }
 
     private function createConnection($parameters) {
-        $connection = $this->_schemes->newConnection($parameters);
+        $connection = $this->_connectionFactory->newConnection($parameters);
         $this->pushInitCommands($connection);
         return $connection;
     }
@@ -87,8 +87,8 @@ class Client {
         return $this->_options;
     }
 
-    public function getSchemes() {
-        return $this->_schemes;
+    public function getConnectionFactory() {
+        return $this->_connectionFactory;
     }
 
     public function getClientFor($connectionAlias) {

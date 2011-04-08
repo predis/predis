@@ -2,7 +2,7 @@
 
 namespace Predis;
 
-class ConnectionSchemes implements IConnectionSchemes {
+class ConnectionFactory implements IConnectionFactory {
     private static $_globalSchemes;
     private $_instanceSchemes = array();
 
