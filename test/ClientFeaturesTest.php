@@ -65,13 +65,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $cmdArgs = array('key1', 'key2', 'key3');
 
         $cmd = new \Predis\Commands\GetMultiple();
-        $cmd->setArgumentsArray($cmdArgs);
-        $this->assertEquals($cmdArgs[0], $cmd->getArgument(0));
-        $this->assertEquals($cmdArgs[1], $cmd->getArgument(1));
-        $this->assertEquals($cmdArgs[2], $cmd->getArgument(2));
-
-        $cmd = new \Predis\Commands\GetMultiple();
-        $cmd->setArguments('key1', 'key2', 'key3');
+        $cmd->setArguments($cmdArgs);
         $this->assertEquals($cmdArgs[0], $cmd->getArgument(0));
         $this->assertEquals($cmdArgs[1], $cmd->getArgument(1));
         $this->assertEquals($cmdArgs[2], $cmd->getArgument(2));

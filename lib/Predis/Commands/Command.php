@@ -12,12 +12,7 @@ abstract class Command implements ICommand {
         return $arguments;
     }
 
-    public function setArguments(/* arguments */) {
-        $this->_arguments = $this->filterArguments(func_get_args());
-        unset($this->_hash);
-    }
-
-    public function setArgumentsArray(Array $arguments) {
+    public function setArguments(Array $arguments) {
         $this->_arguments = $this->filterArguments($arguments);
         unset($this->_hash);
     }

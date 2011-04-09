@@ -81,7 +81,7 @@ abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
         }
         $commandClass = $this->_registeredCommands[$method];
         $command = new $commandClass();
-        $command->setArgumentsArray($arguments);
+        $command->setArguments($arguments);
         return $command;
     }
 
