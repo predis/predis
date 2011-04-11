@@ -14,7 +14,7 @@ class Client {
     private $_options, $_connectionFactory, $_profile, $_connection;
 
     public function __construct($parameters = null, $options = null) {
-        $options = $this->filterOptions($options ?: new ClientOptions());
+        $options = $this->filterOptions($options);
         $this->_options = $options;
         $this->_profile = $options->profile;
         $this->_connectionFactory = $options->connections;
@@ -22,6 +22,9 @@ class Client {
     }
 
     private function filterOptions($options) {
+        if ($options === null) {
+            return new ClientOptions();
+        }
         if ($options instanceof ClientOptions) {
             return $options;
         }
