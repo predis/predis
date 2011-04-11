@@ -58,15 +58,4 @@ class ConnectionFactory implements IConnectionFactory {
 
         return new $connection($parameters);
     }
-
-    public function createByScheme($scheme, $parameters = array()) {
-        if ($parameters instanceof IConnectionParameters) {
-            $parameters = $parameters->toArray();
-        }
-        if (is_array($parameters)) {
-            $parameters['scheme'] = $scheme;
-            return $this->create($parameters);
-        }
-        throw new \InvalidArgumentException("Invalid type for connection parameters");
-    }
 }
