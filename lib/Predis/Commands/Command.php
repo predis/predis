@@ -57,7 +57,7 @@ abstract class Command implements ICommand {
         return true;
     }
 
-    public function getHash(IDistributionStrategy $distributor) {
+    public function getHash(INodeKeyGenerator $distributor) {
         if (isset($this->_hash)) {
             return $this->_hash;
         }

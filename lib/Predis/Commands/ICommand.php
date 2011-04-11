@@ -2,11 +2,11 @@
 
 namespace Predis\Commands;
 
-use Predis\Distribution\IDistributionStrategy;
+use Predis\Distribution\INodeKeyGenerator;
 
 interface ICommand {
     public function getId();
-    public function getHash(IDistributionStrategy $distributor);
+    public function getHash(INodeKeyGenerator $distributor);
     public function setArguments(Array $arguments);
     public function getArguments();
     public function parseResponse($data);
