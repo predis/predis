@@ -37,7 +37,7 @@ class Client {
         throw new \InvalidArgumentException("Invalid type for client options");
     }
 
-    private function initializeConnection($parameters = null) {
+    private function initializeConnection($parameters) {
         if ($parameters === null) {
             return $this->createConnection(new ConnectionParameters());
         }
