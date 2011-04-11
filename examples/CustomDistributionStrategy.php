@@ -5,9 +5,9 @@ require_once 'SharedConfigurations.php';
 // to distribute keys among a cluster of servers simply by creating a class
 // that implements the Predis\Distribution\IDistributionStrategy interface.
 
-class NaiveDistributionStrategy
-    implements Predis\Distribution\IDistributionStrategy {
+use Predis\Distribution\IDistributionStrategy;
 
+class NaiveDistributionStrategy implements IDistributionStrategy {
     private $_nodes, $_nodesCount;
 
     public function __constructor() {
