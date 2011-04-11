@@ -95,14 +95,7 @@ class Client {
     }
 
     public function getClientFor($connectionAlias) {
-        if (!Helpers::isCluster($this->_connection)) {
-            throw new ClientException(
-                'This method is supported only when the client is connected to a cluster of connections'
-            );
-        }
-
-        $connection = $this->_connection->getConnectionById($connectionAlias);
-        if ($connection === null) {
+        if (($connection = $this->getConnection($connectionAlias)) === null) {
             throw new \InvalidArgumentException(
                 "Invalid connection alias: '$connectionAlias'"
             );
@@ -127,12 +120,16 @@ class Client {
     }
 
     public function getConnection($id = null) {
-        if ($id === null) {
-            return $this->_connection;
+        if (isset($id)) {
+            if (!Helpers::isCluster($this->_connection)) {
+                throw new ClientException(
+                    'Retrieving connections by alias is supported '.
+                    'only with clustered connections'
+                );
+            }
+            return $this->_connection->getConnectionById($id);
         }
-        $connection = $this->_connection;
-        $isCluster = Helpers::isCluster($connection);
-        return $isCluster ? $connection->getConnectionById($id) : $connection;
+        return $this->_connection;
     }
 
     public function __call($method, $arguments) {
