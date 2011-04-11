@@ -36,9 +36,8 @@ class PubSubContext implements \Iterator {
                 'Cannot initialize a PUB/SUB context over a cluster of connections'
             );
         }
-        $profile = $client->getProfile();
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
-        if ($profile->supportsCommands($commands) === false) {
+        if ($client->getProfile()->supportsCommands($commands) === false) {
             throw new ClientException(
                 'The current profile does not support PUB/SUB related commands'
             );
@@ -67,7 +66,6 @@ class PubSubContext implements \Iterator {
     public function psubscribe(/* arguments */) {
         $this->writeCommand(self::PSUBSCRIBE, func_get_args());
         $this->_statusFlags |= self::STATUS_PSUBSCRIBED;
-
     }
 
     public function punsubscribe(/* arguments */) {
@@ -113,9 +111,10 @@ class PubSubContext implements \Iterator {
     }
 
     public function valid() {
-        $subscriptions = self::STATUS_SUBSCRIBED + self::STATUS_PSUBSCRIBED;
-        return $this->isFlagSet(self::STATUS_VALID) 
-            && ($this->_statusFlags & $subscriptions) > 0;
+        $isValid = $this->isFlagSet(self::STATUS_VALID);
+        $subscriptionFlags = self::STATUS_SUBSCRIBED + self::STATUS_PSUBSCRIBED;
+        $hasSubscriptions = ($this->_statusFlags & $subscriptionFlags) > 0;
+        return $isValid && $hasSubscriptions;
     }
 
     private function invalidate() {
