@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-use Predis\Distribution\IDistributionStrategy;
+use Predis\Distribution\INodeKeyGenerator;
 
 abstract class Command implements ICommand {
     private $_hash;
