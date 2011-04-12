@@ -46,7 +46,8 @@ class Client {
         }
         if (is_array($parameters)) {
             if (isset($parameters[0])) {
-                $cluster = new ConnectionCluster($this->_options->key_distribution);
+                $clusterClass = $this->_options->cluster;
+                $cluster = new $clusterClass($this->_options->key_distribution);
                 foreach ($parameters as $single) {
                     $cluster->add($single instanceof IConnectionSingle
                         ? $single : $this->createConnection($single)

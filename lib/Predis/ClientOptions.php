@@ -4,6 +4,7 @@ namespace Predis;
 
 use Predis\Options\IOption;
 use Predis\Options\ClientProfile;
+use Predis\Options\ClientClusterType;
 use Predis\Options\ClientKeyDistribution;
 use Predis\Options\ClientConnectionFactory;
 
@@ -23,6 +24,7 @@ class ClientOptions {
             'profile' => new ClientProfile(),
             'key_distribution' => new ClientKeyDistribution(),
             'connections' => new ClientConnectionFactory(),
+            'cluster' => new ClientClusterType(),
         );
         return self::$_sharedOptions;
     }
