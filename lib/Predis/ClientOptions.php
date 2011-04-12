@@ -3,9 +3,9 @@
 namespace Predis;
 
 use Predis\Options\IOption;
-use Predis\Options\CustomOption;
 use Predis\Options\ClientProfile;
 use Predis\Options\ClientKeyDistribution;
+use Predis\Options\ClientConnectionFactory;
 
 class ClientOptions {
     private $_handlers, $_options;
@@ -22,19 +22,7 @@ class ClientOptions {
         self::$_sharedOptions = array(
             'profile' => new ClientProfile(),
             'key_distribution' => new ClientKeyDistribution(),
-            'connections' => new CustomOption(array(
-                'default'  => function() {
-                    return new ConnectionFactory();
-                },
-                'validate' => function($value) {
-                    if ($value instanceof IConnectionFactory) {
-                        return $value;
-                    }
-                    if (is_array($value)) {
-                        return new ConnectionFactory($value);
-                    }
-                },
-            )),
+            'connections' => new ClientConnectionFactory(),
         );
         return self::$_sharedOptions;
     }
