@@ -10,6 +10,9 @@ class ServerVersionNext extends ServerVersion22 {
             'rpush'                 => '\Predis\Commands\ListPushTailV24x',
             'lpush'                 => '\Predis\Commands\ListPushHeadV24x',
 
+            /* commands operating on sets */
+            'sadd'                      => '\Predis\Commands\SetAddV24x',
+
             /* remote server control commands */
             'info'                  => '\Predis\Commands\InfoV24x',
         ));
