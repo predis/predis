@@ -2,6 +2,7 @@
 
 namespace Predis\Commands;
 
+use Predis\Helpers;
 use Predis\Distribution\INodeKeyGenerator;
 
 abstract class Command implements ICommand {
@@ -31,24 +32,13 @@ abstract class Command implements ICommand {
         return isset($this->_arguments[0]);
     }
 
-    protected function getHashablePart($key) {
-        $start = strpos($key, '{');
-        if ($start !== false) {
-            $end = strpos($key, '}', $start);
-            if ($end !== false) {
-                $key = substr($key, ++$start, $end - $start);
-            }
-        }
-        return $key;
-    }
-
     protected function checkSameHashForKeys(Array $keys) {
         if (($count = count($keys)) === 0) {
             return false;
         }
-        $currentKey = $this->getHashablePart($keys[0]);
+        $currentKey = Helpers::getKeyHashablePart($keys[0]);
         for ($i = 1; $i < $count; $i++) {
-            $nextKey = $this->getHashablePart($keys[$i]);
+            $nextKey = Helpers::getKeyHashablePart($keys[$i]);
             if ($currentKey !== $nextKey) {
                 return false;
             }
@@ -62,7 +52,7 @@ abstract class Command implements ICommand {
             return $this->_hash;
         }
         if ($this->canBeHashed()) {
-            $key = $this->getHashablePart($this->_arguments[0]);
+            $key = Helpers::getKeyHashablePart($this->_arguments[0]);
             $this->_hash = $distributor->generateKey($key);
             return $this->_hash;
         }

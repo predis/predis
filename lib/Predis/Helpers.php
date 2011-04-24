@@ -33,4 +33,15 @@ class Helpers {
         }
         return $arguments;
     }
+
+    public static function getKeyHashablePart($key) {
+        $start = strpos($key, '{');
+        if ($start !== false) {
+            $end = strpos($key, '}', $start);
+            if ($end !== false) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+        return $key;
+    }
 }
