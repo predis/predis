@@ -11,8 +11,7 @@ $redis  = new Predis\Client($single_server + array('read_write_timeout' => 0));
 $pubsub = $redis->pubSubContext();
 
 // Subscribe to your channels
-$pubsub->subscribe('control_channel');
-$pubsub->subscribe('notifications');
+$pubsub->subscribe('control_channel', 'notifications');
 
 // Start processing the pubsup messages. Open a terminal and use redis-cli
 // to push messages to the channels. Examples:
