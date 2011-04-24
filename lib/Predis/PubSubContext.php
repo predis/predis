@@ -84,9 +84,7 @@ class PubSubContext implements \Iterator {
     }
 
     private function writeCommand($method, $arguments) {
-        if (count($arguments) === 1 && is_array($arguments[0])) {
-            $arguments = $arguments[0];
-        }
+        $arguments = Helpers::filterArrayArguments($arguments);
         $command = $this->_client->createCommand($method, $arguments);
         $this->_client->getConnection()->writeCommand($command);
     }
