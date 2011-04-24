@@ -2,6 +2,7 @@
 
 namespace Predis\Network;
 
+use Predis\Helpers;
 use Predis\ClientException;
 use Predis\Commands\ICommand;
 use Predis\Distribution\IDistributionStrategy;
@@ -59,6 +60,12 @@ class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {
     public function getConnectionById($id = null) {
         $alias = $id ?: 0;
         return isset($this->_pool[$alias]) ? $this->_pool[$alias] : null;
+    }
+
+    public function getConnectionByKey($key) {
+        $hashablePart = Helpers::getKeyHashablePart($key);
+        $keyHash = $this->_distributor->generateKey($hashablePart);
+        return $this->_distributor->get($keyHash);
     }
 
     public function getIterator() {
