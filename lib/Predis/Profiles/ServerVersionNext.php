@@ -12,6 +12,7 @@ class ServerVersionNext extends ServerVersion22 {
 
             /* commands operating on sets */
             'sadd'                      => '\Predis\Commands\SetAddV24x',
+            'srem'                      => '\Predis\Commands\SetRemoveV24x',
 
             /* commands operating on hashes */
             'hdel'                      => '\Predis\Commands\HashDeleteV24x',
