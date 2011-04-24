@@ -2049,15 +2049,9 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $masterPort = 80;
 
         $this->assertTrue($this->redis->slaveof($masterHost, $masterPort));
-        $serverInfo = $this->redis->info();
-        $this->assertEquals('slave', $serverInfo['role']);
-        $this->assertEquals($masterHost, $serverInfo['master_host']);
-        $this->assertEquals($masterPort, $serverInfo['master_port']);
 
         // slave of NO ONE, the implicit way
         $this->assertTrue($this->redis->slaveof());
-        $serverInfo = $this->redis->info();
-        $this->assertEquals('master', $serverInfo['role']);
 
         // slave of NO ONE, the explicit way
         $this->assertTrue($this->redis->slaveof('NO ONE'));
