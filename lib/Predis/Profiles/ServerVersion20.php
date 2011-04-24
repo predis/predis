@@ -94,6 +94,7 @@ class ServerVersion20 extends ServerProfile {
             /* remote server control commands */
             'info'                      => '\Predis\Commands\Info',
             'slaveof'                   => '\Predis\Commands\SlaveOf',
+            'monitor'                   => '\Predis\Commands\Monitor',
 
             /* persistence control commands */
             'save'                      => '\Predis\Commands\Save',

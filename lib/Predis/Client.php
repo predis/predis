@@ -214,4 +214,8 @@ class Client {
     public function pubSubContext(Array $options = null) {
         return new PubSubContext($this, $options);
     }
+
+    public function monitor() {
+        return new MonitorContext($this);
+    }
 }
