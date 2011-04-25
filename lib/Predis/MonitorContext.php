@@ -60,10 +60,21 @@ class MonitorContext implements \Iterator {
     }
 
     private function getValue() {
+        $database = 0;
         $event = $this->_client->getConnection()->read();
+
+        $callback = function($matches) use (&$database) {
+            if (isset($matches[1])) {
+                $database = (int) $matches[1];
+            }
+            return ' ';
+        };
+        $event = preg_replace_callback('/ \(db (\d+)\) /', $callback, $event, 1);
+
         @list($timestamp, $command, $arguments) = split(' ', $event, 3);
         return (object) array(
             'timestamp' => (float) $timestamp,
+            'database'  => $database,
             'command'   => substr($command, 1, -1),
             'arguments' => $arguments ?: '',
         );
