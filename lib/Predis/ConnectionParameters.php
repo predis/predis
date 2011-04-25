@@ -121,7 +121,7 @@ class ConnectionParameters implements IConnectionParameters {
         return isset($this->_parameters[$parameter]);
     }
 
-    public function setByUser($parameter) {
+    public function isSetByUser($parameter) {
         return in_array($parameter, $this->_userDefined);
     }
 
