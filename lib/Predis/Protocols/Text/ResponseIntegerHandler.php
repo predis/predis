@@ -3,6 +3,7 @@
 namespace Predis\Protocols\Text;
 
 use Predis\Helpers;
+use Predis\ProtocolException;
 use Predis\Protocols\IResponseHandler;
 use Predis\Network\IConnectionComposable;
 
