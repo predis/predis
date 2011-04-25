@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 use Predis\ConnectionParameters;
 use Predis\Commands\ICommand;
@@ -66,4 +67,3 @@ Array
     [7] => INFO <- 127.0.0.1:6379 [0.0025s]
 )
 */
-?>

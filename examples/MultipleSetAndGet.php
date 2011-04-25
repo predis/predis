@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 // redis can set keys and their relative values in one go
 // using MSET, then the same values can be retrieved with
@@ -26,4 +27,3 @@ Array
     [2] => Third user
 )
 */
-?>

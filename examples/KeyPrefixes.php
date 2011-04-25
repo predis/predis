@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 // Predis ships with a KeyPrefixPreprocessor class that is used to transparently
 // prefix each key before sending commands to Redis, even for complex commands
@@ -28,4 +29,3 @@ array(2) {
   [1]=> string(7) "nrk:lol"
 }
 */
-?>

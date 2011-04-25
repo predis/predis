@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 /*
 This is an implementation of an atomic client-side ZPOP using the support for
@@ -38,4 +39,3 @@ function zpop($client, $zsetKey) {
 $redis = new Predis\Client($single_server, 'dev');
 $zpopped = zpop($redis, 'zset');
 echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", "\n";
-?>

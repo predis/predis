@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 // Developers can customize the distribution strategy used by the client
 // to distribute keys among a cluster of servers simply by creating a class
@@ -57,4 +58,3 @@ $server2 = $redis->getClientFor('second')->info();
 printf("Server '%s' has %d keys while server '%s' has %d keys.\n",
     'first', $server1['db15']['keys'], 'second', $server2['db15']['keys']
 );
-?>

@@ -1,5 +1,6 @@
 <?php
-require_once 'SharedConfigurations.php';
+
+require 'SharedConfigurations.php';
 
 // Redis 2.0 features new commands that allow clients to subscribe for
 // events published on certain channels (PUBSUB).
@@ -48,4 +49,3 @@ unset($pubsub);
 // Say goodbye :-)
 $info = $redis->info();
 print_r("Goodbye from Redis v{$info['redis_version']}!\n");
-?>
