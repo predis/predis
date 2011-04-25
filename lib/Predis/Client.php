@@ -185,8 +185,8 @@ class Client {
                 $connection = $this->_connection;
                 $pipeline = new PipelineContext($this,
                     Helpers::isCluster($connection)
-                        ? new Pipeline\SafeClusterExecutor($connection)
-                        : new Pipeline\SafeExecutor($connection)
+                        ? new Pipeline\SafeClusterExecutor()
+                        : new Pipeline\SafeExecutor()
                 );
             }
             else {
