@@ -8,39 +8,32 @@ class ServerVersion12 extends ServerProfile {
         return array(
             /* ---------------- Redis 1.2 ---------------- */
 
-            /* miscellaneous commands */
-            'ping'                      => '\Predis\Commands\Ping',
-            'echo'                      => '\Predis\Commands\DoEcho',
-            'auth'                      => '\Predis\Commands\Auth',
-
-            /* connection handling */
-            'quit'                      => '\Predis\Commands\Quit',
+            /* commands operating on the key space */
+            'exists'                    => '\Predis\Commands\KeyExists',
+            'del'                       => '\Predis\Commands\KeyDelete',
+            'type'                      => '\Predis\Commands\KeyType',
+            'keys'                      => '\Predis\Commands\KeyKeysV12x',
+            'randomkey'                 => '\Predis\Commands\KeyRandom',
+            'rename'                    => '\Predis\Commands\KeyRename',
+            'renamenx'                  => '\Predis\Commands\KeyRenamePreserve',
+            'expire'                    => '\Predis\Commands\KeyExpire',
+            'expireat'                  => '\Predis\Commands\KeyExpireAt',
+            'ttl'                       => '\Predis\Commands\KeyTimeToLive',
+            'move'                      => '\Predis\Commands\KeyMove',
+            'sort'                      => '\Predis\Commands\KeySort',
 
             /* commands operating on string values */
-            'set'                       => '\Predis\Commands\Set',
-            'setnx'                     => '\Predis\Commands\SetPreserve',
-            'mset'                      => '\Predis\Commands\SetMultiple',
-            'msetnx'                    => '\Predis\Commands\SetMultiplePreserve',
-            'get'                       => '\Predis\Commands\Get',
-            'mget'                      => '\Predis\Commands\GetMultiple',
-            'getset'                    => '\Predis\Commands\GetSet',
-            'incr'                      => '\Predis\Commands\Increment',
-            'incrby'                    => '\Predis\Commands\IncrementBy',
-            'decr'                      => '\Predis\Commands\Decrement',
-            'decrby'                    => '\Predis\Commands\DecrementBy',
-            'exists'                    => '\Predis\Commands\Exists',
-            'del'                       => '\Predis\Commands\Delete',
-            'type'                      => '\Predis\Commands\Type',
-
-            /* commands operating on the key space */
-            'keys'                      => '\Predis\Commands\KeysV12x',
-            'randomkey'                 => '\Predis\Commands\RandomKey',
-            'rename'                    => '\Predis\Commands\Rename',
-            'renamenx'                  => '\Predis\Commands\RenamePreserve',
-            'expire'                    => '\Predis\Commands\Expire',
-            'expireat'                  => '\Predis\Commands\ExpireAt',
-            'dbsize'                    => '\Predis\Commands\DatabaseSize',
-            'ttl'                       => '\Predis\Commands\TimeToLive',
+            'set'                       => '\Predis\Commands\StringSet',
+            'setnx'                     => '\Predis\Commands\StringSetPreserve',
+            'mset'                      => '\Predis\Commands\StringSetMultiple',
+            'msetnx'                    => '\Predis\Commands\StringSetMultiplePreserve',
+            'get'                       => '\Predis\Commands\StringGet',
+            'mget'                      => '\Predis\Commands\StringGetMultiple',
+            'getset'                    => '\Predis\Commands\StringGetSet',
+            'incr'                      => '\Predis\Commands\StringIncrement',
+            'incrby'                    => '\Predis\Commands\StringIncrementBy',
+            'decr'                      => '\Predis\Commands\StringDecrement',
+            'decrby'                    => '\Predis\Commands\StringDecrementBy',
 
             /* commands operating on lists */
             'rpush'                     => '\Predis\Commands\ListPushTail',
@@ -82,26 +75,25 @@ class ServerVersion12 extends ServerProfile {
             'zscore'                    => '\Predis\Commands\ZSetScore',
             'zremrangebyscore'          => '\Predis\Commands\ZSetRemoveRangeByScore',
 
-            /* multiple databases handling commands */
-            'select'                    => '\Predis\Commands\SelectDatabase',
-            'move'                      => '\Predis\Commands\MoveKey',
-            'flushdb'                   => '\Predis\Commands\FlushDatabase',
-            'flushall'                  => '\Predis\Commands\FlushAll',
-
-            /* sorting */
-            'sort'                      => '\Predis\Commands\Sort',
+            /* connection related commands */
+            'ping'                      => '\Predis\Commands\ConnectionPing',
+            'auth'                      => '\Predis\Commands\ConnectionAuth',
+            'select'                    => '\Predis\Commands\ConnectionSelect',
+            'echo'                      => '\Predis\Commands\ConnectionEcho',
+            'quit'                      => '\Predis\Commands\ConnectionQuit',
 
             /* remote server control commands */
-            'info'                      => '\Predis\Commands\Info',
-            'slaveof'                   => '\Predis\Commands\SlaveOf',
-            'monitor'                   => '\Predis\Commands\Monitor',
-
-            /* persistence control commands */
-            'save'                      => '\Predis\Commands\Save',
-            'bgsave'                    => '\Predis\Commands\BackgroundSave',
-            'lastsave'                  => '\Predis\Commands\LastSave',
-            'shutdown'                  => '\Predis\Commands\Shutdown',
-            'bgrewriteaof'              => '\Predis\Commands\BackgroundRewriteAppendOnlyFile',
+            'info'                      => '\Predis\Commands\ServerInfo',
+            'slaveof'                   => '\Predis\Commands\ServerSlaveOf',
+            'monitor'                   => '\Predis\Commands\ServerMonitor',
+            'dbsize'                    => '\Predis\Commands\ServerDatabaseSize',
+            'flushdb'                   => '\Predis\Commands\ServerFlushDatabase',
+            'flushall'                  => '\Predis\Commands\ServerFlushAll',
+            'save'                      => '\Predis\Commands\ServerSave',
+            'bgsave'                    => '\Predis\Commands\ServerBackgroundSave',
+            'lastsave'                  => '\Predis\Commands\ServerLastSave',
+            'shutdown'                  => '\Predis\Commands\ServerShutdown',
+            'bgrewriteaof'              => '\Predis\Commands\ServerBackgroundRewriteAOF',
         );
     }
 }

@@ -64,28 +64,28 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testCommand_TestArguments() {
         $cmdArgs = array('key1', 'key2', 'key3');
 
-        $cmd = new \Predis\Commands\GetMultiple();
+        $cmd = new \Predis\Commands\StringGetMultiple();
         $cmd->setArguments($cmdArgs);
         $this->assertEquals($cmdArgs[0], $cmd->getArgument(0));
         $this->assertEquals($cmdArgs[1], $cmd->getArgument(1));
         $this->assertEquals($cmdArgs[2], $cmd->getArgument(2));
 
-        $cmd = new \Predis\Commands\Ping();
+        $cmd = new \Predis\Commands\ConnectionPing();
         $this->assertNull($cmd->getArgument(0));
     }
 
     function testCommand_ParseResponse() {
         // default parser
-        $cmd = new \Predis\Commands\Get();
+        $cmd = new \Predis\Commands\StringGet();
         $this->assertEquals('test', $cmd->parseResponse('test'));
 
         // overridden parser (boolean)
-        $cmd = new \Predis\Commands\Exists();
+        $cmd = new \Predis\Commands\KeyExists();
         $this->assertTrue($cmd->parseResponse('1'));
         $this->assertFalse($cmd->parseResponse('0'));
 
         // overridden parser (boolean)
-        $cmd = new \Predis\Commands\Ping();
+        $cmd = new \Predis\Commands\ConnectionPing();
         $this->assertTrue($cmd->parseResponse('PONG'));
 
         // overridden parser (complex)
@@ -122,12 +122,12 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $profile = \Predis\Profiles\ServerProfile::get('2.0');
 
         $cmdNoArgs = $profile->createCommand('info');
-        $this->assertInstanceOf('\Predis\Commands\Info', $cmdNoArgs);
+        $this->assertInstanceOf('\Predis\Commands\ServerInfo', $cmdNoArgs);
         $this->assertNull($cmdNoArgs->getArgument());
 
         $args = array('key1', 'key2');
         $cmdWithArgs = $profile->createCommand('mget', $args);
-        $this->assertInstanceOf('\Predis\Commands\GetMultiple', $cmdWithArgs);
+        $this->assertInstanceOf('\Predis\Commands\StringGetMultiple', $cmdWithArgs);
         $this->assertEquals($args[0], $cmdWithArgs->getArgument()); // TODO: why?
         $this->assertEquals($args[0], $cmdWithArgs->getArgument(0));
         $this->assertEquals($args[1], $cmdWithArgs->getArgument(1));
@@ -144,7 +144,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
     function testServerProfile_CommandsRegistration() {
         $profile  = \Predis\Profiles\ServerProfile::get('1.2');
         $cmdId    = 'multi';
-        $cmdClass = '\Predis\Commands\Multi';
+        $cmdClass = '\Predis\Commands\TransactionMulti';
 
         $this->assertFalse($profile->supportsCommand($cmdId));
         $profile->defineCommand($cmdId, new $cmdClass());

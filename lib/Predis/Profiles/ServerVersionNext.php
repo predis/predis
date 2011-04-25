@@ -18,8 +18,8 @@ class ServerVersionNext extends ServerVersion22 {
             'hdel'                      => '\Predis\Commands\HashDeleteV24x',
 
             /* remote server control commands */
-            'info'                      => '\Predis\Commands\InfoV24x',
-            'client'                    => '\Predis\Commands\Client',
+            'info'                      => '\Predis\Commands\ServerInfoV24x',
+            'client'                    => '\Predis\Commands\ServerClient',
         ));
     }
 }
