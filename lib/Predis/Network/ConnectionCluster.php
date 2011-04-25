@@ -6,13 +6,14 @@ use Predis\Helpers;
 use Predis\ClientException;
 use Predis\Commands\ICommand;
 use Predis\Distribution\IDistributionStrategy;
+use Predis\Distribution\HashRing;
 
 class ConnectionCluster implements IConnectionCluster, \IteratorAggregate {
     private $_pool, $_distributor;
 
     public function __construct(IDistributionStrategy $distributor = null) {
         $this->_pool = array();
-        $this->_distributor = $distributor ?: new Distribution\HashRing();
+        $this->_distributor = $distributor ?: new HashRing();
     }
 
     public function isConnected() {

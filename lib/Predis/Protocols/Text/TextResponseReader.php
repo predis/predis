@@ -43,7 +43,7 @@ class TextResponseReader implements IResponseReader {
 
         $prefix = $header[0];
         if (!isset($this->_prefixHandlers[$prefix])) {
-            $this->throwMalformedResponse($connection, "Unknown prefix '$prefix'");
+            $this->protocolError($connection, "Unknown prefix '$prefix'");
         }
         $handler = $this->_prefixHandlers[$prefix];
         return $handler->handle($connection, substr($header, 1));
