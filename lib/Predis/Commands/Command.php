@@ -63,14 +63,19 @@ abstract class Command implements ICommand {
         return $data;
     }
 
+    protected function toStringArgumentReducer($accumulator, $argument) {
+        if (strlen($argument) > 32) {
+            $argument = substr($argument, 0, 32) . '[...]';
+        }
+        $accumulator .= " $argument";
+        return $accumulator;
+    }
+
     public function __toString() {
-        $reducer = function($acc, $arg) {
-            if (strlen($arg) > 32) {
-                $arg = substr($arg, 0, 32) . '[...]';
-            }
-            $acc .= " $arg";
-            return $acc;
-        };
-        return array_reduce($this->getArguments(), $reducer, $this->getId());
+        return array_reduce(
+            $this->getArguments(),
+            array($this, 'toStringArgumentReducer'),
+            $this->getId()
+        );
     }
 }
