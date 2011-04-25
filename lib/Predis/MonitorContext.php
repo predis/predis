@@ -76,7 +76,7 @@ class MonitorContext implements \Iterator {
             'timestamp' => (float) $timestamp,
             'database'  => $database,
             'command'   => substr($command, 1, -1),
-            'arguments' => $arguments ?: '',
+            'arguments' => $arguments,
         );
     }
 }
