@@ -7,8 +7,8 @@ class ServerVersionNext extends ServerVersion22 {
     public function getSupportedCommands() {
         return array_merge(parent::getSupportedCommands(), array(
             /* commands operating on lists */
-            'rpush'                 => '\Predis\Commands\ListPushTailV24x',
-            'lpush'                 => '\Predis\Commands\ListPushHeadV24x',
+            'rpush'                     => '\Predis\Commands\ListPushTailV24x',
+            'lpush'                     => '\Predis\Commands\ListPushHeadV24x',
 
             /* commands operating on sets */
             'sadd'                      => '\Predis\Commands\SetAddV24x',
@@ -18,8 +18,8 @@ class ServerVersionNext extends ServerVersion22 {
             'hdel'                      => '\Predis\Commands\HashDeleteV24x',
 
             /* remote server control commands */
-            'info'                  => '\Predis\Commands\InfoV24x',
-            'client'                => '\Predis\Commands\Client',
+            'info'                      => '\Predis\Commands\InfoV24x',
+            'client'                    => '\Predis\Commands\Client',
         ));
     }
 }
