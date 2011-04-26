@@ -32,13 +32,16 @@ Predis relies on the autoloading features of PHP and complies with the
 for interoperability with most of the major frameworks and libraries.
 When used in simple projects or scripts you might need to define an autoloader function:
 
-    spl_autoload_register(function($class) {
-        $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
-        if (file_exists($file)) {
-            require $file;
-            return true;
-        }
-    });
+``` php
+<?php
+spl_autoload_register(function($class) {
+    $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
+    if (file_exists($file)) {
+        require $file;
+        return true;
+    }
+});
+```
 
 You can also create a single Phar archive from the repository just by launching the _createPhar.php_ 
 script located in the _bin_ directory. The generated Phar ships with a stub that defines an autoloader 
@@ -54,21 +57,27 @@ your scripts simply by using functions such as _require_ and _include_, but this
 You don't have to specify a tcp host and port when connecting to Redis instances running on the 
 localhost on the default port:
 
-    $redis = new Predis\Client();
-    $redis->set('library', 'predis');
-    $value = $redis->get('library');
+``` php
+<?php
+$redis = new Predis\Client();
+$redis->set('library', 'predis');
+$value = $redis->get('library');
+```
 
 You can also use an URI string or an array-based dictionary to specify the connection parameters:
 
-    $redis = new Predis\Client('tcp://10.0.0.1:6379');
+``` php
+<?php
+$redis = new Predis\Client('tcp://10.0.0.1:6379');
 
-    // is equivalent to:
+// is equivalent to:
 
-    $redis = new Predis\Client(array(
-        'scheme' => 'tcp',
-        'host'   => '10.0.0.1',
-        'port'   => 6379,
-    ));
+$redis = new Predis\Client(array(
+    'scheme' => 'tcp',
+    'host'   => '10.0.0.1',
+    'port'   => 6379,
+));
+```
 
 
 ### Pipelining multiple commands to multiple instances of Redis with client-side sharding ###
@@ -78,17 +87,20 @@ in one go. Furthermore, pipelining works transparently even on aggregated connec
 in fact, supports client-side sharding of data using consistent-hashing on keys and clustered 
 connections are supported natively by the client class.
 
-    $redis = new Predis\Client(array(
-        array('host' => '10.0.0.1', 'port' => 6379),
-        array('host' => '10.0.0.2', 'port' => 6379)
-    ));
+``` php
+<?php
+$redis = new Predis\Client(array(
+    array('host' => '10.0.0.1', 'port' => 6379),
+    array('host' => '10.0.0.2', 'port' => 6379)
+));
 
-    $replies = $redis->pipeline(function($pipe) {
-        for ($i = 0; $i < 1000; $i++) {
-            $pipe->set("key:$i", str_pad($i, 4, '0', 0));
-            $pipe->get("key:$i");
-        }
-    });
+$replies = $redis->pipeline(function($pipe) {
+    for ($i = 0; $i < 1000; $i++) {
+        $pipe->set("key:$i", str_pad($i, 4, '0', 0));
+        $pipe->get("key:$i");
+    }
+});
+```
 
 
 ### Overriding standard connection classes with custom ones ###
@@ -97,13 +109,15 @@ Predis allows developers to create new connection classes to add support for new
 or override the existing ones to provide a different implementation compared to the default 
 classes. This can be obtained by subclassing the Predis\Network\IConnectionSingle interface.
 
-    class MyConnectionClass implements Predis\Network\IConnectionSingle {
-        // implementation goes here
-    }
+``` php
+<?php
+class MyConnectionClass implements Predis\Network\IConnectionSingle {
+    // implementation goes here
+}
 
-    // Let Predis automatically use your own class to handle the default TCP connection
-
-    Predis\ConnectionSchemes::define('tcp', 'MyConnectionClass');
+// Let Predis automatically use your own class to handle the default TCP connection
+Predis\ConnectionSchemes::define('tcp', 'MyConnectionClass');
+```
 
 
 You can have a look at the Predis\Network namespace for some actual code that gives a better 
@@ -119,13 +133,16 @@ its way into a stable Predis release, then you can start off by creating a new
 class that matches the command type and its behaviour and then bind it to a 
 client instance at runtime. Actually, it is easier done than said:
 
-    class BrandNewRedisCommand extends Predis\Commands\Command {
-        public function getId() { return 'NEWCMD'; }
-    }
+``` php
+<?php
+class BrandNewRedisCommand extends Predis\Commands\Command {
+    public function getId() { return 'NEWCMD'; }
+}
 
-    $redis = new Predis\Client();
-    $redis->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
-    $redis->newcmd();
+$redis = new Predis\Client();
+$redis->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
+$redis->newcmd();
+```
 
 
 ## Development ##
