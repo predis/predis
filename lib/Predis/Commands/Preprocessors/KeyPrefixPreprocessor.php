@@ -125,7 +125,7 @@ class KeyPrefixPreprocessor implements ICommandPreprocessor {
             array_fill_keys($cmdSingleKey, $this->getSingleKeyStrategy()),
             array_fill_keys($cmdMultiKeys, $this->getMultipleKeysStrategy()),
             array(
-                'blpop' => $skipLast, 'blpop' => $skipLast, 'brpoplpush' => $skipLast, 'smove' => $skipLast,
+                'blpop' => $skipLast, 'brpop' => $skipLast, 'brpoplpush' => $skipLast, 'smove' => $skipLast,
                 'mset' => $interleavedKeys, 'msetnx' => $interleavedKeys,
                 'zinterstore' => $zunionstore, 'zunionstore' => $zunionstore,
                 'sort' => $sort, 'debug' => $debug
