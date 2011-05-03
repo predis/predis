@@ -13,4 +13,12 @@ abstract class ScriptedCommand extends ServerEval {
         }
         return array_merge(array($this->getScript(), $keys), $arguments);
     }
+
+    protected function getKeys() {
+        $arguments = $this->getArguments();
+        if (($keys = $this->keysCount()) === -1) {
+            return array_slice($arguments, 2);
+        }
+        return array_slice($arguments, 2, $keys);
+    }
 }
