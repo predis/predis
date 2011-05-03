@@ -28,19 +28,6 @@ class KeyPrefixPreprocessor implements ICommandPreprocessor {
     }
 
     protected function getPrefixStrategies() {
-        $singleKey = function(&$arguments, $prefix) {
-            $arguments[0] = "$prefix{$arguments[0]}";
-        };
-
-        $multiKeys = function(&$arguments, $prefix) {
-            if (count($arguments) === 1 && is_array($arguments[0])) {
-                $arguments = &$arguments[0];
-            }
-            foreach ($arguments as &$key) {
-                $key = "$prefix$key";
-            }
-        };
-
         $skipLast = function(&$arguments, $prefix) {
             $length = count($arguments);
             for ($i = 0; $i < $length - 1; $i++) {
@@ -135,8 +122,8 @@ class KeyPrefixPreprocessor implements ICommandPreprocessor {
         );
 
         return array_merge(
-            array_fill_keys($cmdSingleKey, $singleKey),
-            array_fill_keys($cmdMultiKeys, $multiKeys),
+            array_fill_keys($cmdSingleKey, $this->getSingleKeyStrategy()),
+            array_fill_keys($cmdMultiKeys, $this->getMultipleKeysStrategy()),
             array(
                 'blpop' => $skipLast, 'blpop' => $skipLast, 'brpoplpush' => $skipLast, 'smove' => $skipLast,
                 'mset' => $interleavedKeys, 'msetnx' => $interleavedKeys,
@@ -153,6 +140,23 @@ class KeyPrefixPreprocessor implements ICommandPreprocessor {
             );
         }
         $this->_strategies[$command] = $strategy;
+    }
+
+    public function getSingleKeyStrategy() {
+        return function(&$arguments, $prefix) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+        };
+    }
+
+    public function getMultipleKeysStrategy() {
+        return function(&$arguments, $prefix) {
+            if (count($arguments) === 1 && is_array($arguments[0])) {
+                $arguments = &$arguments[0];
+            }
+            foreach ($arguments as &$key) {
+                $key = "$prefix$key";
+            }
+        };
     }
 
     public function getPrefixStrategy($command) {
