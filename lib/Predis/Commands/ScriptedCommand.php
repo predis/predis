@@ -5,7 +5,12 @@ namespace Predis\Commands;
 abstract class ScriptedCommand extends ServerEval {
     public abstract function getScript();
 
-    public abstract function keysCount();
+    protected function keysCount() {
+        // The default behaviour is to use the first argument as the only value
+        // for KEYS and the rest of the arguments (if any) for ARGV. When -1 is
+        // returned, all the arguments are considered as values for KEYS.
+        return 1;
+    }
 
     protected function filterArguments(Array $arguments) {
         if (($keys = $this->keysCount()) === -1) {
