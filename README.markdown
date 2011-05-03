@@ -43,9 +43,10 @@ spl_autoload_register(function($class) {
 });
 ```
 
-You can also create a single Phar archive from the repository just by launching the _createPhar.php_ 
-script located in the _bin_ directory. The generated Phar ships with a stub that defines an autoloader 
-function for Predis, so you just need to require the Phar archive in order to be able to use the library.
+You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository 
+just by launching the _createPhar.php_ script located in the _bin_ directory. The generated Phar ships with 
+a stub that defines an autoloader function for Predis, so you just need to require the Phar archive in order 
+to be able to use the library.
 
 Alternatively you can generate a single PHP file that holds every class, just like older versions of Predis, 
 using the _createSingleFile.php_ script located in the _bin_ directory. In this way you can load Predis in 
@@ -116,7 +117,7 @@ class MyConnectionClass implements Predis\Network\IConnectionSingle {
 }
 
 // Let Predis automatically use your own class to handle the default TCP connection
-Predis\ConnectionSchemes::define('tcp', 'MyConnectionClass');
+Predis\ConnectionFactory::define('tcp', 'MyConnectionClass');
 ```
 
 
@@ -153,8 +154,8 @@ want to work on Predis, it is highly recommended that you first run the test sui
 be sure that everything is OK, and report strange behaviours or bugs.
 
 When modifying Predis please be sure that no warnings or notices are emitted by PHP 
-by running the interpreter in your development environment with the "error_reporting"
-variable set to E_ALL | E_STRICT.
+by running the interpreter in your development environment with the _error_reporting_ 
+variable set to __E\_ALL | E\_STRICT__.
 
 The recommended way to contribute to Predis is to fork the project on GitHub, create 
 new topic branches on your newly created repository to fix or add features and then 
@@ -176,7 +177,7 @@ too, even though they are not the preferred way to contribute to Predis.
 - [Issue tracker](http://github.com/nrk/predis/issues)
 
 ### Related ###
-- [Redis](http://code.google.com/p/redis/)
+- [Redis](http://redis.io/)
 - [PHP](http://php.net/)
 - [PHPUnit](http://www.phpunit.de/)
 - [Git](http://git-scm.com/)
