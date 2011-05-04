@@ -5,8 +5,6 @@ namespace Predis\Commands;
 use Predis\Iterators\MultiBulkResponseTuple;
 
 class ZSetRange extends Command {
-    private $_withScores = false;
-
     public function getId() {
         return 'ZRANGE';
     }
@@ -32,13 +30,20 @@ class ZSetRange extends Command {
         $finalizedOpts = array();
         if (isset($opts['WITHSCORES'])) {
             $finalizedOpts[] = 'WITHSCORES';
-            $this->_withScores = true;
         }
         return $finalizedOpts;
     }
 
+    protected function withScores() {
+        $arguments = $this->getArguments();
+        if (count($arguments) < 4) {
+            return false;
+        }
+        return strtoupper($arguments[3]) === 'WITHSCORES';
+    }
+
     public function parseResponse($data) {
-        if ($this->_withScores) {
+        if ($this->withScores()) {
             if ($data instanceof \Iterator) {
                 return new MultiBulkResponseTuple($data);
             }
