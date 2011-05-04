@@ -7,6 +7,10 @@ class ServerFlushDatabase extends Command {
         return 'FLUSHDB';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

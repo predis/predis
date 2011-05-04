@@ -7,6 +7,10 @@ class ServerBackgroundRewriteAOF extends Command {
         return 'BGREWRITEAOF';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

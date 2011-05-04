@@ -7,6 +7,10 @@ class TransactionExec extends Command {
         return 'EXEC';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

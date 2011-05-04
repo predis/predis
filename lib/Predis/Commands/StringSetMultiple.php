@@ -20,6 +20,14 @@ class StringSetMultiple extends Command {
         return $arguments;
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        $length = count($arguments);
+        for ($i = 0; $i < $length; $i += 2) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+        return $arguments;
+    }
+
     protected function canBeHashed() {
         $args = $this->getArguments();
         $keys = array();

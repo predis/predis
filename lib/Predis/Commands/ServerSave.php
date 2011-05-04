@@ -7,6 +7,10 @@ class ServerSave extends Command {
         return 'SAVE';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

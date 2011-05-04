@@ -28,6 +28,19 @@ abstract class Command implements ICommand {
         }
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        $arguments[0] = "$prefix{$arguments[0]}";
+        return $arguments;
+    }
+
+    public function prefixKeys($prefix) {
+        $arguments = $this->onPrefixKeys($this->_arguments, $prefix);
+        if (isset($arguments)) {
+            $this->_arguments = $arguments;
+            unset($this->_hash);
+        }
+    }
+
     protected function canBeHashed() {
         return isset($this->_arguments[0]);
     }

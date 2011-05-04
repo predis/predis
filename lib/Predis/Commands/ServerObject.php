@@ -9,6 +9,10 @@ class ServerObject extends Command {
         return 'OBJECT';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

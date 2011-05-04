@@ -14,6 +14,10 @@ class ServerSlaveOf extends Command {
         return $arguments;
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

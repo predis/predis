@@ -7,6 +7,10 @@ class ServerDatabaseSize extends Command {
         return 'DBSIZE';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

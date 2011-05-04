@@ -7,6 +7,10 @@ class ServerBackgroundSave extends Command {
         return 'BGSAVE';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

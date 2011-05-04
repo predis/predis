@@ -7,6 +7,10 @@ class ServerShutdown extends Command {
         return 'SHUTDOWN';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

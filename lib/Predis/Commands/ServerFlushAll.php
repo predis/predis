@@ -7,6 +7,10 @@ class ServerFlushAll extends Command {
         return 'FLUSHALL';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

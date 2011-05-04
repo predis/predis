@@ -7,6 +7,10 @@ class ConnectionAuth extends Command {
         return 'AUTH';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

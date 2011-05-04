@@ -7,6 +7,10 @@ class PubSubUnsubscribe extends Command {
         return 'UNSUBSCRIBE';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::multipleKeys($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         return false;
     }

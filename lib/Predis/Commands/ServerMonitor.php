@@ -7,6 +7,10 @@ class ServerMonitor extends Command {
         return 'MONITOR';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

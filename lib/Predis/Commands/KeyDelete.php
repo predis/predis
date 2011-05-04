@@ -13,6 +13,10 @@ class KeyDelete extends Command {
         return Helpers::filterArrayArguments($arguments);
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::multipleKeys($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         $args = $this->getArguments();
         if (count($args) === 1) {

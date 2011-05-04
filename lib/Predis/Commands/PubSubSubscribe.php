@@ -13,6 +13,10 @@ class PubSubSubscribe extends Command {
         return Helpers::filterArrayArguments($arguments);
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::multipleKeys($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         return false;
     }
