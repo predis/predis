@@ -1,11 +1,11 @@
 <?php
 
-namespace Predis\Commands\Preprocessors;
+namespace Predis\Commands\Processors;
 
 use Predis\ClientException;
 use Predis\Profiles\IServerProfile;
 
-class KeyPrefixPreprocessor implements ICommandPreprocessor {
+class KeyPrefixProcessor implements ICommandProcessor {
     private $_prefix;
     private $_strategies;
 
