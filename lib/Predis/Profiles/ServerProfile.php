@@ -76,12 +76,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport {
         if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
-        if (isset($this->_processor)) {
-            $this->_processor->process($method, $arguments);
-        }
         $commandClass = $this->_registeredCommands[$method];
         $command = new $commandClass();
         $command->setArguments($arguments);
+        if (isset($this->_processor)) {
+            $this->_processor->process($command);
+        }
         return $command;
     }
 

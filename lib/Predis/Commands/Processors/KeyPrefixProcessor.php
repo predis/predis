@@ -3,6 +3,7 @@
 namespace Predis\Commands\Processors;
 
 use Predis\ClientException;
+use Predis\Commands\ICommand;
 use Predis\Profiles\IServerProfile;
 
 class KeyPrefixProcessor implements ICommandProcessor {
@@ -37,39 +38,16 @@ class KeyPrefixProcessor implements ICommandProcessor {
 
         $interleavedKeys = function(&$arguments, $prefix) {
             $length = count($arguments);
-            if ($length === 1 && is_array($arguments[0])) {
-                $oldKvs = &$arguments[0];
-                $newKvs = array();
-                foreach ($oldKvs as $key => $value) {
-                    $newKvs["$prefix$key"] = $value;
-                    unset($oldKvs[$key]);
-                }
-                $arguments[0] = $newKvs;
-            }
-            else {
-                for ($i = 0; $i < $length; $i += 2) {
-                    $arguments[$i] = "$prefix{$arguments[$i]}";
-                }
+            for ($i = 0; $i < $length; $i += 2) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
             }
         };
 
         $zunionstore = function(&$arguments, $prefix) {
             $arguments[0] = "$prefix{$arguments[0]}";
-            if (is_array($arguments[1])) {
-                foreach ($arguments[1] as &$destinationKey) {
-                    $destinationKey = "$prefix$destinationKey";
-                }
-                $args = &$arguments[1];
-                $length = count($args);
-                for ($i = 0; $i < $length; $i++) {
-                    $arguments[1][$i] = "$prefix{$args[$i]}";
-                }
-            }
-            else {
-                $length = (int)$arguments[1];
-                for ($i = 2; $i < $length; $i++) {
-                    $arguments[$i] = "$prefix{$arguments[$i]}";
-                }
+            $length = ((int) $arguments[1]) + 2;
+            for ($i = 2; $i < $length; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
             }
         };
 
@@ -150,9 +128,6 @@ class KeyPrefixProcessor implements ICommandProcessor {
 
     public function getMultipleKeysStrategy() {
         return function(&$arguments, $prefix) {
-            if (count($arguments) === 1 && is_array($arguments[0])) {
-                $arguments = &$arguments[0];
-            }
             foreach ($arguments as &$key) {
                 $key = "$prefix$key";
             }
@@ -173,9 +148,12 @@ class KeyPrefixProcessor implements ICommandProcessor {
         return $this->_prefix;
     }
 
-    public function process($method, &$arguments) {
+    public function process(ICommand $command) {
+        $method = strtolower($command->getId());
         if (isset($this->_strategies[$method])) {
+            $arguments = $command->getArguments();
             $this->_strategies[$method]($arguments, $this->_prefix);
+            $command->setArguments($arguments);
         }
     }
 }

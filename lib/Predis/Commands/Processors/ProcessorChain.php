@@ -2,6 +2,8 @@
 
 namespace Predis\Commands\Processors;
 
+use Predis\Commands\ICommand;
+
 class ProcessorChain implements ICommandProcessorChain, \ArrayAccess {
     private $_processors;
 
@@ -22,10 +24,10 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess {
         }
     }
 
-    public function process($method, &$arguments) {
+    public function process(ICommand $command) {
         $count = count($this->_processors);
         for ($i = 0; $i < $count; $i++) {
-            $this->_processors[$i]->process($method, $arguments);
+            $this->_processors[$i]->process($command);
         }
     }
 
