@@ -18,6 +18,11 @@ abstract class Command implements ICommand {
         unset($this->_hash);
     }
 
+    public function setRawArguments(Array $arguments) {
+        $this->_arguments = $arguments;
+        unset($this->_hash);
+    }
+
     public function getArguments() {
         return $this->_arguments;
     }
