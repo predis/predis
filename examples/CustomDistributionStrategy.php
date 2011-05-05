@@ -7,7 +7,7 @@ require 'SharedConfigurations.php';
 // that implements the Predis\Distribution\IDistributionStrategy interface.
 
 use Predis\Distribution\IDistributionStrategy;
-use Predis\Network\ConnectionCluster;
+use Predis\Network\PredisCluster;
 
 class NaiveDistributionStrategy implements IDistributionStrategy {
     private $_nodes, $_nodesCount;
@@ -44,7 +44,7 @@ class NaiveDistributionStrategy implements IDistributionStrategy {
 
 $options = array(
     'cluster' => function() {
-        return new ConnectionCluster(new NaiveDistributionStrategy());
+        return new PredisCluster(new NaiveDistributionStrategy());
     },
 );
 
