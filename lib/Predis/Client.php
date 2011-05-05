@@ -5,9 +5,8 @@ namespace Predis;
 use Predis\Commands\ICommand;
 use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
-use Predis\Network\ConnectionCluster;
-use Predis\Profiles\ServerProfile;
 use Predis\Profiles\IServerProfile;
+use Predis\Profiles\ServerProfile;
 
 class Client {
     const VERSION = '0.7.0-dev';
