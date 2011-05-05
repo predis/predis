@@ -3,13 +3,13 @@
 namespace Predis\Profiles;
 
 use Predis\ClientException;
-use Predis\Commands\Preprocessors\ICommandPreprocessor;
-use Predis\Commands\Preprocessors\IPreprocessingSupport;
+use Predis\Commands\Processors\ICommandProcessor;
+use Predis\Commands\Processors\IProcessingSupport;
 
-abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
+abstract class ServerProfile implements IServerProfile, IProcessingSupport {
     private static $_profiles;
     private $_registeredCommands;
-    private $_preprocessor;
+    private $_processor;
 
     public function __construct() {
         $this->_registeredCommands = $this->getSupportedCommands();
@@ -76,12 +76,12 @@ abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
         if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
-        if (isset($this->_preprocessor)) {
-            $this->_preprocessor->process($method, $arguments);
-        }
         $commandClass = $this->_registeredCommands[$method];
         $command = new $commandClass();
         $command->setArguments($arguments);
+        if (isset($this->_processor)) {
+            $this->_processor->process($command);
+        }
         return $command;
     }
 
@@ -99,16 +99,16 @@ abstract class ServerProfile implements IServerProfile, IPreprocessingSupport {
         $this->_registeredCommands[$alias] = $command;
     }
 
-    public function setPreprocessor(ICommandPreprocessor $preprocessor) {
-        if (!isset($preprocessor)) {
-            unset($this->_preprocessor);
+    public function setProcessor(ICommandProcessor $processor) {
+        if (!isset($processor)) {
+            unset($this->_processor);
             return;
         }
-        $this->_preprocessor = $preprocessor;
+        $this->_processor = $processor;
     }
 
-    public function getPreprocessor() {
-        return $this->_preprocessor;
+    public function getProcessor() {
+        return $this->_processor;
     }
 
     public function __toString() {

@@ -9,5 +9,6 @@ interface ICommand {
     public function getHash(INodeKeyGenerator $distributor);
     public function setArguments(Array $arguments);
     public function getArguments();
+    public function prefixKeys($prefix);
     public function parseResponse($data);
 }

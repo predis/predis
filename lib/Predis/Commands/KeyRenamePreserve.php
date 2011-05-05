@@ -2,13 +2,9 @@
 
 namespace Predis\Commands;
 
-class KeyRenamePreserve extends Command {
+class KeyRenamePreserve extends KeyRename {
     public function getId() {
         return 'RENAMENX';
-    }
-
-    protected function canBeHashed() {
-        return false;
     }
 
     public function parseResponse($data) {

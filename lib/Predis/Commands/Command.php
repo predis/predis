@@ -18,6 +18,11 @@ abstract class Command implements ICommand {
         unset($this->_hash);
     }
 
+    public function setRawArguments(Array $arguments) {
+        $this->_arguments = $arguments;
+        unset($this->_hash);
+    }
+
     public function getArguments() {
         return $this->_arguments;
     }
@@ -25,6 +30,19 @@ abstract class Command implements ICommand {
     public function getArgument($index = 0) {
         if (isset($this->_arguments[$index]) === true) {
             return $this->_arguments[$index];
+        }
+    }
+
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        $arguments[0] = "$prefix{$arguments[0]}";
+        return $arguments;
+    }
+
+    public function prefixKeys($prefix) {
+        $arguments = $this->onPrefixKeys($this->_arguments, $prefix);
+        if (isset($arguments)) {
+            $this->_arguments = $arguments;
+            unset($this->_hash);
         }
     }
 

@@ -2,12 +2,8 @@
 
 namespace Predis\Commands;
 
-class PubSubUnsubscribeByPattern extends Command {
+class PubSubUnsubscribeByPattern extends PubSubUnsubscribe {
     public function getId() {
         return 'PUNSUBSCRIBE';
-    }
-
-    protected function canBeHashed() {
-        return false;
     }
 }

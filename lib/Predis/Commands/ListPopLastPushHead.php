@@ -7,6 +7,10 @@ class ListPopLastPushHead extends Command {
         return 'RPOPLPUSH';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::multipleKeys($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         return $this->checkSameHashForKeys($this->getArguments());
     }

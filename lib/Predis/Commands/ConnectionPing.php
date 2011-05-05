@@ -7,6 +7,10 @@ class ConnectionPing extends Command {
         return 'PING';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

@@ -7,6 +7,10 @@ class ConnectionEcho extends Command {
         return 'ECHO';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

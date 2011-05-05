@@ -14,6 +14,10 @@ class TransactionWatch extends Command {
         return $arguments;
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::multipleKeys($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         return false;
     }

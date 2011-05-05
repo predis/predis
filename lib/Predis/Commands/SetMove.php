@@ -7,6 +7,10 @@ class SetMove extends Command {
         return 'SMOVE';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        return PrefixHelpers::skipLastArgument($arguments, $prefix);
+    }
+
     protected function canBeHashed() {
         return false;
     }

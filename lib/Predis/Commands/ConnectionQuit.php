@@ -7,6 +7,10 @@ class ConnectionQuit extends Command {
         return 'QUIT';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

@@ -38,6 +38,15 @@ class ZSetUnionStore extends Command {
         return $finalizedOpts;
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        $arguments[0] = "$prefix{$arguments[0]}";
+        $length = ((int) $arguments[1]) + 2;
+        for ($i = 2; $i < $length; $i++) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+        return $arguments;
+    }
+
     protected function canBeHashed() {
         $args = $this->getArguments();
         return $this->checkSameHashForKeys(

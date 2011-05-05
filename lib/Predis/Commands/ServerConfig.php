@@ -7,6 +7,10 @@ class ServerConfig extends Command {
         return 'CONFIG';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

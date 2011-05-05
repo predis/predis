@@ -7,6 +7,10 @@ class TransactionUnwatch extends Command {
         return 'UNWATCH';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

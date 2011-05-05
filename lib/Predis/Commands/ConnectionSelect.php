@@ -7,6 +7,10 @@ class ConnectionSelect extends Command {
         return 'SELECT';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

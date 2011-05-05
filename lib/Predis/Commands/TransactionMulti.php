@@ -7,6 +7,10 @@ class TransactionMulti extends Command {
         return 'MULTI';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

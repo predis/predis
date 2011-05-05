@@ -7,6 +7,10 @@ class ServerInfo extends Command {
         return 'INFO';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }

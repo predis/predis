@@ -7,6 +7,10 @@ class ServerClient extends Command {
         return 'CLIENT';
     }
 
+    protected function onPrefixKeys(Array $arguments, $prefix) {
+        /* NOOP */
+    }
+
     protected function canBeHashed() {
         return false;
     }
