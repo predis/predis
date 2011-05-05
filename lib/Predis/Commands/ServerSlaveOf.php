@@ -7,7 +7,7 @@ class ServerSlaveOf extends Command {
         return 'SLAVEOF';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
             return array('NO', 'ONE');
         }

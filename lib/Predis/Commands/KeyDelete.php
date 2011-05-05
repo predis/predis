@@ -9,7 +9,7 @@ class KeyDelete extends Command {
         return 'DEL';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         return Helpers::filterArrayArguments($arguments);
     }
 

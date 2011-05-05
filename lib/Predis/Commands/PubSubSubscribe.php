@@ -9,7 +9,7 @@ class PubSubSubscribe extends Command {
         return 'SUBSCRIBE';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         return Helpers::filterArrayArguments($arguments);
     }
 

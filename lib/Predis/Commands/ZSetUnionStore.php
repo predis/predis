@@ -7,7 +7,7 @@ class ZSetUnionStore extends Command {
         return 'ZUNIONSTORE';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         $options = array();
         $argc = count($arguments);
         if ($argc > 2 && is_array($arguments[$argc - 1])) {

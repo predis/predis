@@ -9,7 +9,7 @@ class ListPushTailV24x extends Command {
         return 'RPUSH';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         return Helpers::filterVariadicValues($arguments);
     }
 }

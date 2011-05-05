@@ -7,7 +7,7 @@ class KeySort extends Command {
         return 'SORT';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         if (count($arguments) === 1) {
             return $arguments;
         }

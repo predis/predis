@@ -7,7 +7,7 @@ class SetIntersectionStore extends Command {
         return 'SINTERSTORE';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             return array_merge(array($arguments[0]), $arguments[1]);
         }

@@ -9,7 +9,7 @@ class HashDeleteV24x extends Command {
         return 'HDEL';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         return Helpers::filterVariadicValues($arguments);
     }
 

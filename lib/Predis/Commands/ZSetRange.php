@@ -9,7 +9,7 @@ class ZSetRange extends Command {
         return 'ZRANGE';
     }
 
-    public function filterArguments(Array $arguments) {
+    protected function filterArguments(Array $arguments) {
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);
             if ($lastType === 'string' && strtolower($arguments[3]) === 'withscores') {
