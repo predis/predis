@@ -3,6 +3,7 @@
 namespace Predis;
 
 use Predis\Options\IOption;
+use Predis\Options\ClientPrefix;
 use Predis\Options\ClientProfile;
 use Predis\Options\ClientCluster;
 use Predis\Options\ClientConnectionFactory;
@@ -23,6 +24,7 @@ class ClientOptions {
             'profile' => new ClientProfile(),
             'connections' => new ClientConnectionFactory(),
             'cluster' => new ClientCluster(),
+            'prefix' => new ClientPrefix(),
         );
         return self::$_sharedOptions;
     }

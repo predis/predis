@@ -8,10 +8,7 @@ require 'SharedConfigurations.php';
 // user-level namespaces for you keyspace, thus eliminating the need for separate
 // logical databases.
 
-use Predis\Commands\Processors\KeyPrefixProcessor;
-
-$client = new Predis\Client();
-$client->getProfile()->setProcessor(new KeyPrefixProcessor('nrk:'));
+$client = new Predis\Client($single_server, array('prefix' => 'nrk:'));
 
 $client->mset(array('foo' => 'bar', 'lol' => 'wut'));
 var_dump($client->mget('foo', 'lol'));

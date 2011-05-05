@@ -16,6 +16,9 @@ class Client {
         $options = $this->filterOptions($options);
         $this->_options = $options;
         $this->_profile = $options->profile;
+        if ($prefixer = $options->prefix) {
+            $this->_profile->setProcessor($prefixer);
+        }
         $this->_connectionFactory = $options->connections;
         $this->_connection = $this->initializeConnection($parameters);
     }
