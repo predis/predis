@@ -28,11 +28,11 @@ class Client {
         if ($options === null) {
             return new ClientOptions();
         }
-        if ($options instanceof ClientOptions) {
-            return $options;
-        }
         if (is_array($options)) {
             return new ClientOptions($options);
+        }
+        if ($options instanceof ClientOptions) {
+            return $options;
         }
         if ($options instanceof IServerProfile) {
             return new ClientOptions(array('profile' => $options));
