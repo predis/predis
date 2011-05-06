@@ -15,10 +15,11 @@ class Client {
     public function __construct($parameters = null, $options = null) {
         $options = $this->filterOptions($options);
         $this->_options = $options;
-        $this->_profile = $options->profile;
-        if ($prefixer = $options->prefix) {
-            $this->_profile->setProcessor($prefixer);
+        $profile = $options->profile;
+        if (isset($options->prefix)) {
+            $profile->setProcessor($options->prefix);
         }
+        $this->_profile = $profile;
         $this->_connectionFactory = $options->connections;
         $this->_connection = $this->initializeConnection($parameters);
     }

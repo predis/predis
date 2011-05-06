@@ -9,11 +9,14 @@ use Predis\Options\ClientCluster;
 use Predis\Options\ClientConnectionFactory;
 
 class ClientOptions {
-    private $_handlers, $_options;
     private static $_sharedOptions;
+    private $_options = array();
+    private $_handlers;
+    private $_defined;
 
     public function __construct(Array $options = array()) {
-        $this->initialize($options);
+        $this->_handlers = $this->initialize($options);
+        $this->_defined = array_keys($options);
     }
 
     private static function getSharedOptions() {
@@ -40,13 +43,20 @@ class ClientOptions {
     }
 
     private function initialize($options) {
-        $this->_handlers = self::getSharedOptions();
+        $handlers = self::getSharedOptions();
         foreach ($options as $option => $value) {
-            if (isset($this->_handlers[$option])) {
-                $handler = $this->_handlers[$option];
-                $this->_options[$option] = $handler($value);
+            if (isset($handlers[$option])) {
+                $handler = $handlers[$option];
+                $handlers[$option] = function() use($handler, $value) {
+                    return $handler->validate($value);
+                };
             }
         }
+        return $handlers;
+    }
+
+    public function __isset($option) {
+        return in_array($option, $this->_defined);
     }
 
     public function __get($option) {
@@ -54,11 +64,15 @@ class ClientOptions {
             return $this->_options[$option];
         }
         if (isset($this->_handlers[$option])) {
-            $opts = self::getSharedOptions();
-            $value = $opts[$option]->getDefault();
+            $handler = $this->_handlers[$option];
+            if ($handler instanceof IOption) {
+                $value = $handler->getDefault();
+            }
+            else {
+                $value = $handler();
+            }
             $this->_options[$option] = $value;
             return $value;
         }
-        return null;
     }
 }
