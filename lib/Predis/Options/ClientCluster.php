@@ -17,14 +17,10 @@ class ClientCluster extends Option {
 
     public function validate($value) {
         if (is_callable($value)) {
-            return $this->initializeFromCallable($value);
+            return $this->checkInstance(call_user_func($value));
         }
         $initializer = $this->getInitializer($value);
         return $this->checkInstance($initializer());
-    }
-
-    protected function initializeFromCallable($callable) {
-        return $this->checkInstance(call_user_func($callable));
     }
 
     protected function getInitializer($fqnOrType) {
