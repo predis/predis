@@ -65,24 +65,20 @@ class Client {
         return $this->createConnection($parameters);
     }
 
-    private function createConnection($parameters) {
+    protected function createConnection($parameters) {
         $connection = $this->_connectionFactory->create($parameters);
-        $this->pushInitCommands($connection);
+        $parameters = $connection->getParameters();
+        if (isset($parameters->password)) {
+            $connection->pushInitCommand(
+                $this->createCommand('auth', array($parameters->password))
+            );
+        }
+        if (isset($parameters->database)) {
+            $connection->pushInitCommand(
+                $this->createCommand('select', array($parameters->database))
+            );
+        }
         return $connection;
-    }
-
-    private function pushInitCommands(IConnectionSingle $connection) {
-        $params = $connection->getParameters();
-        if (isset($params->password)) {
-            $connection->pushInitCommand($this->createCommand(
-                'auth', array($params->password)
-            ));
-        }
-        if (isset($params->database)) {
-            $connection->pushInitCommand($this->createCommand(
-                'select', array($params->database)
-            ));
-        }
     }
 
     public function getProfile() {
