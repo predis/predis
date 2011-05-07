@@ -7,21 +7,11 @@ class ConnectionFactory implements IConnectionFactory {
     private $_instanceSchemes = array();
 
     public function __construct(Array $schemesMap = null) {
-        self::ensureDefaultSchemes();
+        $this->_instanceSchemes = self::ensureDefaultSchemes();
         if (isset($schemesMap)) {
-            foreach ($schemesMap as $connectionClass) {
-                self::checkConnectionClass($connectionClass);
+            foreach ($schemesMap as $scheme => $connectionClass) {
+                $this->defineConnection($scheme, $connectionClass);
             }
-            $this->_instanceSchemes = $schemesMap;
-        }
-    }
-
-    private static function ensureDefaultSchemes() {
-        if (!isset(self::$_globalSchemes)) {
-            self::$_globalSchemes = array(
-                'tcp'   => '\Predis\Network\StreamConnection',
-                'unix'  => '\Predis\Network\StreamConnection',
-            );
         }
     }
 
@@ -34,28 +24,36 @@ class ConnectionFactory implements IConnectionFactory {
         }
     }
 
+    private static function ensureDefaultSchemes() {
+        if (!isset(self::$_globalSchemes)) {
+            self::$_globalSchemes = array(
+                'tcp'   => '\Predis\Network\StreamConnection',
+                'unix'  => '\Predis\Network\StreamConnection',
+            );
+        }
+        return self::$_globalSchemes;
+    }
+
     public static function define($scheme, $connectionClass) {
         self::ensureDefaultSchemes();
         self::checkConnectionClass($connectionClass);
         self::$_globalSchemes[$scheme] = $connectionClass;
     }
 
+    public function defineConnection($scheme, $connectionClass) {
+        self::checkConnectionClass($connectionClass);
+        $this->_instanceSchemes[$scheme] = $connectionClass;
+    }
+
     public function create($parameters) {
         if (!$parameters instanceof IConnectionParameters) {
             $parameters = new ConnectionParameters($parameters);
         }
-
         $scheme = $parameters->scheme;
-        if (isset($this->_instanceSchemes[$scheme])) {
-            $connection = $this->_instanceSchemes[$scheme];
-        }
-        else if (isset(self::$_globalSchemes[$scheme])) {
-            $connection = self::$_globalSchemes[$scheme];
-        }
-        else {
+        if (!isset($this->_instanceSchemes[$scheme])) {
             throw new ClientException("Unknown connection scheme: $scheme");
         }
-
+        $connection = $this->_instanceSchemes[$scheme];
         return new $connection($parameters);
     }
 }
