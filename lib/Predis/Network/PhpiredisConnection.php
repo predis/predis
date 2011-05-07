@@ -44,10 +44,10 @@ class PhpiredisConnection extends ConnectionBase {
     }
 
     protected function checkParameters(IConnectionParameters $parameters) {
-        if (isset($parameters->iterable_multibulk)) {
+        if ($parameters->isSetByUser('iterable_multibulk')) {
             $this->onInvalidOption('iterable_multibulk', $parameters);
         }
-        if (isset($parameters->connection_persistent)) {
+        if ($parameters->isSetByUser('connection_persistent')) {
             $this->onInvalidOption('connection_persistent', $parameters);
         }
         return parent::checkParameters($parameters);
