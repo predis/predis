@@ -2,6 +2,8 @@
 
 namespace Predis;
 
+use Predis\Network\IConnectionSingle;
+
 class ConnectionFactory implements IConnectionFactory {
     private static $_globalSchemes;
     private $_instanceSchemes = array();
@@ -9,17 +11,20 @@ class ConnectionFactory implements IConnectionFactory {
     public function __construct(Array $schemesMap = null) {
         $this->_instanceSchemes = self::ensureDefaultSchemes();
         if (isset($schemesMap)) {
-            foreach ($schemesMap as $scheme => $connectionClass) {
-                $this->defineConnection($scheme, $connectionClass);
+            foreach ($schemesMap as $scheme => $initializer) {
+                $this->defineConnection($scheme, $initializer);
             }
         }
     }
 
-    private static function checkConnectionClass($class) {
-        $connectionReflection = new \ReflectionClass($class);
-        if (!$connectionReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
-            throw new ClientException(
-                "The class '$class' is not a valid connection class"
+    private static function checkConnectionInitializer($initializer) {
+        if (is_callable($initializer)) {
+            return;
+        }
+        $initializerReflection = new \ReflectionClass($initializer);
+        if (!$initializerReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
+            throw new \InvalidArgumentException(
+                'A connection initializer must be a valid connection class or a callable object'
             );
         }
     }
@@ -34,26 +39,41 @@ class ConnectionFactory implements IConnectionFactory {
         return self::$_globalSchemes;
     }
 
-    public static function define($scheme, $connectionClass) {
+    public static function define($scheme, $connectionInitializer) {
         self::ensureDefaultSchemes();
-        self::checkConnectionClass($connectionClass);
-        self::$_globalSchemes[$scheme] = $connectionClass;
+        self::checkConnectionInitializer($connectionInitializer);
+        self::$_globalSchemes[$scheme] = $connectionInitializer;
     }
 
-    public function defineConnection($scheme, $connectionClass) {
-        self::checkConnectionClass($connectionClass);
-        $this->_instanceSchemes[$scheme] = $connectionClass;
+    public function defineConnection($scheme, $connectionInitializer) {
+        self::checkConnectionInitializer($connectionInitializer);
+        $this->_instanceSchemes[$scheme] = $connectionInitializer;
     }
 
     public function create($parameters) {
         if (!$parameters instanceof IConnectionParameters) {
             $parameters = new ConnectionParameters($parameters);
         }
+
         $scheme = $parameters->scheme;
         if (!isset($this->_instanceSchemes[$scheme])) {
-            throw new ClientException("Unknown connection scheme: $scheme");
+            throw new \InvalidArgumentException("Unknown connection scheme: $scheme");
         }
-        $connection = $this->_instanceSchemes[$scheme];
-        return new $connection($parameters);
+
+        $initializer = $this->_instanceSchemes[$scheme];
+        if (!is_callable($initializer)) {
+            return new $initializer($parameters);
+        }
+
+        $connection = call_user_func($initializer, $parameters);
+        if ($connection instanceof IConnectionSingle) {
+            return $connection;
+        }
+        else {
+            throw new \InvalidArgumentException(
+                'Objects returned by connection initializers must implement ' .
+                'the Predis\Network\IConnectionSingle interface'
+            );
+        }
     }
 }
