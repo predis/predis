@@ -20,6 +20,7 @@ class ServerVersionNext extends ServerVersion22 {
             /* remote server control commands */
             'info'                      => '\Predis\Commands\ServerInfoV24x',
             'client'                    => '\Predis\Commands\ServerClient',
+            'eval'                      => '\Predis\Commands\ServerEval',
         ));
     }
 }
