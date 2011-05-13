@@ -10,12 +10,12 @@ For a version compatible with PHP 5.2 you must use the backported version from t
 
 ## Main features ##
 
-- Full support for Redis 1.2, 2.0 and 2.2. Different versions of Redis are supported via server profiles.
+- Full support for Redis _1.2_, _2.0_, _2.2_ and the last development version. Different versions are managed via server profiles.
 - Client-side sharding with support for consistent hashing and custom distribution strategies.
 - Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
-- Lazy connections to Redis instances are automatically estabilished upon the first call to a command.
-- Ability to connect to Redis using TCP/IP or UNIX domain sockets by default.
+- Ability to connect to Redis using TCP/IP or UNIX domain sockets with optional support for persistent connections.
+- Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
 - Flexible system to define and register your own set of commands to a client instance.
 
 
