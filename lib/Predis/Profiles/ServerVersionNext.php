@@ -21,6 +21,7 @@ class ServerVersionNext extends ServerVersion22 {
             'info'                      => '\Predis\Commands\ServerInfoV24x',
             'client'                    => '\Predis\Commands\ServerClient',
             'eval'                      => '\Predis\Commands\ServerEval',
+            'evalsha'                   => '\Predis\Commands\ServerEvalSHA',
         ));
     }
 }
