@@ -86,11 +86,11 @@ class PhpiredisConnection extends ConnectionBase {
     private function getErrorHandler($throwErrors = true) {
         if ($throwErrors) {
             return function($errorMessage) {
-                throw new ServerException(substr($errorMessage, 4));
+                throw new ServerException($errorMessage);
             };
         }
         return function($errorMessage) {
-            return new ResponseError(substr($errorMessage, 4));
+            return new ResponseError($errorMessage);
         };
     }
 

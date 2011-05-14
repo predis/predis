@@ -8,6 +8,6 @@ use Predis\Network\IConnectionComposable;
 
 class ResponseErrorHandler implements IResponseHandler {
     public function handle(IConnectionComposable $connection, $errorMessage) {
-        throw new ServerException(substr($errorMessage, 4));
+        throw new ServerException($errorMessage);
     }
 }

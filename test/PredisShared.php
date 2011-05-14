@@ -25,17 +25,17 @@ class RC {
     const DEFAULT_DATABASE = 15;
 
     const WIPE_OUT         = 1;
-    const EXCEPTION_WRONG_TYPE     = 'Operation against a key holding the wrong kind of value';
-    const EXCEPTION_NO_SUCH_KEY    = 'no such key';
-    const EXCEPTION_OUT_OF_RANGE   = 'index out of range';
-    const EXCEPTION_OFFSET_RANGE   = 'offset is out of range';
-    const EXCEPTION_INVALID_DB_IDX = 'invalid DB index';
-    const EXCEPTION_VALUE_NOT_INT  = 'value is not an integer';
-    const EXCEPTION_EXEC_NO_MULTI  = 'EXEC without MULTI';
-    const EXCEPTION_SETEX_TTL      = 'invalid expire time in SETEX';
-    const EXCEPTION_HASH_VALNOTINT = 'hash value is not an integer';
-    const EXCEPTION_BIT_VALUE      = 'bit is not an integer or out of range';
-    const EXCEPTION_BIT_OFFSET     = 'bit offset is not an integer or out of range';
+    const EXCEPTION_WRONG_TYPE     = 'ERR Operation against a key holding the wrong kind of value';
+    const EXCEPTION_NO_SUCH_KEY    = 'ERR no such key';
+    const EXCEPTION_OUT_OF_RANGE   = 'ERR index out of range';
+    const EXCEPTION_OFFSET_RANGE   = 'ERR offset is out of range';
+    const EXCEPTION_INVALID_DB_IDX = 'ERR invalid DB index';
+    const EXCEPTION_VALUE_NOT_INT  = 'ERR value is not an integer';
+    const EXCEPTION_EXEC_NO_MULTI  = 'ERR EXEC without MULTI';
+    const EXCEPTION_SETEX_TTL      = 'ERR invalid expire time in SETEX';
+    const EXCEPTION_HASH_VALNOTINT = 'ERR hash value is not an integer';
+    const EXCEPTION_BIT_VALUE      = 'ERR bit is not an integer or out of range';
+    const EXCEPTION_BIT_OFFSET     = 'ERR bit offset is not an integer or out of range';
 
     private static $_connection;
 

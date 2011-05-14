@@ -163,11 +163,10 @@ class StreamConnection extends ConnectionBase {
                 return (int) $payload;
 
             case '-':    // error
-                $errorMessage = substr($payload, 4);
                 if ($this->_throwErrors) {
-                    throw new ServerException($errorMessage);
+                    throw new ServerException($payload);
                 }
-                return new ResponseError($errorMessage);
+                return new ResponseError($payload);
 
             default:
                 $this->onProtocolError("Unknown prefix: '$prefix'");
