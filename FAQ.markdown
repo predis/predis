@@ -46,3 +46,13 @@ generates a single [Phar archive](http://www.php.net/manual/en/intro.phar.php) o
 
 Yes. Obviously, persistent connections actually work when using PHP configured as a persistent process that
 gets recycled between requests (see [PHP-FPM](http://php-fpm.org/)).
+
+
+### Does Predis support transparent (de)serialization of values? ###
+
+No, and it will not ever do that for you by default. The reason behind this decision is that serialization
+is usually something that developers prefer to customize depending on their needs and can not be easily
+generalized when using Redis because of the many possible access patterns for the data. This does not
+mean that it is impossible to have such a feature, you can leverage Predis' extensibility to define your
+own serialization-aware commands. See http://github.com/nrk/predis/issues/29#issuecomment-1202624 for more
+details on how to implement such a feature with a practical example.
