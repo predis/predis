@@ -2,19 +2,13 @@
 
 namespace Predis;
 
-class ServerException extends PredisException {
-    private $_errorType;
-
-    public function __construct($message) {
-        parent::__construct($message);
-        $this->_errorType = substr($message, 0, strpos($message, ' '));
+class ServerException extends PredisException implements IRedisServerError {
+    public function getErrorType() {
+        list($errorType, ) = explode(' ', $this->getMessage(), 2);
+        return $errorType;
     }
 
     public function toResponseError() {
         return new ResponseError($this->getMessage());
-    }
-
-    public function getErrorType() {
-        return $this->_errorType;
     }
 }

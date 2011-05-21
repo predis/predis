@@ -157,7 +157,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
 
     function testResponseQueued() {
         $response = new \Predis\ResponseQueued();
-        $this->assertTrue($response->queued);
+        $this->assertInstanceOf('\Predis\IReplyObject', $response);
         $this->assertEquals(\Predis\Protocols\Text\TextProtocol::QUEUED, (string)$response);
     }
 
@@ -168,8 +168,10 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $errorMessage = 'ERROR MESSAGE';
         $response = new \Predis\ResponseError($errorMessage);
 
-        $this->assertTrue($response->error);
-        $this->assertEquals($errorMessage, $response->message);
+        $this->assertInstanceOf('\Predis\IReplyObject', $response);
+        $this->assertInstanceOf('\Predis\IRedisServerError', $response);
+
+        $this->assertEquals($errorMessage, $response->getMessage());
         $this->assertEquals($errorMessage, (string)$response);
     }
 
@@ -309,7 +311,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $connection->writeBytes($rawCmdUnexpected);
         $errorReply = $reader->read($connection);
         $this->assertInstanceOf('\Predis\ResponseError', $errorReply);
-        $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->message);
+        $this->assertEquals(RC::EXCEPTION_WRONG_TYPE, $errorReply->getMessage());
 
         $reader->setHandler(
             \Predis\Protocols\Text\TextProtocol::PREFIX_ERROR,

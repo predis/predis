@@ -2,9 +2,7 @@
 
 namespace Predis;
 
-class ResponseQueued {
-    public $skipParse = true;
-
+class ResponseQueued implements IReplyObject {
     public function __toString() {
         return 'QUEUED';
     }

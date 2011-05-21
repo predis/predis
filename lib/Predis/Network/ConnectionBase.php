@@ -4,6 +4,7 @@ namespace Predis\Network;
 
 use \InvalidArgumentException;
 use Predis\Helpers;
+use Predis\IReplyObject;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
 use Predis\ProtocolException;
@@ -74,7 +75,7 @@ abstract class ConnectionBase implements IConnectionSingle {
 
     public function readResponse(ICommand $command) {
         $reply = $this->read();
-        if (isset($reply->skipParse)) {
+        if ($reply instanceof IReplyObject) {
             return $reply;
         }
         return $command->parseResponse($reply);
