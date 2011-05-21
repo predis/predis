@@ -79,11 +79,10 @@ class TextProtocol implements IProtocolProcessor {
                 return (int) $payload;
 
             case '-':    // error
-                $errorMessage = substr($payload, 4);
                 if ($this->_throwErrors) {
-                    throw new ServerException($errorMessage);
+                    throw new ServerException($payload);
                 }
-                return new ResponseError($errorMessage);
+                return new ResponseError($payload);
 
             default:
                 Helpers::onCommunicationException(new ProtocolException(
