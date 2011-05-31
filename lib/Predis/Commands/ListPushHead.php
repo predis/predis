@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-class ListPushHead extends Command {
+class ListPushHead extends ListPushTail {
     public function getId() {
         return 'LPUSH';
     }
