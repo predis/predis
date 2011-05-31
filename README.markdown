@@ -10,7 +10,7 @@ For a version compatible with PHP 5.2 you must use the backported version from t
 
 ## Main features ##
 
-- Full support for Redis _1.2_, _2.0_, _2.2_ and the last development version. Different versions are managed via server profiles.
+- Full support for Redis from _1.2_ to _2.4_ and the current development versions. Different versions are managed via server profiles.
 - Client-side sharding with support for consistent hashing and custom distribution strategies.
 - Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
