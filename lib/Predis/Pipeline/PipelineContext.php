@@ -8,13 +8,15 @@ use Predis\ClientException;
 use Predis\Commands\ICommand;
 
 class PipelineContext {
-    private $_client, $_pipelineBuffer, $_returnValues, $_running, $_executor;
+    private $_client;
+    private $_executor;
+    private $_pipeline = array();
+    private $_replies  = array();
+    private $_running  = false;
 
     public function __construct(Client $client, Array $options = null) {
-        $this->_client         = $client;
-        $this->_executor       = $this->getExecutor($client, $options ?: array());
-        $this->_pipelineBuffer = array();
-        $this->_returnValues   = array();
+        $this->_client = $client;
+        $this->_executor = $this->getExecutor($client, $options ?: array());
     }
 
     protected function getExecutor(Client $client, Array $options) {
@@ -42,17 +44,15 @@ class PipelineContext {
     }
 
     protected function recordCommand(ICommand $command) {
-        $this->_pipelineBuffer[] = $command;
+        $this->_pipeline[] = $command;
     }
 
     public function flushPipeline() {
-        if (count($this->_pipelineBuffer) > 0) {
+        if (count($this->_pipeline) > 0) {
             $connection = $this->_client->getConnection();
-            $this->_returnValues = array_merge(
-                $this->_returnValues,
-                $this->_executor->execute($connection, $this->_pipelineBuffer)
-            );
-            $this->_pipelineBuffer = array();
+            $replies = $this->_executor->execute($connection, $this->_pipeline);
+            $this->_replies = array_merge($this->_replies, $replies);
+            $this->_pipeline = array();
         }
         return $this;
     }
@@ -88,6 +88,6 @@ class PipelineContext {
             throw $pipelineBlockException;
         }
 
-        return $this->_returnValues;
+        return $this->_replies;
     }
 }
