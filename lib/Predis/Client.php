@@ -178,7 +178,7 @@ class Client {
         return $this->sharedInitializer(func_get_args(), 'initPipeline');
     }
 
-    private function initPipeline(Array $options = null, $pipelineBlock = null) {
+    protected function initPipeline(Array $options = null, $pipelineBlock = null) {
         return $this->pipelineExecute(
             new PipelineContext($this, $options), $pipelineBlock
         );
@@ -192,7 +192,7 @@ class Client {
         return $this->sharedInitializer(func_get_args(), 'initMultiExec');
     }
 
-    private function initMultiExec(Array $options = null, $block = null) {
+    protected function initMultiExec(Array $options = null, $block = null) {
         $transaction = new MultiExecContext($this, $options ?: array());
         return isset($block) ? $transaction->execute($block) : $transaction;
     }
