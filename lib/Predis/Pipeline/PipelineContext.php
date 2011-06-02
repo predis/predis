@@ -47,6 +47,10 @@ class PipelineContext {
         $this->_pipeline[] = $command;
     }
 
+    public function executeCommand(ICommand $command) {
+        $this->recordCommand($command);
+    }
+
     public function flushPipeline() {
         if (count($this->_pipeline) > 0) {
             $connection = $this->_client->getConnection();
