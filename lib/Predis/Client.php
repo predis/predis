@@ -178,22 +178,8 @@ class Client {
     }
 
     private function initPipeline(Array $options = null, $pipelineBlock = null) {
-        $pipeline = null;
-        if (isset($options)) {
-            if (isset($options['safe']) && $options['safe'] == true) {
-                $connection = $this->_connection;
-                $pipeline = new PipelineContext($this,
-                    Helpers::isCluster($connection)
-                        ? new Pipeline\SafeClusterExecutor()
-                        : new Pipeline\SafeExecutor()
-                );
-            }
-            else {
-                $pipeline = new PipelineContext($this);
-            }
-        }
         return $this->pipelineExecute(
-            $pipeline ?: new PipelineContext($this), $pipelineBlock
+            new PipelineContext($this, $options), $pipelineBlock
         );
     }
 

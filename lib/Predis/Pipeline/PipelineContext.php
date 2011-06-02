@@ -3,17 +3,36 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\Helpers;
 use Predis\ClientException;
 use Predis\Commands\ICommand;
 
 class PipelineContext {
     private $_client, $_pipelineBuffer, $_returnValues, $_running, $_executor;
 
-    public function __construct(Client $client, IPipelineExecutor $executor = null) {
+    public function __construct(Client $client, Array $options = null) {
         $this->_client         = $client;
-        $this->_executor       = $executor ?: new StandardExecutor();
+        $this->_executor       = $this->getExecutor($client, $options ?: array());
         $this->_pipelineBuffer = array();
         $this->_returnValues   = array();
+    }
+
+    protected function getExecutor(Client $client, Array $options) {
+        if (!$options) {
+            return new StandardExecutor();
+        }
+        if (isset($options['executor'])) {
+            $executor = $options['executor'];
+            if (!$executor instanceof IPipelineExecutor) {
+                throw new \ArgumentException();
+            }
+            return $executor;
+        }
+        if (isset($options['safe']) && $options['safe'] == true) {
+            $isCluster = Helpers::isCluster($client->getConnection());
+            return $isCluster ? new SafeClusterExecutor() : new SafeExecutor();
+        }
+        return new StandardExecutor();
     }
 
     public function __call($method, $arguments) {
