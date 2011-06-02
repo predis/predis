@@ -26,7 +26,10 @@ class PipelineContext {
         if (isset($options['executor'])) {
             $executor = $options['executor'];
             if (!$executor instanceof IPipelineExecutor) {
-                throw new \ArgumentException();
+                throw new \InvalidArgumentException(
+                    'The executor option accepts only instances ' .
+                    'of Predis\Pipeline\IPipelineExecutor'
+                );
             }
             return $executor;
         }
