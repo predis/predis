@@ -12,15 +12,19 @@ use Predis\Transaction\MultiExecContext;
 
 class Client {
     const VERSION = '0.7.0-dev';
-    private $_options, $_connectionFactory, $_profile, $_connection;
+
+    private $_options;
+    private $_profile;
+    private $_connectionFactory;
+    private $_connection;
 
     public function __construct($parameters = null, $options = null) {
         $options = $this->filterOptions($options);
-        $this->_options = $options;
         $profile = $options->profile;
         if (isset($options->prefix)) {
             $profile->setProcessor($options->prefix);
         }
+        $this->_options = $options;
         $this->_profile = $profile;
         $this->_connectionFactory = $options->connections;
         $this->_connection = $this->initializeConnection($parameters);
