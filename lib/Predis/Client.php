@@ -192,9 +192,9 @@ class Client {
         return $this->sharedInitializer(func_get_args(), 'initMultiExec');
     }
 
-    private function initMultiExec(Array $options = null, $transBlock = null) {
-        $multi = isset($options) ? new MultiExecContext($this, $options) : new MultiExecContext($this);
-        return $transBlock !== null ? $multi->execute($transBlock) : $multi;
+    private function initMultiExec(Array $options = null, $block = null) {
+        $transaction = new MultiExecContext($this, $options ?: array());
+        return isset($block) ? $transaction->execute($block) : $transaction;
     }
 
     public function pubSubContext(Array $options = null) {
