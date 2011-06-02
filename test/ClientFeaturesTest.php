@@ -486,14 +486,15 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         $multi = $client->multiExec();
+        $transactionClass = '\Predis\Transaction\MultiExecContext';
 
-        $this->assertInstanceOf('\Predis\MultiExecContext', $multi);
-        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->set('foo', 'bar'));
-        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->set('hoge', 'piyo'));
-        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->mset(array(
+        $this->assertInstanceOf($transactionClass, $multi);
+        $this->assertInstanceOf($transactionClass, $multi->set('foo', 'bar'));
+        $this->assertInstanceOf($transactionClass, $multi->set('hoge', 'piyo'));
+        $this->assertInstanceOf($transactionClass, $multi->mset(array(
             'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
         )));
-        $this->assertInstanceOf('\Predis\MultiExecContext', $multi->mget(array(
+        $this->assertInstanceOf($transactionClass, $multi->mget(array(
             'foo', 'hoge', 'foofoo', 'hogehoge'
         )));
 

@@ -8,6 +8,7 @@ use Predis\Network\IConnectionSingle;
 use Predis\Profiles\IServerProfile;
 use Predis\Profiles\ServerProfile;
 use Predis\Pipeline\PipelineContext;
+use Predis\Transaction\MultiExecContext;
 
 class Client {
     const VERSION = '0.7.0-dev';

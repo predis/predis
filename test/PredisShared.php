@@ -168,10 +168,10 @@ class RC {
         try {
             $wrapFunction($testcaseInstance);
         }
-        catch (Predis\AbortedMultiExec $exception) {
+        catch (Predis\Transaction\AbortedMultiExecException $exception) {
             $thrownException = $exception;
         }
-        $testcaseInstance->assertInstanceOf('Predis\AbortedMultiExec', $thrownException);
+        $testcaseInstance->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $thrownException);
     }
 
     public static function pushTailAndReturn(Predis\Client $client, $keyName, Array $values, $wipeOut = 0) {

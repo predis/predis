@@ -1,6 +1,14 @@
 <?php
 
-namespace Predis;
+namespace Predis\Transaction;
+
+use Predis\Client;
+use Predis\Helpers;
+use Predis\ResponseQueued;
+use Predis\ClientException;
+use Predis\ServerException;
+use Predis\ProtocolException;
+use Predis\CommunicationException;
 
 class MultiExecContext {
     private $_initialized, $_discarded, $_insideBlock, $_checkAndSet, $_watchedKeys;
@@ -186,7 +194,7 @@ class MultiExecContext {
             $reply = $this->_client->exec();
             if ($reply === null) {
                 if ($attemptsLeft === 0) {
-                    throw new AbortedMultiExec(
+                    throw new AbortedMultiExecException(
                         'The current transaction has been aborted by the server'
                     );
                 }
