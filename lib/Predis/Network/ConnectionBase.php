@@ -12,8 +12,10 @@ use Predis\ConnectionException;
 use Predis\Commands\ICommand;
 
 abstract class ConnectionBase implements IConnectionSingle {
-    private $_cachedId, $_resource;
-    protected $_params, $_initCmds;
+    private $_resource;
+    private $_cachedId;
+    protected $_params;
+    protected $_initCmds;
 
     public function __construct(IConnectionParameters $parameters) {
         $this->_initCmds = array();

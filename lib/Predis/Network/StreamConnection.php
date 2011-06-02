@@ -11,7 +11,8 @@ use Predis\Protocols\TextCommandSerializer;
 use Predis\Iterators\MultiBulkResponseSimple;
 
 class StreamConnection extends ConnectionBase {
-    private $_mbiterable, $_throwErrors;
+    private $_mbiterable;
+    private $_throwErrors;
 
     public function __destruct() {
         if (!$this->_params->connection_persistent) {

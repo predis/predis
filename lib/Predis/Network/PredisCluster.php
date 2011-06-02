@@ -9,7 +9,8 @@ use Predis\Distribution\IDistributionStrategy;
 use Predis\Distribution\HashRing;
 
 class PredisCluster implements IConnectionCluster, \IteratorAggregate {
-    private $_pool, $_distributor;
+    private $_pool;
+    private $_distributor;
 
     public function __construct(IDistributionStrategy $distributor = null) {
         $this->_pool = array();
