@@ -3,7 +3,9 @@
 namespace Predis;
 
 class MonitorContext implements \Iterator {
-    private $_client, $_isValid, $_position;
+    private $_client;
+    private $_isValid;
+    private $_position;
 
     public function __construct(Client $client) {
         $this->checkCapabilities($client);

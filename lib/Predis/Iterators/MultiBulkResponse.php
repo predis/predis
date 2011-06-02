@@ -3,7 +3,9 @@
 namespace Predis\Iterators;
 
 abstract class MultiBulkResponse implements \Iterator, \Countable {
-    protected $_position, $_current, $_replySize;
+    protected $_position;
+    protected $_current;
+    protected $_replySize;
 
     public function rewind() {
         // NOOP

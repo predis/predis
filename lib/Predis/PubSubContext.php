@@ -14,7 +14,9 @@ class PubSubContext implements \Iterator {
     const STATUS_SUBSCRIBED  = 0x0010;
     const STATUS_PSUBSCRIBED = 0x0100;
 
-    private $_client, $_position, $_options;
+    private $_client;
+    private $_position;
+    private $_options;
 
     public function __construct(Client $client, Array $options = null) {
         $this->checkCapabilities($client);

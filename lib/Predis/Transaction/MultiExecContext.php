@@ -11,8 +11,15 @@ use Predis\ProtocolException;
 use Predis\CommunicationException;
 
 class MultiExecContext {
-    private $_initialized, $_discarded, $_insideBlock, $_checkAndSet, $_watchedKeys;
-    private $_client, $_options, $_commands, $_supportsWatch;
+    private $_client;
+    private $_options;
+    private $_commands;
+    private $_supportsWatch;
+    private $_initialized;
+    private $_discarded;
+    private $_insideBlock;
+    private $_checkAndSet;
+    private $_watchedKeys;
 
     public function __construct(Client $client, Array $options = null) {
         $this->checkCapabilities($client);

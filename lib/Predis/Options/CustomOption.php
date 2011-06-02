@@ -3,7 +3,8 @@
 namespace Predis\Options;
 
 class CustomOption implements IOption {
-    private $_validate, $_default;
+    private $_validate;
+    private $_default;
 
     public function __construct(Array $options) {
         $this->_validate = $this->filterCallable($options, 'validate');

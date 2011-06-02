@@ -5,7 +5,12 @@ namespace Predis\Distribution;
 class HashRing implements IDistributionStrategy {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
-    private $_nodes, $_ring, $_ringKeys, $_ringKeysCount, $_replicas;
+
+    private $_nodes;
+    private $_ring;
+    private $_ringKeys;
+    private $_ringKeysCount;
+    private $_replicas;
 
     public function __construct($replicas = self::DEFAULT_REPLICAS) {
         $this->_replicas = $replicas;

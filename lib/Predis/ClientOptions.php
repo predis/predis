@@ -10,6 +10,7 @@ use Predis\Options\ClientConnectionFactory;
 
 class ClientOptions {
     private static $_sharedOptions;
+
     private $_options = array();
     private $_handlers;
     private $_defined;
