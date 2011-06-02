@@ -194,9 +194,8 @@ class MultiExecContext {
             $reply = $this->_client->exec();
             if ($reply === null) {
                 if ($attemptsLeft === 0) {
-                    throw new AbortedMultiExecException(
-                        'The current transaction has been aborted by the server'
-                    );
+                    $message = 'The current transaction has been aborted by the server';
+                    throw new AbortedMultiExecException($this, $message);
                 }
                 $this->reset();
                 if (isset($this->_options['on_retry']) && is_callable($this->_options['on_retry'])) {
