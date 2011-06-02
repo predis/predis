@@ -390,14 +390,15 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $client->flushdb();
 
         $pipe = $client->pipeline();
+        $pipelineClass = '\Predis\Pipeline\PipelineContext';
 
-        $this->assertInstanceOf('\Predis\PipelineContext', $pipe);
-        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->set('foo', 'bar'));
-        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->set('hoge', 'piyo'));
-        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->mset(array(
+        $this->assertInstanceOf($pipelineClass, $pipe);
+        $this->assertInstanceOf($pipelineClass, $pipe->set('foo', 'bar'));
+        $this->assertInstanceOf($pipelineClass, $pipe->set('hoge', 'piyo'));
+        $this->assertInstanceOf($pipelineClass, $pipe->mset(array(
             'foofoo' => 'barbar', 'hogehoge' => 'piyopiyo'
         )));
-        $this->assertInstanceOf('\Predis\PipelineContext', $pipe->mget(array(
+        $this->assertInstanceOf($pipelineClass, $pipe->mget(array(
             'foo', 'hoge', 'foofoo', 'hogehoge'
         )));
 

@@ -7,6 +7,7 @@ use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
 use Predis\Profiles\IServerProfile;
 use Predis\Profiles\ServerProfile;
+use Predis\Pipeline\PipelineContext;
 
 class Client {
     const VERSION = '0.7.0-dev';

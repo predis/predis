@@ -1,16 +1,17 @@
 <?php
 
-namespace Predis;
+namespace Predis\Pipeline;
 
+use Predis\Client;
+use Predis\ClientException;
 use Predis\Commands\ICommand;
-use Predis\Pipeline\IPipelineExecutor;
 
 class PipelineContext {
     private $_client, $_pipelineBuffer, $_returnValues, $_running, $_executor;
 
     public function __construct(Client $client, IPipelineExecutor $executor = null) {
         $this->_client         = $client;
-        $this->_executor       = $executor ?: new Pipeline\StandardExecutor();
+        $this->_executor       = $executor ?: new StandardExecutor();
         $this->_pipelineBuffer = array();
         $this->_returnValues   = array();
     }
