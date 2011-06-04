@@ -7,7 +7,6 @@ use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\IConnectionParameters;
 use Predis\Commands\ICommand;
-use Predis\Protocols\TextCommandSerializer;
 use Predis\Iterators\MultiBulkResponseSimple;
 
 class StreamConnection extends ConnectionBase {
