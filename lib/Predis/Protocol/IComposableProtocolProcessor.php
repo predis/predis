@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocol;
 
 interface IComposableProtocolProcessor extends IProtocolProcessor {
     public function setSerializer(ICommandSerializer $serializer);

@@ -1,11 +1,11 @@
 <?php
 
-namespace Predis\Protocols\Text;
+namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
 use Predis\ProtocolException;
-use Predis\Protocols\IResponseReader;
-use Predis\Protocols\IResponseHandler;
+use Predis\Protocol\IResponseReader;
+use Predis\Protocol\IResponseHandler;
 use Predis\Network\IConnectionComposable;
 
 class TextResponseReader implements IResponseReader {

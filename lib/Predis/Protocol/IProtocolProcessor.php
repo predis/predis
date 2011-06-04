@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Protocols;
+namespace Predis\Protocol;
 
 use Predis\Commands\ICommand;
 use Predis\Network\IConnectionComposable;

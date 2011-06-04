@@ -2,7 +2,7 @@
 
 namespace Predis\Network;
 
-use Predis\Protocols\IProtocolProcessor;
+use Predis\Protocol\IProtocolProcessor;
 
 interface IConnectionComposable extends IConnectionSingle {
     public function setProtocol(IProtocolProcessor $protocol);
