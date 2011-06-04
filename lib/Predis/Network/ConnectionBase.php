@@ -38,7 +38,6 @@ abstract class ConnectionBase implements IConnectionSingle {
             default:
                 throw new InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
-        return $parameters;
     }
 
     protected function initializeProtocol(IConnectionParameters $parameters) {
