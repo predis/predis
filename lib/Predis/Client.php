@@ -201,8 +201,20 @@ class Client {
         return isset($block) ? $transaction->execute($block) : $transaction;
     }
 
-    public function pubSubContext(Array $options = null) {
-        return new PubSubContext($this, $options);
+    public function pubSubContext(/* arguments */) {
+        return $this->sharedInitializer(func_get_args(), 'initPubSub');
+    }
+
+    protected function initPubSub(Array $options = null, $block = null) {
+        $pubsub = new PubSubContext($this, $options);
+        if (!isset($block)) {
+            return $pubsub;
+        }
+        foreach ($pubsub as $message) {
+            if ($block($pubsub, $message) === false) {
+                $pubsub->closeContext();
+            }
+        }
     }
 
     public function monitor() {
