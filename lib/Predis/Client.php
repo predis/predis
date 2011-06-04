@@ -201,7 +201,7 @@ class Client {
         return isset($block) ? $transaction->execute($block) : $transaction;
     }
 
-    public function pubSubContext(/* arguments */) {
+    public function pubSub(/* arguments */) {
         return $this->sharedInitializer(func_get_args(), 'initPubSub');
     }
 

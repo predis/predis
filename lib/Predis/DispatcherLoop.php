@@ -12,7 +12,7 @@ class DispatcherLoop {
     public function __construct(Client $client) {
         $this->_callbacks = array();
         $this->_client = $client;
-        $this->_pubSubContext = $client->pubSubContext();
+        $this->_pubSubContext = $client->pubSub();
     }
 
     protected function validateCallback($callback) {
