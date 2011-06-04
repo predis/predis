@@ -30,12 +30,8 @@ abstract class ConnectionBase implements IConnectionSingle {
     protected function checkParameters(IConnectionParameters $parameters) {
         switch ($parameters->scheme) {
             case 'unix':
-                $pathToSocket = $parameters->path;
-                if (!isset($pathToSocket)) {
+                if (!isset($parameters->path)) {
                     throw new InvalidArgumentException('Missing UNIX domain socket path');
-                }
-                if (!file_exists($pathToSocket)) {
-                    throw new InvalidArgumentException("Could not find $pathToSocket");
                 }
             case 'tcp':
                 return $parameters;
