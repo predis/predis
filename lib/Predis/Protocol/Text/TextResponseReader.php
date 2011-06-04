@@ -3,9 +3,9 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\ProtocolException;
 use Predis\Protocol\IResponseReader;
 use Predis\Protocol\IResponseHandler;
+use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
 class TextResponseReader implements IResponseReader {

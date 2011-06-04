@@ -7,8 +7,8 @@ use Predis\Helpers;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\ProtocolException;
 use Predis\CommunicationException;
+use Predis\Protocol\ProtocolException;
 
 class MultiExecContext {
     private $_client;

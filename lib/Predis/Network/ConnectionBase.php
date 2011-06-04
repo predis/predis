@@ -7,9 +7,9 @@ use Predis\Helpers;
 use Predis\IReplyObject;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
-use Predis\ProtocolException;
 use Predis\ConnectionException;
 use Predis\Commands\ICommand;
+use Predis\Protocol\ProtocolException;
 
 abstract class ConnectionBase implements IConnectionSingle {
     private $_resource;

@@ -3,8 +3,8 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\ProtocolException;
 use Predis\Protocol\IResponseHandler;
+use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
 class ResponseIntegerHandler implements IResponseHandler {
