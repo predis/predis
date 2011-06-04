@@ -3,7 +3,6 @@
 namespace Predis\Network;
 
 use Predis\IConnectionParameters;
-use Predis\CommunicationException;
 use Predis\Commands\ICommand;
 use Predis\Protocol\IProtocolProcessor;
 use Predis\Protocol\Text\TextProtocol;

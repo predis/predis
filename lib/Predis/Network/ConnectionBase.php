@@ -7,7 +7,6 @@ use Predis\Helpers;
 use Predis\IReplyObject;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
-use Predis\ConnectionException;
 use Predis\Commands\ICommand;
 use Predis\Protocol\ProtocolException;
 
