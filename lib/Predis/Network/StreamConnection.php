@@ -103,7 +103,7 @@ class StreamConnection extends ConnectionBase {
             if ($written === false || $written === 0) {
                 $this->onConnectionError('Error while writing bytes to the server');
             }
-            $value = substr($buffer, $written);
+            $buffer = substr($buffer, $written);
         }
     }
 
