@@ -118,11 +118,23 @@ class WebdisConnection implements IConnectionSingle {
         }
     }
 
+    protected function getHttpOptions() {
+        $options = null;
+        if (isset($this->_parameters->user, $this->_parameters->pass)) {
+            $parameters = $this->_parameters;
+            $options = array(
+                'httpauth' => "{$parameters->user}:{$parameters->pass}",
+                'httpauthtype' => HTTP_AUTH_BASIC,
+            );
+        }
+        return $options;
+    }
+
     public function executeCommand(ICommand $command) {
         $commandId = $this->getCommandId($command);
         $arguments = implode('/', array_map('urlencode', $command->getArguments()));
 
-        $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
+        $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST, $this->getHttpOptions());
         $request->setBody("$commandId/$arguments.raw");
         $request->send();
 
