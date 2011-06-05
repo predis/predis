@@ -83,11 +83,6 @@ class WebdisConnection implements IConnectionSingle {
         };
     }
 
-    private static function argumentsSerializer($str, $arg) {
-        $str .= '/' . urlencode($arg);
-        return $str;
-    }
-
     public function connect() {
         // NOOP
     }
@@ -109,16 +104,19 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     public function executeCommand(ICommand $command) {
-        $params = $this->_parameters;
-        $arguments = array_reduce($command->getArguments(), 'self::argumentsSerializer');
+        $arguments = implode('/', array_map('urlencode', $command->getArguments()));
 
         $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
-        $request->setBody(sprintf('%s%s.raw', $command->getId(), $arguments));
+        $request->setBody("{$command->getId()}/$arguments.raw");
         $request->send();
 
         phpiredis_reader_feed($this->_reader, $request->getResponseBody());
+
         $reply = phpiredis_reader_get_reply($this->_reader);
-        return isset($reply->skipParse) ? $reply : $command->parseResponse($reply);
+        if ($reply instanceof IReplyObject) {
+            return $reply;
+        }
+        return $command->parseResponse($reply);
     }
 
     public function getResource() {
