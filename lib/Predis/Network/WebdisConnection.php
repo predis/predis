@@ -103,11 +103,27 @@ class WebdisConnection implements IConnectionSingle {
         self::throwNotImplementedException(__CLASS__, __FUNCTION__);
     }
 
+    protected function getCommandId(ICommand $command) {
+        switch (($commandId = $command->getId())) {
+            case 'AUTH':
+            case 'SELECT':
+            case 'MULTI':
+            case 'EXEC':
+            case 'WATCH':
+            case 'UNWATCH':
+            case 'DISCARD':
+                throw new \InvalidArgumentException("Disabled command: {$command->getId()}");
+            default:
+                return $commandId;
+        }
+    }
+
     public function executeCommand(ICommand $command) {
+        $commandId = $this->getCommandId($command);
         $arguments = implode('/', array_map('urlencode', $command->getArguments()));
 
         $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
-        $request->setBody("{$command->getId()}/$arguments.raw");
+        $request->setBody("$commandId/$arguments.raw");
         $request->send();
 
         phpiredis_reader_feed($this->_reader, $request->getResponseBody());
