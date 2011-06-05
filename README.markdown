@@ -1,7 +1,5 @@
 # Predis #
 
-## About ##
-
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
 For a list of frequently asked questions about Predis, see the __FAQ__ file in the root of the repository.
@@ -10,8 +8,8 @@ For a version compatible with PHP 5.2 you must use the backported version from t
 
 ## Main features ##
 
-- Full support for Redis from _1.2_ to _2.4_ and the current development versions. Different versions are managed via server profiles.
-- Client-side sharding with support for consistent hashing and custom distribution strategies.
+- Complete support for Redis from __1.2__ to __2.4__ and the current development versions using different server profiles.
+- Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with optional support for persistent connections.
@@ -44,13 +42,13 @@ spl_autoload_register(function($class) {
 ```
 
 You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository 
-just by launching the _createPhar.php_ script located in the _bin_ directory. The generated Phar ships with 
+just by launching the `createPhar.php` script located in the `bin` directory. The generated Phar ships with 
 a stub that defines an autoloader function for Predis, so you just need to require the Phar archive in order 
 to be able to use the library.
 
 Alternatively you can generate a single PHP file that holds every class, just like older versions of Predis, 
-using the _createSingleFile.php_ script located in the _bin_ directory. In this way you can load Predis in 
-your scripts simply by using functions such as _require_ and _include_, but this practice is not encouraged.
+using the `createSingleFile.php` script located in the `bin` directory. In this way you can load Predis in 
+your scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
 
 
 ### Connecting to a local instance of Redis ###
@@ -61,8 +59,8 @@ localhost on the default port:
 ``` php
 <?php
 $redis = new Predis\Client();
-$redis->set('library', 'predis');
-$value = $redis->get('library');
+$redis->set('foo', 'bar');
+$value = $redis->get('foo');
 ```
 
 You can also use an URI string or an array-based dictionary to specify the connection parameters:
@@ -108,7 +106,7 @@ $replies = $redis->pipeline(function($pipe) {
 
 Predis allows developers to create new connection classes to add support for new protocols 
 or override the existing ones to provide a different implementation compared to the default 
-classes. This can be obtained by subclassing the Predis\Network\IConnectionSingle interface.
+classes. This can be obtained by subclassing the `Predis\Network\IConnectionSingle` interface.
 
 ``` php
 <?php
@@ -121,7 +119,7 @@ Predis\ConnectionFactory::define('tcp', 'MyConnectionClass');
 ```
 
 
-You can have a look at the Predis\Network namespace for some actual code that gives a better 
+You can have a look at the `Predis\Network` namespace for some actual code that gives a better 
 insight about how to create new connection classes.
 
 
@@ -154,8 +152,8 @@ want to work on Predis, it is highly recommended that you first run the test sui
 be sure that everything is OK, and report strange behaviours or bugs.
 
 When modifying Predis please be sure that no warnings or notices are emitted by PHP 
-by running the interpreter in your development environment with the _error_reporting_ 
-variable set to __E\_ALL | E\_STRICT__.
+by running the interpreter in your development environment with the `error_reporting` 
+variable set to `E_ALL | E_STRICT`.
 
 The recommended way to contribute to Predis is to fork the project on GitHub, create 
 new topic branches on your newly created repository to fix or add features and then 
