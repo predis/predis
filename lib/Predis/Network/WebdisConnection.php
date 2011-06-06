@@ -119,13 +119,11 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     protected function getHttpOptions() {
-        $options = null;
-        if (isset($this->_parameters->user, $this->_parameters->pass)) {
-            $parameters = $this->_parameters;
-            $options = array(
-                'httpauth' => "{$parameters->user}:{$parameters->pass}",
-                'httpauthtype' => HTTP_AUTH_BASIC,
-            );
+        $options = array();
+        $parameters = $this->_parameters;
+        if (isset($parameters->user, $parameters->pass)) {
+            $options['httpauth'] = "{$parameters->user}:{$parameters->pass}";
+            $options['httpauthtype'] = HTTP_AUTH_BASIC;
         }
         return $options;
     }
@@ -134,11 +132,14 @@ class WebdisConnection implements IConnectionSingle {
         $commandId = $this->getCommandId($command);
         $arguments = implode('/', array_map('urlencode', $command->getArguments()));
 
-        $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST, $this->getHttpOptions());
+        $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
+        if ($options = $this->getHttpOptions()) {
+            $request->setOptions($options);
+        }
         $request->setBody("$commandId/$arguments.raw");
-        $request->send();
 
-        phpiredis_reader_feed($this->_reader, $request->getResponseBody());
+        $response = $request->send();
+        phpiredis_reader_feed($this->_reader, $response->getBody());
 
         $reply = phpiredis_reader_get_reply($this->_reader);
         if ($reply instanceof IReplyObject) {
