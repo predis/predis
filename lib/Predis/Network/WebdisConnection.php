@@ -129,14 +129,19 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     public function executeCommand(ICommand $command) {
-        $commandId = $this->getCommandId($command);
-        $arguments = implode('/', array_map('urlencode', $command->getArguments()));
-
         $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
         if ($options = $this->getHttpOptions()) {
             $request->setOptions($options);
         }
-        $request->setBody("$commandId/$arguments.raw");
+
+        $commandId = $this->getCommandId($command);
+        if ($arguments = $command->getArguments()) {
+            $arguments = implode('/', array_map('urlencode', $arguments));
+            $request->setBody("$commandId/$arguments.raw");
+        }
+        else {
+            $request->setBody("$commandId.raw");
+        }
 
         $response = $request->send();
         phpiredis_reader_feed($this->_reader, $response->getBody());
