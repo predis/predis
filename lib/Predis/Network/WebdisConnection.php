@@ -30,10 +30,6 @@ class WebdisConnection implements IConnectionSingle {
     private $_resource;
     private $_reader;
 
-    private static function throwNotImplementedException($class, $function) {
-        throw new \RuntimeException("The method $class::$function() is not implemented");
-    }
-
     public function __construct(IConnectionParameters $parameters) {
         $this->_parameters = $parameters;
         if ($parameters->scheme !== 'http') {
@@ -47,6 +43,11 @@ class WebdisConnection implements IConnectionSingle {
     public function __destruct() {
         curl_close($this->_resource);
         phpiredis_reader_destroy($this->_reader);
+    }
+
+    private function throwNotSupportedException($function) {
+        $class = __CLASS__;
+        throw new \RuntimeException("The method $class::$function() is not supported");
     }
 
     private function checkExtensions() {
@@ -118,11 +119,11 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     public function writeCommand(ICommand $command) {
-        self::throwNotImplementedException(__CLASS__, __FUNCTION__);
+        $this->throwNotSupportedException(__FUNCTION__);
     }
 
     public function readResponse(ICommand $command) {
-        self::throwNotImplementedException(__CLASS__, __FUNCTION__);
+        $this->throwNotSupportedException(__FUNCTION__);
     }
 
     protected function getCommandId(ICommand $command) {
@@ -182,11 +183,11 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     public function pushInitCommand(ICommand $command) {
-        self::throwNotImplementedException(__CLASS__, __FUNCTION__);
+        $this->throwNotSupportedException(__FUNCTION__);
     }
 
     public function read() {
-        self::throwNotImplementedException(__CLASS__, __FUNCTION__);
+        $this->throwNotSupportedException(__FUNCTION__);
     }
 
     public function __toString() {
