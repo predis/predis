@@ -118,14 +118,6 @@ class WebdisConnection implements IConnectionSingle {
         return true;
     }
 
-    public function writeCommand(ICommand $command) {
-        $this->throwNotSupportedException(__FUNCTION__);
-    }
-
-    public function readResponse(ICommand $command) {
-        $this->throwNotSupportedException(__FUNCTION__);
-    }
-
     protected function getCommandId(ICommand $command) {
         switch (($commandId = $command->getId())) {
             case 'AUTH':
@@ -139,6 +131,14 @@ class WebdisConnection implements IConnectionSingle {
             default:
                 return $commandId;
         }
+    }
+
+    public function writeCommand(ICommand $command) {
+        $this->throwNotSupportedException(__FUNCTION__);
+    }
+
+    public function readResponse(ICommand $command) {
+        $this->throwNotSupportedException(__FUNCTION__);
     }
 
     public function executeCommand(ICommand $command) {
