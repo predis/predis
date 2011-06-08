@@ -16,19 +16,18 @@ implemented yet (or they simply cannot be implemented at all). Here is a list:
 
 namespace Predis\Network;
 
-use HttpRequest;
 use Predis\IConnectionParameters;
 use Predis\ResponseError;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\CommunicationException;
 use Predis\Commands\ICommand;
+use Predis\Protocol\ProtocolException;
 
 const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
 
 class WebdisConnection implements IConnectionSingle {
     private $_parameters;
-    private $_webdisUrl;
+    private $_resource;
     private $_reader;
 
     private static function throwNotImplementedException($class, $function) {
@@ -36,33 +35,51 @@ class WebdisConnection implements IConnectionSingle {
     }
 
     public function __construct(IConnectionParameters $parameters) {
-        $this->checkExtensions();
+        $this->_parameters = $parameters;
         if ($parameters->scheme !== 'http') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
-        $this->_parameters = $parameters;
-        $this->_webdisUrl = "{$parameters->scheme}://{$parameters->host}:{$parameters->port}";
+        $this->checkExtensions();
+        $this->_resource = $this->initializeCurl($parameters);
         $this->_reader = $this->initializeReader($parameters);
     }
 
     public function __destruct() {
+        curl_close($this->_resource);
         phpiredis_reader_destroy($this->_reader);
     }
 
     private function checkExtensions() {
-        if (!class_exists("HttpRequest")) {
-            throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'http'));
+        if (!function_exists('curl_init')) {
+            throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'curl'));
         }
         if (!function_exists('phpiredis_reader_create')) {
             throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'phpiredis'));
         }
     }
 
+    private function initializeCurl(IConnectionParameters $parameters) {
+        $options = array(
+            CURLOPT_URL => "{$parameters->scheme}://{$parameters->host}:{$parameters->port}",
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_POST => true,
+            CURLOPT_WRITEFUNCTION => array($this, 'feedReader'),
+        );
+
+        if (isset($parameters->user, $parameters->pass)) {
+            $options[CURLOPT_USERPWD] = "{$parameters->user}:{$parameters->pass}";
+        }
+
+        $resource = curl_init();
+        curl_setopt_array($resource, $options);
+
+        return $resource;
+    }
+
     private function initializeReader(IConnectionParameters $parameters) {
-        $throwErrors = $parameters->throw_errors;
         $reader = phpiredis_reader_create();
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($throwErrors));
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($parameters->throw_errors));
         return $reader;
     }
 
@@ -81,6 +98,11 @@ class WebdisConnection implements IConnectionSingle {
         return function($errorMessage) {
             return new ResponseError($errorMessage);
         };
+    }
+
+    protected function feedReader($resource, $buffer) {
+        phpiredis_reader_feed($this->_reader, $buffer);
+        return strlen($buffer);
     }
 
     public function connect() {
@@ -118,43 +140,41 @@ class WebdisConnection implements IConnectionSingle {
         }
     }
 
-    protected function getHttpOptions() {
-        $options = array();
-        $parameters = $this->_parameters;
-        if (isset($parameters->user, $parameters->pass)) {
-            $options['httpauth'] = "{$parameters->user}:{$parameters->pass}";
-            $options['httpauthtype'] = HTTP_AUTH_BASIC;
-        }
-        return $options;
-    }
-
     public function executeCommand(ICommand $command) {
-        $request = new HttpRequest($this->_webdisUrl, HttpRequest::METH_POST);
-        if ($options = $this->getHttpOptions()) {
-            $request->setOptions($options);
-        }
-
+        $resource = $this->_resource;
         $commandId = $this->getCommandId($command);
+
         if ($arguments = $command->getArguments()) {
             $arguments = implode('/', array_map('urlencode', $arguments));
-            $request->setBody("$commandId/$arguments.raw");
+            $serializedCommand = "$commandId/$arguments.raw";
         }
         else {
-            $request->setBody("$commandId.raw");
+            $serializedCommand = "$commandId.raw";
         }
 
-        $response = $request->send();
-        phpiredis_reader_feed($this->_reader, $response->getBody());
-
-        $reply = phpiredis_reader_get_reply($this->_reader);
-        if ($reply instanceof IReplyObject) {
-            return $reply;
+        curl_setopt($resource, CURLOPT_POSTFIELDS, $serializedCommand);
+        if (curl_exec($resource) === false) {
+            $error = curl_error($resource);
+            $errno = curl_errno($resource);
+            throw new ConnectionException($this, trim($error), $errno);
         }
-        return $command->parseResponse($reply);
+
+        $readerState = phpiredis_reader_get_state($this->_reader);
+        if ($readerState === PHPIREDIS_READER_STATE_COMPLETE) {
+            $reply = phpiredis_reader_get_reply($this->_reader);
+            if ($reply instanceof IReplyObject) {
+                return $reply;
+            }
+            return $command->parseResponse($reply);
+        }
+        else {
+            $error = phpiredis_reader_get_error($this->_reader);
+            throw new ProtocolException($this, $error);
+        }
     }
 
     public function getResource() {
-        self::throwNotImplementedException(__CLASS__, __FUNCTION__);
+        return $this->_resource;
     }
 
     public function getParameters() {
