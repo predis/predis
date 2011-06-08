@@ -61,6 +61,7 @@ class WebdisConnection implements IConnectionSingle {
 
     private function initializeCurl(IConnectionParameters $parameters) {
         $options = array(
+            CURLOPT_CONNECTTIMEOUT_MS => $parameters->connection_timeout * 1000,
             CURLOPT_URL => "{$parameters->scheme}://{$parameters->host}:{$parameters->port}",
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
