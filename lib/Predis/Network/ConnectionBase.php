@@ -98,7 +98,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     }
 
     public function getResource() {
-        if (isset($this->_resource)) {
+        if (isset($this->_resource) && is_resource($this->_resource)) {
             return $this->_resource;
         }
         $this->connect();
