@@ -46,7 +46,7 @@ abstract class ConnectionBase implements IConnectionSingle {
     protected abstract function createResource();
 
     public function isConnected() {
-        return isset($this->_resource);
+        return isset($this->_resource) && is_resource($this->_resource);
     }
 
     public function connect() {
