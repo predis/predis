@@ -6,9 +6,7 @@ It relies on the http PECL extension to communicate with the web server and the
 phpiredis extension to parse the protocol of the replies returned in the http
 response bodies.
 
-Since this connection class is highly experimental, some features have not been
-implemented yet (or they simply cannot be implemented at all). Here is a list:
-
+Some features are not yet available or they simply cannot be implemented:
   - Pipelining commands.
   - Publish / Subscribe.
   - MULTI / EXEC transactions (not yet supported by Webdis).
