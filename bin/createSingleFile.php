@@ -289,8 +289,8 @@ class PhpClass {
 
         $classBuffer = preg_replace('/<\?php\s?\\n\s?/', '', $classBuffer);
         $classBuffer = preg_replace('/\s?\?>\n?/ms', '', $classBuffer);
-        $classBuffer = preg_replace('/namespace\s+.*;\s?/', '', $classBuffer);
-        $classBuffer = preg_replace_callback('/use\s+(.*)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
+        $classBuffer = preg_replace('/namespace\s+[\w\d_\\\]+;\s?/', '', $classBuffer);
+        $classBuffer = preg_replace_callback('/use\s+([\w\d_\\\]+)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
 
         $this->_body = trim($classBuffer);
 
