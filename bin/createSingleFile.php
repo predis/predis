@@ -10,6 +10,9 @@
 //
 // The current implementation is pretty naïve, but it should do for now.
 //
+// TODO: add some kind of blacklisting mechanism to leave out certain classes
+//       that may be considered useless for developers.
+//
 
 /* -------------------------------------------------------------------------- */
 
