@@ -1,12 +1,12 @@
 #!/usr/bin/php
 <?php
-// This script can be used to automatically glue all the .php files of Predis 
-// into a single monolithic script file that can be used without an autoloader, 
+// This script can be used to automatically glue all the .php files of Predis
+// into a single monolithic script file that can be used without an autoloader,
 // just like the other previous versions of the library.
 //
-// Much of its complexity is due to the fact that we cannot simply join PHP 
-// files, but namespaces and classes definitions must follow a precise order 
-// when dealing with subclassing and inheritance. 
+// Much of its complexity is due to the fact that we cannot simply join PHP
+// files, but namespaces and classes definitions must follow a precise order
+// when dealing with subclassing and inheritance.
 //
 // The current implementation is pretty naïve, but it should do for now.
 //
@@ -176,7 +176,6 @@ class PhpNamespace implements IteratorAggregate {
         }
         $ns = substr($fqn, 0, $nsSepLast);
         return $ns !== '' ? $ns : null;
-            
     }
 
     public function addClass(PhpClass $class) {
@@ -371,7 +370,7 @@ class PhpClass {
 
     public function guessFQN($classes) {
         $useDirectives = $this->getNamespace()->getUseDirectives();
-        return array_map(array($useDirectives, 'getFQN'), $classes);        
+        return array_map(array($useDirectives, 'getFQN'), $classes);
     }
 
     public function getImplementedInterfaces($all = false) {
