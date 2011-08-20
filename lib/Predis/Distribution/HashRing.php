@@ -80,12 +80,16 @@ class HashRing implements IDistributionStrategy {
 
     protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
         $nodeObject = $node['object'];
-        $nodeHash = (string) $nodeObject;
+        $nodeHash = $this->getNodeHash($nodeObject);
         $replicas = (int) round($weightRatio * $totalNodes * $replicas);
         for ($i = 0; $i < $replicas; $i++) {
             $key = crc32("$nodeHash:$i");
             $ring[$key] = $nodeObject;
         }
+    }
+
+    protected function getNodeHash($nodeObject) {
+        return (string) $nodeObject;
     }
 
     public function generateKey($value) {

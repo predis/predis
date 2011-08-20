@@ -11,7 +11,7 @@ class KetamaPureRing extends HashRing {
 
     protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio) {
         $nodeObject = $node['object'];
-        $nodeHash = (string) $nodeObject;
+        $nodeHash = $this->getNodeHash($nodeObject);
         $replicas = (int) floor($weightRatio * $totalNodes * ($replicas / 4));
         for ($i = 0; $i < $replicas; $i++) {
             $unpackedDigest = unpack('V4', md5("$nodeHash-$i", true));
