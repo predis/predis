@@ -39,9 +39,11 @@ class HashRing implements IDistributionStrategy {
     }
 
     private function reset() {
-        unset($this->_ring);
-        unset($this->_ringKeys);
-        unset($this->_ringKeysCount);
+        unset(
+            $this->_ring,
+            $this->_ringKeys,
+            $this->_ringKeysCount
+        );
     }
 
     private function isInitialized() {
