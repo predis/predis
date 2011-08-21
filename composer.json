@@ -1,0 +1,19 @@
+{
+    "name": "Predis",
+    "type": "Library",
+    "description": "Flexible and feature-complete PHP client library for Redis",
+    "keywords": ["nosql","redis"],
+    "homepage": "http://github.com/nrk/predis",
+    "version": "0.7.0-dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniele Alessandri",
+            "email": "suppakilla@gmail.com",
+            "homepage": "http://clorophilla.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
