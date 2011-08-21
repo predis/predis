@@ -21,7 +21,7 @@ class MultiExecContext {
     private $_client;
     private $_options;
     private $_state;
-    private $_supportsWatch;
+    private $_canWatch;
     private $_commands;
 
     public function __construct(Client $client, Array $options = null) {
@@ -59,11 +59,11 @@ class MultiExecContext {
                 'The current profile does not support MULTI, EXEC and DISCARD commands'
             );
         }
-        $this->_supportsWatch = $profile->supportsCommands(array('watch', 'unwatch'));
+        $this->_canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
     }
 
     private function isWatchSupported() {
-        if ($this->_supportsWatch === false) {
+        if ($this->_canWatch === false) {
             throw new ClientException(
                 'The current profile does not support WATCH and UNWATCH commands'
             );
@@ -118,8 +118,9 @@ class MultiExecContext {
         if ($this->checkState(self::STATE_INITIALIZED) && !$this->checkState(self::STATE_CAS)) {
             throw new ClientException('WATCH inside MULTI is not allowed');
         }
+        $watchReply = $this->_client->watch($keys);
         $this->flagState(self::STATE_WATCH);
-        return $this->_client->watch($keys);
+        return $watchReply;
     }
 
     public function multi() {
@@ -187,6 +188,7 @@ class MultiExecContext {
         $reply = null;
         $returnValues = array();
         $attemptsLeft = isset($this->_options['retry']) ? (int)$this->_options['retry'] : 0;
+
         do {
             $blockException = null;
             if ($block !== null) {
@@ -213,7 +215,6 @@ class MultiExecContext {
             if (count($this->_commands) === 0) {
                 if ($this->checkState(self::STATE_WATCH)) {
                     $this->discard();
-                    return;
                 }
                 return;
             }
@@ -236,7 +237,7 @@ class MultiExecContext {
         $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
         $sizeofReplies = count($execReply);
 
-        $commands = &$this->_commands;
+        $commands = $this->_commands;
         if ($sizeofReplies !== count($commands)) {
             $this->onProtocolError('Unexpected number of responses for a MultiExecContext');
         }
