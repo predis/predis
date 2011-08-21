@@ -112,7 +112,7 @@ class PubSubContext implements \Iterator {
 
     public function valid() {
         $isValid = $this->isFlagSet(self::STATUS_VALID);
-        $subscriptionFlags = self::STATUS_SUBSCRIBED + self::STATUS_PSUBSCRIBED;
+        $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED;
         $hasSubscriptions = ($this->_statusFlags & $subscriptionFlags) > 0;
         return $isValid && $hasSubscriptions;
     }
