@@ -224,10 +224,11 @@ class MultiExecContext {
             $this->onProtocolError('Unexpected number of responses for a MultiExecContext');
         }
         for ($i = 0; $i < $sizeofReplies; $i++) {
-            $returnValues[] = $commands[$i]->parseResponse($execReply[$i] instanceof \Iterator
-                ? iterator_to_array($execReply[$i])
-                : $execReply[$i]
-            );
+            $commandReply = $execReply[$i];
+            if ($commandReply instanceof \Iterator) {
+                $commandReply = iterator_to_array($commandReply);
+            }
+            $returnValues[$i] = $commands[$i]->parseResponse($commandReply);
             unset($commands[$i]);
         }
 
