@@ -190,26 +190,8 @@ class MultiExecContext {
         $attemptsLeft = isset($this->_options['retry']) ? (int)$this->_options['retry'] : 0;
 
         do {
-            $blockException = null;
             if ($block !== null) {
-                $this->flagState(self::STATE_INSIDEBLOCK);
-                try {
-                    $block($this);
-                }
-                catch (CommunicationException $exception) {
-                    $blockException = $exception;
-                }
-                catch (ServerException $exception) {
-                    $blockException = $exception;
-                }
-                catch (\Exception $exception) {
-                    $blockException = $exception;
-                    $this->discard();
-                }
-                $this->unflagState(self::STATE_INSIDEBLOCK);
-                if ($blockException !== null) {
-                    throw $blockException;
-                }
+                $this->executeTransactionBlock($block);
             }
 
             if (count($this->_commands) === 0) {
@@ -250,6 +232,28 @@ class MultiExecContext {
         }
 
         return $returnValues;
+    }
+
+    private function executeTransactionBlock($block) {
+        $blockException = null;
+        $this->flagState(self::STATE_INSIDEBLOCK);
+        try {
+            $block($this);
+        }
+        catch (CommunicationException $exception) {
+            $blockException = $exception;
+        }
+        catch (ServerException $exception) {
+            $blockException = $exception;
+        }
+        catch (\Exception $exception) {
+            $blockException = $exception;
+            $this->discard();
+        }
+        $this->unflagState(self::STATE_INSIDEBLOCK);
+        if ($blockException !== null) {
+            throw $blockException;
+        }
     }
 
     private function onProtocolError($message) {
