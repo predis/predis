@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 // This script can be used to automatically glue all the .php files of Predis
 // into a single monolithic script file that can be used without an autoloader,

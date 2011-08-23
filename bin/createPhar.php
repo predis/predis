@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 // In order to be able to execute this script to create a Phar archive of Predis,
 // the Phar module must be loaded and the "phar.readonly" directive php.ini must
