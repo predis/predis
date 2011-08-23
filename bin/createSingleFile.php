@@ -10,11 +10,49 @@
 //
 // The current implementation is pretty naïve, but it should do for now.
 //
-// TODO: add some kind of blacklisting mechanism to leave out certain classes
-//       that may be considered useless for developers.
-//
 
 /* -------------------------------------------------------------------------- */
+
+class CommandLine {
+    public static function getOptions() {
+        $parameters = array(
+            's:'  => 'source:',
+            'o:'  => 'output:',
+            'e:'  => 'exclude:',
+            'E:'  => 'exclude-classes:',
+        );
+
+        $getops = getopt(implode(array_keys($parameters)), $parameters);
+        $options = array(
+            'source'  => __DIR__ . "/../lib/",
+            'output'  => PredisFile::NS_ROOT . '.php',
+            'exclude' => array(),
+        );
+
+        foreach ($getops as $option => $value) {
+            switch ($option) {
+                case 's':
+                case 'source':
+                    $options['source'] = $value;
+                    break;
+                case 'o':
+                case 'output':
+                    $options['output'] = $value;
+                    break;
+                case 'E':
+                case 'exclude-classes':
+                    $options['exclude'] = @file($value, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: $value;
+                    break;
+                case 'e':
+                case 'exclude':
+                    $options['exclude'] = is_array($value) ? $value : array($value);
+                    break;
+            }
+        }
+
+        return $options;
+    }
+}
 
 class PredisFile {
     const NS_ROOT = 'Predis';
@@ -24,7 +62,7 @@ class PredisFile {
         $this->_namespaces = array();
     }
 
-    public static function from($libraryPath) {
+    public static function from($libraryPath, Array $exclude = array()) {
         $nsroot = self::NS_ROOT;
         $predisFile = new PredisFile();
         $libIterator = new RecursiveDirectoryIterator("$libraryPath$nsroot");
@@ -33,7 +71,12 @@ class PredisFile {
             if (!$classFile->isFile()) {
                 continue;
             }
+
             $namespace = strtr(str_replace($libraryPath, '', $classFile->getPath()), '/', '\\');
+            if (in_array(sprintf('%s\\%s', $namespace, $classFile->getBasename('.php')), $exclude)) {
+                continue;
+            }
+
             $phpNamespace = $predisFile->getNamespace($namespace);
             if ($phpNamespace === false) {
                 $phpNamespace = new PhpNamespace($namespace);
@@ -79,7 +122,9 @@ class PredisFile {
             $classes[$fqn] = 0;
         }
         $classes[$fqn] += 1;
-        $phpClass = $this->getClassByFQN($fqn);
+        if (($phpClass = $this->getClassByFQN($fqn)) === null) {
+            throw new RuntimeException("Cannot found the class $fqn which is required by other subclasses. Are you missing a file?");
+        }
         foreach ($phpClass->getDependencies() as $fqn) {
             $this->calculateDependencyScores($classes, $fqn);
         }
@@ -186,7 +231,9 @@ class PhpNamespace implements IteratorAggregate {
     }
 
     public function getClass($className) {
-        return $this->_classes[$className];
+        if (isset($this->_classes[$className])) {
+            return $this->_classes[$className];
+        }
     }
 
     public function getClasses() {
@@ -434,5 +481,6 @@ class PhpClass {
 
 /* -------------------------------------------------------------------------- */
 
-$predisFile = PredisFile::from(__DIR__ . "/../lib/");
-$predisFile->saveTo(isset($argv[1]) ? $argv[1] : PredisFile::NS_ROOT . ".php");
+$options = CommandLine::getOptions();
+$predisFile = PredisFile::from($options['source'], $options['exclude']);
+$predisFile->saveTo($options['output']);
