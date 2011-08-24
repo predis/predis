@@ -60,7 +60,7 @@ class MultiExecContext {
         $profile = $client->getProfile();
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
             throw new ClientException(
-                'The current profile does not support MULTI, EXEC and DISCARD commands'
+                'The current profile does not support MULTI, EXEC and DISCARD'
             );
         }
         $this->_canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
@@ -69,7 +69,7 @@ class MultiExecContext {
     private function isWatchSupported() {
         if ($this->_canWatch === false) {
             throw new ClientException(
-                'The current profile does not support WATCH and UNWATCH commands'
+                'The current profile does not support WATCH and UNWATCH'
             );
         }
     }
@@ -120,7 +120,7 @@ class MultiExecContext {
     public function watch($keys) {
         $this->isWatchSupported();
         if ($this->checkState(self::STATE_INITIALIZED) && !$this->checkState(self::STATE_CAS)) {
-            throw new ClientException('WATCH inside MULTI is not allowed');
+            throw new ClientException('WATCH after MULTI is not allowed');
         }
         $watchReply = $this->_client->watch($keys);
         $this->flagState(self::STATE_WATCH);
@@ -225,7 +225,7 @@ class MultiExecContext {
 
         $commands = $this->_commands;
         if ($sizeofReplies !== count($commands)) {
-            $this->onProtocolError('Unexpected number of responses for a MultiExecContext');
+            $this->onProtocolError("EXEC returned an unexpected number of replies");
         }
         for ($i = 0; $i < $sizeofReplies; $i++) {
             $commandReply = $execReply[$i];
