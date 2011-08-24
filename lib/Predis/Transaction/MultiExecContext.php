@@ -35,6 +35,10 @@ class MultiExecContext {
         $this->_state = $flags;
     }
 
+    protected function getState() {
+        return $this->_state;
+    }
+
     protected function flagState($flags) {
         $this->_state |= $flags;
     }
