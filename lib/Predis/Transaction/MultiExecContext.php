@@ -18,11 +18,11 @@ class MultiExecContext {
     const STATE_CAS         = 0x01000;
     const STATE_WATCH       = 0x10000;
 
-    private $_client;
-    private $_options;
     private $_state;
     private $_canWatch;
-    private $_commands;
+    protected $_client;
+    protected $_options;
+    protected $_commands;
 
     public function __construct(Client $client, Array $options = null) {
         $this->checkCapabilities($client);
@@ -74,12 +74,12 @@ class MultiExecContext {
         }
     }
 
-    private function reset() {
+    protected function reset() {
         $this->setState(self::STATE_RESET);
         $this->_commands = array();
     }
 
-    private function initialize() {
+    protected function initialize() {
         if ($this->checkState(self::STATE_INITIALIZED)) {
             return;
         }
@@ -239,7 +239,7 @@ class MultiExecContext {
         return $returnValues;
     }
 
-    private function executeTransactionBlock($block) {
+    protected function executeTransactionBlock($block) {
         $blockException = null;
         $this->flagState(self::STATE_INSIDEBLOCK);
         try {
