@@ -28,17 +28,16 @@ complete coverage of all the features available in Predis.
 Predis relies on the autoloading features of PHP and complies with the 
 [PSR-0 standard](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) 
 for interoperability with most of the major frameworks and libraries.
-When used in simple projects or scripts you might need to define an autoloader function:
+
+When used in a project or script without PSR-0 autoloading, Predis includes its own autoloader for you to use:
 
 ``` php
 <?php
-spl_autoload_register(function($class) {
-    $file = PREDIS_BASE_PATH . strtr($class, '\\', '/') . '.php';
-    if (file_exists($file)) {
-        require $file;
-        return true;
-    }
-});
+require PREDIS_BASE_PATH . '/Autoloader.php';
+Predis\Autoloader::register();
+
+// You can now create a Predis\Client, and use other Predis classes, without
+// requiring any additional files.
 ```
 
 You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository 
