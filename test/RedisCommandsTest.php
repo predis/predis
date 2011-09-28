@@ -2076,7 +2076,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertGreaterThan(0, $this->redis->lastsave());
     }
 
-    function testMagicUppercase() {
+    function testUppercaseCommands() {
         $uppercase = $this->redis->getProfile()->supportsCommand('INFO');
         $lowercase = $this->redis->getProfile()->supportsCommand('info');
         $this->assertEquals($uppercase, $lowercase);
