@@ -70,10 +70,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport {
     }
 
     public function supportsCommand($command) {
+        $command = strtolower($command);
         return isset($this->_registeredCommands[$command]);
     }
 
     public function createCommand($method, $arguments = array()) {
+        $method = strtolower($method);
         if (!isset($this->_registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
