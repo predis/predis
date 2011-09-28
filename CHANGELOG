@@ -14,6 +14,9 @@ v0.7.0 (2010-xx-xx)
       - Predis\Client::setProfile()
         This method is no more part of the public API and has been made private.
 
+  * Predis now includes its own autoloader. To use it, include Autoloader.php
+    and call Predis\Autoloader::register().
+
   * The Predis\MultiBulkCommand class has been merged into Predis\Command and 
     thus removed. If you have code that extends Predis\MultiBulkCommand but 
     you can not afford to update your code, you can always implement it again 
