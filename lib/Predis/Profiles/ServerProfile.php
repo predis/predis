@@ -70,8 +70,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport {
     }
 
     public function supportsCommand($command) {
-        $command = strtolower($command);
-        return isset($this->_registeredCommands[$command]);
+        return isset($this->_registeredCommands[strtolower($command)]);
     }
 
     public function createCommand($method, $arguments = array()) {
