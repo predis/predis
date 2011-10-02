@@ -99,7 +99,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport {
         if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
-        $this->_registeredCommands[$alias] = $command;
+        $this->_registeredCommands[strtolower($alias)] = $command;
     }
 
     public function setProcessor(ICommandProcessor $processor) {
