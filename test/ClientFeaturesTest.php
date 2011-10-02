@@ -152,6 +152,18 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf($cmdClass, $profile->createCommand($cmdId));
     }
 
+    function testServerProfile_CaseInsensitiveCommandsNames() {
+        $profile = $this->redis->getProfile();
+
+        $uppercase = $profile->supportsCommand('INFO');
+        $lowercase = $profile->supportsCommand('info');
+        $this->assertEquals($uppercase, $lowercase);
+
+        $uppercase = $profile->createCommand('INFO');
+        $lowercase = $profile->createCommand('info');
+        $this->assertEquals($uppercase, $lowercase);
+    }
+
 
     /* Predis\ResponseQueued */
 
