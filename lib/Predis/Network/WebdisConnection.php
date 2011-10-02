@@ -2,7 +2,7 @@
 /*
 This class implements a Predis connection that actually talks with Webdis
 (http://github.com/nicolasff/webdis) instead of connecting directly to Redis.
-It relies on the http PECL extension to communicate with the web server and the
+It relies on the cURL extension to communicate with the web server and the
 phpiredis extension to parse the protocol of the replies returned in the http
 response bodies.
 
