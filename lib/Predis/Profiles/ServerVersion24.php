@@ -177,7 +177,6 @@ class ServerVersion24 extends ServerProfile {
             /* ---------------- Redis 2.4 ---------------- */
 
             /* remote server control commands */
-            'info'                      => '\Predis\Commands\ServerInfoV24x',
             'client'                    => '\Predis\Commands\ServerClient',
         );
     }

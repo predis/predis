@@ -2,7 +2,7 @@
 
 namespace Predis\Commands;
 
-class ServerInfoV24x extends ServerInfo {
+class ServerInfoV26x extends ServerInfo {
     public function parseResponse($data) {
         $info      = array();
         $current   = null;
