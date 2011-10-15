@@ -1,14 +1,10 @@
 <?php
-// -------------------------------------------------------------------------- //
 
-define('I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE', false);
-
-// -------------------------------------------------------------------------- //
-
-if (I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE !== true) {
+if (!file_exists(__DIR__.'/enable.tests')) {
     exit(
-        "Please set the I_AM_AWARE_OF_THE_DESTRUCTIVE_POWER_OF_THIS_TEST_SUITE " .
-        "constant to TRUE in PredisShared.php if you want to proceed.\n"
+        "Please create an empty file named 'enabled.tests' inside the test directory ".
+        "in order to proceed.\n\n*** DO NOT *** run this test suite against servers in ".
+        "a production environment or containing data you are interested in!\n"
     );
 }
 
