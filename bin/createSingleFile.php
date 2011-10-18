@@ -217,7 +217,7 @@ class PredisFile
 
     public function getPhpCode()
     {
-        $buffer = array("<?php\n\n");
+        $buffer = array("<?php\n\n", PhpClass::LICENSE_HEADER, "\n\n");
         $classes = $this->getDependencyScores();
         $namespaces = $this->getOrderedNamespaces($classes);
 
@@ -390,6 +390,17 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
 class PhpClass
 {
+    const LICENSE_HEADER = <<<LICENSE
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+LICENSE;
+
     private $_namespace;
     private $_file;
     private $_body;
@@ -428,10 +439,12 @@ class PhpClass
 
         $classBuffer = stream_get_contents(fopen($this->getFile()->getPathname(), 'r'));
 
+        $classBuffer = str_replace(self::LICENSE_HEADER, '', $classBuffer);
+
         $classBuffer = preg_replace('/<\?php\s?\\n\s?/', '', $classBuffer);
         $classBuffer = preg_replace('/\s?\?>\n?/ms', '', $classBuffer);
-        $classBuffer = preg_replace('/namespace\s+[\w\d_\\\]+;\s?/', '', $classBuffer);
-        $classBuffer = preg_replace_callback('/use\s+([\w\d_\\\]+)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
+        $classBuffer = preg_replace('/namespace\s+[\w\d_\\\\]+;\s?/', '', $classBuffer);
+        $classBuffer = preg_replace_callback('/use\s+([\w\d_\\\\]+)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
 
         $this->_body = trim($classBuffer);
 
