@@ -12,7 +12,8 @@ use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
-class TextProtocol implements IProtocolProcessor {
+class TextProtocol implements IProtocolProcessor
+{
     const NEWLINE = "\r\n";
     const OK      = 'OK';
     const ERROR   = 'ERR';
@@ -27,29 +28,37 @@ class TextProtocol implements IProtocolProcessor {
 
     const BUFFER_SIZE = 4096;
 
-    private $_mbiterable, $_throwErrors, $_serializer;
+    private $_mbiterable;
+    private $_throwErrors;
+    private $_serializer;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->_mbiterable  = false;
         $this->_throwErrors = true;
         $this->_serializer  = new TextCommandSerializer();
     }
 
-    public function write(IConnectionComposable $connection, ICommand $command) {
+    public function write(IConnectionComposable $connection, ICommand $command)
+    {
         $connection->writeBytes($this->_serializer->serialize($command));
     }
 
-    public function read(IConnectionComposable $connection) {
+    public function read(IConnectionComposable $connection)
+    {
         $chunk = $connection->readLine();
         $prefix = $chunk[0];
         $payload = substr($chunk, 1);
+
         switch ($prefix) {
             case '+':    // inline
                 switch ($payload) {
                     case 'OK':
                         return true;
+
                     case 'QUEUED':
                         return new ResponseQueued();
+
                     default:
                         return $payload;
                 }
@@ -63,16 +72,19 @@ class TextProtocol implements IProtocolProcessor {
 
             case '*':    // multi bulk
                 $count = (int) $payload;
+
                 if ($count === -1) {
                     return null;
                 }
                 if ($this->_mbiterable == true) {
                     return new MultiBulkResponseSimple($connection, $count);
                 }
+
                 $multibulk = array();
                 for ($i = 0; $i < $count; $i++) {
                     $multibulk[$i] = $this->read($connection);
                 }
+
                 return $multibulk;
 
             case ':':    // integer
@@ -91,11 +103,13 @@ class TextProtocol implements IProtocolProcessor {
         }
     }
 
-    public function setOption($option, $value) {
+    public function setOption($option, $value)
+    {
         switch ($option) {
             case 'iterable_multibulk':
                 $this->_mbiterable = (bool) $value;
                 break;
+
             case 'throw_errors':
                 $this->_throwErrors = (bool) $value;
                 break;

@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ListSet extends Command {
-    public function getId() {
+class ListSet extends Command
+{
+    public function getId()
+    {
         return 'LSET';
     }
 }

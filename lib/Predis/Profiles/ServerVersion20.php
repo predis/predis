@@ -2,9 +2,15 @@
 
 namespace Predis\Profiles;
 
-class ServerVersion20 extends ServerProfile {
-    public function getVersion() { return '2.0'; }
-    public function getSupportedCommands() {
+class ServerVersion20 extends ServerProfile
+{
+    public function getVersion()
+    {
+        return '2.0';
+    }
+
+    public function getSupportedCommands()
+    {
         return array(
             /* ---------------- Redis 1.2 ---------------- */
 

@@ -16,26 +16,29 @@ ZADD zset 2 b
 ZADD zset 3 c
 */
 
-function zpop($client, $zsetKey) {
+function zpop($client, $key)
+{
     $element = null;
+
     $options = array(
-        'cas'   => true,     // Initialize with support for CAS operations
-        'watch' => $zsetKey, // Key that needs to be WATCHed to detect changes
-        'retry' => 3,        // Number of retries on aborted transactions, after
-                             // which the client bails out with an exception.
+        'cas'   => true,    // Initialize with support for CAS operations
+        'watch' => $key,    // Key that needs to be WATCHed to detect changes
+        'retry' => 3,       // Number of retries on aborted transactions, after
+                            // which the client bails out with an exception.
     );
 
-    $txReply = $client->multiExec($options, function($tx)
-        use ($zsetKey, &$element) {
-        @list($element) = $tx->zrange($zsetKey, 0, 0);
+    $txReply = $client->multiExec($options, function($tx) use ($key, &$element) {
+        @list($element) = $tx->zrange($key, 0, 0);
+
         if (isset($element)) {
-            $tx->multi();     // With CAS, MULTI *must* be explicitly invoked.
-            $tx->zrem($zsetKey, $element);
+            $tx->multi();   // With CAS, MULTI *must* be explicitly invoked.
+            $tx->zrem($key, $element);
         }
     });
     return $element;
 }
 
-$redis = new Predis\Client($single_server, 'dev');
+$redis = new Predis\Client($single_server);
 $zpopped = zpop($redis, 'zset');
+
 echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", "\n";

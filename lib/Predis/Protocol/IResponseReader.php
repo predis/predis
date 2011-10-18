@@ -4,6 +4,7 @@ namespace Predis\Protocol;
 
 use Predis\Network\IConnectionComposable;
 
-interface IResponseReader {
+interface IResponseReader
+{
     public function read(IConnectionComposable $connection);
 }

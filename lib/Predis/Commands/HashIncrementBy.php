@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class HashIncrementBy extends Command {
-    public function getId() {
+class HashIncrementBy extends Command
+{
+    public function getId()
+    {
         return 'HINCRBY';
     }
 }

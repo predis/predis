@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ServerDatabaseSize extends Command {
-    public function getId() {
+class ServerDatabaseSize extends Command
+{
+    public function getId()
+    {
         return 'DBSIZE';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

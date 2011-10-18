@@ -3,11 +3,13 @@
 namespace Predis\Commands;
 
 class StringSetPreserve extends Command {
-    public function getId() {
+    public function getId()
+    {
         return 'SETNX';
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         return (bool) $data;
     }
 }

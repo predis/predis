@@ -3,11 +3,13 @@
 namespace Predis\Commands;
 
 class StringSetMultiplePreserve extends StringSetMultiple {
-    public function getId() {
+    public function getId()
+    {
         return 'MSETNX';
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         return (bool) $data;
     }
 }

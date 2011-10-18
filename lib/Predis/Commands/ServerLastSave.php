@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ServerLastSave extends Command {
-    public function getId() {
+class ServerLastSave extends Command
+{
+    public function getId()
+    {
         return 'LASTSAVE';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

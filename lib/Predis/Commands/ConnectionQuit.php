@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ConnectionQuit extends Command {
-    public function getId() {
+class ConnectionQuit extends Command
+{
+    public function getId()
+    {
         return 'QUIT';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

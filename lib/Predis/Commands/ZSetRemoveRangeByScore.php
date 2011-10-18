@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ZSetRemoveRangeByScore extends Command {
-    public function getId() {
+class ZSetRemoveRangeByScore extends Command
+{
+    public function getId()
+    {
         return 'ZREMRANGEBYSCORE';
     }
 }

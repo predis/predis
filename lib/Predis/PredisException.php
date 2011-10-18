@@ -2,5 +2,6 @@
 
 namespace Predis;
 
-abstract class PredisException extends \Exception {
+abstract class PredisException extends \Exception
+{
 }

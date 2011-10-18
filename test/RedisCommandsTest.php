@@ -1,6 +1,7 @@
 <?php
 
-class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
+class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
+{
     public $redis;
 
     // TODO: instead of an boolean assertion against the return value
@@ -10,43 +11,51 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
     //       should be provided.
     // TODO: missing test with float values for a few commands
 
-    protected function setUp() { 
+    protected function setUp()
+    { 
         $this->redis = RC::getConnection();
         $this->redis->flushdb();
     }
 
-    protected function tearDown() { 
+    protected function tearDown()
+    {
     }
 
-    protected function onNotSuccessfulTest(Exception $exception) {
+    protected function onNotSuccessfulTest(Exception $exception)
+    {
         // drops and reconnect to a redis server on uncaught exceptions
         RC::resetConnection();
+
         parent::onNotSuccessfulTest($exception);
     }
 
-
     /* miscellaneous commands */
 
-    function testPing() {
+    function testPing()
+    {
         $this->assertTrue($this->redis->ping());
     }
 
-    function testEcho() {
+    function testEcho()
+    {
         $string = 'This is an echo test!';
         $this->assertEquals($string, $this->redis->echo($string));
     }
 
-    function testQuit() {
+    function testQuit()
+    {
         $this->redis->quit();
         $this->assertFalse($this->redis->isConnected());
     }
 
-    function testMultiExec() {
+    function testMultiExec()
+    {
         // NOTE: due to a limitation in the current implementation of Predis\Client,
         //       the replies returned by Predis\Commands\Exec are not parsed by their
         //       respective Predis\Commands\Command::parseResponse methods. If you
         //       need that kind of behaviour, you should use an instance of
         //       Predis\MultiExecBlock.
+
         $this->assertTrue($this->redis->multi());
         $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->ping());
         $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->echo('hello'));
@@ -62,7 +71,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testDiscard() {
+    function testDiscard()
+    {
         $this->assertTrue($this->redis->multi());
         $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->set('foo', 'bar'));
         $this->assertInstanceOf('Predis\ResponseQueued', $this->redis->set('hoge', 'piyo'));
@@ -79,12 +89,14 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
 
     /* commands operating on string values */
 
-    function testSet() {
+    function testSet()
+    {
         $this->assertTrue($this->redis->set('foo', 'bar'));
         $this->assertEquals('bar', $this->redis->get('foo'));
     }
 
-    function testGet() {
+    function testGet()
+    {
         $this->redis->set('foo', 'bar');
         $this->assertEquals('bar', $this->redis->get('foo'));
 
@@ -100,14 +112,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testExists() {
+    function testExists()
+    {
         $this->redis->set('foo', 'bar');
 
         $this->assertTrue($this->redis->exists('foo'));
         $this->assertFalse($this->redis->exists('key_does_not_exist'));
     }
 
-    function testSetPreserve() {
+    function testSetPreserve()
+    {
         $multi = RC::getKeyValueArray();
 
         $this->assertTrue($this->redis->setnx('foo', 'bar'));
@@ -115,7 +129,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('bar', $this->redis->get('foo'));
     }
 
-    function testMultipleSetAndGet() {
+    function testMultipleSetAndGet()
+    {
         $multi = RC::getKeyValueArray();
 
         // key=>value pairs via array instance
@@ -128,7 +143,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(1, 2, 3), $this->redis->mget('a', 'b', 'c'));
     }
 
-    function testSetMultiplePreserve() {
+    function testSetMultiplePreserve()
+    {
         $multi    = RC::getKeyValueArray();
         $newpair  = array('hogehoge' => 'piyopiyo');
         $hijacked = array('foo' => 'baz', 'hoge' => 'fuga');
@@ -154,13 +170,15 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         );
     }
 
-    function testGetSet() {
+    function testGetSet()
+    {
         $this->assertNull($this->redis->getset('foo', 'bar'));
         $this->assertEquals('bar', $this->redis->getset('foo', 'barbar'));
         $this->assertEquals('barbar', $this->redis->getset('foo', 'baz'));
     }
 
-    function testIncrementAndIncrementBy() {
+    function testIncrementAndIncrementBy()
+    {
         // test subsequent increment commands
         $this->assertEquals(1, $this->redis->incr('foo'));
         $this->assertEquals(2, $this->redis->incr('foo'));
@@ -171,7 +189,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-100, $this->redis->incrby('foo', -110));
     }
 
-    function testDecrementAndDecrementBy() {
+    function testDecrementAndDecrementBy()
+    {
         // test subsequent decrement commands
         $this->assertEquals(-1, $this->redis->decr('foo'));
         $this->assertEquals(-2, $this->redis->decr('foo'));
@@ -182,14 +201,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(100, $this->redis->decrby('foo', -110));
     }
 
-    function testDelete() {
+    function testDelete()
+    {
         $this->redis->set('foo', 'bar');
         $this->assertEquals(1, $this->redis->del('foo'));
         $this->assertFalse($this->redis->exists('foo'));
         $this->assertEquals(0, $this->redis->del('foo'));
     }
 
-    function testType() {
+    function testType()
+    {
         $this->assertEquals('none', $this->redis->type('fooDoesNotExist'));
 
         $this->redis->set('fooString', 'bar');
@@ -208,7 +229,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals('hash', $this->redis->type('fooHash'));
     }
 
-    function testAppend() {
+    function testAppend()
+    {
         $this->redis->set('foo', 'bar');
         $this->assertEquals(5, $this->redis->append('foo', '__'));
         $this->assertEquals(8, $this->redis->append('foo', 'bar'));
@@ -223,7 +245,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetRange() {
+    function testSetRange()
+    {
         $this->assertEquals(6, $this->redis->setrange('var', 0, 'foobar'));
         $this->assertEquals('foobar', $this->redis->get('var'));
         $this->assertEquals(6, $this->redis->setrange('var', 3, 'foo'));
@@ -245,7 +268,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSubstr() {
+    function testSubstr()
+    {
         $this->redis->set('var', 'foobar');
         $this->assertEquals('foo', $this->redis->substr('var', 0, 2));
         $this->assertEquals('bar', $this->redis->substr('var', 3, 5));
@@ -262,7 +286,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testStrlen() {
+    function testStrlen()
+    {
         $this->redis->set('var', 'foobar');
         $this->assertEquals(6, $this->redis->strlen('var'));
         $this->assertEquals(9, $this->redis->append('var', '___'));
@@ -274,7 +299,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetBit() {
+    function testSetBit()
+    {
         $this->assertEquals(0, $this->redis->setbit('binary', 31, 1));
         $this->assertEquals(0, $this->redis->setbit('binary', 0, 1));
         $this->assertEquals(4, $this->redis->strlen('binary'));
@@ -306,7 +332,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testGetBit() {
+    function testGetBit()
+    {
         $this->redis->set('binary', "\x80\x00\00\x01");
 
         $this->assertEquals(1, $this->redis->getbit('binary', 0));
@@ -328,11 +355,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
-
     /* commands operating on the key space */
 
-    function testKeys() {
+    function testKeys()
+    {
         $keyValsNs     = RC::getNamespacedKeyValueArray();
         $keyValsOthers = array('aaa' => 1, 'aba' => 2, 'aca' => 3);
         $allKeyVals    = array_merge($keyValsNs, $keyValsOthers);
@@ -351,7 +377,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), array_diff(array_keys($keyValsOthers), $keysFromRedis));
     }
 
-    function testRandomKey() {
+    function testRandomKey()
+    {
         $keyvals = RC::getKeyValueArray();
 
         $this->assertNull($this->redis->randomkey());
@@ -360,7 +387,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue(in_array($this->redis->randomkey(), array_keys($keyvals)));
     }
 
-    function testRename() {
+    function testRename()
+    {
         $this->redis->mset(array('foo' => 'bar', 'foofoo' => 'barbar'));
 
         // rename existing keys
@@ -374,7 +402,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testRenamePreserve() {
+    function testRenamePreserve()
+    {
         $this->redis->mset(array('foo' => 'bar', 'hoge' => 'piyo', 'hogehoge' => 'piyopiyo'));
 
         $this->assertTrue($this->redis->renamenx('foo', 'foofoo'));
@@ -390,7 +419,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testExpirationAndTTL() {
+    function testExpirationAndTTL()
+    {
         $this->redis->set('foo', 'bar');
 
         // check for key expiration
@@ -414,7 +444,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(-1, $this->redis->ttl('foo'));
     }
 
-    function testPersist() {
+    function testPersist()
+    {
         $this->redis->set('foo', 'bar');
 
         $this->assertTrue($this->redis->expire('foo', 1));
@@ -426,7 +457,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->redis->persist('foobar'));
     }
 
-    function testSetExpire() {
+    function testSetExpire()
+    {
         $this->assertTrue($this->redis->setex('foo', 10, 'bar'));
         $this->assertTrue($this->redis->exists('foo'));
         $this->assertEquals(10, $this->redis->ttl('foo'));
@@ -447,17 +479,18 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testDatabaseSize() {
+    function testDatabaseSize()
+    {
         // TODO: is this really OK?
         $this->assertEquals(0, $this->redis->dbsize());
         $this->redis->mset(RC::getKeyValueArray());
         $this->assertGreaterThan(0, $this->redis->dbsize());
     }
 
-
     /* commands operating on lists */
 
-    function testPushTail() {
+    function testPushTail()
+    {
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertEquals(1, $this->redis->rpush('metavars', 'foo'));
         $this->assertTrue($this->redis->exists('metavars'));
@@ -470,7 +503,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testPushTailX() {
+    function testPushTailX()
+    {
         $this->assertEquals(0, $this->redis->rpushx('numbers', 1));
         $this->assertEquals(1, $this->redis->rpush('numbers', 2));
         $this->assertEquals(2, $this->redis->rpushx('numbers', 3));
@@ -484,7 +518,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testPushHead() {
+    function testPushHead()
+    {
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertEquals(1, $this->redis->lpush('metavars', 'foo'));
         $this->assertTrue($this->redis->exists('metavars'));
@@ -497,7 +532,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testPushHeadX() {
+    function testPushHeadX()
+    {
         $this->assertEquals(0, $this->redis->lpushx('numbers', 1));
         $this->assertEquals(1, $this->redis->lpush('numbers', 2));
         $this->assertEquals(2, $this->redis->lpushx('numbers', 3));
@@ -511,7 +547,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListLength() {
+    function testListLength()
+    {
         $this->assertEquals(1, $this->redis->rpush('metavars', 'foo'));
         $this->assertEquals(2, $this->redis->rpush('metavars', 'hoge'));
         $this->assertEquals(2, $this->redis->llen('metavars'));
@@ -525,7 +562,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListRange() {
+    function testListRange()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
         $this->assertEquals(
@@ -577,7 +615,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListTrim() {
+    function testListTrim()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
         $this->assertTrue($this->redis->ltrim('numbers', 0, 2));
         $this->assertEquals(
@@ -619,7 +658,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListIndex() {
+    function testListIndex()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
         $this->assertEquals(0, $this->redis->lindex('numbers', 0));
@@ -638,7 +678,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListSet() {
+    function testListSet()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
         $this->assertTrue($this->redis->lset('numbers', 5, -5));
@@ -654,7 +695,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListRemove() {
+    function testListRemove()
+    {
         $mixed = array(0, '_', 2, '_', 4, '_', 6, '_');
 
         RC::pushTailAndReturn($this->redis, 'mixed', $mixed);
@@ -681,7 +723,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListPopFirst() {
+    function testListPopFirst()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2, 3, 4));
 
         $this->assertEquals(0, $this->redis->lpop('numbers'));
@@ -704,7 +747,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListPopLast() {
+    function testListPopLast()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2, 3, 4));
 
         $this->assertEquals(4, $this->redis->rpop('numbers'));
@@ -727,7 +771,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListPopLastPushHead() {
+    function testListPopLastPushHead()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(0, 1, 2));
         $this->assertEquals(0, $this->redis->llen('temporary'));
         $this->assertEquals(2, $this->redis->rpoplpush('numbers', 'temporary'));
@@ -757,7 +802,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListBlockingPopFirst() {
+    function testListBlockingPopFirst()
+    {
         // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it
         //       does not run with a concurrent client pushing items on lists.
         RC::helperForBlockingPops('blpop');
@@ -784,7 +830,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), 2, '', 1);
     }
 
-    function testListBlockingPopLast() {
+    function testListBlockingPopLast()
+    {
         // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it
         //       does not run with a concurrent client pushing items on lists.
         RC::helperForBlockingPops('brpop');
@@ -811,7 +858,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals((float)(time() - $start), 2, '', 1);
     }
 
-    function testListBlockingPopLastPushHead() {
+    function testListBlockingPopLastPushHead()
+    {
         // TODO: this test does not cover all the aspects of BLPOP/BRPOP as it
         //       does not run with a concurrent client pushing items on lists.
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', array(1, 2, 3));
@@ -836,7 +884,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testListInsert() {
+    function testListInsert()
+    {
         $numbers = RC::pushTailAndReturn($this->redis, 'numbers', RC::getArrayOfNumbers());
 
         $this->assertEquals(11, $this->redis->linsert('numbers', 'before', 0, -2));
@@ -852,10 +901,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
     /* commands operating on sets */
 
-    function testSetAdd() {
+    function testSetAdd()
+    {
         $this->assertTrue($this->redis->sadd('set', 0));
         $this->assertTrue($this->redis->sadd('set', 1));
         $this->assertFalse($this->redis->sadd('set', 0));
@@ -866,7 +915,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetRemove() {
+    function testSetRemove()
+    {
         $set = RC::setAddAndReturn($this->redis, 'set', array(0, 1, 2, 3, 4));
 
         $this->assertTrue($this->redis->srem('set', 0));
@@ -879,7 +929,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetPop() {
+    function testSetPop()
+    {
         $set = RC::setAddAndReturn($this->redis, 'set', array(0, 1, 2, 3, 4));
 
         $this->assertTrue(in_array($this->redis->spop('set'), $set));
@@ -892,7 +943,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetMove() {
+    function testSetMove()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(5, 6, 7, 8, 9, 10));
 
@@ -913,7 +965,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetCardinality() {
+    function testSetCardinality()
+    {
         RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5));
 
         $this->assertEquals(6, $this->redis->scard('setA'));
@@ -933,7 +986,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetIsMember() {
+    function testSetIsMember()
+    {
         RC::setAddAndReturn($this->redis, 'set', array(0, 1, 2, 3, 4, 5));
 
         $this->assertTrue($this->redis->sismember('set', 3));
@@ -948,7 +1002,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetMembers() {
+    function testSetMembers()
+    {
         $set = RC::setAddAndReturn($this->redis, 'set', array(0, 1, 2, 3, 4, 5, 6));
 
         $this->assertTrue(RC::sameValuesInArrays($set, $this->redis->smembers('set')));
@@ -962,7 +1017,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetIntersection() {
+    function testSetIntersection()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -988,7 +1044,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetIntersectionStore() {
+    function testSetIntersectionStore()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -1023,7 +1080,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetUnion() {
+    function testSetUnion()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -1052,7 +1110,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetUnionStore() {
+    function testSetUnionStore()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -1089,7 +1148,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetDifference() {
+    function testSetDifference()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -1118,7 +1178,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testSetDifferenceStore() {
+    function testSetDifferenceStore()
+    {
         $setA = RC::setAddAndReturn($this->redis, 'setA', array(0, 1, 2, 3, 4, 5, 6));
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
@@ -1152,7 +1213,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testRandomMember() {
+    function testRandomMember()
+    {
         $set = RC::setAddAndReturn($this->redis, 'set', array(0, 1, 2, 3, 4, 5, 6));
 
         $this->assertTrue(in_array($this->redis->srandmember('set'), $set));
@@ -1166,10 +1228,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
     /* commands operating on sorted sets */
 
-    function testZsetAdd() {
+    function testZsetAdd()
+    {
         $this->assertTrue($this->redis->zadd('zset', 0, 'a'));
         $this->assertTrue($this->redis->zadd('zset', 1, 'b'));
 
@@ -1188,7 +1250,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetIncrementBy() {
+    function testZsetIncrementBy()
+    {
         $this->assertEquals(1, $this->redis->zincrby('zsetDoesNotExist', 1, 'foo'));
         $this->assertEquals('zset', $this->redis->type('zsetDoesNotExist'));
 
@@ -1208,7 +1271,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRemove() {
+    function testZsetRemove()
+    {
         RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertTrue($this->redis->zrem('zset', 'a'));
@@ -1220,7 +1284,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRange() {
+    function testZsetRange()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(
@@ -1284,7 +1349,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetReverseRange() {
+    function testZsetReverseRange()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(
@@ -1343,7 +1409,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRangeByScore() {
+    function testZsetRangeByScore()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(
@@ -1402,7 +1469,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetReverseRangeByScore() {
+    function testZsetReverseRangeByScore()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(
@@ -1461,7 +1529,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetUnionStore() {
+    function testZsetUnionStore()
+    {
         $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
         $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
 
@@ -1533,7 +1602,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetIntersectionStore() {
+    function testZsetIntersectionStore()
+    {
         $zsetA = RC::zsetAddAndReturn($this->redis, 'zseta', array('a' => 1, 'b' => 2, 'c' => 3));
         $zsetB = RC::zsetAddAndReturn($this->redis, 'zsetb', array('b' => 1, 'c' => 2, 'd' => 3));
 
@@ -1595,7 +1665,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetCount() {
+    function testZsetCount()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(0, $this->redis->zcount('zset', 50, 100));
@@ -1612,7 +1683,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetCardinality() {
+    function testZsetCardinality()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(count($zset), $this->redis->zcard('zset'));
@@ -1634,7 +1706,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetScore() {
+    function testZsetScore()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(-10, $this->redis->zscore('zset', 'a'));
@@ -1650,7 +1723,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRemoveRangeByScore() {
+    function testZsetRemoveRangeByScore()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(2, $this->redis->zremrangebyscore('zset', -10, 0));
@@ -1678,7 +1752,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRank() {
+    function testZsetRank()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(0, $this->redis->zrank('zset', 'a'));
@@ -1696,7 +1771,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetReverseRank() {
+    function testZsetReverseRank()
+    {
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(5, $this->redis->zrevrank('zset', 'a'));
@@ -1714,7 +1790,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testZsetRemoveRangeByRank() {
+    function testZsetRemoveRangeByRank()
+    {
         RC::zsetAddAndReturn($this->redis, 'zseta', RC::getZSetArray());
 
         $this->assertEquals(3, $this->redis->zremrangebyrank('zseta', 0, 2));
@@ -1757,10 +1834,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
     /* commands operating on hashes */
 
-    function testHashSet() {
+    function testHashSet()
+    {
         $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
         $this->assertTrue($this->redis->hset('metavars', 'hoge', 'piyo'));
         $this->assertEquals('bar', $this->redis->hget('metavars', 'foo'));
@@ -1772,7 +1849,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashGet() {
+    function testHashGet()
+    {
         $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
         $this->assertEquals('bar', $this->redis->hget('metavars', 'foo'));
 
@@ -1786,14 +1864,16 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashExists() {
+    function testHashExists()
+    {
         $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
         $this->assertTrue($this->redis->hexists('metavars', 'foo'));
         $this->assertFalse($this->redis->hexists('metavars', 'hoge'));
         $this->assertFalse($this->redis->hexists('hashDoesNotExist', 'field'));
     }
 
-    function testHashDelete() {
+    function testHashDelete()
+    {
         $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
         $this->assertTrue($this->redis->hexists('metavars', 'foo'));
         $this->assertTrue($this->redis->hdel('metavars', 'foo'));
@@ -1808,7 +1888,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashLength() {
+    function testHashLength()
+    {
         $this->assertTrue($this->redis->hset('metavars', 'foo', 'bar'));
         $this->assertTrue($this->redis->hset('metavars', 'hoge', 'piyo'));
         $this->assertTrue($this->redis->hset('metavars', 'foofoo', 'barbar'));
@@ -1823,7 +1904,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashSetPreserve() {
+    function testHashSetPreserve()
+    {
         $this->assertTrue($this->redis->hsetnx('metavars', 'foo', 'bar'));
         $this->assertFalse($this->redis->hsetnx('metavars', 'foo', 'barbar'));
         $this->assertEquals('bar', $this->redis->hget('metavars', 'foo'));
@@ -1834,7 +1916,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashSetAndGetMultiple() {
+    function testHashSetAndGetMultiple()
+    {
         $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
 
         // key=>value pairs via array instance
@@ -1848,7 +1931,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array('bar', 'piyo'), $this->redis->hmget('metavars', 'foo', 'hoge'));
     }
 
-    function testHashIncrementBy() {
+    function testHashIncrementBy()
+    {
         // test subsequent increment commands
         $this->assertEquals(10, $this->redis->hincrby('hash', 'counter', 10));
         $this->assertEquals(20, $this->redis->hincrby('hash', 'counter', 10));
@@ -1865,7 +1949,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashKeys() {
+    function testHashKeys()
+    {
         $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
         $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
 
@@ -1878,7 +1963,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashValues() {
+    function testHashValues()
+    {
         $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
         $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
 
@@ -1891,7 +1977,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testHashGetAll() {
+    function testHashGetAll()
+    {
         $hashKVs = array('foo' => 'bar', 'hoge' => 'piyo');
         $this->assertTrue($this->redis->hmset('metavars', $hashKVs));
 
@@ -1904,10 +1991,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
     /* multiple databases handling commands */
 
-    function testSelectDatabase() {
+    function testSelectDatabase()
+    {
         $this->assertTrue($this->redis->select(0));
         $this->assertTrue($this->redis->select(RC::DEFAULT_DATABASE));
 
@@ -1920,7 +2007,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testMove() {
+    function testMove()
+    {
         // TODO: This test sucks big time. Period.
         $otherDb = 5;
         $this->redis->set('foo', 'bar');
@@ -1940,14 +2028,15 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-    function testFlushdb() {
+    function testFlushdb()
+    {
         $this->assertTrue($this->redis->flushdb());
     }
 
-
     /* sorting */
 
-    function testSort() {
+    function testSort()
+    {
         $unorderedList = RC::pushTailAndReturn($this->redis, 'unordered', array(2, 100, 3, 1, 30, 10));
 
         // without parameters
@@ -2032,10 +2121,10 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         });
     }
 
-
     /* remote server control commands */
 
-    function testInfo() {
+    function testInfo()
+    {
         $serverInfo = $this->redis->info();
 
         $this->assertInternalType('array', $serverInfo);
@@ -2044,7 +2133,8 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertGreaterThan(0, $serverInfo['total_connections_received']);
     }
 
-    function testSlaveOf() {
+    function testSlaveOf()
+    {
         $masterHost = 'www.google.com';
         $masterPort = 80;
 
@@ -2057,23 +2147,25 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->redis->slaveof('NO ONE'));
     }
 
-
     /* persistence control commands */
 
-    function testSave() {
+    function testSave()
+    {
         $this->assertTrue($this->redis->save());
     }
 
-    function testBackgroundSave() {
+    function testBackgroundSave()
+    {
         $this->assertTrue($this->redis->bgsave());
     }
 
-    function testBackgroundRewriteAppendOnlyFile() {
+    function testBackgroundRewriteAppendOnlyFile()
+    {
         $this->assertTrue($this->redis->bgrewriteaof());
     }
 
-    function testLastSave() {
+    function testLastSave()
+    {
         $this->assertGreaterThan(0, $this->redis->lastsave());
     }
 }
-?>

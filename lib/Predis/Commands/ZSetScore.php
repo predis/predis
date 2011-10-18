@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ZSetScore extends Command {
-    public function getId() {
+class ZSetScore extends Command
+{
+    public function getId()
+    {
         return 'ZSCORE';
     }
 }

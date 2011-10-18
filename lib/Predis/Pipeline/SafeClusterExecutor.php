@@ -6,17 +6,21 @@ use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Network\IConnection;
 
-class SafeClusterExecutor implements IPipelineExecutor {
-    public function execute(IConnection $connection, &$commands) {
+class SafeClusterExecutor implements IPipelineExecutor
+{
+    public function execute(IConnection $connection, &$commands)
+    {
         $connectionExceptions = array();
         $sizeofPipe = count($commands);
         $values = array();
 
         foreach ($commands as $command) {
             $cmdConnection = $connection->getConnection($command);
+
             if (isset($connectionExceptions[spl_object_hash($cmdConnection)])) {
                 continue;
             }
+
             try {
                 $cmdConnection->writeCommand($command);
             }
@@ -39,10 +43,7 @@ class SafeClusterExecutor implements IPipelineExecutor {
 
             try {
                 $response = $cmdConnection->readResponse($command);
-                $values[] = ($response instanceof \Iterator
-                    ? iterator_to_array($response)
-                    : $response
-                );
+                $values[] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
             }
             catch (ServerException $exception) {
                 $values[] = $exception->toResponseError();

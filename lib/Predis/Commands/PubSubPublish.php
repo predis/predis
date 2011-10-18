@@ -2,12 +2,15 @@
 
 namespace Predis\Commands;
 
-class PubSubPublish extends Command {
-    public function getId() {
+class PubSubPublish extends Command
+{
+    public function getId()
+    {
         return 'PUBLISH';
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

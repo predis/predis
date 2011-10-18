@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class StringGetBit extends Command {
-    public function getId() {
+class StringGetBit extends Command
+{
+    public function getId()
+    {
         return 'GETBIT';
     }
 }

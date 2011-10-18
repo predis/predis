@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class KeyTimeToLive extends Command {
-    public function getId() {
+class KeyTimeToLive extends Command
+{
+    public function getId()
+    {
         return 'TTL';
     }
 }

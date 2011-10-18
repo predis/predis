@@ -2,27 +2,35 @@
 
 namespace Predis\Commands;
 
-class ServerInfo extends Command {
-    public function getId() {
+class ServerInfo extends Command
+{
+    public function getId()
+    {
         return 'INFO';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         $info      = array();
         $infoLines = explode("\r\n", $data, -1);
+
         foreach ($infoLines as $row) {
             @list($k, $v) = explode(':', $row);
+
             if ($row === '' || !isset($v)) {
                 continue;
             }
+
             if (!preg_match('/^db\d+$/', $k)) {
                 if ($k === 'allocation_stats') {
                     $info[$k] = $this->parseAllocationStats($v);
@@ -34,22 +42,29 @@ class ServerInfo extends Command {
                 $info[$k] = $this->parseDatabaseStats($v);
             }
         }
+
         return $info;
     }
 
-    protected function parseDatabaseStats($str) {
+    protected function parseDatabaseStats($str)
+    {
         $db = array();
+
         foreach (explode(',', $str) as $dbvar) {
             list($dbvk, $dbvv) = explode('=', $dbvar);
             $db[trim($dbvk)] = $dbvv;
         }
+
         return $db;
     }
 
-    protected function parseAllocationStats($str) {
+    protected function parseAllocationStats($str)
+    {
         $stats = array();
+
         foreach (explode(',', $str) as $kv) {
             @list($size, $objects, $extra) = explode('=', $kv);
+
             // hack to prevent incorrect values when parsing the >=256 key
             if (isset($extra)) {
                 $size = ">=$objects";
@@ -57,6 +72,7 @@ class ServerInfo extends Command {
             }
             $stats[$size] = $objects;
         }
+
         return $stats;
     }
 }

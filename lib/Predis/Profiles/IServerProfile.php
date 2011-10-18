@@ -2,7 +2,8 @@
 
 namespace Predis\Profiles;
 
-interface IServerProfile {
+interface IServerProfile
+{
     public function getVersion();
     public function supportsCommand($command);
     public function supportsCommands(Array $commands);

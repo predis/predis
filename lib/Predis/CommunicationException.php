@@ -4,21 +4,24 @@ namespace Predis;
 
 use Predis\Network\IConnectionSingle;
 
-abstract class CommunicationException extends PredisException {
+abstract class CommunicationException extends PredisException
+{
     private $_connection;
 
-    public function __construct(IConnectionSingle $connection, $message = null,
-        $code = null, \Exception $innerException = null) {
+    public function __construct(IConnectionSingle $connection, $message = null, $code = null, \Exception $innerException = null)
+    {
+        parent::__construct($message, $code, $innerException);
 
         $this->_connection = $connection;
-        parent::__construct($message, $code, $innerException);
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->_connection;
     }
 
-    public function shouldResetConnection() {
+    public function shouldResetConnection()
+    {
         return true;
     }
 }

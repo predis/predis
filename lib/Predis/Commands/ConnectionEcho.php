@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ConnectionEcho extends Command {
-    public function getId() {
+class ConnectionEcho extends Command
+{
+    public function getId()
+    {
         return 'ECHO';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

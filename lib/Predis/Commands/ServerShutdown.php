@@ -2,16 +2,19 @@
 
 namespace Predis\Commands;
 
-class ServerShutdown extends Command {
+class ServerShutdown extends Command
+{
     public function getId() {
         return 'SHUTDOWN';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

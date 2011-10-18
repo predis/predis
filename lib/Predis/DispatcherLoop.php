@@ -2,20 +2,23 @@
 
 namespace Predis;
 
-class DispatcherLoop {
+class DispatcherLoop
+{
     private $_client;
     private $_pubSubContext;
     private $_callbacks;
     private $_defaultCallback;
     private $_subscriptionCallback;
 
-    public function __construct(Client $client) {
+    public function __construct(Client $client)
+    {
         $this->_callbacks = array();
         $this->_client = $client;
         $this->_pubSubContext = $client->pubSub();
     }
 
-    protected function validateCallback($callback) {
+    protected function validateCallback($callback)
+    {
         if (!is_callable($callback)) {
             throw new ClientException(
                 "The callback parameter must be a valid callable object"
@@ -23,40 +26,47 @@ class DispatcherLoop {
         }
     }
 
-    public function getPubSubContext() {
+    public function getPubSubContext()
+    {
         return $this->_pubSubContext;
     }
 
-    public function subscriptionCallback($callback = null) {
+    public function subscriptionCallback($callback = null)
+    {
         if (isset($callback)) {
             $this->validateCallback($callback);
         }
         $this->_subscriptionCallback = $callback;
     }
 
-    public function defaultCallback($callback = null) {
+    public function defaultCallback($callback = null)
+    {
         if (isset($callback)) {
             $this->validateCallback($callback);
         }
         $this->_subscriptionCallback = $callback;
     }
 
-    public function attachCallback($channel, $callback) {
+    public function attachCallback($channel, $callback)
+    {
         $this->validateCallback($callback);
         $this->_callbacks[$channel] = $callback;
         $this->_pubSubContext->subscribe($channel);
     }
 
-    public function detachCallback($channel) {
+    public function detachCallback($channel)
+    {
         if (isset($this->_callbacks[$channel])) {
             unset($this->_callbacks[$channel]);
             $this->_pubSubContext->unsubscribe($channel);
         }
     }
 
-    public function run() {
+    public function run()
+    {
         foreach ($this->_pubSubContext as $message) {
             $kind = $message->kind;
+
             if ($kind !== PubSubContext::MESSAGE && $kind !== PubSubContext::PMESSAGE) {
                 if (isset($this->_subscriptionCallback)) {
                     $callback = $this->_subscriptionCallback;
@@ -64,6 +74,7 @@ class DispatcherLoop {
                 }
                 continue;
             }
+
             if (isset($this->_callbacks[$message->channel])) {
                 $callback = $this->_callbacks[$message->channel];
                 $callback($message->payload);
@@ -75,7 +86,8 @@ class DispatcherLoop {
         }
     }
 
-    public function stop() {
+    public function stop()
+    {
         $this->_pubSubContext->closeContext();
     }
 }

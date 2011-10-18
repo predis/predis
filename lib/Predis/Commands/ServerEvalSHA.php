@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ServerEvalSHA extends ServerEval {
-    public function getId() {
+class ServerEvalSHA extends ServerEval
+{
+    public function getId()
+    {
         return 'EVALSHA';
     }
 }

@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ConnectionAuth extends Command {
-    public function getId() {
+class ConnectionAuth extends Command
+{
+    public function getId()
+    {
         return 'AUTH';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

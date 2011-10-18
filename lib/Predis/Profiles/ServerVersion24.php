@@ -3,8 +3,13 @@
 namespace Predis\Profiles;
 
 class ServerVersion24 extends ServerProfile {
-    public function getVersion() { return '2.4'; }
-    public function getSupportedCommands() {
+    public function getVersion()
+    {
+        return '2.4';
+    }
+
+    public function getSupportedCommands()
+    {
         return array(
             /* ---------------- Redis 1.2 ---------------- */
 

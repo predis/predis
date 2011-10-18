@@ -2,12 +2,15 @@
 
 namespace Predis\Commands;
 
-class KeyExists extends Command {
-    public function getId() {
+class KeyExists extends Command
+{
+    public function getId()
+    {
         return 'EXISTS';
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         return (bool) $data;
     }
 }

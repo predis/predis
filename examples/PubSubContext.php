@@ -23,6 +23,7 @@ foreach ($pubsub as $message) {
         case 'subscribe':
             echo "Subscribed to {$message->channel}\n";
             break;
+
         case 'message':
             if ($message->channel == 'control_channel') {
                 if ($message->payload == 'quit_loop') {

@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ListRange extends Command {
-    public function getId() {
+class ListRange extends Command
+{
+    public function getId()
+    {
         return 'LRANGE';
     }
 }

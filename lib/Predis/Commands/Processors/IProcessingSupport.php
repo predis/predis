@@ -2,7 +2,8 @@
 
 namespace Predis\Commands\Processors;
 
-interface IProcessingSupport {
+interface IProcessingSupport
+{
     public function setProcessor(ICommandProcessor $processor);
     public function getProcessor();
 }

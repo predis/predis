@@ -3,15 +3,18 @@
 namespace Predis\Commands;
 
 class KeyRename extends Command {
-    public function getId() {
+    public function getId()
+    {
         return 'RENAME';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         return PrefixHelpers::multipleKeys($arguments, $prefix);
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

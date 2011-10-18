@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class SetMembers extends Command {
-    public function getId() {
+class SetMembers extends Command
+{
+    public function getId()
+    {
         return 'SMEMBERS';
     }
 }

@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class TransactionExec extends Command {
-    public function getId() {
+class TransactionExec extends Command
+{
+    public function getId()
+    {
         return 'EXEC';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }

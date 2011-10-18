@@ -2,5 +2,6 @@
 
 namespace Predis\Distribution;
 
-class EmptyRingException extends \Exception {
+class EmptyRingException extends \Exception
+{
 }

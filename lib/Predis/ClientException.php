@@ -2,5 +2,6 @@
 
 namespace Predis;
 
-class ClientException extends PredisException {
+class ClientException extends PredisException
+{
 }

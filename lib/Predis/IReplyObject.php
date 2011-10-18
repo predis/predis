@@ -2,5 +2,6 @@
 
 namespace Predis;
 
-interface IReplyObject {
+interface IReplyObject
+{
 }

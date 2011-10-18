@@ -4,7 +4,8 @@ namespace Predis\Commands;
 
 use Predis\Distribution\INodeKeyGenerator;
 
-interface ICommand {
+interface ICommand
+{
     public function getId();
     public function getHash(INodeKeyGenerator $distributor);
     public function setArguments(Array $arguments);

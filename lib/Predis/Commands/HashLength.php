@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class HashLength extends Command {
-    public function getId() {
+class HashLength extends Command
+{
+    public function getId()
+    {
         return 'HLEN';
     }
 }

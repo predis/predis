@@ -9,35 +9,44 @@ require 'SharedConfigurations.php';
 use Predis\Distribution\IDistributionStrategy;
 use Predis\Network\PredisCluster;
 
-class NaiveDistributionStrategy implements IDistributionStrategy {
-    private $_nodes, $_nodesCount;
+class NaiveDistributionStrategy implements IDistributionStrategy
+{
+    private $_nodes;
+    private $_nodesCount;
 
-    public function __constructor() {
+    public function __constructor()
+    {
         $this->_nodes = array();
         $this->_nodesCount = 0;
     }
 
-    public function add($node, $weight = null) {
+    public function add($node, $weight = null)
+    {
         $this->_nodes[] = $node;
         $this->_nodesCount++;
     }
 
-    public function remove($node) {
+    public function remove($node)
+    {
         $this->_nodes = array_filter($this->_nodes, function($n) use($node) {
             return $n !== $node;
         });
+
         $this->_nodesCount = count($this->_nodes);
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         $count = $this->_nodesCount;
         if ($count === 0) {
             throw new RuntimeException('No connections');
         }
+
         return $this->_nodes[$count > 1 ? abs(crc32($key) % $count) : 0];
     }
 
-    public function generateKey($value) {
+    public function generateKey($value)
+    {
         return crc32($value);
     }
 }

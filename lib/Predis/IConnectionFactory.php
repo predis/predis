@@ -2,6 +2,7 @@
 
 namespace Predis;
 
-interface IConnectionFactory {
+interface IConnectionFactory
+{
     public function create($parameters);
 }

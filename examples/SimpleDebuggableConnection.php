@@ -6,37 +6,48 @@ use Predis\ConnectionParameters;
 use Predis\Commands\ICommand;
 use Predis\Network\StreamConnection;
 
-class SimpleDebuggableConnection extends StreamConnection {
-    private $_debugBuffer = array();
+class SimpleDebuggableConnection extends StreamConnection
+{
     private $_tstart = 0;
+    private $_debugBuffer = array();
 
-    public function connect() {
+    public function connect()
+    {
         $this->_tstart = microtime(true);
+
         parent::connect();
     }
 
-    private function storeDebug(ICommand $command, $direction) {
+    private function storeDebug(ICommand $command, $direction)
+    {
         $firtsArg  = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->_tstart, 4);
+
         $debug  = $command->getId();
         $debug .= isset($firtsArg) ? " $firtsArg " : ' ';
         $debug .= "$direction $this";
         $debug .= " [{$timestamp}s]";
+
         $this->_debugBuffer[] = $debug;
     }
 
-    public function writeCommand(ICommand $command) {
+    public function writeCommand(ICommand $command)
+    {
         parent::writeCommand($command);
+
         $this->storeDebug($command, '->');
     }
 
-    public function readResponse(ICommand $command) {
+    public function readResponse(ICommand $command)
+    {
         $reply = parent::readResponse($command);
         $this->storeDebug($command, '<-');
+
         return $reply;
     }
 
-    public function getDebugBuffer() {
+    public function getDebugBuffer()
+    {
         return $this->_debugBuffer;
     }
 }

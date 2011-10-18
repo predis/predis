@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class ZSetCardinality extends Command {
-    public function getId() {
+class ZSetCardinality extends Command
+{
+    public function getId()
+    {
         return 'ZCARD';
     }
 }

@@ -2,16 +2,20 @@
 
 namespace Predis;
 
-class ResponseQueued implements IReplyObject {
-    public function __toString() {
+class ResponseQueued implements IReplyObject
+{
+    public function __toString()
+    {
         return 'QUEUED';
     }
 
-    public function __get($property) {
+    public function __get($property)
+    {
         return $property === 'queued';
     }
 
-    public function __isset($property) {
+    public function __isset($property)
+    {
         return $property === 'queued';
     }
 }

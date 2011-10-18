@@ -2,6 +2,7 @@
 
 namespace Predis\Distribution;
 
-interface INodeKeyGenerator {
+interface INodeKeyGenerator
+{
     public function generateKey($value);
 }

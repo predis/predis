@@ -5,8 +5,10 @@ namespace Predis\Options;
 use Predis\IConnectionFactory;
 use Predis\ConnectionFactory;
 
-class ClientConnectionFactory extends Option {
-    public function validate($value) {
+class ClientConnectionFactory extends Option
+{
+    public function validate($value)
+    {
         if ($value instanceof IConnectionFactory) {
             return $value;
         }
@@ -15,7 +17,8 @@ class ClientConnectionFactory extends Option {
         }
     }
 
-    public function getDefault() {
+    public function getDefault()
+    {
         return new ConnectionFactory();
     }
 }

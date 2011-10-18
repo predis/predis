@@ -23,32 +23,39 @@ use Predis\Protocol\ProtocolException;
 
 const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
 
-class WebdisConnection implements IConnectionSingle {
+class WebdisConnection implements IConnectionSingle
+{
     private $_parameters;
     private $_resource;
     private $_reader;
 
-    public function __construct(IConnectionParameters $parameters) {
+    public function __construct(IConnectionParameters $parameters)
+    {
         $this->_parameters = $parameters;
+
         if ($parameters->scheme !== 'http') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
+
         $this->checkExtensions();
         $this->_resource = $this->initializeCurl($parameters);
         $this->_reader = $this->initializeReader($parameters);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         curl_close($this->_resource);
         phpiredis_reader_destroy($this->_reader);
     }
 
-    private function throwNotSupportedException($function) {
+    private function throwNotSupportedException($function)
+    {
         $class = __CLASS__;
         throw new \RuntimeException("The method $class::$function() is not supported");
     }
 
-    private function checkExtensions() {
+    private function checkExtensions()
+    {
         if (!function_exists('curl_init')) {
             throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'curl'));
         }
@@ -57,7 +64,8 @@ class WebdisConnection implements IConnectionSingle {
         }
     }
 
-    private function initializeCurl(IConnectionParameters $parameters) {
+    private function initializeCurl(IConnectionParameters $parameters)
+    {
         $options = array(
             CURLOPT_FAILONERROR => true,
             CURLOPT_CONNECTTIMEOUT_MS => $parameters->connection_timeout * 1000,
@@ -77,48 +85,60 @@ class WebdisConnection implements IConnectionSingle {
         return $resource;
     }
 
-    private function initializeReader(IConnectionParameters $parameters) {
+    private function initializeReader(IConnectionParameters $parameters)
+    {
         $reader = phpiredis_reader_create();
+
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
         phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($parameters->throw_errors));
+
         return $reader;
     }
 
-    private function getStatusHandler() {
+    private function getStatusHandler()
+    {
         return function($payload) {
             return $payload === 'OK' ? true : $payload;
         };
     }
 
-    private function getErrorHandler($throwErrors) {
+    private function getErrorHandler($throwErrors)
+    {
         if ($throwErrors) {
             return function($errorMessage) {
                 throw new ServerException($errorMessage);
             };
         }
+
         return function($errorMessage) {
             return new ResponseError($errorMessage);
         };
     }
 
-    protected function feedReader($resource, $buffer) {
+    protected function feedReader($resource, $buffer)
+    {
         phpiredis_reader_feed($this->_reader, $buffer);
+
         return strlen($buffer);
     }
 
-    public function connect() {
+    public function connect()
+    {
         // NOOP
     }
 
-    public function disconnect() {
+    public function disconnect()
+    {
         // NOOP
     }
 
-    public function isConnected() {
+    public function isConnected()
+    {
         return true;
     }
 
-    protected function getCommandId(ICommand $command) {
+    protected function getCommandId(ICommand $command)
+    {
         switch (($commandId = $command->getId())) {
             case 'AUTH':
             case 'SELECT':
@@ -128,20 +148,24 @@ class WebdisConnection implements IConnectionSingle {
             case 'UNWATCH':
             case 'DISCARD':
                 throw new \InvalidArgumentException("Disabled command: {$command->getId()}");
+
             default:
                 return $commandId;
         }
     }
 
-    public function writeCommand(ICommand $command) {
+    public function writeCommand(ICommand $command)
+    {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
-    public function readResponse(ICommand $command) {
+    public function readResponse(ICommand $command)
+    {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
-    public function executeCommand(ICommand $command) {
+    public function executeCommand(ICommand $command)
+    {
         $resource = $this->_resource;
         $commandId = $this->getCommandId($command);
 
@@ -154,6 +178,7 @@ class WebdisConnection implements IConnectionSingle {
         }
 
         curl_setopt($resource, CURLOPT_POSTFIELDS, $serializedCommand);
+
         if (curl_exec($resource) === false) {
             $error = curl_error($resource);
             $errno = curl_errno($resource);
@@ -161,6 +186,7 @@ class WebdisConnection implements IConnectionSingle {
         }
 
         $readerState = phpiredis_reader_get_state($this->_reader);
+
         if ($readerState === PHPIREDIS_READER_STATE_COMPLETE) {
             $reply = phpiredis_reader_get_reply($this->_reader);
             if ($reply instanceof IReplyObject) {
@@ -174,23 +200,28 @@ class WebdisConnection implements IConnectionSingle {
         }
     }
 
-    public function getResource() {
+    public function getResource()
+    {
         return $this->_resource;
     }
 
-    public function getParameters() {
+    public function getParameters()
+    {
         return $this->_parameters;
     }
 
-    public function pushInitCommand(ICommand $command) {
+    public function pushInitCommand(ICommand $command)
+    {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
-    public function read() {
+    public function read()
+    {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return "{$this->_parameters->host}:{$this->_parameters->port}";
     }
 }

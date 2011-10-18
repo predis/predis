@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class KeyMove extends Command {
-    public function getId() {
+class KeyMove extends Command
+{
+    public function getId()
+    {
         return 'MOVE';
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         return (bool) $data;
     }
 }

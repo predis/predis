@@ -12,23 +12,29 @@ $options = array(
     'append_version' => true,
 );
 
-function getPharFilename($options) {
+function getPharFilename($options)
+{
     $filename = $options['name'];
+
     // NOTE: do not consider "append_version" with Phar compression do to a bug in
     // Phar::compress() when renaming phar archives containing dots in their name.
     if ($options['append_version'] && $options['compression'] === Phar::NONE) {
         $versionFile = @fopen(__DIR__ . '/../VERSION', 'r');
+
         if ($versionFile === false) {
             throw new Exception("Could not locate the VERSION file.");
         }
+
         $version = trim(fgets($versionFile));
         fclose($versionFile);
         $filename .= "_$version";
     }
+
     return "$filename.phar";
 }
 
-function getPharStub($options) {
+function getPharStub($options)
+{
     return <<<EOSTUB
 <?php
 Phar::mapPhar('predis.phar');

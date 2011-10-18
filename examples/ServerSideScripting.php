@@ -9,12 +9,15 @@ require 'SharedConfigurations.php';
 
 use Predis\Commands\ScriptedCommand;
 
-class IncrementExistingKey extends ScriptedCommand {
-    protected function keysCount() {
+class IncrementExistingKey extends ScriptedCommand
+{
+    protected function keysCount()
+    {
         return 1;
     }
 
-    public function getScript() {
+    public function getScript()
+    {
         return
 <<<LUA
     if redis('exists', KEYS[1]) == 1 then
@@ -25,8 +28,10 @@ LUA;
 }
 
 $client = new Predis\Client($single_server, 'dev');
+
 $client->getProfile()->defineCommand('increx', 'IncrementExistingKey');
 
 $client->set('foo', 10);
+
 var_dump($client->increx('foo'));       // int(11)
 var_dump($client->increx('bar'));       // NULL

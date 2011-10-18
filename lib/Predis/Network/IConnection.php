@@ -4,7 +4,8 @@ namespace Predis\Network;
 
 use Predis\Commands\ICommand;
 
-interface IConnection {
+interface IConnection
+{
     public function connect();
     public function disconnect();
     public function isConnected();

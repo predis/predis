@@ -2,8 +2,10 @@
 
 namespace Predis\Commands;
 
-class PubSubUnsubscribeByPattern extends PubSubUnsubscribe {
-    public function getId() {
+class PubSubUnsubscribeByPattern extends PubSubUnsubscribe
+{
+    public function getId()
+    {
         return 'PUNSUBSCRIBE';
     }
 }

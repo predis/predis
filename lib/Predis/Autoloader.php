@@ -2,20 +2,24 @@
 
 namespace Predis;
 
-class Autoloader {
+class Autoloader
+{
     private $base_directory;
     private $prefix;
 
-    public function __construct($base_directory=NULL) {
+    public function __construct($base_directory = null)
+    {
         $this->base_directory = $base_directory ?: dirname(__FILE__);
         $this->prefix = __NAMESPACE__ . '\\';
     }
 
-    public static function register() {
+    public static function register()
+    {
         spl_autoload_register(array(new self, 'autoload'));
     }
 
-    public function autoload($class_name) {
+    public function autoload($class_name)
+    {
         if (0 !== strpos($class_name, $this->prefix)) {
             return;
         }

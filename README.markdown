@@ -109,7 +109,8 @@ classes. This can be obtained by subclassing the `Predis\Network\IConnectionSing
 
 ``` php
 <?php
-class MyConnectionClass implements Predis\Network\IConnectionSingle {
+class MyConnectionClass implements Predis\Network\IConnectionSingle
+{
     // implementation goes here
 }
 
@@ -133,8 +134,12 @@ client instance at runtime. Actually, it is easier done than said:
 
 ``` php
 <?php
-class BrandNewRedisCommand extends Predis\Commands\Command {
-    public function getId() { return 'NEWCMD'; }
+class BrandNewRedisCommand extends Predis\Commands\Command
+{
+    public function getId()
+    {
+        return 'NEWCMD';
+    }
 }
 
 $redis = new Predis\Client();

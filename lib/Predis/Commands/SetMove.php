@@ -2,20 +2,25 @@
 
 namespace Predis\Commands;
 
-class SetMove extends Command {
-    public function getId() {
+class SetMove extends Command
+{
+    public function getId()
+    {
         return 'SMOVE';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         return PrefixHelpers::skipLastArgument($arguments, $prefix);
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 
-    public function parseResponse($data) {
+    public function parseResponse($data)
+    {
         return (bool) $data;
     }
 }

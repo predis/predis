@@ -2,16 +2,20 @@
 
 namespace Predis\Commands;
 
-class ServerMonitor extends Command {
-    public function getId() {
+class ServerMonitor extends Command
+{
+    public function getId()
+    {
         return 'MONITOR';
     }
 
-    protected function onPrefixKeys(Array $arguments, $prefix) {
+    protected function onPrefixKeys(Array $arguments, $prefix)
+    {
         /* NOOP */
     }
 
-    protected function canBeHashed() {
+    protected function canBeHashed()
+    {
         return false;
     }
 }
