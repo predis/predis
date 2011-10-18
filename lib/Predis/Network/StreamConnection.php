@@ -18,11 +18,21 @@ use Predis\IConnectionParameters;
 use Predis\Commands\ICommand;
 use Predis\Iterators\MultiBulkResponseSimple;
 
+/**
+ * Connection abstraction to Redis servers based on PHP's streams.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StreamConnection extends ConnectionBase
 {
     private $_mbiterable;
     private $_throwErrors;
 
+    /**
+     * Disconnect from the server and destroys the underlying resource when
+     * PHP's garbage collector kicks in only if the connection has not been
+     * marked as persistent.
+     */
     public function __destruct()
     {
         if (!$this->_params->connection_persistent) {
@@ -30,12 +40,18 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
         $this->_throwErrors = $parameters->throw_errors;
         $this->_mbiterable = $parameters->iterable_multibulk;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function createResource()
     {
         $parameters = $this->_params;
@@ -44,6 +60,12 @@ class StreamConnection extends ConnectionBase
         return $this->$initializer($parameters);
     }
 
+    /**
+     * Initializes a TCP stream resource.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function tcpStreamInitializer(IConnectionParameters $parameters)
     {
         $uri = "tcp://{$parameters->host}:{$parameters->port}/";
@@ -75,6 +97,12 @@ class StreamConnection extends ConnectionBase
         return $resource;
     }
 
+    /**
+     * Initializes a UNIX stream resource.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function unixStreamInitializer(IConnectionParameters $parameters)
     {
         $uri = "unix://{$parameters->path}";
@@ -95,6 +123,9 @@ class StreamConnection extends ConnectionBase
         return $resource;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         parent::connect();
@@ -104,6 +135,9 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         if ($this->isConnected()) {
@@ -113,6 +147,9 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * Sends the initialization commands to Redis when the connection is opened.
+     */
     private function sendInitializationCommands()
     {
         foreach ($this->_initCmds as $command) {
@@ -123,6 +160,12 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * Perform a write operation on the stream of the buffer containing a command
+     * serialized with the Redis wire protocol.
+     *
+     * @param string $buffer Redis wire protocol representation of a command.
+     */
     protected function writeBytes($buffer)
     {
         $socket = $this->getResource();
@@ -139,6 +182,9 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read() {
         $socket = $this->getResource();
 
@@ -216,6 +262,9 @@ class StreamConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeCommand(ICommand $command)
     {
         $commandId = $command->getId();

@@ -11,27 +11,45 @@
 
 namespace Predis\Iterators;
 
+/**
+ * Iterator that abstracts the access to multibulk replies and allows
+ * them to be consumed by user's code in a streaming fashion.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 abstract class MultiBulkResponse implements \Iterator, \Countable
 {
     protected $_position;
     protected $_current;
     protected $_replySize;
 
+    /**
+     * {@inheritdoc}
+     */
     public function rewind()
     {
         // NOOP
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function current()
     {
         return $this->_current;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function key()
     {
         return $this->_position;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function next()
     {
         if (++$this->_position < $this->_replySize) {
@@ -41,18 +59,30 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
         return $this->_position;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function valid()
     {
         return $this->_position < $this->_replySize;
     }
 
+    /**
+     * Returns the number of items of the whole multibulk reply.
+     *
+     * This method should be used to get the size of the current multibulk
+     * reply without using iterator_count, which actually consumes the
+     * iterator to calculate the size (rewinding is not supported).
+     *
+     * @return int
+     */
     public function count()
     {
-        // Use count if you want to get the size of the current multi-bulk
-        // response without using iterator_count (which actually consumes our
-        // iterator to calculate the size, and we cannot perform a rewind)
         return $this->_replySize;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected abstract function getValue();
 }

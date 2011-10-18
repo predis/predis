@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/unwatch
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TransactionUnwatch extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'UNWATCH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

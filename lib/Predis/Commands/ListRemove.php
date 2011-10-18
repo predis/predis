@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/lrem
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListRemove extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'LREM';

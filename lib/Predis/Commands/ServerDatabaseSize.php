@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/dbsize
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerDatabaseSize extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'DBSIZE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

@@ -13,8 +13,17 @@ namespace Predis\Pipeline;
 
 use Predis\Network\IConnection;
 
+/**
+ * Implements a pipeline executor strategy that writes a list of commands to
+ * the connection object but does not read back their replies.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class FireAndForgetExecutor implements IPipelineExecutor
 {
+    /**
+     * {@inheritdoc}
+     */
     public function execute(IConnection $connection, &$commands)
     {
         foreach ($commands as $command) {

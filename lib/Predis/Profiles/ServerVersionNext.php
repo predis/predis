@@ -11,13 +11,24 @@
 
 namespace Predis\Profiles;
 
+/**
+ * Server profile for the current development version of Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerVersionNext extends ServerVersion24
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getVersion()
     {
         return '2.6';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSupportedCommands()
     {
         return array_merge(parent::getSupportedCommands(), array(

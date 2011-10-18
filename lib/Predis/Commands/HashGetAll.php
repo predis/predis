@@ -13,13 +13,23 @@ namespace Predis\Commands;
 
 use Predis\Iterators\MultiBulkResponseTuple;
 
+/**
+ * @link http://redis.io/commands/hgetall
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashGetAll extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HGETALL';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         if ($data instanceof \Iterator) {

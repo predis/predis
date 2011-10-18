@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/eval
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerEval extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'EVAL';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         $arguments = $this->getArguments();
@@ -29,6 +39,9 @@ class ServerEval extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

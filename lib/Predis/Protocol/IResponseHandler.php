@@ -13,7 +13,20 @@ namespace Predis\Protocol;
 
 use Predis\Network\IConnectionComposable;
 
+/**
+ * Interface that defines an handler able to parse a reply.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IResponseHandler
 {
+    /**
+     * Parses a type of reply returned by Redis and reads more data from the
+     * connection if needed.
+     *
+     * @param IConnectionComposable $connection Connection to Redis.
+     * @param string $payload Initial payload of the reply.
+     * @return mixed
+     */
     function handle(IConnectionComposable $connection, $payload);
 }

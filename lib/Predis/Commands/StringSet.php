@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/set
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringSet extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SET';

@@ -31,12 +31,21 @@ use Predis\Protocol\ProtocolException;
 
 const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
 
+/**
+ * Connection abstraction to Webdis servers.
+ *
+ * @link http://webd.is/
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class WebdisConnection implements IConnectionSingle
 {
     private $_parameters;
     private $_resource;
     private $_reader;
 
+    /**
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     public function __construct(IConnectionParameters $parameters)
     {
         $this->_parameters = $parameters;
@@ -50,18 +59,28 @@ class WebdisConnection implements IConnectionSingle
         $this->_reader = $this->initializeReader($parameters);
     }
 
+    /**
+     * Frees the underlying cURL and protocol reader resources when PHP's
+     * garbage collector kicks in.
+     */
     public function __destruct()
     {
         curl_close($this->_resource);
         phpiredis_reader_destroy($this->_reader);
     }
 
+    /**
+     * Helper method used to throw on unsupported methods.
+     */
     private function throwNotSupportedException($function)
     {
         $class = __CLASS__;
         throw new \RuntimeException("The method $class::$function() is not supported");
     }
 
+    /**
+     * Checks if the cURL and phpiredis extensions are loaded in PHP.
+     */
     private function checkExtensions()
     {
         if (!function_exists('curl_init')) {
@@ -72,6 +91,12 @@ class WebdisConnection implements IConnectionSingle
         }
     }
 
+    /**
+     * Initializes cURL.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function initializeCurl(IConnectionParameters $parameters)
     {
         $options = array(
@@ -93,6 +118,12 @@ class WebdisConnection implements IConnectionSingle
         return $resource;
     }
 
+    /**
+     * Initializes phpiredis' protocol reader.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function initializeReader(IConnectionParameters $parameters)
     {
         $reader = phpiredis_reader_create();
@@ -103,6 +134,11 @@ class WebdisConnection implements IConnectionSingle
         return $reader;
     }
 
+    /**
+     * Gets the handler used by the protocol reader to handle status replies.
+     *
+     * @return \Closure
+     */
     private function getStatusHandler()
     {
         return function($payload) {
@@ -110,6 +146,12 @@ class WebdisConnection implements IConnectionSingle
         };
     }
 
+    /**
+     * Gets the handler used by the protocol reader to handle Redis errors.
+     *
+     * @param Boolean $throwErrors Specify if Redis errors throw exceptions.
+     * @return \Closure
+     */
     private function getErrorHandler($throwErrors)
     {
         if ($throwErrors) {
@@ -123,6 +165,13 @@ class WebdisConnection implements IConnectionSingle
         };
     }
 
+    /**
+     * Feeds phpredis' reader resource with the data read from the network.
+     *
+     * @param resource $resource Reader resource.
+     * @param string $buffer Buffer with the reply read from the network.
+     * @return int
+     */
     protected function feedReader($resource, $buffer)
     {
         phpiredis_reader_feed($this->_reader, $buffer);
@@ -130,21 +179,36 @@ class WebdisConnection implements IConnectionSingle
         return strlen($buffer);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         // NOOP
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         // NOOP
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function isConnected()
     {
         return true;
     }
 
+    /**
+     * Checks if the specified command is supported by this connection class.
+     *
+     * @param ICommand $command The instance of a Redis command.
+     * @return string
+     */
     protected function getCommandId(ICommand $command)
     {
         switch (($commandId = $command->getId())) {
@@ -162,16 +226,25 @@ class WebdisConnection implements IConnectionSingle
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeCommand(ICommand $command)
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function readResponse(ICommand $command)
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function executeCommand(ICommand $command)
     {
         $resource = $this->_resource;
@@ -208,26 +281,41 @@ class WebdisConnection implements IConnectionSingle
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getResource()
     {
         return $this->_resource;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters()
     {
         return $this->_parameters;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function pushInitCommand(ICommand $command)
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         return "{$this->_parameters->host}:{$this->_parameters->port}";

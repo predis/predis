@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/flushdb
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerFlushDatabase extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'FLUSHDB';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

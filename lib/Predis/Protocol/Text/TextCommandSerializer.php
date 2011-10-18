@@ -14,8 +14,18 @@ namespace Predis\Protocol\Text;
 use Predis\Commands\ICommand;
 use Predis\Protocol\ICommandSerializer;
 
+/**
+ * Implements a pluggable command serializer using the standard  wire protocol
+ * defined by Redis.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TextCommandSerializer implements ICommandSerializer
 {
+    /**
+     * {@inheritdoc}
+     */
     public function serialize(ICommand $command)
     {
         $commandId = $command->getId();

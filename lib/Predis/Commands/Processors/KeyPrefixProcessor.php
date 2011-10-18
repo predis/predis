@@ -13,25 +13,47 @@ namespace Predis\Commands\Processors;
 
 use Predis\Commands\ICommand;
 
+/**
+ * Command processor that is used to prefix the keys contained in the arguments
+ * of a Redis command.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyPrefixProcessor implements ICommandProcessor
 {
     private $_prefix;
 
+    /**
+     * @param string $prefix Prefix for the keys.
+     */
     public function __construct($prefix)
     {
         $this->setPrefix($prefix);
     }
 
+    /**
+     * Sets a prefix that is applied to all the keys.
+     *
+     * @param string $prefix Prefix for the keys.
+     */
     public function setPrefix($prefix)
     {
         $this->_prefix = $prefix;
     }
 
+    /**
+     * Get the current prefix.
+     *
+     * @return string
+     */
     public function getPrefix()
     {
         return $this->_prefix;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function process(ICommand $command)
     {
         $command->prefixKeys($this->_prefix);

@@ -13,8 +13,15 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/psubscribe
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class PubSubSubscribeByPattern extends PubSubSubscribe
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'PSUBSCRIBE';

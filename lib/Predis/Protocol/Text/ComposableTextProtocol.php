@@ -17,11 +17,22 @@ use Predis\Protocol\ICommandSerializer;
 use Predis\Protocol\IComposableProtocolProcessor;
 use Predis\Network\IConnectionComposable;
 
+/**
+ * Implements a customizable protocol processor that uses the standard Redis
+ * wire protocol to serialize Redis commands and parse replies returned by
+ * the server using a pluggable set of classes.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ComposableTextProtocol implements IComposableProtocolProcessor
 {
     private $_serializer;
     private $_reader;
 
+    /**
+     * @param array $options Set of options used to initialize the protocol processor.
+     */
     public function __construct(Array $options = array())
     {
         $this->setSerializer(new TextCommandSerializer());
@@ -32,6 +43,11 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
         }
     }
 
+    /**
+     * Initializes the protocol processor using a set of options.
+     *
+     * @param array $options Set of options.
+     */
     private function initializeOptions(Array $options)
     {
         foreach ($options as $k => $v) {
@@ -39,6 +55,9 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setOption($option, $value)
     {
         switch ($option) {
@@ -57,36 +76,57 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function serialize(ICommand $command)
     {
         return $this->_serializer->serialize($command);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function write(IConnectionComposable $connection, ICommand $command)
     {
         $connection->writeBytes($this->_serializer->serialize($command));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read(IConnectionComposable $connection)
     {
         return $this->_reader->read($connection);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setSerializer(ICommandSerializer $serializer)
     {
         $this->_serializer = $serializer;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSerializer()
     {
         return $this->_serializer;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setReader(IResponseReader $reader)
     {
         $this->_reader = $reader;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getReader()
     {
         return $this->_reader;

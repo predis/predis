@@ -11,10 +11,19 @@
 
 namespace Predis\Iterators;
 
+/**
+ * Abstract the access to a streamable list of tuples represented
+ * as a multibulk reply that alternates keys and values.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class MultiBulkResponseTuple extends MultiBulkResponse
 {
     private $_iterator;
 
+    /**
+     * @param MultiBulkResponseSimple $iterator Multibulk reply iterator.
+     */
     public function __construct(MultiBulkResponseSimple $iterator)
     {
         $virtualSize = count($iterator) / 2;
@@ -24,11 +33,17 @@ class MultiBulkResponseTuple extends MultiBulkResponse
         $this->_replySize = $virtualSize;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __destruct()
     {
         $this->_iterator->sync();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getValue()
     {
         $k = $this->_iterator->current();

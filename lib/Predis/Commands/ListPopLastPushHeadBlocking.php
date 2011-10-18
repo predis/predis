@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/brpoplpush
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListPopLastPushHeadBlocking extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'BRPOPLPUSH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::skipLastArgument($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return $this->checkSameHashForKeys(

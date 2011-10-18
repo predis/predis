@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/punsubscribe
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class PubSubUnsubscribeByPattern extends PubSubUnsubscribe
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'PUNSUBSCRIBE';

@@ -13,12 +13,54 @@ namespace Predis\Commands;
 
 use Predis\Distribution\INodeKeyGenerator;
 
+/**
+ * Defines an abstraction representing a Redis command.
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface ICommand
 {
+    /**
+     * Gets the ID of a Redis command.
+     *
+     * @return string
+     */
     public function getId();
+
+    /**
+     * Returns an hash of the command using the provided algorithm against the
+     * key (used to calculate the distribution of keys with client-side sharding).
+     *
+     * @param INodeKeyGenerator $distributor Distribution algorithm.
+     * @return int
+     */
     public function getHash(INodeKeyGenerator $distributor);
+
+    /**
+     * Set the arguments of the command.
+     *
+     * @param array $arguments List of arguments.
+     */
     public function setArguments(Array $arguments);
+
+    /**
+     * Get the arguments of the command.
+     *
+     * @return array
+     */
     public function getArguments();
+
+    /**
+     * Prefixes all the keys in the arguments of the command.
+     *
+     * @param string $prefix String user to prefix the keys.
+     */
     public function prefixKeys($prefix);
+
+    /**
+     * Parses a reply buffer and returns a PHP object.
+     *
+     * @param string $data Binary string containing the whole reply.
+     * @return mixed
+     */
     public function parseResponse($data);
 }

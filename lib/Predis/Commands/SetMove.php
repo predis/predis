@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/smove
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SetMove extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SMOVE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::skipLastArgument($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

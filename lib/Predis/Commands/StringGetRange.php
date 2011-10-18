@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/getrange
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringGetRange extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'GETRANGE';

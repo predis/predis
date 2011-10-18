@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/lastsave
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerLastSave extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'LASTSAVE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

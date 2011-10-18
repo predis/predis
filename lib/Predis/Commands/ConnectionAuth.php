@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/auth
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ConnectionAuth extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'AUTH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

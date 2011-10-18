@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/randomkey
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyRandom extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'RANDOMKEY';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return $data !== '' ? $data : null;

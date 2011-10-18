@@ -11,8 +11,25 @@
 
 namespace Predis;
 
+/**
+ * Represents an error returned by Redis (replies identified by "-" in the
+ * Redis response protocol) during the execution of an operation on the server.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IRedisServerError extends IReplyObject
 {
+    /**
+     * Returns the error message
+     *
+     * @return string
+     */
     public function getMessage();
+
+    /**
+     * Returns the error type (e.g. ERR, ASK, MOVED)
+     *
+     * @return string
+     */
     public function getErrorType();
 }

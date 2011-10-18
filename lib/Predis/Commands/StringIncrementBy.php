@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/incrby
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringIncrementBy extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'INCRBY';

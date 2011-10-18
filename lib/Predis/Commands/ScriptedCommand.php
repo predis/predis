@@ -11,10 +11,27 @@
 
 namespace Predis\Commands;
 
+/**
+ * Base class used to implement an higher level abstraction for "virtual"
+ * commands based on EVAL.
+ *
+ * @link http://redis.io/commands/eval
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 abstract class ScriptedCommand extends ServerEval
 {
+    /**
+     * Gets the body of a Lua script.
+     *
+     * @return string
+     */
     public abstract function getScript();
 
+    /*
+     * Gets the number of arguments that should be considered as keys.
+     *
+     * @return int
+     */
     protected function keysCount()
     {
         // The default behaviour for the base class is to use all the arguments
@@ -22,11 +39,17 @@ abstract class ScriptedCommand extends ServerEval
         return count($this->getArguments());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return array_merge(array($this->getScript(), $this->keysCount()), $arguments);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getKeys()
     {
         return array_slice($this->getArguments(), 2, $this->keysCount());

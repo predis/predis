@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/info
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerInfo extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'INFO';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         $info      = array();
@@ -55,6 +71,12 @@ class ServerInfo extends Command
         return $info;
     }
 
+    /**
+     * Parses the reply buffer and extracts the statistics of each logical DB.
+     *
+     * @param string $str Reply buffer.
+     * @return array
+     */
     protected function parseDatabaseStats($str)
     {
         $db = array();
@@ -67,6 +89,12 @@ class ServerInfo extends Command
         return $db;
     }
 
+    /**
+     * Parses the reply buffer and extracts the allocation statistics.
+     *
+     * @param string $str Reply buffer.
+     * @return array
+     */
     protected function parseAllocationStats($str)
     {
         $stats = array();

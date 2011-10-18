@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hincrby
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashIncrementBy extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HINCRBY';

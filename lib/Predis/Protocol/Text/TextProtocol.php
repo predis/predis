@@ -21,6 +21,12 @@ use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 use Predis\Iterators\MultiBulkResponseSimple;
 
+/**
+ * Implements a protocol processor for the standard wire protocol defined by Redis.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TextProtocol implements IProtocolProcessor
 {
     const NEWLINE = "\r\n";
@@ -41,6 +47,9 @@ class TextProtocol implements IProtocolProcessor
     private $_throwErrors;
     private $_serializer;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->_mbiterable  = false;
@@ -48,11 +57,17 @@ class TextProtocol implements IProtocolProcessor
         $this->_serializer  = new TextCommandSerializer();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function write(IConnectionComposable $connection, ICommand $command)
     {
         $connection->writeBytes($this->_serializer->serialize($command));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read(IConnectionComposable $connection)
     {
         $chunk = $connection->readLine();
@@ -112,6 +127,9 @@ class TextProtocol implements IProtocolProcessor
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setOption($option, $value)
     {
         switch ($option) {

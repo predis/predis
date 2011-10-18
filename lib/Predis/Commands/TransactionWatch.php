@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/watch
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TransactionWatch extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'WATCH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (isset($arguments[0]) && is_array($arguments[0])) {
@@ -27,16 +37,25 @@ class TransactionWatch extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::multipleKeys($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

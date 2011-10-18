@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/rpoplpush
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListPopLastPushHead extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'RPOPLPUSH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::multipleKeys($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return $this->checkSameHashForKeys($this->getArguments());

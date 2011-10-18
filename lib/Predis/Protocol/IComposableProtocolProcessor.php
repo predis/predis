@@ -11,10 +11,40 @@
 
 namespace Predis\Protocol;
 
+/**
+ * Interface that defines a customizable protocol processor that serializes
+ * Redis commands and parses replies returned by the server to PHP objects
+ * using a pluggable set of classes defining the underlying wire protocol.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IComposableProtocolProcessor extends IProtocolProcessor
 {
+    /**
+     * Sets the command serializer to be used by the protocol processor.
+     *
+     * @param ICommandSerializer $serializer Command serializer.
+     */
     public function setSerializer(ICommandSerializer $serializer);
+
+    /**
+     * Returns the command serializer used by the protocol processor.
+     *
+     * @return ICommandSerializer
+     */
     public function getSerializer();
+
+    /**
+     * Sets the response reader to be used by the protocol processor.
+     *
+     * @param IResponseReader $reader Response reader.
+     */
     public function setReader(IResponseReader $reader);
+
+    /**
+     * Returns the response reader used by the protocol processor.
+     *
+     * @return IResponseReader
+     */
     public function getReader();
 }

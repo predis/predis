@@ -11,6 +11,14 @@
 
 namespace Predis\Distribution;
 
+/**
+ * This class implements an hashring-based distributor that uses the same
+ * algorithm of memcache to distribute keys in a cluster using client-side
+ * sharding.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @author Lorenzo Castelli <lcastelli@gmail.com>
+ */
 class HashRing implements IDistributionStrategy
 {
     const DEFAULT_REPLICAS = 128;
@@ -22,12 +30,21 @@ class HashRing implements IDistributionStrategy
     private $_ringKeysCount;
     private $_replicas;
 
+    /**
+     * @param int $replicas Number of replicas in the ring.
+     */
     public function __construct($replicas = self::DEFAULT_REPLICAS)
     {
         $this->_replicas = $replicas;
         $this->_nodes    = array();
     }
 
+    /**
+     * Adds a node to the ring with an optional weight.
+     *
+     * @param mixed $node Node object.
+     * @param int $weight Weight for the node.
+     */
     public function add($node, $weight = null)
     {
         // In case of collisions in the hashes of the nodes, the node added
@@ -36,6 +53,9 @@ class HashRing implements IDistributionStrategy
         $this->reset();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function remove($node)
     {
         // A node is removed by resetting the ring so that it's recreated from
@@ -51,6 +71,9 @@ class HashRing implements IDistributionStrategy
         }
     }
 
+    /**
+     * Resets the distributor.
+     */
     private function reset() 
     {
         unset(
@@ -60,11 +83,21 @@ class HashRing implements IDistributionStrategy
         );
     }
 
+    /**
+     * Returns the initialization status of the distributor.
+     *
+     * @return Boolean
+     */
     private function isInitialized()
     {
         return isset($this->_ringKeys);
     }
 
+    /**
+     * Calculates the total weight of all the nodes in the distributor.
+     *
+     * @return int
+     */
     private function computeTotalWeight()
     {
         $totalWeight = 0;
@@ -75,6 +108,9 @@ class HashRing implements IDistributionStrategy
         return $totalWeight;
     }
 
+    /**
+     * Initializes the distributor.
+     */
     private function initialize()
     {
         if ($this->isInitialized()) {
@@ -99,6 +135,15 @@ class HashRing implements IDistributionStrategy
         $this->_ringKeysCount = count($this->_ringKeys);
     }
 
+    /**
+     * Implements the logic needed to add a node to the hashring.
+     *
+     * @param array $ring Source hashring.
+     * @param mixed $node Node object to be added.
+     * @param int $totalNodes Total number of nodes.
+     * @param int $replicas Number of replicas in the ring.
+     * @param float $weightRatio Weight ratio for the node.
+     */
     protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio)
     {
         $nodeObject = $node['object'];
@@ -111,21 +156,39 @@ class HashRing implements IDistributionStrategy
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getNodeHash($nodeObject)
     {
         return (string) $nodeObject;
     }
 
+    /**
+     * Calculates the hash for the specified value.
+     *
+     * @param string $value Input value.
+     * @return int
+     */
     public function generateKey($value)
     {
         return crc32($value);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get($key)
     {
         return $this->_ring[$this->getNodeKey($key)];
     }
 
+    /**
+     * Calculates the corrisponding key of a node distributed in the hashring.
+     *
+     * @param int $key Computed hash of a key.
+     * @return int
+     */
     private function getNodeKey($key)
     {
         $this->initialize();
@@ -150,9 +213,17 @@ class HashRing implements IDistributionStrategy
         return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->_ringKeysCount)];
     }
 
+    /**
+     * Implements a strategy to deal with wrap-around errors during binary searches.
+     *
+     * @param int $upper 
+     * @param int $lower
+     * @param int $ringKeysCount 
+     * @return int
+     */
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount)
     {
-        // Binary search for the last item in _ringkeys with a value less or
+        // Binary search for the last item in ringkeys with a value less or
         // equal to the key. If no such item exists, return the last item.
         return $upper >= 0 ? $upper : $ringKeysCount - 1;
     }

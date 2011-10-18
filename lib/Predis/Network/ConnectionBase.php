@@ -19,6 +19,11 @@ use Predis\ClientException;
 use Predis\Commands\ICommand;
 use Predis\Protocol\ProtocolException;
 
+/**
+ * Base class with the common logic used by connection classes to communicate with Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 abstract class ConnectionBase implements IConnectionSingle
 {
     private $_resource;
@@ -27,6 +32,9 @@ abstract class ConnectionBase implements IConnectionSingle
     protected $_params;
     protected $_initCmds;
 
+    /**
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     public function __construct(IConnectionParameters $parameters)
     {
         $this->_initCmds = array();
@@ -34,11 +42,20 @@ abstract class ConnectionBase implements IConnectionSingle
         $this->initializeProtocol($parameters);
     }
 
+    /**
+     * Disconnect from the server and destroys the underlying resource when
+     * PHP's garbage collector kicks in.
+     */
     public function __destruct()
     {
         $this->disconnect();
     }
 
+    /**
+     * Checks some of the parameters used to initialize the connection.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     protected function checkParameters(IConnectionParameters $parameters)
     {
         switch ($parameters->scheme) {
@@ -55,18 +72,35 @@ abstract class ConnectionBase implements IConnectionSingle
         }
     }
 
+    /**
+     * Initializes some common configurations of the underlying protocol processor
+     * from the connection parameters.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
         // NOOP
     }
 
+    /**
+     * Creates the underlying resource used to communicate with Redis.
+     *
+     * @return mixed
+     */
     protected abstract function createResource();
 
+    /**
+     * {@inheritdoc}
+     */
     public function isConnected()
     {
         return isset($this->_resource);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         if ($this->isConnected()) {
@@ -75,22 +109,34 @@ abstract class ConnectionBase implements IConnectionSingle
         $this->_resource = $this->createResource();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         unset($this->_resource);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function pushInitCommand(ICommand $command)
     {
         $this->_initCmds[] = $command;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function executeCommand(ICommand $command)
     {
         $this->writeCommand($command);
         return $this->readResponse($command);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function readResponse(ICommand $command)
     {
         $reply = $this->read();
@@ -102,16 +148,33 @@ abstract class ConnectionBase implements IConnectionSingle
         return $command->parseResponse($reply);
     }
 
+    /**
+     * Helper method to handle connection errors.
+     *
+     * @param string $message Error message.
+     * @param int $code Error code.
+     */
     protected function onConnectionError($message, $code = null)
     {
         Helpers::onCommunicationException(new ConnectionException($this, $message, $code));
     }
 
+    /**
+     * Helper method to handle protocol errors.
+     *
+     * @param string $message Error message.
+     */
     protected function onProtocolError($message)
     {
         Helpers::onCommunicationException(new ProtocolException($this, $message));
     }
 
+    /**
+     * Helper method to handle invalid connection parameters.
+     *
+     * @param string $option Name of the option.
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     protected function onInvalidOption($option, $parameters = null)
     {
         $message = "Invalid option: $option";
@@ -122,6 +185,9 @@ abstract class ConnectionBase implements IConnectionSingle
         throw new InvalidArgumentException($message);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getResource()
     {
         if (isset($this->_resource)) {
@@ -133,11 +199,19 @@ abstract class ConnectionBase implements IConnectionSingle
         return $this->_resource;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParameters()
     {
         return $this->_params;
     }
 
+    /**
+     * Gets an identifier for the connection.
+     *
+     * @return string
+     */
     protected function getIdentifier()
     {
         if ($this->_params->scheme === 'unix') {
@@ -147,6 +221,9 @@ abstract class ConnectionBase implements IConnectionSingle
         return "{$this->_params->host}:{$this->_params->port}";
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         if (!isset($this->_cachedId)) {

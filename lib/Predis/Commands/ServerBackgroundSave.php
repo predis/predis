@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/bgsave
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerBackgroundSave extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'BGSAVE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         if ($data == 'Background saving started') {

@@ -16,10 +16,20 @@ use Predis\Commands\ICommand;
 use Predis\Protocol\IProtocolProcessor;
 use Predis\Protocol\Text\TextProtocol;
 
+/**
+ * Connection abstraction to Redis servers based on PHP's stream that uses an
+ * external protocol processor defining the protocol used for the communication.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ComposableStreamConnection extends StreamConnection implements IConnectionComposable
 {
     private $_protocol;
 
+    /**
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @param IProtocolProcessor $protocol A protocol processor.
+     */
     public function __construct(IConnectionParameters $parameters, IProtocolProcessor $protocol = null)
     {
         $this->setProtocol($protocol ?: new TextProtocol());
@@ -27,12 +37,18 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         parent::__construct($parameters);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
         $this->_protocol->setOption('throw_errors', $parameters->throw_errors);
         $this->_protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setProtocol(IProtocolProcessor $protocol)
     {
         if ($protocol === null) {
@@ -41,16 +57,25 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         $this->_protocol = $protocol;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getProtocol()
     {
         return $this->_protocol;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeBytes($buffer)
     {
         parent::writeBytes($buffer);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function readBytes($length)
     {
         if ($length <= 0) {
@@ -72,6 +97,9 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         return $value;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function readLine()
     {
         $value  = '';
@@ -89,11 +117,17 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         return substr($value, 0, -2);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeCommand(ICommand $command)
     {
         $this->_protocol->write($this, $command);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         return $this->_protocol->read($this);

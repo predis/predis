@@ -11,6 +11,12 @@
 
 namespace Predis;
 
+/**
+ * Method-dispatcher loop built around the client-side abstraction of a Redis
+ * Publish / Subscribe context.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class DispatcherLoop
 {
     private $_client;
@@ -19,6 +25,9 @@ class DispatcherLoop
     private $_defaultCallback;
     private $_subscriptionCallback;
 
+    /**
+     * @param Client Client instance used by the context.
+     */
     public function __construct(Client $client)
     {
         $this->_callbacks = array();
@@ -26,36 +35,61 @@ class DispatcherLoop
         $this->_pubSubContext = $client->pubSub();
     }
 
-    protected function validateCallback($callback)
+    /**
+     * Checks if the passed argument is a valid callback.
+     *
+     * @param mixed A callback.
+     */
+    protected function validateCallback($callable)
     {
-        if (!is_callable($callback)) {
-            throw new ClientException(
-                "The callback parameter must be a valid callable object"
-            );
+        if (!is_callable($callable)) {
+            throw new ClientException("A valid callable object must be provided");
         }
     }
 
+    /**
+     * Returns the underlying Publish / Subscribe context.
+     *
+     * @return PubSubContext
+     */
     public function getPubSubContext()
     {
         return $this->_pubSubContext;
     }
 
-    public function subscriptionCallback($callback = null)
+    /**
+     * Sets a callback that gets invoked upon new subscriptions.
+     *
+     * @param mixed $callable A callback.
+     */
+    public function subscriptionCallback($callable = null)
     {
-        if (isset($callback)) {
-            $this->validateCallback($callback);
+        if (isset($callable)) {
+            $this->validateCallback($callable);
         }
-        $this->_subscriptionCallback = $callback;
+        $this->_subscriptionCallback = $callable;
     }
 
-    public function defaultCallback($callback = null)
+    /**
+     * Sets a callback that gets invoked when a message is received on a
+     * channel that does not have an associated callback.
+     *
+     * @param mixed $callable A callback.
+     */
+    public function defaultCallback($callable = null)
     {
-        if (isset($callback)) {
-            $this->validateCallback($callback);
+        if (isset($callable)) {
+            $this->validateCallback($callable);
         }
-        $this->_subscriptionCallback = $callback;
+        $this->_subscriptionCallback = $callable;
     }
 
+    /**
+     * Binds a callback to a channel.
+     *
+     * @param string $channel Channel name.
+     * @param Callable $callback A callback.
+     */
     public function attachCallback($channel, $callback)
     {
         $this->validateCallback($callback);
@@ -63,6 +97,11 @@ class DispatcherLoop
         $this->_pubSubContext->subscribe($channel);
     }
 
+    /**
+     * Stops listening to a channel and removes the associated callback.
+     *
+     * @param string $channel Redis channel.
+     */
     public function detachCallback($channel)
     {
         if (isset($this->_callbacks[$channel])) {
@@ -71,6 +110,9 @@ class DispatcherLoop
         }
     }
 
+    /**
+     * Starts the dispatcher loop.
+     */
     public function run()
     {
         foreach ($this->_pubSubContext as $message) {
@@ -95,6 +137,9 @@ class DispatcherLoop
         }
     }
 
+    /**
+     * Terminates the dispatcher loop.
+     */
     public function stop()
     {
         $this->_pubSubContext->closeContext();

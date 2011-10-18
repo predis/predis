@@ -13,6 +13,12 @@ namespace Predis\Protocol;
 
 use Predis\CommunicationException;
 
+/**
+ * Exception class that identifies errors encountered while 
+ * handling the Redis wire protocol.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ProtocolException extends CommunicationException
 {
 }

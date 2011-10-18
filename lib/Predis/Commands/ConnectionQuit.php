@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/quit
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ConnectionQuit extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'QUIT';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

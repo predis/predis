@@ -11,17 +11,31 @@
 
 namespace Predis\Options;
 
+/**
+ * Implements a generic class used to dinamically define a client option.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class CustomOption implements IOption
 {
     private $_validate;
     private $_default;
 
+    /**
+     * @param array $options List of options
+     */
     public function __construct(Array $options)
     {
         $this->_validate = $this->filterCallable($options, 'validate');
         $this->_default  = $this->filterCallable($options, 'default');
     }
 
+    /**
+     * Checks if the specified value in the options array is a callable object.
+     *
+     * @param array $options Array of options
+     * @param string $key Target option.
+     */
     private function filterCallable($options, $key)
     {
         if (!isset($options[$key])) {
@@ -36,6 +50,9 @@ class CustomOption implements IOption
         throw new \InvalidArgumentException("The parameter $key must be callable");
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function validate($value)
     {
         if (isset($value)) {
@@ -48,6 +65,9 @@ class CustomOption implements IOption
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDefault()
     {
         if (!isset($this->_default)) {
@@ -58,6 +78,9 @@ class CustomOption implements IOption
         return $default();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke($value)
     {
         if (isset($value)) {

@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hget
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashGet extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HGET';

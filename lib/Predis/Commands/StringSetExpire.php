@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/setex
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringSetExpire extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SETEX';

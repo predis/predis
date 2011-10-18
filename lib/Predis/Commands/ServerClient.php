@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/client
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerClient extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'CLIENT';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         $args = array_change_key_case($this->getArguments(), CASE_UPPER);
@@ -41,6 +57,13 @@ class ServerClient extends Command
         }
     }
 
+    /**
+     * Parses the reply buffer and returns the list of clients returned by
+     * the CLIENT LIST command.
+     *
+     * @param string $data Reply buffer
+     * @return array
+     */
     protected function parseClientList($data)
     {
         $clients = array();

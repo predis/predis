@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/substr
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringSubstr extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SUBSTR';

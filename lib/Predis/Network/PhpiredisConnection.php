@@ -33,10 +33,20 @@ use Predis\ServerException;
 use Predis\IConnectionParameters;
 use Predis\Commands\ICommand;
 
+/**
+ * Connection abstraction to Redis servers based on PHP's sockets to
+ * handle the actual network connection and the phpiredis extension to
+ * handle the parsing of Redis protocol.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class PhpiredisConnection extends ConnectionBase
 {
     private $_reader;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct(IConnectionParameters $parameters)
     {
         if (!function_exists('socket_create')) {
@@ -49,6 +59,10 @@ class PhpiredisConnection extends ConnectionBase
         parent::__construct($parameters);
     }
 
+    /**
+     * Disconnect from the server and destroys the underlying resource and the
+     * protocol reader resource when PHP's garbage collector kicks in.
+     */
     public function __destruct()
     {
         phpiredis_reader_destroy($this->_reader);
@@ -56,6 +70,9 @@ class PhpiredisConnection extends ConnectionBase
         parent::__destruct();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function checkParameters(IConnectionParameters $parameters)
     {
         if ($parameters->isSetByUser('iterable_multibulk')) {
@@ -68,6 +85,11 @@ class PhpiredisConnection extends ConnectionBase
         return parent::checkParameters($parameters);
     }
 
+    /**
+     * Initializes the protocol reader resource.
+     *
+     * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
+     */
     private function initializeReader($throw_errors = true)
     {
         if (!function_exists('phpiredis_reader_create')) {
@@ -85,11 +107,19 @@ class PhpiredisConnection extends ConnectionBase
         $this->_reader = $reader;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
         $this->initializeReader($parameters->throw_errors);
     }
 
+    /**
+     * Gets the handler used by the protocol reader to handle status replies.
+     *
+     * @return \Closure
+     */
     private function getStatusHandler()
     {
         return function($payload) {
@@ -106,6 +136,12 @@ class PhpiredisConnection extends ConnectionBase
         };
     }
 
+    /**
+     * Gets the handler used by the protocol reader to handle Redis errors.
+     *
+     * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
+     * @return \Closure
+     */
     private function getErrorHandler($throwErrors = true)
     {
         if ($throwErrors) {
@@ -119,6 +155,9 @@ class PhpiredisConnection extends ConnectionBase
         };
     }
 
+    /**
+     * Helper method used to throw exceptions on socket errors.
+     */
     private function emitSocketError()
     {
         $errno  = socket_last_error();
@@ -129,6 +168,9 @@ class PhpiredisConnection extends ConnectionBase
         $this->onConnectionError(trim($errstr), $errno);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function createResource()
     {
         $parameters = $this->_params;
@@ -141,6 +183,12 @@ class PhpiredisConnection extends ConnectionBase
         return $socket;
     }
 
+    /**
+     * Initializes a TCP socket resource.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function tcpSocketInitializer(IConnectionParameters $parameters)
     {
         $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -151,6 +199,12 @@ class PhpiredisConnection extends ConnectionBase
         return $socket;
     }
 
+    /**
+     * Initializes a UNIX socket resource.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return resource
+     */
     private function unixSocketInitializer(IConnectionParameters $parameters)
     {
         $socket = @socket_create(AF_UNIX, SOCK_STREAM, 0);
@@ -162,6 +216,12 @@ class PhpiredisConnection extends ConnectionBase
         return $socket;
     }
 
+    /**
+     * Sets options on the socket resource from the connection parameters.
+     *
+     * @param resource $socket Socket resource.
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     */
     private function setSocketOptions($socket, IConnectionParameters $parameters)
     {
         if ($parameters->scheme !== 'tcp') {
@@ -196,6 +256,12 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * Gets the address from the connection parameters.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return string
+     */
     private function getAddress(IConnectionParameters $parameters)
     {
         if ($parameters->scheme === 'unix') {
@@ -214,6 +280,12 @@ class PhpiredisConnection extends ConnectionBase
         return $host;
     }
 
+    /**
+     * Opens the actual connection to the server with a timeout.
+     *
+     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
+     * @return string
+     */
     private function connectWithTimeout(IConnectionParameters $parameters) {
         $host = self::getAddress($parameters);
         $socket = $this->getResource();
@@ -249,6 +321,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         parent::connect();
@@ -259,6 +334,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         if ($this->isConnected()) {
@@ -268,6 +346,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * Sends the initialization commands to Redis when the connection is opened.
+     */
     private function sendInitializationCommands()
     {
         foreach ($this->_initCmds as $command) {
@@ -278,6 +359,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     private function write($buffer)
     {
         $socket = $this->getResource();
@@ -296,6 +380,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function read()
     {
         $socket = $this->getResource();
@@ -317,6 +404,9 @@ class PhpiredisConnection extends ConnectionBase
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function writeCommand(ICommand $command)
     {
         $cmdargs = $command->getArguments();

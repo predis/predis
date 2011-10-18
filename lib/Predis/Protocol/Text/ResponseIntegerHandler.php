@@ -16,8 +16,22 @@ use Predis\Protocol\IResponseHandler;
 use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
+/**
+ * Implements a response handler for integer replies using the standard wire
+ * protocol defined by Redis.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ResponseIntegerHandler implements IResponseHandler
 {
+    /**
+     * Handles an integer reply returned by Redis.
+     *
+     * @param IConnectionComposable $connection Connection to Redis.
+     * @param string $number String representation of an integer.
+     * @return int
+     */
     public function handle(IConnectionComposable $connection, $number)
     {
         if (is_numeric($number)) {

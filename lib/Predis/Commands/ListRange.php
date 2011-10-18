@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/lrange
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListRange extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'LRANGE';

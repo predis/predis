@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/info
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerInfoV26x extends ServerInfo
 {
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         $info = array();

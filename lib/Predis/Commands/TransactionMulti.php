@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/multi
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TransactionMulti extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'MULTI';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

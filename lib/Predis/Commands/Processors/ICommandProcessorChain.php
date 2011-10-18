@@ -11,10 +11,32 @@
 
 namespace Predis\Commands\Processors;
 
+/**
+ * A command processor chain processes a command using multiple chained command
+ * processor before it is sent to Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface ICommandProcessorChain extends ICommandProcessor, \IteratorAggregate, \Countable
 {
+    /**
+     * Adds a command processor.
+     *
+     * @param ICommandProcessor $processor A command processor.
+     */
+    public function add(ICommandProcessor $processor);
 
-    public function add(ICommandProcessor $preprocessor);
-    public function remove(ICommandProcessor $preprocessor);
+    /**
+     * Removes a command processor from the chain.
+     *
+     * @param ICommandProcessor $processor A command processor.
+     */
+    public function remove(ICommandProcessor $processor);
+
+    /**
+     * Gets the ordered list of command processors in the chain.
+     *
+     * @return array
+     */
     public function getProcessors();
 }

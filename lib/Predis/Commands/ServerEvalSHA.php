@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/evalsha
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerEvalSHA extends ServerEval
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'EVALSHA';

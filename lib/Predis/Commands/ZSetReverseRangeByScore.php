@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/zrevrangebyscore
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetReverseRangeByScore extends ZSetRangeByScore
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZREVRANGEBYSCORE';

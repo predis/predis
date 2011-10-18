@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/zunionstore
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetUnionStore extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZUNIONSTORE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         $options = array();
@@ -37,6 +47,12 @@ class ZSetUnionStore extends Command
         return array_merge($arguments, $options);
     }
 
+    /**
+     * Return a list of options and modifiers compatible with Redis.
+     *
+     * @param array $options List of options.
+     * @return array
+     */
     private function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
@@ -57,6 +73,9 @@ class ZSetUnionStore extends Command
         return $finalizedOpts;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         $arguments[0] = "$prefix{$arguments[0]}";
@@ -69,6 +88,9 @@ class ZSetUnionStore extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         $args = $this->getArguments();

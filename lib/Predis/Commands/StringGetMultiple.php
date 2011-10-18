@@ -13,23 +13,39 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/mget
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringGetMultiple extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'MGET';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return Helpers::filterArrayArguments($arguments);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::multipleKeys($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return $this->checkSameHashForKeys($this->getArguments());

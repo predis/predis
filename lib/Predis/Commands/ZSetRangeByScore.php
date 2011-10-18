@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/zrangebyscore
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetRangeByScore extends ZSetRange
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZRANGEBYSCORE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
@@ -34,6 +44,9 @@ class ZSetRangeByScore extends ZSetRange
         return array_merge($finalizedOpts, parent::prepareOptions($options));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function withScores()
     {
         $arguments = $this->getArguments();

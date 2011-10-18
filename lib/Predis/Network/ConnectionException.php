@@ -13,6 +13,11 @@ namespace Predis\Network;
 
 use Predis\CommunicationException;
 
+/**
+ * Exception class that identifies connection-related errors.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ConnectionException extends CommunicationException
 {
 }

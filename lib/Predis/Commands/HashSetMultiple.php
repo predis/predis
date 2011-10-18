@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hmset
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashSetMultiple extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HMSET';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {

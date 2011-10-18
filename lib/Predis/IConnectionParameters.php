@@ -11,9 +11,34 @@
 
 namespace Predis;
 
+/**
+ * Interface that must be implemented by classes that provide their own mechanism
+ * to parse and handle connection parameters.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IConnectionParameters
 {
+    /**
+     * Checks if the specified parameters is set.
+     *
+     * @param string $property Name of the property.
+     * @return Boolean
+     */
     public function __isset($parameter);
+
+    /**
+     * Returns the value of the specified parameter.
+     *
+     * @param string $parameter Name of the parameter.
+     * @return mixed
+     */
     public function __get($parameter);
+
+    /**
+     * Returns an array representation of the connection parameters.
+     *
+     * @return array
+     */
     public function toArray();
 }

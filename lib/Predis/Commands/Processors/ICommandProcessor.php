@@ -13,7 +13,17 @@ namespace Predis\Commands\Processors;
 
 use Predis\Commands\ICommand;
 
+/**
+ * A command processor processes commands before they are sent to Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface ICommandProcessor
 {
+    /**
+     * Processes a Redis command.
+     *
+     * @param ICommand $command Redis command.
+     */
     public function process(ICommand $command);
 }

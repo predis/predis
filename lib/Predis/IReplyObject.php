@@ -11,6 +11,11 @@
 
 namespace Predis;
 
+/**
+ * Represents a complex reply object from Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IReplyObject
 {
 }

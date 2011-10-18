@@ -16,8 +16,22 @@ use Predis\Protocol\IResponseHandler;
 use Predis\Protocol\ProtocolException;
 use Predis\Network\IConnectionComposable;
 
+/**
+ * Implements a response handler for multi-bulk replies using the standard
+ * wire protocol defined by Redis.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ResponseMultiBulkHandler implements IResponseHandler
 {
+    /**
+     * Handles a multi-bulk reply returned by Redis.
+     *
+     * @param IConnectionComposable $connection Connection to Redis.
+     * @param string $lengthString Number of items in the multi-bulk reply.
+     * @return array
+     */
     public function handle(IConnectionComposable $connection, $lengthString)
     {
         $length = (int) $lengthString;

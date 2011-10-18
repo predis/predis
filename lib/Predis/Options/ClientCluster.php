@@ -14,8 +14,19 @@ namespace Predis\Options;
 use Predis\Network\IConnectionCluster;
 use Predis\Network\PredisCluster;
 
+/**
+ * Option class that returns a connection cluster to be used by a client.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ClientCluster extends Option
 {
+    /**
+     * Checks if the specified value is a valid instance of IConnectionCluster.
+     *
+     * @param IConnectionCluster $cluster Instance of a connection cluster.
+     * @return IConnectionCluster
+     */
     protected function checkInstance($cluster)
     {
         if (!$cluster instanceof IConnectionCluster) {
@@ -27,6 +38,9 @@ class ClientCluster extends Option
         return $cluster;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function validate($value)
     {
         if (is_callable($value)) {
@@ -37,6 +51,12 @@ class ClientCluster extends Option
         return $this->checkInstance($initializer());
     }
 
+    /**
+     * Returns an initializer for the specified FQN or type.
+     *
+     * @param string $fqnOrType Type of cluster of FQN of a class implementing IConnectionCluster
+     * @return \Closure
+     */
     protected function getInitializer($fqnOrType)
     {
         switch ($fqnOrType) {
@@ -50,6 +70,9 @@ class ClientCluster extends Option
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDefault()
     {
         return new PredisCluster();

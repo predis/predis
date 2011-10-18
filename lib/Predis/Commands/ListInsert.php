@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/linsert
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListInsert extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'LINSERT';

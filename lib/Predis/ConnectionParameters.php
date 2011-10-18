@@ -14,6 +14,11 @@ namespace Predis;
 use Predis\IConnectionParameters;
 use Predis\Options\IOption;
 
+/**
+ * Handles parsing and validation of connection parameters.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ConnectionParameters implements IConnectionParameters
 {
     private static $_defaultParameters;
@@ -22,6 +27,9 @@ class ConnectionParameters implements IConnectionParameters
     private $_parameters;
     private $_userDefined;
 
+    /**
+     * @param string|array Connection parameters in the form of an URI string or a named array.
+     */
     public function __construct($parameters = array())
     {
         self::ensureDefaults();
@@ -34,6 +42,9 @@ class ConnectionParameters implements IConnectionParameters
         $this->_parameters = $this->filter($parameters) + self::$_defaultParameters;
     }
 
+    /**
+     * Ensures that the default values and validators are initialized.
+     */
     private static function ensureDefaults()
     {
         if (!isset(self::$_defaultParameters)) {
@@ -72,6 +83,13 @@ class ConnectionParameters implements IConnectionParameters
         }
     }
 
+    /**
+     * Defines a default value and a validator for the specified parameter.
+     *
+     * @param string $parameter Name of the parameter.
+     * @param mixed $default Default value or an instance of IOption.
+     * @param mixed $callable A validator callback.
+     */
     public static function define($parameter, $default, $callable = null)
     {
         self::ensureDefaults();
@@ -96,12 +114,23 @@ class ConnectionParameters implements IConnectionParameters
         self::$_validators[$parameter] = $callable;
     }
 
+    /**
+     * Undefines the default value and validator for the specified parameter.
+     *
+     * @param string $parameter Name of the parameter.
+     */
     public static function undefine($parameter)
     {
         self::ensureDefaults();
         unset(self::$_defaultParameters[$parameter], self::$_validators[$parameter]);
     }
 
+    /**
+     * Parses an URI string and returns an array of connection parameters.
+     *
+     * @param string $uri Connection string.
+     * @return array
+     */
     private function parseURI($uri)
     {
         if (stripos($uri, 'unix') === 0) {
@@ -124,6 +153,12 @@ class ConnectionParameters implements IConnectionParameters
         return $parsed;
     }
 
+    /**
+     * Validates and converts each value of the connection parameters array.
+     *
+     * @param array $parameters Connection parameters.
+     * @return array
+     */
     private function filter(Array $parameters)
     {
         if (count($parameters) > 0) {
@@ -136,6 +171,9 @@ class ConnectionParameters implements IConnectionParameters
         return $parameters;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __get($parameter)
     {
         $value = $this->_parameters[$parameter];
@@ -147,16 +185,28 @@ class ConnectionParameters implements IConnectionParameters
         return $value;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __isset($parameter)
     {
         return isset($this->_parameters[$parameter]);
     }
 
+    /**
+     * Checks if the specified parameter has been set by the user.
+     *
+     * @param string $parameter Name of the parameter.
+     * @return Boolean
+     */
     public function isSetByUser($parameter)
     {
         return in_array($parameter, $this->_userDefined);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function getBaseURI()
     {
         if ($this->scheme === 'unix') {
@@ -166,16 +216,29 @@ class ConnectionParameters implements IConnectionParameters
         return "{$this->scheme}://{$this->host}:{$this->port}";
     }
 
+    /**
+     * Returns the URI parts that must be omitted when calling __toString().
+     *
+     * @return array
+     */
     protected function getDisallowedURIParts()
     {
         return array('scheme', 'host', 'port', 'password', 'path');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function toArray()
     {
         return $this->_parameters;
     }
 
+    /**
+     * Returns a string representation of the parameters.
+     *
+     * @return string
+     */
     public function __toString()
     {
         $query = array();
@@ -197,11 +260,17 @@ class ConnectionParameters implements IConnectionParameters
         return $this->getBaseURI() . '/?' . implode('&', $query);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __sleep()
     {
         return array('_parameters', '_userDefined');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __wakeup()
     {
         self::ensureDefaults();

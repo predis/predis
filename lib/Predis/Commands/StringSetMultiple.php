@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/mset
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringSetMultiple extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'MSET';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 1 && is_array($arguments[0])) {
@@ -35,6 +45,9 @@ class StringSetMultiple extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         $length = count($arguments);
@@ -46,6 +59,9 @@ class StringSetMultiple extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         $args = $this->getArguments();

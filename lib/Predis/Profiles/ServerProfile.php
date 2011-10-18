@@ -15,6 +15,11 @@ use Predis\ClientException;
 use Predis\Commands\Processors\ICommandProcessor;
 use Predis\Commands\Processors\IProcessingSupport;
 
+/**
+ * Base class that implements common functionalities of server profiles.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 abstract class ServerProfile implements IServerProfile, IProcessingSupport
 {
     private static $_profiles;
@@ -22,23 +27,48 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     private $_registeredCommands;
     private $_processor;
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->_registeredCommands = $this->getSupportedCommands();
     }
 
+    /**
+     * Returns a map of all the commands supported by the profile and their
+     * actual PHP classes.
+     *
+     * @return array
+     */
     protected abstract function getSupportedCommands();
 
+    /**
+     * Returns the default server profile.
+     *
+     * @return IServerProfile
+     */
     public static function getDefault()
     {
         return self::get('default');
     }
 
+    /**
+     * Returns the development server profile.
+     *
+     * @return IServerProfile
+     */
     public static function getDevelopment()
     {
         return self::get('dev');
     }
 
+    /**
+     * Returns a map of all the server profiles supported by default and their
+     * actual PHP classes.
+     *
+     * @return array
+     */
     private static function getDefaultProfiles()
     {
         return array(
@@ -51,6 +81,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         );
     }
 
+    /**
+     * Registers a new server profile.
+     *
+     * @param string $alias Profile version or alias.
+     * @param string $profileClass FQN of a class implementing Predis\Profiles\IServerProfile.
+     */
     public static function define($alias, $profileClass)
     {
         if (!isset(self::$_profiles)) {
@@ -68,6 +104,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         self::$_profiles[$alias] = $profileClass;
     }
 
+    /**
+     * Returns the specified server profile.
+     *
+     * @param string $version Profile version or alias.
+     * @return IServerProfile
+     */
     public static function get($version)
     {
         if (!isset(self::$_profiles)) {
@@ -82,6 +124,9 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         return new $profile();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function supportsCommands(Array $commands)
     {
         foreach ($commands as $command) {
@@ -93,11 +138,17 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function supportsCommand($command)
     {
         return isset($this->_registeredCommands[strtolower($command)]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function createCommand($method, $arguments = array())
     {
         $method = strtolower($method);
@@ -116,6 +167,11 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         return $command;
     }
 
+    /**
+     * Defines new commands in the server profile.
+     *
+     * @param array $commands Named list of command IDs and their classes.
+     */
     public function defineCommands(Array $commands)
     {
         foreach ($commands as $alias => $command) {
@@ -123,6 +179,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         }
     }
 
+    /**
+     * Defines a new commands in the server profile.
+     *
+     * @param string $alias Command ID.
+     * @param string $command FQN of a class implementing Predis\Commands\ICommand.
+     */
     public function defineCommand($alias, $command)
     {
         $commandReflection = new \ReflectionClass($command);
@@ -132,6 +194,9 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         $this->_registeredCommands[strtolower($alias)] = $command;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setProcessor(ICommandProcessor $processor)
     {
         if (!isset($processor)) {
@@ -141,11 +206,19 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         $this->_processor = $processor;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getProcessor()
     {
         return $this->_processor;
     }
 
+    /**
+     * Returns the version of server profile as its string representation.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return $this->getVersion();

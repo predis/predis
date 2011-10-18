@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/setbit
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringSetBit extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SETBIT';

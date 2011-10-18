@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/exists
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyExists extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'EXISTS';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

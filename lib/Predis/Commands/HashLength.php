@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hlen
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashLength extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HLEN';

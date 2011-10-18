@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/keys
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyKeys extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'KEYS';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

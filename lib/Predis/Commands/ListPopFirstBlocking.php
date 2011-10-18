@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/blpop
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListPopFirstBlocking extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'BLPOP';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::skipLastArgument($arguments, $prefix);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return $this->checkSameHashForKeys(

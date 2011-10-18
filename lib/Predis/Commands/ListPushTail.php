@@ -13,13 +13,23 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/rpush
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListPushTail extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'RPUSH';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return Helpers::filterVariadicValues($arguments);

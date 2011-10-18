@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/flushall
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerFlushAll extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'FLUSHALL';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

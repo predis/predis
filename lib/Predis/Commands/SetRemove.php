@@ -13,18 +13,31 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/srem
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SetRemove extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SREM';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return Helpers::filterVariadicValues($arguments);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

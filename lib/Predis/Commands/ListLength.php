@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/llen
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListLength extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'LLEN';

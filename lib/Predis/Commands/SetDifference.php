@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/sdiff
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SetDifference extends SetIntersection
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SDIFF';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         return PrefixHelpers::multipleKeys($arguments, $prefix);

@@ -14,8 +14,18 @@ namespace Predis\Pipeline;
 use Predis\ServerException;
 use Predis\Network\IConnection;
 
+/**
+ * Implements the standard pipeline executor strategy used
+ * to write a list of commands and read their replies over
+ * a connection to Redis.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StandardExecutor implements IPipelineExecutor
 {
+    /**
+     * {@inheritdoc}
+     */
     public function execute(IConnection $connection, &$commands)
     {
         $sizeofPipe = count($commands);

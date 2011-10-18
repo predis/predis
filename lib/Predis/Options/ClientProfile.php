@@ -14,8 +14,16 @@ namespace Predis\Options;
 use Predis\Profiles\ServerProfile;
 use Predis\Profiles\IServerProfile;
 
+/**
+ * Option class that handles server profiles to be used by a client.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ClientProfile extends Option
 {
+    /**
+     * {@inheritdoc}
+     */
     public function validate($value)
     {
         if ($value instanceof IServerProfile) {
@@ -31,6 +39,9 @@ class ClientProfile extends Option
         );
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDefault()
     {
         return ServerProfile::getDefault();

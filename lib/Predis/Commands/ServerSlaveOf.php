@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/slaveof
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerSlaveOf extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SLAVEOF';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
@@ -27,11 +37,17 @@ class ServerSlaveOf extends Command
         return $arguments;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

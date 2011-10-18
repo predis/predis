@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/sort
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeySort extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SORT';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 1) {
@@ -70,6 +80,9 @@ class KeySort extends Command
         return $query;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         $arguments[0] = "$prefix{$arguments[0]}";

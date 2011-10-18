@@ -13,18 +13,31 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/zadd
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetAdd extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZADD';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return Helpers::filterVariadicValues($arguments);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

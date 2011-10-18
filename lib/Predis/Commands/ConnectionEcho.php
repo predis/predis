@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/echo
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ConnectionEcho extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ECHO';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

@@ -13,13 +13,23 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/hmget
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashGetMultiple extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HMGET';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         return Helpers::filterVariadicValues($arguments);

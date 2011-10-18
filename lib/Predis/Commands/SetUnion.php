@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/sunion
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SetUnion extends SetIntersection
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SUNION';

@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/zcount
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetCount extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZCOUNT';

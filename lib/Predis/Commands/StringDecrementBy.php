@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/decrby
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringDecrementBy extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'DECRBY';

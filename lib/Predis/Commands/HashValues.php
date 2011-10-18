@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hvals
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashValues extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HVALS';

@@ -11,23 +11,39 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/bgrewriteaof
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerBackgroundRewriteAOF extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'BGREWRITEAOF';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return $data == 'Background append only file rewriting started';

@@ -11,7 +11,19 @@
 
 namespace Predis;
 
+/**
+ * Interface that must be implemented by classes that provide their own mechanism
+ * to create and initialize new instances of Predis\Network\IConnectionSingle.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IConnectionFactory
 {
+    /**
+     * Creates a new connection object.
+     *
+     * @param mixed $parameters Parameters for the connection.
+     * @return Predis\Network\IConnectionSingle
+     */
     public function create($parameters);
 }

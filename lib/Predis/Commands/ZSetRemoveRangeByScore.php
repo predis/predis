@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/zremrangebyscore
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetRemoveRangeByScore extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZREMRANGEBYSCORE';

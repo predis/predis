@@ -11,13 +11,24 @@
 
 namespace Predis\Profiles;
 
+/**
+ * Server profile for Redis v2.2.x.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerVersion22 extends ServerProfile
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getVersion()
     {
         return '2.2';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSupportedCommands()
     {
         return array(

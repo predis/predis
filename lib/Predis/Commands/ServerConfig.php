@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/config
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerConfig extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'CONFIG';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

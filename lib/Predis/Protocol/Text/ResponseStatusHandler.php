@@ -15,8 +15,18 @@ use Predis\ResponseQueued;
 use Predis\Protocol\IResponseHandler;
 use Predis\Network\IConnectionComposable;
 
+/**
+ * Implements a response handler for status replies using the standard wire
+ * protocol defined by Redis.
+ *
+ * @link http://redis.io/topics/protocol
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ResponseStatusHandler implements IResponseHandler
 {
+    /**
+     * {@inheritdoc}
+     */
     public function handle(IConnectionComposable $connection, $status)
     {
         switch ($status) {

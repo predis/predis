@@ -11,13 +11,23 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/expireat
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyExpireAt extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'EXPIREAT';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

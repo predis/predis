@@ -13,8 +13,16 @@ namespace Predis\Options;
 
 use Predis\Commands\Processors\KeyPrefixProcessor;
 
+/**
+ * Option class that handles the prefixing of keys in commands.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ClientPrefix extends Option
 {
+    /**
+     * {@inheritdoc}
+     */
     public function validate($value)
     {
         return new KeyPrefixProcessor($value);

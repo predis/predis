@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/rpop
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ListPopLast extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'RPOP';

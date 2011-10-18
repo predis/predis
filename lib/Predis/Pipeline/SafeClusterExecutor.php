@@ -15,8 +15,18 @@ use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Network\IConnection;
 
+/**
+ * Implements a pipeline executor strategy for connection clusters that does
+ * not fail when an error is encountered, but adds the returned error in the
+ * replies array.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SafeClusterExecutor implements IPipelineExecutor
 {
+    /**
+     * {@inheritdoc}
+     */
     public function execute(IConnection $connection, &$commands)
     {
         $connectionExceptions = array();

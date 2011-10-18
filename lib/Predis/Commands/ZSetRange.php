@@ -13,13 +13,23 @@ namespace Predis\Commands;
 
 use Predis\Iterators\MultiBulkResponseTuple;
 
+/**
+ * @link http://redis.io/commands/zrange
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetRange extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'ZRANGE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(Array $arguments)
     {
         if (count($arguments) === 4) {
@@ -40,6 +50,12 @@ class ZSetRange extends Command
         return $arguments;
     }
 
+    /**
+     * Return a list of options and modifiers compatible with Redis.
+     *
+     * @param array $options List of options.
+     * @return array
+     */
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
@@ -52,6 +68,11 @@ class ZSetRange extends Command
         return $finalizedOpts;
     }
 
+    /**
+     * Checks for the presence of the WITHSCORES modifier.
+     *
+     * @return Boolean
+     */
     protected function withScores()
     {
         $arguments = $this->getArguments();
@@ -63,6 +84,9 @@ class ZSetRange extends Command
         return strtoupper($arguments[3]) === 'WITHSCORES';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         if ($this->withScores()) {

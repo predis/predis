@@ -13,7 +13,18 @@ namespace Predis\Protocol;
 
 use Predis\Commands\ICommand;
 
+/**
+ * Interface that defines a custom serializer for Redis commands.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface ICommandSerializer
 {
+    /**
+     * Serializes a Redis command.
+     *
+     * @param ICommand $command Redis command.
+     * @return string
+     */
     public function serialize(ICommand $command);
 }

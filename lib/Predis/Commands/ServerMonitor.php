@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/monitor
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerMonitor extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'MONITOR';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

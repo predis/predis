@@ -11,8 +11,20 @@
 
 namespace Predis\Commands;
 
+/**
+ * Class that defines a few helpers method for prefixing keys.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class PrefixHelpers
 {
+    /**
+     * Applies the specified prefix to all the arguments.
+     *
+     * @param array $arguments Array of arguments.
+     * @param string $prefix The prefix string.
+     * @return array
+     */
     public static function multipleKeys(Array $arguments, $prefix)
     {
         foreach ($arguments as &$key) {
@@ -22,6 +34,13 @@ class PrefixHelpers
         return $arguments;
     }
 
+    /**
+     * Applies the specified prefix to all the arguments but the last one.
+     *
+     * @param array $arguments Array of arguments.
+     * @param string $prefix The prefix string.
+     * @return array
+     */
     public static function skipLastArgument(Array $arguments, $prefix)
     {
         $length = count($arguments);

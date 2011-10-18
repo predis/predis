@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/hkeys
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class HashKeys extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'HKEYS';

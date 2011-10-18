@@ -15,8 +15,17 @@ use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Network\IConnection;
 
+/**
+ * Implements a pipeline executor strategy that does not fail when an error is
+ * encountered, but adds the returned error in the replies array.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SafeExecutor implements IPipelineExecutor
 {
+    /**
+     * {@inheritdoc}
+     */
     public function execute(IConnection $connection, &$commands)
     {
         $sizeofPipe = count($commands);

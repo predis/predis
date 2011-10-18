@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/exec
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class TransactionExec extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'EXEC';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;

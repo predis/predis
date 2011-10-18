@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/get
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class StringGet extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'GET';

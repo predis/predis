@@ -13,7 +13,20 @@ namespace Predis\Pipeline;
 
 use Predis\Network\IConnection;
 
+/**
+ * Defines a strategy to write a list of commands to the network
+ * and read back their replies.
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 interface IPipelineExecutor
 {
+    /**
+     * Writes a list of commands to the network and reads back their replies.
+     *
+     * @param IConnection $connection Connection to Redis.
+     * @param array $commands List of commands.
+     * @return array
+     */
     public function execute(IConnection $connection, &$commands);
 }

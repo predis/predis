@@ -11,18 +11,31 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/move
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class KeyMove extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'MOVE';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         return (bool) $data;

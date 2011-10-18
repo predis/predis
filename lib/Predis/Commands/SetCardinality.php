@@ -11,8 +11,15 @@
 
 namespace Predis\Commands;
 
+/**
+ * @link http://redis.io/commands/scard
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class SetCardinality extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'SCARD';

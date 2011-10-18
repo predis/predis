@@ -13,18 +13,31 @@ namespace Predis\Commands;
 
 use Predis\Helpers;
 
+/**
+ * @link http://redis.io/commands/object
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ServerObject extends Command
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return 'OBJECT';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function onPrefixKeys(Array $arguments, $prefix)
     {
         /* NOOP */
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function canBeHashed()
     {
         return false;
