@@ -2,7 +2,8 @@
 
 namespace Predis\Commands;
 
-class KeyRename extends Command {
+class KeyRename extends Command
+{
     public function getId()
     {
         return 'RENAME';

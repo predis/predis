@@ -6,8 +6,8 @@ class ServerVersionNext extends ServerVersion24
 {
     public function getVersion()
     {
-		return '2.6';
-	}
+        return '2.6';
+    }
 
     public function getSupportedCommands()
     {

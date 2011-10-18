@@ -2,7 +2,8 @@
 
 namespace Predis\Commands;
 
-class StringSetPreserve extends Command {
+class StringSetPreserve extends Command
+{
     public function getId()
     {
         return 'SETNX';

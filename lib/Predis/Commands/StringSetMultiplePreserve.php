@@ -2,7 +2,8 @@
 
 namespace Predis\Commands;
 
-class StringSetMultiplePreserve extends StringSetMultiple {
+class StringSetMultiplePreserve extends StringSetMultiple
+{
     public function getId()
     {
         return 'MSETNX';

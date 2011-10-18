@@ -10,7 +10,8 @@ use Predis\Profiles\ServerProfile;
 use Predis\Pipeline\PipelineContext;
 use Predis\Transaction\MultiExecContext;
 
-class Client {
+class Client
+{
     const VERSION = '0.7.0-dev';
 
     private $_options;
@@ -38,19 +39,15 @@ class Client {
         if ($options === null) {
             return new ClientOptions();
         }
-
         if (is_array($options)) {
             return new ClientOptions($options);
         }
-
         if ($options instanceof ClientOptions) {
             return $options;
         }
-
         if ($options instanceof IServerProfile) {
             return new ClientOptions(array('profile' => $options));
         }
-
         if (is_string($options)) {
             return new ClientOptions(array('profile' => ServerProfile::get($options)));
         }
@@ -180,9 +177,11 @@ class Client {
     {
         if (Helpers::isCluster($this->_connection)) {
             $replies = array();
+
             foreach ($this->_connection as $connection) {
                 $replies[] = $connection->executeCommand($command);
             }
+
             return $replies;
         }
 

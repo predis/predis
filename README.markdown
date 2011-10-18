@@ -34,6 +34,7 @@ When used in a project or script without PSR-0 autoloading, Predis includes its 
 ``` php
 <?php
 require PREDIS_BASE_PATH . '/Autoloader.php';
+
 Predis\Autoloader::register();
 
 // You can now create a Predis\Client, and use other Predis classes, without

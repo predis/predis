@@ -4,13 +4,13 @@ namespace Predis;
 
 class Autoloader
 {
-    private $base_directory;
-    private $prefix;
+    private $_baseDir;
+    private $_prefix;
 
-    public function __construct($base_directory = null)
+    public function __construct($baseDirectory = null)
     {
-        $this->base_directory = $base_directory ?: dirname(__FILE__);
-        $this->prefix = __NAMESPACE__ . '\\';
+        $this->_baseDir = $baseDirectory ?: dirname(__FILE__);
+        $this->_prefix = __NAMESPACE__ . '\\';
     }
 
     public static function register()
@@ -18,18 +18,18 @@ class Autoloader
         spl_autoload_register(array(new self, 'autoload'));
     }
 
-    public function autoload($class_name)
+    public function autoload($className)
     {
-        if (0 !== strpos($class_name, $this->prefix)) {
+        if (0 !== strpos($className, $this->_prefix)) {
             return;
         }
 
-        $relative_class_name = substr($class_name, strlen($this->prefix));
-        $class_name_parts = explode('\\', $relative_class_name);
+        $relativeClassName = substr($className, strlen($this->_prefix));
+        $classNameParts = explode('\\', $relativeClassName);
 
-        $path = $this->base_directory .
+        $path = $this->_baseDir .
             DIRECTORY_SEPARATOR .
-            implode(DIRECTORY_SEPARATOR, $class_name_parts) .
+            implode(DIRECTORY_SEPARATOR, $classNameParts) .
             '.php';
 
         require_once $path;

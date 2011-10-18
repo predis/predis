@@ -2,7 +2,8 @@
 
 namespace Predis\Options;
 
-class CustomOption implements IOption {
+class CustomOption implements IOption
+{
     private $_validate;
     private $_default;
 

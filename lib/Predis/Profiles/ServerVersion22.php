@@ -2,7 +2,8 @@
 
 namespace Predis\Profiles;
 
-class ServerVersion22 extends ServerProfile {
+class ServerVersion22 extends ServerProfile
+{
     public function getVersion()
     {
         return '2.2';
