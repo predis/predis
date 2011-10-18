@@ -1,14 +1,20 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 require 'SharedConfigurations.php';
 
-/*
-This is a basic example on how to use the Predis\MonitorContext class.
-
-You can use redis-cli to send commands to the same Redis instance your client is
-connected to, and then type "ECHO QUIT_MONITOR" in redis-cli when you want to
-exit the monitor loop and terminate this script in a graceful way.
-*/
+// This is a basic example on how to use the Predis\MonitorContext class.
+// You can use redis-cli to send commands to the same Redis instance your client is
+// connected to, and then type "ECHO QUIT_MONITOR" in redis-cli when you want to
+// exit the monitor loop and terminate this script in a graceful way.
 
 // Create a client and disable r/w timeout on the socket.
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));

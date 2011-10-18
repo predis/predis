@@ -1,20 +1,27 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 require 'SharedConfigurations.php';
 
-/*
-This is an implementation of an atomic client-side ZPOP using the support for
-check-and-set (CAS) operations with MULTI/EXEC transactions, as described in
-"WATCH explained" from http://redis.io/topics/transactions
-
-First, populate your database with a tiny sample data set:
-
-./redis-cli
-SELECT 15
-ZADD zset 1 a
-ZADD zset 2 b
-ZADD zset 3 c
-*/
+// This is an implementation of an atomic client-side ZPOP using the support for
+// check-and-set (CAS) operations with MULTI/EXEC transactions, as described in
+// "WATCH explained" from http://redis.io/topics/transactions
+// 
+// First, populate your database with a tiny sample data set:
+//
+// ./redis-cli
+// SELECT 15
+// ZADD zset 1 a
+// ZADD zset 2 b
+// ZADD zset 3 c
 
 function zpop($client, $key)
 {

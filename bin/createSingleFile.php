@@ -1,5 +1,17 @@
 #!/usr/bin/env php
 <?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+// -------------------------------------------------------------------------- //
+
 // This script can be used to automatically glue all the .php files of Predis
 // into a single monolithic script file that can be used without an autoloader,
 // just like the other previous versions of the library.
@@ -11,7 +23,7 @@
 // The current implementation is pretty naïve, but it should do for now.
 //
 
-/* -------------------------------------------------------------------------- */
+// -------------------------------------------------------------------------- //
 
 class CommandLine
 {

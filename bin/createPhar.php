@@ -1,9 +1,24 @@
 #!/usr/bin/env php
 <?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+// -------------------------------------------------------------------------- //
+
 // In order to be able to execute this script to create a Phar archive of Predis,
 // the Phar module must be loaded and the "phar.readonly" directive php.ini must
 // be set to "off". You can change the values in the $options array to customize
 // the creation of the Phar archive to better suit your needs.
+
+
+// -------------------------------------------------------------------------- //
 
 $options = array(
     'name'           => 'predis',

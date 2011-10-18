@@ -1,18 +1,26 @@
 <?php
-/*
-This class implements a Predis connection that actually talks with Webdis
-(http://github.com/nicolasff/webdis) instead of connecting directly to Redis.
-It relies on the cURL extension to communicate with the web server and the
-phpiredis extension to parse the protocol of the replies returned in the http
-response bodies.
 
-Some features are not yet available or they simply cannot be implemented:
-  - Pipelining commands.
-  - Publish / Subscribe.
-  - MULTI / EXEC transactions (not yet supported by Webdis).
-*/
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Predis\Network;
+
+// This class implements a Predis connection that actually talks with Webdis
+// (http://github.com/nicolasff/webdis) instead of connecting directly to Redis.
+// It relies on the cURL extension to communicate with the web server and the
+// phpiredis extension to parse the protocol of the replies returned in the http
+// response bodies.
+//
+// Some features are not yet available or they simply cannot be implemented:
+//   - Pipelining commands.
+//   - Publish / Subscribe.
+//   - MULTI / EXEC transactions (not yet supported by Webdis).
 
 use Predis\IConnectionParameters;
 use Predis\ResponseError;
