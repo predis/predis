@@ -65,7 +65,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function getProcessors() 
+    public function getProcessors()
     {
         return $this->_processors;
     }

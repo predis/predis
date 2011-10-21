@@ -48,7 +48,7 @@ class ResponseError implements IRedisServerError
 
     /**
      * Converts the object to its string representation.
-     * 
+     *
      * @return string
      */
     public function __toString()

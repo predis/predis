@@ -262,7 +262,7 @@ class MultiExecContext
     }
 
     /**
-     * Resets a transaction by UNWATCHing the keys that are being WATCHed and 
+     * Resets a transaction by UNWATCHing the keys that are being WATCHed and
      * DISCARDing the pending commands that have been already sent to the server.
      *
      * @return MultiExecContext
