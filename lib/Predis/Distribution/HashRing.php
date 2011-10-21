@@ -74,7 +74,7 @@ class HashRing implements IDistributionStrategy
     /**
      * Resets the distributor.
      */
-    private function reset() 
+    private function reset()
     {
         unset(
             $this->_ring,
@@ -216,9 +216,9 @@ class HashRing implements IDistributionStrategy
     /**
      * Implements a strategy to deal with wrap-around errors during binary searches.
      *
-     * @param int $upper 
+     * @param int $upper
      * @param int $lower
-     * @param int $ringKeysCount 
+     * @param int $ringKeysCount
      * @return int
      */
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount)

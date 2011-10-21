@@ -21,7 +21,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
     // TODO: missing test with float values for a few commands
 
     protected function setUp()
-    { 
+    {
         $this->redis = RC::getConnection();
         $this->redis->flushdb();
     }
@@ -613,7 +613,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            array(), 
+            array(),
             $this->redis->lrange('keyDoesNotExist', 0, 1)
         );
 
@@ -1032,7 +1032,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
         $setB = RC::setAddAndReturn($this->redis, 'setB', array(1, 3, 4, 6, 9, 10));
 
         $this->assertTrue(RC::sameValuesInArrays(
-            $setA, 
+            $setA,
             $this->redis->sinter('setA')
         ));
 
@@ -1423,7 +1423,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
         $zset = RC::zsetAddAndReturn($this->redis, 'zset', RC::getZSetArray());
 
         $this->assertEquals(
-            array('a'), 
+            array('a'),
             $this->redis->zrangebyscore('zset', -10, -10)
         );
 
