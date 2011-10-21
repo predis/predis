@@ -495,7 +495,7 @@ class ClientFeaturesTestSuite extends PHPUnit_Framework_TestCase
         $client->flushdb();
 
         RC::testForClientException($this, 'TEST', function() use($client) {
-            $client->pipeline(function($pipe) { 
+            $client->pipeline(function($pipe) {
                 $pipe->ping();
                 $pipe->set('foo', 'bar');
                 throw new Predis\ClientException("TEST");

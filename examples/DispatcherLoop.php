@@ -14,7 +14,7 @@ require 'SharedConfigurations.php';
 /*
 This is a basic example on how to use the Predis\DispatcherLoop class.
 
-To see this example in action you can just use redis-cli and publish some 
+To see this example in action you can just use redis-cli and publish some
 messages to the 'events' and 'control' channel, e.g.:
 
 ./redis-cli

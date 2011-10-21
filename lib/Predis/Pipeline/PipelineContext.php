@@ -44,7 +44,7 @@ class PipelineContext
     /**
      * Returns a pipeline executor depending on the kind of the underlying
      * connection and the passed options.
-     * 
+     *
      * @param Client Client instance used by the context.
      * @param array Options for the context initialization.
      * @return IPipelineExecutor
