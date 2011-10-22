@@ -29,8 +29,9 @@ class IncrementExistingKey extends ScriptedCommand
     {
         return
 <<<LUA
-    if redis('exists', KEYS[1]) == 1 then
-        return redis('incr', KEYS[1])
+    local cmd = redis.call
+    if cmd('exists', KEYS[1]) == 1 then
+        return cmd('incr', KEYS[1])
     end
 LUA;
     }
