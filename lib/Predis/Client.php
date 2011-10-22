@@ -36,7 +36,7 @@ class Client
     /**
      * Initializes a new client with optional connection parameters and client options.
      *
-     * @param mixed $parameters Connection parameters for one or multiple Redis servers.
+     * @param mixed $parameters Connection parameters for one or multiple servers.
      * @param mixed $options Options that specify certain behaviours for the client.
      */
     public function __construct($parameters = null, $options = null)
@@ -56,8 +56,8 @@ class Client
 
     /**
      * Creates an instance of Predis\Options\ClientOptions from various types of
-     * parameters (string, array, Predis\Profiles\ServerProfile) or returns the
-     * passed object if its an instance of Predis\Options\ClientOptions.
+     * arguments (string, array, Predis\Profiles\ServerProfile) or returns the
+     * passed object if it is an instance of Predis\Options\ClientOptions.
      *
      * @param mixed $options Client options.
      * @return ClientOptions
@@ -84,11 +84,11 @@ class Client
     }
 
     /**
-     * Initialize one or multiple connection (cluster) objects from various types of
-     * parameters (string, array) or returns the passed object if it implements the
-     * Predis\Network\IConnection interface.
+     * Initializes one or multiple connection (cluster) objects from various
+     * types of arguments (string, array) or returns the passed object if it
+     * implements the Predis\Network\IConnection interface.
      *
-     * @param mixed $parameters Connection parameters or object.
+     * @param mixed $parameters Connection parameters or instance.
      * @return IConnection
      */
     private function initializeConnection($parameters)
@@ -117,7 +117,7 @@ class Client
     }
 
     /**
-     * Create a new connection to a single Redis server using the provided parameters.
+     * Creates a new connection to a single server with the provided parameters.
      *
      * @param mixed $parameters Connection parameters.
      * @return IConnectionSingle
@@ -151,7 +151,7 @@ class Client
     }
 
     /**
-     * Returns the client options specified upon client initialization.
+     * Returns the client options specified upon initialization.
      *
      * @return ClientOptions
      */
@@ -171,9 +171,9 @@ class Client
     }
 
     /**
-     * Returns a new client instance for the specified connection when the client
-     * is connected to a cluster. The new client will use the same options of the
-     * the original instance.
+     * Returns a new instance of a client for the specified connection when the
+     * client is connected to a cluster. The new instance will use the same
+     * options of the original client.
      *
      * @return Client
      */
@@ -187,7 +187,7 @@ class Client
     }
 
     /**
-     * Opens the connection to Redis.
+     * Opens the connection to the server.
      */
     public function connect()
     {
@@ -195,7 +195,7 @@ class Client
     }
 
     /**
-     * Disconnects from Redis.
+     * Disconnects from the server.
      */
     public function disconnect()
     {
@@ -203,7 +203,9 @@ class Client
     }
 
     /**
-     * Disconnects from Redis. This method is an alias of disconnect().
+     * Disconnects from the server.
+     * 
+     * This method is an alias of disconnect().
      */
     public function quit()
     {
@@ -301,7 +303,7 @@ class Client
     }
 
     /**
-     * Call the specified initializer method on $this with 0, 1 or 2 arguments.
+     * Calls the specified initializer method on $this with 0, 1 or 2 arguments.
      *
      * TODO: Invert $argv and $initializer.
      *

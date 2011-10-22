@@ -48,7 +48,7 @@ class ZSetUnionStore extends Command
     }
 
     /**
-     * Return a list of options and modifiers compatible with Redis.
+     * Returns a list of options and modifiers compatible with Redis.
      *
      * @param array $options List of options.
      * @return array

@@ -11,17 +11,6 @@
 
 namespace Predis\Network;
 
-// This class implements a Predis connection that actually talks with Webdis
-// (http://github.com/nicolasff/webdis) instead of connecting directly to Redis.
-// It relies on the cURL extension to communicate with the web server and the
-// phpiredis extension to parse the protocol of the replies returned in the http
-// response bodies.
-//
-// Some features are not yet available or they simply cannot be implemented:
-//   - Pipelining commands.
-//   - Publish / Subscribe.
-//   - MULTI / EXEC transactions (not yet supported by Webdis).
-
 use Predis\IConnectionParameters;
 use Predis\ResponseError;
 use Predis\ClientException;
@@ -32,9 +21,19 @@ use Predis\Protocol\ProtocolException;
 const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
 
 /**
- * Connection abstraction to Webdis servers.
+ * This class implements a Predis connection that actually talks with Webdis
+ * instead of connecting directly to Redis. It relies on the cURL extension to
+ * communicate with the web server and the phpiredis extension to parse the
+ * protocol of the replies returned in the http response bodies.
  *
- * @link http://webd.is/
+ * Some features are not yet available or they simply cannot be implemented:
+ *   - Pipelining commands.
+ *   - Publish / Subscribe.
+ *   - MULTI / EXEC transactions (not yet supported by Webdis).
+ *
+ * @link http://webd.is
+ * @link http://github.com/nicolasff/webdis
+ * @link http://github.com/seppo0010/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class WebdisConnection implements IConnectionSingle

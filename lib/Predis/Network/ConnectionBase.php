@@ -43,7 +43,7 @@ abstract class ConnectionBase implements IConnectionSingle
     }
 
     /**
-     * Disconnect from the server and destroys the underlying resource when
+     * Disconnects from the server and destroys the underlying resource when
      * PHP's garbage collector kicks in.
      */
     public function __destruct()

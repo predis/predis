@@ -29,7 +29,7 @@ class StreamConnection extends ConnectionBase
     private $_throwErrors;
 
     /**
-     * Disconnect from the server and destroys the underlying resource when
+     * Disconnects from the server and destroys the underlying resource when
      * PHP's garbage collector kicks in only if the connection has not been
      * marked as persistent.
      */
@@ -161,8 +161,8 @@ class StreamConnection extends ConnectionBase
     }
 
     /**
-     * Perform a write operation on the stream of the buffer containing a command
-     * serialized with the Redis wire protocol.
+     * Performs a write operation on the stream of the buffer containing a
+     * command serialized with the Redis wire protocol.
      *
      * @param string $buffer Redis wire protocol representation of a command.
      */

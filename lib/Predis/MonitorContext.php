@@ -12,7 +12,7 @@
 namespace Predis;
 
 /**
- * Client-side abstraction of a Redis monitor context.
+ * Client-side abstraction of a Redis MONITOR context.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

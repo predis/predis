@@ -34,7 +34,7 @@ interface ICommandProcessorChain extends ICommandProcessor, \IteratorAggregate, 
     public function remove(ICommandProcessor $processor);
 
     /**
-     * Gets the ordered list of command processors in the chain.
+     * Returns an ordered list of the command processors in the chain.
      *
      * @return array
      */

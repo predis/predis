@@ -64,7 +64,7 @@ abstract class Command implements ICommand
     }
 
     /**
-     * Get the argument from the arguments list at the specified index.
+     * Gets the argument from the arguments list at the specified index.
      *
      * @param array $arguments Position of the argument.
      */

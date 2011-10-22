@@ -160,7 +160,7 @@ class PubSubContext implements \Iterator
     }
 
     /**
-     * Write a Redis command on the underlying connection.
+     * Writes a Redis command on the underlying connection.
      *
      * @param string $method ID of the command.
      * @param array $arguments List of arguments.

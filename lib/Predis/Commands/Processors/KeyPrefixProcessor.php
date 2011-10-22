@@ -42,7 +42,7 @@ class KeyPrefixProcessor implements ICommandProcessor
     }
 
     /**
-     * Get the current prefix.
+     * Gets the current prefix.
      *
      * @return string
      */

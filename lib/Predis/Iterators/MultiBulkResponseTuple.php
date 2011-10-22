@@ -12,7 +12,7 @@
 namespace Predis\Iterators;
 
 /**
- * Abstract the access to a streamable list of tuples represented
+ * Abstracts the access to a streamable list of tuples represented
  * as a multibulk reply that alternates keys and values.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>

@@ -36,14 +36,14 @@ interface ICommand
     public function getHash(INodeKeyGenerator $distributor);
 
     /**
-     * Set the arguments of the command.
+     * Sets the arguments of the command.
      *
      * @param array $arguments List of arguments.
      */
     public function setArguments(Array $arguments);
 
     /**
-     * Get the arguments of the command.
+     * Gets the arguments of the command.
      *
      * @return array
      */
