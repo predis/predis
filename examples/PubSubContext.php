@@ -15,10 +15,10 @@ require 'SharedConfigurations.php';
 // events published on certain channels (PUBSUB).
 
 // Create a client and disable r/w timeout on the socket
-$redis  = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 
 // Initialize a new pubsub context
-$pubsub = $redis->pubSub();
+$pubsub = $client->pubSub();
 
 // Subscribe to your channels
 $pubsub->subscribe('control_channel', 'notifications');
@@ -57,5 +57,5 @@ foreach ($pubsub as $message) {
 unset($pubsub);
 
 // Say goodbye :-)
-$info = $redis->info();
+$info = $client->info();
 print_r("Goodbye from Redis v{$info['redis_version']}!\n");

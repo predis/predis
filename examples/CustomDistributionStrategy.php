@@ -62,19 +62,20 @@ class NaiveDistributionStrategy implements IDistributionStrategy
 
 $options = array(
     'cluster' => function() {
-        return new PredisCluster(new NaiveDistributionStrategy());
+        $distributor = new NaiveDistributionStrategy();
+        return new PredisCluster($distributor);
     },
 );
 
-$redis = new Predis\Client($multiple_servers, $options);
+$client = new Predis\Client($multiple_servers, $options);
 
 for ($i = 0; $i < 100; $i++) {
-    $redis->set("key:$i", str_pad($i, 4, '0', 0));
-    $redis->get("key:$i");
+    $client->set("key:$i", str_pad($i, 4, '0', 0));
+    $client->get("key:$i");
 }
 
-$server1 = $redis->getClientFor('first')->info();
-$server2 = $redis->getClientFor('second')->info();
+$server1 = $client->getClientFor('first')->info();
+$server2 = $client->getClientFor('second')->info();
 
 printf("Server '%s' has %d keys while server '%s' has %d keys.\n",
     'first', $server1['db15']['keys'], 'second', $server2['db15']['keys']

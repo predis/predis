@@ -67,12 +67,12 @@ $options = array(
     ),
 );
 
-$redis = new Predis\Client($single_server, $options);
-$redis->set('foo', 'bar');
-$redis->get('foo');
-$redis->info();
+$client = new Predis\Client($single_server, $options);
+$client->set('foo', 'bar');
+$client->get('foo');
+$client->info();
 
-print_r($redis->getConnection()->getDebugBuffer());
+print_r($client->getConnection()->getDebugBuffer());
 
 /* OUTPUT:
 Array

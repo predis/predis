@@ -26,7 +26,6 @@ require 'SharedConfigurations.php';
 function zpop($client, $key)
 {
     $element = null;
-
     $options = array(
         'cas'   => true,    // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
@@ -34,7 +33,7 @@ function zpop($client, $key)
                             // which the client bails out with an exception.
     );
 
-    $txReply = $client->multiExec($options, function($tx) use ($key, &$element) {
+    $client->multiExec($options, function($tx) use ($key, &$element) {
         @list($element) = $tx->zrange($key, 0, 0);
 
         if (isset($element)) {
@@ -42,10 +41,11 @@ function zpop($client, $key)
             $tx->zrem($key, $element);
         }
     });
+
     return $element;
 }
 
-$redis = new Predis\Client($single_server);
-$zpopped = zpop($redis, 'zset');
+$client = new Predis\Client($single_server);
+$zpopped = zpop($client, 'zset');
 
 echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", "\n";

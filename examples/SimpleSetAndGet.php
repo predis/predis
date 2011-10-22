@@ -13,10 +13,10 @@ require 'SharedConfigurations.php';
 
 // simple set and get scenario
 
-$redis = new Predis\Client($single_server);
+$client = new Predis\Client($single_server);
 
-$redis->set('library', 'predis');
-$retval = $redis->get('library');
+$client->set('library', 'predis');
+$retval = $client->get('library');
 
 var_dump($retval);
 

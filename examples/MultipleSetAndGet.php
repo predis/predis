@@ -21,10 +21,10 @@ $mkv = array(
     'usr:0003' => 'Third user'
 );
 
-$redis = new Predis\Client($single_server);
+$client = new Predis\Client($single_server);
 
-$redis->mset($mkv);
-$retval = $redis->mget(array_keys($mkv));
+$client->mset($mkv);
+$retval = $client->mget(array_keys($mkv));
 
 print_r($retval);
 
