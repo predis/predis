@@ -11,7 +11,7 @@
 
 if (!file_exists(__DIR__.'/enable.tests')) {
     exit(
-        "Please create an empty file named 'enabled.tests' inside the test directory ".
+        "Please create an empty file named 'enable.tests' inside the test directory ".
         "in order to proceed.\n\n*** DO NOT *** run this test suite against servers in ".
         "a production environment or containing data you are interested in!\n"
     );
