@@ -3,3 +3,7 @@ php:
   - 5.3
   - 5.4
 before_script: touch test/enable.tests
+branches:
+  only:
+    - master
+    - version-0.6
