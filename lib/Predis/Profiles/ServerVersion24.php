@@ -198,6 +198,7 @@ class ServerVersion24 extends ServerProfile
 
             /* remote server control commands */
             'object'                    => '\Predis\Commands\ServerObject',
+            'slowlog'                   => '\Predis\Commands\ServerSlowlog',
 
 
             /* ---------------- Redis 2.4 ---------------- */

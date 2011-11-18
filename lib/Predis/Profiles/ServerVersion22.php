@@ -198,6 +198,7 @@ class ServerVersion22 extends ServerProfile
 
             /* remote server control commands */
             'object'                    => '\Predis\Commands\ServerObject',
+            'slowlog'                   => '\Predis\Commands\ServerSlowlog',
         );
     }
 }
