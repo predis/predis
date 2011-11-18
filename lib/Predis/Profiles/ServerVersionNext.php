@@ -39,6 +39,10 @@ class ServerVersionNext extends ServerVersion24
 
             /* commands operating on string values */
             'psetex'                    => '\Predis\Commands\StringPreciseSetExpire',
+            'incrbyfloat'               => '\Predis\Commands\StringIncrementByFloat',
+
+            /* commands operating on hashes */
+            'hincrbyfloat'              => '\Predis\Commands\HashIncrementByFloat',
 
             /* scripting */
             'eval'                      => '\Predis\Commands\ServerEval',
