@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="test/bootstrap.php">
+<phpunit bootstrap="test/bootstrap.php" colors="true" strict="true">
     <testsuites>
         <testsuite name="Predis Test Suite">
             <directory>test/</directory>
