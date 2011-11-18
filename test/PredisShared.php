@@ -26,10 +26,10 @@ if (!function_exists('array_union')) {
 
 class RC
 {
-    const SERVER_VERSION   = '2.2';
-    const SERVER_HOST      = '127.0.0.1';
-    const SERVER_PORT      = 6379;
-    const DEFAULT_DATABASE = 15;
+    const SERVER_VERSION   = TEST_SERVER_VERSION;
+    const SERVER_HOST      = TEST_SERVER_HOST;
+    const SERVER_PORT      = TEST_SERVER_PORT;
+    const DEFAULT_DATABASE = TEST_SERVER_DBNUM;
 
     const WIPE_OUT         = 1;
     const EXCEPTION_WRONG_TYPE     = 'ERR Operation against a key holding the wrong kind of value';
