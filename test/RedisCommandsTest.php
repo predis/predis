@@ -2166,6 +2166,7 @@ class RedisCommandTestSuite extends PHPUnit_Framework_TestCase
     function testBackgroundSave()
     {
         $this->assertTrue($this->redis->bgsave());
+        sleep(1);
     }
 
     function testBackgroundRewriteAppendOnlyFile()
