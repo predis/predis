@@ -24,19 +24,19 @@ class HashRing implements IDistributionStrategy
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
 
-    private $_nodes;
-    private $_ring;
-    private $_ringKeys;
-    private $_ringKeysCount;
-    private $_replicas;
+    private $nodes;
+    private $ring;
+    private $ringKeys;
+    private $ringKeysCount;
+    private $replicas;
 
     /**
      * @param int $replicas Number of replicas in the ring.
      */
     public function __construct($replicas = self::DEFAULT_REPLICAS)
     {
-        $this->_replicas = $replicas;
-        $this->_nodes    = array();
+        $this->replicas = $replicas;
+        $this->nodes    = array();
     }
 
     /**
@@ -49,7 +49,7 @@ class HashRing implements IDistributionStrategy
     {
         // In case of collisions in the hashes of the nodes, the node added
         // last wins, thus the order in which nodes are added is significant.
-        $this->_nodes[] = array('object' => $node, 'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT);
+        $this->nodes[] = array('object' => $node, 'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT);
         $this->reset();
     }
 
@@ -62,9 +62,9 @@ class HashRing implements IDistributionStrategy
         // scratch, in order to reassign possible hashes with collisions to the
         // right node according to the order in which they were added in the
         // first place.
-        for ($i = 0; $i < count($this->_nodes); ++$i) {
-            if ($this->_nodes[$i]['object'] === $node) {
-                array_splice($this->_nodes, $i, 1);
+        for ($i = 0; $i < count($this->nodes); ++$i) {
+            if ($this->nodes[$i]['object'] === $node) {
+                array_splice($this->nodes, $i, 1);
                 $this->reset();
                 break;
             }
@@ -77,9 +77,9 @@ class HashRing implements IDistributionStrategy
     private function reset()
     {
         unset(
-            $this->_ring,
-            $this->_ringKeys,
-            $this->_ringKeysCount
+            $this->ring,
+            $this->ringKeys,
+            $this->ringKeysCount
         );
     }
 
@@ -90,7 +90,7 @@ class HashRing implements IDistributionStrategy
      */
     private function isInitialized()
     {
-        return isset($this->_ringKeys);
+        return isset($this->ringKeys);
     }
 
     /**
@@ -101,7 +101,7 @@ class HashRing implements IDistributionStrategy
     private function computeTotalWeight()
     {
         $totalWeight = 0;
-        foreach ($this->_nodes as $node) {
+        foreach ($this->nodes as $node) {
             $totalWeight += $node['weight'];
         }
 
@@ -117,22 +117,22 @@ class HashRing implements IDistributionStrategy
             return;
         }
 
-        if (count($this->_nodes) === 0) {
+        if (count($this->nodes) === 0) {
             throw new EmptyRingException('Cannot initialize empty hashring');
         }
 
-        $this->_ring = array();
+        $this->ring = array();
         $totalWeight = $this->computeTotalWeight();
-        $nodesCount  = count($this->_nodes);
+        $nodesCount  = count($this->nodes);
 
-        foreach ($this->_nodes as $node) {
+        foreach ($this->nodes as $node) {
             $weightRatio = $node['weight'] / $totalWeight;
-            $this->addNodeToRing($this->_ring, $node, $nodesCount, $this->_replicas, $weightRatio);
+            $this->addNodeToRing($this->ring, $node, $nodesCount, $this->replicas, $weightRatio);
         }
-        ksort($this->_ring, SORT_NUMERIC);
+        ksort($this->ring, SORT_NUMERIC);
 
-        $this->_ringKeys = array_keys($this->_ring);
-        $this->_ringKeysCount = count($this->_ringKeys);
+        $this->ringKeys = array_keys($this->ring);
+        $this->ringKeysCount = count($this->ringKeys);
     }
 
     /**
@@ -180,7 +180,7 @@ class HashRing implements IDistributionStrategy
      */
     public function get($key)
     {
-        return $this->_ring[$this->getNodeKey($key)];
+        return $this->ring[$this->getNodeKey($key)];
     }
 
     /**
@@ -192,8 +192,8 @@ class HashRing implements IDistributionStrategy
     private function getNodeKey($key)
     {
         $this->initialize();
-        $ringKeys = $this->_ringKeys;
-        $upper = $this->_ringKeysCount - 1;
+        $ringKeys = $this->ringKeys;
+        $upper = $this->ringKeysCount - 1;
         $lower = 0;
 
         while ($lower <= $upper) {
@@ -210,7 +210,7 @@ class HashRing implements IDistributionStrategy
             }
         }
 
-        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->_ringKeysCount)];
+        return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->ringKeysCount)];
     }
 
     /**

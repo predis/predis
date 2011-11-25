@@ -20,7 +20,7 @@ use Predis\Commands\ICommand;
  */
 class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
 {
-    private $_processors;
+    private $processors;
 
     /**
      * @param array $processors List of instances of ICommandProcessor.
@@ -37,7 +37,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function add(ICommandProcessor $processor)
     {
-        $this->_processors[] = $processor;
+        $this->processors[] = $processor;
     }
 
     /**
@@ -45,7 +45,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function remove(ICommandProcessor $processor)
     {
-        $index = array_search($processor, $this->_processors, true);
+        $index = array_search($processor, $this->processors, true);
         if ($index !== false) {
             unset($this[$index]);
         }
@@ -56,9 +56,9 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function process(ICommand $command)
     {
-        $count = count($this->_processors);
+        $count = count($this->processors);
         for ($i = 0; $i < $count; $i++) {
-            $this->_processors[$i]->process($command);
+            $this->processors[$i]->process($command);
         }
     }
 
@@ -67,7 +67,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function getProcessors()
     {
-        return $this->_processors;
+        return $this->processors;
     }
 
     /**
@@ -77,7 +77,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->_processors);
+        return new \ArrayIterator($this->processors);
     }
 
     /**
@@ -87,7 +87,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function count()
     {
-        return count($this->_processors);
+        return count($this->processors);
     }
 
     /**
@@ -95,7 +95,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function offsetExists($index)
     {
-        return isset($this->_processors[$index]);
+        return isset($this->processors[$index]);
     }
 
     /**
@@ -103,7 +103,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function offsetGet($index)
     {
-        return $this->_processors[$index];
+        return $this->processors[$index];
     }
 
     /**
@@ -118,7 +118,7 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
             );
         }
 
-        $this->_processors[$index] = $processor;
+        $this->processors[$index] = $processor;
     }
 
     /**
@@ -126,6 +126,6 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
      */
     public function offsetUnset($index)
     {
-        unset($this->_processors[$index]);
+        unset($this->processors[$index]);
     }
 }

@@ -20,7 +20,7 @@ use Predis\PredisException;
  */
 class AbortedMultiExecException extends PredisException
 {
-    private $_transaction;
+    private $transaction;
 
     /**
      * @param MultiExecContext $transaction Transaction that generated the exception.
@@ -31,7 +31,7 @@ class AbortedMultiExecException extends PredisException
     {
         parent::__construct($message, $code);
 
-        $this->_transaction = $transaction;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -41,6 +41,6 @@ class AbortedMultiExecException extends PredisException
      */
     public function getTransaction()
     {
-        return $this->_transaction;
+        return $this->transaction;
     }
 }

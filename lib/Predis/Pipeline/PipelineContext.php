@@ -24,12 +24,12 @@ use Predis\Commands\ICommand;
  */
 class PipelineContext
 {
-    private $_client;
-    private $_executor;
+    private $client;
+    private $executor;
 
-    private $_pipeline = array();
-    private $_replies  = array();
-    private $_running  = false;
+    private $pipeline = array();
+    private $replies  = array();
+    private $running  = false;
 
     /**
      * @param Client Client instance used by the context.
@@ -37,8 +37,8 @@ class PipelineContext
      */
     public function __construct(Client $client, Array $options = null)
     {
-        $this->_client = $client;
-        $this->_executor = $this->getExecutor($client, $options ?: array());
+        $this->client = $client;
+        $this->executor = $this->getExecutor($client, $options ?: array());
     }
 
     /**
@@ -83,7 +83,7 @@ class PipelineContext
      */
     public function __call($method, $arguments)
     {
-        $command = $this->_client->createCommand($method, $arguments);
+        $command = $this->client->createCommand($method, $arguments);
         $this->recordCommand($command);
 
         return $this;
@@ -94,7 +94,7 @@ class PipelineContext
      */
     protected function recordCommand(ICommand $command)
     {
-        $this->_pipeline[] = $command;
+        $this->pipeline[] = $command;
     }
 
     /**
@@ -113,11 +113,11 @@ class PipelineContext
      */
     public function flushPipeline()
     {
-        if (count($this->_pipeline) > 0) {
-            $connection = $this->_client->getConnection();
-            $replies = $this->_executor->execute($connection, $this->_pipeline);
-            $this->_replies = array_merge($this->_replies, $replies);
-            $this->_pipeline = array();
+        if (count($this->pipeline) > 0) {
+            $connection = $this->client->getConnection();
+            $replies = $this->executor->execute($connection, $this->pipeline);
+            $this->replies = array_merge($this->replies, $replies);
+            $this->pipeline = array();
         }
 
         return $this;
@@ -131,10 +131,10 @@ class PipelineContext
      */
     private function setRunning($bool)
     {
-        if ($bool === true && $this->_running === true) {
+        if ($bool === true && $this->running === true) {
             throw new ClientException("This pipeline is already opened");
         }
-        $this->_running = $bool;
+        $this->running = $bool;
     }
 
     /**
@@ -168,6 +168,6 @@ class PipelineContext
             throw $pipelineBlockException;
         }
 
-        return $this->_replies;
+        return $this->replies;
     }
 }

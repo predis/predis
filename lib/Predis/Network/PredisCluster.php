@@ -25,16 +25,16 @@ use Predis\Distribution\HashRing;
  */
 class PredisCluster implements IConnectionCluster, \IteratorAggregate
 {
-    private $_pool;
-    private $_distributor;
+    private $pool;
+    private $distributor;
 
     /**
      * @param IDistributionStrategy $distributor Distribution strategy used by the cluster.
      */
     public function __construct(IDistributionStrategy $distributor = null)
     {
-        $this->_pool = array();
-        $this->_distributor = $distributor ?: new HashRing();
+        $this->pool = array();
+        $this->distributor = $distributor ?: new HashRing();
     }
 
     /**
@@ -42,7 +42,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function isConnected()
     {
-        foreach ($this->_pool as $connection) {
+        foreach ($this->pool as $connection) {
             if ($connection->isConnected()) {
                 return true;
             }
@@ -56,7 +56,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function connect()
     {
-        foreach ($this->_pool as $connection) {
+        foreach ($this->pool as $connection) {
             $connection->connect();
         }
     }
@@ -66,7 +66,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function disconnect()
     {
-        foreach ($this->_pool as $connection) {
+        foreach ($this->pool as $connection) {
             $connection->disconnect();
         }
     }
@@ -79,13 +79,13 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
         $parameters = $connection->getParameters();
 
         if (isset($parameters->alias)) {
-            $this->_pool[$parameters->alias] = $connection;
+            $this->pool[$parameters->alias] = $connection;
         }
         else {
-            $this->_pool[] = $connection;
+            $this->pool[] = $connection;
         }
 
-        $this->_distributor->add($connection, $parameters->weight);
+        $this->distributor->add($connection, $parameters->weight);
     }
 
     /**
@@ -93,10 +93,10 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function getConnection(ICommand $command)
     {
-        $cmdHash = $command->getHash($this->_distributor);
+        $cmdHash = $command->getHash($this->distributor);
 
         if (isset($cmdHash)) {
-            return $this->_distributor->get($cmdHash);
+            return $this->distributor->get($cmdHash);
         }
 
         throw new ClientException(
@@ -111,7 +111,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
     {
         $alias = $id ?: 0;
 
-        return isset($this->_pool[$alias]) ? $this->_pool[$alias] : null;
+        return isset($this->pool[$alias]) ? $this->pool[$alias] : null;
     }
 
 
@@ -124,9 +124,9 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
     public function getConnectionByKey($key)
     {
         $hashablePart = Helpers::getKeyHashablePart($key);
-        $keyHash = $this->_distributor->generateKey($hashablePart);
+        $keyHash = $this->distributor->generateKey($hashablePart);
 
-        return $this->_distributor->get($keyHash);
+        return $this->distributor->get($keyHash);
     }
 
     /**
@@ -134,7 +134,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->_pool);
+        return new \ArrayIterator($this->pool);
     }
 
     /**

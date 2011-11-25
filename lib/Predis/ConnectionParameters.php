@@ -21,11 +21,11 @@ use Predis\Options\IOption;
  */
 class ConnectionParameters implements IConnectionParameters
 {
-    private static $_defaultParameters;
-    private static $_validators;
+    private static $defaultParameters;
+    private static $validators;
 
-    private $_parameters;
-    private $_userDefined;
+    private $parameters;
+    private $userDefined;
 
     /**
      * @param string|array Connection parameters in the form of an URI string or a named array.
@@ -38,8 +38,8 @@ class ConnectionParameters implements IConnectionParameters
             $parameters = $this->parseURI($parameters);
         }
 
-        $this->_userDefined = array_keys($parameters);
-        $this->_parameters = $this->filter($parameters) + self::$_defaultParameters;
+        $this->userDefined = array_keys($parameters);
+        $this->parameters = $this->filter($parameters) + self::$defaultParameters;
     }
 
     /**
@@ -47,8 +47,8 @@ class ConnectionParameters implements IConnectionParameters
      */
     private static function ensureDefaults()
     {
-        if (!isset(self::$_defaultParameters)) {
-            self::$_defaultParameters = array(
+        if (!isset(self::$defaultParameters)) {
+            self::$defaultParameters = array(
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => 6379,
@@ -66,12 +66,12 @@ class ConnectionParameters implements IConnectionParameters
             );
         }
 
-        if (!isset(self::$_validators)) {
+        if (!isset(self::$validators)) {
             $bool = function($value) { return (bool) $value; };
             $float = function($value) { return (float) $value; };
             $int = function($value) { return (int) $value; };
 
-            self::$_validators = array(
+            self::$validators = array(
                 'port' => $int,
                 'connection_async' => $bool,
                 'connection_persistent' => $bool,
@@ -93,15 +93,15 @@ class ConnectionParameters implements IConnectionParameters
     public static function define($parameter, $default, $callable = null)
     {
         self::ensureDefaults();
-        self::$_defaultParameters[$parameter] = $default;
+        self::$defaultParameters[$parameter] = $default;
 
         if ($default instanceof IOption) {
-            self::$_validators[$parameter] = $default;
+            self::$validators[$parameter] = $default;
             return;
         }
 
         if (!isset($callable)) {
-            unset(self::$_validators[$parameter]);
+            unset(self::$validators[$parameter]);
             return;
         }
 
@@ -111,7 +111,7 @@ class ConnectionParameters implements IConnectionParameters
             );
         }
 
-        self::$_validators[$parameter] = $callable;
+        self::$validators[$parameter] = $callable;
     }
 
     /**
@@ -122,7 +122,7 @@ class ConnectionParameters implements IConnectionParameters
     public static function undefine($parameter)
     {
         self::ensureDefaults();
-        unset(self::$_defaultParameters[$parameter], self::$_validators[$parameter]);
+        unset(self::$defaultParameters[$parameter], self::$validators[$parameter]);
     }
 
     /**
@@ -162,7 +162,7 @@ class ConnectionParameters implements IConnectionParameters
     private function filter(Array $parameters)
     {
         if (count($parameters) > 0) {
-            $validators = array_intersect_key(self::$_validators, $parameters);
+            $validators = array_intersect_key(self::$validators, $parameters);
             foreach ($validators as $parameter => $validator) {
                 $parameters[$parameter] = $validator($parameters[$parameter]);
             }
@@ -176,10 +176,10 @@ class ConnectionParameters implements IConnectionParameters
      */
     public function __get($parameter)
     {
-        $value = $this->_parameters[$parameter];
+        $value = $this->parameters[$parameter];
 
         if ($value instanceof IOption) {
-            $this->_parameters[$parameter] = ($value = $value->getDefault());
+            $this->parameters[$parameter] = ($value = $value->getDefault());
         }
 
         return $value;
@@ -190,7 +190,7 @@ class ConnectionParameters implements IConnectionParameters
      */
     public function __isset($parameter)
     {
-        return isset($this->_parameters[$parameter]);
+        return isset($this->parameters[$parameter]);
     }
 
     /**
@@ -201,7 +201,7 @@ class ConnectionParameters implements IConnectionParameters
      */
     public function isSetByUser($parameter)
     {
-        return in_array($parameter, $this->_userDefined);
+        return in_array($parameter, $this->userDefined);
     }
 
     /**
@@ -231,7 +231,7 @@ class ConnectionParameters implements IConnectionParameters
      */
     public function toArray()
     {
-        return $this->_parameters;
+        return $this->parameters;
     }
 
     /**
@@ -245,7 +245,7 @@ class ConnectionParameters implements IConnectionParameters
         $parameters = $this->toArray();
         $reject = $this->getDisallowedURIParts();
 
-        foreach ($this->_userDefined as $param) {
+        foreach ($this->userDefined as $param) {
             if (in_array($param, $reject) || !isset($parameters[$param])) {
                 continue;
             }

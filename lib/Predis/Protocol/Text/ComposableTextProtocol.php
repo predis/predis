@@ -27,8 +27,8 @@ use Predis\Network\IConnectionComposable;
  */
 class ComposableTextProtocol implements IComposableProtocolProcessor
 {
-    private $_serializer;
-    private $_reader;
+    private $serializer;
+    private $reader;
 
     /**
      * @param array $options Set of options used to initialize the protocol processor.
@@ -63,12 +63,12 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
         switch ($option) {
             case 'iterable_multibulk':
                 $handler = $value ? new ResponseMultiBulkStreamHandler() : new ResponseMultiBulkHandler();
-                $this->_reader->setHandler(TextProtocol::PREFIX_MULTI_BULK, $handler);
+                $this->reader->setHandler(TextProtocol::PREFIX_MULTI_BULK, $handler);
                 break;
 
             case 'throw_errors':
                 $handler = $value ? new ResponseErrorHandler() : new ResponseErrorSilentHandler();
-                $this->_reader->setHandler(TextProtocol::PREFIX_ERROR, $handler);
+                $this->reader->setHandler(TextProtocol::PREFIX_ERROR, $handler);
                 break;
 
             default:
@@ -81,7 +81,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function serialize(ICommand $command)
     {
-        return $this->_serializer->serialize($command);
+        return $this->serializer->serialize($command);
     }
 
     /**
@@ -89,7 +89,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function write(IConnectionComposable $connection, ICommand $command)
     {
-        $connection->writeBytes($this->_serializer->serialize($command));
+        $connection->writeBytes($this->serializer->serialize($command));
     }
 
     /**
@@ -97,7 +97,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function read(IConnectionComposable $connection)
     {
-        return $this->_reader->read($connection);
+        return $this->reader->read($connection);
     }
 
     /**
@@ -105,7 +105,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function setSerializer(ICommandSerializer $serializer)
     {
-        $this->_serializer = $serializer;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -113,7 +113,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function getSerializer()
     {
-        return $this->_serializer;
+        return $this->serializer;
     }
 
     /**
@@ -121,7 +121,7 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function setReader(IResponseReader $reader)
     {
-        $this->_reader = $reader;
+        $this->reader = $reader;
     }
 
     /**
@@ -129,6 +129,6 @@ class ComposableTextProtocol implements IComposableProtocolProcessor
      */
     public function getReader()
     {
-        return $this->_reader;
+        return $this->reader;
     }
 }

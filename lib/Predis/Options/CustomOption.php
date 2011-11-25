@@ -18,16 +18,16 @@ namespace Predis\Options;
  */
 class CustomOption implements IOption
 {
-    private $_validate;
-    private $_default;
+    private $validate;
+    private $default;
 
     /**
      * @param array $options List of options
      */
     public function __construct(Array $options)
     {
-        $this->_validate = $this->filterCallable($options, 'validate');
-        $this->_default  = $this->filterCallable($options, 'default');
+        $this->validate = $this->filterCallable($options, 'validate');
+        $this->default  = $this->filterCallable($options, 'default');
     }
 
     /**
@@ -56,10 +56,10 @@ class CustomOption implements IOption
     public function validate($value)
     {
         if (isset($value)) {
-            if ($this->_validate === null) {
+            if ($this->validate === null) {
                 return $value;
             }
-            $validator = $this->_validate;
+            $validator = $this->validate;
 
             return $validator($value);
         }
@@ -70,10 +70,10 @@ class CustomOption implements IOption
      */
     public function getDefault()
     {
-        if (!isset($this->_default)) {
+        if (!isset($this->default)) {
             return;
         }
-        $default = $this->_default;
+        $default = $this->default;
 
         return $default();
     }

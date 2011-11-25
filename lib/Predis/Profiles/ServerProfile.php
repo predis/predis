@@ -22,17 +22,17 @@ use Predis\Commands\Processors\IProcessingSupport;
  */
 abstract class ServerProfile implements IServerProfile, IProcessingSupport
 {
-    private static $_profiles;
+    private static $profiles;
 
-    private $_registeredCommands;
-    private $_processor;
+    private $registeredCommands;
+    private $processor;
 
     /**
      *
      */
     public function __construct()
     {
-        $this->_registeredCommands = $this->getSupportedCommands();
+        $this->registeredCommands = $this->getSupportedCommands();
     }
 
     /**
@@ -89,8 +89,8 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
      */
     public static function define($alias, $profileClass)
     {
-        if (!isset(self::$_profiles)) {
-            self::$_profiles = self::getDefaultProfiles();
+        if (!isset(self::$profiles)) {
+            self::$profiles = self::getDefaultProfiles();
         }
 
         $profileReflection = new \ReflectionClass($profileClass);
@@ -101,7 +101,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
             );
         }
 
-        self::$_profiles[$alias] = $profileClass;
+        self::$profiles[$alias] = $profileClass;
     }
 
     /**
@@ -112,14 +112,14 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
      */
     public static function get($version)
     {
-        if (!isset(self::$_profiles)) {
-            self::$_profiles = self::getDefaultProfiles();
+        if (!isset(self::$profiles)) {
+            self::$profiles = self::getDefaultProfiles();
         }
-        if (!isset(self::$_profiles[$version])) {
+        if (!isset(self::$profiles[$version])) {
             throw new ClientException("Unknown server profile: $version");
         }
 
-        $profile = self::$_profiles[$version];
+        $profile = self::$profiles[$version];
 
         return new $profile();
     }
@@ -143,7 +143,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
      */
     public function supportsCommand($command)
     {
-        return isset($this->_registeredCommands[strtolower($command)]);
+        return isset($this->registeredCommands[strtolower($command)]);
     }
 
     /**
@@ -152,16 +152,16 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     public function createCommand($method, $arguments = array())
     {
         $method = strtolower($method);
-        if (!isset($this->_registeredCommands[$method])) {
+        if (!isset($this->registeredCommands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
 
-        $commandClass = $this->_registeredCommands[$method];
+        $commandClass = $this->registeredCommands[$method];
         $command = new $commandClass();
         $command->setArguments($arguments);
 
-        if (isset($this->_processor)) {
-            $this->_processor->process($command);
+        if (isset($this->processor)) {
+            $this->processor->process($command);
         }
 
         return $command;
@@ -191,7 +191,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
-        $this->_registeredCommands[strtolower($alias)] = $command;
+        $this->registeredCommands[strtolower($alias)] = $command;
     }
 
     /**
@@ -200,10 +200,10 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     public function setProcessor(ICommandProcessor $processor)
     {
         if (!isset($processor)) {
-            unset($this->_processor);
+            unset($this->processor);
             return;
         }
-        $this->_processor = $processor;
+        $this->processor = $processor;
     }
 
     /**
@@ -211,7 +211,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
      */
     public function getProcessor()
     {
-        return $this->_processor;
+        return $this->processor;
     }
 
     /**

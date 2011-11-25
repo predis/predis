@@ -44,7 +44,7 @@ class RC
     const EXCEPTION_BIT_VALUE      = 'ERR bit is not an integer or out of range';
     const EXCEPTION_BIT_OFFSET     = 'ERR bit offset is not an integer or out of range';
 
-    private static $_connection;
+    private static $connection;
 
     public static function getConnectionArguments(Array $additional = array())
     {
@@ -73,18 +73,18 @@ class RC
             return self::createConnection();
         }
 
-        if (self::$_connection === null || !self::$_connection->isConnected()) {
-            self::$_connection = self::createConnection();
+        if (self::$connection === null || !self::$connection->isConnected()) {
+            self::$connection = self::createConnection();
         }
 
-        return self::$_connection;
+        return self::$connection;
     }
 
     public static function resetConnection()
     {
-        if (self::$_connection !== null && self::$_connection->isConnected()) {
-            self::$_connection->disconnect();
-            self::$_connection = self::createConnection();
+        if (self::$connection !== null && self::$connection->isConnected()) {
+            self::$connection->disconnect();
+            self::$connection = self::createConnection();
         }
     }
 

@@ -33,12 +33,12 @@ class MultiExecContext
     const STATE_CAS         = 0x01000;
     const STATE_WATCH       = 0x10000;
 
-    private $_state;
-    private $_canWatch;
+    private $state;
+    private $canWatch;
 
-    protected $_client;
-    protected $_options;
-    protected $_commands;
+    protected $client;
+    protected $options;
+    protected $commands;
 
     /**
      * @param Client Client instance used by the context.
@@ -47,8 +47,8 @@ class MultiExecContext
     public function __construct(Client $client, Array $options = null)
     {
         $this->checkCapabilities($client);
-        $this->_options = $options ?: array();
-        $this->_client = $client;
+        $this->options = $options ?: array();
+        $this->client = $client;
         $this->reset();
     }
 
@@ -59,7 +59,7 @@ class MultiExecContext
      */
     protected function setState($flags)
     {
-        $this->_state = $flags;
+        $this->state = $flags;
     }
 
     /**
@@ -69,7 +69,7 @@ class MultiExecContext
      */
     protected function getState()
     {
-        return $this->_state;
+        return $this->state;
     }
 
     /**
@@ -79,7 +79,7 @@ class MultiExecContext
      */
     protected function flagState($flags)
     {
-        $this->_state |= $flags;
+        $this->state |= $flags;
     }
 
     /**
@@ -89,7 +89,7 @@ class MultiExecContext
      */
     protected function unflagState($flags)
     {
-        $this->_state &= ~$flags;
+        $this->state &= ~$flags;
     }
 
     /**
@@ -100,7 +100,7 @@ class MultiExecContext
      */
     protected function checkState($flags)
     {
-        return ($this->_state & $flags) === $flags;
+        return ($this->state & $flags) === $flags;
     }
 
     /**
@@ -125,7 +125,7 @@ class MultiExecContext
             );
         }
 
-        $this->_canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
+        $this->canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
     }
 
     /**
@@ -133,7 +133,7 @@ class MultiExecContext
      */
     private function isWatchSupported()
     {
-        if ($this->_canWatch === false) {
+        if ($this->canWatch === false) {
             throw new ClientException(
                 'The current profile does not support WATCH and UNWATCH'
             );
@@ -146,7 +146,7 @@ class MultiExecContext
     protected function reset()
     {
         $this->setState(self::STATE_RESET);
-        $this->_commands = array();
+        $this->commands = array();
     }
 
     /**
@@ -158,7 +158,7 @@ class MultiExecContext
             return;
         }
 
-        $options = $this->_options;
+        $options = $this->options;
 
         if (isset($options['cas']) && $options['cas']) {
             $this->flagState(self::STATE_CAS);
@@ -171,7 +171,7 @@ class MultiExecContext
         $discarded = $this->checkState(self::STATE_DISCARDED);
 
         if (!$cas || ($cas && $discarded)) {
-            $this->_client->multi();
+            $this->client->multi();
             if ($discarded) {
                 $this->unflagState(self::STATE_CAS);
             }
@@ -191,7 +191,7 @@ class MultiExecContext
     public function __call($method, $arguments)
     {
         $this->initialize();
-        $client = $this->_client;
+        $client = $this->client;
 
         if ($this->checkState(self::STATE_CAS)) {
             return call_user_func_array(array($client, $method), $arguments);
@@ -204,7 +204,7 @@ class MultiExecContext
             $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
 
-        $this->_commands[] = $command;
+        $this->commands[] = $command;
 
         return $this;
     }
@@ -223,7 +223,7 @@ class MultiExecContext
             throw new ClientException('WATCH after MULTI is not allowed');
         }
 
-        $watchReply = $this->_client->watch($keys);
+        $watchReply = $this->client->watch($keys);
         $this->flagState(self::STATE_WATCH);
 
         return $watchReply;
@@ -238,7 +238,7 @@ class MultiExecContext
     {
         if ($this->checkState(self::STATE_INITIALIZED | self::STATE_CAS)) {
             $this->unflagState(self::STATE_CAS);
-            $this->_client->multi();
+            $this->client->multi();
         }
         else {
             $this->initialize();
@@ -256,7 +256,7 @@ class MultiExecContext
     {
         $this->isWatchSupported();
         $this->unflagState(self::STATE_WATCH);
-        $this->_client->unwatch();
+        $this->client->unwatch();
 
         return $this;
     }
@@ -271,7 +271,7 @@ class MultiExecContext
     {
         if ($this->checkState(self::STATE_INITIALIZED)) {
             $command = $this->checkState(self::STATE_CAS) ? 'unwatch' : 'discard';
-            $this->_client->$command();
+            $this->client->$command();
             $this->reset();
             $this->flagState(self::STATE_DISCARDED);
         }
@@ -309,7 +309,7 @@ class MultiExecContext
                 );
             }
 
-            if (count($this->_commands) > 0) {
+            if (count($this->commands) > 0) {
                 $this->discard();
                 throw new ClientException(
                     'Cannot execute a transaction block after using fluent interface'
@@ -317,7 +317,7 @@ class MultiExecContext
             }
         }
 
-        if (isset($this->_options['retry']) && !isset($callable)) {
+        if (isset($this->options['retry']) && !isset($callable)) {
             $this->discard();
             throw new \InvalidArgumentException(
                 'Automatic retries can be used only when a transaction block is provided'
@@ -337,21 +337,21 @@ class MultiExecContext
 
         $reply = null;
         $returnValues = array();
-        $attemptsLeft = isset($this->_options['retry']) ? (int)$this->_options['retry'] : 0;
+        $attemptsLeft = isset($this->options['retry']) ? (int)$this->options['retry'] : 0;
 
         do {
             if ($callable !== null) {
                 $this->executeTransactionBlock($callable);
             }
 
-            if (count($this->_commands) === 0) {
+            if (count($this->commands) === 0) {
                 if ($this->checkState(self::STATE_WATCH)) {
                     $this->discard();
                 }
                 return;
             }
 
-            $reply = $this->_client->exec();
+            $reply = $this->client->exec();
 
             if ($reply === null) {
                 if ($attemptsLeft === 0) {
@@ -361,8 +361,8 @@ class MultiExecContext
 
                 $this->reset();
 
-                if (isset($this->_options['on_retry']) && is_callable($this->_options['on_retry'])) {
-                    call_user_func($this->_options['on_retry'], $this, $attemptsLeft);
+                if (isset($this->options['on_retry']) && is_callable($this->options['on_retry'])) {
+                    call_user_func($this->options['on_retry'], $this, $attemptsLeft);
                 }
 
                 continue;
@@ -373,7 +373,7 @@ class MultiExecContext
 
         $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
         $sizeofReplies = count($execReply);
-        $commands = $this->_commands;
+        $commands = $this->commands;
 
         if ($sizeofReplies !== count($commands)) {
             $this->onProtocolError("EXEC returned an unexpected number of replies");
@@ -435,7 +435,7 @@ class MultiExecContext
         // connection, we can safely assume that Predis\Client::getConnection()
         // will always return an instance of Predis\Network\IConnectionSingle.
         Helpers::onCommunicationException(new ProtocolException(
-            $this->_client->getConnection(), $message
+            $this->client->getConnection(), $message
         ));
     }
 }

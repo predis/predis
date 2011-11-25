@@ -20,7 +20,7 @@ use Predis\Network\IConnectionSingle;
  */
 abstract class CommunicationException extends PredisException
 {
-    private $_connection;
+    private $connection;
 
     /**
      * @param IConnectionSingle $connection Connection that generated the exception.
@@ -33,7 +33,7 @@ abstract class CommunicationException extends PredisException
     {
         parent::__construct($message, $code, $innerException);
 
-        $this->_connection = $connection;
+        $this->connection = $connection;
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class CommunicationException extends PredisException
      */
     public function getConnection()
     {
-        return $this->_connection;
+        return $this->connection;
     }
 
     /**

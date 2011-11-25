@@ -24,20 +24,20 @@ use Predis\Options\ClientConnectionFactory;
  */
 class ClientOptions
 {
-    private static $_sharedOptions;
+    private static $sharedOptions;
 
-    private $_handlers;
-    private $_defined;
+    private $handlers;
+    private $defined;
 
-    private $_options = array();
+    private $options = array();
 
     /**
      * @param array $options Array of client options.
      */
     public function __construct(Array $options = array())
     {
-        $this->_handlers = $this->initialize($options);
-        $this->_defined = array_keys($options);
+        $this->handlers = $this->initialize($options);
+        $this->defined = array_keys($options);
     }
 
     /**
@@ -47,18 +47,18 @@ class ClientOptions
      */
     private static function getSharedOptions()
     {
-        if (isset(self::$_sharedOptions)) {
-            return self::$_sharedOptions;
+        if (isset(self::$sharedOptions)) {
+            return self::$sharedOptions;
         }
 
-        self::$_sharedOptions = array(
+        self::$sharedOptions = array(
             'profile' => new ClientProfile(),
             'connections' => new ClientConnectionFactory(),
             'cluster' => new ClientCluster(),
             'prefix' => new ClientPrefix(),
         );
 
-        return self::$_sharedOptions;
+        return self::$sharedOptions;
     }
 
     /**
@@ -70,7 +70,7 @@ class ClientOptions
     public static function define($option, IOption $handler)
     {
         self::getSharedOptions();
-        self::$_sharedOptions[$option] = $handler;
+        self::$sharedOptions[$option] = $handler;
     }
 
     /**
@@ -81,7 +81,7 @@ class ClientOptions
     public static function undefine($option)
     {
         self::getSharedOptions();
-        unset(self::$_sharedOptions[$option]);
+        unset(self::$sharedOptions[$option]);
     }
 
     /**
@@ -114,7 +114,7 @@ class ClientOptions
      */
     public function __isset($option)
     {
-        return in_array($option, $this->_defined);
+        return in_array($option, $this->defined);
     }
 
     /**
@@ -125,14 +125,14 @@ class ClientOptions
      */
     public function __get($option)
     {
-        if (isset($this->_options[$option])) {
-            return $this->_options[$option];
+        if (isset($this->options[$option])) {
+            return $this->options[$option];
         }
 
-        if (isset($this->_handlers[$option])) {
-            $handler = $this->_handlers[$option];
+        if (isset($this->handlers[$option])) {
+            $handler = $this->handlers[$option];
             $value = $handler instanceof IOption ? $handler->getDefault() : $handler();
-            $this->_options[$option] = $value;
+            $this->options[$option] = $value;
 
             return $value;
         }

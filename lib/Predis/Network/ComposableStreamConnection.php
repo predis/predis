@@ -24,7 +24,7 @@ use Predis\Protocol\Text\TextProtocol;
  */
 class ComposableStreamConnection extends StreamConnection implements IConnectionComposable
 {
-    private $_protocol;
+    private $protocol;
 
     /**
      * @param IConnectionParameters $parameters Parameters used to initialize the connection.
@@ -42,8 +42,8 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
      */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
-        $this->_protocol->setOption('throw_errors', $parameters->throw_errors);
-        $this->_protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
+        $this->protocol->setOption('throw_errors', $parameters->throw_errors);
+        $this->protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
     }
 
     /**
@@ -54,7 +54,7 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
         if ($protocol === null) {
             throw new \InvalidArgumentException("The protocol instance cannot be a null value");
         }
-        $this->_protocol = $protocol;
+        $this->protocol = $protocol;
     }
 
     /**
@@ -62,7 +62,7 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
      */
     public function getProtocol()
     {
-        return $this->_protocol;
+        return $this->protocol;
     }
 
     /**
@@ -122,7 +122,7 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
      */
     public function writeCommand(ICommand $command)
     {
-        $this->_protocol->write($this, $command);
+        $this->protocol->write($this, $command);
     }
 
     /**
@@ -130,6 +130,6 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
      */
     public function read()
     {
-        return $this->_protocol->read($this);
+        return $this->protocol->read($this);
     }
 }

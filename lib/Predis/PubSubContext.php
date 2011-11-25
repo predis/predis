@@ -29,9 +29,9 @@ class PubSubContext implements \Iterator
     const STATUS_SUBSCRIBED  = 0x0010;
     const STATUS_PSUBSCRIBED = 0x0100;
 
-    private $_client;
-    private $_position;
-    private $_options;
+    private $client;
+    private $position;
+    private $options;
 
     /**
      * @param Client Client instance used by the context.
@@ -40,9 +40,9 @@ class PubSubContext implements \Iterator
     public function __construct(Client $client, Array $options = null)
     {
         $this->checkCapabilities($client);
-        $this->_options = $options ?: array();
-        $this->_client = $client;
-        $this->_statusFlags = self::STATUS_VALID;
+        $this->options = $options ?: array();
+        $this->client = $client;
+        $this->statusFlags = self::STATUS_VALID;
 
         $this->genericSubscribeInit('subscribe');
         $this->genericSubscribeInit('psubscribe');
@@ -86,8 +86,8 @@ class PubSubContext implements \Iterator
      */
     private function genericSubscribeInit($subscribeAction)
     {
-        if (isset($this->_options[$subscribeAction])) {
-            $this->$subscribeAction($this->_options[$subscribeAction]);
+        if (isset($this->options[$subscribeAction])) {
+            $this->$subscribeAction($this->options[$subscribeAction]);
         }
     }
 
@@ -99,7 +99,7 @@ class PubSubContext implements \Iterator
      */
     private function isFlagSet($value)
     {
-        return ($this->_statusFlags & $value) === $value;
+        return ($this->statusFlags & $value) === $value;
     }
 
     /**
@@ -110,7 +110,7 @@ class PubSubContext implements \Iterator
     public function subscribe(/* arguments */)
     {
         $this->writeCommand(self::SUBSCRIBE, func_get_args());
-        $this->_statusFlags |= self::STATUS_SUBSCRIBED;
+        $this->statusFlags |= self::STATUS_SUBSCRIBED;
     }
 
     /**
@@ -131,7 +131,7 @@ class PubSubContext implements \Iterator
     public function psubscribe(/* arguments */)
     {
         $this->writeCommand(self::PSUBSCRIBE, func_get_args());
-        $this->_statusFlags |= self::STATUS_PSUBSCRIBED;
+        $this->statusFlags |= self::STATUS_PSUBSCRIBED;
     }
 
     /**
@@ -168,8 +168,8 @@ class PubSubContext implements \Iterator
     private function writeCommand($method, $arguments)
     {
         $arguments = Helpers::filterArrayArguments($arguments);
-        $command = $this->_client->createCommand($method, $arguments);
-        $this->_client->getConnection()->writeCommand($command);
+        $command = $this->client->createCommand($method, $arguments);
+        $this->client->getConnection()->writeCommand($command);
     }
 
     /**
@@ -196,7 +196,7 @@ class PubSubContext implements \Iterator
      */
     public function key()
     {
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -205,10 +205,10 @@ class PubSubContext implements \Iterator
     public function next()
     {
         if ($this->isFlagSet(self::STATUS_VALID)) {
-            $this->_position++;
+            $this->position++;
         }
 
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -220,7 +220,7 @@ class PubSubContext implements \Iterator
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);
         $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED;
-        $hasSubscriptions = ($this->_statusFlags & $subscriptionFlags) > 0;
+        $hasSubscriptions = ($this->statusFlags & $subscriptionFlags) > 0;
 
         return $isValid && $hasSubscriptions;
     }
@@ -230,7 +230,7 @@ class PubSubContext implements \Iterator
      */
     private function invalidate()
     {
-        $this->_statusFlags = 0x0000;
+        $this->statusFlags = 0x0000;
     }
 
     /**
@@ -241,7 +241,7 @@ class PubSubContext implements \Iterator
      */
     private function getValue()
     {
-        $response = $this->_client->getConnection()->read();
+        $response = $this->client->getConnection()->read();
 
         switch ($response[0]) {
             case self::SUBSCRIBE:

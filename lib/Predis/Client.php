@@ -28,10 +28,10 @@ class Client
 {
     const VERSION = '0.7.0-dev';
 
-    private $_options;
-    private $_profile;
-    private $_connection;
-    private $_connectionFactory;
+    private $options;
+    private $profile;
+    private $connection;
+    private $connectionFactory;
 
     /**
      * Initializes a new client with optional connection parameters and client options.
@@ -48,10 +48,10 @@ class Client
             $profile->setProcessor($options->prefix);
         }
 
-        $this->_options = $options;
-        $this->_profile = $profile;
-        $this->_connectionFactory = $options->connections;
-        $this->_connection = $this->initializeConnection($parameters);
+        $this->options = $options;
+        $this->profile = $profile;
+        $this->connectionFactory = $options->connections;
+        $this->connection = $this->initializeConnection($parameters);
     }
 
     /**
@@ -99,7 +99,7 @@ class Client
 
         if (is_array($parameters)) {
             if (isset($parameters[0])) {
-                $cluster = $this->_options->cluster;
+                $cluster = $this->options->cluster;
                 foreach ($parameters as $node) {
                     $connection = $node instanceof IConnectionSingle ? $node : $this->createConnection($node);
                     $cluster->add($connection);
@@ -124,7 +124,7 @@ class Client
      */
     protected function createConnection($parameters)
     {
-        $connection = $this->_connectionFactory->create($parameters);
+        $connection = $this->connectionFactory->create($parameters);
         $parameters = $connection->getParameters();
 
         if (isset($parameters->password)) {
@@ -147,7 +147,7 @@ class Client
      */
     public function getProfile()
     {
-        return $this->_profile;
+        return $this->profile;
     }
 
     /**
@@ -157,7 +157,7 @@ class Client
      */
     public function getOptions()
     {
-        return $this->_options;
+        return $this->options;
     }
 
     /**
@@ -167,7 +167,7 @@ class Client
      */
     public function getConnectionFactory()
     {
-        return $this->_connectionFactory;
+        return $this->connectionFactory;
     }
 
     /**
@@ -183,7 +183,7 @@ class Client
             throw new \InvalidArgumentException("Invalid connection alias: '$connectionAlias'");
         }
 
-        return new Client($connection, $this->_options);
+        return new Client($connection, $this->options);
     }
 
     /**
@@ -191,7 +191,7 @@ class Client
      */
     public function connect()
     {
-        $this->_connection->connect();
+        $this->connection->connect();
     }
 
     /**
@@ -199,7 +199,7 @@ class Client
      */
     public function disconnect()
     {
-        $this->_connection->disconnect();
+        $this->connection->disconnect();
     }
 
     /**
@@ -220,7 +220,7 @@ class Client
      */
     public function isConnected()
     {
-        return $this->_connection->isConnected();
+        return $this->connection->isConnected();
     }
 
     /**
@@ -233,16 +233,16 @@ class Client
     public function getConnection($id = null)
     {
         if (isset($id)) {
-            if (!Helpers::isCluster($this->_connection)) {
+            if (!Helpers::isCluster($this->connection)) {
                 throw new ClientException(
                     'Retrieving connections by alias is supported only with clustered connections'
                 );
             }
 
-            return $this->_connection->getConnectionById($id);
+            return $this->connection->getConnectionById($id);
         }
 
-        return $this->_connection;
+        return $this->connection;
     }
 
     /**
@@ -254,8 +254,8 @@ class Client
      */
     public function __call($method, $arguments)
     {
-        $command = $this->_profile->createCommand($method, $arguments);
-        return $this->_connection->executeCommand($command);
+        $command = $this->profile->createCommand($method, $arguments);
+        return $this->connection->executeCommand($command);
     }
 
     /**
@@ -267,7 +267,7 @@ class Client
      */
     public function createCommand($method, $arguments = array())
     {
-        return $this->_profile->createCommand($method, $arguments);
+        return $this->profile->createCommand($method, $arguments);
     }
 
     /**
@@ -278,7 +278,7 @@ class Client
      */
     public function executeCommand(ICommand $command)
     {
-        return $this->_connection->executeCommand($command);
+        return $this->connection->executeCommand($command);
     }
 
     /**
@@ -289,17 +289,17 @@ class Client
      */
     public function executeCommandOnShards(ICommand $command)
     {
-        if (Helpers::isCluster($this->_connection)) {
+        if (Helpers::isCluster($this->connection)) {
             $replies = array();
 
-            foreach ($this->_connection as $connection) {
+            foreach ($this->connection as $connection) {
                 $replies[] = $connection->executeCommand($command);
             }
 
             return $replies;
         }
 
-        return array($this->_connection->executeCommand($command));
+        return array($this->connection->executeCommand($command));
     }
 
     /**

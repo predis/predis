@@ -25,8 +25,8 @@ use Predis\Iterators\MultiBulkResponseSimple;
  */
 class StreamConnection extends ConnectionBase
 {
-    private $_mbiterable;
-    private $_throwErrors;
+    private $mbiterable;
+    private $throwErrors;
 
     /**
      * Disconnects from the server and destroys the underlying resource when
@@ -35,7 +35,7 @@ class StreamConnection extends ConnectionBase
      */
     public function __destruct()
     {
-        if (!$this->_params->connection_persistent) {
+        if (!$this->params->connection_persistent) {
             $this->disconnect();
         }
     }
@@ -45,8 +45,8 @@ class StreamConnection extends ConnectionBase
      */
     protected function initializeProtocol(IConnectionParameters $parameters)
     {
-        $this->_throwErrors = $parameters->throw_errors;
-        $this->_mbiterable = $parameters->iterable_multibulk;
+        $this->throwErrors = $parameters->throw_errors;
+        $this->mbiterable = $parameters->iterable_multibulk;
     }
 
     /**
@@ -54,7 +54,7 @@ class StreamConnection extends ConnectionBase
      */
     protected function createResource()
     {
-        $parameters = $this->_params;
+        $parameters = $this->params;
         $initializer = "{$parameters->scheme}StreamInitializer";
 
         return $this->$initializer($parameters);
@@ -130,7 +130,7 @@ class StreamConnection extends ConnectionBase
     {
         parent::connect();
 
-        if (count($this->_initCmds) > 0){
+        if (count($this->initCmds) > 0){
             $this->sendInitializationCommands();
         }
     }
@@ -152,10 +152,10 @@ class StreamConnection extends ConnectionBase
      */
     private function sendInitializationCommands()
     {
-        foreach ($this->_initCmds as $command) {
+        foreach ($this->initCmds as $command) {
             $this->writeCommand($command);
         }
-        foreach ($this->_initCmds as $command) {
+        foreach ($this->initCmds as $command) {
             $this->readResponse($command);
         }
     }
@@ -237,7 +237,7 @@ class StreamConnection extends ConnectionBase
                     return null;
                 }
 
-                if ($this->_mbiterable === true) {
+                if ($this->mbiterable === true) {
                     return new MultiBulkResponseSimple($this, $count);
                 }
 
@@ -252,7 +252,7 @@ class StreamConnection extends ConnectionBase
                 return (int) $payload;
 
             case '-':    // error
-                if ($this->_throwErrors) {
+                if ($this->throwErrors) {
                     throw new ServerException($payload);
                 }
                 return new ResponseError($payload);

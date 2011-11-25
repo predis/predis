@@ -18,16 +18,16 @@ namespace Predis;
  */
 class Autoloader
 {
-    private $_baseDir;
-    private $_prefix;
+    private $baseDir;
+    private $prefix;
 
     /**
      * @param string $baseDirectory Base directory where the source files are located.
      */
     public function __construct($baseDirectory = null)
     {
-        $this->_baseDir = $baseDirectory ?: dirname(__FILE__);
-        $this->_prefix = __NAMESPACE__ . '\\';
+        $this->baseDir = $baseDirectory ?: dirname(__FILE__);
+        $this->prefix = __NAMESPACE__ . '\\';
     }
 
     /**
@@ -45,14 +45,14 @@ class Autoloader
      */
     public function autoload($className)
     {
-        if (0 !== strpos($className, $this->_prefix)) {
+        if (0 !== strpos($className, $this->prefix)) {
             return;
         }
 
-        $relativeClassName = substr($className, strlen($this->_prefix));
+        $relativeClassName = substr($className, strlen($this->prefix));
         $classNameParts = explode('\\', $relativeClassName);
 
-        $path = $this->_baseDir .
+        $path = $this->baseDir .
             DIRECTORY_SEPARATOR .
             implode(DIRECTORY_SEPARATOR, $classNameParts) .
             '.php';

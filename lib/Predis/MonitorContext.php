@@ -18,9 +18,9 @@ namespace Predis;
  */
 class MonitorContext implements \Iterator
 {
-    private $_client;
-    private $_isValid;
-    private $_position;
+    private $client;
+    private $isValid;
+    private $position;
 
     /**
      * @param Client Client instance used by the context.
@@ -28,7 +28,7 @@ class MonitorContext implements \Iterator
     public function __construct(Client $client)
     {
         $this->checkCapabilities($client);
-        $this->_client = $client;
+        $this->client = $client;
         $this->openContext();
     }
 
@@ -68,9 +68,9 @@ class MonitorContext implements \Iterator
      */
     protected function openContext()
     {
-        $this->_isValid = true;
-        $monitor = $this->_client->createCommand('monitor');
-        $this->_client->executeCommand($monitor);
+        $this->isValid = true;
+        $monitor = $this->client->createCommand('monitor');
+        $this->client->executeCommand($monitor);
     }
 
     /**
@@ -79,8 +79,8 @@ class MonitorContext implements \Iterator
      */
     public function closeContext()
     {
-        $this->_client->disconnect();
-        $this->_isValid = false;
+        $this->client->disconnect();
+        $this->isValid = false;
     }
 
     /**
@@ -106,7 +106,7 @@ class MonitorContext implements \Iterator
      */
     public function key()
     {
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -114,7 +114,7 @@ class MonitorContext implements \Iterator
      */
     public function next()
     {
-        $this->_position++;
+        $this->position++;
     }
 
     /**
@@ -124,7 +124,7 @@ class MonitorContext implements \Iterator
      */
     public function valid()
     {
-        return $this->_isValid;
+        return $this->isValid;
     }
 
     /**
@@ -136,7 +136,7 @@ class MonitorContext implements \Iterator
     private function getValue()
     {
         $database = 0;
-        $event = $this->_client->getConnection()->read();
+        $event = $this->client->getConnection()->read();
 
         $callback = function($matches) use (&$database) {
             if (isset($matches[1])) {

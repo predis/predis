@@ -20,7 +20,8 @@ class ServerShutdown extends Command
     /**
      * {@inheritdoc}
      */
-    public function getId() {
+    public function getId()
+    {
         return 'SHUTDOWN';
     }
 

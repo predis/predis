@@ -33,26 +33,26 @@ $dispatcher = new Predis\DispatcherLoop($client);
 // Demonstrate how to use a callable class as a callback for Predis\DispatcherLoop.
 class EventsListener implements Countable
 {
-    private $_events;
+    private $events;
 
     public function __construct()
     {
-        $this->_events = array();
+        $this->events = array();
     }
 
     public function count()
     {
-        return count($this->_events);
+        return count($this->events);
     }
 
     public function getEvents()
     {
-        return $this->_events;
+        return $this->events;
     }
 
     public function __invoke($payload)
     {
-        $this->_events[] = $payload;
+        $this->events[] = $payload;
     }
 }
 

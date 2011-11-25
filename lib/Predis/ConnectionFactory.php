@@ -22,16 +22,16 @@ use Predis\Network\IConnectionSingle;
  */
 class ConnectionFactory implements IConnectionFactory
 {
-    private static $_globalSchemes;
+    private static $globalSchemes;
 
-    private $_instanceSchemes = array();
+    private $instanceSchemes = array();
 
     /**
      * @param array $schemesMap Map of URI schemes to connection classes.
      */
     public function __construct(Array $schemesMap = null)
     {
-        $this->_instanceSchemes = self::ensureDefaultSchemes();
+        $this->instanceSchemes = self::ensureDefaultSchemes();
 
         if (isset($schemesMap)) {
             foreach ($schemesMap as $scheme => $initializer) {
@@ -69,14 +69,14 @@ class ConnectionFactory implements IConnectionFactory
      */
     private static function ensureDefaultSchemes()
     {
-        if (!isset(self::$_globalSchemes)) {
-            self::$_globalSchemes = array(
+        if (!isset(self::$globalSchemes)) {
+            self::$globalSchemes = array(
                 'tcp'   => '\Predis\Network\StreamConnection',
                 'unix'  => '\Predis\Network\StreamConnection',
             );
         }
 
-        return self::$_globalSchemes;
+        return self::$globalSchemes;
     }
 
     /**
@@ -89,7 +89,7 @@ class ConnectionFactory implements IConnectionFactory
     {
         self::ensureDefaultSchemes();
         self::checkConnectionInitializer($connectionInitializer);
-        self::$_globalSchemes[$scheme] = $connectionInitializer;
+        self::$globalSchemes[$scheme] = $connectionInitializer;
     }
 
     /**
@@ -101,7 +101,7 @@ class ConnectionFactory implements IConnectionFactory
     public function defineConnection($scheme, $connectionInitializer)
     {
         self::checkConnectionInitializer($connectionInitializer);
-        $this->_instanceSchemes[$scheme] = $connectionInitializer;
+        $this->instanceSchemes[$scheme] = $connectionInitializer;
     }
 
     /**
@@ -114,11 +114,11 @@ class ConnectionFactory implements IConnectionFactory
         }
 
         $scheme = $parameters->scheme;
-        if (!isset($this->_instanceSchemes[$scheme])) {
+        if (!isset($this->instanceSchemes[$scheme])) {
             throw new \InvalidArgumentException("Unknown connection scheme: $scheme");
         }
 
-        $initializer = $this->_instanceSchemes[$scheme];
+        $initializer = $this->instanceSchemes[$scheme];
         if (!is_callable($initializer)) {
             return new $initializer($parameters);
         }

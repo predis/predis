@@ -26,19 +26,19 @@ use Predis\Protocol\ProtocolException;
  */
 abstract class ConnectionBase implements IConnectionSingle
 {
-    private $_resource;
-    private $_cachedId;
+    private $resource;
+    private $cachedId;
 
-    protected $_params;
-    protected $_initCmds;
+    protected $params;
+    protected $initCmds;
 
     /**
      * @param IConnectionParameters $parameters Parameters used to initialize the connection.
      */
     public function __construct(IConnectionParameters $parameters)
     {
-        $this->_initCmds = array();
-        $this->_params = $this->checkParameters($parameters);
+        $this->initCmds = array();
+        $this->params = $this->checkParameters($parameters);
         $this->initializeProtocol($parameters);
     }
 
@@ -95,7 +95,7 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function isConnected()
     {
-        return isset($this->_resource);
+        return isset($this->resource);
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class ConnectionBase implements IConnectionSingle
         if ($this->isConnected()) {
             throw new ClientException('Connection already estabilished');
         }
-        $this->_resource = $this->createResource();
+        $this->resource = $this->createResource();
     }
 
     /**
@@ -114,7 +114,7 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function disconnect()
     {
-        unset($this->_resource);
+        unset($this->resource);
     }
 
     /**
@@ -122,7 +122,7 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function pushInitCommand(ICommand $command)
     {
-        $this->_initCmds[] = $command;
+        $this->initCmds[] = $command;
     }
 
     /**
@@ -190,13 +190,13 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function getResource()
     {
-        if (isset($this->_resource)) {
-            return $this->_resource;
+        if (isset($this->resource)) {
+            return $this->resource;
         }
 
         $this->connect();
 
-        return $this->_resource;
+        return $this->resource;
     }
 
     /**
@@ -204,7 +204,7 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function getParameters()
     {
-        return $this->_params;
+        return $this->params;
     }
 
     /**
@@ -214,11 +214,11 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     protected function getIdentifier()
     {
-        if ($this->_params->scheme === 'unix') {
-            return $this->_params->path;
+        if ($this->params->scheme === 'unix') {
+            return $this->params->path;
         }
 
-        return "{$this->_params->host}:{$this->_params->port}";
+        return "{$this->params->host}:{$this->params->port}";
     }
 
     /**
@@ -226,10 +226,10 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function __toString()
     {
-        if (!isset($this->_cachedId)) {
-            $this->_cachedId = $this->getIdentifier();
+        if (!isset($this->cachedId)) {
+            $this->cachedId = $this->getIdentifier();
         }
 
-        return $this->_cachedId;
+        return $this->cachedId;
     }
 }

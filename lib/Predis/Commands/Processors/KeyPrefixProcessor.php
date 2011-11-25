@@ -21,7 +21,7 @@ use Predis\Commands\ICommand;
  */
 class KeyPrefixProcessor implements ICommandProcessor
 {
-    private $_prefix;
+    private $prefix;
 
     /**
      * @param string $prefix Prefix for the keys.
@@ -38,7 +38,7 @@ class KeyPrefixProcessor implements ICommandProcessor
      */
     public function setPrefix($prefix)
     {
-        $this->_prefix = $prefix;
+        $this->prefix = $prefix;
     }
 
     /**
@@ -48,7 +48,7 @@ class KeyPrefixProcessor implements ICommandProcessor
      */
     public function getPrefix()
     {
-        return $this->_prefix;
+        return $this->prefix;
     }
 
     /**
@@ -56,6 +56,6 @@ class KeyPrefixProcessor implements ICommandProcessor
      */
     public function process(ICommand $command)
     {
-        $command->prefixKeys($this->_prefix);
+        $command->prefixKeys($this->prefix);
     }
 }

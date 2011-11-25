@@ -21,8 +21,8 @@ use Predis\Distribution\INodeKeyGenerator;
  */
 abstract class Command implements ICommand
 {
-    private $_hash;
-    private $_arguments = array();
+    private $hash;
+    private $arguments = array();
 
     /**
      * Returns a filtered array of the arguments.
@@ -40,8 +40,8 @@ abstract class Command implements ICommand
      */
     public function setArguments(Array $arguments)
     {
-        $this->_arguments = $this->filterArguments($arguments);
-        unset($this->_hash);
+        $this->arguments = $this->filterArguments($arguments);
+        unset($this->hash);
     }
 
     /**
@@ -51,8 +51,8 @@ abstract class Command implements ICommand
      */
     public function setRawArguments(Array $arguments)
     {
-        $this->_arguments = $arguments;
-        unset($this->_hash);
+        $this->arguments = $arguments;
+        unset($this->hash);
     }
 
     /**
@@ -60,7 +60,7 @@ abstract class Command implements ICommand
      */
     public function getArguments()
     {
-        return $this->_arguments;
+        return $this->arguments;
     }
 
     /**
@@ -70,8 +70,8 @@ abstract class Command implements ICommand
      */
     public function getArgument($index = 0)
     {
-        if (isset($this->_arguments[$index]) === true) {
-            return $this->_arguments[$index];
+        if (isset($this->arguments[$index]) === true) {
+            return $this->arguments[$index];
         }
     }
 
@@ -94,10 +94,10 @@ abstract class Command implements ICommand
      */
     public function prefixKeys($prefix)
     {
-        $arguments = $this->onPrefixKeys($this->_arguments, $prefix);
+        $arguments = $this->onPrefixKeys($this->arguments, $prefix);
         if (isset($arguments)) {
-            $this->_arguments = $arguments;
-            unset($this->_hash);
+            $this->arguments = $arguments;
+            unset($this->hash);
         }
     }
 
@@ -108,7 +108,7 @@ abstract class Command implements ICommand
      */
     protected function canBeHashed()
     {
-        return isset($this->_arguments[0]);
+        return isset($this->arguments[0]);
     }
 
     /**
@@ -141,15 +141,15 @@ abstract class Command implements ICommand
      */
     public function getHash(INodeKeyGenerator $distributor)
     {
-        if (isset($this->_hash)) {
-            return $this->_hash;
+        if (isset($this->hash)) {
+            return $this->hash;
         }
 
         if ($this->canBeHashed()) {
-            $key = Helpers::getKeyHashablePart($this->_arguments[0]);
-            $this->_hash = $distributor->generateKey($key);
+            $key = Helpers::getKeyHashablePart($this->arguments[0]);
+            $this->hash = $distributor->generateKey($key);
 
-            return $this->_hash;
+            return $this->hash;
         }
 
         return null;

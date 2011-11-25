@@ -17,12 +17,12 @@ use Predis\Network\StreamConnection;
 
 class SimpleDebuggableConnection extends StreamConnection
 {
-    private $_tstart = 0;
-    private $_debugBuffer = array();
+    private $tstart = 0;
+    private $debugBuffer = array();
 
     public function connect()
     {
-        $this->_tstart = microtime(true);
+        $this->tstart = microtime(true);
 
         parent::connect();
     }
@@ -30,14 +30,14 @@ class SimpleDebuggableConnection extends StreamConnection
     private function storeDebug(ICommand $command, $direction)
     {
         $firtsArg  = $command->getArgument(0);
-        $timestamp = round(microtime(true) - $this->_tstart, 4);
+        $timestamp = round(microtime(true) - $this->tstart, 4);
 
         $debug  = $command->getId();
         $debug .= isset($firtsArg) ? " $firtsArg " : ' ';
         $debug .= "$direction $this";
         $debug .= " [{$timestamp}s]";
 
-        $this->_debugBuffer[] = $debug;
+        $this->debugBuffer[] = $debug;
     }
 
     public function writeCommand(ICommand $command)
@@ -57,7 +57,7 @@ class SimpleDebuggableConnection extends StreamConnection
 
     public function getDebugBuffer()
     {
-        return $this->_debugBuffer;
+        return $this->debugBuffer;
     }
 }
 

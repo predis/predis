@@ -21,7 +21,7 @@ use Predis\Network\IConnectionSingle;
  */
 class MultiBulkResponseSimple extends MultiBulkResponse
 {
-    private $_connection;
+    private $connection;
 
     /**
      * @param IConnectionSingle $connection Connection to Redis.
@@ -29,10 +29,10 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      */
     public function __construct(IConnectionSingle $connection, $size)
     {
-        $this->_connection = $connection;
-        $this->_position   = 0;
-        $this->_current    = $size > 0 ? $this->getValue() : null;
-        $this->_replySize  = $size;
+        $this->connection = $connection;
+        $this->position   = 0;
+        $this->current    = $size > 0 ? $this->getValue() : null;
+        $this->replySize  = $size;
     }
 
     /**
@@ -57,8 +57,8 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     {
         if ($drop == true) {
             if ($this->valid()) {
-                $this->_position = $this->_replySize;
-                $this->_connection->disconnect();
+                $this->position = $this->replySize;
+                $this->connection->disconnect();
             }
         }
         else {
@@ -75,6 +75,6 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      */
     protected function getValue()
     {
-        return $this->_connection->read();
+        return $this->connection->read();
     }
 }

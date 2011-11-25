@@ -20,38 +20,38 @@ use Predis\Network\PredisCluster;
 
 class NaiveDistributionStrategy implements IDistributionStrategy
 {
-    private $_nodes;
-    private $_nodesCount;
+    private $nodes;
+    private $nodesCount;
 
     public function __constructor()
     {
-        $this->_nodes = array();
-        $this->_nodesCount = 0;
+        $this->nodes = array();
+        $this->nodesCount = 0;
     }
 
     public function add($node, $weight = null)
     {
-        $this->_nodes[] = $node;
-        $this->_nodesCount++;
+        $this->nodes[] = $node;
+        $this->nodesCount++;
     }
 
     public function remove($node)
     {
-        $this->_nodes = array_filter($this->_nodes, function($n) use($node) {
+        $this->nodes = array_filter($this->nodes, function($n) use($node) {
             return $n !== $node;
         });
 
-        $this->_nodesCount = count($this->_nodes);
+        $this->nodesCount = count($this->nodes);
     }
 
     public function get($key)
     {
-        $count = $this->_nodesCount;
+        $count = $this->nodesCount;
         if ($count === 0) {
             throw new RuntimeException('No connections');
         }
 
-        return $this->_nodes[$count > 1 ? abs(crc32($key) % $count) : 0];
+        return $this->nodes[$count > 1 ? abs(crc32($key) % $count) : 0];
     }
 
     public function generateKey($value)

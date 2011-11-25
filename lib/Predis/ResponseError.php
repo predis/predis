@@ -19,14 +19,14 @@ namespace Predis;
  */
 class ResponseError implements IRedisServerError
 {
-    private $_message;
+    private $message;
 
     /**
      * @param string $message Error message returned by Redis
      */
     public function __construct($message)
     {
-        $this->_message = $message;
+        $this->message = $message;
     }
 
     /**
@@ -34,7 +34,7 @@ class ResponseError implements IRedisServerError
      */
     public function getMessage()
     {
-        return $this->_message;
+        return $this->message;
     }
 
     /**

@@ -26,14 +26,14 @@ use Predis\Network\IConnectionComposable;
  */
 class TextResponseReader implements IResponseReader
 {
-    private $_prefixHandlers;
+    private $prefixHandlers;
 
     /**
      *
      */
     public function __construct()
     {
-        $this->_prefixHandlers = $this->getDefaultHandlers();
+        $this->prefixHandlers = $this->getDefaultHandlers();
     }
 
     /**
@@ -60,7 +60,7 @@ class TextResponseReader implements IResponseReader
      */
     public function setHandler($prefix, IResponseHandler $handler)
     {
-        $this->_prefixHandlers[$prefix] = $handler;
+        $this->prefixHandlers[$prefix] = $handler;
     }
 
     /**
@@ -72,8 +72,8 @@ class TextResponseReader implements IResponseReader
      */
     public function getHandler($prefix)
     {
-        if (isset($this->_prefixHandlers[$prefix])) {
-            return $this->_prefixHandlers[$prefix];
+        if (isset($this->prefixHandlers[$prefix])) {
+            return $this->prefixHandlers[$prefix];
         }
     }
 
@@ -88,11 +88,11 @@ class TextResponseReader implements IResponseReader
         }
 
         $prefix = $header[0];
-        if (!isset($this->_prefixHandlers[$prefix])) {
+        if (!isset($this->prefixHandlers[$prefix])) {
             $this->protocolError($connection, "Unknown prefix '$prefix'");
         }
 
-        $handler = $this->_prefixHandlers[$prefix];
+        $handler = $this->prefixHandlers[$prefix];
 
         return $handler->handle($connection, substr($header, 1));
     }

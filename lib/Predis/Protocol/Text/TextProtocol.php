@@ -43,18 +43,18 @@ class TextProtocol implements IProtocolProcessor
 
     const BUFFER_SIZE = 4096;
 
-    private $_mbiterable;
-    private $_throwErrors;
-    private $_serializer;
+    private $mbiterable;
+    private $throwErrors;
+    private $serializer;
 
     /**
      *
      */
     public function __construct()
     {
-        $this->_mbiterable  = false;
-        $this->_throwErrors = true;
-        $this->_serializer  = new TextCommandSerializer();
+        $this->mbiterable  = false;
+        $this->throwErrors = true;
+        $this->serializer  = new TextCommandSerializer();
     }
 
     /**
@@ -62,7 +62,7 @@ class TextProtocol implements IProtocolProcessor
      */
     public function write(IConnectionComposable $connection, ICommand $command)
     {
-        $connection->writeBytes($this->_serializer->serialize($command));
+        $connection->writeBytes($this->serializer->serialize($command));
     }
 
     /**
@@ -100,7 +100,7 @@ class TextProtocol implements IProtocolProcessor
                 if ($count === -1) {
                     return null;
                 }
-                if ($this->_mbiterable == true) {
+                if ($this->mbiterable == true) {
                     return new MultiBulkResponseSimple($connection, $count);
                 }
 
@@ -115,7 +115,7 @@ class TextProtocol implements IProtocolProcessor
                 return (int) $payload;
 
             case '-':    // error
-                if ($this->_throwErrors) {
+                if ($this->throwErrors) {
                     throw new ServerException($payload);
                 }
                 return new ResponseError($payload);
@@ -134,11 +134,11 @@ class TextProtocol implements IProtocolProcessor
     {
         switch ($option) {
             case 'iterable_multibulk':
-                $this->_mbiterable = (bool) $value;
+                $this->mbiterable = (bool) $value;
                 break;
 
             case 'throw_errors':
-                $this->_throwErrors = (bool) $value;
+                $this->throwErrors = (bool) $value;
                 break;
         }
     }

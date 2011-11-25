@@ -38,24 +38,24 @@ const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able t
  */
 class WebdisConnection implements IConnectionSingle
 {
-    private $_parameters;
-    private $_resource;
-    private $_reader;
+    private $parameters;
+    private $resource;
+    private $reader;
 
     /**
      * @param IConnectionParameters $parameters Parameters used to initialize the connection.
      */
     public function __construct(IConnectionParameters $parameters)
     {
-        $this->_parameters = $parameters;
+        $this->parameters = $parameters;
 
         if ($parameters->scheme !== 'http') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
 
         $this->checkExtensions();
-        $this->_resource = $this->initializeCurl($parameters);
-        $this->_reader = $this->initializeReader($parameters);
+        $this->resource = $this->initializeCurl($parameters);
+        $this->reader = $this->initializeReader($parameters);
     }
 
     /**
@@ -64,8 +64,8 @@ class WebdisConnection implements IConnectionSingle
      */
     public function __destruct()
     {
-        curl_close($this->_resource);
-        phpiredis_reader_destroy($this->_reader);
+        curl_close($this->resource);
+        phpiredis_reader_destroy($this->reader);
     }
 
     /**
@@ -173,7 +173,7 @@ class WebdisConnection implements IConnectionSingle
      */
     protected function feedReader($resource, $buffer)
     {
-        phpiredis_reader_feed($this->_reader, $buffer);
+        phpiredis_reader_feed($this->reader, $buffer);
 
         return strlen($buffer);
     }
@@ -246,7 +246,7 @@ class WebdisConnection implements IConnectionSingle
      */
     public function executeCommand(ICommand $command)
     {
-        $resource = $this->_resource;
+        $resource = $this->resource;
         $commandId = $this->getCommandId($command);
 
         if ($arguments = $command->getArguments()) {
@@ -265,17 +265,17 @@ class WebdisConnection implements IConnectionSingle
             throw new ConnectionException($this, trim($error), $errno);
         }
 
-        $readerState = phpiredis_reader_get_state($this->_reader);
+        $readerState = phpiredis_reader_get_state($this->reader);
 
         if ($readerState === PHPIREDIS_READER_STATE_COMPLETE) {
-            $reply = phpiredis_reader_get_reply($this->_reader);
+            $reply = phpiredis_reader_get_reply($this->reader);
             if ($reply instanceof IReplyObject) {
                 return $reply;
             }
             return $command->parseResponse($reply);
         }
         else {
-            $error = phpiredis_reader_get_error($this->_reader);
+            $error = phpiredis_reader_get_error($this->reader);
             throw new ProtocolException($this, $error);
         }
     }
@@ -285,7 +285,7 @@ class WebdisConnection implements IConnectionSingle
      */
     public function getResource()
     {
-        return $this->_resource;
+        return $this->resource;
     }
 
     /**
@@ -293,7 +293,7 @@ class WebdisConnection implements IConnectionSingle
      */
     public function getParameters()
     {
-        return $this->_parameters;
+        return $this->parameters;
     }
 
     /**
@@ -317,6 +317,6 @@ class WebdisConnection implements IConnectionSingle
      */
     public function __toString()
     {
-        return "{$this->_parameters->host}:{$this->_parameters->port}";
+        return "{$this->parameters->host}:{$this->parameters->port}";
     }
 }

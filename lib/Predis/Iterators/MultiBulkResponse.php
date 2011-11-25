@@ -19,9 +19,9 @@ namespace Predis\Iterators;
  */
 abstract class MultiBulkResponse implements \Iterator, \Countable
 {
-    protected $_position;
-    protected $_current;
-    protected $_replySize;
+    protected $position;
+    protected $current;
+    protected $replySize;
 
     /**
      * {@inheritdoc}
@@ -36,7 +36,7 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
      */
     public function current()
     {
-        return $this->_current;
+        return $this->current;
     }
 
     /**
@@ -44,7 +44,7 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
      */
     public function key()
     {
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -52,11 +52,11 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
      */
     public function next()
     {
-        if (++$this->_position < $this->_replySize) {
-            $this->_current = $this->getValue();
+        if (++$this->position < $this->replySize) {
+            $this->current = $this->getValue();
         }
 
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
      */
     public function valid()
     {
-        return $this->_position < $this->_replySize;
+        return $this->position < $this->replySize;
     }
 
     /**
@@ -78,7 +78,7 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
      */
     public function count()
     {
-        return $this->_replySize;
+        return $this->replySize;
     }
 
     /**

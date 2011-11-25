@@ -76,11 +76,11 @@ class PredisFile
 {
     const NS_ROOT = 'Predis';
 
-    private $_namespaces;
+    private $namespaces;
 
     public function __construct()
     {
-        $this->_namespaces = array();
+        $this->namespaces = array();
     }
 
     public static function from($libraryPath, Array $exclude = array())
@@ -116,24 +116,24 @@ class PredisFile
 
     public function addNamespace(PhpNamespace $namespace)
     {
-        if (isset($this->_namespaces[(string)$namespace])) {
+        if (isset($this->namespaces[(string)$namespace])) {
             throw new InvalidArgumentException("Duplicated namespace");
         }
-        $this->_namespaces[(string)$namespace] = $namespace;
+        $this->namespaces[(string)$namespace] = $namespace;
     }
 
     public function getNamespaces()
     {
-        return $this->_namespaces;
+        return $this->namespaces;
     }
 
     public function getNamespace($namespace)
     {
-        if (!isset($this->_namespaces[$namespace])) {
+        if (!isset($this->namespaces[$namespace])) {
             return false;
         }
 
-        return $this->_namespaces[$namespace];
+        return $this->namespaces[$namespace];
     }
 
     public function getClassByFQN($classFqn)
@@ -261,14 +261,14 @@ class PredisFile
 
 class PhpNamespace implements IteratorAggregate
 {
-    private $_namespace;
-    private $_classes;
+    private $namespace;
+    private $classes;
 
     public function __construct($namespace)
     {
-        $this->_namespace = $namespace;
-        $this->_classes = array();
-        $this->_useDirectives = new PhpUseDirectives($this);
+        $this->namespace = $namespace;
+        $this->classes = array();
+        $this->useDirectives = new PhpUseDirectives($this);
     }
 
     public static function extractName($fqn)
@@ -284,19 +284,19 @@ class PhpNamespace implements IteratorAggregate
 
     public function addClass(PhpClass $class)
     {
-        $this->_classes[$class->getName()] = $class;
+        $this->classes[$class->getName()] = $class;
     }
 
     public function getClass($className)
     {
-        if (isset($this->_classes[$className])) {
-            return $this->_classes[$className];
+        if (isset($this->classes[$className])) {
+            return $this->classes[$className];
         }
     }
 
     public function getClasses()
     {
-        return array_values($this->_classes);
+        return array_values($this->classes);
     }
 
     public function getIterator()
@@ -306,46 +306,46 @@ class PhpNamespace implements IteratorAggregate
 
     public function getUseDirectives()
     {
-        return $this->_useDirectives;
+        return $this->useDirectives;
     }
 
     public function getPhpCode()
     {
-        return "namespace $this->_namespace;\n";
+        return "namespace $this->namespace;\n";
     }
 
     public function __toString()
     {
-        return $this->_namespace;
+        return $this->namespace;
     }
 }
 
 class PhpUseDirectives implements Countable, IteratorAggregate
 {
-    private $_use;
-    private $_aliases;
-    private $_namespace;
+    private $use;
+    private $aliases;
+    private $namespace;
 
     public function __construct(PhpNamespace $namespace)
     {
-        $this->_use = array();
-        $this->_aliases = array();
-        $this->_namespace = $namespace;
+        $this->use = array();
+        $this->aliases = array();
+        $this->namespace = $namespace;
     }
 
     public function add($use, $as = null)
     {
-        if (in_array($use, $this->_use)) {
+        if (in_array($use, $this->use)) {
             return;
         }
 
-        $this->_use[] = $use;
-        $this->_aliases[$as ?: PhpClass::extractName($use)] = $use;
+        $this->use[] = $use;
+        $this->aliases[$as ?: PhpClass::extractName($use)] = $use;
     }
 
     public function getList()
     {
-        return $this->_use;
+        return $this->use;
     }
 
     public function getIterator()
@@ -362,14 +362,14 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
     public function getNamespace()
     {
-        return $this->_namespace;
+        return $this->namespace;
     }
 
     public function getFQN($className)
     {
         if (($nsSepFirst = strpos($className, '\\')) === false) {
-            if (isset($this->_aliases[$className])) {
-                return $this->_aliases[$className];
+            if (isset($this->aliases[$className])) {
+                return $this->aliases[$className];
             }
 
             return (string)$this->getNamespace() . "\\$className";
@@ -384,7 +384,7 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
     public function count()
     {
-        return count($this->_use);
+        return count($this->use);
     }
 }
 
@@ -401,19 +401,19 @@ class PhpClass
  */
 LICENSE;
 
-    private $_namespace;
-    private $_file;
-    private $_body;
-    private $_implements;
-    private $_extends;
-    private $_name;
+    private $namespace;
+    private $file;
+    private $body;
+    private $implements;
+    private $extends;
+    private $name;
 
     public function __construct(PhpNamespace $namespace, SplFileInfo $classFile)
     {
-        $this->_namespace = $namespace;
-        $this->_file = $classFile;
-        $this->_implements = array();
-        $this->_extends = array();
+        $this->namespace = $namespace;
+        $this->file = $classFile;
+        $this->implements = array();
+        $this->extends = array();
 
         $this->extractData();
         $namespace->addClass($this);
@@ -446,7 +446,7 @@ LICENSE;
         $classBuffer = preg_replace('/namespace\s+[\w\d_\\\\]+;\s?/', '', $classBuffer);
         $classBuffer = preg_replace_callback('/use\s+([\w\d_\\\\]+)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
 
-        $this->_body = trim($classBuffer);
+        $this->body = trim($classBuffer);
 
         $this->extractHierarchy();
     }
@@ -509,7 +509,7 @@ LICENSE;
                 case T_INTERFACE:
                     $iterator->seek($iterator->key() + 2);
                     $tk = $iterator->current();
-                    $this->_name = $tk[1];
+                    $this->name = $tk[1];
                     break;
 
                 case T_IMPLEMENTS:
@@ -528,8 +528,8 @@ LICENSE;
             $iterator->next();
         }
 
-        $this->_implements = $this->guessFQN($implements);
-        $this->_extends = $this->guessFQN($extends);
+        $this->implements = $this->guessFQN($implements);
+        $this->extends = $this->guessFQN($extends);
     }
 
     public function guessFQN($classes)
@@ -541,11 +541,11 @@ LICENSE;
     public function getImplementedInterfaces($all = false)
     {
         if ($all) {
-            return $this->_implements;
+            return $this->implements;
         }
 
         return array_filter(
-            $this->_implements,
+            $this->implements,
             function ($cn) { return strpos($cn, 'Predis\\') === 0; }
         );
     }
@@ -553,11 +553,11 @@ LICENSE;
     public function getExtendedClasses($all = false)
     {
         if ($all) {
-            return $this->_extemds;
+            return $this->extemds;
         }
 
         return array_filter(
-            $this->_extends,
+            $this->extends,
             function ($cn) { return strpos($cn, 'Predis\\') === 0; }
         );
     }
@@ -572,27 +572,27 @@ LICENSE;
 
     public function getNamespace()
     {
-        return $this->_namespace;
+        return $this->namespace;
     }
 
     public function getFile()
     {
-        return $this->_file;
+        return $this->file;
     }
 
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     public function getFQN()
     {
-        return (string)$this->getNamespace() . '\\' . $this->_name;
+        return (string)$this->getNamespace() . '\\' . $this->name;
     }
 
     public function getPhpCode()
     {
-        return $this->_body;
+        return $this->body;
     }
 
     public function __toString()

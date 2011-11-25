@@ -39,7 +39,7 @@ use Predis\Commands\ICommand;
  */
 class PhpiredisConnection extends ConnectionBase
 {
-    private $_reader;
+    private $reader;
 
     /**
      * {@inheritdoc}
@@ -62,7 +62,7 @@ class PhpiredisConnection extends ConnectionBase
      */
     public function __destruct()
     {
-        phpiredis_reader_destroy($this->_reader);
+        phpiredis_reader_destroy($this->reader);
 
         parent::__destruct();
     }
@@ -101,7 +101,7 @@ class PhpiredisConnection extends ConnectionBase
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
         phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($throw_errors));
 
-        $this->_reader = $reader;
+        $this->reader = $reader;
     }
 
     /**
@@ -170,7 +170,7 @@ class PhpiredisConnection extends ConnectionBase
      */
     protected function createResource()
     {
-        $parameters = $this->_params;
+        $parameters = $this->params;
 
         $initializer = array($this, "{$parameters->scheme}SocketInitializer");
         $socket = call_user_func($initializer, $parameters);
@@ -325,8 +325,8 @@ class PhpiredisConnection extends ConnectionBase
     {
         parent::connect();
 
-        $this->connectWithTimeout($this->_params);
-        if (count($this->_initCmds) > 0) {
+        $this->connectWithTimeout($this->params);
+        if (count($this->initCmds) > 0) {
             $this->sendInitializationCommands();
         }
     }
@@ -348,10 +348,10 @@ class PhpiredisConnection extends ConnectionBase
      */
     private function sendInitializationCommands()
     {
-        foreach ($this->_initCmds as $command) {
+        foreach ($this->initCmds as $command) {
             $this->writeCommand($command);
         }
-        foreach ($this->_initCmds as $command) {
+        foreach ($this->initCmds as $command) {
             $this->readResponse($command);
         }
     }
@@ -383,7 +383,7 @@ class PhpiredisConnection extends ConnectionBase
     public function read()
     {
         $socket = $this->getResource();
-        $reader = $this->_reader;
+        $reader = $this->reader;
 
         while (($state = phpiredis_reader_get_state($reader)) === PHPIREDIS_READER_STATE_INCOMPLETE) {
             if (@socket_recv($socket, $buffer, 4096, 0) === false || $buffer === '') {
