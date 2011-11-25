@@ -35,7 +35,7 @@ class StreamConnection extends ConnectionBase
      */
     public function __destruct()
     {
-        if (!$this->params->connection_persistent) {
+        if (!$this->parameters->connection_persistent) {
             $this->disconnect();
         }
     }
@@ -54,7 +54,7 @@ class StreamConnection extends ConnectionBase
      */
     protected function createResource()
     {
-        $parameters = $this->params;
+        $parameters = $this->parameters;
         $initializer = "{$parameters->scheme}StreamInitializer";
 
         return $this->$initializer($parameters);

@@ -29,7 +29,7 @@ abstract class ConnectionBase implements IConnectionSingle
     private $resource;
     private $cachedId;
 
-    protected $params;
+    protected $parameters;
     protected $initCmds;
 
     /**
@@ -38,7 +38,7 @@ abstract class ConnectionBase implements IConnectionSingle
     public function __construct(IConnectionParameters $parameters)
     {
         $this->initCmds = array();
-        $this->params = $this->checkParameters($parameters);
+        $this->parameters = $this->checkParameters($parameters);
         $this->initializeProtocol($parameters);
     }
 
@@ -204,7 +204,7 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     public function getParameters()
     {
-        return $this->params;
+        return $this->parameters;
     }
 
     /**
@@ -214,11 +214,11 @@ abstract class ConnectionBase implements IConnectionSingle
      */
     protected function getIdentifier()
     {
-        if ($this->params->scheme === 'unix') {
-            return $this->params->path;
+        if ($this->parameters->scheme === 'unix') {
+            return $this->parameters->path;
         }
 
-        return "{$this->params->host}:{$this->params->port}";
+        return "{$this->parameters->host}:{$this->parameters->port}";
     }
 
     /**

@@ -170,7 +170,7 @@ class PhpiredisConnection extends ConnectionBase
      */
     protected function createResource()
     {
-        $parameters = $this->params;
+        $parameters = $this->parameters;
 
         $initializer = array($this, "{$parameters->scheme}SocketInitializer");
         $socket = call_user_func($initializer, $parameters);
@@ -325,7 +325,7 @@ class PhpiredisConnection extends ConnectionBase
     {
         parent::connect();
 
-        $this->connectWithTimeout($this->params);
+        $this->connectWithTimeout($this->parameters);
         if (count($this->initCmds) > 0) {
             $this->sendInitializationCommands();
         }
