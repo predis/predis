@@ -36,9 +36,7 @@ When used in a project or script without PSR-0 autoloading, Predis includes its 
 require PREDIS_BASE_PATH . '/Autoloader.php';
 
 Predis\Autoloader::register();
-
-// You can now create a Predis\Client, and use other Predis classes, without
-// requiring any additional files.
+// Now you can use Predis without requiring any additional file.
 ```
 
 You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository
