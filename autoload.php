@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the Predis package.
  *
@@ -9,5 +8,6 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/../autoload.php';
-require __DIR__.'/PredisShared.php';
+require __DIR__.'/lib/Predis/Autoloader.php';
+
+Predis\Autoloader::register();
