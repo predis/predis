@@ -123,7 +123,7 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
      */
     public function getConnectionByKey($key)
     {
-        $hashablePart = Helpers::getKeyHashablePart($key);
+        $hashablePart = Helpers::extractKeyTag($key);
         $keyHash = $this->distributor->generateKey($hashablePart);
 
         return $this->distributor->get($keyHash);

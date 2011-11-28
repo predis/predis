@@ -87,7 +87,7 @@ class Helpers
      * @param string $key A key.
      * @return string
      */
-    public static function getKeyHashablePart($key)
+    public static function extractKeyTag($key)
     {
         $start = strpos($key, '{');
         if ($start !== false) {

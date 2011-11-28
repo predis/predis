@@ -123,10 +123,10 @@ abstract class Command implements ICommand
             return false;
         }
 
-        $currentKey = Helpers::getKeyHashablePart($keys[0]);
+        $currentKey = Helpers::extractKeyTag($keys[0]);
 
         for ($i = 1; $i < $count; $i++) {
-            $nextKey = Helpers::getKeyHashablePart($keys[$i]);
+            $nextKey = Helpers::extractKeyTag($keys[$i]);
             if ($currentKey !== $nextKey) {
                 return false;
             }
@@ -146,7 +146,7 @@ abstract class Command implements ICommand
         }
 
         if ($this->canBeHashed()) {
-            $key = Helpers::getKeyHashablePart($this->arguments[0]);
+            $key = Helpers::extractKeyTag($this->arguments[0]);
             $this->hash = $distributor->generateKey($key);
 
             return $this->hash;
