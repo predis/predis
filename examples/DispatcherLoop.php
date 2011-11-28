@@ -28,7 +28,7 @@ PUBLISH control terminate_dispatcher
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 
 // Create a Predis\DispatcherLoop instance and attach a bunch of callbacks.
-$dispatcher = new Predis\DispatcherLoop($client);
+$dispatcher = new Predis\PubSub\DispatcherLoop($client);
 
 // Demonstrate how to use a callable class as a callback for Predis\DispatcherLoop.
 class EventsListener implements Countable

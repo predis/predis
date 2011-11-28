@@ -9,7 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\PubSub;
+
+use Predis\Client;
+use Predis\ClientException;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis

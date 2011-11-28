@@ -9,7 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\PubSub;
+
+use Predis\Client;
+use Predis\Helpers;
+use Predis\ClientException;
 
 /**
  * Client-side abstraction of a Publish / Subscribe context.

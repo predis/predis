@@ -16,6 +16,7 @@ use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
 use Predis\Profiles\IServerProfile;
 use Predis\Profiles\ServerProfile;
+use Predis\PubSub\PubSubContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Transaction\MultiExecContext;
 
