@@ -55,7 +55,9 @@ name) and let Predis using it. __phpiredis__ is a C-based extension that wraps _
 official Redis C client library) with a thin layer that exposes its features to PHP. You will now
 get the benefits of a faster protocol parser just by adding a single line of code in your application:
 
-    Predis\ConnectionFactory::define('tcp', '\Predis\Network\PhpiredisConnection');
+    $client = new Predis\Client('tcp://127.0.0.1', array(
+        'connections' => array('tcp' => 'Predis\Network\PhpiredisConnection')
+    ));
 
 As simple as it is, nothing will really change in the way you use the library in your application. So,
 how fast is it now? There are not much improvements for inline or short bulk replies (e.g. _SET_ or

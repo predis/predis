@@ -113,10 +113,11 @@ class MyConnectionClass implements Predis\Network\IConnectionSingle
     // implementation goes here
 }
 
-// Let Predis automatically use your own class to handle the default TCP connection
-Predis\ConnectionFactory::define('tcp', 'MyConnectionClass');
+// Let Predis automatically use your own class to handle connections identified by the tcp prefix.
+$client = new Predis\Client('tcp://127.0.0.1', array(
+    'connections' => array('tcp' => 'MyConnectionClass')
+));
 ```
-
 
 You can have a look at the `Predis\Network` namespace for some actual code that gives a better
 insight about how to create new connection classes.

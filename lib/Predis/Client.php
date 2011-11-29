@@ -32,7 +32,7 @@ class Client
     private $options;
     private $profile;
     private $connection;
-    private $connectionFactory;
+    private $connections;
 
     /**
      * Initializes a new client with optional connection parameters and client options.
@@ -43,15 +43,16 @@ class Client
     public function __construct($parameters = null, $options = null)
     {
         $options = $this->filterOptions($options);
-        $profile = $options->profile;
 
+        $profile = $options->profile;
         if (isset($options->prefix)) {
             $profile->setProcessor($options->prefix);
         }
 
         $this->options = $options;
         $this->profile = $profile;
-        $this->connectionFactory = $options->connections;
+        $this->connections = $options->connections;
+
         $this->connection = $this->initializeConnection($parameters);
     }
 
@@ -94,51 +95,15 @@ class Client
      */
     private function initializeConnection($parameters)
     {
-        if ($parameters === null) {
-            return $this->createConnection(new ConnectionParameters());
-        }
-
-        if (is_array($parameters)) {
-            if (isset($parameters[0])) {
-                $cluster = $this->options->cluster;
-                foreach ($parameters as $node) {
-                    $connection = $node instanceof IConnectionSingle ? $node : $this->createConnection($node);
-                    $cluster->add($connection);
-                }
-                return $cluster;
-            }
-            return $this->createConnection($parameters);
-        }
-
         if ($parameters instanceof IConnection) {
             return $parameters;
         }
 
-        return $this->createConnection($parameters);
-    }
-
-    /**
-     * Creates a new connection to a single server with the provided parameters.
-     *
-     * @param mixed $parameters Connection parameters.
-     * @return IConnectionSingle
-     */
-    protected function createConnection($parameters)
-    {
-        $connection = $this->connectionFactory->create($parameters);
-        $parameters = $connection->getParameters();
-
-        if (isset($parameters->password)) {
-            $command = $this->createCommand('auth', array($parameters->password));
-            $connection->pushInitCommand($command);
+        if (is_array($parameters) && isset($parameters[0])) {
+            return $this->connections->createCluster($this->options->cluster, $parameters, $this->profile);
         }
 
-        if (isset($parameters->database)) {
-            $command = $this->createCommand('select', array($parameters->database));
-            $connection->pushInitCommand($command);
-        }
-
-        return $connection;
+        return $this->connections->create($parameters, $this->profile);
     }
 
     /**
@@ -168,7 +133,7 @@ class Client
      */
     public function getConnectionFactory()
     {
-        return $this->connectionFactory;
+        return $this->connections;
     }
 
     /**

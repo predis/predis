@@ -11,7 +11,10 @@
 
 namespace Predis;
 
+use Predis\Profiles\IServerProfile;
 use Predis\Network\IConnectionSingle;
+use Predis\Network\IConnectionCluster;
+use Predis\Profiles\ServerProfile;
 
 /**
  * Provides a default factory for Redis connections that maps URI schemes
@@ -22,22 +25,28 @@ use Predis\Network\IConnectionSingle;
  */
 class ConnectionFactory implements IConnectionFactory
 {
-    private static $globalSchemes;
-
-    private $instanceSchemes = array();
+    private $schemes;
 
     /**
-     * @param array $schemesMap Map of URI schemes to connection classes.
+     * Initializes a new instance of the default connection factory class used by Predis.
      */
-    public function __construct(Array $schemesMap = null)
+    public function __construct()
     {
-        $this->instanceSchemes = self::ensureDefaultSchemes();
+        $this->schemes = $this->getDefaultSchemes();
+    }
 
-        if (isset($schemesMap)) {
-            foreach ($schemesMap as $scheme => $initializer) {
-                $this->defineConnection($scheme, $initializer);
-            }
-        }
+    /**
+     * Returns a named array that maps URI schemes to connection classes.
+     *
+     * @return array Map of URI schemes and connection classes.
+     */
+    protected function getDefaultSchemes()
+    {
+        return array(
+            'tcp' => 'Predis\Network\StreamConnection',
+            'unix' => 'Predis\Network\StreamConnection',
+            'http' => 'Predis\Network\WebdisConnection',
+        );
     }
 
     /**
@@ -46,81 +55,61 @@ class ConnectionFactory implements IConnectionFactory
      * callable objects are used for lazy initialization of connection objects.
      *
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
+     * @return mixed
      */
-    private static function checkConnectionInitializer($initializer)
+    protected function checkInitializer($initializer)
     {
         if (is_callable($initializer)) {
-            return;
+            return $initializer;
         }
 
         $initializerReflection = new \ReflectionClass($initializer);
 
-        if (!$initializerReflection->isSubclassOf('\Predis\Network\IConnectionSingle')) {
+        if (!$initializerReflection->isSubclassOf('Predis\Network\IConnectionSingle')) {
             throw new \InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object'
             );
         }
-    }
 
-    /**
-     * Ensures that the default global URI schemes map is initialized.
-     *
-     * @return array
-     */
-    private static function ensureDefaultSchemes()
-    {
-        if (!isset(self::$globalSchemes)) {
-            self::$globalSchemes = array(
-                'tcp'   => '\Predis\Network\StreamConnection',
-                'unix'  => '\Predis\Network\StreamConnection',
-            );
-        }
-
-        return self::$globalSchemes;
-    }
-
-    /**
-     * Defines a new URI scheme => connection class relation at class level.
-     *
-     * @param string $scheme URI scheme
-     * @param mixed $connectionInitializer FQN of a connection class or a callable for lazy initialization.
-     */
-    public static function define($scheme, $connectionInitializer)
-    {
-        self::ensureDefaultSchemes();
-        self::checkConnectionInitializer($connectionInitializer);
-        self::$globalSchemes[$scheme] = $connectionInitializer;
-    }
-
-    /**
-     * Defines a new URI scheme => connection class relation at instance level.
-     *
-     * @param string $scheme URI scheme
-     * @param mixed $connectionInitializer FQN of a connection class or a callable for lazy initialization.
-     */
-    public function defineConnection($scheme, $connectionInitializer)
-    {
-        self::checkConnectionInitializer($connectionInitializer);
-        $this->instanceSchemes[$scheme] = $connectionInitializer;
+        return $initializer;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function create($parameters)
+    public function define($scheme, $initializer)
+    {
+        $this->schemes[$scheme] = $this->checkInitializer($initializer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function undefine($scheme)
+    {
+        unset($this->schemes[$scheme]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function create($parameters, IServerProfile $profile = null)
     {
         if (!$parameters instanceof IConnectionParameters) {
-            $parameters = new ConnectionParameters($parameters);
+            $parameters = new ConnectionParameters($parameters ?: array());
         }
 
         $scheme = $parameters->scheme;
-        if (!isset($this->instanceSchemes[$scheme])) {
+        if (!isset($this->schemes[$scheme])) {
             throw new \InvalidArgumentException("Unknown connection scheme: $scheme");
         }
 
-        $initializer = $this->instanceSchemes[$scheme];
+        $initializer = $this->schemes[$scheme];
         if (!is_callable($initializer)) {
-            return new $initializer($parameters);
+            $connection = new $initializer($parameters);
+            $this->prepareConnection($connection, $profile ?: ServerProfile::getDefault());
+
+            return $connection;
         }
 
         $connection = call_user_func($initializer, $parameters);
@@ -132,5 +121,38 @@ class ConnectionFactory implements IConnectionFactory
         }
 
         return $connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createCluster(IConnectionCluster $cluster, $parameters, IServerProfile $profile = null)
+    {
+        foreach ($parameters as $node) {
+            $cluster->add($node instanceof IConnectionSingle ? $node : $this->create($node, $profile));
+        }
+
+        return $cluster;
+    }
+
+    /**
+     * Prepares a connection object after its initialization.
+     *
+     * @param IConnectionSingle $connection Instance of a connection object.
+     * @param IServerProfile $profile $connection Instance of a connection object.
+     */
+    protected function prepareConnection(IConnectionSingle $connection, IServerProfile $profile)
+    {
+        $parameters = $connection->getParameters();
+
+        if (isset($parameters->password)) {
+            $command = $profile->createCommand('auth', array($parameters->password));
+            $connection->pushInitCommand($command);
+        }
+
+        if (isset($parameters->database)) {
+            $command = $profile->createCommand('select', array($parameters->database));
+            $connection->pushInitCommand($command);
+        }
     }
 }

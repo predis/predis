@@ -30,7 +30,11 @@ class ClientConnectionFactory extends Option
             return $value;
         }
         if (is_array($value)) {
-            return new ConnectionFactory($value);
+            $factory = $this->getDefault();
+            foreach ($value as $scheme => $initializer) {
+                $factory->define($scheme, $initializer);
+            }
+            return $factory;
         }
     }
 

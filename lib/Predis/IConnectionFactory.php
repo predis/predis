@@ -11,6 +11,9 @@
 
 namespace Predis;
 
+use Predis\Profiles\IServerProfile;
+use Predis\Network\IConnectionCluster;
+
 /**
  * Interface that must be implemented by classes that provide their own mechanism
  * to create and initialize new instances of Predis\Network\IConnectionSingle.
@@ -20,10 +23,34 @@ namespace Predis;
 interface IConnectionFactory
 {
     /**
+     * Defines or overrides the connection class identified by a scheme prefix.
+     *
+     * @param string $scheme URI scheme identifying the connection class.
+     * @param mixed $initializer FQN of a connection class or a callable object for lazy initialization.
+     */
+    public function define($scheme, $initializer);
+
+    /**
+     * Undefines the connection identified by a scheme prefix.
+     *
+     * @param string $scheme Parameters for the connection.
+     */
+    public function undefine($scheme);
+
+    /**
      * Creates a new connection object.
      *
      * @param mixed $parameters Parameters for the connection.
      * @return Predis\Network\IConnectionSingle
      */
-    public function create($parameters);
+    public function create($parameters, IServerProfile $profile = null);
+
+    /**
+     * Prepares a cluster of connection objects.
+     *
+     * @param IConnectionCluster Instance of a connection cluster class.
+     * @param array $parameters List of parameters for each connection object.
+     * @return Predis\Network\IConnectionCluster
+     */
+    public function createCluster(IConnectionCluster $cluster, $parameters, IServerProfile $profile = null);
 }
