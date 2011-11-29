@@ -64,7 +64,7 @@ class Client
      * @param mixed $options Client options.
      * @return ClientOptions
      */
-    private function filterOptions($options)
+    protected function filterOptions($options)
     {
         if ($options === null) {
             return new ClientOptions();
@@ -93,7 +93,7 @@ class Client
      * @param mixed $parameters Connection parameters or instance.
      * @return IConnection
      */
-    private function initializeConnection($parameters)
+    protected function initializeConnection($parameters)
     {
         if ($parameters instanceof IConnection) {
             return $parameters;
