@@ -112,7 +112,7 @@ class ConnectionFactory implements IConnectionFactory
             return $connection;
         }
 
-        $connection = call_user_func($initializer, $parameters);
+        $connection = call_user_func($initializer, $parameters, $profile);
         if (!$connection instanceof IConnectionSingle) {
             throw new \InvalidArgumentException(
                 'Objects returned by connection initializers must implement ' .
