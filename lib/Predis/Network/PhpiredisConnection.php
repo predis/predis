@@ -172,43 +172,16 @@ class PhpiredisConnection extends ConnectionBase
     {
         $parameters = $this->parameters;
 
-        $initializer = array($this, "{$parameters->scheme}SocketInitializer");
-        $socket = call_user_func($initializer, $parameters);
+        $isUnix = $this->parameters->scheme === 'unix';
+        $domain = $isUnix ? AF_UNIX : AF_INET;
+        $protocol = $isUnix ? 0 : SOL_TCP;
+
+        $socket = @call_user_func('socket_create', $domain, SOCK_STREAM, $protocol);
+        if (!is_resource($socket)) {
+            $this->emitSocketError();
+        }
 
         $this->setSocketOptions($socket, $parameters);
-
-        return $socket;
-    }
-
-    /**
-     * Initializes a TCP socket resource.
-     *
-     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
-     * @return resource
-     */
-    private function tcpSocketInitializer(IConnectionParameters $parameters)
-    {
-        $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if (!is_resource($socket)) {
-            $this->emitSocketError();
-        }
-
-        return $socket;
-    }
-
-    /**
-     * Initializes a UNIX socket resource.
-     *
-     * @param IConnectionParameters $parameters Parameters used to initialize the connection.
-     * @return resource
-     */
-    private function unixSocketInitializer(IConnectionParameters $parameters)
-    {
-        $socket = @socket_create(AF_UNIX, SOCK_STREAM, 0);
-
-        if (!is_resource($socket)) {
-            $this->emitSocketError();
-        }
 
         return $socket;
     }
