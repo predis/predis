@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/ltrim
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListTrim extends Command
+class ListTrim extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

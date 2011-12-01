@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/sinterstore
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetIntersectionStore extends Command
+class SetIntersectionStore extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -40,9 +40,9 @@ class SetIntersectionStore extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

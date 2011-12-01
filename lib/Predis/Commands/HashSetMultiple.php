@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/hmset
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashSetMultiple extends Command
+class HashSetMultiple extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

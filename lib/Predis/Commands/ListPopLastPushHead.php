@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/rpoplpush
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPopLastPushHead extends Command
+class ListPopLastPushHead extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -28,9 +28,9 @@ class ListPopLastPushHead extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

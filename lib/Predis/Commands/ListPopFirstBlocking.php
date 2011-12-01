@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/blpop
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPopFirstBlocking extends Command
+class ListPopFirstBlocking extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -28,9 +28,9 @@ class ListPopFirstBlocking extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::skipLastArgument($arguments, $prefix);
+        PrefixHelpers::skipLast($this, $prefix);
     }
 
     /**

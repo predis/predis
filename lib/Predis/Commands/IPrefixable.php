@@ -11,17 +11,19 @@
 
 namespace Predis\Commands;
 
+use Predis\Distribution\INodeKeyGenerator;
+
 /**
- * @link http://redis.io/commands/getset
+ * Defines a command whose keys can be prefixed.
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGetSet extends PrefixableCommand
+interface IPrefixable
 {
     /**
-     * {@inheritdoc}
+     * Prefixes all the keys found in the arguments of the command.
+     *
+     * @param string $prefix String used to prefix the keys.
      */
-    public function getId()
-    {
-        return 'GETSET';
-    }
+    public function prefixKeys($prefix);
 }

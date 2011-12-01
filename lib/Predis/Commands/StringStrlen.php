@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/strlen
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringStrlen extends Command
+class StringStrlen extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/sort
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeySort extends Command
+class KeySort extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -83,8 +83,9 @@ class KeySort extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
+        $arguments = $this->getArguments();
         $arguments[0] = "$prefix{$arguments[0]}";
 
         if (($count = count($arguments)) > 1) {
@@ -109,6 +110,6 @@ class KeySort extends Command
             }
         }
 
-        return $arguments;
+        $this->setRawArguments($arguments);
     }
 }

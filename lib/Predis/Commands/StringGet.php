@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/get
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGet extends Command
+class StringGet extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

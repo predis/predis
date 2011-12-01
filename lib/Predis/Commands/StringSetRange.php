@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/setrange
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringSetRange extends Command
+class StringSetRange extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

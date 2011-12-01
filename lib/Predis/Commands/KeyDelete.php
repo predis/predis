@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/del
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyDelete extends Command
+class KeyDelete extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -38,9 +38,9 @@ class KeyDelete extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

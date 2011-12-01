@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/spop
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetPop  extends Command
+class SetPop extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

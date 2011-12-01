@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/zrem
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetRemove extends Command
+class ZSetRemove extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

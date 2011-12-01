@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/keys
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyKeys extends Command
+class KeyKeys extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

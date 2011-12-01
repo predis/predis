@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/eval
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerEval extends Command
+class ServerEval extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -28,7 +28,7 @@ class ServerEval extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
         $arguments = $this->getArguments();
 

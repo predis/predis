@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/zadd
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetAdd extends Command
+class ZSetAdd extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

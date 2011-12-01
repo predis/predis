@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/srem
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetRemove extends Command
+class SetRemove extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

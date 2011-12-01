@@ -17,7 +17,7 @@ use Predis\Iterators\MultiBulkResponseTuple;
  * @link http://redis.io/commands/zrange
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetRange extends Command
+class ZSetRange extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

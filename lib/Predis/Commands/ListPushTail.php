@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/rpush
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPushTail extends Command
+class ListPushTail extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

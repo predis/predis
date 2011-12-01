@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/rename
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyRename extends Command
+class KeyRename extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -28,9 +28,9 @@ class KeyRename extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

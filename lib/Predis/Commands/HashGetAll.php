@@ -17,7 +17,7 @@ use Predis\Iterators\MultiBulkResponseTuple;
  * @link http://redis.io/commands/hgetall
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashGetAll extends Command
+class HashGetAll extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

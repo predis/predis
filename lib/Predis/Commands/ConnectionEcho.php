@@ -28,14 +28,6 @@ class ConnectionEcho extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
-    {
-        /* NOOP */
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function canBeHashed()
     {
         return false;

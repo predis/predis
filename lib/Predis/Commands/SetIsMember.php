@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/sismember
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetIsMember extends Command
+class SetIsMember extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

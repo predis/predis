@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/hsetnx
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashSetPreserve extends Command
+class HashSetPreserve extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

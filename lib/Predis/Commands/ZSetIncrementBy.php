@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/zincrby
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetIncrementBy extends Command
+class ZSetIncrementBy extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

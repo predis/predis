@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/randomkey
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyRandom extends Command
+class KeyRandom extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

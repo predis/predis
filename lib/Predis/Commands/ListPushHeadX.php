@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/lpushx
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPushHeadX extends Command
+class ListPushHeadX extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

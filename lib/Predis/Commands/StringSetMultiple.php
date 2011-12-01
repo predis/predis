@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/mset
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringSetMultiple extends Command
+class StringSetMultiple extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -48,15 +48,9 @@ class StringSetMultiple extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        $length = count($arguments);
-
-        for ($i = 0; $i < $length; $i += 2) {
-            $arguments[$i] = "$prefix{$arguments[$i]}";
-        }
-
-        return $arguments;
+        PrefixHelpers::interleaved($this, $prefix);
     }
 
     /**

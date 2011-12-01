@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/getrange
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGetRange extends Command
+class StringGetRange extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

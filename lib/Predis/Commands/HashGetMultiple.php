@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/hmget
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashGetMultiple extends Command
+class HashGetMultiple extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

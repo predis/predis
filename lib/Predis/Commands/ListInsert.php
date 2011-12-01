@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/linsert
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListInsert extends Command
+class ListInsert extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

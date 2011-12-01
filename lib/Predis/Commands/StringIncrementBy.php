@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/incrby
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringIncrementBy extends Command
+class StringIncrementBy extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

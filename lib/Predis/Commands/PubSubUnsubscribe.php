@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/unsubscribe
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PubSubUnsubscribe extends Command
+class PubSubUnsubscribe extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -28,9 +28,9 @@ class PubSubUnsubscribe extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

@@ -12,16 +12,19 @@
 namespace Predis\Commands;
 
 /**
- * @link http://redis.io/commands/getset
+ * Base class for Redis commands with prefixable keys.
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGetSet extends PrefixableCommand
+abstract class PrefixableCommand extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function prefixKeys($prefix)
     {
-        return 'GETSET';
+        $arguments = $this->getArguments();
+        $arguments[0] = "$prefix{$arguments[0]}";
+        $this->setRawArguments($arguments);
     }
 }

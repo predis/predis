@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/hexists
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashExists extends Command
+class HashExists extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

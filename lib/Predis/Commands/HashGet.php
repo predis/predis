@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/hget
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashGet extends Command
+class HashGet extends PrefixableCommand
 {
     /**
      * {@inheritdoc}

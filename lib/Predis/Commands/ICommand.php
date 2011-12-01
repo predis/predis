@@ -50,13 +50,6 @@ interface ICommand
     public function getArguments();
 
     /**
-     * Prefixes all the keys in the arguments of the command.
-     *
-     * @param string $prefix String user to prefix the keys.
-     */
-    public function prefixKeys($prefix);
-
-    /**
      * Parses a reply buffer and returns a PHP object.
      *
      * @param string $data Binary string containing the whole reply.

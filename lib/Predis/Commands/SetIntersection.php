@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/sinter
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetIntersection extends Command
+class SetIntersection extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -38,9 +38,9 @@ class SetIntersection extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

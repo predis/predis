@@ -76,32 +76,6 @@ abstract class Command implements ICommand
     }
 
     /**
-     * Implements the rule that is used to prefix the keys and returns a new
-     * array of arguments with the modified keys.
-     *
-     * @param array $arguments Arguments of the command.
-     * @param string $prefix Prefix appended to each key in the arguments.
-     * @return array
-     */
-    protected function onPrefixKeys(Array $arguments, $prefix)
-    {
-        $arguments[0] = "$prefix{$arguments[0]}";
-        return $arguments;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        $arguments = $this->onPrefixKeys($this->arguments, $prefix);
-        if (isset($arguments)) {
-            $this->arguments = $arguments;
-            unset($this->hash);
-        }
-    }
-
-    /**
      * Checks if the command can return an hash for client-side sharding.
      *
      * @return Boolean

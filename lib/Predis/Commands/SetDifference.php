@@ -24,12 +24,4 @@ class SetDifference extends SetIntersection
     {
         return 'SDIFF';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function onPrefixKeys(Array $arguments, $prefix)
-    {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
-    }
 }

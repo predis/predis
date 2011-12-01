@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/mget
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGetMultiple extends Command
+class StringGetMultiple extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -38,9 +38,9 @@ class StringGetMultiple extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

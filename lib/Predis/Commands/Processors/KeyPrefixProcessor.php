@@ -12,6 +12,7 @@
 namespace Predis\Commands\Processors;
 
 use Predis\Commands\ICommand;
+use Predis\Commands\IPrefixable;
 
 /**
  * Command processor that is used to prefix the keys contained in the arguments
@@ -56,6 +57,8 @@ class KeyPrefixProcessor implements ICommandProcessor
      */
     public function process(ICommand $command)
     {
-        $command->prefixKeys($this->prefix);
+        if ($command instanceof IPrefixable) {
+            $command->prefixKeys($this->prefix);
+        }
     }
 }

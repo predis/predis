@@ -17,7 +17,7 @@ use Predis\Helpers;
  * @link http://redis.io/commands/subscribe
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PubSubSubscribe extends Command
+class PubSubSubscribe extends Command implements IPrefixable
 {
     /**
      * {@inheritdoc}
@@ -38,9 +38,9 @@ class PubSubSubscribe extends Command
     /**
      * {@inheritdoc}
      */
-    protected function onPrefixKeys(Array $arguments, $prefix)
+    public function prefixKeys($prefix)
     {
-        return PrefixHelpers::multipleKeys($arguments, $prefix);
+        PrefixHelpers::all($this, $prefix);
     }
 
     /**

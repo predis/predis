@@ -15,7 +15,7 @@ namespace Predis\Commands;
  * @link http://redis.io/commands/zcard
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetCardinality extends Command
+class ZSetCardinality extends PrefixableCommand
 {
     /**
      * {@inheritdoc}
