@@ -54,6 +54,6 @@ class ServerEval extends Command
      */
     public function getScriptHash()
     {
-        returns sha1($this->getArgument(0));
+        return sha1($this->getArgument(0));
     }
 }
