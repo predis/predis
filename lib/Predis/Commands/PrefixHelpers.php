@@ -24,7 +24,7 @@ class PrefixHelpers
      * @param ICommand $command Command instance.
      * @param string $prefix Prefix string.
      */
-    protected function first(ICommand $command, $prefix) {
+    public function first(ICommand $command, $prefix) {
         $arguments = $command->getArguments();
 
         $arguments[0] = "$prefix{$arguments[0]}";
