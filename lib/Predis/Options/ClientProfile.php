@@ -26,17 +26,18 @@ class ClientProfile extends Option
      */
     public function validate(IClientOptions $options, $value)
     {
-        if ($value instanceof IServerProfile) {
-            return $value;
-        }
-
         if (is_string($value)) {
-            return ServerProfile::get($value);
+            $value = ServerProfile::get($value);
+            if (isset($options->prefix)) {
+                $value->setProcessor($options->prefix);
+            }
         }
 
-        throw new \InvalidArgumentException(
-            "Invalid value for the profile option"
-        );
+        if (!$value instanceof IServerProfile) {
+            throw new \InvalidArgumentException('Invalid value for the profile option');
+        }
+
+        return $value;
     }
 
     /**
@@ -44,6 +45,11 @@ class ClientProfile extends Option
      */
     public function getDefault(IClientOptions $options)
     {
-        return ServerProfile::getDefault();
+        $profile = ServerProfile::getDefault();
+        if (isset($options->prefix)) {
+            $profile->setProcessor($options->prefix);
+        }
+
+        return $profile;
     }
 }

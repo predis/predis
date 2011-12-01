@@ -46,13 +46,8 @@ class Client
     {
         $options = $this->filterOptions($options);
 
-        $profile = $options->profile;
-        if (isset($options->prefix)) {
-            $profile->setProcessor($options->prefix);
-        }
-
         $this->options = $options;
-        $this->profile = $profile;
+        $this->profile = $options->profile;
         $this->connections = $options->connections;
 
         $this->connection = $this->initializeConnection($parameters);
@@ -77,11 +72,8 @@ class Client
         if ($options instanceof IClientOptions) {
             return $options;
         }
-        if ($options instanceof IServerProfile) {
+        if ($options instanceof IServerProfile || is_string($options)) {
             return new ClientOptions(array('profile' => $options));
-        }
-        if (is_string($options)) {
-            return new ClientOptions(array('profile' => ServerProfile::get($options)));
         }
 
         throw new \InvalidArgumentException("Invalid type for client options");
