@@ -377,7 +377,7 @@ class Client
         }
 
         foreach ($pubsub as $message) {
-            if ($callable($pubsub, $message) === false) {
+            if (call_user_func($callable, $pubsub, $message) === false) {
                 $pubsub->closeContext();
             }
         }

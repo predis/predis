@@ -124,18 +124,18 @@ class DispatcherLoop
             if ($kind !== PubSubContext::MESSAGE && $kind !== PubSubContext::PMESSAGE) {
                 if (isset($this->subscriptionCallback)) {
                     $callback = $this->subscriptionCallback;
-                    $callback($message);
+                    call_user_func($callback, $message);
                 }
                 continue;
             }
 
             if (isset($this->callbacks[$message->channel])) {
                 $callback = $this->callbacks[$message->channel];
-                $callback($message->payload);
+                call_user_func($callback, $message->payload);
             }
             else if (isset($this->defaultCallback)) {
                 $callback = $this->defaultCallback;
-                $callback($message);
+                call_user_func($callback, $message);
             }
         }
     }
