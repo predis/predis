@@ -24,7 +24,7 @@ class ClientProfile extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function validate(IClientOptions $options, $value)
     {
         if ($value instanceof IServerProfile) {
             return $value;
@@ -42,7 +42,7 @@ class ClientProfile extends Option
     /**
      * {@inheritdoc}
      */
-    public function getDefault()
+    public function getDefault(IClientOptions $options)
     {
         return ServerProfile::getDefault();
     }

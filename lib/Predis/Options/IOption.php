@@ -24,7 +24,7 @@ interface IOption
      * @param mixed $value Input value.
      * @return mixed
      */
-    public function validate($value);
+    public function validate(IClientOptions $options, $value);
 
     /**
      * Returns a default value for the option.
@@ -32,7 +32,7 @@ interface IOption
      * @param mixed $value Input value.
      * @return mixed
      */
-    public function getDefault();
+    public function getDefault(IClientOptions $options);
 
     /**
      * Validates a value and, if no value is specified, returns
@@ -41,5 +41,5 @@ interface IOption
      * @param mixed $value Input value.
      * @return mixed
      */
-    public function __invoke($value);
+    public function __invoke(IClientOptions $options, $value);
 }

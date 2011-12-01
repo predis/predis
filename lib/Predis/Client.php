@@ -12,9 +12,11 @@
 namespace Predis;
 
 use Predis\Commands\ICommand;
+use Predis\Options\IClientOptions;
 use Predis\Network\IConnection;
 use Predis\Network\IConnectionSingle;
 use Predis\Profiles\IServerProfile;
+use Predis\Options\ClientOptions;
 use Predis\Profiles\ServerProfile;
 use Predis\PubSub\PubSubContext;
 use Predis\Pipeline\PipelineContext;
@@ -72,7 +74,7 @@ class Client
         if (is_array($options)) {
             return new ClientOptions($options);
         }
-        if ($options instanceof ClientOptions) {
+        if ($options instanceof IClientOptions) {
             return $options;
         }
         if ($options instanceof IServerProfile) {

@@ -11,20 +11,11 @@
 
 namespace Predis\Options;
 
-use Predis\Commands\Processors\KeyPrefixProcessor;
-
 /**
- * Option class that handles the prefixing of keys in commands.
+ * Marker interface defining a client options bag.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ClientPrefix extends Option
+interface IClientOptions
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function validate(IClientOptions $options, $value)
-    {
-        return new KeyPrefixProcessor($value);
-    }
 }

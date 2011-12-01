@@ -9,26 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
-
-use Predis\Options\IOption;
-use Predis\Options\ClientPrefix;
-use Predis\Options\ClientProfile;
-use Predis\Options\ClientCluster;
-use Predis\Options\ClientConnectionFactory;
+namespace Predis\Options;
 
 /**
  * Class that manages validation and conversion of client options.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ClientOptions
+class ClientOptions implements IClientOptions
 {
-    private static $sharedOptions;
-
     private $handlers;
     private $defined;
-
     private $options = array();
 
     /**
@@ -37,7 +28,7 @@ class ClientOptions
     public function __construct(Array $options = array())
     {
         $this->handlers = $this->initialize($options);
-        $this->defined = array_keys($options);
+        $this->defined = array_fill_keys(array_keys($options), true);
     }
 
     /**
@@ -45,43 +36,14 @@ class ClientOptions
      *
      * @return array
      */
-    private static function getSharedOptions()
+    protected function getDefaultOptions()
     {
-        if (isset(self::$sharedOptions)) {
-            return self::$sharedOptions;
-        }
-
-        self::$sharedOptions = array(
+        return array(
             'profile' => new ClientProfile(),
             'connections' => new ClientConnectionFactory(),
             'cluster' => new ClientCluster(),
             'prefix' => new ClientPrefix(),
         );
-
-        return self::$sharedOptions;
-    }
-
-    /**
-     * Defines an option handler or overrides an existing one.
-     *
-     * @param string $option Name of the option.
-     * @param IOption $handler Handler for the option.
-     */
-    public static function define($option, IOption $handler)
-    {
-        self::getSharedOptions();
-        self::$sharedOptions[$option] = $handler;
-    }
-
-    /**
-     * Undefines the handler for the specified option.
-     *
-     * @param string $option Name of the option.
-     */
-    public static function undefine($option)
-    {
-        self::getSharedOptions();
-        unset(self::$sharedOptions[$option]);
     }
 
     /**
@@ -90,16 +52,19 @@ class ClientOptions
      * @param array $options List of client options values.
      * @return array
      */
-    private function initialize($options)
+    protected function initialize(Array $options)
     {
-        $handlers = self::getSharedOptions();
+        $handlers = $this->getDefaultOptions();
 
         foreach ($options as $option => $value) {
             if (isset($handlers[$option])) {
                 $handler = $handlers[$option];
-                $handlers[$option] = function() use($handler, $value) {
-                    return $handler->validate($value);
+                $handlers[$option] = function($options) use($handler, $value) {
+                    return $handler->validate($options, $value);
                 };
+            }
+            else {
+                $this->options[$option] = $value;
             }
         }
 
@@ -114,7 +79,7 @@ class ClientOptions
      */
     public function __isset($option)
     {
-        return in_array($option, $this->defined);
+        return isset($this->defined[$option]);
     }
 
     /**
@@ -131,7 +96,7 @@ class ClientOptions
 
         if (isset($this->handlers[$option])) {
             $handler = $this->handlers[$option];
-            $value = $handler instanceof IOption ? $handler->getDefault() : $handler();
+            $value = $handler instanceof IOption ? $handler->getDefault($this) : $handler($this);
             $this->options[$option] = $value;
 
             return $value;

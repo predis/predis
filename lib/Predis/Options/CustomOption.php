@@ -53,7 +53,7 @@ class CustomOption implements IOption
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function validate(IClientOptions $options, $value)
     {
         if (isset($value)) {
             if ($this->validate === null) {
@@ -61,32 +61,32 @@ class CustomOption implements IOption
             }
             $validator = $this->validate;
 
-            return $validator($value);
+            return $validator($options, $value);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDefault()
+    public function getDefault(IClientOptions $options)
     {
         if (!isset($this->default)) {
             return;
         }
         $default = $this->default;
 
-        return $default();
+        return $default($options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __invoke($value)
+    public function __invoke(IClientOptions $options, $value)
     {
         if (isset($value)) {
-            return $this->validate($value);
+            return $this->validate($options, $value);
         }
 
-        return $this->getDefault();
+        return $this->getDefault($options);
     }
 }

@@ -24,13 +24,13 @@ class ClientConnectionFactory extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function validate(IClientOptions $options, $value)
     {
         if ($value instanceof IConnectionFactory) {
             return $value;
         }
         if (is_array($value)) {
-            $factory = $this->getDefault();
+            $factory = $this->getDefault($options);
             foreach ($value as $scheme => $initializer) {
                 $factory->define($scheme, $initializer);
             }
@@ -41,7 +41,7 @@ class ClientConnectionFactory extends Option
     /**
      * {@inheritdoc}
      */
-    public function getDefault()
+    public function getDefault(IClientOptions $options)
     {
         return new ConnectionFactory();
     }

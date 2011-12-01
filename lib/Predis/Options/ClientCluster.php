@@ -41,7 +41,7 @@ class ClientCluster extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate($value)
+    public function validate(IClientOptions $options, $value)
     {
         if (is_callable($value)) {
             return $this->checkInstance(call_user_func($value));
@@ -73,7 +73,7 @@ class ClientCluster extends Option
     /**
      * {@inheritdoc}
      */
-    public function getDefault()
+    public function getDefault(IClientOptions $options)
     {
         return new PredisCluster();
     }
