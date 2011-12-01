@@ -45,11 +45,9 @@ class Client
     public function __construct($parameters = null, $options = null)
     {
         $options = $this->filterOptions($options);
-
         $this->options = $options;
         $this->profile = $options->profile;
         $this->connections = $options->connections;
-
         $this->connection = $this->initializeConnection($parameters);
     }
 
@@ -92,7 +90,6 @@ class Client
         if ($parameters instanceof IConnection) {
             return $parameters;
         }
-
         if (is_array($parameters) && isset($parameters[0])) {
             return $this->connections->createCluster($this->options->cluster, $parameters, $this->profile);
         }
@@ -164,7 +161,7 @@ class Client
 
     /**
      * Disconnects from the server.
-     * 
+     *
      * This method is an alias of disconnect().
      */
     public function quit()
