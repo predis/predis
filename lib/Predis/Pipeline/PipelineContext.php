@@ -176,4 +176,14 @@ class PipelineContext
 
         return $this->replies;
     }
+
+    /**
+     * Returns the underlying client instance used by the pipeline object.
+     *
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
 }
