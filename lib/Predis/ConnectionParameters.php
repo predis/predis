@@ -265,7 +265,7 @@ class ConnectionParameters implements IConnectionParameters
      */
     public function __sleep()
     {
-        return array('_parameters', '_userDefined');
+        return array('parameters', 'userDefined');
     }
 
     /**
