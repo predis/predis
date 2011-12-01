@@ -72,12 +72,12 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     private static function getDefaultProfiles()
     {
         return array(
-            '1.2'     => '\Predis\Profiles\ServerVersion12',
-            '2.0'     => '\Predis\Profiles\ServerVersion20',
-            '2.2'     => '\Predis\Profiles\ServerVersion22',
-            '2.4'     => '\Predis\Profiles\ServerVersion24',
-            'default' => '\Predis\Profiles\ServerVersion24',
-            'dev'     => '\Predis\Profiles\ServerVersionNext',
+            '1.2'     => 'Predis\Profiles\ServerVersion12',
+            '2.0'     => 'Predis\Profiles\ServerVersion20',
+            '2.2'     => 'Predis\Profiles\ServerVersion22',
+            '2.4'     => 'Predis\Profiles\ServerVersion24',
+            'default' => 'Predis\Profiles\ServerVersion24',
+            'dev'     => 'Predis\Profiles\ServerVersionNext',
         );
     }
 
@@ -95,7 +95,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
 
         $profileReflection = new \ReflectionClass($profileClass);
 
-        if (!$profileReflection->isSubclassOf('\Predis\Profiles\IServerProfile')) {
+        if (!$profileReflection->isSubclassOf('Predis\Profiles\IServerProfile')) {
             throw new ClientException(
                 "Cannot register '$profileClass' as it is not a valid profile class"
             );
@@ -188,7 +188,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     public function defineCommand($alias, $command)
     {
         $commandReflection = new \ReflectionClass($command);
-        if (!$commandReflection->isSubclassOf('\Predis\Commands\ICommand')) {
+        if (!$commandReflection->isSubclassOf('Predis\Commands\ICommand')) {
             throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
         }
         $this->commands[strtolower($alias)] = $command;
