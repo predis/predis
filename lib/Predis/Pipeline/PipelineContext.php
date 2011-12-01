@@ -106,17 +106,19 @@ class PipelineContext
     }
 
     /**
-     * Flushes the queued commands by writing the buffer to Redis and reading
-     * all the replies into the reply buffer.
+     * Flushes the buffer that holds the queued commands.
      *
+     * @param Boolean $send Specifies if the commands in the buffer should be sent to Redis.
      * @return PipelineContext
      */
-    public function flushPipeline()
+    public function flushPipeline($send = true)
     {
         if (count($this->pipeline) > 0) {
-            $connection = $this->client->getConnection();
-            $replies = $this->executor->execute($connection, $this->pipeline);
-            $this->replies = array_merge($this->replies, $replies);
+            if ($send) {
+                $connection = $this->client->getConnection();
+                $replies = $this->executor->execute($connection, $this->pipeline);
+                $this->replies = array_merge($this->replies, $replies);
+            }
             $this->pipeline = array();
         }
 
