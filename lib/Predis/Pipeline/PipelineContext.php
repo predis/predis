@@ -91,6 +91,8 @@ class PipelineContext
 
     /**
      * Queues a command instance into the pipeline buffer.
+     *
+     * @param ICommand $command Command to queue in the buffer.
      */
     protected function recordCommand(ICommand $command)
     {
@@ -99,6 +101,8 @@ class PipelineContext
 
     /**
      * Queues a command instance into the pipeline buffer.
+     *
+     * @param ICommand $command Command to queue in the buffer.
      */
     public function executeCommand(ICommand $command)
     {
