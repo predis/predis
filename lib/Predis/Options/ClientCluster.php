@@ -46,7 +46,7 @@ class ClientCluster extends Option
         if (is_callable($value)) {
             return $this->checkInstance(call_user_func($value));
         }
-        $initializer = $this->getInitializer($value);
+        $initializer = $this->getInitializer($options, $value);
 
         return $this->checkInstance($initializer());
     }
@@ -54,10 +54,11 @@ class ClientCluster extends Option
     /**
      * Returns an initializer for the specified FQN or type.
      *
-     * @param string $fqnOrType Type of cluster of FQN of a class implementing IConnectionCluster
+     * @param string $fqnOrType Type of cluster of FQN of a class implementing IConnectionCluster.
+     * @param IClientOptions $options Instance of the client options.
      * @return \Closure
      */
-    protected function getInitializer($fqnOrType)
+    protected function getInitializer(IClientOptions $options, $fqnOrType)
     {
         switch ($fqnOrType) {
             case 'predis':
