@@ -37,8 +37,8 @@ Before v0.7, Predis used the one-big-file approach to distribute the library. As
 just one file for everything, this kind of solution is actually not that good. Predis now complies with the
 [PSR-0](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) standard to play nice with
 the major recent frameworks and libraries, so it needs an autoloader function to be defined. If you still
-want to have just one file grouping all the classes for whatever reason, then the __bin/createSingleFile.php__
-script in the repository can generate it for you. There is also the __bin/createPhar.php__ script that
+want to have just one file grouping all the classes for whatever reason, then the __bin/create-single-file.php__
+script in the repository can generate it for you. There is also the __bin/create-phar.php__ script that
 generates a single [Phar archive](http://www.php.net/manual/en/intro.phar.php) of the whole library.
 
 

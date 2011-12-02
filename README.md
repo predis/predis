@@ -40,12 +40,12 @@ Predis\Autoloader::register();
 ```
 
 You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository
-just by launching the `createPhar.php` script located in the `bin` directory. The generated Phar ships with
+just by launching the `create-phar.php` script located in the `bin` directory. The generated Phar ships with
 a stub that defines an autoloader function for Predis, so you just need to require the Phar archive in order
 to be able to use the library.
 
 Alternatively you can generate a single PHP file that holds every class, just like older versions of Predis,
-using the `createSingleFile.php` script located in the `bin` directory. In this way you can load Predis in
+using the `create-single-file.php` script located in the `bin` directory. In this way you can load Predis in
 your scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
 
 
