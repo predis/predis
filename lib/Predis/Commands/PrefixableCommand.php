@@ -23,8 +23,9 @@ abstract class PrefixableCommand extends Command implements IPrefixable
      */
     public function prefixKeys($prefix)
     {
-        $arguments = $this->getArguments();
-        $arguments[0] = "$prefix{$arguments[0]}";
-        $this->setRawArguments($arguments);
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $this->setRawArguments($arguments);
+        }
     }
 }

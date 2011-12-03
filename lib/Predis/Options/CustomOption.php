@@ -24,7 +24,7 @@ class CustomOption implements IOption
     /**
      * @param array $options List of options
      */
-    public function __construct(Array $options)
+    public function __construct(Array $options = array())
     {
         $this->validate = $this->filterCallable($options, 'validate');
         $this->default  = $this->filterCallable($options, 'default');

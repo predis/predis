@@ -191,11 +191,9 @@ class Client
     {
         if (isset($id)) {
             if (!Helpers::isCluster($this->connection)) {
-                throw new ClientException(
-                    'Retrieving connections by alias is supported only with clustered connections'
-                );
+                $message = 'Retrieving connections by alias is supported only with clustered connections';
+                throw new NotSupportedException($message);
             }
-
             return $this->connection->getConnectionById($id);
         }
 

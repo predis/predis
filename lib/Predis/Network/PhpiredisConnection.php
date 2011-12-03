@@ -11,12 +11,13 @@
 
 namespace Predis\Network;
 
+use Predis\Commands\ICommand;
+use Predis\IConnectionParameters;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\IConnectionParameters;
-use Predis\Commands\ICommand;
+use Predis\NotSupportedException;
 
 /**
  * This class provides the implementation of a Predis connection that uses the
@@ -47,7 +48,7 @@ class PhpiredisConnection extends ConnectionBase
     public function __construct(IConnectionParameters $parameters)
     {
         if (!function_exists('socket_create')) {
-            throw new ClientException(
+            throw new NotSupportedException(
                 'The socket extension must be loaded in order to be able to ' .
                 'use this connection class'
             );
@@ -90,7 +91,7 @@ class PhpiredisConnection extends ConnectionBase
     private function initializeReader($throw_errors = true)
     {
         if (!function_exists('phpiredis_reader_create')) {
-            throw new ClientException(
+            throw new NotSupportedException(
                 'The phpiredis extension must be loaded in order to be able to ' .
                 'use this connection class'
             );

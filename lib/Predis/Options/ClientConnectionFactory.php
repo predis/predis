@@ -36,6 +36,14 @@ class ClientConnectionFactory extends Option
             }
             return $factory;
         }
+        if (is_string($value) && class_exists($value)) {
+            if (!($factory = new $value()) && !$factory instanceof IConnectionFactory) {
+                throw new \InvalidArgumentException("Class $value must be an instance of Predis\IConnectionFactory");
+            }
+            return $factory;
+        }
+
+        throw new \InvalidArgumentException('Invalid value for the connections option');
     }
 
     /**

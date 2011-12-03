@@ -14,6 +14,7 @@ namespace Predis\Network;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
+use Predis\NotSupportedException;
 use Predis\IConnectionParameters;
 use Predis\Commands\ICommand;
 use Predis\Iterators\MultiBulkResponseSimple;

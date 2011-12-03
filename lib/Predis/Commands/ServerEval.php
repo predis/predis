@@ -36,7 +36,7 @@ class ServerEval extends Command implements IPrefixable
             $arguments[$i] = "$prefix{$arguments[$i]}";
         }
 
-        return $arguments;
+        $this->setRawArguments($arguments);
     }
 
     /**

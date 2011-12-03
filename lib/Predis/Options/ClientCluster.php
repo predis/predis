@@ -30,9 +30,7 @@ class ClientCluster extends Option
     protected function checkInstance($cluster)
     {
         if (!$cluster instanceof IConnectionCluster) {
-            throw new \InvalidArgumentException(
-                'Instance of Predis\Network\IConnectionCluster expected'
-            );
+            throw new \InvalidArgumentException('Instance of Predis\Network\IConnectionCluster expected');
         }
 
         return $cluster;
@@ -44,7 +42,7 @@ class ClientCluster extends Option
     public function validate(IClientOptions $options, $value)
     {
         if (is_callable($value)) {
-            return $this->checkInstance(call_user_func($value));
+            return $this->checkInstance(call_user_func($value, $options));
         }
         $initializer = $this->getInitializer($options, $value);
 
@@ -54,7 +52,7 @@ class ClientCluster extends Option
     /**
      * Returns an initializer for the specified FQN or type.
      *
-     * @param string $fqnOrType Type of cluster of FQN of a class implementing IConnectionCluster.
+     * @param string $fqnOrType Type of cluster or FQN of a class implementing IConnectionCluster.
      * @param IClientOptions $options Instance of the client options.
      * @return \Closure
      */
@@ -65,6 +63,10 @@ class ClientCluster extends Option
                 return function() { return new PredisCluster(); };
 
             default:
+                // TODO: we should not even allow non-string values here.
+                if (is_string($fqnOrType) && !class_exists($fqnOrType)) {
+                    throw new \InvalidArgumentException('Class $fqnOrType does not exist');
+                }
                 return function() use($fqnOrType) {
                     return new $fqnOrType();
                 };

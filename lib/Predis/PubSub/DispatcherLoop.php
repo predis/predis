@@ -12,7 +12,6 @@
 namespace Predis\PubSub;
 
 use Predis\Client;
-use Predis\ClientException;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
@@ -46,7 +45,7 @@ class DispatcherLoop
     protected function validateCallback($callable)
     {
         if (!is_callable($callable)) {
-            throw new ClientException("A valid callable object must be provided");
+            throw new \InvalidArgumentException("A valid callable object must be provided");
         }
     }
 

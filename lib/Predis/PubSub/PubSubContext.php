@@ -14,6 +14,7 @@ namespace Predis\PubSub;
 use Predis\Client;
 use Predis\Helpers;
 use Predis\ClientException;
+use Predis\NotSupportedException;
 
 /**
  * Client-side abstraction of a Publish / Subscribe context.
@@ -57,7 +58,7 @@ class PubSubContext implements \Iterator
      */
     public function __destruct()
     {
-        $this->closeContext();
+        $this->closeContext(true);
     }
 
     /**
@@ -69,17 +70,12 @@ class PubSubContext implements \Iterator
     private function checkCapabilities(Client $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
-            throw new ClientException(
-                'Cannot initialize a PUB/SUB context over a cluster of connections'
-            );
+            throw new NotSupportedException('Cannot initialize a PUB/SUB context over a cluster of connections');
         }
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
-
         if ($client->getProfile()->supportsCommands($commands) === false) {
-            throw new ClientException(
-                'The current profile does not support PUB/SUB related commands'
-            );
+            throw new NotSupportedException('The current profile does not support PUB/SUB related commands');
         }
     }
 
@@ -150,10 +146,23 @@ class PubSubContext implements \Iterator
 
     /**
      * Closes the context by unsubscribing from all the subscribed channels.
+     * Optionally, the context can be forcefully closed by dropping the
+     * underlying connection.
+     *
+     * @param Boolean $force Forcefully close the context by closing the connection.
+     * @return Boolean Returns false if there are no pending messages.
      */
-    public function closeContext()
+    public function closeContext($force = false)
     {
-        if ($this->valid()) {
+        if (!$this->valid()) {
+            return false;
+        }
+
+        if ($force) {
+            $this->invalidate();
+            $this->client->disconnect();
+        }
+        else {
             if ($this->isFlagSet(self::STATUS_SUBSCRIBED)) {
                 $this->unsubscribe();
             }
@@ -161,6 +170,8 @@ class PubSubContext implements \Iterator
                 $this->punsubscribe();
             }
         }
+
+        return !$force;
     }
 
     /**
@@ -208,7 +219,7 @@ class PubSubContext implements \Iterator
      */
     public function next()
     {
-        if ($this->isFlagSet(self::STATUS_VALID)) {
+        if ($this->valid()) {
             $this->position++;
         }
 
@@ -272,9 +283,8 @@ class PubSubContext implements \Iterator
                 );
 
             default:
-                throw new ClientException(
-                    "Received an unknown message type {$response[0]} inside of a pubsub context"
-                );
+                $message = "Received an unknown message type {$response[0]} inside of a pubsub context";
+                throw new ClientException($message);
         }
     }
 }

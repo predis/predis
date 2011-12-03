@@ -14,6 +14,7 @@ namespace Predis\Commands;
 /**
  * @link http://redis.io/commands/keys
  * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @deprecated
  */
 class KeyKeysV12x extends KeyKeys
 {

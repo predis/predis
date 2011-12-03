@@ -27,12 +27,16 @@ abstract class ScriptedCommand extends ServerEval
      */
     public abstract function getScript();
 
-    /*
+    /**
      * Gets the number of arguments that should be considered as keys.
+     *
+     * @todo Should we make a scripted command act by default as a variadic
+     *       command where the first argument is the key (KEYS[1]) and the
+     *       rest is the list of values (ARGV)?
      *
      * @return int
      */
-    protected function keysCount()
+    public function getKeysCount()
     {
         // The default behaviour for the base class is to use all the arguments
         // passed to a scripted command to populate the KEYS table in Lua.
@@ -40,18 +44,20 @@ abstract class ScriptedCommand extends ServerEval
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the elements from the arguments that are identified as keys.
+     *
+     * @return array
      */
-    protected function filterArguments(Array $arguments)
+    public function getKeys()
     {
-        return array_merge(array($this->getScript(), $this->keysCount()), $arguments);
+        return array_slice($this->getArguments(), 2, $this->getKeysCount());
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getKeys()
+    protected function filterArguments(Array $arguments)
     {
-        return array_slice($this->getArguments(), 2, $this->keysCount());
+        return array_merge(array($this->getScript(), $this->getKeysCount()), $arguments);
     }
 }

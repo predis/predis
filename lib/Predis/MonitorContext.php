@@ -49,15 +49,11 @@ class MonitorContext implements \Iterator
     private function checkCapabilities(Client $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
-            throw new ClientException(
-                'Cannot initialize a monitor context over a cluster of connections'
-            );
+            throw new NotSupportedException('Cannot initialize a monitor context over a cluster of connections');
         }
 
         if ($client->getProfile()->supportsCommand('monitor') === false) {
-            throw new ClientException(
-                'The current profile does not support the MONITOR command'
-            );
+            throw new NotSupportedException('The current profile does not support the MONITOR command');
         }
     }
 

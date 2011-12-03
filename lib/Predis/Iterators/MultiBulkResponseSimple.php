@@ -42,7 +42,7 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      */
     public function __destruct()
     {
-        $this->sync();
+        $this->sync(true);
     }
 
     /**

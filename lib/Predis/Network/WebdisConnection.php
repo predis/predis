@@ -11,12 +11,13 @@
 
 namespace Predis\Network;
 
+use Predis\Commands\ICommand;
 use Predis\IConnectionParameters;
 use Predis\ResponseError;
-use Predis\ClientException;
 use Predis\ServerException;
-use Predis\Commands\ICommand;
+use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
+use Predis\Network\ConnectionException;
 
 const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
 
@@ -74,7 +75,7 @@ class WebdisConnection implements IConnectionSingle
     private function throwNotSupportedException($function)
     {
         $class = __CLASS__;
-        throw new \RuntimeException("The method $class::$function() is not supported");
+        throw new NotSupportedException("The method $class::$function() is not supported");
     }
 
     /**
@@ -83,10 +84,10 @@ class WebdisConnection implements IConnectionSingle
     private function checkExtensions()
     {
         if (!function_exists('curl_init')) {
-            throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'curl'));
+            throw new NotSupportedException(sprintf(ERR_MSG_EXTENSION, 'curl'));
         }
         if (!function_exists('phpiredis_reader_create')) {
-            throw new ClientException(sprintf(ERR_MSG_EXTENSION, 'phpiredis'));
+            throw new NotSupportedException(sprintf(ERR_MSG_EXTENSION, 'phpiredis'));
         }
     }
 
@@ -138,7 +139,7 @@ class WebdisConnection implements IConnectionSingle
      *
      * @return \Closure
      */
-    private function getStatusHandler()
+    protected function getStatusHandler()
     {
         return function($payload) {
             return $payload === 'OK' ? true : $payload;
@@ -151,7 +152,7 @@ class WebdisConnection implements IConnectionSingle
      * @param Boolean $throwErrors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
-    private function getErrorHandler($throwErrors)
+    protected function getErrorHandler($throwErrors)
     {
         if ($throwErrors) {
             return function($errorMessage) {
@@ -218,7 +219,8 @@ class WebdisConnection implements IConnectionSingle
             case 'WATCH':
             case 'UNWATCH':
             case 'DISCARD':
-                throw new \InvalidArgumentException("Disabled command: {$command->getId()}");
+            case 'MONITOR':
+                throw new NotSupportedException("Disabled command: {$command->getId()}");
 
             default:
                 return $commandId;

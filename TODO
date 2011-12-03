@@ -2,13 +2,5 @@
 
 * Implement smart and transparent support for redis-cluster.
 
-* Switch to smaller test units and add more granular tests that try to cover
-  every single class.
-
 * Documentation! The README is obviously not enought to show how to use Predis
   as it does not cover all of its features.
-
-* Missing tests for commands:
-    PUBLISH, SUBSCRIBE, UNSUBSCRIBE, PSUBSCRIBE, PUNSUBSCRIBE, DEBUG, OBJECT,
-    CLIENT, CONFIG GET, CONFIG SET, CONFIG RESETSTAT, SLOWLOG, SCRIPT, PTTL,
-    PSETEX, PEXPIRE, PEXPIREAT, INCRBYFLOAT, HINCRBYFLOAT

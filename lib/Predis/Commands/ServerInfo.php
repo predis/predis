@@ -39,7 +39,7 @@ class ServerInfo extends Command
     public function parseResponse($data)
     {
         $info      = array();
-        $infoLines = explode("\r\n", $data, -1);
+        $infoLines = preg_split('/\r?\n/', $data);
 
         foreach ($infoLines as $row) {
             @list($k, $v) = explode(':', $row);

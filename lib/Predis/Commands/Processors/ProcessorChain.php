@@ -20,7 +20,7 @@ use Predis\Commands\ICommand;
  */
 class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
 {
-    private $processors;
+    private $processors = array();
 
     /**
      * @param array $processors List of instances of ICommandProcessor.
@@ -127,5 +127,6 @@ class ProcessorChain implements ICommandProcessorChain, \ArrayAccess
     public function offsetUnset($index)
     {
         unset($this->processors[$index]);
+        $this->processors = array_values($this->processors);
     }
 }

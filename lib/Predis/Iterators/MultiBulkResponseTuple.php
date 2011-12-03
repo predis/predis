@@ -17,7 +17,7 @@ namespace Predis\Iterators;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiBulkResponseTuple extends MultiBulkResponse
+class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
 {
     private $iterator;
 
@@ -36,9 +36,17 @@ class MultiBulkResponseTuple extends MultiBulkResponse
     /**
      * {@inheritdoc}
      */
+    public function getInnerIterator()
+    {
+        return $this->iterator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function __destruct()
     {
-        $this->iterator->sync();
+        $this->iterator->sync(true);
     }
 
     /**

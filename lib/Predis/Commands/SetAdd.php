@@ -34,12 +34,4 @@ class SetAdd extends PrefixableCommand
     {
         return Helpers::filterVariadicValues($arguments);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }

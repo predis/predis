@@ -11,6 +11,8 @@
 
 namespace Predis\Commands;
 
+use Predis\Helpers;
+
 /**
  * @link http://redis.io/commands/unsubscribe
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -23,6 +25,14 @@ class PubSubUnsubscribe extends Command implements IPrefixable
     public function getId()
     {
         return 'UNSUBSCRIBE';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return Helpers::filterArrayArguments($arguments);
     }
 
     /**

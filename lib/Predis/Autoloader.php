@@ -52,11 +52,6 @@ class Autoloader
         $relativeClassName = substr($className, strlen($this->prefix));
         $classNameParts = explode('\\', $relativeClassName);
 
-        $path = $this->baseDir .
-            DIRECTORY_SEPARATOR .
-            implode(DIRECTORY_SEPARATOR, $classNameParts) .
-            '.php';
-
-        require_once $path;
+        require_once $this->baseDir.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $classNameParts).'.php';
     }
 }

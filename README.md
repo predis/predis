@@ -148,27 +148,40 @@ $redis->newcmd();
 ```
 
 
-## Development ##
+## Test suite ##
 
-Predis is fully backed up by a test suite which tries to cover all the aspects of the
-client library and the interaction of every single command with a Redis server. If you
-want to work on Predis, it is highly recommended that you first run the test suite to
-be sure that everything is OK, and report strange behaviours or bugs.
+__ATTENTION__: Do not run the test suite shipped with Predis against instances of
+Redis running in production environments or containing data you are interested in!
 
-When modifying Predis please be sure that no warnings or notices are emitted by PHP
+Predis has a comprehensive test suite covering every aspect of the library. The suite
+performs integration tests against a running instance of Redis (>= 2.4.0 is required)
+to verify the correct behaviour of the implementation of each command and automatically
+skips commands that are not defined in the selected version of Redis. If you do not have
+Redis up and running, integration tests can be disabled. By default, the test suite is
+configured to execute integration tests using the server profile for Redis v2.4 (which
+is the current stable version of Redis). You can optionally run the suite against a
+Redis instance built from the `unstable` branch with the development profile by changing
+the `TEST_SERVER_VERSION` to `dev` in the `phpunit.xml` file. More details about testing
+Predis are available in `tests/README.md`.
+
+## Contributing ##
+
+If you want to work on Predis, it is highly recommended that you first run the test
+suite in order to check that everything is OK, and report strange behaviours or bugs.
+
+When modifying Predis please make sure that no warnings or notices are emitted by PHP
 by running the interpreter in your development environment with the `error_reporting`
 variable set to `E_ALL | E_STRICT`.
 
 The recommended way to contribute to Predis is to fork the project on GitHub, create
 new topic branches on your newly created repository to fix or add features and then
-open a new pull request with a description of the applied changes. Obviously, you can
-use any other Git hosting provider of your preference. Diff patches will be accepted
-too, even though they are not the preferred way to contribute to Predis.
+open a new pull request with a description of the applied changes. Obviously, you
+can use any other Git hosting provider of your preference.
 
 
 ## Dependencies ##
 
-- PHP >= 5.3.0
+- PHP >= 5.3.2
 - PHPUnit >= 3.5.0 (needed to run the test suite)
 
 ## Links ##

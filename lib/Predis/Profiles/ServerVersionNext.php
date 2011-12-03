@@ -33,24 +33,24 @@ class ServerVersionNext extends ServerVersion24
     {
         return array_merge(parent::getSupportedCommands(), array(
             /* commands operating on the key space */
-            'pttl'                      => '\Predis\Commands\KeyPreciseTimeToLive',
-            'pexpire'                   => '\Predis\Commands\KeyPreciseExpire',
-            'pexpireat'                 => '\Predis\Commands\KeyPreciseExpireAt',
+            'pttl'                      => 'Predis\Commands\KeyPreciseTimeToLive',
+            'pexpire'                   => 'Predis\Commands\KeyPreciseExpire',
+            'pexpireat'                 => 'Predis\Commands\KeyPreciseExpireAt',
 
             /* commands operating on string values */
-            'psetex'                    => '\Predis\Commands\StringPreciseSetExpire',
-            'incrbyfloat'               => '\Predis\Commands\StringIncrementByFloat',
+            'psetex'                    => 'Predis\Commands\StringPreciseSetExpire',
+            'incrbyfloat'               => 'Predis\Commands\StringIncrementByFloat',
 
             /* commands operating on hashes */
-            'hincrbyfloat'              => '\Predis\Commands\HashIncrementByFloat',
+            'hincrbyfloat'              => 'Predis\Commands\HashIncrementByFloat',
 
             /* scripting */
-            'eval'                      => '\Predis\Commands\ServerEval',
-            'evalsha'                   => '\Predis\Commands\ServerEvalSHA',
-            'script'                    => '\Predis\Commands\ServerScript',
+            'eval'                      => 'Predis\Commands\ServerEval',
+            'evalsha'                   => 'Predis\Commands\ServerEvalSHA',
+            'script'                    => 'Predis\Commands\ServerScript',
 
             /* remote server control commands */
-            'info'                      => '\Predis\Commands\ServerInfoV26x',
+            'info'                      => 'Predis\Commands\ServerInfoV26x',
         ));
     }
 }

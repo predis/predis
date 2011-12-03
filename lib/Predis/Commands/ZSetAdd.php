@@ -32,14 +32,16 @@ class ZSetAdd extends PrefixableCommand
      */
     protected function filterArguments(Array $arguments)
     {
-        return Helpers::filterVariadicValues($arguments);
-    }
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flattened = array($arguments[0]);
+            foreach($arguments[1] as $member => $score) {
+                $flattened[] = $score;
+                $flattened[] = $member;
+            }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
+            return $flattened;
+        }
+
+        return $arguments;
     }
 }

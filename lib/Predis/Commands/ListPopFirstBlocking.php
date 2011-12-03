@@ -28,6 +28,18 @@ class ListPopFirstBlocking extends Command implements IPrefixable
     /**
      * {@inheritdoc}
      */
+    protected function filterArguments(Array $arguments)
+    {
+        if (count($arguments) === 2 && is_array($arguments[0])) {
+            list($arguments, $timeout) = $arguments;
+            array_push($arguments, $timeout);
+        }
+        return $arguments;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function prefixKeys($prefix)
     {
         PrefixHelpers::skipLast($this, $prefix);

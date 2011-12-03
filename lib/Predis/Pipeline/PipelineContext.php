@@ -38,7 +38,7 @@ class PipelineContext
     public function __construct(Client $client, Array $options = null)
     {
         $this->client = $client;
-        $this->executor = $this->getExecutor($client, $options ?: array());
+        $this->executor = $this->createExecutor($client, $options ?: array());
     }
 
     /**
@@ -49,7 +49,7 @@ class PipelineContext
      * @param array Options for the context initialization.
      * @return IPipelineExecutor
      */
-    protected function getExecutor(Client $client, Array $options)
+    protected function createExecutor(Client $client, Array $options)
     {
         if (!$options) {
             return new StandardExecutor();
@@ -160,7 +160,7 @@ class PipelineContext
 
         try {
             if ($callable !== null) {
-                $callable($this);
+                call_user_func($callable, $this);
             }
             $this->flushPipeline();
         }
@@ -185,5 +185,15 @@ class PipelineContext
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Returns the underlying pipeline executor used by the pipeline object.
+     *
+     * @return IPipelineExecutor
+     */
+    public function getExecutor()
+    {
+        return $this->executor;
     }
 }

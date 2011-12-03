@@ -11,10 +11,11 @@
 
 namespace Predis\Network;
 
-use Predis\Helpers;
-use Predis\ClientException;
 use Predis\Commands\ICommand;
 use Predis\Distribution\IDistributionStrategy;
+use Predis\Helpers;
+use Predis\ClientException;
+use Predis\NotSupportedException;
 use Predis\Distribution\HashRing;
 
 /**
@@ -22,6 +23,7 @@ use Predis\Distribution\HashRing;
  * implementing client-side sharding based on pluggable distribution strategies.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @todo Add the ability to remove connections from pool.
  */
 class PredisCluster implements IConnectionCluster, \IteratorAggregate
 {
@@ -85,7 +87,8 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
             $this->pool[] = $connection;
         }
 
-        $this->distributor->add($connection, $parameters->weight);
+        $weight = isset($parameters->weight) ? $parameters->weight : null;
+        $this->distributor->add($connection, $weight);
     }
 
     /**
@@ -99,9 +102,8 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
             return $this->distributor->get($cmdHash);
         }
 
-        throw new ClientException(
-            sprintf("Cannot send '%s' commands to a cluster of connections", $command->getId())
-        );
+        $message = sprintf("Cannot send '%s' commands to a cluster of connections", $command->getId());
+        throw new NotSupportedException($message);
     }
 
     /**

@@ -20,7 +20,7 @@ use Predis\Commands\ScriptedCommand;
 
 class IncrementExistingKey extends ScriptedCommand
 {
-    protected function keysCount()
+    public function getKeysCount()
     {
         return 1;
     }

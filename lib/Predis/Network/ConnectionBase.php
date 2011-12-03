@@ -11,7 +11,6 @@
 
 namespace Predis\Network;
 
-use \InvalidArgumentException;
 use Predis\Helpers;
 use Predis\IReplyObject;
 use Predis\IConnectionParameters;
@@ -61,14 +60,14 @@ abstract class ConnectionBase implements IConnectionSingle
         switch ($parameters->scheme) {
             case 'unix':
                 if (!isset($parameters->path)) {
-                    throw new InvalidArgumentException('Missing UNIX domain socket path');
+                    throw new \InvalidArgumentException('Missing UNIX domain socket path');
                 }
 
             case 'tcp':
                 return $parameters;
 
             default:
-                throw new InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+                throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
     }
 
@@ -182,7 +181,7 @@ abstract class ConnectionBase implements IConnectionSingle
             $message .= " [$parameters]";
         }
 
-        throw new InvalidArgumentException($message);
+        throw new \InvalidArgumentException($message);
     }
 
     /**

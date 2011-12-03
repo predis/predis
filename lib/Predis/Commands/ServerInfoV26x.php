@@ -24,7 +24,11 @@ class ServerInfoV26x extends ServerInfo
     {
         $info = array();
         $current = null;
-        $infoLines = explode("\r\n", $data, -1);
+        $infoLines = preg_split('/\r?\n/', $data);
+
+        if (isset($infoLines[0]) && $infoLines[0][0] !== '#') {
+            return parent::parseResponse($data);
+        }
 
         foreach ($infoLines as $row) {
             if ($row === '') {

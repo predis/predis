@@ -1,0 +1,237 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+use Predis\Commands\ICommand;
+use Predis\Commands\IPrefixable;
+
+class CommandTestCaseGenerator
+{
+    private $options;
+
+    public function __construct(Array $options)
+    {
+        if (!isset($options['class'])) {
+            throw new RuntimeException("Missing 'class' option.");
+        }
+        $this->options = $options;
+    }
+
+    public static function fromCommandLine()
+    {
+        $parameters = array(
+            'c:'  => 'class:',
+            'r::' => 'realm::',
+            'o::' => 'output::',
+            'x::' => 'overwrite::'
+        );
+
+        $getops = getopt(implode(array_keys($parameters)), $parameters);
+
+        $options = array(
+            'overwrite' => false,
+            'tests' => __DIR__.'/../tests',
+        );
+
+        foreach ($getops as $option => $value) {
+            switch ($option) {
+                case 'c':
+                case 'class':
+                    $options['class'] = $value;
+                    break;
+
+                case 'r':
+                case 'realm':
+                    $options['realm'] = $value;
+                    break;
+
+                case 'o':
+                case 'output':
+                    $options['output'] = $value;
+                    break;
+
+                case 'x':
+                case 'overwrite':
+                    $options['overwrite'] = true;
+                    break;
+            }
+        }
+
+        if (!isset($options['class'])) {
+            throw new RuntimeException("Missing 'class' option.");
+        }
+
+        $options['fqn'] = "Predis\\Commands\\{$options['class']}";
+        $options['path'] = "Predis/Commands/{$options['class']}.php";
+
+        $source = __DIR__.'/../lib/'.$options['path'];
+        if (!file_exists($source)) {
+            throw new RuntimeException("Cannot find class file for {$options['fqn']} in $source.");
+        }
+
+        if (!isset($options['output'])) {
+            $options['output'] = sprintf("%s/%s", $options['tests'], str_replace('.php', 'Test.php', $options['path']));
+        }
+
+        return new self($options);
+    }
+
+    protected function getTestRealm()
+    {
+        if (isset($this->options['realm'])) {
+            if (!$this->options['realm']) {
+                throw new RuntimeException('Invalid value for realm has been sepcified (empty).');
+            }
+            return $this->options['realm'];
+        }
+
+        $class = array_pop(explode('\\', $this->options['fqn']));
+        list($realm,) = preg_split('/([[:upper:]][[:lower:]]+)/', $class, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        return strtolower($realm);
+    }
+
+    public function generate()
+    {
+        $reflection = new ReflectionClass($class = $this->options['fqn']);
+
+        if (!$reflection->isInstantiable()) {
+            throw new RuntimeException("Class $class must be instantiable, abstract classes or interfaces are not allowed.");
+        }
+        if (!$reflection->implementsInterface('Predis\Commands\ICommand')) {
+            throw new RuntimeException("Class $class must implement the Predis\Commands\ICommand interface.");
+        }
+
+        $instance = $reflection->newInstance();
+        $buffer = $this->getTestCaseBuffer($instance);
+
+        return $buffer;
+    }
+
+    public function save()
+    {
+        $options = $this->options;
+        if (file_exists($options['output']) && !$options['overwrite']) {
+            throw new RuntimeException("File {$options['output']} already exist. Specify the --overwrite option to overwrite the existing file.");
+        }
+        file_put_contents($options['output'], $this->generate());
+    }
+
+    protected function getTestCaseBuffer(ICommand $instance)
+    {
+        $id = $instance->getId();
+        $fqn = get_class($instance);
+        $class = array_pop(explode('\\', $fqn)) . "Test";
+        $realm = $this->getTestRealm();
+
+        $buffer =<<<PHP
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Commands;
+
+use \PHPUnit_Framework_TestCase as StandardTestCase;
+
+/**
+ * @group commands
+ * @group realm-$realm
+ */
+class $class extends CommandTestCase
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedCommand()
+    {
+        return '$fqn';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getExpectedId()
+    {
+        return '$id';
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFilterArguments()
+    {
+        \$this->markTestIncomplete('This test has not been implemented yet.');
+
+        \$arguments = array(/* add arguments */);
+        \$expected = array(/* add arguments */);
+
+        \$command = \$this->getCommand();
+        \$command->setArguments(\$arguments);
+
+        \$this->assertSame(\$expected, \$command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParseResponse()
+    {
+        \$this->markTestIncomplete('This test has not been implemented yet.');
+
+        \$raw = null;
+        \$expected = null;
+
+        \$command = \$this->getCommand();
+
+        \$this->assertSame(\$expected, \$command->parseResponse(\$raw));
+    }
+
+PHP;
+
+        if ($instance instanceof IPrefixable) {
+            $buffer .=<<<PHP
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys()
+    {
+        \$this->markTestIncomplete('This test has not been implemented yet.');
+
+        \$arguments = array(/* add arguments */);
+        \$expected = array(/* add arguments */);
+
+        \$command = \$this->getCommandWithArgumentsArray(\$arguments);
+        \$command->prefixKeys('prefix:');
+
+        \$this->assertSame(\$expected, \$command->getArguments());
+    }
+
+PHP;
+        }
+
+        return "$buffer}\n";
+    }
+}
+
+// ------------------------------------------------------------------------- //
+
+require __DIR__.'/../autoload.php';
+
+$generator = CommandTestCaseGenerator::fromCommandLine();
+$generator->save();

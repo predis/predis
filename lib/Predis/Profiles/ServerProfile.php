@@ -96,9 +96,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
         $profileReflection = new \ReflectionClass($profileClass);
 
         if (!$profileReflection->isSubclassOf('Predis\Profiles\IServerProfile')) {
-            throw new ClientException(
-                "Cannot register '$profileClass' as it is not a valid profile class"
-            );
+            throw new \InvalidArgumentException("Cannot register '$profileClass' as it is not a valid profile class");
         }
 
         self::$profiles[$alias] = $profileClass;
@@ -147,6 +145,20 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     }
 
     /**
+     * Returns the FQN of the class that represent the specified command ID
+     * registered in the current server profile.
+     *
+     * @param string $command Command ID.
+     * @return string
+     */
+    public function getCommandClass($command)
+    {
+        if (isset($this->commands[$command = strtolower($command)])) {
+            return $this->commands[$command];
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function createCommand($method, $arguments = array())
@@ -189,7 +201,7 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     {
         $commandReflection = new \ReflectionClass($command);
         if (!$commandReflection->isSubclassOf('Predis\Commands\ICommand')) {
-            throw new ClientException("Cannot register '$command' as it is not a valid Redis command");
+            throw new \InvalidArgumentException("Cannot register '$command' as it is not a valid Redis command");
         }
         $this->commands[strtolower($alias)] = $command;
     }
@@ -197,12 +209,8 @@ abstract class ServerProfile implements IServerProfile, IProcessingSupport
     /**
      * {@inheritdoc}
      */
-    public function setProcessor(ICommandProcessor $processor)
+    public function setProcessor(ICommandProcessor $processor = null)
     {
-        if (!isset($processor)) {
-            unset($this->processor);
-            return;
-        }
         $this->processor = $processor;
     }
 

@@ -16,6 +16,7 @@ use Predis\Helpers;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
+use Predis\NotSupportedException;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
 
@@ -112,17 +113,12 @@ class MultiExecContext
     private function checkCapabilities(Client $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
-            throw new ClientException(
-                'Cannot initialize a MULTI/EXEC context over a cluster of connections'
-            );
+            throw new NotSupportedException('Cannot initialize a MULTI/EXEC context over a cluster of connections');
         }
 
         $profile = $client->getProfile();
-
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
-            throw new ClientException(
-                'The current profile does not support MULTI, EXEC and DISCARD'
-            );
+            throw new NotSupportedException('The current profile does not support MULTI, EXEC and DISCARD');
         }
 
         $this->canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
@@ -134,9 +130,7 @@ class MultiExecContext
     private function isWatchSupported()
     {
         if ($this->canWatch === false) {
-            throw new ClientException(
-                'The current profile does not support WATCH and UNWATCH'
-            );
+            throw new NotSupportedException('The current profile does not support WATCH and UNWATCH');
         }
     }
 
@@ -256,7 +250,7 @@ class MultiExecContext
     {
         $this->isWatchSupported();
         $this->unflagState(self::STATE_WATCH);
-        $this->client->unwatch();
+        $this->__call('unwatch', array());
 
         return $this;
     }
@@ -297,31 +291,23 @@ class MultiExecContext
     private function checkBeforeExecution($callable)
     {
         if ($this->checkState(self::STATE_INSIDEBLOCK)) {
-            throw new ClientException(
-                "Cannot invoke 'execute' or 'exec' inside an active client transaction block"
-            );
+            throw new ClientException("Cannot invoke 'execute' or 'exec' inside an active client transaction block");
         }
 
         if ($callable) {
             if (!is_callable($callable)) {
-                throw new \InvalidArgumentException(
-                    'Argument passed must be a callable object'
-                );
+                throw new \InvalidArgumentException('Argument passed must be a callable object');
             }
 
             if (count($this->commands) > 0) {
                 $this->discard();
-                throw new ClientException(
-                    'Cannot execute a transaction block after using fluent interface'
-                );
+                throw new ClientException('Cannot execute a transaction block after using fluent interface');
             }
         }
 
         if (isset($this->options['retry']) && !isset($callable)) {
             $this->discard();
-            throw new \InvalidArgumentException(
-                'Automatic retries can be used only when a transaction block is provided'
-            );
+            throw new \InvalidArgumentException('Automatic retries can be used only when a transaction block is provided');
         }
     }
 
