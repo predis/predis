@@ -161,7 +161,7 @@ Redis up and running, integration tests can be disabled. By default, the test su
 configured to execute integration tests using the server profile for Redis v2.4 (which
 is the current stable version of Redis). You can optionally run the suite against a
 Redis instance built from the `unstable` branch with the development profile by changing
-the `TEST_SERVER_VERSION` to `dev` in the `phpunit.xml` file. More details about testing
+the `REDIS_SERVER_VERSION` to `dev` in the `phpunit.xml` file. More details about testing
 Predis are available in `tests/README.md`.
 
 ## Contributing ##
