@@ -25,7 +25,7 @@ use Predis\Distribution\HashRing;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @todo Add the ability to remove connections from pool.
  */
-class PredisCluster implements IConnectionCluster, \IteratorAggregate
+class PredisCluster implements IConnectionCluster, \IteratorAggregate, \Countable
 {
     private $pool;
     private $distributor;
@@ -94,6 +94,36 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
+    public function remove(IConnectionSingle $connection)
+    {
+        if (($id = array_search($connection, $this->pool, true)) !== false) {
+            unset($this->pool[$id]);
+            $this->distributor->remove($connection);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Removes a connection instance using its alias or index.
+     *
+     * @param string $connectionId Alias or index of a connection.
+     * @return Boolean Returns true if the connection was in the pool.
+     */
+    public function removeById($connectionId)
+    {
+        if ($connection = $this->getConnectionById($connectionId)) {
+            return $this->remove($connection);
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getConnection(ICommand $command)
     {
         $cmdHash = $command->getHash($this->distributor);
@@ -129,6 +159,14 @@ class PredisCluster implements IConnectionCluster, \IteratorAggregate
         $keyHash = $this->distributor->generateKey($hashablePart);
 
         return $this->distributor->get($keyHash);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count($this->pool);
     }
 
     /**

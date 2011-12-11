@@ -33,6 +33,7 @@ class PredisClusterTest extends StandardTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
+        $this->assertSame(2, count($cluster));
         $this->assertSame($connection1, $cluster->getConnectionById(0));
         $this->assertSame($connection2, $cluster->getConnectionById(1));
     }
@@ -49,8 +50,48 @@ class PredisClusterTest extends StandardTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
+        $this->assertSame(2, count($cluster));
         $this->assertSame($connection1, $cluster->getConnectionById('node1'));
         $this->assertSame($connection2, $cluster->getConnectionById('node2'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRemovingConnectionsFromCluster()
+    {
+        $connection1 = $this->getMockConnection();
+        $connection2 = $this->getMockConnection();
+        $connection3 = $this->getMockConnection();
+
+        $cluster = new PredisCluster();
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $this->assertTrue($cluster->remove($connection1));
+        $this->assertFalse($cluster->remove($connection3));
+        $this->assertSame(1, count($cluster));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRemovingConnectionsFromClusterByAlias()
+    {
+        $connection1 = $this->getMockConnection();
+        $connection2 = $this->getMockConnection('tcp://host1:7001?alias=node2');
+        $connection3 = $this->getMockConnection('tcp://host1:7002?alias=node3');
+        $connection4 = $this->getMockConnection('tcp://host1:7003?alias=node4');
+
+        $cluster = new PredisCluster();
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $this->assertTrue($cluster->removeById(0));
+        $this->assertTrue($cluster->removeById('node2'));
+        $this->assertFalse($cluster->removeById('node4'));
+        $this->assertSame(1, count($cluster));
     }
 
     /**

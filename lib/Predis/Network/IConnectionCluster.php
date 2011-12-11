@@ -29,6 +29,14 @@ interface IConnectionCluster extends IConnection
     public function add(IConnectionSingle $connection);
 
     /**
+     * Removes the specified connection instance from the cluster.
+     *
+     * @param IConnectionSingle $connection Instance of a connection.
+     * @return Boolean Returns true if the connection was in the pool.
+     */
+    public function remove(IConnectionSingle $connection);
+
+    /**
      * Gets the actual connection instance in charge of the specified command.
      *
      * @param ICommand $command Instance of a Redis command.
