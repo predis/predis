@@ -390,7 +390,7 @@ class MultiExecContext
         $this->flagState(self::STATE_INSIDEBLOCK);
 
         try {
-            $callable($this);
+            call_user_func($callable, $this);
         }
         catch (CommunicationException $exception) {
             $blockException = $exception;
