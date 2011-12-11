@@ -21,7 +21,7 @@ project,
 - Flexible system to define and register your own set of commands or server profiles to client instances.
 
 
-## How to get Predis ##
+## How to use Predis ##
 
 Predis is available on [Packagist](http://packagist.org/packages/predis/predis) for an easy installation
 using [Composer](http://packagist.org/about-composer). Composer helps you manage dependencies for your
