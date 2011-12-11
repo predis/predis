@@ -12,7 +12,7 @@ v0.7.0 (2011-12-xx)
 
 - Support for long aliases (method names) for Redis commands has been dropped.
 
-- Redis 1.0 is no more supported since the library now uses only the unified
+- Redis 1.0 is no more supported. From now on Predis will use only the unified
   protocol to serialize commands.
 
 - It is possible to prefix keys transparently on a client-level basis with the
@@ -20,7 +20,7 @@ v0.7.0 (2011-12-xx)
 
 - An external connection factory is used to initialize new connection instances
   and developers can now register their own connection classes using the new
-  `connections` client options.
+  `connections` client option.
 
 - It is possible to connect locally to Redis using UNIX domain sockets. Just
   use `unix:///path/to/redis.sock` or a named array just like in the following
@@ -44,7 +44,7 @@ v0.7.0 (2011-12-xx)
   the only breaking changes that should be mentioned here are:
 
   - `throw_on_error` has been renamed to `throw_errors` and it is a connection
-    parameter instead of a client option alongside `iterable_multibulk`.
+    parameter instead of a client option, along with `iterable_multibulk`.
 
   - `key_distribution` has been removed from the client options. To customize
     the distribution strategy you must provide a callable object to the new
@@ -74,6 +74,7 @@ v0.7.0 (2011-12-xx)
 
 v0.6.6 (2011-04-01)
 ===============================================================================
+
 - Switched to Redis 2.2 as the default server profile (there are no changes
   that would break compatibility with previous releases). Long command names
   are no more supported by default but if you need them you can still require
@@ -112,6 +113,7 @@ v0.6.6 (2011-04-01)
 
 v0.6.5 (2011-02-12)
 ===============================================================================
+
 - __FIX__: due to an untested internal change introduced in v0.6.4, a wrong
   handling of bulk reads of zero-length values was producing protocol
   desynchronization errors (ISSUE #20).
@@ -119,6 +121,7 @@ v0.6.5 (2011-02-12)
 
 v0.6.4 (2011-02-12)
 ===============================================================================
+
 - Various performance improvements (15% ~ 25%) especially when dealing with
   long multibulk replies or when using clustered connections.
 
@@ -132,6 +135,7 @@ v0.6.4 (2011-02-12)
 
 v0.6.3 (2011-01-01)
 ===============================================================================
+
 - New commands available in the Redis v2.2 profile (dev):
   - Strings: `SETRANGE`, `GETRANGE`, `SETBIT`, `GETBIT`
   - Lists  : `BRPOPLPUSH`
@@ -145,6 +149,7 @@ v0.6.3 (2011-01-01)
 
 v0.6.2 (2010-11-28)
 ===============================================================================
+
 - Minor internal improvements and clean ups.
 
 - New commands available in the Redis v2.2 profile (dev):
@@ -169,6 +174,7 @@ v0.6.2 (2010-11-28)
 
 v0.6.1 (2010-07-11)
 ===============================================================================
+
 - Minor internal improvements and clean ups.
 
 - New commands available in the Redis v2.2 profile (dev):
@@ -210,6 +216,7 @@ v0.6.1 (2010-07-11)
 
 v0.6.0 (2010-05-24)
 ===============================================================================
+
 - Switched to the new multi-bulk request protocol for all of the commands
   in the Redis 1.2 and Redis 2.0 profiles. Inline and bulk requests are now
   deprecated as they will be removed in future releases of Redis.
@@ -324,6 +331,7 @@ v0.6.0 (2010-05-24)
 
 v0.5.1 (2010-01-23)
 ===============================================================================
+
 * `RPOPLPUSH` has been changed from bulk command to inline command in Redis
   1.2.1, so `ListPopLastPushHead` now extends `InlineCommand`. The old behavior
   is still available via the `ListPopLastPushHeadBulk` class so that you can
