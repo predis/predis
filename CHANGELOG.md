@@ -5,7 +5,7 @@ v0.7.0 (2011-12-xx)
   single file holding all the classes of the library, but multiple files (one
   for each class). You can use any PSR-0 compatible autoloader to load Predis
   or just leverage the default one shipped with the library by requiring the
-  `Predis/Autoloadr.php` and call `Predis\Autoloader::register()`.
+  `Predis/Autoloader.php` and call `Predis\Autoloader::register()`.
 
 - The default server profile for Redis is now 2.4. The `dev` profile supports
   all the features of Redis 2.6 (currently unstable) such as Lua scripting.

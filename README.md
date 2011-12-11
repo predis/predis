@@ -14,10 +14,11 @@ project,
   server profiles.
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Command pipelining on single and aggregated connections.
+- Transparent key prefixing strategy capable of handling any command known that has keys in its arguments.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
+- Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
 - Ability to use alternative connection classes to use different types of network or protocol backends.
-- Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
 
 
@@ -120,7 +121,7 @@ class MyConnectionClass implements Predis\Network\IConnectionSingle
     // implementation goes here
 }
 
-// Let Predis automatically use your own class to handle connections identified by the tcp prefix.
+// Let Predis automatically use your own class to handle connections identified by the tcp scheme.
 $client = new Predis\Client('tcp://127.0.0.1', array(
     'connections' => array('tcp' => 'MyConnectionClass')
 ));
@@ -167,6 +168,9 @@ suite is configured to execute integration tests using the server profile for Re
 current stable version of Redis). You can optionally run the suite against a Redis instance built from
 the `unstable` branch with the development profile by changing the `REDIS_SERVER_VERSION` to `dev` in
 the `phpunit.xml` file. More details about testing Predis are available in `tests/README.md`.
+
+Predis uses Travis CI for continuous integration. You can find the results of the test suite and the build
+history [on its project page](http://travis-ci.org/nrk/predis).
 
 
 ## Contributing ##
