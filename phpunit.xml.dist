@@ -11,7 +11,7 @@
         <exclude>
             <group>ext-phpiredis</group>
             <group>ext-curl</group>
-            <group>realm-network-webdis</group>
+            <group>realm-webdis</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->

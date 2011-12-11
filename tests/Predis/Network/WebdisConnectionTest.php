@@ -17,10 +17,10 @@ use Predis\ConnectionParameters;
 use Predis\Profiles\ServerProfile;
 
 /**
- * @group realm-network
  * @group ext-curl
  * @group ext-phpiredis
- * @group realm-network-webdis
+ * @group realm-connection
+ * @group realm-webdis
  */
 class WebdisConnectionTest extends StandardTestCase
 {

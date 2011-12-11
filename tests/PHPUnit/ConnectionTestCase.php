@@ -17,7 +17,7 @@ use Predis\ConnectionParameters;
 use Predis\Profiles\ServerProfile;
 
 /**
- * @group realm-network
+ * @group realm-connection
  */
 abstract class ConnectionTestCase extends StandardTestCase
 {
