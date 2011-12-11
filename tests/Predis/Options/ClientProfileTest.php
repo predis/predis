@@ -29,7 +29,7 @@ class ClientProfileTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientProfile();
 
-        $profile = $option->validate($options, '2.0');
+        $profile = $option->filter($options, '2.0');
 
         $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
         $this->assertEquals('2.0', $profile->getVersion());
@@ -45,7 +45,7 @@ class ClientProfileTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientProfile();
 
-        $profile = $option->validate($options, $value);
+        $profile = $option->filter($options, $value);
 
         $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
         $this->assertEquals('2.0', $profile->getVersion());
@@ -62,7 +62,7 @@ class ClientProfileTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientProfile();
 
-        $option->validate($options, new \stdClass());
+        $option->filter($options, new \stdClass());
     }
 
     /**
@@ -105,7 +105,7 @@ class ClientProfileTest extends StandardTestCase
      * @group disconnected
      * @todo Can't we when trap __isset when mocking an interface? Doesn't seem to work here.
      */
-    public function testValidateSetsPrefixProcessorFromClientOptions()
+    public function testFilterSetsPrefixProcessorFromClientOptions()
     {
         $options = $this->getMock('Predis\Options\ClientOptions', array('__isset', '__get'));
         $options->expects($this->once())
@@ -119,7 +119,7 @@ class ClientProfileTest extends StandardTestCase
 
         $option = new ClientProfile();
 
-        $profile = $option->validate($options, '2.0');
+        $profile = $option->filter($options, '2.0');
 
         $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
         $this->assertEquals('2.0', $profile->getVersion());
@@ -164,7 +164,7 @@ class ClientProfileTest extends StandardTestCase
 
         $option = new ClientProfile();
 
-        $profile = $option->validate($options, ServerProfile::getDefault());
+        $profile = $option->filter($options, ServerProfile::getDefault());
 
         $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
         $this->assertNull($profile->getProcessor());

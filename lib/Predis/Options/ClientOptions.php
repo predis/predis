@@ -12,7 +12,7 @@
 namespace Predis\Options;
 
 /**
- * Class that manages validation and conversion of client options.
+ * Class that manages client options with filtering and conversion.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -60,7 +60,7 @@ class ClientOptions implements IClientOptions
             if (isset($handlers[$option])) {
                 $handler = $handlers[$option];
                 $handlers[$option] = function($options) use($handler, $value) {
-                    return $handler->validate($options, $value);
+                    return $handler->filter($options, $value);
                 };
             }
             else {

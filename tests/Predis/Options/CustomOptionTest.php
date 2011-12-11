@@ -22,9 +22,9 @@ class CustomOptionTest extends StandardTestCase
      * @group disconnected
      * @expectedException InvalidArgumentException
      */
-    public function testConstructorAcceptsOnlyCallablesForValidate()
+    public function testConstructorAcceptsOnlyCallablesForFilter()
     {
-        $option = new CustomOption(array('validate' => new \stdClass()));
+        $option = new CustomOption(array('filter' => new \stdClass()));
     }
 
     /**
@@ -49,12 +49,12 @@ class CustomOptionTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testValidateWithoutCallbackReturnsValue()
+    public function testFilterWithoutCallbackReturnsValue()
     {
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new CustomOption();
 
-        $this->assertEquals('test', $option->validate($options, 'test'));
+        $this->assertEquals('test', $option->filter($options, 'test'));
     }
 
     /**
@@ -71,22 +71,22 @@ class CustomOptionTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testInvokeCallsValidateCallback()
+    public function testInvokeCallsFilterCallback()
     {
         $value = 'test';
 
         $options = $this->getMock('Predis\Options\IClientOptions');
 
-        $validate = $this->getMock('stdClass', array('__invoke'));
-        $validate->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Options\IClientOptions'), $value)
-                 ->will($this->returnValue(true));
+        $filter = $this->getMock('stdClass', array('__invoke'));
+        $filter->expects($this->once())
+               ->method('__invoke')
+               ->with($this->isInstanceOf('Predis\Options\IClientOptions'), $value)
+               ->will($this->returnValue(true));
 
         $default = $this->getMock('stdClass', array('__invoke'));
         $default->expects($this->never())->method('__invoke');
 
-        $option = new CustomOption(array('validate' => $validate, 'default' => $default));
+        $option = new CustomOption(array('filter' => $filter, 'default' => $default));
 
         $this->assertTrue($option($options, $value));
     }
@@ -98,8 +98,8 @@ class CustomOptionTest extends StandardTestCase
     {
         $options = $this->getMock('Predis\Options\IClientOptions');
 
-        $validate = $this->getMock('stdClass', array('__invoke'));
-        $validate->expects($this->never())->method('__invoke');
+        $filter = $this->getMock('stdClass', array('__invoke'));
+        $filter->expects($this->never())->method('__invoke');
 
         $default = $this->getMock('stdClass', array('__invoke'));
         $default->expects($this->once())
@@ -107,7 +107,7 @@ class CustomOptionTest extends StandardTestCase
                 ->with($this->isInstanceOf('Predis\Options\IClientOptions'))
                 ->will($this->returnValue(true));
 
-        $option = new CustomOption(array('validate' => $validate, 'default' => $default));
+        $option = new CustomOption(array('filter' => $filter, 'default' => $default));
 
         $this->assertTrue($option($options, null));
     }

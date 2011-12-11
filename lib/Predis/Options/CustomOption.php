@@ -18,7 +18,7 @@ namespace Predis\Options;
  */
 class CustomOption implements IOption
 {
-    private $validate;
+    private $filter;
     private $default;
 
     /**
@@ -26,8 +26,8 @@ class CustomOption implements IOption
      */
     public function __construct(Array $options = array())
     {
-        $this->validate = $this->filterCallable($options, 'validate');
-        $this->default  = $this->filterCallable($options, 'default');
+        $this->filter = $this->ensureCallable($options, 'filter');
+        $this->default  = $this->ensureCallable($options, 'default');
     }
 
     /**
@@ -36,7 +36,7 @@ class CustomOption implements IOption
      * @param array $options Array of options
      * @param string $key Target option.
      */
-    private function filterCallable($options, $key)
+    private function ensureCallable($options, $key)
     {
         if (!isset($options[$key])) {
             return;
@@ -53,13 +53,13 @@ class CustomOption implements IOption
     /**
      * {@inheritdoc}
      */
-    public function validate(IClientOptions $options, $value)
+    public function filter(IClientOptions $options, $value)
     {
         if (isset($value)) {
-            if ($this->validate === null) {
+            if ($this->filter === null) {
                 return $value;
             }
-            $validator = $this->validate;
+            $validator = $this->filter;
 
             return $validator($options, $value);
         }
@@ -84,7 +84,7 @@ class CustomOption implements IOption
     public function __invoke(IClientOptions $options, $value)
     {
         if (isset($value)) {
-            return $this->validate($options, $value);
+            return $this->filter($options, $value);
         }
 
         return $this->getDefault($options);

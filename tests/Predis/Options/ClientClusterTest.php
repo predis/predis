@@ -28,7 +28,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $cluster = $option->validate($options, $clusterClass);
+        $cluster = $option->filter($options, $clusterClass);
 
         $this->assertInstanceOf('Predis\Network\IConnectionCluster', $cluster);
     }
@@ -41,7 +41,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $cluster = $option->validate($options, 'predis');
+        $cluster = $option->filter($options, 'predis');
 
         $this->assertInstanceOf('Predis\Network\IConnectionCluster', $cluster);
     }
@@ -62,7 +62,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $cluster = $option->validate($options, $initializer);
+        $cluster = $option->filter($options, $initializer);
 
         $this->assertInstanceOf('Predis\Network\IConnectionCluster', $cluster);
         $this->assertSame($value, $cluster);
@@ -79,7 +79,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $option->validate($options, $connectionClass);
+        $option->filter($options, $connectionClass);
     }
 
     /**
@@ -92,7 +92,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $option->validate($options, 'unknown');
+        $option->filter($options, 'unknown');
     }
 
     /**
@@ -107,7 +107,7 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $option->validate($options, $value);
+        $option->filter($options, $value);
     }
 
     /**
@@ -120,6 +120,6 @@ class ClientClusterTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientCluster();
 
-        $option->validate($options, new \stdClass());
+        $option->filter($options, new \stdClass());
     }
 }

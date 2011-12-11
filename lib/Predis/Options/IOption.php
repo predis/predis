@@ -19,12 +19,12 @@ namespace Predis\Options;
 interface IOption
 {
     /**
-     * Validates (and optionally converts) the passed value.
+     * Filters (and optionally converts) the passed value.
      *
      * @param mixed $value Input value.
      * @return mixed
      */
-    public function validate(IClientOptions $options, $value);
+    public function filter(IClientOptions $options, $value);
 
     /**
      * Returns a default value for the option.
@@ -35,7 +35,7 @@ interface IOption
     public function getDefault(IClientOptions $options);
 
     /**
-     * Validates a value and, if no value is specified, returns
+     * Filters a value and, if no value is specified, returns
      * the default one defined by the option.
      *
      * @param mixed $value Input value.

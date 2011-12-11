@@ -24,7 +24,7 @@ class ClientProfile extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate(IClientOptions $options, $value)
+    public function filter(IClientOptions $options, $value)
     {
         if (is_string($value)) {
             $value = ServerProfile::get($value);

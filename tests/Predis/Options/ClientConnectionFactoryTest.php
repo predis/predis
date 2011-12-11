@@ -41,7 +41,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
                ->with($options)
                ->will($this->returnValue($default));
 
-        $factory = $option->validate($options, $value);
+        $factory = $option->filter($options, $value);
 
         $this->assertInstanceOf('Predis\IConnectionFactory', $factory);
         $this->assertSame($default, $factory);
@@ -58,7 +58,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
         $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('getDefault'));
         $option->expects($this->never())->method('getDefault');
 
-        $this->assertSame($value, $option->validate($options, $value));
+        $this->assertSame($value, $option->filter($options, $value));
     }
 
     /**
@@ -72,7 +72,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
         $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('getDefault'));
         $option->expects($this->never())->method('getDefault');
 
-        $this->assertInstanceOf($factory, $option->validate($options, $factory));
+        $this->assertInstanceOf($factory, $option->filter($options, $factory));
     }
 
     /**
@@ -85,7 +85,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientConnectionFactory();
 
-        $option->validate($options, new \stdClass());
+        $option->filter($options, new \stdClass());
     }
 
     /**
@@ -96,17 +96,17 @@ class ClientConnectionFactoryTest extends StandardTestCase
         $value = $this->getMock('Predis\IConnectionFactory');
         $options = $this->getMock('Predis\Options\IClientOptions');
 
-        $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('validate', 'getDefault'));
+        $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('filter', 'getDefault'));
         $option->expects($this->once())
-               ->method('validate')
+               ->method('filter')
                ->with($options, $value)
                ->will($this->returnValue($value));
         $option->expects($this->never())->method('getDefault');
 
         $this->assertInstanceOf('Predis\IConnectionFactory', $option($options, $value));
 
-        $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('validate', 'getDefault'));
-        $option->expects($this->never())->method('validate');
+        $option = $this->getMock('Predis\Options\ClientConnectionFactory', array('filter', 'getDefault'));
+        $option->expects($this->never())->method('filter');
         $option->expects($this->once())
                ->method('getDefault')
                ->with($options)

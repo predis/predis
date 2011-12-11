@@ -21,7 +21,7 @@ class Option implements IOption
     /**
      * {@inheritdoc}
      */
-    public function validate(IClientOptions $options, $value)
+    public function filter(IClientOptions $options, $value)
     {
         return $value;
     }
@@ -40,7 +40,7 @@ class Option implements IOption
     public function __invoke(IClientOptions $options, $value)
     {
         if (isset($value)) {
-            return $this->validate($options, $value);
+            return $this->filter($options, $value);
         }
 
         return $this->getDefault($options);

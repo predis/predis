@@ -27,7 +27,7 @@ class ClientPrefixTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new ClientPrefix();
 
-        $return = $option->validate($options, $value);
+        $return = $option->filter($options, $value);
 
         $this->assertInstanceOf('Predis\Commands\Processors\ICommandProcessor', $return);
         $this->assertInstanceOf('Predis\Commands\Processors\KeyPrefixProcessor', $return);

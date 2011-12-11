@@ -24,7 +24,7 @@ class ClientConnectionFactory extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate(IClientOptions $options, $value)
+    public function filter(IClientOptions $options, $value)
     {
         if ($value instanceof IConnectionFactory) {
             return $value;

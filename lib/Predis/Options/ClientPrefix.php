@@ -23,7 +23,7 @@ class ClientPrefix extends Option
     /**
      * {@inheritdoc}
      */
-    public function validate(IClientOptions $options, $value)
+    public function filter(IClientOptions $options, $value)
     {
         return new KeyPrefixProcessor($value);
     }

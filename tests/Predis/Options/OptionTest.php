@@ -27,7 +27,7 @@ class OptionTest extends StandardTestCase
         $options = $this->getMock('Predis\Options\IClientOptions');
         $option = new Option();
 
-        $this->assertSame($value, $option->validate($options, $value));
+        $this->assertSame($value, $option->filter($options, $value));
     }
 
     /**
@@ -49,9 +49,9 @@ class OptionTest extends StandardTestCase
         $value = new \stdClass();
         $options = $this->getMock('Predis\Options\IClientOptions');
 
-        $option = $this->getMock('Predis\Options\Option', array('validate', 'getDefault'));
+        $option = $this->getMock('Predis\Options\Option', array('filter', 'getDefault'));
         $option->expects($this->once())
-               ->method('validate')
+               ->method('filter')
                ->with($options, $value)
                ->will($this->returnValue($value));
         $option->expects($this->never())->method('getDefault');
@@ -67,8 +67,8 @@ class OptionTest extends StandardTestCase
         $expected = new \stdClass();
         $options = $this->getMock('Predis\Options\IClientOptions');
 
-        $option = $this->getMock('Predis\Options\Option', array('validate', 'getDefault'));
-        $option->expects($this->never())->method('validate');
+        $option = $this->getMock('Predis\Options\Option', array('filter', 'getDefault'));
+        $option->expects($this->never())->method('filter');
         $option->expects($this->once())
                ->method('getDefault')
                ->with($options)
