@@ -1,9 +1,9 @@
 # About testing Predis #
 
-__ATTENTION__: Do not run this test suite against instances of Redis running in
-production environments or containing data you are interested in! If you still
+__ATTENTION__: Do not ever run this test suite against instances of Redis running
+in production environments or containing data you are interested in! If you still
 want to test this software on a production server without hitting the database,
-please read on to undestand how to disable integration tests.
+please read ahead to undestand how to disable integration tests.
 
 Predis ships with a comprehensive test suite that uses __PHPUnit__ to cover every
 aspect of the library. The suite is organized into several unit groups with the
@@ -43,7 +43,7 @@ $ phpunit --group disconnected --exclude-group commands,slow
 
 The suite performs integration tests against a running instance of Redis (>= 2.4.0
 is required) to verify the correct behaviour of the implementation of each command
-and certain abstractions implemented in Predis that depend on them. These tests are
+and certain abstractions implemented in Predis depending on them. These tests are
 identified by the __connected__ group.
 
 Integration tests for commands that are not defined in the specified server profile
@@ -57,7 +57,7 @@ branch with the development profile by changing the `REDIS_SERVER_VERSION` to `d
 in the `phpunit.xml` file.
 
 If you do not have a Redis instance up and running or available for testing, you
-can disable integration tests completely by excluding the __connected__ group:
+can completely disable integration tests by excluding the __connected__ group:
 
 ```bash
 $ phpunit --exclude-group connected
@@ -66,7 +66,7 @@ $ phpunit --exclude-group connected
 ### Slow tests ###
 
 Certain tests can slow down the execution of the test suite. These tests can be disabled
-by excluding the by the __slow__ group:
+by excluding the __slow__ group:
 
 ```bash
 $ phpunit --exclude-group slow

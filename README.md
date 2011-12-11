@@ -3,56 +3,63 @@
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
 For a list of frequently asked questions about Predis, see the __FAQ__ file in the root of the repository.
-For a version compatible with PHP 5.2 you must use the backported version from the latest release in the 0.6.x series.
+For a version compatible with PHP 5.2 you must use the backported version from the latest release in the
+0.6.x series. More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the
+project,
 
 
 ## Main features ##
 
-- Complete support for Redis from __1.2__ to __2.4__ and the current development versions using different server profiles.
+- Complete support for Redis from __1.2__ to __2.4__ and the current development versions using different
+  server profiles.
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
-- Ability to connect to Redis using TCP/IP or UNIX domain sockets with optional support for persistent connections.
+- Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
+- Ability to use alternative connection classes to use different types of network or protocol backends.
 - Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
-- Flexible system to define and register your own set of commands to a client instance.
+- Flexible system to define and register your own set of commands or server profiles to client instances.
 
 
-## Quick examples ##
+## How to get Predis ##
 
-See the [official wiki](http://wiki.github.com/nrk/predis) of the project for a more
-complete coverage of all the features available in Predis.
+Predis is available on [Packagist](http://packagist.org/packages/predis/predis) for an easy installation
+using [Composer](http://packagist.org/about-composer). Composer helps you manage dependencies for your
+projects and libraries without much hassle which makes it the preferred way to get up and running with
+new applications. Alternatively, the library is available on [PearHub](http://pearhub.org/projects/predis)'s
+channel for a more traditional installation via PEAR. Zip and tar.gz archives are also downloadable from
+GitHub by browsing the list of [tagged releases](http://github.com/nrk/predis/tags).
 
 
-### Loading Predis
+### Loading the library ###
 
-Predis relies on the autoloading features of PHP and complies with the
-[PSR-0 standard](http://groups.google.com/group/php-standards/web/psr-0-final-proposal)
-for interoperability with most of the major frameworks and libraries.
-
-When used in a project or script without PSR-0 autoloading, Predis includes its own autoloader for you to use:
+To automatically load all of its files, Predis relies on the autoloading features of PHP and complies
+with the [PSR-0 standard](http://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for
+interoperability with most of the major frameworks and libraries. Everything is transparently handled
+for you when installing the library using Composer, but you can also leverage its own autoloader class
+if you are going to use it in a project or script without any PSR-0 compliant autoloading facility:
 
 ``` php
 <?php
 require PREDIS_BASE_PATH . '/Autoloader.php';
 
 Predis\Autoloader::register();
-// Now you can use Predis without requiring any additional file.
 ```
 
-You can also create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository
-just by launching the `create-phar.php` script located in the `bin` directory. The generated Phar ships with
-a stub that defines an autoloader function for Predis, so you just need to require the Phar archive in order
-to be able to use the library.
+You can create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository
+just by launching the `bin/create-phar.php` executable script. The generated Phar archive ships with a
+stub defining an autoloader function for Predis, so you just need to require the Phar to be able to use
+the library.
 
-Alternatively you can generate a single PHP file that holds every class, just like older versions of Predis,
-using the `create-single-file.php` script located in the `bin` directory. In this way you can load Predis in
-your scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
+Alternatively you can generate a single PHP file that holds every class, just like older versions of
+Predis, using the `bin/create-single-file.php` executable sript. In this way you can load Predis in your
+scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
 
 
 ### Connecting to a local instance of Redis ###
 
-You don't have to specify a tcp host and port when connecting to Redis instances running on the
-localhost on the default port:
+When connecting to local instance of Redis (`127.0.0.1` on port `6379`), you do not have to specify any
+additional parameter to create a new client instance:
 
 ``` php
 <?php
@@ -61,7 +68,7 @@ $redis->set('foo', 'bar');
 $value = $redis->get('foo');
 ```
 
-You can also use an URI string or an array-based dictionary to specify the connection parameters:
+However you can use an URI string or a named array to specify the needed connection parameters:
 
 ``` php
 <?php
@@ -79,10 +86,10 @@ $redis = new Predis\Client(array(
 
 ### Pipelining multiple commands to multiple instances of Redis with client-side sharding ###
 
-Pipelining helps with performances when there is the need to issue many commands to a server
-in one go. Furthermore, pipelining works transparently even on aggregated connections. Predis,
-in fact, supports client-side sharding of data using consistent-hashing on keys and clustered
-connections are supported natively by the client class.
+Pipelining helps with performances when there is the need to send many commands to a server in one go.
+Furthermore, pipelining works transparently even on aggregated connections. To achieve this, Predis
+supports client-side sharding using consistent-hashing on keys while clustered connections are supported
+natively by the client class.
 
 ``` php
 <?php
@@ -102,9 +109,9 @@ $replies = $redis->pipeline(function($pipe) {
 
 ### Overriding standard connection classes with custom ones ###
 
-Predis allows developers to create new connection classes to add support for new protocols
-or override the existing ones to provide a different implementation compared to the default
-classes. This can be obtained by subclassing the `Predis\Network\IConnectionSingle` interface.
+Predis allows developers to create new connection classes to add support for new protocols or override
+the existing ones and provide a different implementation compared to the default classes. This can be
+obtained by subclassing the `Predis\Network\IConnectionSingle` interface.
 
 ``` php
 <?php
@@ -119,18 +126,17 @@ $client = new Predis\Client('tcp://127.0.0.1', array(
 ));
 ```
 
-You can have a look at the `Predis\Network` namespace for some actual code that gives a better
-insight about how to create new connection classes.
+The classes contained in the `Predis\Network` namespace give you a better insight with actual code on
+how to create new connection classes.
 
 
-### Definition and runtime registration of new commands on the client ###
+### Defining and registering new commands on the client at runtime ###
 
-Let's suppose Redis just added the support for a brand new feature associated
-with a new command. If you want to start using the above mentioned new feature
-right away without messing with Predis source code or waiting for it to find
-its way into a stable Predis release, then you can start off by creating a new
-class that matches the command type and its behaviour and then bind it to a
-client instance at runtime. Actually, it is easier done than said:
+Let's suppose Redis just added the support for a brand new feature associated with a new command. If
+you want to start using the above mentioned new feature right away without messing with Predis source
+code or waiting for it to find its way into a stable Predis release, then you can start off by creating
+a new class that matches the command type and its behaviour and then bind it to a client instance at
+runtime. Actually, it is easier done than said:
 
 ``` php
 <?php
@@ -150,33 +156,30 @@ $redis->newcmd();
 
 ## Test suite ##
 
-__ATTENTION__: Do not run the test suite shipped with Predis against instances of
-Redis running in production environments or containing data you are interested in!
+__ATTENTION__: Do not ever run the test suite shipped with Predis against instances of Redis running in
+production environments or containing data you are interested in!
 
-Predis has a comprehensive test suite covering every aspect of the library. The suite
-performs integration tests against a running instance of Redis (>= 2.4.0 is required)
-to verify the correct behaviour of the implementation of each command and automatically
-skips commands that are not defined in the selected version of Redis. If you do not have
-Redis up and running, integration tests can be disabled. By default, the test suite is
-configured to execute integration tests using the server profile for Redis v2.4 (which
-is the current stable version of Redis). You can optionally run the suite against a
-Redis instance built from the `unstable` branch with the development profile by changing
-the `REDIS_SERVER_VERSION` to `dev` in the `phpunit.xml` file. More details about testing
-Predis are available in `tests/README.md`.
+Predis has a comprehensive test suite covering every aspect of the library. The suite performs integration
+tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct behaviour of the
+implementation of each command and automatically skips commands not defined in the selected version of
+Redis. If you do not have Redis up and running, integration tests can be disabled. By default, the test
+suite is configured to execute integration tests using the server profile for Redis v2.4 (which is the
+current stable version of Redis). You can optionally run the suite against a Redis instance built from
+the `unstable` branch with the development profile by changing the `REDIS_SERVER_VERSION` to `dev` in
+the `phpunit.xml` file. More details about testing Predis are available in `tests/README.md`.
+
 
 ## Contributing ##
 
-If you want to work on Predis, it is highly recommended that you first run the test
-suite in order to check that everything is OK, and report strange behaviours or bugs.
+If you want to work on Predis, it is highly recommended that you first run the test suite in order to
+check that everything is OK, and report strange behaviours or bugs. When modifying Predis please make
+sure that no warnings or notices are emitted by PHP by running the interpreter in your development
+environment with the `error_reporting` variable set to `E_ALL | E_STRICT`.
 
-When modifying Predis please make sure that no warnings or notices are emitted by PHP
-by running the interpreter in your development environment with the `error_reporting`
-variable set to `E_ALL | E_STRICT`.
-
-The recommended way to contribute to Predis is to fork the project on GitHub, create
-new topic branches on your newly created repository to fix or add features and then
-open a new pull request with a description of the applied changes. Obviously, you
-can use any other Git hosting provider of your preference.
+The recommended way to contribute to Predis is to fork the project on GitHub, create new topic branches
+on your newly created repository to fix or add features (possibly with tests covering your modifications)
+and then open a new pull request with a description of the applied changes. Obviously you can use any
+other Git hosting provider of your preference.
 
 
 ## Dependencies ##
@@ -205,7 +208,8 @@ can use any other Git hosting provider of your preference.
 
 - [Lorenzo Castelli](http://github.com/lcastelli)
 - [Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
-- [Sebastian Waisbrot](http://github.com/seppo0010) for his work on extending [phpiredis](http://github.com/seppo0010/phpiredis) for Predis
+- [Sebastian Waisbrot](http://github.com/seppo0010) ([twitter](http://twitter.com/seppo0010))
+  for his work on extending [phpiredis](http://github.com/seppo0010/phpiredis) for Predis
 
 ## License ##
 
