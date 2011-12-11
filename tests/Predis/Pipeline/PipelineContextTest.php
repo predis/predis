@@ -310,6 +310,25 @@ class PipelineContextTest extends StandardTestCase
     /**
      * @group connected
      */
+    public function testOutOfBandMessagesInsidePipeline()
+    {
+        $oob = null;
+        $client = $this->getClient();
+
+        $results = $client->pipeline(function($pipe) use(&$oob) {
+            $pipe->set('foo', 'bar');
+            $oob = $pipe->getClient()->echo('oob message');
+            $pipe->get('foo');
+        });
+
+        $this->assertSame(array(true, 'bar'), $results);
+        $this->assertSame('oob message', $oob);
+        $this->assertTrue($client->exists('foo'));
+    }
+
+    /**
+     * @group connected
+     */
     public function testIntegrationWithClientExceptionInCallableBlock()
     {
         $client = $this->getClient();
