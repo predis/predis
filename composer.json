@@ -2,9 +2,8 @@
     "name": "predis/predis",
     "type": "library",
     "description": "Flexible and feature-complete PHP client library for Redis",
-    "keywords": ["nosql","redis"],
+    "keywords": ["nosql", "redis", "predis"],
     "homepage": "http://github.com/nrk/predis",
-    "version": "0.7.0-dev",
     "license": "MIT",
     "authors": [
         {
