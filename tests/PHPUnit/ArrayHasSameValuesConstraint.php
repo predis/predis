@@ -30,13 +30,15 @@ class ArrayHasSameValuesConstraint extends PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function evaluate($other)
+    public function evaluate($other, $description = '', $returnResult = FALSE)
     {
+        $description = $description ?: 'Failed asserting that two arrays have the same elements.';
+
         if (count($this->array) !== count($other)) {
-            throw new PHPUnit_Framework_ExpectationFailedException('Failed asserting that two arrays have the same elements.');
+            throw new PHPUnit_Framework_ExpectationFailedException($description);
         }
         if (array_diff($this->array, $other)) {
-            throw new PHPUnit_Framework_ExpectationFailedException('Failed asserting that two arrays have the same elements.');
+            throw new PHPUnit_Framework_ExpectationFailedException($description);
         }
 
         return true;

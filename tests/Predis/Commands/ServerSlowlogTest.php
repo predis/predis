@@ -79,7 +79,8 @@ class ServerSlowlogTest extends CommandTestCase
     {
         $redis = $this->getClient();
 
-        $threshold = array_pop($redis->config('get', 'slowlog-log-slower-than'));
+        $config = $redis->config('get', 'slowlog-log-slower-than');
+        $threshold = array_pop($config);
 
         $redis->config('set', 'slowlog-log-slower-than', 0);
         $redis->set('foo', 'bar');
