@@ -11,7 +11,6 @@
  */
 
 // -------------------------------------------------------------------------- //
-
 // This script can be used to automatically glue all the .php files of Predis
 // into a single monolithic script file that can be used without an autoloader,
 // just like the other previous versions of the library.
@@ -21,8 +20,6 @@
 // when dealing with subclassing and inheritance.
 //
 // The current implementation is pretty naïve, but it should do for now.
-//
-
 // -------------------------------------------------------------------------- //
 
 class CommandLine

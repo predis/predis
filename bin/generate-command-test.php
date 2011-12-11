@@ -10,6 +10,29 @@
  * file that was distributed with this source code.
  */
 
+// -------------------------------------------------------------------------- //
+// This script can be used to automatically generate a file with the scheleton
+// of a test case to test a Redis command by specifying the name of the class
+// in the Predis\Commands namespace (only classes in this namespace are valid).
+// For example, to generate a test case for SET (which is represented by the
+// Predis\Commands\StringSet class):
+//
+//   $ ./bin/generate-command-test.php --class=StringSet
+//
+// Here is a list of optional arguments:
+//
+// --realm: each command has its own realm (commands that operate on strings,
+// lists, sets and such) but while this realm is usually inferred from the name
+// of the specified class, sometimes it can be useful to override it with a
+// custom one.
+//
+// --output: write the generated test case to the specified path instead of
+// the default one.
+//
+// --overwrite: pre-existing test files are not overwritten unless this option
+// is explicitly specified.
+// -------------------------------------------------------------------------- //
+
 use Predis\Commands\ICommand;
 use Predis\Commands\IPrefixable;
 
