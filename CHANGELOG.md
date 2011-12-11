@@ -1,4 +1,4 @@
-v0.7.0 (2011-12-xx)
+v0.7.0 (2011-12-11)
 ===============================================================================
 
 - Predis now adheres to the PSR-0 standard which means that there is no more a
