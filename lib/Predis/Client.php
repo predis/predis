@@ -90,8 +90,14 @@ class Client
         if ($parameters instanceof IConnection) {
             return $parameters;
         }
+
         if (is_array($parameters) && isset($parameters[0])) {
-            return $this->connections->createCluster($this->options->cluster, $parameters, $this->profile);
+            $replication = isset($this->options->replication) && $this->options->replication;
+
+            $connection = $this->options->{$replication ? 'replication' : 'cluster'};
+            $initializer = $replication ? 'createReplication' : 'createCluster';
+
+            return $this->connections->$initializer($connection, $parameters, $this->profile);
         }
 
         return $this->connections->create($parameters, $this->profile);

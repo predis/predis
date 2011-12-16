@@ -13,6 +13,7 @@ namespace Predis;
 
 use Predis\Profiles\IServerProfile;
 use Predis\Network\IConnectionCluster;
+use Predis\Network\IConnectionReplication;
 
 /**
  * Interface that must be implemented by classes that provide their own mechanism
@@ -53,4 +54,13 @@ interface IConnectionFactory
      * @return Predis\Network\IConnectionCluster
      */
     public function createCluster(IConnectionCluster $cluster, $parameters, IServerProfile $profile = null);
+
+    /**
+     * Prepares a master / slave replication configuration.
+     *
+     * @param IConnectionReplication Instance of a connection cluster class.
+     * @param array $parameters List of parameters for each connection object.
+     * @return Predis\Network\IConnectionReplication
+     */
+    public function createReplication(IConnectionReplication $replication, $parameters, IServerProfile $profile = null);
 }
