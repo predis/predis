@@ -65,7 +65,7 @@ class ClientCluster extends Option
             default:
                 // TODO: we should not even allow non-string values here.
                 if (is_string($fqnOrType) && !class_exists($fqnOrType)) {
-                    throw new \InvalidArgumentException('Class $fqnOrType does not exist');
+                    throw new \InvalidArgumentException("Class $fqnOrType does not exist");
                 }
                 return function() use($fqnOrType) {
                     return new $fqnOrType();
