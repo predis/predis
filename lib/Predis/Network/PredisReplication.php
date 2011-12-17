@@ -23,6 +23,7 @@ use Predis\Commands\ICommand;
 class PredisReplication implements IConnectionReplication
 {
     private $readonly = array();
+    private $readonlySHA1 = array();
     private $current = null;
     private $master = null;
     private $slaves = array();
@@ -33,26 +34,6 @@ class PredisReplication implements IConnectionReplication
     public function __construct()
     {
         $this->readonly = $this->getReadOnlyOperations();
-    }
-
-    /**
-     * Returns if the specified command performs a read-only operation
-     * against a key stored on Redis.
-     *
-     * @param ICommand $command Instance of Redis command.
-     * @return Boolean
-     */
-    protected function isReadOperation(ICommand $command)
-    {
-        if (isset($this->readonly[$id = $command->getId()])) {
-            if (true === $readonly = $this->readonly[$id]) {
-                return true;
-            }
-
-            return $readonly($command);
-        }
-
-        return false;
     }
 
     /**
@@ -255,7 +236,82 @@ class PredisReplication implements IConnectionReplication
     }
 
     /**
-     * Returns a list of commands that perform read-only operations.
+     * Returns if the specified command performs a read-only operation
+     * against a key stored on Redis.
+     *
+     * @param ICommand $command Instance of Redis command.
+     * @return Boolean
+     */
+    protected function isReadOperation(ICommand $command)
+    {
+        if (isset($this->readonly[$id = $command->getId()])) {
+            if (true === $readonly = $this->readonly[$id]) {
+                return true;
+            }
+
+            return $readonly($command);
+        }
+
+        if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
+            $sha1 = $eval ? sha1($command->getArgument(0)) : $command->getArgument(0);
+
+            if (isset($this->readonlySHA1[$sha1])) {
+                if (true === $readonly = $this->readonlySHA1[$sha1]) {
+                    return true;
+                }
+
+                return $readonly($command);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Marks a command as a read-only operation. When the behaviour of a
+     * command can be decided only at runtime depending on its arguments,
+     * a callable object can be provided to dinamically check if the passed
+     * instance of a command performs write operations or not.
+     *
+     * @param string $commandID ID of the command.
+     * @param mixed $readonly A boolean or a callable object.
+     */
+    public function setCommandReadOnly($commandID, $readonly = true)
+    {
+        $commandID = strtoupper($commandID);
+
+        if ($readonly) {
+            $this->readonly[$commandID] = $readonly;
+        }
+        else {
+            unset($this->readonly[$commandID]);
+        }
+    }
+
+    /**
+     * Marks a Lua script for EVAL and EVALSHA as a read-only operation. When
+     * the behaviour of a script can be decided only at runtime depending on
+     * its arguments, a callable object can be provided to dinamically check
+     * if the passed instance of EVAL or EVALSHA performs write operations or
+     * not.
+     *
+     * @param string $script Body of the Lua script.
+     * @param mixed $readonly A boolean or a callable object.
+     */
+    public function setScriptReadOnly($script, $readonly = true)
+    {
+        $sha1 = sha1($script);
+
+        if ($readonly) {
+            $this->readonlySHA1[$sha1] = $readonly;
+        }
+        else {
+            unset($this->readonlySHA1[$sha1]);
+        }
+    }
+
+    /**
+     * Returns the default list of commands performing read-only operations.
      *
      * @return array
      */
