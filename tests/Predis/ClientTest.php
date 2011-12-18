@@ -385,7 +385,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by alias is supported only with clustered connections
+     * @expectedExceptionMessage Retrieving connections by alias is supported only with aggregated connections (cluster or replication)
      */
     public function testGetConnectionWithAliasWorksOnlyWithCluster()
     {

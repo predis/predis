@@ -196,8 +196,8 @@ class Client
     public function getConnection($id = null)
     {
         if (isset($id)) {
-            if (!Helpers::isCluster($this->connection)) {
-                $message = 'Retrieving connections by alias is supported only with clustered connections';
+            if (!Helpers::isAggregated($this->connection)) {
+                $message = 'Retrieving connections by alias is supported only with aggregated connections (cluster or replication)';
                 throw new NotSupportedException($message);
             }
             return $this->connection->getConnectionById($id);
