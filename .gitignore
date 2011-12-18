@@ -1,2 +1,5 @@
+*.tgz
+*.phar
 phpunit.xml
+package.xml
 experiments/
