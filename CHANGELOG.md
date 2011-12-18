@@ -3,6 +3,8 @@ v0.7.1 (201x-xx-xx)
 
 - Miscellaneous minor fixes.
 
+- PearHub's PEAR channel has been deprecated in favour of `pear.nrk.io`.
+
 
 v0.7.0 (2011-12-11)
 ===============================================================================

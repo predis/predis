@@ -27,9 +27,9 @@ project,
 Predis is available on [Packagist](http://packagist.org/packages/predis/predis) for an easy installation
 using [Composer](http://packagist.org/about-composer). Composer helps you manage dependencies for your
 projects and libraries without much hassle which makes it the preferred way to get up and running with
-new applications. Alternatively, the library is available on [PearHub](http://pearhub.org/projects/predis)'s
-channel for a more traditional installation via PEAR. Zip and tar.gz archives are also downloadable from
-GitHub by browsing the list of [tagged releases](http://github.com/nrk/predis/tags).
+new applications. Alternatively, the library is available on our [own PEAR channel](http://pear.nrk.io)
+for a more traditional installation via PEAR. Zip and tar.gz archives are also downloadable from GitHub
+by browsing the list of [tagged releases](http://github.com/nrk/predis/tags).
 
 
 ### Loading the library ###
@@ -197,6 +197,7 @@ other Git hosting provider of your preference.
 - [Source code](http://github.com/nrk/predis/)
 - [Wiki](http://wiki.github.com/nrk/predis/)
 - [Issue tracker](http://github.com/nrk/predis/issues)
+- [PEAR channel](http://pear.nrk.io)
 
 ### Related ###
 - [Redis](http://redis.io/)
