@@ -12,6 +12,7 @@
 namespace Predis\Network;
 
 use Predis\Commands\ICommand;
+use Predis\NotSupportedException;
 
 /**
  * Defines the standard virtual connection class that is used
@@ -22,6 +23,7 @@ use Predis\Commands\ICommand;
  */
 class PredisReplication implements IConnectionReplication
 {
+    private $disallowed = array();
     private $readonly = array();
     private $readonlySHA1 = array();
     private $current = null;
@@ -33,6 +35,7 @@ class PredisReplication implements IConnectionReplication
      */
     public function __construct()
     {
+        $this->disallowed = $this->getDisallowedOperations();
         $this->readonly = $this->getReadOnlyOperations();
     }
 
@@ -244,7 +247,11 @@ class PredisReplication implements IConnectionReplication
      */
     protected function isReadOperation(ICommand $command)
     {
-        if (isset($this->readonly[$id = $command->getId()])) {
+        if (isset($this->disallowed[$id = $command->getId()])) {
+            throw new NotSupportedException("The command $id is not allowed in replication mode");
+        }
+
+        if (isset($this->readonly[$id])) {
             if (true === $readonly = $this->readonly[$id]) {
                 return true;
             }
@@ -311,6 +318,28 @@ class PredisReplication implements IConnectionReplication
     }
 
     /**
+     * Returns the default list of disallowed commands.
+     *
+     * @return array
+     */
+    protected function getDisallowedOperations()
+    {
+        return array(
+            'SHUTDOWN'          => true,
+            'INFO'              => true,
+            'DBSIZE'            => true,
+            'LASTSAVE'          => true,
+            'CONFIG'            => true,
+            'MONITOR'           => true,
+            'SLAVEOF'           => true,
+            'SAVE'              => true,
+            'BGSAVE'            => true,
+            'BGREWRITEAOF'      => true,
+            'SLOWLOG'           => true,
+        );
+    }
+
+    /**
      * Returns the default list of commands performing read-only operations.
      *
      * @return array
@@ -360,11 +389,6 @@ class PredisReplication implements IConnectionReplication
             'SELECT'            => true,
             'ECHO'              => true,
             'QUIT'              => true,
-            'INFO'              => true,
-            'DBSIZE'            => true,
-            'MONITOR'           => true,
-            'LASTSAVE'          => true,
-            'SHUTDOWN'          => true,
             'OBJECT'            => true,
             'SORT'              => function(ICommand $command) {
                 $arguments = $command->getArguments();
