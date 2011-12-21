@@ -349,6 +349,69 @@ class MasterSlaveReplicationTest extends StandardTestCase
 
     /**
      * @group disconnected
+     */
+    public function testWatchTriggersSwitchToMasterConnection()
+    {
+        $profile = ServerProfile::getDefault();
+        $cmdWatch = $profile->createCommand('watch', array('foo'));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())->method('executeCommand')->with($cmdWatch);
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->never())->method('executeCommand');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdWatch);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testMultiTriggersSwitchToMasterConnection()
+    {
+        $profile = ServerProfile::getDefault();
+        $cmdMulti = $profile->createCommand('multi');
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())->method('executeCommand')->with($cmdMulti);
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->never())->method('executeCommand');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdMulti);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testEvalTriggersSwitchToMasterConnection()
+    {
+        $profile = ServerProfile::get('dev');
+        $cmdEval = $profile->createCommand('eval', array("return redis.call('info')"));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())->method('executeCommand')->with($cmdEval);
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->never())->method('executeCommand');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdEval);
+    }
+
+    /**
+     * @group disconnected
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The command INFO is not allowed in replication mode
      */
@@ -415,6 +478,34 @@ class MasterSlaveReplicationTest extends StandardTestCase
 
         $replication->executeCommand($cmdExistsFoo);
         $replication->executeCommand($cmdExistsBar);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanSetReadOnlyFlagForEvalScripts()
+    {
+        $profile = ServerProfile::get('dev');
+
+        $cmdEval = $profile->createCommand('eval', array($script = "return redis.call('info');"));
+        $cmdEvalSha = $profile->createCommand('evalsha', array($scriptSHA1 = sha1($script)));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->never())->method('executeCommand');
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->exactly(2))
+               ->method('executeCommand')
+               ->with($this->logicalOr($cmdEval, $cmdEvalSha));
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->setScriptReadOnly($script);
+
+        $replication->executeCommand($cmdEval);
+        $replication->executeCommand($cmdEvalSha);
     }
 
     // ******************************************************************** //
