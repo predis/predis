@@ -14,6 +14,7 @@ namespace Predis;
 use Predis\Profiles\IServerProfile;
 use Predis\Network\IConnectionSingle;
 use Predis\Network\IConnectionCluster;
+use Predis\Network\IConnectionReplication;
 use Predis\Profiles\ServerProfile;
 
 /**
@@ -133,6 +134,18 @@ class ConnectionFactory implements IConnectionFactory
         }
 
         return $cluster;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createReplication(IConnectionReplication $replication, $parameters, IServerProfile $profile = null)
+    {
+        foreach ($parameters as $node) {
+            $replication->add($node instanceof IConnectionSingle ? $node : $this->create($node, $profile));
+        }
+
+        return $replication;
     }
 
     /**

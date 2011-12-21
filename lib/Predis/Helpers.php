@@ -13,6 +13,7 @@ namespace Predis;
 
 use Predis\Network\IConnection;
 use Predis\Network\IConnectionCluster;
+use Predis\Network\IConnectionReplication;
 
 /**
  * Defines a few helper methods.
@@ -21,6 +22,17 @@ use Predis\Network\IConnectionCluster;
  */
 class Helpers
 {
+    /**
+     * Checks if the specified connection represents an aggregation of connections.
+     *
+     * @param IConnection $connection Connection object.
+     * @return Boolean
+     */
+    public static function isAggregated(IConnection $connection)
+    {
+        return $connection instanceof IConnectionCluster || $connection instanceof IConnectionReplication;
+    }
+
     /**
      * Checks if the specified connection represents a cluster.
      *

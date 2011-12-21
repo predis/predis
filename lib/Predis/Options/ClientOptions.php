@@ -42,6 +42,7 @@ class ClientOptions implements IClientOptions
             'profile' => new ClientProfile(),
             'connections' => new ClientConnectionFactory(),
             'cluster' => new ClientCluster(),
+            'replication' => new ClientReplication(),
             'prefix' => new ClientPrefix(),
         );
     }
