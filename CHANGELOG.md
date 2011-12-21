@@ -77,7 +77,7 @@ v0.7.0 (2011-12-11)
   thus removed. Serialization of commands is now a competence of connections.
 
 - The `Predis\IConnection` interface has been splitted into two new interfaces:
-  `Predis\Network\IConnectionSingle and `Predis\Network\IConnectionCluster`.
+  `Predis\Network\IConnectionSingle` and `Predis\Network\IConnectionCluster`.
 
 - The constructor of `Predis\Client` now accepts more type of arguments such as
   instances of `Predis\IConnectionParameters` and `Predis\Network\IConnection`.

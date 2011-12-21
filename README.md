@@ -53,7 +53,7 @@ stub defining an autoloader function for Predis, so you just need to require the
 the library.
 
 Alternatively you can generate a single PHP file that holds every class, just like older versions of
-Predis, using the `bin/create-single-file.php` executable sript. In this way you can load Predis in your
+Predis, using the `bin/create-single-file.php` executable script. In this way you can load Predis in your
 scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
 
 
