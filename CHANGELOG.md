@@ -3,6 +3,9 @@ v0.7.1 (201x-xx-xx)
 
 - Miscellaneous minor fixes.
 
+- The 'profile' client option now accepts a callable object used to initialize
+  a new instance of Predis\Profiles\IServerProfile.
+
 - PearHub's PEAR channel has been deprecated in favour of `pear.nrk.io`.
 
 

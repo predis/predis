@@ -55,6 +55,28 @@ class ClientProfileTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testValidationAcceptsCallableObjectAsInitializers()
+    {
+        $value = $this->getMock('Predis\Profiles\IServerProfile');
+
+        $initializer = $this->getMock('stdClass', array('__invoke'));
+        $initializer->expects($this->once())
+                    ->method('__invoke')
+                    ->with($this->isInstanceOf('Predis\Options\IClientOptions'))
+                    ->will($this->returnValue($value));
+
+        $options = $this->getMock('Predis\Options\IClientOptions');
+        $option = new ClientProfile();
+
+        $profile = $option->filter($options, $initializer);
+
+        $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
+        $this->assertSame($value, $profile);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testValidationThrowsExceptionOnWrongInvalidArguments()
     {
         $this->setExpectedException('InvalidArgumentException');
@@ -168,5 +190,20 @@ class ClientProfileTest extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Profiles\IServerProfile', $profile);
         $this->assertNull($profile->getProcessor());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid value for the profile option
+     */
+    public function testValidationThrowsExceptionOnInvalidObjectReturnedByCallback()
+    {
+        $value = function($options) { return new \stdClass(); };
+
+        $options = $this->getMock('Predis\Options\IClientOptions');
+        $option = new ClientProfile();
+
+        $option->filter($options, $value);
     }
 }

@@ -33,6 +33,10 @@ class ClientProfile extends Option
             }
         }
 
+        if (is_callable($value)) {
+            $value = call_user_func($value, $options);
+        }
+
         if (!$value instanceof IServerProfile) {
             throw new \InvalidArgumentException('Invalid value for the profile option');
         }
