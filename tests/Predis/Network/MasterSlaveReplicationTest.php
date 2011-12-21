@@ -19,7 +19,7 @@ use Predis\Profiles\ServerProfile;
 /**
  *
  */
-class PredisReplicationTest extends StandardTestCase
+class MasterSlaveReplicationTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -30,7 +30,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
         $replication->add($slave2);
@@ -52,7 +52,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -70,7 +70,7 @@ class PredisReplicationTest extends StandardTestCase
      */
     public function testThrowsExceptionOnEmptyReplication()
     {
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->connect();
     }
 
@@ -81,7 +81,7 @@ class PredisReplicationTest extends StandardTestCase
      */
     public function testThrowsExceptionOnMissingMaster()
     {
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
         $replication->connect();
@@ -94,7 +94,7 @@ class PredisReplicationTest extends StandardTestCase
      */
     public function testThrowsExceptionOnMissingSlave()
     {
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
 
         $replication->connect();
@@ -111,7 +111,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave->expects($this->once())->method('connect');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave);
 
@@ -129,7 +129,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave->expects($this->once())->method('isConnected')->will($this->returnValue(true));
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave);
         $replication->connect();
@@ -148,7 +148,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave->expects($this->any())->method('isConnected')->will($this->returnValue(false));
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave);
 
@@ -171,7 +171,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave->expects($this->once())->method('disconnect');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave);
 
@@ -186,7 +186,7 @@ class PredisReplicationTest extends StandardTestCase
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -205,7 +205,7 @@ class PredisReplicationTest extends StandardTestCase
      */
     public function testThrowsErrorWhenSwitchingToUnknownConnection()
     {
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
@@ -222,7 +222,7 @@ class PredisReplicationTest extends StandardTestCase
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -243,7 +243,7 @@ class PredisReplicationTest extends StandardTestCase
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -264,7 +264,7 @@ class PredisReplicationTest extends StandardTestCase
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -293,7 +293,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave1->expects($this->once())->method('writeCommand')->with($cmdExists);
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -316,7 +316,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave1->expects($this->once())->method('readResponse')->with($cmdExists);
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -339,7 +339,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave1->expects($this->once())->method('executeCommand')->with($cmdExists);
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -356,7 +356,7 @@ class PredisReplicationTest extends StandardTestCase
     {
         $cmd = ServerProfile::getDefault()->createCommand('info');
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
@@ -378,7 +378,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave1->expects($this->once())->method('executeCommand')->with($cmdSet);
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
@@ -404,7 +404,7 @@ class PredisReplicationTest extends StandardTestCase
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
         $slave1->expects($this->once())->method('executeCommand')->with($cmdExistsFoo);
 
-        $replication = new PredisReplication();
+        $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 

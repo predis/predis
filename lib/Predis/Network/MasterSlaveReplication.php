@@ -21,7 +21,7 @@ use Predis\NotSupportedException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PredisReplication implements IConnectionReplication
+class MasterSlaveReplication implements IConnectionReplication
 {
     private $disallowed = array();
     private $readonly = array();

@@ -12,7 +12,7 @@
 namespace Predis\Options;
 
 use Predis\Network\IConnectionReplication;
-use Predis\Network\PredisReplication;
+use Predis\Network\MasterSlaveReplication;
 
 /**
  * Option class that returns a replication connection be used by a client.
@@ -69,6 +69,6 @@ class ClientReplication extends Option
      */
     public function getDefault(IClientOptions $options)
     {
-        return new PredisReplication();
+        return new MasterSlaveReplication();
     }
 }
