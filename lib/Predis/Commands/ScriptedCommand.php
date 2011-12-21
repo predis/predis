@@ -28,19 +28,21 @@ abstract class ScriptedCommand extends ServerEval
     public abstract function getScript();
 
     /**
-     * Gets the number of arguments that should be considered as keys.
+     * Specifies the number of arguments that should be considered as keys.
      *
-     * @todo Should we make a scripted command act by default as a variadic
-     *       command where the first argument is the key (KEYS[1]) and the
-     *       rest is the list of values (ARGV)?
+     * The default behaviour for the base class is to return FALSE to indicate that
+     * all the elements of the arguments array should be considered as keys, but
+     * subclasses can enforce a static number of keys.
      *
-     * @return int
+     * @todo How about returning 1 by default to make scripted commands act like
+     *       variadic ones where the first argument is the key (KEYS[1]) and the
+     *       rest are values (ARGV)?
+     *
+     * @return int|Boolean
      */
-    public function getKeysCount()
+    protected function getKeysCount()
     {
-        // The default behaviour for the base class is to use all the arguments
-        // passed to a scripted command to populate the KEYS table in Lua.
-        return count($this->getArguments());
+        return false;
     }
 
     /**
@@ -58,6 +60,8 @@ abstract class ScriptedCommand extends ServerEval
      */
     protected function filterArguments(Array $arguments)
     {
-        return array_merge(array($this->getScript(), $this->getKeysCount()), $arguments);
+        $header = array($this->getScript(), ($keys = $this->getKeysCount()) !== false ? $keys : count($arguments));
+
+        return array_merge($header, $arguments);
     }
 }
