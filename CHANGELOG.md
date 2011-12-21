@@ -3,6 +3,11 @@ v0.7.1 (201x-xx-xx)
 
 - Miscellaneous minor fixes.
 
+- Added transparent support for master / slave replication configurations where
+  write operations are performed on the master server and read operations are
+  routed to one of the slaves. Please refer to ISSUE #21 for a bit of history
+  and more details about replication support in Predis.
+
 - The 'profile' client option now accepts a callable object used to initialize
   a new instance of Predis\Profiles\IServerProfile.
 

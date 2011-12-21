@@ -13,6 +13,7 @@ project,
 - Complete support for Redis from __1.2__ to __2.4__ and the current development versions using different
   server profiles.
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
+- Support for master / slave replication configurations (write on master, read from slaves).
 - Command pipelining on single and aggregated connections.
 - Transparent key prefixing strategy capable of handling any command known that has keys in its arguments.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
