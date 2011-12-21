@@ -15,6 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Profiles\ServerProfile;
 use Predis\Network\PredisCluster;
+use Predis\Network\MasterSlaveReplication;
 
 /**
  *
@@ -182,6 +183,22 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testConstructorWithReplicationArgument()
+    {
+        $replication = new MasterSlaveReplication();
+
+        $factory = new ConnectionFactory();
+        $factory->createReplication($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
+
+        $client = new Client($replication);
+
+        $this->assertInstanceOf('Predis\Network\IConnectionReplication', $client->getConnection());
+        $this->assertSame($replication, $client->getConnection());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testConstructorWithNullAndStringArgument()
     {
         $client = new Client(null, '2.0');
@@ -215,6 +232,20 @@ class ClientTest extends StandardTestCase
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
 
         $this->assertSame($factory, $client->getConnectionFactory());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithArrayAndOptionReplicationArgument()
+    {
+        $arg1 = array('tcp://host1?alias=master', 'tcp://host2?alias=slave');
+        $arg2 = array('replication' => true);
+        $client = new Client($arg1, $arg2);
+
+        $this->assertInstanceOf('Predis\Network\IConnectionReplication', $connection = $client->getConnection());
+        $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
+        $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
     }
 
     /**

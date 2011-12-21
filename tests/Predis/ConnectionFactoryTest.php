@@ -335,6 +335,29 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory->createCluster($cluster, $nodes, $profile);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testReplicationWithMixedConnectionParameters()
+    {
+        list(, $connectionClass) = $this->getMockConnectionClass();
+
+        $replication = $this->getMock('Predis\Network\IConnectionReplication');
+        $replication->expects($this->exactly(4))
+                    ->method('add')
+                    ->with($this->isInstanceOf('Predis\Network\IConnectionSingle'));
+
+        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
+        $factory->expects($this->exactly(3))
+                ->method('create')
+                ->will($this->returnCallback(function($_, $_) use($connectionClass) {
+                    return new $connectionClass;
+                }));
+
+        $factory->createReplication($replication, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
+    }
+
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
