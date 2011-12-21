@@ -82,13 +82,19 @@ class PredisReplication implements IConnectionReplication
         if ($connection->getParameters()->alias === 'master') {
             $this->master = null;
             $this->reset();
+
+            return true;
         }
         else {
             if (($id = array_search($connection, $this->slaves, true)) !== false) {
                 unset($this->slaves[$id]);
                 $this->reset();
+
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
