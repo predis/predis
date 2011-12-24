@@ -16,6 +16,7 @@ use Predis\Helpers;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
+use Predis\Commands\ICommand;
 use Predis\NotSupportedException;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
@@ -180,20 +181,31 @@ class MultiExecContext
      *
      * @param string $method Command ID.
      * @param array $arguments Arguments for the command.
-     * @return MultiExecContext
+     * @return mixed
      */
     public function __call($method, $arguments)
     {
+        $command = $this->client->createCommand($method, $arguments);
+        $response = $this->executeCommand($command);
+
+        return $response;
+    }
+
+    /**
+     * Executes the specified Redis command.
+     *
+     * @param ICommand $command A Redis command.
+     * @return mixed
+     */
+    public function executeCommand(ICommand $command)
+    {
         $this->initialize();
-        $client = $this->client;
+
+        $response = $this->client->executeCommand($command);
 
         if ($this->checkState(self::STATE_CAS)) {
-            return call_user_func_array(array($client, $method), $arguments);
+            return $response;
         }
-
-        $command  = $client->createCommand($method, $arguments);
-        $response = $client->executeCommand($command);
-
         if (!$response instanceof ResponseQueued) {
             $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
