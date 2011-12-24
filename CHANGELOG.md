@@ -1,6 +1,8 @@
 v0.7.1 (201x-xx-xx)
 ===============================================================================
 
+- PearHub's PEAR channel has been deprecated in favour of `pear.nrk.io`.
+
 - Miscellaneous minor fixes.
 
 - Added transparent support for master / slave replication configurations where
@@ -11,7 +13,8 @@ v0.7.1 (201x-xx-xx)
 - The 'profile' client option now accepts a callable object used to initialize
   a new instance of Predis\Profiles\IServerProfile.
 
-- PearHub's PEAR channel has been deprecated in favour of `pear.nrk.io`.
+- Exposed a method for MULTI / EXEC contexts that adds the ability to execute
+  instances of Redis commands against transaction objects.
 
 
 v0.7.0 (2011-12-11)
