@@ -43,7 +43,8 @@ if you are going to use it in a project or script without any PSR-0 compliant au
 
 ``` php
 <?php
-require PREDIS_BASE_PATH . '/Autoloader.php';
+// prepend a base path if Predis is not present in your "include_path".
+require 'Predis/Autoloader.php';
 
 Predis\Autoloader::register();
 ```
