@@ -15,6 +15,7 @@ use Predis\Helpers;
 use Predis\IReplyObject;
 use Predis\IConnectionParameters;
 use Predis\ClientException;
+use Predis\NotSupportedException;
 use Predis\Commands\ICommand;
 use Predis\Protocol\ProtocolException;
 
@@ -169,7 +170,7 @@ abstract class ConnectionBase implements IConnectionSingle
     }
 
     /**
-     * Helper method to handle invalid connection parameters.
+     * Helper method to handle not supported connection parameters.
      *
      * @param string $option Name of the option.
      * @param IConnectionParameters $parameters Parameters used to initialize the connection.
@@ -181,7 +182,7 @@ abstract class ConnectionBase implements IConnectionSingle
             $message .= " [$parameters]";
         }
 
-        throw new \InvalidArgumentException($message);
+        throw new NotSupportedException($message);
     }
 
     /**
