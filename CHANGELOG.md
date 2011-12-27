@@ -1,7 +1,7 @@
 v0.7.1 (201x-xx-xx)
 ===============================================================================
 
-- PearHub's PEAR channel has been deprecated in favour of `pear.nrk.io`.
+- The PEAR channel on PearHub has been deprecated in favour of `pear.nrk.io`.
 
 - Miscellaneous minor fixes.
 
@@ -10,8 +10,8 @@ v0.7.1 (201x-xx-xx)
   routed to one of the slaves. Please refer to ISSUE #21 for a bit of history
   and more details about replication support in Predis.
 
-- The 'profile' client option now accepts a callable object used to initialize
-  a new instance of Predis\Profiles\IServerProfile.
+- The `profile` client option now accepts a callable object used to initialize
+  a new instance of `Predis\Profiles\IServerProfile`.
 
 - Exposed a method for MULTI / EXEC contexts that adds the ability to execute
   instances of Redis commands against transaction objects.
