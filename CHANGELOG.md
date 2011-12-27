@@ -1,4 +1,4 @@
-v0.7.1 (201x-xx-xx)
+v0.7.1 (2011-12-27)
 ===============================================================================
 
 - The PEAR channel on PearHub has been deprecated in favour of `pear.nrk.io`.
