@@ -262,7 +262,7 @@ class MasterSlaveReplication implements IConnectionReplication
                 return true;
             }
 
-            return $readonly($command);
+            return call_user_func($readonly, $command);
         }
 
         if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
@@ -273,11 +273,21 @@ class MasterSlaveReplication implements IConnectionReplication
                     return true;
                 }
 
-                return $readonly($command);
+                return call_user_func($readonly, $command);
             }
         }
 
         return false;
+    }
+
+    /**
+     * Checks if a SORT command is a readable operation by parsing the arguments
+     * array of the specified commad instance.
+     */
+    private function isSortReadOnly(ICommand $command)
+    {
+        $arguments = $command->getArguments();
+        return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
     }
 
     /**
@@ -396,10 +406,15 @@ class MasterSlaveReplication implements IConnectionReplication
             'ECHO'              => true,
             'QUIT'              => true,
             'OBJECT'            => true,
-            'SORT'              => function(ICommand $command) {
-                $arguments = $command->getArguments();
-                return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
-            },
+            'SORT'              => array($this, 'isSortReadOnly'),
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array('master', 'slaves', 'disallowed', 'readonly', 'readonlySHA1');
     }
 }

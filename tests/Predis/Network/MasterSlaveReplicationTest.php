@@ -412,6 +412,29 @@ class MasterSlaveReplicationTest extends StandardTestCase
 
     /**
      * @group disconnected
+     */
+    public function testSortTriggersSwitchToMasterConnectionOnStoreModifier()
+    {
+        $profile = ServerProfile::get('dev');
+        $cmdSortNormal = $profile->createCommand('sort', array('key'));
+        $cmdSortStore = $profile->createCommand('sort', array('key', array('store' => 'key:store')));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())->method('executeCommand')->with($cmdSortStore);
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->once())->method('executeCommand')->with($cmdSortNormal);
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdSortNormal);
+        $replication->executeCommand($cmdSortStore);
+    }
+
+    /**
+     * @group disconnected
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The command INFO is not allowed in replication mode
      */
@@ -506,6 +529,24 @@ class MasterSlaveReplicationTest extends StandardTestCase
 
         $replication->executeCommand($cmdEval);
         $replication->executeCommand($cmdEvalSha);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanBeSerialized()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $unserialized = unserialize(serialize($replication));
+
+        $this->assertEquals($master, $unserialized->getConnectionById('master'));
+        $this->assertEquals($slave1, $unserialized->getConnectionById('slave1'));
     }
 
     // ******************************************************************** //
