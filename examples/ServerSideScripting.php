@@ -39,7 +39,7 @@ LUA;
     }
 }
 
-$client = new Predis\Client($single_server, 'dev');
+$client = new Predis\Client($single_server, '2.6');
 
 $client->getProfile()->defineCommand('increx', 'IncrementExistingKey');
 

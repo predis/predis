@@ -51,7 +51,7 @@ $parameters = array(
 
 $options = array(
     'profile' => function($options) {
-        $profile = ServerProfile::get('dev');
+        $profile = ServerProfile::get('2.6');
         $profile->defineCommand('hmgetall', 'HashMultipleGetAll');
 
         return $profile;
