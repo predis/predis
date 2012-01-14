@@ -1,3 +1,15 @@
+v0.7.2 (2012-xx-xx)
+===============================================================================
+
+- Added `2.6` in server profiles aliases list. `2.4` is still the default one.
+
+- Connection instances can be serialized and unserialized using `serialize()`
+  and `unserialize()`. This is handy in certain scenarios such as client-side
+  cluster or replication to lower the overhead of initializing a connection
+  object with many sub-connections since since unserializing can be up to 5x
+  times faster.
+
+
 v0.7.1 (2011-12-27)
 ===============================================================================
 
