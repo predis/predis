@@ -1,12 +1,13 @@
 v0.7.2 (2012-xx-xx)
 ===============================================================================
 
-- Added `2.6` in server profiles aliases list. `2.4` is still the default one.
+- Added `2.6` in the server profiles aliases list for the upcoming Redis 2.6.
+  `2.4` is still the default server profile.
 
 - Connection instances can be serialized and unserialized using `serialize()`
   and `unserialize()`. This is handy in certain scenarios such as client-side
-  cluster or replication to lower the overhead of initializing a connection
-  object with many sub-connections since since unserializing can be up to 5x
+  clustering or replication to lower the overhead of initializing a connection
+  object with many sub-connections since unserializing them can be up to 5x
   times faster.
 
 
@@ -109,7 +110,7 @@ v0.6.6 (2011-04-01)
 - Switched to Redis 2.2 as the default server profile (there are no changes
   that would break compatibility with previous releases). Long command names
   are no more supported by default but if you need them you can still require
-  Predis_Compatibility.php to avoid breaking compatibility.
+  `Predis_Compatibility.php` to avoid breaking compatibility.
 
 - Added a `VERSION` constant to `Predis\Client`.
 
@@ -119,7 +120,7 @@ v0.6.6 (2011-04-01)
 
 - Predis now uses by default a new protocol reader, more lightweight and
   faster than the default handler-based one. Users can revert to the old
-  protocol reader with the 'reader' client option set to `composable`.
+  protocol reader with the `reader` client option set to `composable`.
   This client option can also accept custom reader classes implementing the
   new `Predis\IResponseReader` interface.
 
