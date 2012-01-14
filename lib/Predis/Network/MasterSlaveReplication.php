@@ -283,6 +283,9 @@ class MasterSlaveReplication implements IConnectionReplication
     /**
      * Checks if a SORT command is a readable operation by parsing the arguments
      * array of the specified commad instance.
+     *
+     * @param ICommand $command Instance of Redis command.
+     * @return Boolean
      */
     private function isSortReadOnly(ICommand $command)
     {
