@@ -321,4 +321,24 @@ class WebdisConnection implements IConnectionSingle
     {
         return "{$this->parameters->host}:{$this->parameters->port}";
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array('parameters');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __wakeup()
+    {
+        $this->checkExtensions();
+        $parameters = $this->getParameters();
+
+        $this->resource = $this->initializeCurl($parameters);
+        $this->reader = $this->initializeReader($parameters);
+    }
 }

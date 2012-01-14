@@ -384,4 +384,12 @@ class PhpiredisConnection extends ConnectionBase
         array_unshift($cmdargs, $command->getId());
         $this->write(phpiredis_format_command($cmdargs));
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __wakeup()
+    {
+        $this->initializeProtocol($this->getParameters());
+    }
 }

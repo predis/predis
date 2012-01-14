@@ -53,6 +53,20 @@ class PhpiredisConnectionTest extends ConnectionTestCase
         $connection = new PhpiredisConnection($parameters);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testCanBeSerialized()
+    {
+        $parameters = $this->getParameters(array('alias' => 'redis', 'read_write_timeout' => 10));
+        $connection = new PhpiredisConnection($parameters);
+
+        $unserialized = unserialize(serialize($connection));
+
+        $this->assertInstanceOf('Predis\Network\PhpiredisConnection', $unserialized);
+        $this->assertEquals($parameters, $unserialized->getParameters());
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //

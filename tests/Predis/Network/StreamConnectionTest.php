@@ -53,6 +53,19 @@ class StreamConnectionTest extends ConnectionTestCase
         $connection = new StreamConnection($parameters);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testCanBeSerialized()
+    {
+        $parameters = $this->getParameters(array('alias' => 'redis', 'read_write_timeout' => 10));
+        $connection = new StreamConnection($parameters);
+
+        $unserialized = unserialize(serialize($connection));
+
+        $this->assertEquals($connection, $unserialized);
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //

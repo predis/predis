@@ -232,4 +232,12 @@ abstract class ConnectionBase implements IConnectionSingle
 
         return $this->cachedId;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array('parameters', 'initCmds');
+    }
 }

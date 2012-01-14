@@ -321,6 +321,25 @@ class PredisClusterTest extends StandardTestCase
         $cluster->executeCommand($command);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testCanBeSerialized()
+    {
+        $connection1 = $this->getMockConnection('tcp://host1?alias=first');
+        $connection2 = $this->getMockConnection('tcp://host2?alias=second');
+
+        $cluster = new PredisCluster();
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        // We use the following line to initialize the underlying hashring.
+        $cluster->getConnectionByKey('foo');
+        $unserialized = unserialize(serialize($cluster));
+
+        $this->assertEquals($cluster, $unserialized);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

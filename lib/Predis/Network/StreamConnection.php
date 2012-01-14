@@ -284,4 +284,12 @@ class StreamConnection extends ConnectionBase
 
         $this->writeBytes($buffer);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array_merge(parent::__sleep(), array('mbiterable', 'throwErrors'));
+    }
 }

@@ -132,4 +132,12 @@ class ComposableStreamConnection extends StreamConnection implements IConnection
     {
         return $this->protocol->read($this);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __sleep()
+    {
+        return array_merge(parent::__sleep(), array('protocol'));
+    }
 }

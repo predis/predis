@@ -100,6 +100,20 @@ class WebdisConnectionTest extends StandardTestCase
         $connection->executeCommand($this->getProfile()->createCommand('auth', array('foobar')));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testCanBeSerialized()
+    {
+        $parameters = $this->getParameters(array('alias' => 'webdis'));
+        $connection = new WebdisConnection($parameters);
+
+        $unserialized = unserialize(serialize($connection));
+
+        $this->assertInstanceOf('Predis\Network\WebdisConnection', $unserialized);
+        $this->assertEquals($parameters, $unserialized->getParameters());
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
