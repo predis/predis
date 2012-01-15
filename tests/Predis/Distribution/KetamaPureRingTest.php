@@ -27,12 +27,12 @@ class KetamaPureRingTest extends DistributionStrategyTestCase
     /**
      * @group disconnected
      */
-    public function testGenerateKey()
+    public function testHash()
     {
         $ring = $this->getDistributorInstance();
         list(, $hash) = unpack('V', md5('foobar', true));
 
-        $this->assertEquals($hash, $ring->generateKey('foobar'));
+        $this->assertEquals($hash, $ring->hash('foobar'));
     }
 
     /**

@@ -13,12 +13,12 @@ require 'SharedConfigurations.php';
 
 // Developers can customize the distribution strategy used by the client
 // to distribute keys among a cluster of servers simply by creating a class
-// that implements the Predis\Distribution\IDistributionStrategy interface.
+// that implements Predis\Distribution\DistributionStrategyInterface.
 
-use Predis\Distribution\IDistributionStrategy;
-use Predis\Network\PredisCluster;
+use Predis\Distribution\DistributionStrategyInterface;
+use Predis\Connection\PredisCluster;
 
-class NaiveDistributionStrategy implements IDistributionStrategy
+class NaiveDistributionStrategy implements DistributionStrategyInterface
 {
     private $nodes;
     private $nodesCount;
@@ -54,7 +54,7 @@ class NaiveDistributionStrategy implements IDistributionStrategy
         return $this->nodes[$count > 1 ? abs(crc32($key) % $count) : 0];
     }
 
-    public function generateKey($value)
+    public function hash($value)
     {
         return crc32($value);
     }

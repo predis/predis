@@ -12,10 +12,10 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\Protocol\IResponseReader;
-use Predis\Protocol\IResponseHandler;
+use Predis\Protocol\ResponseReaderInterface;
+use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Network\IConnectionComposable;
+use Predis\Connection\ComposableConnectionInterface;
 
 /**
  * Implements a pluggable response reader using the standard wire protocol
@@ -24,7 +24,7 @@ use Predis\Network\IConnectionComposable;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextResponseReader implements IResponseReader
+class TextResponseReader implements ResponseReaderInterface
 {
     private $handlers;
 
@@ -56,9 +56,9 @@ class TextResponseReader implements IResponseReader
      * reply that can be returned by Redis.
      *
      * @param string $prefix Identifier for a type of reply.
-     * @param IResponseHandler $handler Response handler for the reply.
+     * @param ResponseHandlerInterface $handler Response handler for the reply.
      */
-    public function setHandler($prefix, IResponseHandler $handler)
+    public function setHandler($prefix, ResponseHandlerInterface $handler)
     {
         $this->handlers[$prefix] = $handler;
     }
@@ -68,7 +68,7 @@ class TextResponseReader implements IResponseReader
      * can be returned by Redis.
      *
      * @param string $prefix Identifier for a type of reply.
-     * @return IResponseHandler
+     * @return ResponseHandlerInterface
      */
     public function getHandler($prefix)
     {
@@ -80,7 +80,7 @@ class TextResponseReader implements IResponseReader
     /**
      * {@inheritdoc}
      */
-    public function read(IConnectionComposable $connection)
+    public function read(ComposableConnectionInterface $connection)
     {
         $header = $connection->readLine();
         if ($header === '') {
@@ -101,10 +101,10 @@ class TextResponseReader implements IResponseReader
      * Helper method used to handle a protocol error generated while reading a
      * reply from a connection to Redis.
      *
-     * @param IConnectionComposable $connection Connection to Redis that generated the error.
+     * @param ComposableConnectionInterface $connection Connection to Redis that generated the error.
      * @param string $message Error message.
      */
-    private function protocolError(IConnectionComposable $connection, $message)
+    private function protocolError(ComposableConnectionInterface $connection, $message)
     {
         Helpers::onCommunicationException(new ProtocolException($connection, $message));
     }

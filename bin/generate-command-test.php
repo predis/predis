@@ -13,9 +13,9 @@
 // -------------------------------------------------------------------------- //
 // This script can be used to automatically generate a file with the scheleton
 // of a test case to test a Redis command by specifying the name of the class
-// in the Predis\Commands namespace (only classes in this namespace are valid).
+// in the Predis\Command namespace (only classes in this namespace are valid).
 // For example, to generate a test case for SET (which is represented by the
-// Predis\Commands\StringSet class):
+// Predis\Command\StringSet class):
 //
 //   $ ./bin/generate-command-test.php --class=StringSet
 //
@@ -33,8 +33,8 @@
 // is explicitly specified.
 // -------------------------------------------------------------------------- //
 
-use Predis\Commands\ICommand;
-use Predis\Commands\IPrefixable;
+use Predis\Command\CommandInterface;
+use Predis\Command\PrefixableCommandInterface;
 
 class CommandTestCaseGenerator
 {
@@ -92,8 +92,8 @@ class CommandTestCaseGenerator
             throw new RuntimeException("Missing 'class' option.");
         }
 
-        $options['fqn'] = "Predis\\Commands\\{$options['class']}";
-        $options['path'] = "Predis/Commands/{$options['class']}.php";
+        $options['fqn'] = "Predis\\Command\\{$options['class']}";
+        $options['path'] = "Predis/Command/{$options['class']}.php";
 
         $source = __DIR__.'/../lib/'.$options['path'];
         if (!file_exists($source)) {
@@ -129,8 +129,8 @@ class CommandTestCaseGenerator
         if (!$reflection->isInstantiable()) {
             throw new RuntimeException("Class $class must be instantiable, abstract classes or interfaces are not allowed.");
         }
-        if (!$reflection->implementsInterface('Predis\Commands\ICommand')) {
-            throw new RuntimeException("Class $class must implement the Predis\Commands\ICommand interface.");
+        if (!$reflection->implementsInterface('Predis\Command\CommandInterface')) {
+            throw new RuntimeException("Class $class must implement Predis\Command\CommandInterface.");
         }
 
         $instance = $reflection->newInstance();
@@ -148,7 +148,7 @@ class CommandTestCaseGenerator
         file_put_contents($options['output'], $this->generate());
     }
 
-    protected function getTestCaseBuffer(ICommand $instance)
+    protected function getTestCaseBuffer(CommandInterface $instance)
     {
         $id = $instance->getId();
         $fqn = get_class($instance);
@@ -167,7 +167,7 @@ class CommandTestCaseGenerator
  * file that was distributed with this source code.
  */
 
-namespace Predis\Commands;
+namespace Predis\Command;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -226,7 +226,7 @@ class $class extends CommandTestCase
 
 PHP;
 
-        if ($instance instanceof IPrefixable) {
+        if ($instance instanceof PrefixableCommandInterface) {
             $buffer .=<<<PHP
 
     /**

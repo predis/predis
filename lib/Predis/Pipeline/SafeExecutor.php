@@ -13,7 +13,7 @@ namespace Predis\Pipeline;
 
 use Predis\ServerException;
 use Predis\CommunicationException;
-use Predis\Network\IConnection;
+use Predis\Connection\ConnectionInterface;
 
 /**
  * Implements a pipeline executor strategy that does not fail when an error is
@@ -21,12 +21,12 @@ use Predis\Network\IConnection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SafeExecutor implements IPipelineExecutor
+class SafeExecutor implements PipelineExecutorInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function execute(IConnection $connection, &$commands)
+    public function execute(ConnectionInterface $connection, &$commands)
     {
         $sizeofPipe = count($commands);
         $values = array();

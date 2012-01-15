@@ -114,11 +114,11 @@ $replies = $redis->pipeline(function($pipe) {
 
 Predis allows developers to create new connection classes to add support for new protocols or override
 the existing ones and provide a different implementation compared to the default classes. This can be
-obtained by subclassing the `Predis\Network\IConnectionSingle` interface.
+obtained by implementing `Predis\Connection\SingleConnectionInterface`.
 
 ``` php
 <?php
-class MyConnectionClass implements Predis\Network\IConnectionSingle
+class MyConnectionClass implements Predis\Connection\SingleConnectionInterface
 {
     // implementation goes here
 }
@@ -129,8 +129,8 @@ $client = new Predis\Client('tcp://127.0.0.1', array(
 ));
 ```
 
-The classes contained in the `Predis\Network` namespace give you a better insight with actual code on
-how to create new connection classes.
+The classes contained in the `Predis\Connection` namespace give you a better insight with actual code
+on how to create new connection classes.
 
 
 ### Defining and registering new commands on the client at runtime ###
@@ -143,7 +143,7 @@ runtime. Actually, it is easier done than said:
 
 ``` php
 <?php
-class BrandNewRedisCommand extends Predis\Commands\Command
+class BrandNewRedisCommand extends Predis\Command\AbstractCommand
 {
     public function getId()
     {

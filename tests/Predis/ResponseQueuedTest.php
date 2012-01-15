@@ -25,7 +25,7 @@ class ResponseQueuedTest extends StandardTestCase
     {
         $queued = new ResponseQueued();
 
-        $this->assertInstanceOf('Predis\IReplyObject', $queued);
+        $this->assertInstanceOf('Predis\ResponseObjectInterface', $queued);
     }
 
     /**

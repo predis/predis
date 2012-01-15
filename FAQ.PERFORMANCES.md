@@ -56,7 +56,7 @@ official Redis C client library) with a thin layer that exposes its features to 
 get the benefits of a faster protocol parser just by adding a single line of code in your application:
 
     $client = new Predis\Client('tcp://127.0.0.1', array(
-        'connections' => array('tcp' => 'Predis\Network\PhpiredisConnection')
+        'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
     ));
 
 As simple as it is, nothing will really change in the way you use the library in your application. So,

@@ -16,7 +16,7 @@ use Predis\Helpers;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\Commands\ICommand;
+use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
@@ -194,10 +194,10 @@ class MultiExecContext
     /**
      * Executes the specified Redis command.
      *
-     * @param ICommand $command A Redis command.
+     * @param CommandInterface $command A Redis command.
      * @return mixed
      */
-    public function executeCommand(ICommand $command)
+    public function executeCommand(CommandInterface $command)
     {
         $this->initialize();
 
@@ -431,7 +431,7 @@ class MultiExecContext
     {
         // Since a MULTI/EXEC block cannot be initialized over a clustered
         // connection, we can safely assume that Predis\Client::getConnection()
-        // will always return an instance of Predis\Network\IConnectionSingle.
+        // will always return an instance of Predis\Connection\SingleConnectionInterface.
         Helpers::onCommunicationException(new ProtocolException(
             $this->client->getConnection(), $message
         ));

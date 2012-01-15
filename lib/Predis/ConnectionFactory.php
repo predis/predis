@@ -11,20 +11,19 @@
 
 namespace Predis;
 
-use Predis\Profiles\IServerProfile;
-use Predis\Network\IConnectionSingle;
-use Predis\Network\IConnectionCluster;
-use Predis\Network\IConnectionReplication;
-use Predis\Profiles\ServerProfile;
+use Predis\Profile\ServerProfileInterface;
+use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\ClusterConnectionInterface;
+use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Profile\ServerProfile;
 
 /**
  * Provides a default factory for Redis connections that maps URI schemes
- * to connection classes implementing the Predis\Network\IConnectionSingle
- * interface.
+ * to connection classes implementing Predis\Connection\SingleConnectionInterface.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionFactory implements IConnectionFactory
+class ConnectionFactory implements ConnectionFactoryInterface
 {
     private $schemes;
 
@@ -44,15 +43,15 @@ class ConnectionFactory implements IConnectionFactory
     protected function getDefaultSchemes()
     {
         return array(
-            'tcp' => 'Predis\Network\StreamConnection',
-            'unix' => 'Predis\Network\StreamConnection',
-            'http' => 'Predis\Network\WebdisConnection',
+            'tcp' => 'Predis\Connection\StreamConnection',
+            'unix' => 'Predis\Connection\StreamConnection',
+            'http' => 'Predis\Connection\WebdisConnection',
         );
     }
 
     /**
      * Checks if the provided argument represents a valid connection class
-     * implementing the Predis\Network\IConnectionSingle interface. Optionally,
+     * implementing Predis\Connection\SingleConnectionInterface. Optionally,
      * callable objects are used for lazy initialization of connection objects.
      *
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
@@ -66,7 +65,7 @@ class ConnectionFactory implements IConnectionFactory
 
         $initializerReflection = new \ReflectionClass($initializer);
 
-        if (!$initializerReflection->isSubclassOf('Predis\Network\IConnectionSingle')) {
+        if (!$initializerReflection->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
             throw new \InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object'
             );
@@ -94,9 +93,9 @@ class ConnectionFactory implements IConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function create($parameters, IServerProfile $profile = null)
+    public function create($parameters, ServerProfileInterface $profile = null)
     {
-        if (!$parameters instanceof IConnectionParameters) {
+        if (!$parameters instanceof ConnectionParametersInterface) {
             $parameters = new ConnectionParameters($parameters ?: array());
         }
 
@@ -114,10 +113,10 @@ class ConnectionFactory implements IConnectionFactory
         }
 
         $connection = call_user_func($initializer, $parameters, $profile);
-        if (!$connection instanceof IConnectionSingle) {
+        if (!$connection instanceof SingleConnectionInterface) {
             throw new \InvalidArgumentException(
                 'Objects returned by connection initializers must implement ' .
-                'the Predis\Network\IConnectionSingle interface'
+                'Predis\Connection\SingleConnectionInterface'
             );
         }
 
@@ -127,10 +126,10 @@ class ConnectionFactory implements IConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function createCluster(IConnectionCluster $cluster, $parameters, IServerProfile $profile = null)
+    public function createCluster(ClusterConnectionInterface $cluster, $parameters, ServerProfileInterface $profile = null)
     {
         foreach ($parameters as $node) {
-            $cluster->add($node instanceof IConnectionSingle ? $node : $this->create($node, $profile));
+            $cluster->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
         }
 
         return $cluster;
@@ -139,10 +138,10 @@ class ConnectionFactory implements IConnectionFactory
     /**
      * {@inheritdoc}
      */
-    public function createReplication(IConnectionReplication $replication, $parameters, IServerProfile $profile = null)
+    public function createReplication(ReplicationConnectionInterface $replication, $parameters, ServerProfileInterface $profile = null)
     {
         foreach ($parameters as $node) {
-            $replication->add($node instanceof IConnectionSingle ? $node : $this->create($node, $profile));
+            $replication->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
         }
 
         return $replication;
@@ -151,10 +150,10 @@ class ConnectionFactory implements IConnectionFactory
     /**
      * Prepares a connection object after its initialization.
      *
-     * @param IConnectionSingle $connection Instance of a connection object.
-     * @param IServerProfile $profile $connection Instance of a connection object.
+     * @param SingleConnectionInterface $connection Instance of a connection object.
+     * @param ServerProfileInterface $profile $connection Instance of a connection object.
      */
-    protected function prepareConnection(IConnectionSingle $connection, IServerProfile $profile)
+    protected function prepareConnection(SingleConnectionInterface $connection, ServerProfileInterface $profile)
     {
         $parameters = $connection->getParameters();
 

@@ -17,7 +17,7 @@ namespace Predis;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseQueued implements IReplyObject
+class ResponseQueued implements ResponseObjectInterface
 {
     /**
      * Converts the object to its string representation.

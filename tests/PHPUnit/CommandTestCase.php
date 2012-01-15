@@ -9,13 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Commands;
+namespace Predis\Command;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profiles\ServerProfile;
-use Predis\Profiles\IServerProfile;
+use Predis\Profile\ServerProfile;
+use Predis\Profile\ServerProfileInterface;
 
 /**
  *
@@ -25,7 +25,7 @@ abstract class CommandTestCase extends StandardTestCase
     /**
      * Returns the expected command.
      *
-     * @return ICommand|string Instance or FQN of the expected command.
+     * @return CommandInterface|string Instance or FQN of the expected command.
      */
     protected abstract function getExpectedCommand();
 
@@ -39,19 +39,19 @@ abstract class CommandTestCase extends StandardTestCase
     /**
      * Returns a new command instance.
      *
-     * @return ICommand
+     * @return CommandInterface
      */
     protected function getCommand()
     {
         $command = $this->getExpectedCommand();
 
-        return $command instanceof ICommand ? $command : new $command();
+        return $command instanceof CommandInterface ? $command : new $command();
     }
 
     /**
      * Return the server profile used during the tests.
      *
-     * @return IServerProfile
+     * @return ServerProfileInterface
      */
     protected function getProfile()
     {
@@ -99,14 +99,14 @@ abstract class CommandTestCase extends StandardTestCase
      */
     protected function isPrefixable()
     {
-        return $this->getCommand() instanceof IPrefixable;
+        return $this->getCommand() instanceof PrefixableCommandInterface;
     }
 
     /**
      * Returns a new command instance with the specified arguments.
      *
      * @param ... List of arguments for the command.
-     * @return ICommand
+     * @return CommandInterface
      */
     protected function getCommandWithArguments(/* arguments */)
     {
@@ -117,7 +117,7 @@ abstract class CommandTestCase extends StandardTestCase
      * Returns a new command instance with the specified arguments.
      *
      * @param array $arguments Arguments for the command.
-     * @return ICommand
+     * @return CommandInterface
      */
     protected function getCommandWithArgumentsArray(Array $arguments)
     {
@@ -155,7 +155,7 @@ abstract class CommandTestCase extends StandardTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertInstanceOf('Predis\Commands\ICommand', $command);
+        $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals($this->getExpectedId(), $command->getId());
     }
 

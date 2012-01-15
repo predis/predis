@@ -12,7 +12,7 @@
 namespace Predis;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\Network\IConnectionSingle;
+use Predis\Connection\SingleConnectionInterface;
 
 /**
  *
@@ -63,16 +63,16 @@ class CommunicationExceptionTest extends StandardTestCase
      * Returns a mocked connection instance.
      *
      * @param mixed $parameters Connection parameters.
-     * @return IConnectionSingle
+     * @return SingleConnectionInterface
      */
     protected function getMockedConnectionBase($parameters = null)
     {
-        $builder = $this->getMockBuilder('Predis\Network\ConnectionBase');
+        $builder = $this->getMockBuilder('Predis\Connection\AbstractConnection');
 
         if ($parameters === null) {
             $builder->disableOriginalConstructor();
         }
-        else if (!$parameters instanceof IConnectionParameters) {
+        else if (!$parameters instanceof ConnectionParametersInterface) {
             $parameters = new ConnectionParameters($parameters);
         }
 
@@ -82,13 +82,13 @@ class CommunicationExceptionTest extends StandardTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param IConnectionSingle $message Connection instance.
+     * @param SingleConnectionInterface $message Connection instance.
      * @param string $message Exception message.
      * @param int $code Exception code.
      * @param \Exception $inner Inner exception.
      * @return \Exception
      */
-    protected function getException(IConnectionSingle $connection, $message, $code = 0, \Exception $inner = null)
+    protected function getException(SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
     {
         $arguments = array($connection, $message, $code, $inner);
         $mock = $this->getMockForAbstractClass('Predis\CommunicationException', $arguments);

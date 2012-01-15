@@ -27,8 +27,8 @@ class ResponseErrorTest extends StandardTestCase
     {
         $error = new ResponseError(self::ERR_WRONG_KEY_TYPE);
 
-        $this->assertInstanceOf('Predis\IRedisServerError', $error);
-        $this->assertInstanceOf('Predis\IReplyObject', $error);
+        $this->assertInstanceOf('Predis\ResponseErrorInterface', $error);
+        $this->assertInstanceOf('Predis\ResponseObjectInterface', $error);
     }
 
     /**

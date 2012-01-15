@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Profiles;
+namespace Predis\Profile;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -21,7 +21,7 @@ abstract class ServerVersionTestCase extends StandardTestCase
     /**
      * Returns a new instance of the tested profile.
      *
-     * @return Predis\Profiles\IServerProfile
+     * @return ServerProfileInterface
      */
     protected abstract function getProfileInstance();
 
@@ -43,10 +43,10 @@ abstract class ServerVersionTestCase extends StandardTestCase
      * Returns the list of commands supported by the current
      * server profile.
      *
-     * @param IServerProfile $profile Server profile instance.
+     * @param ServerProfileInterface $profile Server profile instance.
      * @return array
      */
-    protected function getCommands(IServerProfile $profile)
+    protected function getCommands(ServerProfileInterface $profile)
     {
         $commands = $profile->getSupportedCommands();
 

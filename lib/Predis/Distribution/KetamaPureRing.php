@@ -51,7 +51,7 @@ class KetamaPureRing extends HashRing
     /**
      * {@inheritdoc}
      */
-    public function generateKey($value)
+    public function hash($value)
     {
         $hash = unpack('V', md5($value, true));
         return $hash[1];

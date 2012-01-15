@@ -14,7 +14,7 @@ namespace Predis\Protocol;
 require_once __DIR__.'/../CommunicationExceptionTest.php';
 
 use Predis\CommunicationExceptionTest;
-use Predis\Network\IConnectionSingle;
+use Predis\Connection\SingleConnectionInterface;
 
 /**
  *
@@ -24,7 +24,7 @@ class ProtocolExceptionTest extends CommunicationExceptionTest
     /**
      * {@inheritdoc}
      */
-    protected function getException(IConnectionSingle $connection, $message, $code = 0, \Exception $inner = null)
+    protected function getException(SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
     {
         return new ProtocolException($connection, $message, $code, $inner);
     }

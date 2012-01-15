@@ -11,9 +11,9 @@
 
 namespace Predis;
 
-use Predis\Network\IConnection;
-use Predis\Network\IConnectionCluster;
-use Predis\Network\IConnectionReplication;
+use Predis\Connection\ConnectionInterface;
+use Predis\Connection\ClusterConnectionInterface;
+use Predis\Connection\ReplicationConnectionInterface;
 
 /**
  * Defines a few helper methods.
@@ -25,23 +25,23 @@ class Helpers
     /**
      * Checks if the specified connection represents an aggregation of connections.
      *
-     * @param IConnection $connection Connection object.
+     * @param ConnectionInterface $connection Connection object.
      * @return Boolean
      */
-    public static function isAggregated(IConnection $connection)
+    public static function isAggregated(ConnectionInterface $connection)
     {
-        return $connection instanceof IConnectionCluster || $connection instanceof IConnectionReplication;
+        return $connection instanceof ClusterConnectionInterface || $connection instanceof ReplicationConnectionInterface;
     }
 
     /**
      * Checks if the specified connection represents a cluster.
      *
-     * @param IConnection $connection Connection object.
+     * @param ConnectionInterface $connection Connection object.
      * @return Boolean
      */
-    public static function isCluster(IConnection $connection)
+    public static function isCluster(ConnectionInterface $connection)
     {
-        return $connection instanceof IConnectionCluster;
+        return $connection instanceof ClusterConnectionInterface;
     }
 
     /**

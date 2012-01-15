@@ -12,8 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use Predis\ServerException;
-use Predis\Protocol\IResponseHandler;
-use Predis\Network\IConnectionComposable;
+use Predis\Protocol\ResponseHandlerInterface;
+use Predis\Connection\ComposableConnectionInterface;
 
 /**
  * Implements a response handler for error replies using the standard wire
@@ -25,12 +25,12 @@ use Predis\Network\IConnectionComposable;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseErrorHandler implements IResponseHandler
+class ResponseErrorHandler implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(IConnectionComposable $connection, $errorMessage)
+    public function handle(ComposableConnectionInterface $connection, $errorMessage)
     {
         throw new ServerException($errorMessage);
     }

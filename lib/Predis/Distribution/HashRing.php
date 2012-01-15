@@ -19,7 +19,7 @@ namespace Predis\Distribution;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
-class HashRing implements IDistributionStrategy
+class HashRing implements DistributionStrategyInterface
 {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
@@ -170,7 +170,7 @@ class HashRing implements IDistributionStrategy
      * @param string $value Input value.
      * @return int
      */
-    public function generateKey($value)
+    public function hash($value)
     {
         return crc32($value);
     }

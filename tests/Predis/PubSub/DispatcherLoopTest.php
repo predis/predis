@@ -14,7 +14,7 @@ namespace Predis\PubSub;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profiles\ServerProfile;
+use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-pubsub

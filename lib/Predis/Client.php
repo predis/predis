@@ -11,14 +11,14 @@
 
 namespace Predis;
 
-use Predis\Commands\ICommand;
-use Predis\Options\IClientOptions;
-use Predis\Network\IConnection;
-use Predis\Network\IConnectionSingle;
-use Predis\Profiles\IServerProfile;
-use Predis\Options\ClientOptions;
-use Predis\Profiles\ServerProfile;
+use Predis\Command\CommandInterface;
+use Predis\Option\ClientOptionsInterface;
+use Predis\Connection\ConnectionInterface;
+use Predis\Profile\ServerProfileInterface;
+use Predis\Option\ClientOptions;
+use Predis\Profile\ServerProfile;
 use Predis\PubSub\PubSubContext;
+use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Transaction\MultiExecContext;
 
@@ -52,9 +52,9 @@ class Client
     }
 
     /**
-     * Creates an instance of Predis\Options\ClientOptions from various types of
-     * arguments (string, array, Predis\Profiles\ServerProfile) or returns the
-     * passed object if it is an instance of Predis\Options\ClientOptions.
+     * Creates an instance of Predis\Option\ClientOptions from various types of
+     * arguments (string, array, Predis\Profile\ServerProfile) or returns the
+     * passed object if it is an instance of Predis\Option\ClientOptions.
      *
      * @param mixed $options Client options.
      * @return ClientOptions
@@ -67,10 +67,10 @@ class Client
         if (is_array($options)) {
             return new ClientOptions($options);
         }
-        if ($options instanceof IClientOptions) {
+        if ($options instanceof ClientOptionsInterface) {
             return $options;
         }
-        if ($options instanceof IServerProfile || is_string($options)) {
+        if ($options instanceof ServerProfileInterface || is_string($options)) {
             return new ClientOptions(array('profile' => $options));
         }
 
@@ -80,14 +80,14 @@ class Client
     /**
      * Initializes one or multiple connection (cluster) objects from various
      * types of arguments (string, array) or returns the passed object if it
-     * implements the Predis\Network\IConnection interface.
+     * implements Predis\Connection\ConnectionInterface.
      *
      * @param mixed $parameters Connection parameters or instance.
-     * @return IConnection
+     * @return ConnectionInterface
      */
     protected function initializeConnection($parameters)
     {
-        if ($parameters instanceof IConnection) {
+        if ($parameters instanceof ConnectionInterface) {
             return $parameters;
         }
 
@@ -106,7 +106,7 @@ class Client
     /**
      * Returns the server profile used by the client.
      *
-     * @return IServerProfile
+     * @return ServerProfileInterface
      */
     public function getProfile()
     {
@@ -126,7 +126,7 @@ class Client
     /**
      * Returns the connection factory object used by the client.
      *
-     * @return IConnectionFactory
+     * @return ConnectionFactoryInterface
      */
     public function getConnectionFactory()
     {
@@ -191,7 +191,7 @@ class Client
      * one of the connection instances identified by its alias.
      *
      * @param string $id The alias of a connection when connected to a cluster.
-     * @return IConnection
+     * @return ConnectionInterface
      */
     public function getConnection($id = null)
     {
@@ -224,7 +224,7 @@ class Client
      *
      * @param string $method The name of a Redis command.
      * @param array $arguments The arguments for the command.
-     * @return ICommand
+     * @return CommandInterface
      */
     public function createCommand($method, $arguments = array())
     {
@@ -234,10 +234,10 @@ class Client
     /**
      * Executes the specified Redis command.
      *
-     * @param ICommand $command A Redis command.
+     * @param CommandInterface $command A Redis command.
      * @return mixed
      */
-    public function executeCommand(ICommand $command)
+    public function executeCommand(CommandInterface $command)
     {
         return $this->connection->executeCommand($command);
     }
@@ -245,10 +245,10 @@ class Client
     /**
      * Executes the specified Redis command on all the nodes of a cluster.
      *
-     * @param ICommand $command A Redis command.
+     * @param CommandInterface $command A Redis command.
      * @return array
      */
-    public function executeCommandOnShards(ICommand $command)
+    public function executeCommandOnShards(CommandInterface $command)
     {
         if (Helpers::isCluster($this->connection)) {
             $replies = array();

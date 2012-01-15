@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Network;
+namespace Predis\Connection;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\ConnectionParameters;
-use Predis\Profiles\ServerProfile;
+use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-connection
@@ -24,7 +24,7 @@ abstract class ConnectionTestCase extends StandardTestCase
     /**
      * @group disconnected
      * @group slow
-     * @expectedException Predis\Network\ConnectionException
+     * @expectedException Predis\Connection\ConnectionException
      */
     public function testThrowExceptionWhenUnableToConnect()
     {
@@ -308,7 +308,7 @@ abstract class ConnectionTestCase extends StandardTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException Predis\Network\ConnectionException
+     * @expectedException Predis\Connection\ConnectionException
      * @expectedExceptionMessage Connection timed out
      */
     public function testThrowsExceptionOnConnectionTimeout()
@@ -321,7 +321,7 @@ abstract class ConnectionTestCase extends StandardTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException Predis\Network\ConnectionException
+     * @expectedException Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {

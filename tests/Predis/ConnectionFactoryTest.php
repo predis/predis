@@ -25,7 +25,7 @@ class ConnectionFactoryTest extends StandardTestCase
     {
         $factory = new ConnectionFactory();
 
-        $this->assertInstanceOf('Predis\IConnectionFactory', $factory);
+        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $factory);
     }
 
     /**
@@ -42,7 +42,7 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $connection = $factory->create($tcp);
         $parameters = $connection->getParameters();
-        $this->assertInstanceOf('Predis\Network\StreamConnection', $connection);
+        $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
         $this->assertEquals($tcp->scheme, $parameters->scheme);
         $this->assertEquals($tcp->host, $parameters->host);
         $this->assertEquals($tcp->database, $parameters->database);
@@ -55,7 +55,7 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $connection = $factory->create($tcp);
         $parameters = $connection->getParameters();
-        $this->assertInstanceOf('Predis\Network\StreamConnection', $connection);
+        $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
         $this->assertEquals($tcp->scheme, $parameters->scheme);
         $this->assertEquals($tcp->database, $parameters->database);
     }
@@ -69,7 +69,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $connection = $factory->create(null);
         $parameters = $connection->getParameters();
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
         $this->assertFalse($parameters->isSetByUser('custom'));
     }
@@ -83,7 +83,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $connection = $factory->create(array('scheme' => 'tcp', 'custom' => 'foobar'));
         $parameters = $connection->getParameters();
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
         $this->assertTrue($parameters->isSetByUser('custom'));
     }
@@ -97,7 +97,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $connection = $factory->create('tcp://127.0.0.1?custom=foobar');
         $parameters = $connection->getParameters();
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
         $this->assertTrue($parameters->isSetByUser('custom'));
     }
@@ -107,14 +107,14 @@ class ConnectionFactoryTest extends StandardTestCase
      */
     public function testCreateConnectionWithoutInitializationCommands()
     {
-        $profile = $this->getMock('Predis\Profiles\IServerProfile');
+        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->never())->method('create');
 
         $factory = new ConnectionFactory();
         $parameters = new ConnectionParameters();
         $connection = $factory->create($parameters, $profile);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
     }
 
     /**
@@ -129,10 +129,10 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $createCommand = function($id, $arguments) use($test, &$commands) {
             $commands[$id] = $arguments;
-            return $test->getMock('Predis\Commands\ICommand');
+            return $test->getMock('Predis\Command\CommandInterface');
         };
 
-        $profile = $this->getMock('Predis\Profiles\IServerProfile');
+        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->exactly(2))
                 ->method('createCommand')
                 ->with($this->isType('string'), $this->isType('array'))
@@ -142,7 +142,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $parameters = new ConnectionParameters(array('database' => $database, 'password' => $password));
         $connection = $factory->create($parameters, $profile);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals(2, count($commands));   // TODO: assertCount()?
         $this->assertEquals(array($database), $commands['select']);
         $this->assertEquals(array($password), $commands['auth']);
@@ -237,7 +237,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory->undefine('unknown');
         $connection = $factory->create('tcp://127.0.0.1');
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
     }
 
     /**
@@ -264,10 +264,10 @@ class ConnectionFactoryTest extends StandardTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Network\IConnectionCluster');
+        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->exactly(2))
                 ->method('add')
-                ->with($this->isInstanceOf('Predis\Network\IConnectionSingle'));
+                ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
 
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
         $factory->expects($this->never())
@@ -283,10 +283,10 @@ class ConnectionFactoryTest extends StandardTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Network\IConnectionCluster');
+        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->exactly(4))
                 ->method('add')
-                ->with($this->isInstanceOf('Predis\Network\IConnectionSingle'));
+                ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
 
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(3))
@@ -303,7 +303,7 @@ class ConnectionFactoryTest extends StandardTestCase
      */
     public function testClusterWithEmptyListOfParameters()
     {
-        $cluster = $this->getMock('Predis\Network\IConnectionCluster');
+        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->never())->method('add');
 
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
@@ -314,14 +314,14 @@ class ConnectionFactoryTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @todo We might want to add a test for IConnectionSingle::pushInitCommand().
+     * @todo We might want to add a test for SingleConnectionInterface::pushInitCommand().
      */
     public function testClusterWithServerProfileArgument()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Network\IConnectionCluster');
-        $profile = $this->getMock('Predis\Profiles\IServerProfile');
+        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
+        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
 
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(2))
@@ -342,10 +342,10 @@ class ConnectionFactoryTest extends StandardTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $replication = $this->getMock('Predis\Network\IConnectionReplication');
+        $replication = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
         $replication->expects($this->exactly(4))
                     ->method('add')
-                    ->with($this->isInstanceOf('Predis\Network\IConnectionSingle'));
+                    ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
 
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(3))
@@ -363,13 +363,13 @@ class ConnectionFactoryTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a mocked Predis\Network\IConnectionSingle.
+     * Returns a mocked Predis\Connection\SingleConnectionInterface.
      *
      * @return Array Mock instance and class name
      */
     protected function getMockConnectionClass()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         return array($connection, get_class($connection));
     }

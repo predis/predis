@@ -27,11 +27,11 @@ class HashRingTest extends DistributionStrategyTestCase
     /**
      * @group disconnected
      */
-    public function testGenerateKey()
+    public function testHash()
     {
         $ring = $this->getDistributorInstance();
 
-        $this->assertEquals(crc32('foobar'), $ring->generateKey('foobar'));
+        $this->assertEquals(crc32('foobar'), $ring->hash('foobar'));
     }
 
     /**

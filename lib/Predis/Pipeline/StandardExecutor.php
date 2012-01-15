@@ -12,7 +12,7 @@
 namespace Predis\Pipeline;
 
 use Predis\ServerException;
-use Predis\Network\IConnection;
+use Predis\Connection\ConnectionInterface;
 
 /**
  * Implements the standard pipeline executor strategy used
@@ -21,12 +21,12 @@ use Predis\Network\IConnection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StandardExecutor implements IPipelineExecutor
+class StandardExecutor implements PipelineExecutorInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function execute(IConnection $connection, &$commands)
+    public function execute(ConnectionInterface $connection, &$commands)
     {
         $sizeofPipe = count($commands);
         $values = array();

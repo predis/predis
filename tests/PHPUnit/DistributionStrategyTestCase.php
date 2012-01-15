@@ -21,23 +21,23 @@ abstract class DistributionStrategyTestCase extends StandardTestCase
     /**
      * Returns a new instance of the tested distributor.
      *
-     * @return Predis\Distribution\IDistributionStrategy
+     * @return Predis\Distribution\DistributionStrategyInterface
      */
     protected abstract function getDistributorInstance();
 
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param IDistributionStrategy $ring Hashring instance.
+     * @param DistributionStrategyInterface $ring Hashring instance.
      * @param int $iterations Number of nodes to fetch.
      * @return array Nodes from the hashring.
      */
-    protected function getNodes(IDistributionStrategy $ring, $iterations = 10)
+    protected function getNodes(DistributionStrategyInterface $ring, $iterations = 10)
     {
         $nodes = array();
 
         for ($i = 0; $i < $iterations; $i++) {
-            $key = $ring->generateKey($i * $i);
+            $key = $ring->hash($i * $i);
             $nodes[] = $ring->get($key);
         }
 

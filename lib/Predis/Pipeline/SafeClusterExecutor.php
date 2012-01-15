@@ -13,7 +13,7 @@ namespace Predis\Pipeline;
 
 use Predis\ServerException;
 use Predis\CommunicationException;
-use Predis\Network\IConnection;
+use Predis\Connection\ConnectionInterface;
 
 /**
  * Implements a pipeline executor strategy for connection clusters that does
@@ -22,12 +22,12 @@ use Predis\Network\IConnection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SafeClusterExecutor implements IPipelineExecutor
+class SafeClusterExecutor implements PipelineExecutorInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function execute(IConnection $connection, &$commands)
+    public function execute(ConnectionInterface $connection, &$commands)
     {
         $connectionExceptions = array();
         $sizeofPipe = count($commands);

@@ -11,7 +11,7 @@
 
 namespace Predis;
 
-use Predis\Network\IConnectionSingle;
+use Predis\Connection\SingleConnectionInterface;
 
 /**
  * Base exception class for network-related errors.
@@ -23,12 +23,12 @@ abstract class CommunicationException extends PredisException
     private $connection;
 
     /**
-     * @param IConnectionSingle $connection Connection that generated the exception.
+     * @param SingleConnectionInterface $connection Connection that generated the exception.
      * @param string $message Error message.
      * @param int $code Error code.
      * @param \Exception $innerException Inner exception for wrapping the original error.
      */
-    public function __construct(IConnectionSingle $connection,
+    public function __construct(SingleConnectionInterface $connection,
         $message = null, $code = null, \Exception $innerException = null)
     {
         parent::__construct($message, $code, $innerException);
@@ -39,7 +39,7 @@ abstract class CommunicationException extends PredisException
     /**
      * Gets the connection that generated the exception.
      *
-     * @return IConnectionSingle
+     * @return SingleConnectionInterface
      */
     public function getConnection()
     {

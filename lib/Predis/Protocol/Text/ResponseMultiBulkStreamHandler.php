@@ -12,10 +12,10 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\Protocol\IResponseHandler;
+use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Network\IConnectionComposable;
-use Predis\Iterators\MultiBulkResponseSimple;
+use Predis\Connection\ComposableConnectionInterface;
+use Predis\Iterator\MultiBulkResponseSimple;
 
 /**
  * Implements a response handler for iterable multi-bulk replies using the
@@ -24,16 +24,16 @@ use Predis\Iterators\MultiBulkResponseSimple;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseMultiBulkStreamHandler implements IResponseHandler
+class ResponseMultiBulkStreamHandler implements ResponseHandlerInterface
 {
     /**
      * Handles a multi-bulk reply returned by Redis in a streamable fashion.
      *
-     * @param IConnectionComposable $connection Connection to Redis.
+     * @param ComposableConnectionInterface $connection Connection to Redis.
      * @param string $lengthString Number of items in the multi-bulk reply.
      * @return MultiBulkResponseSimple
      */
-    public function handle(IConnectionComposable $connection, $lengthString)
+    public function handle(ComposableConnectionInterface $connection, $lengthString)
     {
         $length = (int) $lengthString;
 

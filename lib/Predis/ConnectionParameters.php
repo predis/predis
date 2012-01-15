@@ -11,15 +11,14 @@
 
 namespace Predis;
 
-use Predis\IConnectionParameters;
-use Predis\Options\IOption;
+use Predis\Option\OptionInterface;
 
 /**
  * Handles parsing and validation of connection parameters.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionParameters implements IConnectionParameters
+class ConnectionParameters implements ConnectionParametersInterface
 {
     private static $defaultParameters;
     private static $validators;
@@ -87,7 +86,7 @@ class ConnectionParameters implements IConnectionParameters
      * Defines a default value and a validator for the specified parameter.
      *
      * @param string $parameter Name of the parameter.
-     * @param mixed $default Default value or an instance of IOption.
+     * @param mixed $default Default value or an instance of OptionInterface.
      * @param mixed $callable A validator callback.
      */
     public static function define($parameter, $default, $callable = null)
@@ -95,7 +94,7 @@ class ConnectionParameters implements IConnectionParameters
         self::ensureDefaults();
         self::$defaultParameters[$parameter] = $default;
 
-        if ($default instanceof IOption) {
+        if ($default instanceof OptionInterface) {
             self::$validators[$parameter] = $default;
             return;
         }
@@ -178,7 +177,7 @@ class ConnectionParameters implements IConnectionParameters
     {
         $value = $this->parameters[$parameter];
 
-        if ($value instanceof IOption) {
+        if ($value instanceof OptionInterface) {
             $this->parameters[$parameter] = ($value = $value->getDefault());
         }
 

@@ -14,11 +14,11 @@ require 'SharedConfigurations.php';
 // This example will not work with versions of Redis < 2.6.
 //
 // Additionally to the EVAL command defined in the current development profile, the new
-// Predis\Commands\ScriptedCommand base class can be used to build an higher abstraction
+// Predis\Command\ScriptedCommand base class can be used to build an higher abstraction
 // for our "scripted" commands so that they will appear just like any other command on
 // the client-side. This is a quick example used to implement INCREX.
 
-use Predis\Commands\ScriptedCommand;
+use Predis\Command\ScriptedCommand;
 
 class IncrementExistingKey extends ScriptedCommand
 {

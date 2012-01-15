@@ -12,8 +12,8 @@
 require 'SharedConfigurations.php';
 
 use Predis\ConnectionParameters;
-use Predis\Commands\ICommand;
-use Predis\Network\StreamConnection;
+use Predis\Command\CommandInterface;
+use Predis\Connection\StreamConnection;
 
 class SimpleDebuggableConnection extends StreamConnection
 {
@@ -27,7 +27,7 @@ class SimpleDebuggableConnection extends StreamConnection
         parent::connect();
     }
 
-    private function storeDebug(ICommand $command, $direction)
+    private function storeDebug(CommandInterface $command, $direction)
     {
         $firtsArg  = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->tstart, 4);
@@ -40,14 +40,14 @@ class SimpleDebuggableConnection extends StreamConnection
         $this->debugBuffer[] = $debug;
     }
 
-    public function writeCommand(ICommand $command)
+    public function writeCommand(CommandInterface $command)
     {
         parent::writeCommand($command);
 
         $this->storeDebug($command, '->');
     }
 
-    public function readResponse(ICommand $command)
+    public function readResponse(CommandInterface $command)
     {
         $reply = parent::readResponse($command);
         $this->storeDebug($command, '<-');

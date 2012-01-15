@@ -38,8 +38,8 @@ class ServerExceptionTest extends StandardTestCase
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertInstanceOf('Predis\ServerException', $exception);
-        $this->assertInstanceOf('Predis\IRedisServerError', $exception);
-        $this->assertInstanceOf('Predis\IReplyObject', $exception);
+        $this->assertInstanceOf('Predis\ResponseErrorInterface', $exception);
+        $this->assertInstanceOf('Predis\ResponseObjectInterface', $exception);
         $this->assertInstanceOf('Predis\PredisException', $exception);
     }
 

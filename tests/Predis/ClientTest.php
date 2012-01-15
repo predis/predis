@@ -13,9 +13,9 @@ namespace Predis;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profiles\ServerProfile;
-use Predis\Network\PredisCluster;
-use Predis\Network\MasterSlaveReplication;
+use Predis\Profile\ServerProfile;
+use Predis\Connection\PredisCluster;
+use Predis\Connection\MasterSlaveReplication;
 
 /**
  *
@@ -30,7 +30,7 @@ class ClientTest extends StandardTestCase
         $client = new Client();
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -50,7 +50,7 @@ class ClientTest extends StandardTestCase
         $client = new Client(null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -70,7 +70,7 @@ class ClientTest extends StandardTestCase
         $client = new Client(null, null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $connection);
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -106,7 +106,7 @@ class ClientTest extends StandardTestCase
 
         $client = new Client($arg1);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionCluster', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
     }
 
     /**
@@ -128,7 +128,7 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client($arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
-        $this->assertInstanceOf('Predis\Network\IConnectionCluster', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
     }
 
     /**
@@ -136,12 +136,12 @@ class ClientTest extends StandardTestCase
      */
     public function testConstructorWithArrayOfConnectionsArgument()
     {
-        $connection1 = $this->getMock('Predis\Network\IConnectionSingle');
-        $connection2 = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection2 = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = new Client(array($connection1, $connection2));
 
-        $this->assertInstanceOf('Predis\Network\IConnectionCluster', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
         $this->assertSame($connection1, $cluster->getConnectionById(0));
         $this->assertSame($connection2, $cluster->getConnectionById(1));
     }
@@ -156,7 +156,7 @@ class ClientTest extends StandardTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $client->getConnection());
         $this->assertSame($connection, $client->getConnection());
 
         $parameters = $client->getConnection()->getParameters();
@@ -176,7 +176,7 @@ class ClientTest extends StandardTestCase
 
         $client = new Client($cluster);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionCluster', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
         $this->assertSame($cluster, $client->getConnection());
     }
 
@@ -192,7 +192,7 @@ class ClientTest extends StandardTestCase
 
         $client = new Client($replication);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionReplication', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $client->getConnection());
         $this->assertSame($replication, $client->getConnection());
     }
 
@@ -221,14 +221,14 @@ class ClientTest extends StandardTestCase
      */
     public function testConstructorWithNullAndArrayArgument()
     {
-        $factory = $this->getMock('Predis\IConnectionFactory');
+        $factory = $this->getMock('Predis\ConnectionFactoryInterface');
 
         $arg2 = array('profile' => '2.0', 'prefix' => 'prefix:', 'connections' => $factory);
         $client = new Client(null, $arg2);
 
         $profile = $client->getProfile();
         $this->assertSame($profile->getVersion(), ServerProfile::get('2.0')->getVersion());
-        $this->assertInstanceOf('Predis\Commands\Processors\KeyPrefixProcessor', $profile->getProcessor());
+        $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
 
         $this->assertSame($factory, $client->getConnectionFactory());
@@ -243,7 +243,7 @@ class ClientTest extends StandardTestCase
         $arg2 = array('replication' => true);
         $client = new Client($arg1, $arg2);
 
-        $this->assertInstanceOf('Predis\Network\IConnectionReplication', $connection = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $connection = $client->getConnection());
         $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
         $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
     }
@@ -253,7 +253,7 @@ class ClientTest extends StandardTestCase
      */
     public function testConnectAndDisconnect()
     {
-        $connection = $this->getMock('Predis\Network\IConnection');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())->method('connect');
         $connection->expects($this->once())->method('disconnect');
 
@@ -267,7 +267,7 @@ class ClientTest extends StandardTestCase
      */
     public function testIsConnectedChecksConnectionState()
     {
-        $connection = $this->getMock('Predis\Network\IConnection');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())->method('isConnected');
 
         $client = new Client($connection);
@@ -279,7 +279,7 @@ class ClientTest extends StandardTestCase
      */
     public function testQuitIsAliasForDisconnect()
     {
-        $connection = $this->getMock('Predis\Network\IConnection');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())->method('disconnect');
 
         $client = new Client($connection);
@@ -293,7 +293,7 @@ class ClientTest extends StandardTestCase
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
 
-        $profile = $this->getMock('Predis\Profiles\IServerProfile');
+        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->once())
                 ->method('createCommand')
                 ->with('ping', array())
@@ -310,7 +310,7 @@ class ClientTest extends StandardTestCase
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
 
-        $connection= $this->getMock('Predis\Network\IConnection');
+        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->with($ping)
@@ -328,13 +328,13 @@ class ClientTest extends StandardTestCase
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
 
-        $connection1 = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
                     ->will($this->returnValue(true));
 
-        $connection2 = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection2 = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection2->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
@@ -352,7 +352,7 @@ class ClientTest extends StandardTestCase
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
 
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
@@ -370,13 +370,13 @@ class ClientTest extends StandardTestCase
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
 
-        $connection = $this->getMock('Predis\Network\IConnection');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Commands\ConnectionPing'))
+                   ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
                    ->will($this->returnValue(true));
 
-        $profile = $this->getMock('Predis\Profiles\IServerProfile');
+        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->once())
                 ->method('createCommand')
                 ->with('ping', array())
@@ -405,9 +405,9 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
-        $this->assertInstanceOf('Predis\Network\IConnectionCluster', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $node01 = $client->getConnection('node01'));
-        $this->assertInstanceOf('Predis\Network\IConnectionSingle', $node02 = $client->getConnection('node02'));
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnection('node01'));
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnection('node02'));
 
         $this->assertSame('host1', $node01->getParameters()->host);
         $this->assertSame('host2', $node02->getParameters()->host);
@@ -442,7 +442,7 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client();
 
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $options = array('executor' => $executor);
 
         $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline($options));
@@ -472,7 +472,7 @@ class ClientTest extends StandardTestCase
      */
     public function testPipelineWithArrayAndCallableExecutesPipelineWithOptions()
     {
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $options = array('executor' => $executor);
 
         $test = $this;
@@ -508,7 +508,7 @@ class ClientTest extends StandardTestCase
      */
     public function testPubSubWithArrayReturnsPubSubContextWithOptions()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $options = array('subscribe' => 'channel');
 
         $client = new Client($connection);
@@ -533,7 +533,7 @@ class ClientTest extends StandardTestCase
         $message = array('subscribe', 'channel', 0);
         $options = array('subscribe' => 'channel');
 
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));
@@ -582,7 +582,7 @@ class ClientTest extends StandardTestCase
         //       here is not the point.
         $options = array('cas' => true, 'retry' => 3);
 
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue(new ResponseQueued()));
@@ -603,10 +603,10 @@ class ClientTest extends StandardTestCase
      */
     public function testMonitorReturnsMonitorContext()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\MonitorContext', $monitor = $client->monitor());
+        $this->assertInstanceOf('Predis\Monitor\MonitorContext', $monitor = $client->monitor());
     }
 
     // ******************************************************************** //

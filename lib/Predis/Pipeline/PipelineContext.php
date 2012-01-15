@@ -14,8 +14,8 @@ namespace Predis\Pipeline;
 use Predis\Client;
 use Predis\Helpers;
 use Predis\ClientException;
-use Predis\Commands\ICommand;
-use Predis\Network\IConnectionReplication;
+use Predis\Command\CommandInterface;
+use Predis\Connection\ReplicationConnectionInterface;
 
 /**
  * Abstraction of a pipeline context where write and read operations
@@ -48,7 +48,7 @@ class PipelineContext
      *
      * @param Client Client instance used by the context.
      * @param array Options for the context initialization.
-     * @return IPipelineExecutor
+     * @return PipelineExecutorInterface
      */
     protected function createExecutor(Client $client, Array $options)
     {
@@ -58,10 +58,10 @@ class PipelineContext
 
         if (isset($options['executor'])) {
             $executor = $options['executor'];
-            if (!$executor instanceof IPipelineExecutor) {
+            if (!$executor instanceof PipelineExecutorInterface) {
                 throw new \InvalidArgumentException(
                     'The executor option accepts only instances ' .
-                    'of Predis\Pipeline\IPipelineExecutor'
+                    'of Predis\Pipeline\PipelineExecutorInterface'
                 );
             }
             return $executor;
@@ -93,9 +93,9 @@ class PipelineContext
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param ICommand $command Command to queue in the buffer.
+     * @param CommandInterface $command Command to queue in the buffer.
      */
-    protected function recordCommand(ICommand $command)
+    protected function recordCommand(CommandInterface $command)
     {
         $this->pipeline[] = $command;
     }
@@ -103,9 +103,9 @@ class PipelineContext
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param ICommand $command Command to queue in the buffer.
+     * @param CommandInterface $command Command to queue in the buffer.
      */
-    public function executeCommand(ICommand $command)
+    public function executeCommand(CommandInterface $command)
     {
         $this->recordCommand($command);
     }
@@ -124,7 +124,7 @@ class PipelineContext
 
                 // TODO: it would be better to use a dedicated pipeline executor
                 //       for classes implementing master/slave replication.
-                if ($connection instanceof IConnectionReplication) {
+                if ($connection instanceof ReplicationConnectionInterface) {
                     $connection->switchTo('master');
                 }
 
@@ -198,7 +198,7 @@ class PipelineContext
     /**
      * Returns the underlying pipeline executor used by the pipeline object.
      *
-     * @return IPipelineExecutor
+     * @return PipelineExecutorInterface
      */
     public function getExecutor()
     {

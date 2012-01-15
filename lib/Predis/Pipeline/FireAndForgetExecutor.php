@@ -11,7 +11,7 @@
 
 namespace Predis\Pipeline;
 
-use Predis\Network\IConnection;
+use Predis\Connection\ConnectionInterface;
 
 /**
  * Implements a pipeline executor strategy that writes a list of commands to
@@ -19,12 +19,12 @@ use Predis\Network\IConnection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class FireAndForgetExecutor implements IPipelineExecutor
+class FireAndForgetExecutor implements PipelineExecutorInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function execute(IConnection $connection, &$commands)
+    public function execute(ConnectionInterface $connection, &$commands)
     {
         foreach ($commands as $command) {
             $connection->writeCommand($command);

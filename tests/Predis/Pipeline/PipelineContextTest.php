@@ -15,7 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\ClientException;
-use Predis\Profiles\ServerProfile;
+use Predis\Profile\ServerProfile;
 
 /**
  *
@@ -40,7 +40,7 @@ class PipelineContextTest extends StandardTestCase
     public function testConstructorWithOptions()
     {
         $client = new Client();
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $pipeline = new PipelineContext($client, array('executor' => $executor));
         $this->assertSame($executor, $pipeline->getExecutor());
 
@@ -48,7 +48,7 @@ class PipelineContextTest extends StandardTestCase
         $this->assertInstanceOf('Predis\Pipeline\SafeExecutor', $pipeline->getExecutor());
 
         $options = array('executor' => 'safe');
-        $client = new Client($this->getMock('Predis\Network\IConnectionCluster'));
+        $client = new Client($this->getMock('Predis\Connection\ClusterConnectionInterface'));
         $pipeline = new PipelineContext($client, array('safe' => true));
         $this->assertInstanceOf('Predis\Pipeline\SafeClusterExecutor', $pipeline->getExecutor());
     }
@@ -58,7 +58,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testCallDoesNotSendCommandsWithoutExecute()
     {
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
         $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
@@ -73,7 +73,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testCallReturnsPipelineForFluentInterface()
     {
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
         $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
@@ -89,7 +89,7 @@ class PipelineContextTest extends StandardTestCase
     {
         $profile = ServerProfile::getDefault();
 
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
         $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
@@ -104,7 +104,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteWithEmptyBuffer()
     {
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
         $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
@@ -117,7 +117,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteWithFilledBuffer()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(3))
                    ->method('writeCommand');
         $connection->expects($this->exactly(3))
@@ -140,7 +140,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testFlushWithFalseArgumentDiscardsBuffer()
     {
-        $executor = $this->getMock('Predis\Pipeline\IPipelineExecutor');
+        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
         $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
@@ -159,7 +159,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testFlushHandlesPartialBuffers()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(4))
                    ->method('writeCommand');
         $connection->expects($this->exactly(4))
@@ -223,7 +223,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteWithCallableArgumentRunsPipelineInCallable()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(4))
                    ->method('writeCommand');
         $connection->expects($this->exactly(4))
@@ -247,7 +247,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteWithCallableArgumentHandlesExceptions()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->never())->method('writeCommand');
         $connection->expects($this->never())->method('readResponse');
 

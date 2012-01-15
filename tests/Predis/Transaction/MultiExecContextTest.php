@@ -16,7 +16,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 use Predis\Client;
 use Predis\ResponseQueued;
 use Predis\ServerException;
-use Predis\Commands\ICommand;
+use Predis\Command\CommandInterface;
 
 /**
  * @group realm-transaction
@@ -30,7 +30,7 @@ class MultiExecContextTest extends StandardTestCase
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection, '1.2');
         $tx = new MultiExecContext($client);
     }
@@ -42,7 +42,7 @@ class MultiExecContextTest extends StandardTestCase
      */
     public function testThrowsExceptionOnUnsupportedWatchUnwatchInProfile()
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection, '2.0');
         $tx = new MultiExecContext($client, array('options' => 'cas'));
 
@@ -584,15 +584,15 @@ class MultiExecContextTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a mocked instance of Predis\Network\IConnectionSingle using
-     * the specified callback to return values from the executeCommand method.
+     * Returns a mocked instance of Predis\Connection\SingleConnectionInterface
+     * usingthe specified callback to return values from executeCommand().
      *
      * @param \Closure $executeCallback
-     * @return \Predis\Network\IConnectionSingle
+     * @return \Predis\Connection\SingleConnectionInterface
      */
     protected function getMockedConnection($executeCallback)
     {
-        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->any())
                    ->method('executeCommand')
                    ->will($this->returnCallback($executeCallback));
@@ -628,7 +628,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $multi = $watch = $abort = false;
 
-        return function(ICommand $command) use(&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
+        return function(CommandInterface $command) use(&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
             $cmd = $command->getId();
 
             if ($multi || $cmd === 'MULTI') {
@@ -690,7 +690,7 @@ class MultiExecContextTest extends StandardTestCase
     }
 
     /**
-     * Converts an array of instances of Predis\Commands\ICommand and
+     * Converts an array of instances of Predis\Command\CommandInterface and
      * returns an array containing their IDs.
      *
      * @param array $commands List of commands instances.

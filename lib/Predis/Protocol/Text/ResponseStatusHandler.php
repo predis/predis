@@ -12,8 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use Predis\ResponseQueued;
-use Predis\Protocol\IResponseHandler;
-use Predis\Network\IConnectionComposable;
+use Predis\Protocol\ResponseHandlerInterface;
+use Predis\Connection\ComposableConnectionInterface;
 
 /**
  * Implements a response handler for status replies using the standard wire
@@ -22,12 +22,12 @@ use Predis\Network\IConnectionComposable;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseStatusHandler implements IResponseHandler
+class ResponseStatusHandler implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function handle(IConnectionComposable $connection, $status)
+    public function handle(ComposableConnectionInterface $connection, $status)
     {
         switch ($status) {
             case 'OK':
