@@ -200,4 +200,20 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     {
         return $this->getConnection($command)->executeCommand($command);
     }
+
+    /**
+     * Executes the specified Redis command on all the nodes of a cluster.
+     *
+     * @param CommandInterface $command A Redis command.
+     * @return array
+     */
+    public function executeCommandOnNodes(CommandInterface $command)
+    {
+        $replies = array();
+        foreach ($this->pool as $connection) {
+            $replies[] = $connection->executeCommand($command);
+        }
+
+        return $replies;
+    }
 }

@@ -241,27 +241,6 @@ class Client
     }
 
     /**
-     * Executes the specified Redis command on all the nodes of a cluster.
-     *
-     * @param CommandInterface $command A Redis command.
-     * @return array
-     */
-    public function executeCommandOnShards(CommandInterface $command)
-    {
-        if (Helpers::isCluster($this->connection)) {
-            $replies = array();
-
-            foreach ($this->connection as $connection) {
-                $replies[] = $connection->executeCommand($command);
-            }
-
-            return $replies;
-        }
-
-        return array($this->connection->executeCommand($command));
-    }
-
-    /**
      * Calls the specified initializer method on $this with 0, 1 or 2 arguments.
      *
      * TODO: Invert $argv and $initializer.

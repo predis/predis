@@ -324,48 +324,6 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandOnEachNode()
-    {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
-
-        $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection1->expects($this->once())
-                    ->method('executeCommand')
-                    ->with($ping)
-                    ->will($this->returnValue(true));
-
-        $connection2 = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection2->expects($this->once())
-                    ->method('executeCommand')
-                    ->with($ping)
-                    ->will($this->returnValue(false));
-
-        $client = new Client(array($connection1, $connection2));
-
-        $this->assertSame(array(true, false), $client->executeCommandOnShards($ping));
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testExecuteCommandOnEachNodeButConnectionSingle()
-    {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
-
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->once())
-                    ->method('executeCommand')
-                    ->with($ping)
-                    ->will($this->returnValue(true));
-
-        $client = new Client($connection);
-
-        $this->assertSame(array(true), $client->executeCommandOnShards($ping));
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testCallingRedisCommandExecutesInstanceOfCommand()
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
