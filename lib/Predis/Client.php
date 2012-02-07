@@ -93,11 +93,9 @@ class Client
 
         if (is_array($parameters) && isset($parameters[0])) {
             $replication = isset($this->options->replication) && $this->options->replication;
-
             $connection = $this->options->{$replication ? 'replication' : 'cluster'};
-            $initializer = $replication ? 'createReplication' : 'createCluster';
 
-            return $this->connections->$initializer($connection, $parameters, $this->profile);
+            return $this->connections->createAggregated($connection, $parameters, $this->profile);
         }
 
         return $this->connections->create($parameters, $this->profile);

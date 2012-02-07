@@ -260,7 +260,7 @@ class ConnectionFactoryTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testClusterSkipCreationOnConnectionInstance()
+    public function testAggregatedConnectionSkipCreationOnConnectionInstance()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -273,13 +273,13 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory->expects($this->never())
                 ->method('create');
 
-        $factory->createCluster($cluster, array(new $connectionClass(), new $connectionClass()));
+        $factory->createAggregated($cluster, array(new $connectionClass(), new $connectionClass()));
     }
 
     /**
      * @group disconnected
      */
-    public function testClusterWithMixedConnectionParameters()
+    public function testAggregatedConnectionWithMixedConnectionParameters()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -295,13 +295,13 @@ class ConnectionFactoryTest extends StandardTestCase
                     return new $connectionClass;
                 }));
 
-        $factory->createCluster($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
+        $factory->createAggregated($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
     }
 
     /**
      * @group disconnected
      */
-    public function testClusterWithEmptyListOfParameters()
+    public function testAggregatedConnectionWithEmptyListOfParameters()
     {
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->never())->method('add');
@@ -309,14 +309,14 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
         $factory->expects($this->never())->method('create');
 
-        $factory->createCluster($cluster, array());
+        $factory->createAggregated($cluster, array());
     }
 
     /**
      * @group disconnected
      * @todo We might want to add a test for SingleConnectionInterface::pushInitCommand().
      */
-    public function testClusterWithServerProfileArgument()
+    public function testAggregatedConnectionWithServerProfileArgument()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -332,29 +332,7 @@ class ConnectionFactoryTest extends StandardTestCase
                 }));
 
         $nodes = array('tcp://127.0.0.1:7001?password=foo', 'tcp://127.0.0.1:7002?password=bar');
-        $factory->createCluster($cluster, $nodes, $profile);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testReplicationWithMixedConnectionParameters()
-    {
-        list(, $connectionClass) = $this->getMockConnectionClass();
-
-        $replication = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
-        $replication->expects($this->exactly(4))
-                    ->method('add')
-                    ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
-
-        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
-        $factory->expects($this->exactly(3))
-                ->method('create')
-                ->will($this->returnCallback(function($_, $_) use($connectionClass) {
-                    return new $connectionClass;
-                }));
-
-        $factory->createReplication($replication, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
+        $factory->createAggregated($cluster, $nodes, $profile);
     }
 
 

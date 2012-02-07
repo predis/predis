@@ -12,8 +12,7 @@
 namespace Predis;
 
 use Predis\Profile\ServerProfileInterface;
-use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Connection\AggregatedConnectionInterface;
 
 /**
  * Interface that must be implemented by classes that provide their own mechanism
@@ -47,20 +46,11 @@ interface ConnectionFactoryInterface
     public function create($parameters, ServerProfileInterface $profile = null);
 
     /**
-     * Prepares a cluster of connection objects.
+     * Prepares an aggregation of connection objects.
      *
-     * @param ClusterConnectionInterface Instance of a connection cluster class.
+     * @param AggregatedConnectionInterface Instance of an aggregated connection class.
      * @param array $parameters List of parameters for each connection object.
-     * @return Predis\Connection\ClusterConnectionInterface
+     * @return Predis\Connection\AggregatedConnectionInterface
      */
-    public function createCluster(ClusterConnectionInterface $cluster, $parameters, ServerProfileInterface $profile = null);
-
-    /**
-     * Prepares a master / slave replication configuration.
-     *
-     * @param ReplicationConnectionInterface Instance of a connection cluster class.
-     * @param array $parameters List of parameters for each connection object.
-     * @return Predis\Connection\ReplicationConnectionInterface
-     */
-    public function createReplication(ReplicationConnectionInterface $replication, $parameters, ServerProfileInterface $profile = null);
+    public function createAggregated(AggregatedConnectionInterface $cluster, $parameters, ServerProfileInterface $profile = null);
 }

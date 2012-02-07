@@ -13,7 +13,7 @@ namespace Predis;
 
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Connection\AggregatedConnectionInterface;
 
 /**
  * Defines a few helper methods.
@@ -30,7 +30,7 @@ class Helpers
      */
     public static function isAggregated(ConnectionInterface $connection)
     {
-        return $connection instanceof ClusterConnectionInterface || $connection instanceof ReplicationConnectionInterface;
+        return $connection instanceof AggregatedConnectionInterface;
     }
 
     /**

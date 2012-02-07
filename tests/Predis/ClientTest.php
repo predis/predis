@@ -172,7 +172,7 @@ class ClientTest extends StandardTestCase
         $cluster = new PredisCluster();
 
         $factory = new ConnectionFactory();
-        $factory->createCluster($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
+        $factory->createAggregated($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
         $client = new Client($cluster);
 
@@ -188,7 +188,7 @@ class ClientTest extends StandardTestCase
         $replication = new MasterSlaveReplication();
 
         $factory = new ConnectionFactory();
-        $factory->createReplication($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
+        $factory->createAggregated($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
 
         $client = new Client($replication);
 

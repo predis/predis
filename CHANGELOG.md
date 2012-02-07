@@ -1,6 +1,9 @@
 v0.8.0 (201x-xx-xx)
 ===============================================================================
 
+- Cluster and replication connections now extend a new common interface,
+  `Predis\Connection\AggregatedConnectionInterface`.
+
 - Some namespaces have been renamed:
 
   - `Predis\Network` => `Predis\Connection`

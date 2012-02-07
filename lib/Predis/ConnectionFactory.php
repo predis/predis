@@ -13,8 +13,7 @@ namespace Predis;
 
 use Predis\Profile\ServerProfileInterface;
 use Predis\Connection\SingleConnectionInterface;
-use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Profile\ServerProfile;
 
 /**
@@ -126,25 +125,13 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createCluster(ClusterConnectionInterface $cluster, $parameters, ServerProfileInterface $profile = null)
+    public function createAggregated(AggregatedConnectionInterface $connection, $parameters, ServerProfileInterface $profile = null)
     {
         foreach ($parameters as $node) {
-            $cluster->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
+            $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
         }
 
-        return $cluster;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createReplication(ReplicationConnectionInterface $replication, $parameters, ServerProfileInterface $profile = null)
-    {
-        foreach ($parameters as $node) {
-            $replication->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
-        }
-
-        return $replication;
+        return $connection;
     }
 
     /**
