@@ -12,7 +12,7 @@
             <group>ext-phpiredis</group>
             <group>ext-curl</group>
             <group>realm-webdis</group>
-            <group>connected</group>
+            <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
             <!-- <group>slow</group> -->
