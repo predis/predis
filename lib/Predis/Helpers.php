@@ -91,24 +91,4 @@ class Helpers
 
         return $arguments;
     }
-
-    /**
-     * Returns only the hashable part of a key (delimited by "{...}"), or the
-     * whole key if a key tag is not found in the string.
-     *
-     * @param string $key A key.
-     * @return string
-     */
-    public static function extractKeyTag($key)
-    {
-        $start = strpos($key, '{');
-        if ($start !== false) {
-            $end = strpos($key, '}', $start);
-            if ($end !== false) {
-                $key = substr($key, ++$start, $end - $start);
-            }
-        }
-
-        return $key;
-    }
 }

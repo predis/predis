@@ -24,12 +24,4 @@ class TransactionMulti extends AbstractCommand
     {
         return 'MULTI';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

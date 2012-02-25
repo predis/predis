@@ -32,14 +32,6 @@ class ServerConfig extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         if ($data instanceof \Iterator) {

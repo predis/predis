@@ -35,6 +35,10 @@ v0.8.0 (201x-xx-xx)
   context to make the execution atomic: if a pipeline fails at a certain point
   then the whole pipeline is discarded.
 
+- The key-hashing mechanism for commands is now handled externally and is no
+  more a competence of each command class. This change is neeeded to support
+  both client-side sharding and Redis cluster.
+
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
 

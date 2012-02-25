@@ -89,16 +89,4 @@ class ZSetUnionStore extends PrefixableCommand
 
         $this->setRawArguments($arguments);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        $args = $this->getArguments();
-
-        return $this->checkSameHashForKeys(
-            array_merge(array($args[0]), array_slice($args, 2, $args[1]))
-        );
-    }
 }

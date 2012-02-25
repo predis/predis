@@ -24,12 +24,4 @@ class ServerShutdown extends AbstractCommand
     {
         return 'SHUTDOWN';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

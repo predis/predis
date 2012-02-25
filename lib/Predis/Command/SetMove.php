@@ -36,14 +36,6 @@ class SetMove extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         return (bool) $data;

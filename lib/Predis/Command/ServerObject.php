@@ -26,12 +26,4 @@ class ServerObject extends AbstractCommand
     {
         return 'OBJECT';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

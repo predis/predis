@@ -24,12 +24,4 @@ class PubSubPublish extends PrefixableCommand
     {
         return 'PUBLISH';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

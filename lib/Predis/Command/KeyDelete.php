@@ -42,17 +42,4 @@ class KeyDelete extends AbstractCommand implements PrefixableCommandInterface
     {
         PrefixHelpers::all($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        $args = $this->getArguments();
-        if (count($args) === 1) {
-            return true;
-        }
-
-        return $this->checkSameHashForKeys($args);
-    }
 }

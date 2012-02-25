@@ -24,12 +24,4 @@ class ConnectionSelect extends AbstractCommand
     {
         return 'SELECT';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

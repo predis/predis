@@ -24,12 +24,4 @@ class ServerFlushDatabase extends AbstractCommand
     {
         return 'FLUSHDB';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Distribution\HashGeneratorInterface;
-
 /**
  * Defines an abstraction representing a Redis command.
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -27,13 +25,18 @@ interface CommandInterface
     public function getId();
 
     /**
-     * Returns an hash of the command using the provided algorithm against the
-     * key (used to calculate the distribution of keys with client-side sharding).
+     * Set the hash for the command.
      *
-     * @param HashGeneratorInterface $hasher Distribution algorithm.
+     * @param int $hash Calculated hash.
+     */
+    public function setHash($hash);
+
+    /**
+     * Returns the hash of the command.
+     *
      * @return int
      */
-    public function getHash(HashGeneratorInterface $hasher);
+    public function getHash();
 
     /**
      * Sets the arguments of the command.

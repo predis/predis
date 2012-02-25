@@ -24,12 +24,4 @@ class TransactionExec extends AbstractCommand
     {
         return 'EXEC';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

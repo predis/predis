@@ -12,8 +12,8 @@
 namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
+use Predis\Command\Hash\CommandHashStrategy;
 use Predis\Distribution\DistributionStrategyInterface;
-use Predis\Helpers;
 use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Distribution\HashRing;
@@ -29,6 +29,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
 {
     private $pool;
     private $distributor;
+    private $cmdHasher;
 
     /**
      * @param DistributionStrategyInterface $distributor Distribution strategy used by the cluster.
@@ -36,6 +37,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     public function __construct(DistributionStrategyInterface $distributor = null)
     {
         $this->pool = array();
+        $this->cmdHasher = new CommandHashStrategy();
         $this->distributor = $distributor ?: new HashRing();
     }
 
@@ -126,14 +128,18 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnection(CommandInterface $command)
     {
-        $cmdHash = $command->getHash($this->distributor);
+        $hash = $command->getHash();
 
-        if (isset($cmdHash)) {
-            return $this->distributor->get($cmdHash);
+        if (isset($hash)) {
+            return $this->distributor->get($hash);
         }
 
-        $message = sprintf("Cannot send '%s' commands to a cluster of connections", $command->getId());
-        throw new NotSupportedException($message);
+        if ($hash = $this->cmdHasher->getHash($this->distributor, $command)) {
+            $command->setHash($hash);
+            return $this->distributor->get($hash);
+        }
+
+        throw new NotSupportedException("Cannot send {$command->getId()} to a cluster of connections");
     }
 
     /**
@@ -155,10 +161,10 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnectionByKey($key)
     {
-        $hashablePart = Helpers::extractKeyTag($key);
-        $keyHash = $this->distributor->hash($hashablePart);
+        $hash = $this->cmdHasher->getKeyHash($this->distributor, $key);
+        $node = $this->distributor->get($hash);
 
-        return $this->distributor->get($keyHash);
+        return $node;
     }
 
     /**
@@ -210,6 +216,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     public function executeCommandOnNodes(CommandInterface $command)
     {
         $replies = array();
+
         foreach ($this->pool as $connection) {
             $replies[] = $connection->executeCommand($command);
         }

@@ -24,12 +24,4 @@ class ServerSave extends AbstractCommand
     {
         return 'SAVE';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

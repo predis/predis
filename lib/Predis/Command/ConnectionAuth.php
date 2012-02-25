@@ -24,12 +24,4 @@ class ConnectionAuth extends AbstractCommand
     {
         return 'AUTH';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

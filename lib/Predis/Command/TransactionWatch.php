@@ -48,14 +48,6 @@ class TransactionWatch extends AbstractCommand implements PrefixableCommandInter
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         return (bool) $data;

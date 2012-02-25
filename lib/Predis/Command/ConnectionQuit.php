@@ -24,12 +24,4 @@ class ConnectionQuit extends AbstractCommand
     {
         return 'QUIT';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

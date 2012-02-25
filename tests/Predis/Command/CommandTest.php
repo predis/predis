@@ -95,91 +95,18 @@ class CommandTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @protected
      */
-    public function testCheckSameHashForKeys()
+    public function testSetAndGetHash()
     {
+        $hash = "key-hash";
+
         $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
-
-        $checkSameHashForKeys = new \ReflectionMethod($command, 'checkSameHashForKeys');
-        $checkSameHashForKeys->setAccessible(true);
-
-        $this->assertTrue($checkSameHashForKeys->invoke($command, array('foo', '{foo}:bar')));
-        $this->assertFalse($checkSameHashForKeys->invoke($command, array('foo', '{foo}:bar', 'foo:bar')));
-    }
-
-    /**
-     * @group disconnected
-     * @protected
-     */
-    public function testCanBeHashed()
-    {
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
-
-        $canBeHashed = new \ReflectionMethod($command, 'canBeHashed');
-        $canBeHashed->setAccessible(true);
-
-        $this->assertFalse($canBeHashed->invoke($command));
-
         $command->setRawArguments(array('key'));
-        $this->assertTrue($canBeHashed->invoke($command));
-    }
 
-    /**
-     * @group disconnected
-     */
-    public function testDoesNotReturnAnHashByDefault()
-    {
-        $distributor = $this->getMock('Predis\Distribution\HashGeneratorInterface');
-        $distributor->expects($this->never())->method('hash');
+        $this->assertNull($command->getHash());
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
-
-        $command->getHash($distributor);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testReturnAnHashWhenCanBeHashedAndCachesIt()
-    {
-        $key = 'key';
-        $hash = "$key-hash";
-
-        $distributor = $this->getMock('Predis\Distribution\HashGeneratorInterface');
-        $distributor->expects($this->once())
-                    ->method('hash')
-                    ->with($key)
-                    ->will($this->returnValue($hash));
-
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
-        $command->setRawArguments(array($key));
-
-        $this->assertEquals($hash, $command->getHash($distributor));
-
-        $this->assertEquals($hash, $command->getHash($distributor));
-        $this->assertEquals($hash, $command->getHash($distributor));
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testExtractsKeyTagsBeforeHashing()
-    {
-        $tag = 'key';
-        $key = "{{$tag}}:ignore";
-        $hash = "$tag-hash";
-
-        $distributor = $this->getMock('Predis\Distribution\HashGeneratorInterface');
-        $distributor->expects($this->once())
-                    ->method('hash')
-                    ->with($tag)
-                    ->will($this->returnValue($hash));
-
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
-        $command->setRawArguments(array($key));
-
-        $this->assertEquals($hash, $command->getHash($distributor));
+        $command->setHash($hash);
+        $this->assertSame($hash, $command->getHash());
     }
 
     /**

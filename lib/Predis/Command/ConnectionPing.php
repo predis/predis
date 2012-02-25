@@ -28,14 +28,6 @@ class ConnectionPing extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         return $data === 'PONG' ? true : false;

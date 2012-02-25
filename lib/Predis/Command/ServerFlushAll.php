@@ -24,12 +24,4 @@ class ServerFlushAll extends AbstractCommand
     {
         return 'FLUSHALL';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

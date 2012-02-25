@@ -32,12 +32,4 @@ class KeyRename extends AbstractCommand implements PrefixableCommandInterface
     {
         PrefixHelpers::all($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

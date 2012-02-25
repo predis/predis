@@ -44,14 +44,4 @@ class ListPopFirstBlocking extends AbstractCommand implements PrefixableCommandI
     {
         PrefixHelpers::skipLast($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return $this->checkSameHashForKeys(
-            array_slice(($args = $this->getArguments()), 0, count($args) - 1)
-        );
-    }
 }

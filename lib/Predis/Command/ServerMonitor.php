@@ -24,12 +24,4 @@ class ServerMonitor extends AbstractCommand
     {
         return 'MONITOR';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

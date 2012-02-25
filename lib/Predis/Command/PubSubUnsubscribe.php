@@ -42,12 +42,4 @@ class PubSubUnsubscribe extends AbstractCommand implements PrefixableCommandInte
     {
         PrefixHelpers::all($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

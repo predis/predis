@@ -79,18 +79,4 @@ class HelpersTest extends StandardTestCase
         $arguments = array(new \stdClass());
         $this->assertSame($arguments, Helpers::filterArrayArguments($arguments));
     }
-
-    /**
-     * @group disconnected
-     */
-    public function testExtractKeyTag()
-    {
-        $this->assertEquals('foo:bar', Helpers::extractKeyTag('foo:bar'));
-        $this->assertEquals('foo:', Helpers::extractKeyTag('{foo:}bar'));
-        $this->assertEquals('bar', Helpers::extractKeyTag('foo:{bar}'));
-        $this->assertEquals('foo:bar', Helpers::extractKeyTag('{foo:bar}'));
-        $this->assertEquals('', Helpers::extractKeyTag('foo{}:bar'));
-        $this->assertEquals('', Helpers::extractKeyTag(''));
-        $this->assertEquals('', Helpers::extractKeyTag('{}'));
-    }
 }

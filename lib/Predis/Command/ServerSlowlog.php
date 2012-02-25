@@ -30,14 +30,6 @@ class ServerSlowlog extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         if (($iterable = $data instanceof \Iterator) || is_array($data)) {

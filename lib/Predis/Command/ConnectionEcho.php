@@ -24,12 +24,4 @@ class ConnectionEcho extends AbstractCommand
     {
         return 'ECHO';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

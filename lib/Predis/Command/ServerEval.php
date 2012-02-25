@@ -40,14 +40,6 @@ class ServerEval extends AbstractCommand implements PrefixableCommandInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
      * Calculates the SHA1 hash of the body of the script.
      *
      * @return string SHA1 hash.

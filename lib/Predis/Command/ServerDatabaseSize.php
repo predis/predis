@@ -24,12 +24,4 @@ class ServerDatabaseSize extends AbstractCommand
     {
         return 'DBSIZE';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

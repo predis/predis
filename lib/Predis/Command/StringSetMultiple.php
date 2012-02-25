@@ -52,19 +52,4 @@ class StringSetMultiple extends AbstractCommand implements PrefixableCommandInte
     {
         PrefixHelpers::interleaved($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        $args = $this->getArguments();
-        $keys = array();
-
-        for ($i = 0; $i < count($args); $i += 2) {
-            $keys[] = $args[$i];
-        }
-
-        return $this->checkSameHashForKeys($keys);
-    }
 }

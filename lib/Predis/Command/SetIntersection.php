@@ -42,12 +42,4 @@ class SetIntersection extends AbstractCommand implements PrefixableCommandInterf
     {
         PrefixHelpers::all($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return $this->checkSameHashForKeys($this->getArguments());
-    }
 }

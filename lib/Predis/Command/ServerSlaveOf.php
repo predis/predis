@@ -36,12 +36,4 @@ class ServerSlaveOf extends AbstractCommand
 
         return $arguments;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

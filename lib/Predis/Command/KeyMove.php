@@ -28,14 +28,6 @@ class KeyMove extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         return (bool) $data;

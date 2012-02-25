@@ -28,14 +28,6 @@ class ServerClient extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         $args = array_change_key_case($this->getArguments(), CASE_UPPER);

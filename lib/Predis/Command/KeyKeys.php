@@ -24,12 +24,4 @@ class KeyKeys extends PrefixableCommand
     {
         return 'KEYS';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

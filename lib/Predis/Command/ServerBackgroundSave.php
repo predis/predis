@@ -28,14 +28,6 @@ class ServerBackgroundSave extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function canBeHashed()
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         if ($data == 'Background saving started') {

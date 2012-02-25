@@ -24,12 +24,4 @@ class TransactionDiscard extends AbstractCommand
     {
         return 'DISCARD';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

@@ -42,12 +42,4 @@ class StringGetMultiple extends AbstractCommand implements PrefixableCommandInte
     {
         PrefixHelpers::all($this, $prefix);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return $this->checkSameHashForKeys($this->getArguments());
-    }
 }

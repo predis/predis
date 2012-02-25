@@ -24,12 +24,4 @@ class ServerLastSave extends AbstractCommand
     {
         return 'LASTSAVE';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }

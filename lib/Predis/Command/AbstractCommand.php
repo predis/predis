@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Helpers;
-use Predis\Distribution\HashGeneratorInterface;
 
 /**
  * Base class for Redis commands.
@@ -76,57 +74,21 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Checks if the command can return an hash for client-side sharding.
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
-    protected function canBeHashed()
+    public function setHash($hash)
     {
-        return isset($this->arguments[0]);
-    }
-
-    /**
-     * Checks if the specified array of keys will generate the same hash.
-     *
-     * @param array $keys Array of keys.
-     * @return Boolean
-     */
-    protected function checkSameHashForKeys(Array $keys)
-    {
-        if (($count = count($keys)) === 0) {
-            return false;
-        }
-
-        $currentKey = Helpers::extractKeyTag($keys[0]);
-
-        for ($i = 1; $i < $count; $i++) {
-            $nextKey = Helpers::extractKeyTag($keys[$i]);
-            if ($currentKey !== $nextKey) {
-                return false;
-            }
-            $currentKey = $nextKey;
-        }
-
-        return true;
+        $this->hash = $hash;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHash(HashGeneratorInterface $hasher)
+    public function getHash()
     {
         if (isset($this->hash)) {
             return $this->hash;
         }
-
-        if ($this->canBeHashed()) {
-            $key = Helpers::extractKeyTag($this->arguments[0]);
-            $this->hash = $hasher->hash($key);
-
-            return $this->hash;
-        }
-
-        return null;
     }
 
     /**
