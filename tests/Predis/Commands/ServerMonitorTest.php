@@ -64,6 +64,9 @@ class ServerMonitorTest extends CommandTestCase
         $command = $this->getCommand();
 
         $this->assertTrue($connection->executeCommand($command));
+        // TODO: this test currently fails with the unstable branch of Redis, but
+        //       I still have to find the reason since at first sight the reply
+        //       format has not changed.
         $this->assertRegExp('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
     }
 }
