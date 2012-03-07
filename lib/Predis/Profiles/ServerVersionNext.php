@@ -51,6 +51,7 @@ class ServerVersionNext extends ServerVersion24
 
             /* remote server control commands */
             'info'                      => 'Predis\Commands\ServerInfoV26x',
+            'time'                      => 'Predis\Commands\ServerTime',
         ));
     }
 }
