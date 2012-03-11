@@ -136,21 +136,29 @@ class MonitorContext implements \Iterator
     private function getValue()
     {
         $database = 0;
+        $client = null;
         $event = $this->client->getConnection()->read();
 
-        $callback = function($matches) use (&$database) {
-            if (isset($matches[1])) {
+        $callback = function($matches) use (&$database, &$client) {
+            if (2 === $count = count($matches)) {
+                // Redis <= 2.4
                 $database = (int) $matches[1];
+            }
+            if (4 === $count) {
+                // Redis >= 2.6
+                $database = (int) $matches[2];
+                $client = $matches[3];
             }
             return ' ';
         };
 
-        $event = preg_replace_callback('/ \(db (\d+)\) /', $callback, $event, 1);
-        @list($timestamp, $command, $arguments) = split(' ', $event, 3);
+        $event = preg_replace_callback('/ \(db (\d+)\) | \[(\d+) (.*?)\] /', $callback, $event, 1);
+        @list($timestamp, $command, $arguments) = explode(' ', $event, 3);
 
         return (object) array(
             'timestamp' => (float) $timestamp,
             'database'  => $database,
+            'client'    => $client,
             'command'   => substr($command, 1, -1),
             'arguments' => $arguments,
         );
