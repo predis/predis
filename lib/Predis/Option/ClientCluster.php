@@ -12,6 +12,7 @@
 namespace Predis\Option;
 
 use Predis\Connection\ClusterConnectionInterface;
+use Predis\Connection\RedisCluster;
 use Predis\Connection\PredisCluster;
 
 /**
@@ -60,7 +61,17 @@ class ClientCluster extends AbstractOption
     {
         switch ($fqnOrType) {
             case 'predis':
-                return function() { return new PredisCluster(); };
+                return function() {
+                    return new PredisCluster();
+                };
+
+            case 'redis':
+                return function() use($options) {
+                    $connectionFactory = $options->connections;
+                    $cluster = new RedisCluster($connectionFactory);
+
+                    return $cluster;
+                };
 
             default:
                 // TODO: we should not even allow non-string values here.

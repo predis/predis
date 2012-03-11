@@ -3,6 +3,9 @@ v0.8.0 (201x-xx-xx)
 
 - The default server profile for Redis is now `2.6`.
 
+- Added smart support for redis-cluster (Redis v3.0) in addition to the usual
+  cluster implementation that uses client-side sharding.
+
 - Some namespaces and classes have been renamed to follow one common rule
   inspired by the Symfony2 naming conventions. See `CHANGELOG.NAMING.md` for
   more details about these changes.

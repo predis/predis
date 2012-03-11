@@ -11,6 +11,7 @@ project.
 ## Main features ##
 
 - Complete support for Redis from __1.2__ to __2.6__ and unstable versions using different server profiles.
+- Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
 - Command pipelining on single and aggregated connections.
