@@ -105,7 +105,7 @@ class MonitorContextTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testCurrentReadsMessageFromConnection()
+    public function testReadsMessageFromConnectionToRedis24()
     {
         $message = '1323367530.939137 (db 15) "MONITOR"';
 
@@ -120,6 +120,30 @@ class MonitorContextTest extends StandardTestCase
         $payload = $monitor->current();
         $this->assertSame(1323367530, (int) $payload->timestamp);
         $this->assertSame(15, $payload->database);
+        $this->assertNull($payload->client);
+        $this->assertSame('MONITOR', $payload->command);
+        $this->assertNull($payload->arguments);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsMessageFromConnectionToRedis26()
+    {
+        $message = '1323367530.939137 [15 127.0.0.1:37265] "MONITOR"';
+
+        $connection = $this->getMock('Predis\Network\IConnectionSingle');
+        $connection->expects($this->once())
+                   ->method('read')
+                   ->will($this->returnValue($message));
+
+        $client = new Client($connection);
+        $monitor = new MonitorContext($client);
+
+        $payload = $monitor->current();
+        $this->assertSame(1323367530, (int) $payload->timestamp);
+        $this->assertSame(15, $payload->database);
+        $this->assertSame('127.0.0.1:37265', $payload->client);
         $this->assertSame('MONITOR', $payload->command);
         $this->assertNull($payload->arguments);
     }
