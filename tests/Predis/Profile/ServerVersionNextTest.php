@@ -168,6 +168,7 @@ class ServerVersionNextTest extends ServerVersionTestCase
             127 => 'eval',
             128 => 'evalsha',
             129 => 'script',
+            130 => 'time',
         );
     }
 }
