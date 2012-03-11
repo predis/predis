@@ -2,13 +2,15 @@ v0.7.2 (2012-xx-xx)
 ===============================================================================
 
 - Added `2.6` in the server profiles aliases list for the upcoming Redis 2.6.
-  `2.4` is still the default server profile.
+  `2.4` is still the default server profile. `dev` now targets Redis 3.0.
 
 - Connection instances can be serialized and unserialized using `serialize()`
   and `unserialize()`. This is handy in certain scenarios such as client-side
   clustering or replication to lower the overhead of initializing a connection
   object with many sub-connections since unserializing them can be up to 5x
   times faster.
+
+- __FIX__: fixed parsing of the payload returned by `MONITOR` with Redis 2.6.
 
 
 v0.7.1 (2011-12-27)
