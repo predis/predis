@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for the current development version of Redis.
+ * Server profile for the current unstable version of Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersionNext extends ServerVersion24
+class ServerVersionNext extends ServerVersion26
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '2.6';
+        return '3.0';
     }
 
     /**
@@ -32,26 +32,6 @@ class ServerVersionNext extends ServerVersion24
     public function getSupportedCommands()
     {
         return array_merge(parent::getSupportedCommands(), array(
-            /* commands operating on the key space */
-            'pttl'                      => 'Predis\Command\KeyPreciseTimeToLive',
-            'pexpire'                   => 'Predis\Command\KeyPreciseExpire',
-            'pexpireat'                 => 'Predis\Command\KeyPreciseExpireAt',
-
-            /* commands operating on string values */
-            'psetex'                    => 'Predis\Command\StringPreciseSetExpire',
-            'incrbyfloat'               => 'Predis\Command\StringIncrementByFloat',
-
-            /* commands operating on hashes */
-            'hincrbyfloat'              => 'Predis\Command\HashIncrementByFloat',
-
-            /* scripting */
-            'eval'                      => 'Predis\Command\ServerEval',
-            'evalsha'                   => 'Predis\Command\ServerEvalSHA',
-            'script'                    => 'Predis\Command\ServerScript',
-
-            /* remote server control commands */
-            'info'                      => 'Predis\Command\ServerInfoV26x',
-            'time'                      => 'Predis\Command\ServerTime',
         ));
     }
 }

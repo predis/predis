@@ -10,7 +10,7 @@ project,
 
 ## Main features ##
 
-- Complete support for Redis from __1.2__ to __2.4__ and the current development versions using different
+- Complete support for Redis from __1.2__ to __2.6__ and the current unstable versions using different
   server profiles.
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
