@@ -1,69 +1,12 @@
 v0.8.0 (201x-xx-xx)
 ===============================================================================
 
+- Some namespaces and classes have been renamed to follow one common rule
+  inspired by the Symfony2 naming conventions. See `CHANGELOG.NAMING.md` for
+  more details about these changes.
+
 - Cluster and replication connections now extend a new common interface,
   `Predis\Connection\AggregatedConnectionInterface`.
-
-- Some namespaces have been renamed:
-
-  - `Predis\Network` => `Predis\Connection`
-  - `Predis\Profiles` => `Predis\Profile`
-  - `Predis\Iterators` => `Predis\Iterator`
-  - `Predis\Options` => `Predis\Option`
-  - `Predis\Commands` => `Predis\Command`
-  - `Predis\Commands\Processors` => `Predis\Command\Processor`
-
-- Some interfaces have been renamed:
-
-  - `Predis\IReplyObject` => `Predis\ResponseObjectInterface`
-  - `Predis\IRedisServerError` => `Predis\ResponseErrorInterface`
-  - `Predis\IConnectionFactory` => `Predis\ConnectionFactoryInterface`
-  - `Predis\IConnectionParameters` => `Predis\ConnectionParametersInterface`
-  - `Predis\Options\IOption` => `Predis\Option\OptionInterface`
-  - `Predis\Options\IClientOptions` => `Predis\Option\ClientOptionsInterface`
-  - `Predis\Profile\IServerProfile` => `Predis\Profile\ServerProfileInterface`
-  - `Predis\Pipeline\IPipelineExecutor`
-      => `Predis\Pipeline\PipelineExecutorInterface`
-  - `Predis\Distribution\INodeKeyGenerator`
-      => `Predis\Distribution\HashGeneratorInterface`
-  - `Predis\Distribution\IDistributionStrategy`
-      => `Predis\Distribution\DistributionStrategyInterface`
-  - `Predis\Protocol\IProtocolProcessor` => `Predis\Protocol\ProtocolInterface`
-  - `Predis\Protocol\IResponseReader`
-      => `Predis\Protocol\ResponseReaderInterface`
-  - `Predis\Protocol\IResponseHandler`
-      => `Predis\Protocol\ResponseHandlerInterface`
-  - `Predis\Protocol\ICommandSerializer`
-      => `Predis\Protocol\CommandSerializerInterface`
-  - `Predis\Protocol\IComposableProtocolProcessor`
-      => `Predis\Protocol\ComposableProtocolInterface`
-  - `Predis\Network\IConnection` => `Predis\Connection\ConnectionInterface`
-  - `Predis\Network\IConnectionSingle`
-      => `Predis\Connection\SingleConnectionInterface`
-  - `Predis\Network\IConnectionComposable`
-      => `Predis\Connection\ComposableConnectionInterface`
-  - `Predis\Network\IConnectionCluster`
-      => `Predis\Connection\ClusterConnectionInterface`
-  - `Predis\Network\IConnectionReplication`
-      => `Predis\Connection\ReplicationConnectionInterface`
-  - `Predis\Commands\ICommand` => `Predis\Command\CommandInterface`
-  - `Predis\Commands\IPrefixable`
-      => `Predis\Command\PrefixableCommandInterface`
-  - `Predis\Command\Processor\ICommandProcessor`
-      => `Predis\Command\Processor\CommandProcessorInterface`
-  - `Predis\Command\Processor\ICommandProcessorChain`
-      => `Predis\Command\Processor\CommandProcessorChainInterface`
-  - `Predis\Command\Processor\IProcessingSupport`
-      => `Predis\Command\Processor\CommandProcessingInterface`
-
-- Some classes have been renamed:
-
-  - `Predis\Commands\Command` => `Predis\Command\AbstractCommand`
-  - `Predis\Network\ConnectionBase` => `Predis\Connection\AbstractConnection`
-
-- Some interfaces and classes have been moved to different namespaces:
-
-  - `Predis\MonitorContext` is now under the `Predis\Monitor`.
 
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
