@@ -76,8 +76,8 @@ class PhpiredisConnection extends AbstractConnection
         if ($parameters->isSetByUser('iterable_multibulk')) {
             $this->onInvalidOption('iterable_multibulk', $parameters);
         }
-        if ($parameters->isSetByUser('connection_persistent')) {
-            $this->onInvalidOption('connection_persistent', $parameters);
+        if ($parameters->isSetByUser('persistent')) {
+            $this->onInvalidOption('persistent', $parameters);
         }
 
         return parent::checkParameters($parameters);
@@ -275,7 +275,7 @@ class PhpiredisConnection extends AbstractConnection
         $null = null;
         $selectable = array($socket);
 
-        $timeout = $parameters->connection_timeout;
+        $timeout = $parameters->timeout;
         $timeoutSecs = floor($timeout);
         $timeoutUSecs = ($timeout - $timeoutSecs) * 1000000;
 

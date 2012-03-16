@@ -28,7 +28,7 @@ abstract class ConnectionTestCase extends StandardTestCase
      */
     public function testThrowExceptionWhenUnableToConnect()
     {
-        $parameters = array('host' => '169.254.10.10', 'connection_timeout' => 0.5);
+        $parameters = array('host' => '169.254.10.10', 'timeout' => 0.5);
         $connection = $this->getConnection($profile, false, $parameters);
         $connection->executeCommand($this->getProfile()->createCommand('ping'));
     }
@@ -313,7 +313,7 @@ abstract class ConnectionTestCase extends StandardTestCase
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
-        $connection = $this->getConnection($_, false, array('host' => '169.254.10.10', 'connection_timeout' => 0.5));
+        $connection = $this->getConnection($_, false, array('host' => '169.254.10.10', 'timeout' => 0.5));
 
         $connection->connect();
     }

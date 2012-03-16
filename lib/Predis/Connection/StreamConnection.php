@@ -36,7 +36,7 @@ class StreamConnection extends AbstractConnection
      */
     public function __destruct()
     {
-        if (!$this->parameters->connection_persistent) {
+        if (!$this->parameters->persistent) {
             $this->disconnect();
         }
     }
@@ -72,15 +72,15 @@ class StreamConnection extends AbstractConnection
         $uri = "tcp://{$parameters->host}:{$parameters->port}/";
 
         $flags = STREAM_CLIENT_CONNECT;
-        if ($parameters->connection_async) {
+        if ($parameters->async_connect) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
-        if ($parameters->connection_persistent) {
+        if ($parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
         $resource = @stream_socket_client(
-            $uri, $errno, $errstr, $parameters->connection_timeout, $flags
+            $uri, $errno, $errstr, $parameters->timeout, $flags
         );
 
         if (!$resource) {
@@ -109,12 +109,12 @@ class StreamConnection extends AbstractConnection
         $uri = "unix://{$parameters->path}";
 
         $flags = STREAM_CLIENT_CONNECT;
-        if ($parameters->connection_persistent) {
+        if ($parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
         $resource = @stream_socket_client(
-            $uri, $errno, $errstr, $parameters->connection_timeout, $flags
+            $uri, $errno, $errstr, $parameters->timeout, $flags
         );
 
         if (!$resource) {

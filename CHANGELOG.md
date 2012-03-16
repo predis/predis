@@ -5,6 +5,12 @@ v0.8.0 (201x-xx-xx)
   inspired by the Symfony2 naming conventions. See `CHANGELOG.NAMING.md` for
   more details about these changes.
 
+- Certain connection parameters have been renamed:
+
+  - `connection_async` is now `async_connect`
+  - `connection_timeout` is now `timeout`
+  - `connection_persistent` is now `persistent`
+
 - Cluster and replication connections now extend a new common interface,
   `Predis\Connection\AggregatedConnectionInterface`.
 

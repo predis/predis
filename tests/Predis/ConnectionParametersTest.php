@@ -32,9 +32,9 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($defaults['port'], $parameters->port);
         $this->assertEquals($defaults['throw_errors'], $parameters->throw_errors);
         $this->assertEquals($defaults['iterable_multibulk'], $parameters->iterable_multibulk);
-        $this->assertEquals($defaults['connection_async'], $parameters->connection_async);
-        $this->assertEquals($defaults['connection_persistent'], $parameters->connection_persistent);
-        $this->assertEquals($defaults['connection_timeout'], $parameters->connection_timeout);
+        $this->assertEquals($defaults['async_connect'], $parameters->async_connect);
+        $this->assertEquals($defaults['persistent'], $parameters->persistent);
+        $this->assertEquals($defaults['timeout'], $parameters->timeout);
         $this->assertEquals($defaults['read_write_timeout'], $parameters->read_write_timeout);
         $this->assertEquals($defaults['database'], $parameters->database);
         $this->assertEquals($defaults['password'], $parameters->password);
@@ -175,9 +175,9 @@ class ConnectionParametersTest extends StandardTestCase
             'port' => 6379,
             'database' => null,
             'password' => null,
-            'connection_async' => false,
-            'connection_persistent' => false,
-            'connection_timeout' => 5.0,
+            'async_connect' => false,
+            'persistent' => false,
+            'timeout' => 5.0,
             'read_write_timeout' => null,
             'alias' => null,
             'weight' => null,

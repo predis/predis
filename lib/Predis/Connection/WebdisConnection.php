@@ -102,7 +102,7 @@ class WebdisConnection implements SingleConnectionInterface
     {
         $options = array(
             CURLOPT_FAILONERROR => true,
-            CURLOPT_CONNECTTIMEOUT_MS => $parameters->connection_timeout * 1000,
+            CURLOPT_CONNECTTIMEOUT_MS => $parameters->timeout * 1000,
             CURLOPT_URL => "{$parameters->scheme}://{$parameters->host}:{$parameters->port}",
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
