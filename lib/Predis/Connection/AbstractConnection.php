@@ -177,9 +177,11 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     protected function onInvalidOption($option, $parameters = null)
     {
-        $message = "Invalid option: $option";
+        $class = get_called_class();
+        $message = "Invalid option for connection $class: $option";
+
         if (isset($parameters)) {
-            $message .= " [$parameters]";
+            $message .= sprintf(' [%s => %s]', $option, $parameters->{$option});
         }
 
         throw new NotSupportedException($message);
