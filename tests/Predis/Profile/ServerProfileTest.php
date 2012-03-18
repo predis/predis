@@ -148,6 +148,34 @@ class ServerProfileTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testDefineCommand()
+    {
+        $profile = ServerProfile::getDefault();
+        $command = $this->getMock('Predis\Command\CommandInterface');
+
+        $profile->defineCommand('mock', get_class($command));
+
+        $this->assertTrue($profile->supportsCommand('mock'));
+        $this->assertTrue($profile->supportsCommand('MOCK'));
+
+        $this->assertSame(get_class($command), $profile->getCommandClass('mock'));
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Cannot register 'stdClass' as it is not a valid Redis command
+     */
+    public function testDefineInvalidCommand()
+    {
+        $profile = ServerProfile::getDefault();
+
+        $profile->defineCommand('mock', 'stdClass');
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateCommandWithoutArguments()
     {
         $profile = ServerProfile::getDefault();
