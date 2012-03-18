@@ -11,7 +11,7 @@
 
 namespace Predis\PubSub;
 
-use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Helpers;
 use Predis\ClientException;
 use Predis\NotSupportedException;
@@ -39,10 +39,10 @@ class PubSubContext implements \Iterator
     private $options;
 
     /**
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      * @param array Options for the context initialization.
      */
-    public function __construct(Client $client, Array $options = null)
+    public function __construct(ClientInterface $client, Array $options = null)
     {
         $this->checkCapabilities($client);
         $this->options = $options ?: array();
@@ -65,9 +65,9 @@ class PubSubContext implements \Iterator
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a Publish / Subscribe context.
      *
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      */
-    private function checkCapabilities(Client $client)
+    private function checkCapabilities(ClientInterface $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
             throw new NotSupportedException('Cannot initialize a PUB/SUB context over a cluster of connections');

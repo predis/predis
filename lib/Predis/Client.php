@@ -27,7 +27,7 @@ use Predis\Transaction\MultiExecContext;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Client
+class Client implements ClientInterface
 {
     const VERSION = '0.8.0-dev';
 
@@ -102,9 +102,7 @@ class Client
     }
 
     /**
-     * Returns the server profile used by the client.
-     *
-     * @return ServerProfileInterface
+     * {@inheritdoc}
      */
     public function getProfile()
     {
@@ -112,9 +110,7 @@ class Client
     }
 
     /**
-     * Returns the client options specified upon initialization.
-     *
-     * @return ClientOptions
+     * {@inheritdoc}
      */
     public function getOptions()
     {
@@ -185,11 +181,7 @@ class Client
     }
 
     /**
-     * Returns the underlying connection instance or, when connected to a cluster,
-     * one of the connection instances identified by its alias.
-     *
-     * @param string $id The alias of a connection when connected to a cluster.
-     * @return ConnectionInterface
+     * {@inheritdoc}
      */
     public function getConnection($id = null)
     {
@@ -218,11 +210,7 @@ class Client
     }
 
     /**
-     * Creates a new instance of the specified Redis command.
-     *
-     * @param string $method The name of a Redis command.
-     * @param array $arguments The arguments for the command.
-     * @return CommandInterface
+     * {@inheritdoc}
      */
     public function createCommand($method, $arguments = array())
     {
@@ -230,10 +218,7 @@ class Client
     }
 
     /**
-     * Executes the specified Redis command.
-     *
-     * @param CommandInterface $command A Redis command.
-     * @return mixed
+     * {@inheritdoc}
      */
     public function executeCommand(CommandInterface $command)
     {

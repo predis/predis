@@ -11,7 +11,7 @@
 
 namespace Predis\Monitor;
 
-use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Helpers;
 use Predis\NotSupportedException;
 
@@ -27,9 +27,9 @@ class MonitorContext implements \Iterator
     private $position;
 
     /**
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      */
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->checkCapabilities($client);
         $this->client = $client;
@@ -48,9 +48,9 @@ class MonitorContext implements \Iterator
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a monitor context.
      *
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      */
-    private function checkCapabilities(Client $client)
+    private function checkCapabilities(ClientInterface $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
             throw new NotSupportedException('Cannot initialize a monitor context over a cluster of connections');
@@ -63,8 +63,6 @@ class MonitorContext implements \Iterator
 
     /**
      * Initializes the context and sends the MONITOR command to the server.
-     *
-     * @param Client Client instance used by the context.
      */
     protected function openContext()
     {

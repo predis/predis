@@ -11,12 +11,14 @@
 
 namespace Predis\Transaction;
 
-use Predis\Client;
+use Predis\ClientInterface;
+use Predis\BasicClientInterface;
+use Predis\ExecutableContextInterface;
+use Predis\Command\CommandInterface;
 use Predis\Helpers;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
-use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
@@ -26,7 +28,7 @@ use Predis\Protocol\ProtocolException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiExecContext
+class MultiExecContext implements BasicClientInterface, ExecutableContextInterface
 {
     const STATE_RESET       = 0x00000;
     const STATE_INITIALIZED = 0x00001;
@@ -43,10 +45,10 @@ class MultiExecContext
     protected $commands;
 
     /**
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      * @param array Options for the context initialization.
      */
-    public function __construct(Client $client, Array $options = null)
+    public function __construct(ClientInterface $client, Array $options = null)
     {
         $this->checkCapabilities($client);
         $this->options = $options ?: array();
@@ -109,9 +111,9 @@ class MultiExecContext
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a transaction context.
      *
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      */
-    private function checkCapabilities(Client $client)
+    private function checkCapabilities(ClientInterface $client)
     {
         if (Helpers::isCluster($client->getConnection())) {
             throw new NotSupportedException('Cannot initialize a MULTI/EXEC context over a cluster of connections');
@@ -326,7 +328,7 @@ class MultiExecContext
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param mixed $callable Callback for execution.
+     * @param mixed $callable Optional callback for execution.
      * @return array
      */
     public function execute($callable = null)

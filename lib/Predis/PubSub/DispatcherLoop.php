@@ -11,7 +11,7 @@
 
 namespace Predis\PubSub;
 
-use Predis\Client;
+use Predis\ClientInterface;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
@@ -28,9 +28,9 @@ class DispatcherLoop
     private $subscriptionCallback;
 
     /**
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      */
-    public function __construct(Client $client)
+    public function __construct(ClientInterface $client)
     {
         $this->callbacks = array();
         $this->client = $client;

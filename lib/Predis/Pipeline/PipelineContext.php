@@ -11,11 +11,13 @@
 
 namespace Predis\Pipeline;
 
-use Predis\Client;
-use Predis\Helpers;
-use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\BasicClientInterface;
+use Predis\ExecutableContextInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Helpers;
+use Predis\ClientException;
 
 /**
  * Abstraction of a pipeline context where write and read operations
@@ -23,7 +25,7 @@ use Predis\Connection\ReplicationConnectionInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PipelineContext
+class PipelineContext implements BasicClientInterface, ExecutableContextInterface
 {
     private $client;
     private $executor;
@@ -33,10 +35,10 @@ class PipelineContext
     private $running  = false;
 
     /**
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      * @param array Options for the context initialization.
      */
-    public function __construct(Client $client, Array $options = null)
+    public function __construct(ClientInterface $client, Array $options = null)
     {
         $this->client = $client;
         $this->executor = $this->createExecutor($client, $options ?: array());
@@ -46,11 +48,11 @@ class PipelineContext
      * Returns a pipeline executor depending on the kind of the underlying
      * connection and the passed options.
      *
-     * @param Client Client instance used by the context.
+     * @param ClientInterface Client instance used by the context.
      * @param array Options for the context initialization.
      * @return PipelineExecutorInterface
      */
-    protected function createExecutor(Client $client, Array $options)
+    protected function createExecutor(ClientInterface $client, Array $options)
     {
         if (!$options) {
             return new StandardExecutor();
@@ -154,7 +156,7 @@ class PipelineContext
     /**
      * Handles the actual execution of the whole pipeline.
      *
-     * @param mixed $callable Callback for execution.
+     * @param mixed $callable Optional callback for execution.
      * @return array
      */
     public function execute($callable = null)
@@ -188,7 +190,7 @@ class PipelineContext
     /**
      * Returns the underlying client instance used by the pipeline object.
      *
-     * @return Client
+     * @return ClientInterface
      */
     public function getClient()
     {
