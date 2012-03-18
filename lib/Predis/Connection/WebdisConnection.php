@@ -20,8 +20,6 @@ use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Connection\ConnectionException;
 
-const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
-
 /**
  * This class implements a Predis connection that actually talks with Webdis
  * instead of connecting directly to Redis. It relies on the cURL extension to
@@ -50,6 +48,8 @@ const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able t
  */
 class WebdisConnection implements SingleConnectionInterface
 {
+    const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
+
     private $parameters;
     private $resource;
     private $reader;
@@ -95,10 +95,10 @@ class WebdisConnection implements SingleConnectionInterface
     private function checkExtensions()
     {
         if (!function_exists('curl_init')) {
-            throw new NotSupportedException(sprintf(ERR_MSG_EXTENSION, 'curl'));
+            throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'curl'));
         }
         if (!function_exists('phpiredis_reader_create')) {
-            throw new NotSupportedException(sprintf(ERR_MSG_EXTENSION, 'phpiredis'));
+            throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'phpiredis'));
         }
     }
 

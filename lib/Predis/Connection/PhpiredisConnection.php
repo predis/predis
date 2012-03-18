@@ -49,6 +49,8 @@ use Predis\NotSupportedException;
  */
 class PhpiredisConnection extends AbstractConnection
 {
+    const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able to use this connection class';
+
     private $reader;
 
     /**
@@ -56,12 +58,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
-        if (!function_exists('socket_create')) {
-            throw new NotSupportedException(
-                'The socket extension must be loaded in order to be able to ' .
-                'use this connection class'
-            );
-        }
+        $this->checkExtensions();
 
         parent::__construct($parameters);
     }
@@ -75,6 +72,19 @@ class PhpiredisConnection extends AbstractConnection
         phpiredis_reader_destroy($this->reader);
 
         parent::__destruct();
+    }
+
+    /**
+     * Checks if the cURL and phpiredis extensions are loaded in PHP.
+     */
+    private function checkExtensions()
+    {
+        if (!function_exists('socket_create')) {
+            throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'socket'));
+        }
+        if (!function_exists('phpiredis_reader_create')) {
+            throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'phpiredis'));
+        }
     }
 
     /**
@@ -97,14 +107,7 @@ class PhpiredisConnection extends AbstractConnection
      *
      * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
      */
-    private function initializeReader($throw_errors = true)
-    {
-        if (!function_exists('phpiredis_reader_create')) {
-            throw new NotSupportedException(
-                'The phpiredis extension must be loaded in order to be able to ' .
-                'use this connection class'
-            );
-        }
+    private function initializeReader($throw_errors = true)    {
 
         $reader = phpiredis_reader_create();
 
