@@ -71,7 +71,9 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
-        $this->assertFalse($parameters->isSetByUser('custom'));
+
+        $this->assertFalse(isset($parameters->custom));
+        $this->assertNull($parameters->custom);
     }
 
     /**
@@ -85,7 +87,9 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
-        $this->assertTrue($parameters->isSetByUser('custom'));
+
+        $this->assertTrue(isset($parameters->custom));
+        $this->assertSame('foobar', $parameters->custom);
     }
 
     /**
@@ -99,7 +103,9 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals('tcp', $parameters->scheme);
-        $this->assertTrue($parameters->isSetByUser('custom'));
+
+        $this->assertTrue(isset($parameters->custom));
+        $this->assertSame('foobar', $parameters->custom);
     }
 
     /**

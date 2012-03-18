@@ -20,108 +20,59 @@ use Predis\Option\OptionInterface;
  */
 class ConnectionParameters implements ConnectionParametersInterface
 {
-    private static $defaultParameters;
-    private static $validators;
-
     private $parameters;
-    private $userDefined;
+
+    private static $defaults = array(
+        'scheme' => 'tcp',
+        'host' => '127.0.0.1',
+        'port' => 6379,
+        'timeout' => 5.0,
+        'iterable_multibulk' => false,
+        'throw_errors' => true,
+    );
 
     /**
      * @param string|array Connection parameters in the form of an URI string or a named array.
      */
     public function __construct($parameters = array())
     {
-        self::ensureDefaults();
-
         if (!is_array($parameters)) {
             $parameters = $this->parseURI($parameters);
         }
 
-        $this->userDefined = array_keys($parameters);
-        $this->parameters = $this->filter($parameters) + self::$defaultParameters;
+        $this->parameters = $this->filter($parameters) + $this->getDefaults();
     }
 
     /**
-     * Ensures that the default values and validators are initialized.
-     */
-    private static function ensureDefaults()
-    {
-        if (!isset(self::$defaultParameters)) {
-            self::$defaultParameters = array(
-                'scheme' => 'tcp',
-                'host' => '127.0.0.1',
-                'port' => 6379,
-                'database' => null,
-                'password' => null,
-                'async_connect' => false,
-                'persistent' => false,
-                'timeout' => 5.0,
-                'read_write_timeout' => null,
-                'alias' => null,
-                'weight' => null,
-                'path' => null,
-                'iterable_multibulk' => false,
-                'throw_errors' => true,
-            );
-        }
-
-        if (!isset(self::$validators)) {
-            $bool = function($value) { return (bool) $value; };
-            $float = function($value) { return (float) $value; };
-            $int = function($value) { return (int) $value; };
-
-            self::$validators = array(
-                'port' => $int,
-                'async_connect' => $bool,
-                'persistent' => $bool,
-                'timeout' => $float,
-                'read_write_timeout' => $float,
-                'iterable_multibulk' => $bool,
-                'throw_errors' => $bool,
-            );
-        }
-    }
-
-    /**
-     * Defines a default value and a validator for the specified parameter.
+     * Returns some default parameters with their values.
      *
-     * @param string $parameter Name of the parameter.
-     * @param mixed $default Default value or an instance of OptionInterface.
-     * @param mixed $callable A validator callback.
+     * @return array
      */
-    public static function define($parameter, $default, $callable = null)
+    protected function getDefaults()
     {
-        self::ensureDefaults();
-        self::$defaultParameters[$parameter] = $default;
-
-        if ($default instanceof OptionInterface) {
-            self::$validators[$parameter] = $default;
-            return;
-        }
-
-        if (!isset($callable)) {
-            unset(self::$validators[$parameter]);
-            return;
-        }
-
-        if (!is_callable($callable)) {
-            throw new \InvalidArgumentException(
-                "The validator for $parameter must be a callable object"
-            );
-        }
-
-        self::$validators[$parameter] = $callable;
+        return self::$defaults;
     }
 
     /**
-     * Undefines the default value and validator for the specified parameter.
+     * Returns validators functions for the values of certain parameters.
      *
-     * @param string $parameter Name of the parameter.
+     * @return array
      */
-    public static function undefine($parameter)
+    protected function getValidators()
     {
-        self::ensureDefaults();
-        unset(self::$defaultParameters[$parameter], self::$validators[$parameter]);
+        $bool = function($value) { return (bool) $value; };
+        $float = function($value) { return (float) $value; };
+        $int = function($value) { return (int) $value; };
+
+        return array(
+            'port' => $int,
+            'async_connect' => $bool,
+            'persistent' => $bool,
+            'timeout' => $float,
+            'read_write_timeout' => $float,
+            'iterable_multibulk' => $bool,
+            'throw_errors' => $bool,
+        );
     }
 
     /**
@@ -161,7 +112,7 @@ class ConnectionParameters implements ConnectionParametersInterface
     private function filter(Array $parameters)
     {
         if (count($parameters) > 0) {
-            $validators = array_intersect_key(self::$validators, $parameters);
+            $validators = array_intersect_key($this->getValidators(), $parameters);
             foreach ($validators as $parameter => $validator) {
                 $parameters[$parameter] = $validator($parameters[$parameter]);
             }
@@ -175,13 +126,9 @@ class ConnectionParameters implements ConnectionParametersInterface
      */
     public function __get($parameter)
     {
-        $value = $this->parameters[$parameter];
-
-        if ($value instanceof OptionInterface) {
-            $this->parameters[$parameter] = ($value = $value->getDefault());
+        if (isset($this->{$parameter})) {
+            return $this->parameters[$parameter];
         }
-
-        return $value;
     }
 
     /**
@@ -193,39 +140,6 @@ class ConnectionParameters implements ConnectionParametersInterface
     }
 
     /**
-     * Checks if the specified parameter has been set by the user.
-     *
-     * @param string $parameter Name of the parameter.
-     * @return Boolean
-     */
-    public function isSetByUser($parameter)
-    {
-        return in_array($parameter, $this->userDefined);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getBaseURI()
-    {
-        if ($this->scheme === 'unix') {
-            return "{$this->scheme}://{$this->path}";
-        }
-
-        return "{$this->scheme}://{$this->host}:{$this->port}";
-    }
-
-    /**
-     * Returns the URI parts that must be omitted when calling __toString().
-     *
-     * @return array
-     */
-    protected function getDisallowedURIParts()
-    {
-        return array('scheme', 'host', 'port', 'password', 'path');
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function toArray()
@@ -234,44 +148,10 @@ class ConnectionParameters implements ConnectionParametersInterface
     }
 
     /**
-     * Returns a string representation of the parameters.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        $query = array();
-        $parameters = $this->toArray();
-        $reject = $this->getDisallowedURIParts();
-
-        foreach ($this->userDefined as $param) {
-            if (in_array($param, $reject) || !isset($parameters[$param])) {
-                continue;
-            }
-            $value = $parameters[$param];
-            $query[] = "$param=" . ($value === false ? '0' : $value);
-        }
-
-        if (count($query) === 0) {
-            return $this->getBaseURI();
-        }
-
-        return $this->getBaseURI() . '/?' . implode('&', $query);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function __sleep()
     {
-        return array('parameters', 'userDefined');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __wakeup()
-    {
-        self::ensureDefaults();
+        return array('parameters');
     }
 }

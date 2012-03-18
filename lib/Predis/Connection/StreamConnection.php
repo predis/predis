@@ -46,8 +46,8 @@ class StreamConnection extends AbstractConnection
      */
     protected function initializeProtocol(ConnectionParametersInterface $parameters)
     {
-        $this->throwErrors = $parameters->throw_errors;
-        $this->mbiterable = $parameters->iterable_multibulk;
+        $this->throwErrors = (bool) $parameters->throw_errors;
+        $this->mbiterable = (bool) $parameters->iterable_multibulk;
     }
 
     /**
@@ -72,10 +72,10 @@ class StreamConnection extends AbstractConnection
         $uri = "tcp://{$parameters->host}:{$parameters->port}/";
 
         $flags = STREAM_CLIENT_CONNECT;
-        if ($parameters->async_connect) {
+        if (isset($parameters->async_connect) && $parameters->async_connect === true) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
-        if ($parameters->persistent) {
+        if (isset($parameters->persistent) && $parameters->persistent === true) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
@@ -109,7 +109,7 @@ class StreamConnection extends AbstractConnection
         $uri = "unix://{$parameters->path}";
 
         $flags = STREAM_CLIENT_CONNECT;
-        if ($parameters->persistent) {
+        if ($parameters->persistent === true) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 

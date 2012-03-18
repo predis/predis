@@ -32,15 +32,7 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($defaults['port'], $parameters->port);
         $this->assertEquals($defaults['throw_errors'], $parameters->throw_errors);
         $this->assertEquals($defaults['iterable_multibulk'], $parameters->iterable_multibulk);
-        $this->assertEquals($defaults['async_connect'], $parameters->async_connect);
-        $this->assertEquals($defaults['persistent'], $parameters->persistent);
         $this->assertEquals($defaults['timeout'], $parameters->timeout);
-        $this->assertEquals($defaults['read_write_timeout'], $parameters->read_write_timeout);
-        $this->assertEquals($defaults['database'], $parameters->database);
-        $this->assertEquals($defaults['password'], $parameters->password);
-        $this->assertEquals($defaults['alias'], $parameters->alias);
-        $this->assertEquals($defaults['weight'], $parameters->weight);
-        $this->assertEquals($defaults['path'], $parameters->path);
     }
 
     /**
@@ -57,21 +49,21 @@ class ConnectionParametersTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testIsSetByUser()
+    public function testUserDefinedParameters()
     {
         $parameters = new ConnectionParameters(array('port' => 7000, 'custom' => 'foobar'));
 
         $this->assertTrue(isset($parameters->scheme));
-        $this->assertFalse($parameters->isSetByUser('scheme'));
+        $this->assertSame('tcp', $parameters->scheme);
 
         $this->assertTrue(isset($parameters->port));
-        $this->assertTrue($parameters->isSetByUser('port'));
+        $this->assertSame(7000, $parameters->port);
 
         $this->assertTrue(isset($parameters->custom));
-        $this->assertTrue($parameters->isSetByUser('custom'));
+        $this->assertSame('foobar', $parameters->custom);
 
         $this->assertFalse(isset($parameters->unknown));
-        $this->assertFalse($parameters->isSetByUser('unknown'));
+        $this->assertNull($parameters->unknown);
     }
 
     /**
@@ -98,11 +90,10 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($overrides['throw_errors'], $parameters->throw_errors);
 
         $this->assertTrue(isset($parameters->custom));
-        $this->assertTrue($parameters->isSetByUser('custom'));
         $this->assertEquals($overrides['custom'], $parameters->custom);
 
         $this->assertFalse(isset($parameters->unknown));
-        $this->assertFalse($parameters->isSetByUser('unknown'));
+        $this->assertNull($parameters->unknown);
     }
 
     /**
@@ -119,29 +110,6 @@ class ConnectionParametersTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testToString()
-    {
-        $uri = 'tcp://localhost:7000/?database=15&custom=foobar&throw_errors=0';
-        $parameters = new ConnectionParameters($uri);
-
-        $this->assertEquals($uri, (string) $parameters);
-    }
-
-    /**
-     * @group disconnected
-     * @todo Does it actually make sense?
-     */
-    public function testToStringOmitPassword()
-    {
-        $uri = 'tcp://localhost:7000/?database=15&custom=foobar&throw_errors=0';
-        $parameters = new ConnectionParameters($uri . '&password=foobar');
-
-        $this->assertEquals($uri, (string) $parameters);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testSerialization()
     {
         $parameters = new ConnectionParameters(array('port' => 7000, 'custom' => 'foobar'));
@@ -151,11 +119,10 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($parameters->port, $unserialized->port);
 
         $this->assertTrue(isset($unserialized->custom));
-        $this->assertTrue($unserialized->isSetByUser('custom'));
         $this->assertEquals($parameters->custom, $unserialized->custom);
 
         $this->assertFalse(isset($unserialized->unknown));
-        $this->assertFalse($unserialized->isSetByUser('unknown'));
+        $this->assertNull($unserialized->unknown);
     }
 
     // ******************************************************************** //
@@ -173,15 +140,7 @@ class ConnectionParametersTest extends StandardTestCase
             'scheme' => 'tcp',
             'host' => '127.0.0.1',
             'port' => 6379,
-            'database' => null,
-            'password' => null,
-            'async_connect' => false,
-            'persistent' => false,
             'timeout' => 5.0,
-            'read_write_timeout' => null,
-            'alias' => null,
-            'weight' => null,
-            'path' => null,
             'iterable_multibulk' => false,
             'throw_errors' => true,
         );
