@@ -181,18 +181,6 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     }
 
     /**
-     * Defines new commands in the server profile.
-     *
-     * @param array $commands Named list of command IDs and their classes.
-     */
-    public function defineCommands(Array $commands)
-    {
-        foreach ($commands as $alias => $command) {
-            $this->defineCommand($alias, $command);
-        }
-    }
-
-    /**
      * Defines a new commands in the server profile.
      *
      * @param string $alias Command ID.
