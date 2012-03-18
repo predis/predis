@@ -20,7 +20,18 @@ use Predis\Command\CommandInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
 
 /**
- * Connection abstraction to Redis servers based on PHP's streams.
+ * Standard connection to Redis servers implemented on top of PHP's streams.
+ * The connection parameters supported by this class are:
+ *
+ *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - host: hostname or IP address of the server.
+ *  - port: TCP port of the server.
+ *  - timeout: timeout to perform the connection.
+ *  - read_write_timeout: timeout of read / write operations.
+ *  - async_connect: performs the connection asynchronously.
+ *  - persistent: the connection is left intact after a GC collection.
+ *  - throw_errors: -ERR replies treated as exceptions.
+ *  - iterable_multibulk: multibulk replies treated as iterable objects.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

@@ -35,6 +35,15 @@ use Predis\NotSupportedException;
  * For instructions on how to build and install the phpiredis extension, please
  * consult the repository of the project.
  *
+ * The connection parameters supported by this class are:
+ *
+ *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - host: hostname or IP address of the server.
+ *  - port: TCP port of the server.
+ *  - timeout: timeout to perform the connection.
+ *  - read_write_timeout: timeout of read / write operations.
+ *  - throw_errors: -ERR replies treated as exceptions.
+ *
  * @link http://github.com/seppo0010/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

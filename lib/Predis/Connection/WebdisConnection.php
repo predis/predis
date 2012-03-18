@@ -33,6 +33,16 @@ const ERR_MSG_EXTENSION = 'The %s extension must be loaded in order to be able t
  *   - Publish / Subscribe.
  *   - MULTI / EXEC transactions (not yet supported by Webdis).
  *
+ * The connection parameters supported by this class are:
+ *
+ *  - scheme: must be 'http'.
+ *  - host: hostname or IP address of the server.
+ *  - port: TCP port of the server.
+ *  - timeout: timeout to perform the connection.
+ *  - user: username for authentication.
+ *  - pass: password for authentication.
+ *  - throw_errors: -ERR replies treated as exceptions.
+ *
  * @link http://webd.is
  * @link http://github.com/nicolasff/webdis
  * @link http://github.com/seppo0010/phpiredis
