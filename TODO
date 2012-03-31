@@ -1,4 +1,4 @@
 * Documentation! The README is obviously not enought to show how to use Predis
   as it does not cover all of its features.
 
-* [v0.8] Implement smart and transparent support for redis-cluster.
+* Implement smart and transparent support for redis-cluster.
