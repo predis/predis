@@ -5,13 +5,12 @@ Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Re
 For a list of frequently asked questions about Predis, see the __FAQ__ file in the root of the repository.
 For a version compatible with PHP 5.2 you must use the backported version from the latest release in the
 0.6.x series. More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the
-project,
+project.
 
 
 ## Main features ##
 
-- Complete support for Redis from __1.2__ to __2.6__ and the current unstable versions using different
-  server profiles.
+- Complete support for Redis from __1.2__ to __2.6__ and unstable versions using different server profiles.
 - Client-side sharding with support for consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
 - Command pipelining on single and aggregated connections.
@@ -35,7 +34,7 @@ by browsing the list of [tagged releases](http://github.com/nrk/predis/tags).
 
 ### Loading the library ###
 
-To automatically load all of its files, Predis relies on the autoloading features of PHP and complies
+Predis relies on the autoloading features of PHP to automatically load the needed files and complies
 with the [PSR-0 standard](http://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for
 interoperability with most of the major frameworks and libraries. Everything is transparently handled
 for you when installing the library using Composer, but you can also leverage its own autoloader class
