@@ -20,7 +20,7 @@ use Predis\Command\Processor\ProcessorChain;
 class ServerProfileTest extends StandardTestCase
 {
     const DEFAULT_PROFILE_VERSION = '2.4';
-    const DEVELOPMENT_PROFILE_VERSION = '3.0';
+    const DEVELOPMENT_PROFILE_VERSION = '2.8';
 
     /**
      * @group disconnected

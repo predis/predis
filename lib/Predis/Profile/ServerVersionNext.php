@@ -23,7 +23,7 @@ class ServerVersionNext extends ServerVersion26
      */
     public function getVersion()
     {
-        return '3.0';
+        return '2.8';
     }
 
     /**
