@@ -56,3 +56,45 @@ generalized when using Redis because of the many possible access patterns for th
 mean that it is impossible to have such a feature, you can leverage Predis' extensibility to define your
 own serialization-aware commands. See [here](http://github.com/nrk/predis/issues/29#issuecomment-1202624)
 for more details on how to implement such a feature with a practical example.
+
+
+### How can I force Predis to connect to Redis before sending any command? ###
+
+Explicitly connecting to Redis is usually not needed since the client library relies on lazily initialized
+connections to the server, but this behavior can be inconvenient in certain scenarios when you absolutely
+need to do an upfront check to detect if the server is up and running and eventually catch exceptions on
+failures. In this case developers can use `Predis\Client::connect()` to explicitly connect to the server:
+
+```
+$client = new Predis\Client();
+
+try {
+    $client->connect();
+}
+catch (Predis\Connection\ConnectionException $exception) {
+    // We could not connect to Redis! Your handling code goes here.
+}
+
+$client->info();
+```
+
+
+### How Predis implements abstraction of Redis commands? ###
+
+The approach used in Predis to implement the abstraction of Redis commands is quite simple. By default
+every command in the library follows exactly the same argument list as defined in the great online
+[Redis documentation](http://redis.io/commands) which makes things pretty easy if you already know how
+Redis works or if you need to look up how to use certain commands. Alternatively, variadic commands can
+accept an array for keys or values (depending on the command) instead of a list of arguments. See for
+example how [RPUSH](http://redis.io/commands/rpush) or [HMSET](http://redis.io/commands/hmset) work:
+
+```
+$client->rpush('my:list', 'value1', 'value2', 'value3');                 // values as arguments
+$client->rpush('my:list', array('value1', 'value2', 'value3'));          // values as single argument array
+
+$client->hmset('my:hash', 'field1', 'value1', 'field2', 'value2');       // values as arguments
+$client->hmset('my:hash', array('field1'=>'value1', 'field2'=>'value2'); // values as single named array
+```
+
+The only exception to this _rule_ is the [SORT](http://redis.io/commands/sort) command for which modifiers are
+[passed using a named array](https://github.com/nrk/predis/blob/master/tests/Predis/Command/KeySortTest.php#L56-77).
