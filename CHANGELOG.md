@@ -19,7 +19,7 @@ v0.8.0 (201x-xx-xx)
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
 
-v0.7.2 (2012-xx-xx)
+v0.7.2 (2012-04-01)
 ===============================================================================
 
 - Added `2.6` in the server profiles aliases list for the upcoming Redis 2.6.
