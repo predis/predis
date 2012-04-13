@@ -1,3 +1,12 @@
+v0.7.3 (2012-xx-xx)
+===============================================================================
+
+- __FIX__: `examples\CustomDistributionStrategy.php` had a mistyped constructor
+  call and produced a bad distribution due to an error as pointed in ISSUE #63.
+  This bug is limited to the above mentioned example and does not affect the
+  classes implemented in the `Predis\Distribution` namespace.
+
+
 v0.7.2 (2012-04-01)
 ===============================================================================
 

@@ -23,7 +23,7 @@ class NaiveDistributionStrategy implements IDistributionStrategy
     private $nodes;
     private $nodesCount;
 
-    public function __constructor()
+    public function __construct()
     {
         $this->nodes = array();
         $this->nodesCount = 0;
@@ -51,7 +51,7 @@ class NaiveDistributionStrategy implements IDistributionStrategy
             throw new RuntimeException('No connections');
         }
 
-        return $this->nodes[$count > 1 ? abs(crc32($key) % $count) : 0];
+        return $this->nodes[$count > 1 ? abs($key % $count) : 0];
     }
 
     public function generateKey($value)
