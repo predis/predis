@@ -15,7 +15,6 @@ use Predis\Client;
 use Predis\Helpers;
 use Predis\ClientException;
 use Predis\Commands\ICommand;
-use Predis\Network\IConnectionReplication;
 
 /**
  * Abstraction of a pipeline context where write and read operations
@@ -121,13 +120,6 @@ class PipelineContext
         if (count($this->pipeline) > 0) {
             if ($send) {
                 $connection = $this->client->getConnection();
-
-                // TODO: it would be better to use a dedicated pipeline executor
-                //       for classes implementing master/slave replication.
-                if ($connection instanceof IConnectionReplication) {
-                    $connection->switchTo('master');
-                }
-
                 $replies = $this->executor->execute($connection, $this->pipeline);
                 $this->replies = array_merge($this->replies, $replies);
             }

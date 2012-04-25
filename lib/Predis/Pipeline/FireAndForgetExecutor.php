@@ -12,6 +12,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Network\IConnection;
+use Predis\Network\IConnectionReplication;
 
 /**
  * Implements a pipeline executor strategy that writes a list of commands to
@@ -22,10 +23,26 @@ use Predis\Network\IConnection;
 class FireAndForgetExecutor implements IPipelineExecutor
 {
     /**
+     * Allows the pipeline executor to perform operations on the
+     * connection before starting to execute the commands stored
+     * in the pipeline.
+     *
+     * @param IConnection Connection instance.
+     */
+    protected function checkConnection(IConnection $connection)
+    {
+        if ($connection instanceof IConnectionReplication) {
+            $connection->switchTo('master');
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function execute(IConnection $connection, &$commands)
     {
+        $this->checkConnection($connection);
+
         foreach ($commands as $command) {
             $connection->writeCommand($command);
         }
