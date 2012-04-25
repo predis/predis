@@ -13,6 +13,7 @@ namespace Predis\Pipeline;
 
 use Predis\ServerException;
 use Predis\Connection\ConnectionInterface;
+use Predis\Connection\ReplicationConnectionInterface;
 
 /**
  * Implements the standard pipeline executor strategy used
@@ -24,12 +25,28 @@ use Predis\Connection\ConnectionInterface;
 class StandardExecutor implements PipelineExecutorInterface
 {
     /**
+     * Allows the pipeline executor to perform operations on the
+     * connection before starting to execute the commands stored
+     * in the pipeline.
+     *
+     * @param ConnectionInterface Connection instance.
+     */
+    protected function checkConnection(ConnectionInterface $connection)
+    {
+        if ($connection instanceof ReplicationConnectionInterface) {
+            $connection->switchTo('master');
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function execute(ConnectionInterface $connection, &$commands)
     {
         $sizeofPipe = count($commands);
         $values = array();
+
+        $this->checkConnection($connection);
 
         foreach ($commands as $command) {
             $connection->writeCommand($command);

@@ -15,7 +15,6 @@ use Predis\ClientInterface;
 use Predis\BasicClientInterface;
 use Predis\ExecutableContextInterface;
 use Predis\Command\CommandInterface;
-use Predis\Connection\ReplicationConnectionInterface;
 use Predis\Helpers;
 use Predis\ClientException;
 
@@ -123,13 +122,6 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
         if (count($this->pipeline) > 0) {
             if ($send) {
                 $connection = $this->client->getConnection();
-
-                // TODO: it would be better to use a dedicated pipeline executor
-                //       for classes implementing master/slave replication.
-                if ($connection instanceof ReplicationConnectionInterface) {
-                    $connection->switchTo('master');
-                }
-
                 $replies = $this->executor->execute($connection, $this->pipeline);
                 $this->replies = array_merge($this->replies, $replies);
             }
