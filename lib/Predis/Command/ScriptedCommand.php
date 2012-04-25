@@ -60,8 +60,13 @@ abstract class ScriptedCommand extends ServerEval
      */
     protected function filterArguments(Array $arguments)
     {
-        $header = array($this->getScript(), ($keys = $this->getKeysCount()) !== false ? $keys : count($arguments));
+        if (false !== $numkeys = $this->getKeysCount()) {
+            $numkeys = $numkeys >= 0 ? $numkeys : count($arguments) + $numkeys;
+        }
+        else {
+            $numkeys = count($arguments);
+        }
 
-        return array_merge($header, $arguments);
+        return array_merge(array($this->getScript(), $numkeys), $arguments);
     }
 }
