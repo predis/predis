@@ -20,30 +20,47 @@ require 'SharedConfigurations.php';
 
 use Predis\Commands\ScriptedCommand;
 
-class IncrementExistingKey extends ScriptedCommand
+class IncrementExistingKeysBy extends ScriptedCommand
 {
     public function getKeysCount()
     {
-        return 1;
+        // Tell Predis to use all the arguments but the last one as arguments
+        // for KEYS. The last one will be used to populate ARGV.
+        return -1;
     }
 
     public function getScript()
     {
         return
 <<<LUA
-    local cmd = redis.call
-    if cmd('exists', KEYS[1]) == 1 then
-        return cmd('incr', KEYS[1])
-    end
+local cmd, insert = redis.call, table.insert
+local increment, results = ARGV[1], { }
+
+for idx, key in ipairs(KEYS) do
+  if cmd('exists', key) == 1 then
+    insert(results, idx, cmd('incrby', key, increment))
+  else
+    insert(results, idx, false)
+  end
+end
+
+return results
 LUA;
     }
 }
 
 $client = new Predis\Client($single_server, '2.6');
 
-$client->getProfile()->defineCommand('increx', 'IncrementExistingKey');
+$client->getProfile()->defineCommand('increxby', 'IncrementExistingKeysBy');
 
-$client->set('foo', 10);
+$client->mset('foo', 10, 'foobar', 100);
 
-var_dump($client->increx('foo'));       // int(11)
-var_dump($client->increx('bar'));       // NULL
+var_export($client->increxby('foo', 'foofoo', 'foobar', 50));
+
+/*
+array (
+  0 => 60,
+  1 => NULL,
+  2 => 150,
+)
+*/

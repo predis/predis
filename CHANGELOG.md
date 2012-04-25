@@ -1,6 +1,11 @@
 v0.7.3 (2012-xx-xx)
 ===============================================================================
 
+- When the number of keys `Predis\Commands\ScriptedCommand` is negative, Predis
+  will count from the end of the arguments list to calculate the actual number
+  of keys that will be interpreted as elements for `KEYS` by the underlying
+  `EVAL` command.
+
 - __FIX__: `examples\CustomDistributionStrategy.php` had a mistyped constructor
   call and produced a bad distribution due to an error as pointed in ISSUE #63.
   This bug is limited to the above mentioned example and does not affect the
