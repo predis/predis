@@ -24,4 +24,14 @@ class ServerEvalSHA extends ServerEval
     {
         return 'EVALSHA';
     }
+
+    /**
+     * Returns the SHA1 hash of the body of the script.
+     *
+     * @return string SHA1 hash.
+     */
+    public function getScriptHash()
+    {
+        return $this->getArgument(0);
+    }
 }
