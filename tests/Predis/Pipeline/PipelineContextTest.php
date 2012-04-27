@@ -41,16 +41,13 @@ class PipelineContextTest extends StandardTestCase
     {
         $client = new Client();
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
+
         $pipeline = new PipelineContext($client, array('executor' => $executor));
         $this->assertSame($executor, $pipeline->getExecutor());
 
-        $pipeline = new PipelineContext($client, array('safe' => true));
-        $this->assertInstanceOf('Predis\Pipeline\SafeExecutor', $pipeline->getExecutor());
-
-        $options = array('executor' => 'safe');
-        $client = new Client($this->getMock('Predis\Connection\ClusterConnectionInterface'));
-        $pipeline = new PipelineContext($client, array('safe' => true));
-        $this->assertInstanceOf('Predis\Pipeline\SafeClusterExecutor', $pipeline->getExecutor());
+        $executorCbk = function($client, $options) use($executor) { return $executor; };
+        $pipeline = new PipelineContext($client, array('executor' => $executorCbk));
+        $this->assertSame($executor, $pipeline->getExecutor());
     }
 
     /**

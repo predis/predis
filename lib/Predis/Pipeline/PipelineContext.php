@@ -68,16 +68,17 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
             return $executor;
         }
 
-        if (isset($options['safe']) && $options['safe'] == true) {
-            $isCluster = Helpers::isCluster($client->getConnection());
-            return $isCluster ? new SafeClusterExecutor() : new SafeExecutor();
-        }
+        $clientOpts = $client->getOptions();
+        $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
 
+        return new StandardExecutor($useExceptions);
+    }
+
+    protected function getDefaultExecutor()
+    {
         $clientOpts = $client->getOptions();
         $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
         $executor = new StandardExecutor($useExceptions);
-
-        return $executor;
     }
 
     /**
