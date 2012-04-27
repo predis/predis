@@ -76,6 +76,15 @@ class ServerEvalSHATest extends CommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testGetScriptHash()
+    {
+        $command = $this->getCommandWithArgumentsArray(array($sha1 = sha1('return true')), 0);
+        $this->assertSame($sha1, $command->getScriptHash());
+    }
+
+    /**
      * @group connected
      */
     public function testExecutesSpecifiedLuaScript()

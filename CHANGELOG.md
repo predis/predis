@@ -11,6 +11,8 @@ v0.7.3 (2012-xx-xx)
   This bug is limited to the above mentioned example and does not affect the
   classes implemented in the `Predis\Distribution` namespace.
 
+- __FIX__: `Predis\Commands\ServerEvalSHA::getScriptHash()` was calculating the
+  hash while it just needs to return the first argument of the command.
 
 v0.7.2 (2012-04-01)
 ===============================================================================
