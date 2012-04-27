@@ -82,6 +82,16 @@ abstract class MultiBulkResponse implements \Iterator, \Countable
     }
 
     /**
+     * Returns the current position of the iterator.
+     *
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected abstract function getValue();

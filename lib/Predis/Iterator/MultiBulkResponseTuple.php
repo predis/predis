@@ -28,7 +28,7 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
     {
         $virtualSize = count($iterator) / 2;
         $this->iterator = $iterator;
-        $this->position = 0;
+        $this->position = $iterator->getPosition();
         $this->current = $virtualSize > 0 ? $this->getValue() : null;
         $this->replySize = $virtualSize;
     }
