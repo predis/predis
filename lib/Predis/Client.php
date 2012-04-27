@@ -209,7 +209,7 @@ class Client implements ClientInterface
         $response = $this->connection->executeCommand($command);
 
         if ($response instanceof ResponseErrorInterface) {
-            $this->onResponseError($response);
+            $this->onResponseError($command, $response);
         }
 
         return $response;
@@ -231,7 +231,7 @@ class Client implements ClientInterface
         $response = $this->connection->executeCommand($command);
 
         if ($response instanceof ResponseErrorInterface) {
-            $this->onResponseError($response);
+            $this->onResponseError($command, $response);
         }
 
         return $response;
@@ -240,9 +240,10 @@ class Client implements ClientInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
+     * @param CommandInterface $command The command that generated the error.
      * @param ResponseErrorInterface $response The error response instance.
      */
-    protected function onResponseError(ResponseErrorInterface $response)
+    protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
     {
         if ($this->options->exceptions === true) {
             $message = $response->getMessage();
