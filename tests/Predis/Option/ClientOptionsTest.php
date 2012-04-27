@@ -42,12 +42,14 @@ class ClientOptionsTest extends StandardTestCase
             'connections' => 'Predis\ConnectionFactory',
             'prefix' => 'prefix:',
             'profile' => '2.0',
+            'exceptions' => false,
         ));
 
         $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $options->prefix);
+        $this->assertInternalType('bool', $options->exceptions);
     }
 
     /**

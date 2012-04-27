@@ -14,6 +14,7 @@ namespace Predis\Transaction;
 use Predis\ClientInterface;
 use Predis\BasicClientInterface;
 use Predis\ExecutableContextInterface;
+use Predis\ResponseErrorInterface;
 use Predis\Command\CommandInterface;
 use Predis\Helpers;
 use Predis\ResponseQueued;
@@ -379,8 +380,16 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             $this->onProtocolError("EXEC returned an unexpected number of replies");
         }
 
+        $clientOpts = $this->client->getOptions();
+        $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
+
         for ($i = 0; $i < $sizeofReplies; $i++) {
             $commandReply = $execReply[$i];
+
+            if ($commandReply instanceof ResponseErrorInterface && $useExceptions) {
+                $message = $commandReply->getMessage();
+                throw new ServerException($message);
+            }
 
             if ($commandReply instanceof \Iterator) {
                 $commandReply = iterator_to_array($commandReply);

@@ -30,8 +30,8 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     private $executor;
 
     private $pipeline = array();
-    private $replies  = array();
-    private $running  = false;
+    private $replies = array();
+    private $running = false;
 
     /**
      * @param ClientInterface Client instance used by the context.
@@ -53,18 +53,18 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
      */
     protected function createExecutor(ClientInterface $client, Array $options)
     {
-        if (!$options) {
-            return new StandardExecutor();
-        }
-
         if (isset($options['executor'])) {
             $executor = $options['executor'];
-            if (!$executor instanceof PipelineExecutorInterface) {
-                throw new \InvalidArgumentException(
-                    'The executor option accepts only instances ' .
-                    'of Predis\Pipeline\PipelineExecutorInterface'
-                );
+
+            if (is_callable($executor)) {
+                $executor = call_user_func($executor, $client, $options);
             }
+
+            if (!$executor instanceof PipelineExecutorInterface) {
+                $message = 'The executor option accepts only instances of Predis\Pipeline\PipelineExecutorInterface';
+                throw new \InvalidArgumentException($message);
+            }
+
             return $executor;
         }
 
@@ -73,7 +73,11 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
             return $isCluster ? new SafeClusterExecutor() : new SafeExecutor();
         }
 
-        return new StandardExecutor();
+        $clientOpts = $client->getOptions();
+        $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
+        $executor = new StandardExecutor($useExceptions);
+
+        return $executor;
     }
 
     /**
@@ -123,8 +127,10 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
             if ($send) {
                 $connection = $this->client->getConnection();
                 $replies = $this->executor->execute($connection, $this->pipeline);
+
                 $this->replies = array_merge($this->replies, $replies);
             }
+
             $this->pipeline = array();
         }
 

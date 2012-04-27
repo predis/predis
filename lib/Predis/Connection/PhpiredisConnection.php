@@ -16,7 +16,6 @@ use Predis\ConnectionParametersInterface;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ClientException;
-use Predis\ServerException;
 use Predis\NotSupportedException;
 
 /**
@@ -42,7 +41,6 @@ use Predis\NotSupportedException;
  *  - port: TCP port of the server.
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
- *  - throw_errors: -ERR replies treated as exceptions.
  *
  * @link http://github.com/seppo0010/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -104,15 +102,13 @@ class PhpiredisConnection extends AbstractConnection
 
     /**
      * Initializes the protocol reader resource.
-     *
-     * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
      */
-    private function initializeReader($throw_errors = true)    {
+    private function initializeReader()    {
 
         $reader = phpiredis_reader_create();
 
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($throw_errors));
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
 
         $this->reader = $reader;
     }
@@ -122,7 +118,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     protected function initializeProtocol(ConnectionParametersInterface $parameters)
     {
-        $this->initializeReader($parameters->throw_errors);
+        $this->initializeReader();
     }
 
     /**
@@ -152,14 +148,8 @@ class PhpiredisConnection extends AbstractConnection
      * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
-    private function getErrorHandler($throwErrors = true)
+    private function getErrorHandler()
     {
-        if ($throwErrors) {
-            return function($errorMessage) {
-                throw new ServerException($errorMessage);
-            };
-        }
-
         return function($errorMessage) {
             return new ResponseError($errorMessage);
         };

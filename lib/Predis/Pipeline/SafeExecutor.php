@@ -26,7 +26,7 @@ class SafeExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, &$commands)
+    public function execute(ConnectionInterface $connection, Array &$commands)
     {
         $sizeofPipe = count($commands);
         $values = array();
@@ -47,9 +47,6 @@ class SafeExecutor implements PipelineExecutorInterface
             try {
                 $response = $connection->readResponse($command);
                 $values[] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
-            }
-            catch (ServerException $exception) {
-                $values[] = $exception->toResponseError();
             }
             catch (CommunicationException $exception) {
                 $toAdd = count($commands) - count($values);

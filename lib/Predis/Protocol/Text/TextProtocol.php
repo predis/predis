@@ -44,7 +44,6 @@ class TextProtocol implements ProtocolInterface
     const BUFFER_SIZE = 4096;
 
     private $mbiterable;
-    private $throwErrors;
     private $serializer;
 
     /**
@@ -52,9 +51,8 @@ class TextProtocol implements ProtocolInterface
      */
     public function __construct()
     {
-        $this->mbiterable  = false;
-        $this->throwErrors = true;
-        $this->serializer  = new TextCommandSerializer();
+        $this->mbiterable = false;
+        $this->serializer = new TextCommandSerializer();
     }
 
     /**
@@ -115,9 +113,6 @@ class TextProtocol implements ProtocolInterface
                 return (int) $payload;
 
             case '-':    // error
-                if ($this->throwErrors) {
-                    throw new ServerException($payload);
-                }
                 return new ResponseError($payload);
 
             default:
@@ -135,10 +130,6 @@ class TextProtocol implements ProtocolInterface
         switch ($option) {
             case 'iterable_multibulk':
                 $this->mbiterable = (bool) $value;
-                break;
-
-            case 'throw_errors':
-                $this->throwErrors = (bool) $value;
                 break;
         }
     }

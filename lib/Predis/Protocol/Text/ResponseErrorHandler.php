@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\ServerException;
+use Predis\ResponseError;
 use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Connection\ComposableConnectionInterface;
 
@@ -19,19 +19,19 @@ use Predis\Connection\ComposableConnectionInterface;
  * Implements a response handler for error replies using the standard wire
  * protocol defined by Redis.
  *
- * This handler throws an exception to notify the user that an error has
+ * This handler returns a reply object to notify the user that an error has
  * occurred on the server.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseErrorHandler implements ResponseHandlerInterface
+class ResponseErrorSilentHandler implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}
      */
     public function handle(ComposableConnectionInterface $connection, $errorMessage)
     {
-        throw new ServerException($errorMessage);
+        return new ResponseError($errorMessage);
     }
 }

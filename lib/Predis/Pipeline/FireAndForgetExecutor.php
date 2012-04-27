@@ -39,7 +39,7 @@ class FireAndForgetExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, &$commands)
+    public function execute(ConnectionInterface $connection, Array &$commands)
     {
         $this->checkConnection($connection);
 

@@ -28,7 +28,6 @@ class ConnectionParameters implements ConnectionParametersInterface
         'port' => 6379,
         'timeout' => 5.0,
         'iterable_multibulk' => false,
-        'throw_errors' => true,
     );
 
     /**
@@ -71,7 +70,6 @@ class ConnectionParameters implements ConnectionParametersInterface
             'timeout' => $float,
             'read_write_timeout' => $float,
             'iterable_multibulk' => $bool,
-            'throw_errors' => $bool,
         );
     }
 

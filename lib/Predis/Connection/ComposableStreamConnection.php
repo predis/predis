@@ -42,7 +42,6 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
      */
     protected function initializeProtocol(ConnectionParametersInterface $parameters)
     {
-        $this->protocol->setOption('throw_errors', $parameters->throw_errors);
         $this->protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
     }
 

@@ -28,5 +28,5 @@ interface PipelineExecutorInterface
      * @param array $commands List of commands.
      * @return array
      */
-    public function execute(ConnectionInterface $connection, &$commands);
+    public function execute(ConnectionInterface $connection, Array &$commands);
 }

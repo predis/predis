@@ -378,7 +378,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testIntegrationWithServerErrorInCallableBlock()
     {
-        $client = $this->getClient(array('throw_errors' => false));
+        $client = $this->getClient(array(), array('exceptions' => false));
 
         $results = $client->pipeline(function($pipe) {
             $pipe->set('foo', 'bar');
@@ -400,9 +400,10 @@ class PipelineContextTest extends StandardTestCase
      * server instance to perform integration tests.
      *
      * @return array Additional connection parameters.
-     * @return Client client instance.
+     * @return array Additional client options.
+     * @return Client New client instance.
      */
-    protected function getClient(Array $parameters = array())
+    protected function getClient(Array $parameters = array(), Array $options = array())
     {
         $parameters = array_merge(array(
             'scheme' => 'tcp',
@@ -411,7 +412,11 @@ class PipelineContextTest extends StandardTestCase
             'database' => REDIS_SERVER_DBNUM,
         ), $parameters);
 
-        $client = new Client($parameters, array('profile' => REDIS_SERVER_VERSION));
+        $options = array_merge(array(
+            'profile' => REDIS_SERVER_VERSION,
+        ), $options);
+
+        $client = new Client($parameters, $options);
 
         $client->connect();
         $client->flushdb();

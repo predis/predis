@@ -497,6 +497,48 @@ class MultiExecContextTest extends StandardTestCase
     /**
      * @group connected
      */
+    public function testIntegrationThrowsExceptionOnRedisErrorInBlock()
+    {
+        $client = $this->getClient();
+        $exception = null;
+        $value = (string) rand();
+
+        try {
+            $client->multiExec(function($tx) use($value) {
+                $tx->set('foo', 'bar');
+                $tx->lpush('foo', 'bar');
+                $tx->set('foo', $value);
+            });
+        }
+        catch (ServerException $ex) {
+            $exception = $ex;
+        }
+
+        $this->assertInstanceOf('Predis\ResponseErrorInterface', $exception);
+        $this->assertSame($value, $client->get('foo'));
+    }
+
+    /**
+     * @group connected
+     */
+    public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock()
+    {
+        $client = $this->getClient(array(), array('exceptions' => false));
+
+        $replies = $client->multiExec(function($tx) {
+            $tx->set('foo', 'bar');
+            $tx->lpush('foo', 'bar');
+            $tx->echo('foobar');
+        });
+
+        $this->assertTrue($replies[0]);
+        $this->assertInstanceOf('Predis\ResponseErrorInterface', $replies[1]);
+        $this->assertSame('foobar', $replies[2]);
+    }
+
+    /**
+     * @group connected
+     */
     public function testIntegrationSendMultiOnCommandsAfterDiscard()
     {
         $client = $this->getClient();
@@ -704,10 +746,11 @@ class MultiExecContextTest extends StandardTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @return array Additional connection parameters.
+     * @param array Additional connection parameters.
+     * @param array Additional client options.
      * @return Client client instance.
      */
-    protected function getClient(Array $parameters = array())
+    protected function getClient(Array $parameters = array(), Array $options = array())
     {
         $parameters = array_merge(array(
             'scheme' => 'tcp',
@@ -716,7 +759,11 @@ class MultiExecContextTest extends StandardTestCase
             'database' => REDIS_SERVER_DBNUM,
         ), $parameters);
 
-        $client = new Client($parameters, array('profile' => REDIS_SERVER_VERSION));
+        $options = array_merge(array(
+            'profile' => REDIS_SERVER_VERSION
+        ), $options);
+
+        $client = new Client($parameters, $options);
 
         $client->connect();
         $client->flushdb();

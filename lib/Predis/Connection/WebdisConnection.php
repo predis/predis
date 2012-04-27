@@ -15,7 +15,6 @@ use Predis\Command\CommandInterface;
 use Predis\ResponseObjectInterface;
 use Predis\ConnectionParametersInterface;
 use Predis\ResponseError;
-use Predis\ServerException;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Connection\ConnectionException;
@@ -39,7 +38,6 @@ use Predis\Connection\ConnectionException;
  *  - timeout: timeout to perform the connection.
  *  - user: username for authentication.
  *  - pass: password for authentication.
- *  - throw_errors: -ERR replies treated as exceptions.
  *
  * @link http://webd.is
  * @link http://github.com/nicolasff/webdis
@@ -140,7 +138,7 @@ class WebdisConnection implements SingleConnectionInterface
         $reader = phpiredis_reader_create();
 
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
-        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler($parameters->throw_errors));
+        phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
 
         return $reader;
     }
@@ -160,17 +158,10 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Gets the handler used by the protocol reader to handle Redis errors.
      *
-     * @param Boolean $throwErrors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
-    protected function getErrorHandler($throwErrors)
+    protected function getErrorHandler()
     {
-        if ($throwErrors) {
-            return function($errorMessage) {
-                throw new ServerException($errorMessage);
-            };
-        }
-
         return function($errorMessage) {
             return new ResponseError($errorMessage);
         };

@@ -66,11 +66,6 @@ class ComposableTextProtocol implements ComposableProtocolInterface
                 $this->reader->setHandler(TextProtocol::PREFIX_MULTI_BULK, $handler);
                 break;
 
-            case 'throw_errors':
-                $handler = $value ? new ResponseErrorHandler() : new ResponseErrorSilentHandler();
-                $this->reader->setHandler(TextProtocol::PREFIX_ERROR, $handler);
-                break;
-
             default:
                 throw new \InvalidArgumentException("The option $option is not supported by the current protocol");
         }

@@ -13,7 +13,6 @@ namespace Predis\Connection;
 
 use Predis\ResponseError;
 use Predis\ResponseQueued;
-use Predis\ServerException;
 use Predis\NotSupportedException;
 use Predis\ConnectionParametersInterface;
 use Predis\Command\CommandInterface;
@@ -30,7 +29,6 @@ use Predis\Iterator\MultiBulkResponseSimple;
  *  - read_write_timeout: timeout of read / write operations.
  *  - async_connect: performs the connection asynchronously.
  *  - persistent: the connection is left intact after a GC collection.
- *  - throw_errors: -ERR replies treated as exceptions.
  *  - iterable_multibulk: multibulk replies treated as iterable objects.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -38,7 +36,6 @@ use Predis\Iterator\MultiBulkResponseSimple;
 class StreamConnection extends AbstractConnection
 {
     private $mbiterable;
-    private $throwErrors;
 
     /**
      * Disconnects from the server and destroys the underlying resource when
@@ -57,7 +54,6 @@ class StreamConnection extends AbstractConnection
      */
     protected function initializeProtocol(ConnectionParametersInterface $parameters)
     {
-        $this->throwErrors = (bool) $parameters->throw_errors;
         $this->mbiterable = (bool) $parameters->iterable_multibulk;
     }
 
@@ -264,9 +260,6 @@ class StreamConnection extends AbstractConnection
                 return (int) $payload;
 
             case '-':    // error
-                if ($this->throwErrors) {
-                    throw new ServerException($payload);
-                }
                 return new ResponseError($payload);
 
             default:
@@ -301,6 +294,6 @@ class StreamConnection extends AbstractConnection
      */
     public function __sleep()
     {
-        return array_merge(parent::__sleep(), array('mbiterable', 'throwErrors'));
+        return array_merge(parent::__sleep(), array('mbiterable'));
     }
 }

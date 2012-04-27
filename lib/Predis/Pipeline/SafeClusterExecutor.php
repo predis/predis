@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Connection\ConnectionInterface;
 
@@ -27,7 +26,7 @@ class SafeClusterExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, &$commands)
+    public function execute(ConnectionInterface $connection, Array &$commands)
     {
         $connectionExceptions = array();
         $sizeofPipe = count($commands);
@@ -63,9 +62,6 @@ class SafeClusterExecutor implements PipelineExecutorInterface
             try {
                 $response = $cmdConnection->readResponse($command);
                 $values[] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
-            }
-            catch (ServerException $exception) {
-                $values[] = $exception->toResponseError();
             }
             catch (CommunicationException $exception) {
                 $values[] = $exception;

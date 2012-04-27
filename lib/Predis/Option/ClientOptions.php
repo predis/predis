@@ -44,6 +44,7 @@ class ClientOptions implements ClientOptionsInterface
             'cluster' => new ClientCluster(),
             'replication' => new ClientReplication(),
             'prefix' => new ClientPrefix(),
+            'exceptions' => new ClientExceptions(),
         );
     }
 

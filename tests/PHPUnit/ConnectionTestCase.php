@@ -265,25 +265,10 @@ abstract class ConnectionTestCase extends StandardTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
-     * @expectedExceptionMessage ERR Operation against a key holding the wrong kind of value
-     */
-    public function testReadsErrorRepliesAsExceptions()
-    {
-        $connection = $this->getConnection($profile, true, array('throw_errors' => true));
-
-        $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
-        $connection->writeCommand($profile->createCommand('rpush', array('foo', 'baz')));
-
-        $connection->read();
-    }
-
-    /**
-     * @group connected
      */
     public function testReadsErrorRepliesAsResponseErrorObjects()
     {
-        $connection = $this->getConnection($profile, true, array('throw_errors' => false));
+        $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
         $connection->writeCommand($profile->createCommand('rpush', array('foo', 'baz')));

@@ -30,7 +30,6 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($defaults['scheme'], $parameters->scheme);
         $this->assertEquals($defaults['host'], $parameters->host);
         $this->assertEquals($defaults['port'], $parameters->port);
-        $this->assertEquals($defaults['throw_errors'], $parameters->throw_errors);
         $this->assertEquals($defaults['iterable_multibulk'], $parameters->iterable_multibulk);
         $this->assertEquals($defaults['timeout'], $parameters->timeout);
     }
@@ -76,7 +75,7 @@ class ConnectionParametersTest extends StandardTestCase
         $overrides = array(
             'port' => 7000,
             'database' => 5,
-            'throw_errors' => false,
+            'iterable_multibulk' => false,
             'custom' => 'foobar',
         );
 
@@ -87,7 +86,7 @@ class ConnectionParametersTest extends StandardTestCase
         $this->assertEquals($overrides['port'], $parameters->port);
 
         $this->assertEquals($overrides['database'], $parameters->database);
-        $this->assertEquals($overrides['throw_errors'], $parameters->throw_errors);
+        $this->assertEquals($overrides['iterable_multibulk'], $parameters->iterable_multibulk);
 
         $this->assertTrue(isset($parameters->custom));
         $this->assertEquals($overrides['custom'], $parameters->custom);
@@ -142,7 +141,6 @@ class ConnectionParametersTest extends StandardTestCase
             'port' => 6379,
             'timeout' => 5.0,
             'iterable_multibulk' => false,
-            'throw_errors' => true,
         );
     }
 

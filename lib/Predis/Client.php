@@ -206,7 +206,13 @@ class Client implements ClientInterface
     public function __call($method, $arguments)
     {
         $command = $this->profile->createCommand($method, $arguments);
-        return $this->connection->executeCommand($command);
+        $response = $this->connection->executeCommand($command);
+
+        if ($response instanceof ResponseErrorInterface) {
+            $this->onResponseError($response);
+        }
+
+        return $response;
     }
 
     /**
@@ -222,7 +228,26 @@ class Client implements ClientInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->connection->executeCommand($command);
+        $response = $this->connection->executeCommand($command);
+
+        if ($response instanceof ResponseErrorInterface) {
+            $this->onResponseError($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Handles -ERR responses returned by Redis.
+     *
+     * @param ResponseErrorInterface $response The error response instance.
+     */
+    protected function onResponseError(ResponseErrorInterface $response)
+    {
+        if ($this->options->exceptions === true) {
+            $message = $response->getMessage();
+            throw new ServerException($message);
+        }
     }
 
     /**
