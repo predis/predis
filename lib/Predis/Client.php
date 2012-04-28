@@ -249,7 +249,7 @@ class Client implements ClientInterface
     {
         if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
-            $eval->setArguments($command->getEvalArguments());
+            $eval->setRawArguments($command->getEvalArguments());
 
             return $this->executeCommand($eval);
         }
