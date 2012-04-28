@@ -643,6 +643,31 @@ class ClientTest extends StandardTestCase
         $this->assertInstanceOf('Predis\Monitor\MonitorContext', $monitor = $client->monitor());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testClientResendScriptedCommandUsingEvalOnNoScriptErrors()
+    {
+        $command = $this->getMockForAbstractClass('Predis\Command\ScriptedCommand');
+        $command->expects($this->once())
+                ->method('getScript')
+                ->will($this->returnValue('return redis.call(\'exists\', KEYS[1])'));
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->at(0))
+                   ->method('executeCommand')
+                   ->with($command)
+                   ->will($this->returnValue(new ResponseError('NOSCRIPT')));
+        $connection->expects($this->at(1))
+                   ->method('executeCommand')
+                   ->with($this->isInstanceOf('Predis\Command\ServerEval'))
+                   ->will($this->returnValue(true));
+
+        $client = new Client($connection);
+
+        $this->assertTrue($client->executeCommand($command));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

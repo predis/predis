@@ -18,7 +18,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/eval
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class ScriptedCommand extends ServerEval
+abstract class ScriptedCommand extends ServerEvalSHA
 {
     /**
      * Gets the body of a Lua script.
@@ -67,6 +67,17 @@ abstract class ScriptedCommand extends ServerEval
             $numkeys = count($arguments);
         }
 
-        return array_merge(array($this->getScript(), $numkeys), $arguments);
+        return array_merge(array(sha1($this->getScript()), $numkeys), $arguments);
+    }
+
+    /**
+     * @return array
+     */
+    public function getEvalArguments()
+    {
+        $arguments = $this->getArguments();
+        $arguments[0] = $this->getScript();
+
+        return $arguments;
     }
 }

@@ -21,6 +21,7 @@ use Predis\PubSub\PubSubContext;
 use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Transaction\MultiExecContext;
+use Predis\Command\ScriptedCommand;
 
 /**
  * Main class that exposes the most high-level interface to interact with Redis.
@@ -209,7 +210,7 @@ class Client implements ClientInterface
         $response = $this->connection->executeCommand($command);
 
         if ($response instanceof ResponseErrorInterface) {
-            $this->onResponseError($command, $response);
+            $response = $this->onResponseError($command, $response);
         }
 
         return $response;
@@ -231,7 +232,7 @@ class Client implements ClientInterface
         $response = $this->connection->executeCommand($command);
 
         if ($response instanceof ResponseErrorInterface) {
-            $this->onResponseError($command, $response);
+            return $this->onResponseError($command, $response);
         }
 
         return $response;
@@ -242,13 +243,23 @@ class Client implements ClientInterface
      *
      * @param CommandInterface $command The command that generated the error.
      * @param ResponseErrorInterface $response The error response instance.
+     * @return mixed
      */
     protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
     {
+        if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
+            $eval = $this->createCommand('eval');
+            $eval->setArguments($command->getEvalArguments());
+
+            return $this->executeCommand($eval);
+        }
+
         if ($this->options->exceptions === true) {
             $message = $response->getMessage();
             throw new ServerException($message);
         }
+
+        return $response;
     }
 
     /**
