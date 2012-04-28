@@ -57,6 +57,7 @@ class PhpiredisConnection extends AbstractConnection
     public function __construct(ConnectionParametersInterface $parameters)
     {
         $this->checkExtensions();
+        $this->initializeReader();
 
         parent::__construct($parameters);
     }
@@ -111,14 +112,6 @@ class PhpiredisConnection extends AbstractConnection
         phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
 
         $this->reader = $reader;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function initializeProtocol(ConnectionParametersInterface $parameters)
-    {
-        $this->initializeReader();
     }
 
     /**
@@ -392,6 +385,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     public function __wakeup()
     {
-        $this->initializeProtocol($this->getParameters());
+        $this->checkExtensions();
+        $this->initializeReader();
     }
 }

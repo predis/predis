@@ -38,6 +38,16 @@ class StreamConnection extends AbstractConnection
     private $mbiterable;
 
     /**
+     * {@inheritdoc}
+     */
+    public function __construct(ConnectionParametersInterface $parameters)
+    {
+        $this->mbiterable = (bool) $parameters->iterable_multibulk;
+
+        parent::__construct($parameters);
+    }
+
+    /**
      * Disconnects from the server and destroys the underlying resource when
      * PHP's garbage collector kicks in only if the connection has not been
      * marked as persistent.
@@ -47,14 +57,6 @@ class StreamConnection extends AbstractConnection
         if (!$this->parameters->persistent) {
             $this->disconnect();
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function initializeProtocol(ConnectionParametersInterface $parameters)
-    {
-        $this->mbiterable = (bool) $parameters->iterable_multibulk;
     }
 
     /**

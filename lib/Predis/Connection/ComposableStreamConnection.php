@@ -32,17 +32,11 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
      */
     public function __construct(ConnectionParametersInterface $parameters, ProtocolInterface $protocol = null)
     {
-        $this->setProtocol($protocol ?: new TextProtocol());
+        $protocol = $protocol ?: new TextProtocol();
+        $protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
 
-        parent::__construct($parameters);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function initializeProtocol(ConnectionParametersInterface $parameters)
-    {
-        $this->protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
+        $this->protocol = $protocol;
+        $this->parameters = $this->checkParameters($parameters);
     }
 
     /**

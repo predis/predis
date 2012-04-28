@@ -57,13 +57,13 @@ class WebdisConnection implements SingleConnectionInterface
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
-        $this->parameters = $parameters;
+        $this->checkExtensions();
 
         if ($parameters->scheme !== 'http') {
             throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
 
-        $this->checkExtensions();
+        $this->parameters = $parameters;
         $this->resource = $this->initializeCurl($parameters);
         $this->reader = $this->initializeReader($parameters);
     }

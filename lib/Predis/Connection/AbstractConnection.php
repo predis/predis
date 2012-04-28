@@ -30,16 +30,14 @@ abstract class AbstractConnection implements SingleConnectionInterface
     private $cachedId;
 
     protected $parameters;
-    protected $initCmds;
+    protected $initCmds = array();
 
     /**
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
-        $this->initCmds = array();
         $this->parameters = $this->checkParameters($parameters);
-        $this->initializeProtocol($parameters);
     }
 
     /**
@@ -70,17 +68,6 @@ abstract class AbstractConnection implements SingleConnectionInterface
             default:
                 throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
         }
-    }
-
-    /**
-     * Initializes some common configurations of the underlying protocol processor
-     * from the connection parameters.
-     *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     */
-    protected function initializeProtocol(ConnectionParametersInterface $parameters)
-    {
-        // NOOP
     }
 
     /**
