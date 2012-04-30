@@ -74,7 +74,7 @@ class PhpiredisConnection extends AbstractConnection
     }
 
     /**
-     * Checks if the cURL and phpiredis extensions are loaded in PHP.
+     * Checks if the socket and phpiredis extensions are loaded in PHP.
      */
     private function checkExtensions()
     {
