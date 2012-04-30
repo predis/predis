@@ -74,13 +74,6 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
         return new StandardExecutor($useExceptions);
     }
 
-    protected function getDefaultExecutor()
-    {
-        $clientOpts = $client->getOptions();
-        $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
-        $executor = new StandardExecutor($useExceptions);
-    }
-
     /**
      * Queues a command into the pipeline buffer.
      *
