@@ -11,6 +11,7 @@
 
 namespace Predis\Transaction;
 
+use SplQueue;
 use Predis\ClientInterface;
 use Predis\BasicClientInterface;
 use Predis\ExecutableContextInterface;
@@ -144,7 +145,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     protected function reset()
     {
         $this->setState(self::STATE_RESET);
-        $this->commands = array();
+        $this->commands = new SplQueue();
     }
 
     /**
@@ -213,7 +214,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
 
-        $this->commands[] = $command;
+        $this->commands->enqueue($command);
 
         return $this;
     }
@@ -232,10 +233,10 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             throw new ClientException('WATCH after MULTI is not allowed');
         }
 
-        $watchReply = $this->client->watch($keys);
+        $reply = $this->client->watch($keys);
         $this->flagState(self::STATE_WATCH);
 
-        return $watchReply;
+        return $reply;
     }
 
     /**
@@ -314,7 +315,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
                 throw new \InvalidArgumentException('Argument passed must be a callable object');
             }
 
-            if (count($this->commands) > 0) {
+            if (!$this->commands->isEmpty()) {
                 $this->discard();
                 throw new ClientException('Cannot execute a transaction block after using fluent interface');
             }
@@ -337,15 +338,15 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
         $this->checkBeforeExecution($callable);
 
         $reply = null;
-        $returnValues = array();
-        $attemptsLeft = isset($this->options['retry']) ? (int)$this->options['retry'] : 0;
+        $values = array();
+        $attempts = isset($this->options['retry']) ? (int) $this->options['retry'] : 0;
 
         do {
             if ($callable !== null) {
                 $this->executeTransactionBlock($callable);
             }
 
-            if (count($this->commands) === 0) {
+            if ($this->commands->isEmpty()) {
                 if ($this->checkState(self::STATE_WATCH)) {
                     $this->discard();
                 }
@@ -355,7 +356,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             $reply = $this->client->exec();
 
             if ($reply === null) {
-                if ($attemptsLeft === 0) {
+                if ($attempts === 0) {
                     $message = 'The current transaction has been aborted by the server';
                     throw new AbortedMultiExecException($this, $message);
                 }
@@ -363,28 +364,28 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
                 $this->reset();
 
                 if (isset($this->options['on_retry']) && is_callable($this->options['on_retry'])) {
-                    call_user_func($this->options['on_retry'], $this, $attemptsLeft);
+                    call_user_func($this->options['on_retry'], $this, $attempts);
                 }
 
                 continue;
             }
 
             break;
-        } while ($attemptsLeft-- > 0);
+        } while ($attempts-- > 0);
 
-        $execReply = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
-        $sizeofReplies = count($execReply);
+        $exec = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
         $commands = $this->commands;
 
-        if ($sizeofReplies !== count($commands)) {
+        $size = count($exec);
+        if ($size !== count($commands)) {
             $this->onProtocolError("EXEC returned an unexpected number of replies");
         }
 
         $clientOpts = $this->client->getOptions();
         $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
 
-        for ($i = 0; $i < $sizeofReplies; $i++) {
-            $commandReply = $execReply[$i];
+        for ($i = 0; $i < $size; $i++) {
+            $commandReply = $exec[$i];
 
             if ($commandReply instanceof ResponseErrorInterface && $useExceptions) {
                 $message = $commandReply->getMessage();
@@ -395,11 +396,10 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
                 $commandReply = iterator_to_array($commandReply);
             }
 
-            $returnValues[$i] = $commands[$i]->parseResponse($commandReply);
-            unset($commands[$i]);
+            $values[$i] = $commands->dequeue()->parseResponse($commandReply);
         }
 
-        return $returnValues;
+        return $values;
     }
 
     /**
