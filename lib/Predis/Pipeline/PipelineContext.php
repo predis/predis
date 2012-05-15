@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use SplQueue;
 use Predis\ClientInterface;
 use Predis\BasicClientInterface;
 use Predis\ExecutableContextInterface;
@@ -28,8 +29,8 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
 {
     private $client;
     private $executor;
+    private $pipeline;
 
-    private $pipeline = array();
     private $replies = array();
     private $running = false;
 
@@ -41,6 +42,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     {
         $this->client = $client;
         $this->executor = $this->createExecutor($client, $options ?: array());
+        $this->pipeline = new SplQueue();
     }
 
     /**
@@ -96,7 +98,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
      */
     protected function recordCommand(CommandInterface $command)
     {
-        $this->pipeline[] = $command;
+        $this->pipeline->enqueue($command);
     }
 
     /**
@@ -117,15 +119,14 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
      */
     public function flushPipeline($send = true)
     {
-        if (count($this->pipeline) > 0) {
-            if ($send) {
-                $connection = $this->client->getConnection();
-                $replies = $this->executor->execute($connection, $this->pipeline);
+        if ($send && !$this->pipeline->isEmpty()) {
+            $connection = $this->client->getConnection();
+            $replies = $this->executor->execute($connection, $this->pipeline);
 
-                $this->replies = array_merge($this->replies, $replies);
-            }
-
-            $this->pipeline = array();
+            $this->replies = array_merge($this->replies, $replies);
+        }
+        else {
+            $this->pipeline = new SplQueue();
         }
 
         return $this;

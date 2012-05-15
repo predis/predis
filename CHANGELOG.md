@@ -29,6 +29,10 @@ v0.8.0 (201x-xx-xx)
 
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
+- Command pipelines have been optimized for both speed and code cleanness, but
+  at the cost of bringing a breaking change in the signature of the interface
+  for pipeline executors.
+
 
 v0.7.2 (2012-04-01)
 ===============================================================================

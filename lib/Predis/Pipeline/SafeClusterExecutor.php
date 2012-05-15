@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use SplQueue;
 use Predis\CommunicationException;
 use Predis\Connection\ConnectionInterface;
 
@@ -26,11 +27,11 @@ class SafeClusterExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, Array &$commands)
+    public function execute(ConnectionInterface $connection, SplQueue $commands)
     {
-        $connectionExceptions = array();
-        $sizeofPipe = count($commands);
+        $size = count($commands);
         $values = array();
+        $connectionExceptions = array();
 
         foreach ($commands as $command) {
             $cmdConnection = $connection->getConnection($command);
@@ -47,24 +48,23 @@ class SafeClusterExecutor implements PipelineExecutorInterface
             }
         }
 
-        for ($i = 0; $i < $sizeofPipe; $i++) {
-            $command = $commands[$i];
-            unset($commands[$i]);
+        for ($i = 0; $i < $size; $i++) {
+            $command = $commands->dequeue();
 
             $cmdConnection = $connection->getConnection($command);
             $connectionObjectHash = spl_object_hash($cmdConnection);
 
             if (isset($connectionExceptions[$connectionObjectHash])) {
-                $values[] = $connectionExceptions[$connectionObjectHash];
+                $values[$i] = $connectionExceptions[$connectionObjectHash];
                 continue;
             }
 
             try {
                 $response = $cmdConnection->readResponse($command);
-                $values[] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
+                $values[$i] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
             }
             catch (CommunicationException $exception) {
-                $values[] = $exception;
+                $values[$i] = $exception;
                 $connectionExceptions[$connectionObjectHash] = $exception;
             }
         }

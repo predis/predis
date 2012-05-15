@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use SplQueue;
 use Predis\ServerException;
 use Predis\CommunicationException;
 use Predis\Connection\ConnectionInterface;
@@ -26,9 +27,9 @@ class SafeExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, Array &$commands)
+    public function execute(ConnectionInterface $connection, SplQueue $commands)
     {
-        $sizeofPipe = count($commands);
+        $size = count($commands);
         $values = array();
 
         foreach ($commands as $command) {
@@ -36,17 +37,16 @@ class SafeExecutor implements PipelineExecutorInterface
                 $connection->writeCommand($command);
             }
             catch (CommunicationException $exception) {
-                return array_fill(0, $sizeofPipe, $exception);
+                return array_fill(0, $size, $exception);
             }
         }
 
-        for ($i = 0; $i < $sizeofPipe; $i++) {
-            $command = $commands[$i];
-            unset($commands[$i]);
+        for ($i = 0; $i < $size; $i++) {
+            $command = $commands->dequeue();
 
             try {
                 $response = $connection->readResponse($command);
-                $values[] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
+                $values[$i] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
             }
             catch (CommunicationException $exception) {
                 $toAdd = count($commands) - count($values);

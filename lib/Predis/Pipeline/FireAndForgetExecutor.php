@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use SplQueue;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
 
@@ -39,12 +40,12 @@ class FireAndForgetExecutor implements PipelineExecutorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(ConnectionInterface $connection, Array &$commands)
+    public function execute(ConnectionInterface $connection, SplQueue $commands)
     {
         $this->checkConnection($connection);
 
-        foreach ($commands as $command) {
-            $connection->writeCommand($command);
+        while (!$commands->isEmpty()) {
+            $connection->writeCommand($commands->dequeue());
         }
 
         $connection->disconnect();

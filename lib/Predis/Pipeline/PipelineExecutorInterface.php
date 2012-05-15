@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use SplQueue;
 use Predis\Connection\ConnectionInterface;
 
 /**
@@ -25,8 +26,8 @@ interface PipelineExecutorInterface
      * Writes a list of commands to the network and reads back their replies.
      *
      * @param ConnectionInterface $connection Connection to Redis.
-     * @param array $commands List of commands.
+     * @param SplQueue $commands Commands queued for execution.
      * @return array
      */
-    public function execute(ConnectionInterface $connection, Array &$commands);
+    public function execute(ConnectionInterface $connection, SplQueue $commands);
 }
