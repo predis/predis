@@ -31,6 +31,10 @@ v0.8.0 (201x-xx-xx)
   at the cost of bringing a breaking change in the signature of the interface
   for pipeline executors.
 
+- Added a new pipeline executor that sends commands wrapped in a MULTI / EXEC
+  context to make the execution atomic: if a pipeline fails at a certain point
+  then the whole pipeline is discarded.
+
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
 
