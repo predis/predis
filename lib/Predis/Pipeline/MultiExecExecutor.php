@@ -75,13 +75,11 @@ class MultiExecExecutor implements PipelineExecutorInterface
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
 
-            if (!$response instanceof ResponseQueued) {
-                if ($response instanceof ResponseErrorInterface) {
-                    $cmd = $this->profile->createCommand('discard');
-                    $connection->executeCommand($cmd);
+            if ($response instanceof ResponseErrorInterface) {
+                $cmd = $this->profile->createCommand('discard');
+                $connection->executeCommand($cmd);
 
-                    throw new ServerException($response->getMessage());
-                }
+                throw new ServerException($response->getMessage());
             }
         }
 
