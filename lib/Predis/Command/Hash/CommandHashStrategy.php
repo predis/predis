@@ -75,6 +75,8 @@ class CommandHashStrategy implements CommandHashStrategyInterface
             'SETRANGE'              => $keyIsFirstArgument,
             'STRLEN'                => $keyIsFirstArgument,
             'SUBSTR'                => $keyIsFirstArgument,
+            'BITOP'                 => array($this, 'getKeyFromBitOp'),
+            'BITCOUNT'              => $keyIsFirstArgument,
 
             /* commands operating on lists */
             'LINSERT'               => $keyIsFirstArgument,
@@ -214,6 +216,21 @@ class CommandHashStrategy implements CommandHashStrategyInterface
 
         if ($this->checkSameHashForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
             return $arguments[0];
+        }
+    }
+
+    /**
+     * Extracts the key from BITOP command.
+     *
+     * @param CommandInterface $command Command instance.
+     * @return string
+     */
+    protected function getKeyFromBitOp(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if ($this->checkSameHashForKeys(array_slice($arguments, 1, count($arguments)))) {
+            return $arguments[1];
         }
     }
 

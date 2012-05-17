@@ -164,11 +164,13 @@ class ServerVersion26Test extends ServerVersionTestCase
             123 => 'pexpireat',
             124 => 'psetex',
             125 => 'incrbyfloat',
-            126 => 'hincrbyfloat',
-            127 => 'eval',
-            128 => 'evalsha',
-            129 => 'script',
-            130 => 'time',
+            126 => 'bitop',
+            127 => 'bitcount',
+            128 => 'hincrbyfloat',
+            129 => 'eval',
+            130 => 'evalsha',
+            131 => 'script',
+            132 => 'time',
         );
     }
 }

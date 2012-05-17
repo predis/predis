@@ -140,6 +140,22 @@ class CommandHashStrategyTest extends StandardTestCase
         }
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testKeysForBitOpCommand()
+    {
+        $distribution = new HashRing();
+        $hashstrategy = new CommandHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+        $arguments = array('AND', '{key}:destination', '{key}:src:1', '{key}:src:2');
+
+        foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
+            $command = $profile->createCommand($commandID, $arguments);
+            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+        }
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
@@ -186,6 +202,8 @@ class CommandHashStrategyTest extends StandardTestCase
             'SETRANGE'              => 'keys-first',
             'STRLEN'                => 'keys-first',
             'SUBSTR'                => 'keys-first',
+            'BITOP'                 => 'keys-bitop',
+            'BITCOUNT'              => 'keys-first',
 
             /* commands operating on lists */
             'LINSERT'               => 'keys-first',
