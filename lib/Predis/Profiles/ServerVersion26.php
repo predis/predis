@@ -217,6 +217,8 @@ class ServerVersion26 extends ServerProfile
             /* commands operating on string values */
             'psetex'                    => 'Predis\Commands\StringPreciseSetExpire',
             'incrbyfloat'               => 'Predis\Commands\StringIncrementByFloat',
+            'bitop'                     => 'Predis\Commands\StringBitOp',
+            'bitcount'                  => 'Predis\Commands\StringBitCount',
 
             /* commands operating on hashes */
             'hincrbyfloat'              => 'Predis\Commands\HashIncrementByFloat',

@@ -68,6 +68,24 @@ class PrefixHelpers
     }
 
     /**
+     * Applies the specified prefix to all the arguments but the first one.
+     *
+     * @param ICommand $command Command instance.
+     * @param string $prefix Prefix string.
+     */
+    public static function skipFirst(ICommand $command, $prefix)
+    {
+        $arguments = $command->getArguments();
+        $length = count($arguments);
+
+        for ($i = 1; $i < $length; $i++) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+
+        $command->setRawArguments($arguments);
+    }
+
+    /**
      * Applies the specified prefix to all the arguments but the last one.
      *
      * @param ICommand $command Command instance.

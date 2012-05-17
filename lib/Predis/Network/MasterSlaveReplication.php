@@ -409,6 +409,7 @@ class MasterSlaveReplication implements IConnectionReplication
             'ECHO'              => true,
             'QUIT'              => true,
             'OBJECT'            => true,
+            'BITCOUNT'          => true,
             'SORT'              => array($this, 'isSortReadOnly'),
         );
     }
