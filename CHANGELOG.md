@@ -1,6 +1,8 @@
 v0.7.3 (2012-xx-xx)
 ===============================================================================
 
+- New commands available in the Redis v2.6 profile (dev): `BITOP`, `BITCOUNT`.
+
 - When the number of keys `Predis\Commands\ScriptedCommand` is negative, Predis
   will count from the end of the arguments list to calculate the actual number
   of keys that will be interpreted as elements for `KEYS` by the underlying
