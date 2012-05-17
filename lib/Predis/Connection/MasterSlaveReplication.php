@@ -409,6 +409,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
             'ECHO'              => true,
             'QUIT'              => true,
             'OBJECT'            => true,
+            'TIME'              => true,
             'SORT'              => array($this, 'isSortReadOnly'),
         );
     }
