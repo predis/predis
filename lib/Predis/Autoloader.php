@@ -52,7 +52,10 @@ class Autoloader
     {
         if (0 === strpos($className, $this->prefix)) {
             $parts = explode('\\', substr($className, $this->prefixLength));
-            require($this->directory.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $parts).'.php');
+            $filepath = $this->directory.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $parts).'.php';
+            if (is_file($filepath)) {
+                require($filepath);
+            }
         }
     }
 }
