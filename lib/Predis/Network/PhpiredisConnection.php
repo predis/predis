@@ -257,7 +257,8 @@ class PhpiredisConnection extends ConnectionBase
      * @param IConnectionParameters $parameters Parameters used to initialize the connection.
      * @return string
      */
-    private function connectWithTimeout(IConnectionParameters $parameters) {
+    private function connectWithTimeout(IConnectionParameters $parameters)
+    {
         $host = self::getAddress($parameters);
         $socket = $this->getResource();
 

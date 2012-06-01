@@ -186,7 +186,8 @@ class StreamConnection extends ConnectionBase
     /**
      * {@inheritdoc}
      */
-    public function read() {
+    public function read()
+    {
         $socket = $this->getResource();
 
         $chunk  = fgets($socket);
