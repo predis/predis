@@ -1,4 +1,4 @@
-v0.7.3 (2012-xx-xx)
+v0.7.3 (2012-06-01)
 ===============================================================================
 
 - New commands available in the Redis v2.6 profile (dev): `BITOP`, `BITCOUNT`.
