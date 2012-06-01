@@ -45,6 +45,28 @@ v0.8.0 (201x-xx-xx)
 - `Predis\Options\Option` is now abstract, see `Predis\Option\AbstractOption`.
 
 
+v0.7.3 (2012-06-01)
+===============================================================================
+
+- New commands available in the Redis v2.6 profile (dev): `BITOP`, `BITCOUNT`.
+
+- When the number of keys `Predis\Commands\ScriptedCommand` is negative, Predis
+  will count from the end of the arguments list to calculate the actual number
+  of keys that will be interpreted as elements for `KEYS` by the underlying
+  `EVAL` command.
+
+- __FIX__: `examples\CustomDistributionStrategy.php` had a mistyped constructor
+  call and produced a bad distribution due to an error as pointed in ISSUE #63.
+  This bug is limited to the above mentioned example and does not affect the
+  classes implemented in the `Predis\Distribution` namespace.
+
+- __FIX__: `Predis\Commands\ServerEvalSHA::getScriptHash()` was calculating the
+  hash while it just needs to return the first argument of the command.
+
+- __FIX__: `Predis\Autoloader` has been modified to allow cascading autoloaders
+  for the `Predis` namespace.
+
+
 v0.7.2 (2012-04-01)
 ===============================================================================
 
