@@ -16,6 +16,10 @@ v0.7.3 (2012-xx-xx)
 - __FIX__: `Predis\Commands\ServerEvalSHA::getScriptHash()` was calculating the
   hash while it just needs to return the first argument of the command.
 
+- __FIX__: `Predis\Autoloader` has been modified to allow cascading autoloaders
+  for the `Predis` namespace.
+
+
 v0.7.2 (2012-04-01)
 ===============================================================================
 
