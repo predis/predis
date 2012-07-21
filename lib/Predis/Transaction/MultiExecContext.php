@@ -32,12 +32,12 @@ use Predis\Protocol\ProtocolException;
  */
 class MultiExecContext implements BasicClientInterface, ExecutableContextInterface
 {
-    const STATE_RESET       = 0x00000;
-    const STATE_INITIALIZED = 0x00001;
-    const STATE_INSIDEBLOCK = 0x00010;
-    const STATE_DISCARDED   = 0x00100;
-    const STATE_CAS         = 0x01000;
-    const STATE_WATCH       = 0x10000;
+    const STATE_RESET       = 0;	// 0b00000
+    const STATE_INITIALIZED = 1;	// 0b00001
+    const STATE_INSIDEBLOCK = 2;	// 0b00010
+    const STATE_DISCARDED   = 4;	// 0b00100
+    const STATE_CAS         = 8;	// 0b01000
+    const STATE_WATCH       = 16;	// 0b10000
 
     private $state;
     private $canWatch;
