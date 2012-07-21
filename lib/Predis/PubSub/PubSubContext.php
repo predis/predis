@@ -30,9 +30,9 @@ class PubSubContext implements \Iterator
     const MESSAGE      = 'message';
     const PMESSAGE     = 'pmessage';
 
-    const STATUS_VALID       = 0x0001;
-    const STATUS_SUBSCRIBED  = 0x0010;
-    const STATUS_PSUBSCRIBED = 0x0100;
+    const STATUS_VALID       = 1;   // 0b0001
+    const STATUS_SUBSCRIBED  = 2;   // 0b0010
+    const STATUS_PSUBSCRIBED = 4;   // 0b0100
 
     private $client;
     private $position;
@@ -245,7 +245,7 @@ class PubSubContext implements \Iterator
      */
     private function invalidate()
     {
-        $this->statusFlags = 0x0000;
+        $this->statusFlags = 0; // 0b0000;
     }
 
     /**

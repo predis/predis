@@ -1,3 +1,11 @@
+v0.7.4 (2012-xx-xx)
+===============================================================================
+
+- __FIX__: the internal flags used to track the state of PUB/SUB and MULTI/EXEC
+  contexts were defined using a wrong notation (hexadecimal instead of binary).
+  Fortunately everything was working as expected, even if by sheer coincidence.
+
+
 v0.7.3 (2012-06-01)
 ===============================================================================
 
