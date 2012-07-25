@@ -157,6 +157,34 @@ class CommandHashStrategy implements CommandHashStrategyInterface
     }
 
     /**
+     * Sets an handler for the specified command ID.
+     *
+     * The signature of the callback must have a single parameter
+     * of type Predis\Command\CommandInterface.
+     *
+     * When the callback argument is omitted or NULL, the previously
+     * associated handler for the specified command ID is removed.
+     *
+     * @param string $commandId The ID of the command to be handled.
+     * @param mixed $callback A valid callable object or NULL.
+     */
+    public function setCommandHandler($commandId, $callback = null)
+    {
+        $commandId = strtoupper($commandId);
+
+        if (!isset($callback)) {
+            unset($this->commands[$commandId]);
+            return;
+        }
+
+        if (!is_callable($callback)) {
+            throw new \InvalidArgumentException("Callback must be a valid callable object or NULL");
+        }
+
+        $this->commands[$commandId] = $callback;
+    }
+
+    /**
      * Extracts the key from the first argument of a command instance.
      *
      * @param CommandInterface $command Command instance.
