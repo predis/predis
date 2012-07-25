@@ -156,6 +156,46 @@ class CommandHashStrategyTest extends StandardTestCase
         }
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testUnsettingCommandHandler()
+    {
+        $distribution = new HashRing();
+        $hashstrategy = new CommandHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+
+        $hashstrategy->setCommandHandler('set');
+        $hashstrategy->setCommandHandler('get', null);
+
+        $command = $profile->createCommand('set', array('key', 'value'));
+        $this->assertNull($hashstrategy->getHash($distribution, $command));
+
+        $command = $profile->createCommand('get', array('key'));
+        $this->assertNull($hashstrategy->getHash($distribution, $command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingCustomCommandHandler()
+    {
+        $distribution = new HashRing();
+        $hashstrategy = new CommandHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
+                 ->will($this->returnValue('key'));
+
+        $hashstrategy->setCommandHandler('get', $callable);
+
+        $command = $profile->createCommand('get', array('key'));
+        $this->assertNotNull($hashstrategy->getHash($distribution, $command));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
