@@ -24,6 +24,15 @@ class PredisClusterTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testExposesCommandHashStrategy()
+    {
+        $cluster = new PredisCluster();
+        $this->assertInstanceOf('Predis\Command\Hash\CommandHashStrategy', $cluster->getCommandHashStrategy());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAddingConnectionsToCluster()
     {
         $connection1 = $this->getMockConnection();

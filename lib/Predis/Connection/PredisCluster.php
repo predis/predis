@@ -168,6 +168,17 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     }
 
     /**
+     * Returns the underlying command hash strategy used to hash
+     * commands by their keys.
+     *
+     * @return CommandHashStrategy
+     */
+    public function getCommandHashStrategy()
+    {
+        return $this->cmdHasher;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function count()
