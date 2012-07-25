@@ -15,6 +15,7 @@ use Predis\ClientInterface;
 use Predis\Helpers;
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\Connection\AggregatedConnectionInterface;
 
 /**
  * Client-side abstraction of a Publish / Subscribe context.
@@ -48,7 +49,7 @@ class PubSubContext extends AbstractPubSubContext
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if (Helpers::isCluster($client->getConnection())) {
+        if ($client->getConnection() instanceof AggregatedConnectionInterface) {
             throw new NotSupportedException('Cannot initialize a PUB/SUB context over a cluster of connections');
         }
 

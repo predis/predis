@@ -14,6 +14,7 @@ namespace Predis;
 use Predis\Command\CommandInterface;
 use Predis\Option\ClientOptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Profile\ServerProfileInterface;
 use Predis\Option\ClientOptions;
 use Predis\Profile\ServerProfile;
@@ -187,9 +188,10 @@ class Client implements ClientInterface
     public function getConnection($id = null)
     {
         if (isset($id)) {
-            if (!Helpers::isAggregated($this->connection)) {
-                $message = 'Retrieving connections by alias is supported only with aggregated connections (cluster or replication)';
-                throw new NotSupportedException($message);
+            if (!$this->connection instanceof AggregatedConnectionInterface) {
+                throw new NotSupportedException(
+                    'Retrieving connections by alias is supported only with aggregated connections (cluster or replication)'
+                );
             }
             return $this->connection->getConnectionById($id);
         }

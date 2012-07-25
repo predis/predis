@@ -21,18 +21,6 @@ class HelpersTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testConnectionIsCluster()
-    {
-        $single = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
-
-        $this->assertFalse(Helpers::isCluster($single));
-        $this->assertTrue(Helpers::isCluster($cluster));
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testOnCommunicationException()
     {
         $this->setExpectedException('Predis\CommunicationException');

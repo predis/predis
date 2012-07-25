@@ -17,7 +17,7 @@ use Predis\BasicClientInterface;
 use Predis\ExecutableContextInterface;
 use Predis\ResponseErrorInterface;
 use Predis\Command\CommandInterface;
-use Predis\Helpers;
+use Predis\Connection\AggregatedConnectionInterface;
 use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\ServerException;
@@ -32,12 +32,12 @@ use Predis\Protocol\ProtocolException;
  */
 class MultiExecContext implements BasicClientInterface, ExecutableContextInterface
 {
-    const STATE_RESET       = 0;	// 0b00000
-    const STATE_INITIALIZED = 1;	// 0b00001
-    const STATE_INSIDEBLOCK = 2;	// 0b00010
-    const STATE_DISCARDED   = 4;	// 0b00100
-    const STATE_CAS         = 8;	// 0b01000
-    const STATE_WATCH       = 16;	// 0b10000
+    const STATE_RESET       = 0;    // 0b00000
+    const STATE_INITIALIZED = 1;    // 0b00001
+    const STATE_INSIDEBLOCK = 2;    // 0b00010
+    const STATE_DISCARDED   = 4;    // 0b00100
+    const STATE_CAS         = 8;    // 0b01000
+    const STATE_WATCH       = 16;   // 0b10000
 
     private $state;
     private $canWatch;
@@ -117,7 +117,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if (Helpers::isCluster($client->getConnection())) {
+        if ($client->getConnection() instanceof AggregatedConnectionInterface) {
             throw new NotSupportedException('Cannot initialize a MULTI/EXEC context over a cluster of connections');
         }
 

@@ -12,8 +12,8 @@
 namespace Predis\Monitor;
 
 use Predis\ClientInterface;
-use Predis\Helpers;
 use Predis\NotSupportedException;
+use Predis\Connection\AggregatedConnectionInterface;
 
 /**
  * Client-side abstraction of a Redis MONITOR context.
@@ -52,7 +52,7 @@ class MonitorContext implements \Iterator
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if (Helpers::isCluster($client->getConnection())) {
+        if ($client->getConnection() instanceof AggregatedConnectionInterface) {
             throw new NotSupportedException('Cannot initialize a monitor context over a cluster of connections');
         }
 
