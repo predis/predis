@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
+use Predis\Command\CommandInterface;
 
 /**
  * Defines the standard virtual connection class that is used

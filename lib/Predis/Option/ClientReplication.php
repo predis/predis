@@ -11,8 +11,8 @@
 
 namespace Predis\Option;
 
-use Predis\Connection\ReplicationConnectionInterface;
 use Predis\Connection\MasterSlaveReplication;
+use Predis\Connection\ReplicationConnectionInterface;
 
 /**
  * Option class that returns a replication connection be used by a client.

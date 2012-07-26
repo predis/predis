@@ -15,8 +15,8 @@ require 'SharedConfigurations.php';
 // to distribute keys among a cluster of servers simply by creating a class
 // that implements Predis\Distribution\DistributionStrategyInterface.
 
-use Predis\Distribution\DistributionStrategyInterface;
 use Predis\Connection\PredisCluster;
+use Predis\Distribution\DistributionStrategyInterface;
 
 class NaiveDistributionStrategy implements DistributionStrategyInterface
 {

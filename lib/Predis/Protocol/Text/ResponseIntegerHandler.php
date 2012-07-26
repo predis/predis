@@ -12,9 +12,9 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\Protocol\ResponseHandlerInterface;
-use Predis\Protocol\ProtocolException;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Protocol\ProtocolException;
+use Predis\Protocol\ResponseHandlerInterface;
 
 /**
  * Implements a response handler for integer replies using the standard wire

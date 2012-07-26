@@ -12,8 +12,9 @@
 namespace Predis\Command\Hash;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\Profile\ServerProfile;
+
 use Predis\Distribution\HashRing;
+use Predis\Profile\ServerProfile;
 
 /**
  *

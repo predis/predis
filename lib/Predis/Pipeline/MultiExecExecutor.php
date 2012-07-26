@@ -12,14 +12,14 @@
 namespace Predis\Pipeline;
 
 use SplQueue;
+use Predis\ClientException;
+use Predis\ResponseQueued;
 use Predis\ResponseErrorInterface;
-use Predis\Profile\ServerProfileInterface;
+use Predis\ServerException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
-use Predis\ResponseQueued;
-use Predis\ClientException;
-use Predis\ServerException;
 use Predis\Profile\ServerProfile;
+use Predis\Profile\ServerProfileInterface;
 
 /**
  * Implements a pipeline executor that wraps the whole pipeline

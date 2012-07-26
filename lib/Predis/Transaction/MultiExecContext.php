@@ -12,17 +12,17 @@
 namespace Predis\Transaction;
 
 use SplQueue;
-use Predis\ClientInterface;
 use Predis\BasicClientInterface;
+use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\CommunicationException;
 use Predis\ExecutableContextInterface;
+use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
+use Predis\ResponseQueued;
+use Predis\ServerException;
 use Predis\Command\CommandInterface;
 use Predis\Connection\AggregatedConnectionInterface;
-use Predis\ResponseQueued;
-use Predis\ClientException;
-use Predis\ServerException;
-use Predis\NotSupportedException;
-use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
 
 /**

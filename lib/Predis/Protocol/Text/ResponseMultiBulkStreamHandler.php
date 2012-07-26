@@ -12,10 +12,10 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\Protocol\ResponseHandlerInterface;
-use Predis\Protocol\ProtocolException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
+use Predis\Protocol\ProtocolException;
+use Predis\Protocol\ResponseHandlerInterface;
 
 /**
  * Implements a response handler for iterable multi-bulk replies using the

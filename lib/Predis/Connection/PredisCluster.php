@@ -11,12 +11,12 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\CommandInterface;
-use Predis\Command\Hash\CommandHashStrategy;
-use Predis\Distribution\DistributionStrategyInterface;
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\Command\CommandInterface;
+use Predis\Command\Hash\CommandHashStrategy;
 use Predis\Distribution\HashRing;
+use Predis\Distribution\DistributionStrategyInterface;
 
 /**
  * Abstraction for a cluster of aggregated connections to various Redis servers

@@ -12,6 +12,7 @@
 namespace Predis;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
+
 use Predis\Connection\SingleConnectionInterface;
 
 /**

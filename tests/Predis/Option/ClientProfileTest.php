@@ -13,8 +13,8 @@ namespace Predis\Option;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Profile\ServerProfile;
 
 /**
  *

@@ -12,8 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use Predis\ResponseQueued;
-use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Protocol\ResponseHandlerInterface;
 
 /**
  * Implements a response handler for status replies using the standard wire

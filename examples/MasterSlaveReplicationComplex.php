@@ -18,9 +18,9 @@ require 'SharedConfigurations.php';
 // in the server profile used by the new client instance and marks it marks it as
 // a read-only operation for replication so that it will be executed on slaves.
 
-use Predis\Profile\ServerProfile;
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\MasterSlaveReplication;
+use Predis\Profile\ServerProfile;
 
 // ------------------------------------------------------------------------- //
 

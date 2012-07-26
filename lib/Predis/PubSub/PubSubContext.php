@@ -11,9 +11,9 @@
 
 namespace Predis\PubSub;
 
+use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Helpers;
-use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
 

@@ -12,6 +12,7 @@
 namespace Predis\Profile;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
+
 use Predis\Command\Processor\ProcessorChain;
 
 /**

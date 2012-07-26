@@ -12,10 +12,10 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
+use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ResponseReaderInterface;
 use Predis\Protocol\CommandSerializerInterface;
 use Predis\Protocol\ComposableProtocolInterface;
-use Predis\Connection\ComposableConnectionInterface;
 
 /**
  * Implements a customizable protocol processor that uses the standard Redis

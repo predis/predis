@@ -11,10 +11,10 @@
 
 namespace Predis\Connection;
 
-use Predis\ResponseErrorInterface;
-use Predis\Command\CommandInterface;
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\ResponseErrorInterface;
+use Predis\Command\CommandInterface;
 use Predis\Distribution\CRC16HashGenerator;
 
 /**

@@ -11,10 +11,10 @@
 
 namespace Predis\Connection;
 
-use Predis\Helpers;
-use Predis\ResponseObjectInterface;
 use Predis\ClientException;
+use Predis\Helpers;
 use Predis\NotSupportedException;
+use Predis\ResponseObjectInterface;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
 

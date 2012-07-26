@@ -12,10 +12,10 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Helpers;
-use Predis\Protocol\ResponseReaderInterface;
-use Predis\Protocol\ResponseHandlerInterface;
-use Predis\Protocol\ProtocolException;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Protocol\ProtocolException;
+use Predis\Protocol\ResponseHandlerInterface;
+use Predis\Protocol\ResponseReaderInterface;
 
 /**
  * Implements a pluggable response reader using the standard wire protocol

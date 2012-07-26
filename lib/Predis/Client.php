@@ -12,19 +12,19 @@
 namespace Predis;
 
 use Predis\Command\CommandInterface;
-use Predis\Option\ClientOptionsInterface;
-use Predis\Connection\ConnectionInterface;
+use Predis\Command\ScriptedCommand;
 use Predis\Connection\AggregatedConnectionInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionFactory;
 use Predis\Connection\ConnectionFactoryInterface;
-use Predis\Profile\ServerProfileInterface;
-use Predis\Option\ClientOptions;
-use Predis\Profile\ServerProfile;
-use Predis\PubSub\PubSubContext;
 use Predis\Monitor\MonitorContext;
+use Predis\Option\ClientOptions;
+use Predis\Option\ClientOptionsInterface;
 use Predis\Pipeline\PipelineContext;
+use Predis\Profile\ServerProfile;
+use Predis\Profile\ServerProfileInterface;
+use Predis\PubSub\PubSubContext;
 use Predis\Transaction\MultiExecContext;
-use Predis\Command\ScriptedCommand;
 
 /**
  * Main class that exposes the most high-level interface to interact with Redis.

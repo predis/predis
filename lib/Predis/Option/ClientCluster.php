@@ -12,8 +12,8 @@
 namespace Predis\Option;
 
 use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\RedisCluster;
 use Predis\Connection\PredisCluster;
+use Predis\Connection\RedisCluster;
 
 /**
  * Option class that returns a connection cluster to be used by a client.

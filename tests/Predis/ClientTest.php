@@ -13,10 +13,10 @@ namespace Predis;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
-use Predis\Connection\PredisCluster;
-use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\ConnectionFactory;
+use Predis\Connection\MasterSlaveReplication;
+use Predis\Connection\PredisCluster;
+use Predis\Profile\ServerProfile;
 
 /**
  *

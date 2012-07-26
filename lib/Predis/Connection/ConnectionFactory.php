@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use Predis\Profile\ServerProfileInterface;
 use Predis\Profile\ServerProfile;
+use Predis\Profile\ServerProfileInterface;
 
 /**
  * Provides a default factory for Redis connections that maps URI schemes

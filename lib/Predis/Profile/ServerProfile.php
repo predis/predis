@@ -12,8 +12,8 @@
 namespace Predis\Profile;
 
 use Predis\ClientException;
-use Predis\Command\Processor\CommandProcessorInterface;
 use Predis\Command\Processor\CommandProcessingInterface;
+use Predis\Command\Processor\CommandProcessorInterface;
 
 /**
  * Base class that implements common functionalities of server profiles.

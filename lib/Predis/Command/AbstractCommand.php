@@ -11,7 +11,6 @@
 
 namespace Predis\Command;
 
-
 /**
  * Base class for Redis commands.
  *

@@ -11,11 +11,11 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\CommandInterface;
-use Predis\ResponseError;
-use Predis\ResponseQueued;
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\ResponseError;
+use Predis\ResponseQueued;
+use Predis\Command\CommandInterface;
 
 /**
  * This class provides the implementation of a Predis connection that uses the

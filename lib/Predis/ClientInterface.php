@@ -11,8 +11,8 @@
 
 namespace Predis;
 
-use Predis\Option\ClientOptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Option\ClientOptionsInterface;
 use Predis\Profile\ServerProfileInterface;
 
 /**

@@ -16,10 +16,10 @@ use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\Command\CommandInterface;
-use Predis\Protocol\ProtocolInterface;
-use Predis\Protocol\ProtocolException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
+use Predis\Protocol\ProtocolException;
+use Predis\Protocol\ProtocolInterface;
 
 /**
  * Implements a protocol processor for the standard wire protocol defined by Redis.

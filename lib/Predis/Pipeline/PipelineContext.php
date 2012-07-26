@@ -12,12 +12,12 @@
 namespace Predis\Pipeline;
 
 use SplQueue;
-use Predis\ClientInterface;
 use Predis\BasicClientInterface;
-use Predis\ExecutableContextInterface;
-use Predis\Command\CommandInterface;
-use Predis\Helpers;
 use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\ExecutableContextInterface;
+use Predis\Helpers;
+use Predis\Command\CommandInterface;
 
 /**
  * Abstraction of a pipeline context where write and read operations
