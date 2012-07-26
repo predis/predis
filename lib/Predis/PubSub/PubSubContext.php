@@ -50,7 +50,7 @@ class PubSubContext extends AbstractPubSubContext
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a PUB/SUB context over a cluster of connections');
+            throw new NotSupportedException('Cannot initialize a PUB/SUB context when using aggregated connections');
         }
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');

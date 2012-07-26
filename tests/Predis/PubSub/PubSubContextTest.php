@@ -40,7 +40,7 @@ class PubSubContextTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a PUB/SUB context over a cluster of connections
+     * @expectedExceptionMessage Cannot initialize a PUB/SUB context when using aggregated connections
      */
     public function testPubSubContextDoesNotWorkOnClusters()
     {

@@ -41,7 +41,7 @@ class MonitorContextTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a monitor context over a cluster of connections
+     * @expectedExceptionMessage Cannot initialize a monitor context when using aggregated connections
      */
     public function testMonitorContextDoesNotWorkOnClusters()
     {

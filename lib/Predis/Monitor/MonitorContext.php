@@ -53,7 +53,7 @@ class MonitorContext implements \Iterator
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a monitor context over a cluster of connections');
+            throw new NotSupportedException('Cannot initialize a monitor context when using aggregated connections');
         }
 
         if ($client->getProfile()->supportsCommand('monitor') === false) {

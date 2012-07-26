@@ -118,7 +118,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a MULTI/EXEC context over a cluster of connections');
+            throw new NotSupportedException('Cannot initialize a MULTI/EXEC context when using aggregated connections');
         }
 
         $profile = $client->getProfile();
@@ -440,8 +440,8 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
      */
     private function onProtocolError($message)
     {
-        // Since a MULTI/EXEC block cannot be initialized over a clustered
-        // connection, we can safely assume that Predis\Client::getConnection()
+        // Since a MULTI/EXEC block cannot be initialized when using aggregated
+        // connections, we can safely assume that Predis\Client::getConnection()
         // will always return an instance of Predis\Connection\SingleConnectionInterface.
         Helpers::onCommunicationException(new ProtocolException(
             $this->client->getConnection(), $message
