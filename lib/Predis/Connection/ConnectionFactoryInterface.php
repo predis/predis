@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Connection;
 
 use Predis\Profile\ServerProfileInterface;
-use Predis\Connection\AggregatedConnectionInterface;
 
 /**
  * Interface that must be implemented by classes that provide their own mechanism

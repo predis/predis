@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Connection;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -17,7 +17,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
  * @todo ConnectionParameters::define();
  * @todo ConnectionParameters::undefine();
  */
-class ConnectionParametersTest extends StandardTestCase
+class ParametersTest extends StandardTestCase
 {
     /**
      * @group disconnected

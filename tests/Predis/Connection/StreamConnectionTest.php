@@ -13,7 +13,6 @@ namespace Predis\Connection;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\ConnectionParameters;
 use Predis\Profile\ServerProfile;
 
 /**
@@ -34,7 +33,7 @@ class StreamConnectionTest extends ConnectionTestCase
     /**
      * @group disconnected
      */
-    public function testExposesConnectionParameters()
+    public function testExposesParameters()
     {
         $parameters = $this->getParameters();
         $connection = new StreamConnection($parameters);

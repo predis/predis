@@ -13,7 +13,7 @@ namespace Predis\Option;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\ConnectionFactory;
+use Predis\Connection\ConnectionFactory;
 
 /**
  *
@@ -30,7 +30,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
 
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
-        $default = $this->getMock('Predis\ConnectionFactoryInterface');
+        $default = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
         $default->expects($this->exactly(2))
                 ->method('define')
                 ->with($this->matchesRegularExpression('/^tcp|redis$/'), $connectionClass);
@@ -43,7 +43,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
 
         $factory = $option->filter($options, $value);
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $factory);
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $factory);
         $this->assertSame($default, $factory);
     }
 
@@ -52,7 +52,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
      */
     public function testValidationAcceptsFactoryInstancesAsValue()
     {
-        $value = $this->getMock('Predis\ConnectionFactoryInterface');
+        $value = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
         $option = $this->getMock('Predis\Option\ClientConnectionFactory', array('getDefault'));
@@ -66,7 +66,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
      */
     public function testValidationAcceptsStringAsValue()
     {
-        $factory = 'Predis\ConnectionFactory';
+        $factory = 'Predis\Connection\ConnectionFactory';
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
         $option = $this->getMock('Predis\Option\ClientConnectionFactory', array('getDefault'));
@@ -93,7 +93,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
      */
     public function testInvokeReturnsSpecifiedFactoryOrDefault()
     {
-        $value = $this->getMock('Predis\ConnectionFactoryInterface');
+        $value = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
 
         $option = $this->getMock('Predis\Option\ClientConnectionFactory', array('filter', 'getDefault'));
@@ -103,7 +103,7 @@ class ClientConnectionFactoryTest extends StandardTestCase
                ->will($this->returnValue($value));
         $option->expects($this->never())->method('getDefault');
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $option($options, $value));
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $option($options, $value));
 
         $option = $this->getMock('Predis\Option\ClientConnectionFactory', array('filter', 'getDefault'));
         $option->expects($this->never())->method('filter');
@@ -112,6 +112,6 @@ class ClientConnectionFactoryTest extends StandardTestCase
                ->with($options)
                ->will($this->returnValue($value));
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $option($options, null));
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $option($options, null));
     }
 }

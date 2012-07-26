@@ -11,7 +11,6 @@
 
 require 'SharedConfigurations.php';
 
-use Predis\ConnectionParameters;
 use Predis\Command\CommandInterface;
 use Predis\Connection\StreamConnection;
 

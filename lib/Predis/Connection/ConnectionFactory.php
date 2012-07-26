@@ -9,11 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Connection;
 
 use Predis\Profile\ServerProfileInterface;
-use Predis\Connection\SingleConnectionInterface;
-use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Profile\ServerProfile;
 
 /**

@@ -12,7 +12,6 @@
 namespace Predis\Connection;
 
 use Predis\ResponseErrorInterface;
-use Predis\ConnectionFactoryInterface;
 use Predis\Command\CommandInterface;
 use Predis\ClientException;
 use Predis\NotSupportedException;
@@ -31,9 +30,9 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     private $hashgenerator;
 
     /**
-     * @param ConnectionFactoryInterface $connections Connection factory object.
+     * @param FactoryInterface $connections Connection factory object.
      */
-    public function __construct(ConnectionFactoryInterface $connections = null)
+    public function __construct(FactoryInterface $connections = null)
     {
         $this->pool = array();
         $this->slots = array();

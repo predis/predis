@@ -11,8 +11,8 @@
 
 namespace Predis\Option;
 
-use Predis\ConnectionFactoryInterface;
-use Predis\ConnectionFactory;
+use Predis\Connection\ConnectionFactory;
+use Predis\Connection\ConnectionFactoryInterface;
 
 /**
  * Option class that returns a connection factory to be used by a client.
@@ -38,7 +38,7 @@ class ClientConnectionFactory extends AbstractOption
         }
         if (is_string($value) && class_exists($value)) {
             if (!($factory = new $value()) && !$factory instanceof ConnectionFactoryInterface) {
-                throw new \InvalidArgumentException("Class $value must be an instance of Predis\ConnectionFactoryInterface");
+                throw new \InvalidArgumentException("Class $value must be an instance of Predis\Connection\ConnectionFactoryInterface");
             }
             return $factory;
         }

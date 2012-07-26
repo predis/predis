@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Connection;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -25,7 +25,7 @@ class ConnectionFactoryTest extends StandardTestCase
     {
         $factory = new ConnectionFactory();
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $factory);
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $factory);
     }
 
     /**
@@ -275,7 +275,7 @@ class ConnectionFactoryTest extends StandardTestCase
                 ->method('add')
                 ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
 
-        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
+        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->never())
                 ->method('create');
 
@@ -285,7 +285,7 @@ class ConnectionFactoryTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testAggregatedConnectionWithMixedConnectionParameters()
+    public function testAggregatedConnectionWithMixedParameters()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -294,7 +294,7 @@ class ConnectionFactoryTest extends StandardTestCase
                 ->method('add')
                 ->with($this->isInstanceOf('Predis\Connection\SingleConnectionInterface'));
 
-        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
+        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(3))
                 ->method('create')
                 ->will($this->returnCallback(function($_, $_) use($connectionClass) {
@@ -312,7 +312,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->never())->method('add');
 
-        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
+        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->never())->method('create');
 
         $factory->createAggregated($cluster, array());
@@ -329,7 +329,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
 
-        $factory = $this->getMock('Predis\ConnectionFactory', array('create'));
+        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(2))
                 ->method('create')
                 ->with($this->anything(), $profile)

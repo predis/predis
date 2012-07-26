@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\ConnectionParametersInterface;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolInterface;
 use Predis\Protocol\Text\TextProtocol;

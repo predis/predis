@@ -12,7 +12,6 @@
 namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
-use Predis\ConnectionParametersInterface;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\ClientException;

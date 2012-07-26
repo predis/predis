@@ -16,6 +16,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 use Predis\Profile\ServerProfile;
 use Predis\Connection\PredisCluster;
 use Predis\Connection\MasterSlaveReplication;
+use Predis\Connection\ConnectionFactory;
 
 /**
  *
@@ -201,7 +202,7 @@ class ClientTest extends StandardTestCase
      */
     public function testConstructorWithNullAndArrayArgument()
     {
-        $factory = $this->getMock('Predis\ConnectionFactoryInterface');
+        $factory = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
 
         $arg2 = array('profile' => '2.0', 'prefix' => 'prefix:', 'connections' => $factory);
         $client = new Client(null, $arg2);

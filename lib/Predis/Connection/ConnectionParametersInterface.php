@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Connection;
 
 /**
  * Interface that must be implemented by classes that provide their own mechanism

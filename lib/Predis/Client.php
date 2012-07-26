@@ -15,6 +15,8 @@ use Predis\Command\CommandInterface;
 use Predis\Option\ClientOptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\AggregatedConnectionInterface;
+use Predis\Connection\ConnectionFactory;
+use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Profile\ServerProfileInterface;
 use Predis\Option\ClientOptions;
 use Predis\Profile\ServerProfile;

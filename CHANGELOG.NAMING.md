@@ -17,8 +17,6 @@ by the naming conventions adopted by the Symfony2 project. This is a list of all
 
   - `Predis\IReplyObject` => `Predis\ResponseObjectInterface`
   - `Predis\IRedisServerError` => `Predis\ResponseErrorInterface`
-  - `Predis\IConnectionFactory` => `Predis\ConnectionFactoryInterface`
-  - `Predis\IConnectionParameters` => `Predis\ConnectionParametersInterface`
   - `Predis\Options\IOption` => `Predis\Option\OptionInterface`
   - `Predis\Options\IClientOptions` => `Predis\Option\ClientOptionsInterface`
   - `Predis\Profile\IServerProfile` => `Predis\Profile\ServerProfileInterface`
@@ -48,4 +46,8 @@ by the naming conventions adopted by the Symfony2 project. This is a list of all
 
 ### Classes or interfaces moved to different namespaces ###
 
-  - `Predis\MonitorContext` is now under the `Predis\Monitor`.
+  - `Predis\MonitorContext` => `Predis\Monitor\MonitorContext`
+  - `Predis\ConnectionParameters` => `Predis\Connection\ConnectionParameters`
+  - `Predis\ConnectionParametersInterface` => `Predis\Connection\ConnectionParametersInterface`
+  - `Predis\ConnectionFactory` => `Predis\Connection\ConnectionFactory`
+  - `Predis\ConnectionFactoryInterface` => `Predis\Connection\ConnectionFactoryInterface`

@@ -13,7 +13,6 @@ namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\ResponseObjectInterface;
-use Predis\ConnectionParametersInterface;
 use Predis\ResponseError;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;

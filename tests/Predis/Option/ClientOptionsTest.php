@@ -26,7 +26,7 @@ class ClientOptionsTest extends StandardTestCase
     {
         $options = new ClientOptions();
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $options->connections);
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertNull($options->prefix);
@@ -39,13 +39,13 @@ class ClientOptionsTest extends StandardTestCase
     {
         $options = new ClientOptions(array(
             'cluster' => 'Predis\Connection\PredisCluster',
-            'connections' => 'Predis\ConnectionFactory',
+            'connections' => 'Predis\Connection\ConnectionFactory',
             'prefix' => 'prefix:',
             'profile' => '2.0',
             'exceptions' => false,
         ));
 
-        $this->assertInstanceOf('Predis\ConnectionFactoryInterface', $options->connections);
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $options->prefix);
