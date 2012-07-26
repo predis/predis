@@ -31,7 +31,7 @@ class MultiExecContextTest extends StandardTestCase
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $client = new Client($connection, '1.2');
+        $client = new Client($connection, array('profile' => '1.2'));
         $tx = new MultiExecContext($client);
     }
 
@@ -43,7 +43,7 @@ class MultiExecContextTest extends StandardTestCase
     public function testThrowsExceptionOnUnsupportedWatchUnwatchInProfile()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $client = new Client($connection, '2.0');
+        $client = new Client($connection, array('profile' => '2.0'));
         $tx = new MultiExecContext($client, array('options' => 'cas'));
 
         $tx->watch('foo');

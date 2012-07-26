@@ -72,9 +72,6 @@ class Client implements ClientInterface
         if ($options instanceof ClientOptionsInterface) {
             return $options;
         }
-        if ($options instanceof ServerProfileInterface || is_string($options)) {
-            return new ClientOptions(array('profile' => $options));
-        }
 
         throw new \InvalidArgumentException("Invalid type for client options");
     }

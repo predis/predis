@@ -199,26 +199,6 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithNullAndStringArgument()
-    {
-        $client = new Client(null, '2.0');
-
-        $this->assertSame($client->getProfile()->getVersion(), ServerProfile::get('2.0')->getVersion());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testConstructorWithNullAndProfileArgument()
-    {
-        $client = new Client(null, $arg2 = ServerProfile::get('2.0'));
-
-        $this->assertSame($client->getProfile(), $arg2);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testConstructorWithNullAndArrayArgument()
     {
         $factory = $this->getMock('Predis\ConnectionFactoryInterface');
@@ -299,7 +279,7 @@ class ClientTest extends StandardTestCase
                 ->with('ping', array())
                 ->will($this->returnValue($ping));
 
-        $client = new Client(null, $profile);
+        $client = new Client(null, array('profile' => $profile));
         $this->assertSame($ping, $client->createCommand('ping', array()));
     }
 
@@ -378,7 +358,8 @@ class ClientTest extends StandardTestCase
                 ->with('ping', array())
                 ->will($this->returnValue($ping));
 
-        $client = $this->getMock('Predis\Client', array('createCommand'), array($connection, $profile));
+        $options = array('profile' => $profile);
+        $client = $this->getMock('Predis\Client', array('createCommand'), array($connection, $options));
 
         $this->assertTrue($client->ping());
     }

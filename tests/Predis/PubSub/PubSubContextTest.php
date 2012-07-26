@@ -262,12 +262,13 @@ class PubSubContextTest extends StandardTestCase
             'read_write_timeout' => 2,
         );
 
+        $options = array('profile' => REDIS_SERVER_VERSION);
         $messages = array();
 
-        $producer = new Client($parameters, REDIS_SERVER_VERSION);
+        $producer = new Client($parameters, $options);
         $producer->connect();
 
-        $consumer = new Client($parameters, REDIS_SERVER_VERSION);
+        $consumer = new Client($parameters, $options);
         $consumer->connect();
 
         $pubsub = new PubSubContext($consumer);

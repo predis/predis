@@ -83,7 +83,11 @@ class MultiBulkResponseTupleTest extends StandardTestCase
             'read_write_timeout' => 2,
         );
 
-        $client = new Client($parameters, REDIS_SERVER_VERSION);
+        $options = array(
+            'profile' => REDIS_SERVER_VERSION,
+        );
+
+        $client = new Client($parameters, $options);
         $client->connect();
         $client->select(REDIS_SERVER_DBNUM);
         $client->flushdb();
