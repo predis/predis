@@ -46,10 +46,9 @@ class Client implements ClientInterface
      */
     public function __construct($parameters = null, $options = null)
     {
-        $options = $this->filterOptions($options);
-        $this->options = $options;
-        $this->profile = $options->profile;
-        $this->connections = $options->connections;
+        $this->options = $this->filterOptions($options);
+        $this->profile = $this->options->profile;
+        $this->connections = $this->options->connections;
         $this->connection = $this->initializeConnection($parameters);
     }
 
@@ -66,9 +65,11 @@ class Client implements ClientInterface
         if ($options === null) {
             return new ClientOptions();
         }
+
         if (is_array($options)) {
             return new ClientOptions($options);
         }
+
         if ($options instanceof ClientOptionsInterface) {
             return $options;
         }
