@@ -53,24 +53,53 @@ class ConnectionParameters implements ConnectionParametersInterface
     }
 
     /**
-     * Returns validators functions for the values of certain parameters.
+     * Returns cast functions for user-supplied parameter values.
      *
      * @return array
      */
-    protected function getValidators()
+    protected function getValueCasters()
     {
-        $bool = function($value) { return (bool) $value; };
-        $float = function($value) { return (float) $value; };
-        $int = function($value) { return (int) $value; };
-
         return array(
-            'port' => $int,
-            'async_connect' => $bool,
-            'persistent' => $bool,
-            'timeout' => $float,
-            'read_write_timeout' => $float,
-            'iterable_multibulk' => $bool,
+            'port' => 'self::castInteger',
+            'async_connect' => 'self::castBoolean',
+            'persistent' => 'self::castBoolean',
+            'timeout' => 'self::castFloat',
+            'read_write_timeout' => 'self::castFloat',
+            'iterable_multibulk' => 'self::castBoolean',
         );
+    }
+
+    /**
+     * Validates value as boolean.
+     *
+     * @param mixed $value Input value.
+     * @return boolean
+     */
+    private static function castBoolean($value)
+    {
+        return (bool) $value;
+    }
+
+    /**
+     * Validates value as float.
+     *
+     * @param mixed $value Input value.
+     * @return float
+     */
+    private static function castFloat($value)
+    {
+        return (float) $value;
+    }
+
+    /**
+     * Validates value as integer.
+     *
+     * @param mixed $value Input value.
+     * @return int
+     */
+    private static function castInteger($value)
+    {
+        return (int) $value;
     }
 
     /**
@@ -110,9 +139,9 @@ class ConnectionParameters implements ConnectionParametersInterface
     private function filter(Array $parameters)
     {
         if (count($parameters) > 0) {
-            $validators = array_intersect_key($this->getValidators(), $parameters);
-            foreach ($validators as $parameter => $validator) {
-                $parameters[$parameter] = $validator($parameters[$parameter]);
+            $casters = array_intersect_key($this->getValueCasters(), $parameters);
+            foreach ($casters as $parameter => $caster) {
+                $parameters[$parameter] = call_user_func($caster, $parameters[$parameter]);
             }
         }
 
