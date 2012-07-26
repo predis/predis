@@ -26,12 +26,14 @@ use Predis\ServerException;
  */
 class StandardExecutor implements PipelineExecutorInterface
 {
+    protected $exceptions;
+
     /**
-     * @param bool $useServerExceptions Specifies if the executor should throw exceptions on server errors.
+     * @param bool $exceptions Specifies if the executor should throw exceptions on server errors.
      */
-    public function __construct($useServerExceptions = true)
+    public function __construct($exceptions = true)
     {
-        $this->useServerExceptions = (bool) $useServerExceptions;
+        $this->exceptions = (bool) $exceptions;
     }
 
     /**
@@ -70,7 +72,7 @@ class StandardExecutor implements PipelineExecutorInterface
     {
         $size = count($commands);
         $values = array();
-        $useServerExceptions = $this->useServerExceptions;
+        $exceptions = $this->exceptions;
 
         $this->checkConnection($connection);
 
@@ -81,7 +83,7 @@ class StandardExecutor implements PipelineExecutorInterface
         for ($i = 0; $i < $size; $i++) {
             $response = $connection->readResponse($commands->dequeue());
 
-            if ($response instanceof ResponseErrorInterface && $useServerExceptions === true) {
+            if ($response instanceof ResponseErrorInterface && $exceptions === true) {
                 $this->onResponseError($connection, $response);
             }
 
