@@ -35,13 +35,13 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     private $running = false;
 
     /**
-     * @param ClientInterface Client instance used by the context.
-     * @param array Options for the context initialization.
+     * @param ClientInterface $client Client instance used by the context.
+     * @param PipelineExecutorInterface $executor Pipeline executor instace.
      */
-    public function __construct(ClientInterface $client, Array $options = null)
+    public function __construct(ClientInterface $client, PipelineExecutorInterface $executor = null)
     {
         $this->client = $client;
-        $this->executor = $this->createExecutor($client, $options ?: array());
+        $this->executor = $executor ?: $this->createExecutor($client);
         $this->pipeline = new SplQueue();
     }
 
@@ -50,30 +50,17 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
      * connection and the passed options.
      *
      * @param ClientInterface Client instance used by the context.
-     * @param array Options for the context initialization.
      * @return PipelineExecutorInterface
      */
-    protected function createExecutor(ClientInterface $client, Array $options)
+    protected function createExecutor(ClientInterface $client)
     {
-        if (isset($options['executor'])) {
-            $executor = $options['executor'];
+        $options = $client->getOptions();
 
-            if (is_callable($executor)) {
-                $executor = call_user_func($executor, $client, $options);
-            }
-
-            if (!$executor instanceof PipelineExecutorInterface) {
-                $message = 'The executor option accepts only instances of Predis\Pipeline\PipelineExecutorInterface';
-                throw new \InvalidArgumentException($message);
-            }
-
-            return $executor;
+        if (isset($options->exceptions)) {
+            return new StandardExecutor($options->exceptions);
         }
 
-        $clientOpts = $client->getOptions();
-        $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
-
-        return new StandardExecutor($useExceptions);
+        return new StandardExecutor();
     }
 
     /**

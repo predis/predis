@@ -475,16 +475,15 @@ class ClientTest extends StandardTestCase
     public function testPipelineWithArrayReturnsPipelineContextWithOptions()
     {
         $client = new Client();
-
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
+
         $options = array('executor' => $executor);
-
         $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline($options));
+        $this->assertSame($executor, $pipeline->getExecutor());
 
-        $reflection = new \ReflectionProperty($pipeline, 'executor');
-        $reflection->setAccessible(true);
-
-        $this->assertSame($executor, $reflection->getValue($pipeline));
+        $options = array('executor' => function ($client, $options) use ($executor) { return $executor; });
+        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline($options));
+        $this->assertSame($executor, $pipeline->getExecutor());
     }
 
     /**

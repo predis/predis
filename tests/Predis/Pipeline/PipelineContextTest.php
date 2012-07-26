@@ -37,16 +37,12 @@ class PipelineContextTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithOptions()
+    public function testConstructorWithExecutorArgument()
     {
         $client = new Client();
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
 
-        $pipeline = new PipelineContext($client, array('executor' => $executor));
-        $this->assertSame($executor, $pipeline->getExecutor());
-
-        $executorCbk = function($client, $options) use($executor) { return $executor; };
-        $pipeline = new PipelineContext($client, array('executor' => $executorCbk));
+        $pipeline = new PipelineContext($client, $executor);
         $this->assertSame($executor, $pipeline->getExecutor());
     }
 
@@ -58,7 +54,7 @@ class PipelineContextTest extends StandardTestCase
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
-        $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
+        $pipeline = new PipelineContext(new Client(), $executor);
 
         $pipeline->echo('one');
         $pipeline->echo('two');
@@ -73,7 +69,7 @@ class PipelineContextTest extends StandardTestCase
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
-        $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
+        $pipeline = new PipelineContext(new Client(), $executor);
 
         $this->assertSame($pipeline, $pipeline->echo('one'));
         $this->assertSame($pipeline, $pipeline->echo('one')->echo('two')->echo('three'));
@@ -89,7 +85,7 @@ class PipelineContextTest extends StandardTestCase
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
-        $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
+        $pipeline = new PipelineContext(new Client(), $executor);
 
         $pipeline->executeCommand($profile->createCommand('echo', array('one')));
         $pipeline->executeCommand($profile->createCommand('echo', array('two')));
@@ -104,7 +100,7 @@ class PipelineContextTest extends StandardTestCase
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
-        $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
+        $pipeline = new PipelineContext(new Client(), $executor);
 
         $this->assertSame(array(), $pipeline->execute());
     }
@@ -140,7 +136,7 @@ class PipelineContextTest extends StandardTestCase
         $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
         $executor->expects($this->never())->method('executor');
 
-        $pipeline = new PipelineContext(new Client(), array('executor' => $executor));
+        $pipeline = new PipelineContext(new Client(), $executor);
 
         $pipeline->echo('one');
         $pipeline->echo('two');

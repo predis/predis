@@ -313,8 +313,16 @@ class Client implements ClientInterface
      */
     protected function initPipeline(Array $options = null, $callable = null)
     {
-        $pipeline = new PipelineContext($this, $options);
-        return $this->pipelineExecute($pipeline, $callable);
+        $executor = isset($options['executor']) ? $options['executor'] : null;
+
+        if (is_callable($executor)) {
+            $executor = call_user_func($executor, $this, $options);
+        }
+
+        $pipeline = new PipelineContext($this, $executor);
+        $replies  = $this->pipelineExecute($pipeline, $callable);
+
+        return $replies;
     }
 
     /**
