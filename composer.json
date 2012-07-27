@@ -15,6 +15,10 @@
     "require": {
         "php": ">=5.3.0"
     },
+    "suggest": {
+        "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol",
+        "ext-curl": "Allows access to Webdis when paired with phpiredis"
+    },
     "autoload": {
         "psr-0": {"Predis": "lib/"}
     }
