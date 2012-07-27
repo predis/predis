@@ -60,6 +60,7 @@ class ZSetUnionStore extends PrefixableCommand
 
         if (isset($opts['WEIGHTS']) && is_array($opts['WEIGHTS'])) {
             $finalizedOpts[] = 'WEIGHTS';
+
             foreach ($opts['WEIGHTS'] as $weight) {
                 $finalizedOpts[] = $weight;
             }

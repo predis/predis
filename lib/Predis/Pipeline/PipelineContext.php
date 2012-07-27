@@ -109,10 +109,8 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
         if ($send && !$this->pipeline->isEmpty()) {
             $connection = $this->client->getConnection();
             $replies = $this->executor->execute($connection, $this->pipeline);
-
             $this->replies = array_merge($this->replies, $replies);
-        }
-        else {
+        } else {
             $this->pipeline = new SplQueue();
         }
 
@@ -130,6 +128,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
         if ($bool === true && $this->running === true) {
             throw new ClientException("This pipeline is already opened");
         }
+
         $this->running = $bool;
     }
 
@@ -153,8 +152,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
                 call_user_func($callable, $this);
             }
             $this->flushPipeline();
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $pipelineBlockException = $exception;
         }
 

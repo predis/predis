@@ -27,7 +27,7 @@ class CustomOption implements OptionInterface
     public function __construct(Array $options = array())
     {
         $this->filter = $this->ensureCallable($options, 'filter');
-        $this->default  = $this->ensureCallable($options, 'default');
+        $this->default = $this->ensureCallable($options, 'default');
     }
 
     /**
@@ -42,8 +42,7 @@ class CustomOption implements OptionInterface
             return;
         }
 
-        $callable = $options[$key];
-        if (is_callable($callable)) {
+        if (is_callable($callable = $options[$key])) {
             return $callable;
         }
 
@@ -59,9 +58,8 @@ class CustomOption implements OptionInterface
             if ($this->filter === null) {
                 return $value;
             }
-            $validator = $this->filter;
 
-            return $validator($options, $value);
+            return call_user_func($this->filter, $options, $value);
         }
     }
 
@@ -73,9 +71,8 @@ class CustomOption implements OptionInterface
         if (!isset($this->default)) {
             return;
         }
-        $default = $this->default;
 
-        return $default($options);
+        return call_user_func($this->default, $options);
     }
 
     /**

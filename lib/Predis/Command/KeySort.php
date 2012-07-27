@@ -44,20 +44,21 @@ class KeySort extends AbstractCommand implements PrefixableCommandInterface
 
         if (isset($sortParams['GET'])) {
             $getargs = $sortParams['GET'];
+
             if (is_array($getargs)) {
                 foreach ($getargs as $getarg) {
                     $query[] = 'GET';
                     $query[] = $getarg;
                 }
-            }
-            else {
+            } else {
                 $query[] = 'GET';
                 $query[] = $getargs;
             }
         }
 
-        if (isset($sortParams['LIMIT']) && is_array($sortParams['LIMIT'])
-            && count($sortParams['LIMIT']) == 2) {
+        if (isset($sortParams['LIMIT']) &&
+            is_array($sortParams['LIMIT']) &&
+            count($sortParams['LIMIT']) == 2) {
 
             $query[] = 'LIMIT';
             $query[] = $sortParams['LIMIT'][0];

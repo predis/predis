@@ -28,6 +28,7 @@ class ClientProfile extends AbstractOption
     {
         if (is_string($value)) {
             $value = ServerProfile::get($value);
+
             if (isset($options->prefix)) {
                 $value->setProcessor($options->prefix);
             }
@@ -50,6 +51,7 @@ class ClientProfile extends AbstractOption
     public function getDefault(ClientOptionsInterface $options)
     {
         $profile = ServerProfile::getDefault();
+
         if (isset($options->prefix)) {
             $profile->setProcessor($options->prefix);
         }

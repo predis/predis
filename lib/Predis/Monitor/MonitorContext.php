@@ -55,7 +55,6 @@ class MonitorContext implements \Iterator
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
             throw new NotSupportedException('Cannot initialize a monitor context when using aggregated connections');
         }
-
         if ($client->getProfile()->supportsCommand('monitor') === false) {
             throw new NotSupportedException('The current profile does not support the MONITOR command');
         }
@@ -137,16 +136,18 @@ class MonitorContext implements \Iterator
         $client = null;
         $event = $this->client->getConnection()->read();
 
-        $callback = function($matches) use (&$database, &$client) {
+        $callback = function ($matches) use (&$database, &$client) {
             if (2 === $count = count($matches)) {
                 // Redis <= 2.4
                 $database = (int) $matches[1];
             }
+
             if (4 === $count) {
                 // Redis >= 2.6
                 $database = (int) $matches[2];
                 $client = $matches[3];
             }
+
             return ' ';
         };
 

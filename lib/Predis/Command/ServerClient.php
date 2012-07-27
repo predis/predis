@@ -31,6 +31,7 @@ class ServerClient extends AbstractCommand
     public function parseResponse($data)
     {
         $args = array_change_key_case($this->getArguments(), CASE_UPPER);
+
         switch (strtoupper($args[0])) {
             case 'LIST':
                 return $this->parseClientList($data);
@@ -54,10 +55,12 @@ class ServerClient extends AbstractCommand
 
         foreach (explode("\n", $data, -1) as $clientData) {
             $client = array();
+
             foreach (explode(' ', $clientData) as $kv) {
                 @list($k, $v) = explode('=', $kv);
                 $client[$k] = $v;
             }
+
             $clients[] = $client;
         }
 

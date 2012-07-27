@@ -32,6 +32,7 @@ class Helpers
     {
         if ($exception->shouldResetConnection()) {
             $connection = $exception->getConnection();
+
             if ($connection->isConnected()) {
                 $connection->disconnect();
             }

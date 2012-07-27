@@ -37,6 +37,7 @@ class HashGetAll extends PrefixableCommand
         }
 
         $result = array();
+
         for ($i = 0; $i < count($data); $i++) {
             $result[$data[$i]] = $data[++$i];
         }

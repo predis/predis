@@ -48,9 +48,9 @@ class ServerInfoV26x extends ServerInfo
                     $current[$k] = $this->parseAllocationStats($v);
                     continue;
                 }
+
                 $current[$k] = $v;
-            }
-            else {
+            } else {
                 $current[$k] = $this->parseDatabaseStats($v);
             }
         }

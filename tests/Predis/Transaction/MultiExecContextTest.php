@@ -75,7 +75,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->echo('one');
             $tx->echo('two');
             $tx->echo('three');
@@ -98,9 +98,10 @@ class MultiExecContextTest extends StandardTestCase
         $exception = null;
 
         try {
-            $tx->echo('foo')->execute(function($tx) { $tx->echo('bar'); });
-        }
-        catch (\Exception $ex) {
+            $tx->echo('foo')->execute(function ($tx) {
+                $tx->echo('bar');
+            });
+        } catch (\Exception $ex) {
             $exception = $ex;
         }
 
@@ -118,7 +119,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             // NOOP
         });
 
@@ -138,7 +139,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->exec();
         });
 
@@ -156,7 +157,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->discard();
         });
 
@@ -174,7 +175,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->set('foo', 'bar');
             $tx->get('foo');
             $tx->discard();
@@ -195,7 +196,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->echo('before DISCARD');
             $tx->discard();
             $tx->echo('after DISCARD');
@@ -245,7 +246,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->get('foo');
             $tx->get('hoge');
         });
@@ -294,7 +295,7 @@ class MultiExecContextTest extends StandardTestCase
         $tx = $this->getMockedTransaction($callback, $options);
 
         $test = $this;
-        $replies = $tx->execute(function($tx) use($test) {
+        $replies = $tx->execute(function ($tx) use ($test) {
             $tx->watch('foobar');
 
             $reply1 = $tx->get('foo');
@@ -325,7 +326,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(array(), $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
-        $tx->execute(function($tx) {
+        $tx->execute(function ($tx) {
             $tx->multi();
         });
 
@@ -344,7 +345,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback(array(), $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
-        $tx->execute(function($tx) {
+        $tx->execute(function ($tx) {
             $bar = $tx->get('foo');
             $tx->set('hoge', 'piyo');
         });
@@ -383,11 +384,13 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
-        $replies = $tx->execute(function($tx) use($sentinel, &$attempts) {
+        $replies = $tx->execute(function ($tx) use ($sentinel, &$attempts) {
             $tx->get('foo');
+
             if ($attempts > 0) {
                 $attempts -= 1;
                 $sentinel->signal();
+
                 $tx->echo('!!ABORT!!');
             }
         });
@@ -407,7 +410,7 @@ class MultiExecContextTest extends StandardTestCase
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback);
 
-        $replies = $tx->execute(function($tx) {
+        $replies = $tx->execute(function ($tx) {
             $tx->echo('!!ABORT!!');
         });
     }
@@ -426,13 +429,13 @@ class MultiExecContextTest extends StandardTestCase
         $replies = null;
 
         try {
-            $replies = $tx->execute(function($tx) {
+            $replies = $tx->execute(function ($tx) {
                 $tx->set('foo', 'bar');
                 $tx->get('foo');
+
                 throw new \RuntimeException('TEST');
             });
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             // NOOP
         }
 
@@ -454,13 +457,12 @@ class MultiExecContextTest extends StandardTestCase
         $replies = null;
 
         try {
-            $replies = $tx->execute(function($tx) {
+            $replies = $tx->execute(function ($tx) {
                 $tx->set('foo', 'bar');
                 $tx->echo('ERR Invalid operation');
                 $tx->get('foo');
             });
-        }
-        catch (ServerException $ex) {
+        } catch (ServerException $ex) {
             $tx->discard();
         }
 
@@ -481,12 +483,11 @@ class MultiExecContextTest extends StandardTestCase
         $exception = null;
 
         try {
-            $client->multiExec(function($tx) {
+            $client->multiExec(function ($tx) {
                 $tx->set('foo', 'bar');
                 throw new \RuntimeException("TEST");
             });
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $exception = $ex;
         }
 
@@ -504,13 +505,12 @@ class MultiExecContextTest extends StandardTestCase
         $value = (string) rand();
 
         try {
-            $client->multiExec(function($tx) use($value) {
+            $client->multiExec(function ($tx) use ($value) {
                 $tx->set('foo', 'bar');
                 $tx->lpush('foo', 'bar');
                 $tx->set('foo', $value);
             });
-        }
-        catch (ServerException $ex) {
+        } catch (ServerException $ex) {
             $exception = $ex;
         }
 
@@ -525,7 +525,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $client = $this->getClient(array(), array('exceptions' => false));
 
-        $replies = $client->multiExec(function($tx) {
+        $replies = $client->multiExec(function ($tx) {
             $tx->set('foo', 'bar');
             $tx->lpush('foo', 'bar');
             $tx->echo('foobar');
@@ -543,7 +543,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $client = $this->getClient();
 
-        $replies = $client->multiExec(function($tx) {
+        $replies = $client->multiExec(function ($tx) {
             $tx->set('foo', 'bar');
             $tx->discard();
             $tx->set('hoge', 'piyo');
@@ -564,13 +564,12 @@ class MultiExecContextTest extends StandardTestCase
         $client2 = $this->getClient();
 
         try {
-            $client1->multiExec(array('watch' => 'sentinel'), function($tx) use($client2) {
+            $client1->multiExec(array('watch' => 'sentinel'), function ($tx) use ($client2) {
                 $tx->set('sentinel', 'client1');
                 $tx->get('sentinel');
                 $client2->set('sentinel', 'client2');
             });
-        }
-        catch (AbortedMultiExecException $ex) {
+        } catch (AbortedMultiExecException $ex) {
             $exception = $ex;
         }
 
@@ -588,9 +587,10 @@ class MultiExecContextTest extends StandardTestCase
         $client->set('foo', 'bar');
         $options = array('watch' => 'foo', 'cas' => true);
 
-        $replies = $client->multiExec($options, function($tx) {
+        $replies = $client->multiExec($options, function ($tx) {
             $tx->watch('foobar');
             $foo = $tx->get('foo');
+
             $tx->multi();
             $tx->set('foobar', $foo);
             $tx->discard();
@@ -605,15 +605,18 @@ class MultiExecContextTest extends StandardTestCase
         $client->set('foo', 'bar');
 
         $options = array('watch' => 'foo', 'cas' => true, 'retry' => 1);
-        $replies = $client->multiExec($options, function($tx) use($client2, &$hijack) {
+        $replies = $client->multiExec($options, function ($tx) use ($client2, &$hijack) {
             $foo = $tx->get('foo');
             $tx->multi();
+
             $tx->set('foobar', $foo);
             $tx->discard();
+
             if ($hijack) {
                 $hijack = false;
                 $client2->set('foo', 'hijacked!');
             }
+
             $tx->mget('foo', 'foobar');
         });
 
@@ -670,13 +673,12 @@ class MultiExecContextTest extends StandardTestCase
     {
         $multi = $watch = $abort = false;
 
-        return function(CommandInterface $command) use(&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
+        return function (CommandInterface $command) use (&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
             $cmd = $command->getId();
 
             if ($multi || $cmd === 'MULTI') {
                 $commands[] = $command;
-            }
-            else {
+            } else {
                 $cas[] = $command;
             }
 
@@ -685,31 +687,38 @@ class MultiExecContextTest extends StandardTestCase
                     if ($multi) {
                         throw new ServerException("ERR $cmd inside MULTI is not allowed");
                     }
+
                     return $watch = true;
 
                 case 'MULTI':
                     if ($multi) {
                         throw new ServerException("ERR MULTI calls can not be nested");
                     }
+
                     return $multi = true;
 
                 case 'EXEC':
                     if (!$multi) {
                         throw new ServerException("ERR $cmd without MULTI");
                     }
+
                     $watch = $multi = false;
+
                     if ($abort) {
                         $commands = $cas = array();
                         $abort = false;
                         return null;
                     }
+
                     return $expected;
 
                 case 'DISCARD':
                     if (!$multi) {
                         throw new ServerException("ERR $cmd without MULTI");
                     }
+
                     $watch = $multi = false;
+
                     return true;
 
                 case 'ECHO':
@@ -717,9 +726,11 @@ class MultiExecContextTest extends StandardTestCase
                     if (strpos($trigger, 'ERR ') === 0) {
                         throw new ServerException($trigger);
                     }
+
                     if ($trigger === '!!ABORT!!' && $multi) {
                         $abort = true;
                     }
+
                     return new ResponseQueued();
 
                 case 'UNWATCH':

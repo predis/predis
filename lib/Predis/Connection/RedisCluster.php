@@ -90,6 +90,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         if (($id = array_search($connection, $this->pool, true)) !== false) {
             unset($this->pool[$id]);
+
             return true;
         }
 
@@ -106,6 +107,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         if (isset($this->pool[$connectionId])) {
             unset($this->pool[$connectionId]);
+
             return true;
         }
 
@@ -126,6 +128,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
         }
 
         $slot = $hash & 0x0FFF;
+
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
         }

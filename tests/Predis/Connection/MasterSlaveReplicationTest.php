@@ -493,7 +493,7 @@ class MasterSlaveReplicationTest extends StandardTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $replication->setCommandReadOnly('exists', function($cmd) {
+        $replication->setCommandReadOnly('exists', function ($cmd) {
             list($arg1) = $cmd->getArguments();
             return $arg1 === 'foo';
         });

@@ -54,6 +54,7 @@ class PubSubContext extends AbstractPubSubContext
         }
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
+
         if ($client->getProfile()->supportsCommands($commands) === false) {
             throw new NotSupportedException('The current profile does not support PUB/SUB related commands');
         }

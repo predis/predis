@@ -72,8 +72,7 @@ class CommunicationExceptionTest extends StandardTestCase
 
         if ($parameters === null) {
             $builder->disableOriginalConstructor();
-        }
-        else if (!$parameters instanceof ConnectionParametersInterface) {
+        } else if (!$parameters instanceof ConnectionParametersInterface) {
             $parameters = new ConnectionParameters($parameters);
         }
 

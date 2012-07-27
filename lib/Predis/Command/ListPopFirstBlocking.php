@@ -34,6 +34,7 @@ class ListPopFirstBlocking extends AbstractCommand implements PrefixableCommandI
             list($arguments, $timeout) = $arguments;
             array_push($arguments, $timeout);
         }
+
         return $arguments;
     }
 

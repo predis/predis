@@ -29,9 +29,9 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     public function __construct(SingleConnectionInterface $connection, $size)
     {
         $this->connection = $connection;
-        $this->position   = 0;
-        $this->current    = $size > 0 ? $this->getValue() : null;
-        $this->replySize  = $size;
+        $this->position = 0;
+        $this->current = $size > 0 ? $this->getValue() : null;
+        $this->replySize = $size;
     }
 
     /**
@@ -59,8 +59,7 @@ class MultiBulkResponseSimple extends MultiBulkResponse
                 $this->position = $this->replySize;
                 $this->connection->disconnect();
             }
-        }
-        else {
+        } else {
             while ($this->valid()) {
                 $this->next();
             }

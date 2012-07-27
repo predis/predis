@@ -84,8 +84,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
 
         if (isset($parameters->alias)) {
             $this->pool[$parameters->alias] = $connection;
-        }
-        else {
+        } else {
             $this->pool[] = $connection;
         }
 

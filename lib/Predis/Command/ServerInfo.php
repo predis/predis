@@ -45,9 +45,9 @@ class ServerInfo extends AbstractCommand
                     $info[$k] = $this->parseAllocationStats($v);
                     continue;
                 }
+
                 $info[$k] = $v;
-            }
-            else {
+            } else {
                 $info[$k] = $this->parseDatabaseStats($v);
             }
         }
@@ -91,6 +91,7 @@ class ServerInfo extends AbstractCommand
                 $size = ">=$objects";
                 $objects = $extra;
             }
+
             $stats[$size] = $objects;
         }
 

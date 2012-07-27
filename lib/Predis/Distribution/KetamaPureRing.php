@@ -42,6 +42,7 @@ class KetamaPureRing extends HashRing
 
         for ($i = 0; $i < $replicas; $i++) {
             $unpackedDigest = unpack('V4', md5("$nodeHash-$i", true));
+
             foreach ($unpackedDigest as $key) {
                 $ring[$key] = $nodeObject;
             }

@@ -114,6 +114,7 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
         if (!isset(self::$profiles)) {
             self::$profiles = self::getDefaultProfiles();
         }
+
         if (!isset(self::$profiles[$version])) {
             throw new ClientException("Unknown server profile: $version");
         }
@@ -165,6 +166,7 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     public function createCommand($method, $arguments = array())
     {
         $method = strtolower($method);
+
         if (!isset($this->commands[$method])) {
             throw new ClientException("'$method' is not a registered Redis command");
         }
@@ -189,9 +191,11 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     public function defineCommand($alias, $command)
     {
         $commandReflection = new \ReflectionClass($command);
+
         if (!$commandReflection->isSubclassOf('Predis\Command\CommandInterface')) {
             throw new \InvalidArgumentException("Cannot register '$command' as it is not a valid Redis command");
         }
+
         $this->commands[strtolower($alias)] = $command;
     }
 

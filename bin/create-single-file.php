@@ -184,7 +184,7 @@ class PredisFile
     {
         $namespaces = array_fill_keys(array_unique(
             array_map(
-                function($fqn) { return PhpNamespace::extractName($fqn); },
+                function ($fqn) { return PhpNamespace::extractName($fqn); },
                 array_keys($dependencyScores)
             )
         ), 0);
@@ -200,7 +200,7 @@ class PredisFile
 
     private function getOrderedClasses(PhpNamespace $phpNamespace, $classes)
     {
-        $nsClassesFQNs = array_map(function($cl) { return $cl->getFQN(); }, $phpNamespace->getClasses());
+        $nsClassesFQNs = array_map(function ($cl) { return $cl->getFQN(); }, $phpNamespace->getClasses());
         $nsOrderedClasses = array();
 
         foreach ($nsClassesFQNs as $nsClassFQN) {
@@ -352,7 +352,9 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
     public function getPhpCode()
     {
-        $reducer = function($str, $use) { return $str .= "use $use;\n"; };
+        $reducer = function ($str, $use) {
+            return $str .= "use $use;\n";
+        };
 
         return array_reduce($this->getList(), $reducer, '');
     }
@@ -430,7 +432,7 @@ LICENSE;
     {
         $useDirectives = $this->getNamespace()->getUseDirectives();
 
-        $useExtractor = function($m) use($useDirectives) {
+        $useExtractor = function ($m) use ($useDirectives) {
             $useDirectives->add(($namespacedPath = $m[1]));
         };
 
@@ -453,7 +455,7 @@ LICENSE;
         $implements = array();
         $extends =  array();
 
-        $extractor = function($iterator, $callback) {
+        $extractor = function ($iterator, $callback) {
             $className = '';
             $iterator->seek($iterator->key() + 1);
 
@@ -464,8 +466,7 @@ LICENSE;
                     if (preg_match('/\s?,\s?/', $token)) {
                         $callback(trim($className));
                         $className = '';
-                    }
-                    else if ($token == '{') {
+                    } else if ($token == '{') {
                         $callback(trim($className));
                         return;
                     }
@@ -510,13 +511,13 @@ LICENSE;
                     break;
 
                 case T_IMPLEMENTS:
-                    $extractor($iterator, function($fqn) use (&$implements) {
+                    $extractor($iterator, function ($fqn) use (&$implements) {
                         $implements[] = $fqn;
                     });
                     break;
 
                 case T_EXTENDS:
-                    $extractor($iterator, function($fqn) use (&$extends) {
+                    $extractor($iterator, function ($fqn) use (&$extends) {
                         $extends[] = $fqn;
                     });
                     break;

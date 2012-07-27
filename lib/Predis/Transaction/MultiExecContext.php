@@ -122,6 +122,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
         }
 
         $profile = $client->getProfile();
+
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
             throw new NotSupportedException('The current profile does not support MULTI, EXEC and DISCARD');
         }
@@ -171,6 +172,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
 
         if (!$cas || ($cas && $discarded)) {
             $this->client->multi();
+
             if ($discarded) {
                 $this->unflagState(self::STATE_CAS);
             }
@@ -204,12 +206,12 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     public function executeCommand(CommandInterface $command)
     {
         $this->initialize();
-
         $response = $this->client->executeCommand($command);
 
         if ($this->checkState(self::STATE_CAS)) {
             return $response;
         }
+
         if (!$response instanceof ResponseQueued) {
             $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
@@ -249,8 +251,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
         if ($this->checkState(self::STATE_INITIALIZED | self::STATE_CAS)) {
             $this->unflagState(self::STATE_CAS);
             $this->client->multi();
-        }
-        else {
+        } else {
             $this->initialize();
         }
 
@@ -350,6 +351,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
                 if ($this->checkState(self::STATE_WATCH)) {
                     $this->discard();
                 }
+
                 return;
             }
 
@@ -414,14 +416,11 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
 
         try {
             call_user_func($callable, $this);
-        }
-        catch (CommunicationException $exception) {
+        } catch (CommunicationException $exception) {
             $blockException = $exception;
-        }
-        catch (ServerException $exception) {
+        } catch (ServerException $exception) {
             $blockException = $exception;
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $blockException = $exception;
             $this->discard();
         }

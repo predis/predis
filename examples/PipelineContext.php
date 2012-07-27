@@ -16,7 +16,7 @@ require 'SharedConfigurations.php';
 
 $client = new Predis\Client($single_server);
 
-$replies = $client->pipeline(function($pipe) {
+$replies = $client->pipeline(function ($pipe) {
     $pipe->ping();
     $pipe->flushdb();
     $pipe->incrby('counter', 10);

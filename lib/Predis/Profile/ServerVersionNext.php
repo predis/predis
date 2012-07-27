@@ -31,7 +31,6 @@ class ServerVersionNext extends ServerVersion26
      */
     public function getSupportedCommands()
     {
-        return array_merge(parent::getSupportedCommands(), array(
-        ));
+        return array_merge(parent::getSupportedCommands(), array());
     }
 }

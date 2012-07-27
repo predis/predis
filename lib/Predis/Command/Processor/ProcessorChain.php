@@ -45,8 +45,7 @@ class ProcessorChain implements CommandProcessorChainInterface, \ArrayAccess
      */
     public function remove(CommandProcessorInterface $processor)
     {
-        $index = array_search($processor, $this->processors, true);
-        if ($index !== false) {
+        if (false !== $index = array_search($processor, $this->processors, true)) {
             unset($this[$index]);
         }
     }
@@ -56,8 +55,7 @@ class ProcessorChain implements CommandProcessorChainInterface, \ArrayAccess
      */
     public function process(CommandInterface $command)
     {
-        $count = count($this->processors);
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count = count($this->processors); $i++) {
             $this->processors[$i]->process($command);
         }
     }

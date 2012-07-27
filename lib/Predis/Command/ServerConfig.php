@@ -40,6 +40,7 @@ class ServerConfig extends AbstractCommand
 
         if (is_array($data)) {
             $result = array();
+
             for ($i = 0; $i < count($data); $i++) {
                 $result[$data[$i]] = $data[++$i];
             }

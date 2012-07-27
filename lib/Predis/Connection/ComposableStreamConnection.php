@@ -46,6 +46,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
         if ($protocol === null) {
             throw new \InvalidArgumentException("The protocol instance cannot be a null value");
         }
+
         $this->protocol = $protocol;
     }
 
@@ -79,12 +80,13 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
 
         do {
             $chunk = fread($socket, $length);
+
             if ($chunk === false || $chunk === '') {
                 $this->onConnectionError('Error while reading bytes from the server');
             }
+
             $value .= $chunk;
-        }
-        while (($length -= strlen($chunk)) > 0);
+        } while (($length -= strlen($chunk)) > 0);
 
         return $value;
     }
@@ -99,12 +101,13 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
 
         do {
             $chunk = fgets($socket);
+
             if ($chunk === false || $chunk === '') {
                 $this->onConnectionError('Error while reading line from the server');
             }
+
             $value .= $chunk;
-        }
-        while (substr($value, -2) !== "\r\n");
+        } while (substr($value, -2) !== "\r\n");
 
         return substr($value, 0, -2);
     }

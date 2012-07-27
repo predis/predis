@@ -83,11 +83,13 @@ class TextResponseReader implements ResponseReaderInterface
     public function read(ComposableConnectionInterface $connection)
     {
         $header = $connection->readLine();
+
         if ($header === '') {
             $this->protocolError($connection, 'Unexpected empty header');
         }
 
         $prefix = $header[0];
+
         if (!isset($this->handlers[$prefix])) {
             $this->protocolError($connection, "Unknown prefix '$prefix'");
         }

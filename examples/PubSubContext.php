@@ -38,12 +38,10 @@ foreach ($pubsub as $message) {
                 if ($message->payload == 'quit_loop') {
                     echo "Aborting pubsub loop...\n";
                     $pubsub->unsubscribe();
-                }
-                else {
+                } else {
                     echo "Received an unrecognized command: {$message->payload}.\n";
                 }
-            }
-            else {
+            } else {
                 echo "Received the following message from {$message->channel}:\n",
                      "  {$message->payload}\n\n";
             }

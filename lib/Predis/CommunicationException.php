@@ -28,11 +28,10 @@ abstract class CommunicationException extends PredisException
      * @param int $code Error code.
      * @param \Exception $innerException Inner exception for wrapping the original error.
      */
-    public function __construct(SingleConnectionInterface $connection,
-        $message = null, $code = null, \Exception $innerException = null)
-    {
+    public function __construct(
+        SingleConnectionInterface $connection, $message = null, $code = null, \Exception $innerException = null
+    ) {
         parent::__construct($message, $code, $innerException);
-
         $this->connection = $connection;
     }
 

@@ -102,7 +102,9 @@ class ClientClusterTest extends StandardTestCase
     {
         $this->setExpectedException('InvalidArgumentException');
 
-        $value = function($options) { return new \stdClass(); };
+        $value = function ($options) {
+            return new \stdClass();
+        };
 
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
         $option = new ClientCluster();

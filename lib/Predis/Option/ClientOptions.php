@@ -61,11 +61,10 @@ class ClientOptions implements ClientOptionsInterface
         foreach ($options as $option => $value) {
             if (isset($handlers[$option])) {
                 $handler = $handlers[$option];
-                $handlers[$option] = function($options) use($handler, $value) {
+                $handlers[$option] = function ($options) use ($handler, $value) {
                     return $handler->filter($options, $value);
                 };
-            }
-            else {
+            } else {
                 $this->options[$option] = $value;
             }
         }

@@ -43,9 +43,11 @@ class ClientReplication extends AbstractOption
     {
         if (is_callable($value)) {
             $connection = call_user_func($value, $options);
+
             if (!$connection instanceof ReplicationConnectionInterface) {
                 throw new \InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');
             }
+
             return $connection;
         }
 
@@ -53,9 +55,11 @@ class ClientReplication extends AbstractOption
             if (!class_exists($value)) {
                 throw new \InvalidArgumentException("Class $value does not exist");
             }
+
             if (!($connection = new $value()) instanceof ReplicationConnectionInterface) {
                 throw new \InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');
             }
+
             return $connection;
         }
 

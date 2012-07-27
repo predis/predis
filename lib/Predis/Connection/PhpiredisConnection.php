@@ -120,7 +120,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     private function getStatusHandler()
     {
-        return function($payload) {
+        return function ($payload) {
             switch ($payload) {
                 case 'OK':
                     return true;
@@ -142,7 +142,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     private function getErrorHandler()
     {
-        return function($errorMessage) {
+        return function ($errorMessage) {
             return new ResponseError($errorMessage);
         };
     }
@@ -294,6 +294,7 @@ class PhpiredisConnection extends AbstractConnection
         parent::connect();
 
         $this->connectWithTimeout($this->parameters);
+
         if (count($this->initCmds) > 0) {
             $this->sendInitializationCommands();
         }
@@ -306,7 +307,6 @@ class PhpiredisConnection extends AbstractConnection
     {
         if ($this->isConnected()) {
             socket_close($this->getResource());
-
             parent::disconnect();
         }
     }
@@ -363,8 +363,7 @@ class PhpiredisConnection extends AbstractConnection
 
         if ($state === PHPIREDIS_READER_STATE_COMPLETE) {
             return phpiredis_reader_get_reply($reader);
-        }
-        else {
+        } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));
         }
     }

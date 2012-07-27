@@ -133,9 +133,11 @@ class ConnectionFactoryTest extends StandardTestCase
         $password = 'foobar';
         $commands = array();
 
-        $createCommand = function($id, $arguments) use($test, &$commands) {
+        $createCommand = function ($id, $arguments) use ($test, &$commands) {
             $commands[$id] = $arguments;
-            return $test->getMock('Predis\Command\CommandInterface');
+            $command = $test->getMock('Predis\Command\CommandInterface');
+
+            return $command;
         };
 
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
@@ -191,7 +193,7 @@ class ConnectionFactoryTest extends StandardTestCase
 
         $parameters = new ConnectionParameters(array('scheme' => 'foobar'));
 
-        $initializer = function($parameters) use($connectionClass) {
+        $initializer = function ($parameters) use ($connectionClass) {
             return new $connectionClass($parameters);
         };
 
@@ -297,7 +299,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(3))
                 ->method('create')
-                ->will($this->returnCallback(function($_, $_) use($connectionClass) {
+                ->will($this->returnCallback(function ($_, $_) use ($connectionClass) {
                     return new $connectionClass;
                 }));
 
@@ -333,7 +335,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory->expects($this->exactly(2))
                 ->method('create')
                 ->with($this->anything(), $profile)
-                ->will($this->returnCallback(function($_, $_) use($connectionClass) {
+                ->will($this->returnCallback(function ($_, $_) use ($connectionClass) {
                     return new $connectionClass();
                 }));
 

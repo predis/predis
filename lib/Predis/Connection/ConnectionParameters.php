@@ -124,6 +124,7 @@ class ConnectionParameters implements ConnectionParametersInterface
                 @list($k, $v) = explode('=', $kv);
                 $parsed[$k] = $v;
             }
+
             unset($parsed['query']);
         }
 
@@ -140,6 +141,7 @@ class ConnectionParameters implements ConnectionParametersInterface
     {
         if (count($parameters) > 0) {
             $casters = array_intersect_key($this->getValueCasters(), $parameters);
+
             foreach ($casters as $parameter => $caster) {
                 $parameters[$parameter] = call_user_func($caster, $parameters[$parameter]);
             }

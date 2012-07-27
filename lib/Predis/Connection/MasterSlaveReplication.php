@@ -66,8 +66,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
 
         if ($alias === 'master') {
             $this->master = $connection;
-        }
-        else {
+        } else {
             $this->slaves[$alias ?: count($this->slaves)] = $connection;
         }
 
@@ -84,8 +83,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
             $this->reset();
 
             return true;
-        }
-        else {
+        } else {
             if (($id = array_search($connection, $this->slaves, true)) !== false) {
                 unset($this->slaves[$id]);
                 $this->reset();
@@ -108,7 +106,6 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
 
             return $this->current;
         }
-
         if ($this->current === $this->master) {
             return $this->current;
         }
@@ -128,6 +125,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
         if ($connectionId === 'master') {
             return $this->master;
         }
+
         if (isset($this->slaves[$connectionId])) {
             return $this->slaves[$connectionId];
         }
@@ -215,6 +213,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
         if ($this->master) {
             $this->master->disconnect();
         }
+
         foreach ($this->slaves as $connection) {
             $connection->disconnect();
         }
@@ -308,8 +307,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
 
         if ($readonly) {
             $this->readonly[$commandID] = $readonly;
-        }
-        else {
+        } else {
             unset($this->readonly[$commandID]);
         }
     }
@@ -330,8 +328,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
 
         if ($readonly) {
             $this->readonlySHA1[$sha1] = $readonly;
-        }
-        else {
+        } else {
             unset($this->readonlySHA1[$sha1]);
         }
     }

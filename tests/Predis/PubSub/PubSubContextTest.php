@@ -80,7 +80,7 @@ class PubSubContextTest extends StandardTestCase
         $client->expects($this->exactly(2))
                ->method('createCommand')
                ->with($this->logicalOr($this->equalTo('subscribe'), $this->equalTo('psubscribe')))
-               ->will($this->returnCallback(function($id, $args) use($profile) {
+               ->will($this->returnCallback(function ($id, $args) use ($profile) {
                    return $profile->createCommand($id, $args);
                }));
 

@@ -98,7 +98,6 @@ class MultiExecExecutor implements PipelineExecutorInterface
             if ($response = $responses[$i] instanceof \Iterator) {
                 $response = iterator_to_array($response);
             }
-
             $values[$i] = $commands->dequeue()->parseResponse($responses[$i]);
             unset($responses[$i]);
         }

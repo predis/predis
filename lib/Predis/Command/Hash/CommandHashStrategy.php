@@ -317,9 +317,11 @@ class CommandHashStrategy implements CommandHashStrategyInterface
 
         for ($i = 1; $i < $count; $i++) {
             $nextKey = $this->extractKeyTag($keys[$i]);
+
             if ($currentKey !== $nextKey) {
                 return false;
             }
+
             $currentKey = $nextKey;
         }
 
@@ -335,10 +337,8 @@ class CommandHashStrategy implements CommandHashStrategyInterface
      */
     protected function extractKeyTag($key)
     {
-        $start = strpos($key, '{');
-        if ($start !== false) {
-            $end = strpos($key, '}', $start);
-            if ($end !== false) {
+        if (false !== $start = strpos($key, '{')) {
+            if (false !== $end = strpos($key, '}', $start)) {
                 $key = substr($key, ++$start, $end - $start);
             }
         }

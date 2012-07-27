@@ -432,7 +432,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by alias is supported only with aggregated connections (cluster or replication)
+     * @expectedExceptionMessage Retrieving connections by alias is supported only with aggregated connections
      */
     public function testGetConnectionWithAliasWorksOnlyWithCluster()
     {
@@ -491,7 +491,7 @@ class ClientTest extends StandardTestCase
         $options = array('executor' => $executor);
 
         $test = $this;
-        $mockCallback = function($pipeline) use($executor, $test) {
+        $mockCallback = function ($pipeline) use ($executor, $test) {
             $reflection = new \ReflectionProperty($pipeline, 'executor');
             $reflection->setAccessible(true);
 
@@ -602,7 +602,9 @@ class ClientTest extends StandardTestCase
                    ->method('executeCommand')
                    ->will($this->returnValue(new ResponseQueued()));
 
-        $txCallback = function($tx) { $tx->ping(); };
+        $txCallback = function ($tx) {
+            $tx->ping();
+        };
 
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())

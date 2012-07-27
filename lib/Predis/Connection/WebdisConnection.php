@@ -94,6 +94,7 @@ class WebdisConnection implements SingleConnectionInterface
         if (!function_exists('curl_init')) {
             throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'curl'));
         }
+
         if (!function_exists('phpiredis_reader_create')) {
             throw new NotSupportedException(sprintf(self::ERR_MSG_EXTENSION, 'phpiredis'));
         }
@@ -120,8 +121,7 @@ class WebdisConnection implements SingleConnectionInterface
             $options[CURLOPT_USERPWD] = "{$parameters->user}:{$parameters->pass}";
         }
 
-        $resource = curl_init();
-        curl_setopt_array($resource, $options);
+        curl_setopt_array($resource = curl_init(), $options);
 
         return $resource;
     }
@@ -149,7 +149,7 @@ class WebdisConnection implements SingleConnectionInterface
      */
     protected function getStatusHandler()
     {
-        return function($payload) {
+        return function ($payload) {
             return $payload === 'OK' ? true : $payload;
         };
     }
@@ -161,7 +161,7 @@ class WebdisConnection implements SingleConnectionInterface
      */
     protected function getErrorHandler()
     {
-        return function($errorMessage) {
+        return function ($errorMessage) {
             return new ResponseError($errorMessage);
         };
     }
@@ -255,8 +255,7 @@ class WebdisConnection implements SingleConnectionInterface
         if ($arguments = $command->getArguments()) {
             $arguments = implode('/', array_map('urlencode', $arguments));
             $serializedCommand = "$commandId/$arguments.raw";
-        }
-        else {
+        } else {
             $serializedCommand = "$commandId.raw";
         }
 
@@ -272,14 +271,14 @@ class WebdisConnection implements SingleConnectionInterface
 
         if ($readerState === PHPIREDIS_READER_STATE_COMPLETE) {
             $reply = phpiredis_reader_get_reply($this->reader);
+
             if ($reply instanceof ResponseObjectInterface) {
                 return $reply;
             }
+
             return $command->parseResponse($reply);
-        }
-        else {
-            $error = phpiredis_reader_get_error($this->reader);
-            throw new ProtocolException($this, $error);
+        } else {
+            throw new ProtocolException($this, phpiredis_reader_get_error($this->reader));
         }
     }
 

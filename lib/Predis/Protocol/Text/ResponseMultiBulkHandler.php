@@ -58,8 +58,7 @@ class ResponseMultiBulkHandler implements ResponseHandlerInterface
 
                 if (isset($handlersCache[$prefix])) {
                     $handler = $handlersCache[$prefix];
-                }
-                else {
+                } else {
                     $handler = $reader->getHandler($prefix);
                     $handlersCache[$prefix] = $handler;
                 }

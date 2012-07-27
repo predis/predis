@@ -97,11 +97,13 @@ class ConnectionFactory implements ConnectionFactoryInterface
         }
 
         $scheme = $parameters->scheme;
+
         if (!isset($this->schemes[$scheme])) {
             throw new \InvalidArgumentException("Unknown connection scheme: $scheme");
         }
 
         $initializer = $this->schemes[$scheme];
+
         if (!is_callable($initializer)) {
             $connection = new $initializer($parameters);
             $this->prepareConnection($connection, $profile ?: ServerProfile::getDefault());
@@ -110,6 +112,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
         }
 
         $connection = call_user_func($initializer, $parameters, $profile);
+
         if (!$connection instanceof SingleConnectionInterface) {
             throw new \InvalidArgumentException(
                 'Objects returned by connection initializers must implement ' .

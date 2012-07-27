@@ -103,6 +103,7 @@ class TextProtocol implements ProtocolInterface
                 }
 
                 $multibulk = array();
+
                 for ($i = 0; $i < $count; $i++) {
                     $multibulk[$i] = $this->read($connection);
                 }

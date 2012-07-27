@@ -115,8 +115,7 @@ abstract class AbstractPubSubContext implements \Iterator
         if ($force) {
             $this->invalidate();
             $this->disconnect();
-        }
-        else {
+        } else {
             if ($this->isFlagSet(self::STATUS_SUBSCRIBED)) {
                 $this->unsubscribe();
             }

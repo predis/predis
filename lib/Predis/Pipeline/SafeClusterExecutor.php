@@ -42,8 +42,7 @@ class SafeClusterExecutor implements PipelineExecutorInterface
 
             try {
                 $cmdConnection->writeCommand($command);
-            }
-            catch (CommunicationException $exception) {
+            } catch (CommunicationException $exception) {
                 $connectionExceptions[spl_object_hash($cmdConnection)] = $exception;
             }
         }
@@ -62,8 +61,7 @@ class SafeClusterExecutor implements PipelineExecutorInterface
             try {
                 $response = $cmdConnection->readResponse($command);
                 $values[$i] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
-            }
-            catch (CommunicationException $exception) {
+            } catch (CommunicationException $exception) {
                 $values[$i] = $exception;
                 $connectionExceptions[$connectionObjectHash] = $exception;
             }

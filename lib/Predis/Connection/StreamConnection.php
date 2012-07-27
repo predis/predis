@@ -78,8 +78,8 @@ class StreamConnection extends AbstractConnection
     private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
     {
         $uri = "tcp://{$parameters->host}:{$parameters->port}/";
-
         $flags = STREAM_CLIENT_CONNECT;
+
         if (isset($parameters->async_connect) && $parameters->async_connect === true) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
@@ -87,9 +87,7 @@ class StreamConnection extends AbstractConnection
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
-        $resource = @stream_socket_client(
-            $uri, $errno, $errstr, $parameters->timeout, $flags
-        );
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
@@ -115,15 +113,13 @@ class StreamConnection extends AbstractConnection
     private function unixStreamInitializer(ConnectionParametersInterface $parameters)
     {
         $uri = "unix://{$parameters->path}";
-
         $flags = STREAM_CLIENT_CONNECT;
+
         if ($parameters->persistent === true) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
-        $resource = @stream_socket_client(
-            $uri, $errno, $errstr, $parameters->timeout, $flags
-        );
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
@@ -151,7 +147,6 @@ class StreamConnection extends AbstractConnection
     {
         if ($this->isConnected()) {
             fclose($this->getResource());
-
             parent::disconnect();
         }
     }
@@ -181,12 +176,14 @@ class StreamConnection extends AbstractConnection
 
         while (($length = strlen($buffer)) > 0) {
             $written = fwrite($socket, $buffer);
+
             if ($length === $written) {
                 return;
             }
             if ($written === false || $written === 0) {
                 $this->onConnectionError('Error while writing bytes to the server');
             }
+
             $buffer = substr($buffer, $written);
         }
     }
@@ -196,8 +193,8 @@ class StreamConnection extends AbstractConnection
      */
     public function read() {
         $socket = $this->getResource();
-
         $chunk  = fgets($socket);
+
         if ($chunk === false || $chunk === '') {
             $this->onConnectionError('Error while reading line from the server');
         }
@@ -229,11 +226,11 @@ class StreamConnection extends AbstractConnection
 
                 do {
                     $chunk = fread($socket, min($bytesLeft, 4096));
+
                     if ($chunk === false || $chunk === '') {
-                        $this->onConnectionError(
-                            'Error while reading bytes from the server'
-                        );
+                        $this->onConnectionError('Error while reading bytes from the server');
                     }
+
                     $bulkData .= $chunk;
                     $bytesLeft = $size - strlen($bulkData);
                 } while ($bytesLeft > 0);
@@ -242,15 +239,16 @@ class StreamConnection extends AbstractConnection
 
             case '*':    // multi bulk
                 $count = (int) $payload;
+
                 if ($count === -1) {
                     return null;
                 }
-
                 if ($this->mbiterable === true) {
                     return new MultiBulkResponseSimple($this, $count);
                 }
 
                 $multibulk = array();
+
                 for ($i = 0; $i < $count; $i++) {
                     $multibulk[$i] = $this->read();
                 }

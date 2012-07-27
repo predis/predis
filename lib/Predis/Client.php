@@ -189,10 +189,9 @@ class Client implements ClientInterface
     {
         if (isset($id)) {
             if (!$this->connection instanceof AggregatedConnectionInterface) {
-                throw new NotSupportedException(
-                    'Retrieving connections by alias is supported only with aggregated connections (cluster or replication)'
-                );
+                throw new NotSupportedException('Retrieving connections by alias is supported only with aggregated connections');
             }
+
             return $this->connection->getConnectionById($id);
         }
 
@@ -257,8 +256,7 @@ class Client implements ClientInterface
         }
 
         if ($this->options->exceptions === true) {
-            $message = $response->getMessage();
-            throw new ServerException($message);
+            throw new ServerException($response->getMessage());
         }
 
         return $response;

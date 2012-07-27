@@ -30,10 +30,6 @@ class ServerBackgroundSave extends AbstractCommand
      */
     public function parseResponse($data)
     {
-        if ($data == 'Background saving started') {
-            return true;
-        }
-
-        return $data;
+        return $data === 'Background saving started' ? true : $data;
     }
 }

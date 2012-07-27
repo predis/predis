@@ -55,7 +55,7 @@ class DispatcherLoopTest extends StandardTestCase
                        $this->equalTo('01:argument'),
                        $this->equalTo('01:quit')
                    ))
-                   ->will($this->returnCallback(function($arg) use($dispatcher) {
+                   ->will($this->returnCallback(function ($arg) use ($dispatcher) {
                        if ($arg === '01:quit') {
                            $dispatcher->stop();
                        }

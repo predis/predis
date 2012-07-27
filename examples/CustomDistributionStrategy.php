@@ -37,7 +37,7 @@ class NaiveDistributionStrategy implements DistributionStrategyInterface
 
     public function remove($node)
     {
-        $this->nodes = array_filter($this->nodes, function($n) use($node) {
+        $this->nodes = array_filter($this->nodes, function ($n) use ($node) {
             return $n !== $node;
         });
 
@@ -46,8 +46,7 @@ class NaiveDistributionStrategy implements DistributionStrategyInterface
 
     public function get($key)
     {
-        $count = $this->nodesCount;
-        if ($count === 0) {
+        if (0 === $count = $this->nodesCount) {
             throw new RuntimeException('No connections');
         }
 
@@ -61,9 +60,11 @@ class NaiveDistributionStrategy implements DistributionStrategyInterface
 }
 
 $options = array(
-    'cluster' => function() {
+    'cluster' => function () {
         $distributor = new NaiveDistributionStrategy();
-        return new PredisCluster($distributor);
+        $cluster = new PredisCluster($distributor);
+
+        return $cluster;
     },
 );
 

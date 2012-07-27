@@ -178,7 +178,7 @@ class PipelineContextTest extends StandardTestCase
         $test = $this;
         $pipeline = new PipelineContext(new Client());
 
-        $callable = function($pipe) use($test, $pipeline) {
+        $callable = function ($pipe) use ($test, $pipeline) {
             $test->assertSame($pipeline, $pipe);
             $pipe->flushPipeline(false);
         };
@@ -206,7 +206,7 @@ class PipelineContextTest extends StandardTestCase
     {
         $pipeline = new PipelineContext(new Client());
 
-        $pipeline->execute(function($pipe) {
+        $pipeline->execute(function ($pipe) {
             $pipe->execute();
         });
     }
@@ -225,7 +225,7 @@ class PipelineContextTest extends StandardTestCase
 
         $pipeline = new PipelineContext(new Client($connection));
 
-        $replies = $pipeline->execute(function($pipe) {
+        $replies = $pipeline->execute(function ($pipe) {
             $pipe->echo('one');
             $pipe->echo('two');
             $pipe->echo('three');
@@ -250,13 +250,12 @@ class PipelineContextTest extends StandardTestCase
         $replies = null;
 
         try {
-            $replies = $pipeline->execute(function($pipe) {
+            $replies = $pipeline->execute(function ($pipe) {
                 $pipe->echo('one');
                 throw new ClientException('TEST');
                 $pipe->echo('two');
             });
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $exception = $ex;
         }
 
@@ -291,7 +290,7 @@ class PipelineContextTest extends StandardTestCase
     {
         $client = $this->getClient();
 
-        $results = $client->pipeline(function($pipe) {
+        $results = $client->pipeline(function ($pipe) {
             $pipe->set('foo', 'bar');
             $pipe->get('foo');
         });
@@ -308,7 +307,7 @@ class PipelineContextTest extends StandardTestCase
         $oob = null;
         $client = $this->getClient();
 
-        $results = $client->pipeline(function($pipe) use(&$oob) {
+        $results = $client->pipeline(function ($pipe) use (&$oob) {
             $pipe->set('foo', 'bar');
             $oob = $pipe->getClient()->echo('oob message');
             $pipe->get('foo');
@@ -327,12 +326,11 @@ class PipelineContextTest extends StandardTestCase
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function($pipe) {
+            $client->pipeline(function ($pipe) {
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $exception = $ex;
         }
 
@@ -349,15 +347,14 @@ class PipelineContextTest extends StandardTestCase
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function($pipe) {
+            $client->pipeline(function ($pipe) {
                 $pipe->set('foo', 'bar');
                 // LPUSH on a string key fails, but won't stop
                 // the pipeline to send the commands.
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $exception = $ex;
         }
 
@@ -373,7 +370,7 @@ class PipelineContextTest extends StandardTestCase
     {
         $client = $this->getClient(array(), array('exceptions' => false));
 
-        $results = $client->pipeline(function($pipe) {
+        $results = $client->pipeline(function ($pipe) {
             $pipe->set('foo', 'bar');
             $pipe->lpush('foo', 'bar'); // LPUSH on a string key fails.
             $pipe->get('foo');
@@ -425,12 +422,13 @@ class PipelineContextTest extends StandardTestCase
      */
     protected function getReadCallback()
     {
-        return function($command) {
+        return function ($command) {
             if (($id = $command->getId()) !== 'ECHO') {
                 throw new \InvalidArgumentException("Expected ECHO, got {$id}");
             }
 
             list($echoed) = $command->getArguments();
+
             return $echoed;
         };
     }

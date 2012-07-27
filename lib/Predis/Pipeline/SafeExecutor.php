@@ -35,8 +35,7 @@ class SafeExecutor implements PipelineExecutorInterface
         foreach ($commands as $command) {
             try {
                 $connection->writeCommand($command);
-            }
-            catch (CommunicationException $exception) {
+            } catch (CommunicationException $exception) {
                 return array_fill(0, $size, $exception);
             }
         }
@@ -47,8 +46,7 @@ class SafeExecutor implements PipelineExecutorInterface
             try {
                 $response = $connection->readResponse($command);
                 $values[$i] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
-            }
-            catch (CommunicationException $exception) {
+            } catch (CommunicationException $exception) {
                 $toAdd = count($commands) - count($values);
                 $values = array_merge($values, array_fill(0, $toAdd, $exception));
                 break;

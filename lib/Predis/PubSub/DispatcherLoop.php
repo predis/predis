@@ -69,6 +69,7 @@ class DispatcherLoop
         if (isset($callable)) {
             $this->validateCallback($callable);
         }
+
         $this->subscriptionCallback = $callable;
     }
 
@@ -83,6 +84,7 @@ class DispatcherLoop
         if (isset($callable)) {
             $this->validateCallback($callable);
         }
+
         $this->subscriptionCallback = $callable;
     }
 
@@ -125,14 +127,14 @@ class DispatcherLoop
                     $callback = $this->subscriptionCallback;
                     call_user_func($callback, $message);
                 }
+
                 continue;
             }
 
             if (isset($this->callbacks[$message->channel])) {
                 $callback = $this->callbacks[$message->channel];
                 call_user_func($callback, $message->payload);
-            }
-            else if (isset($this->defaultCallback)) {
+            } else if (isset($this->defaultCallback)) {
                 $callback = $this->defaultCallback;
                 call_user_func($callback, $message);
             }

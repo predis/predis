@@ -50,7 +50,7 @@ function getPharStub($options)
     return <<<EOSTUB
 <?php
 Phar::mapPhar('predis.phar');
-spl_autoload_register(function(\$class) {
+spl_autoload_register(function (\$class) {
     if (strpos(\$class, 'Predis\\\\') === 0) {
         \$file = 'phar://predis.phar/'.strtr(\$class, '\\\', '/').'.php';
         if (file_exists(\$file)) {

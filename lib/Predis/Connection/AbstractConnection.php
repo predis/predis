@@ -92,6 +92,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
         if ($this->isConnected()) {
             throw new ClientException('Connection already estabilished');
         }
+
         $this->resource = $this->createResource();
     }
 

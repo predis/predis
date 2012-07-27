@@ -70,8 +70,7 @@ $client = new Predis\Client();
 
 try {
     $client->connect();
-}
-catch (Predis\Connection\ConnectionException $exception) {
+} catch (Predis\Connection\ConnectionException $exception) {
     // We could not connect to Redis! Your handling code goes here.
 }
 

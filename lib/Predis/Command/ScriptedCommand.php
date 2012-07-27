@@ -62,8 +62,7 @@ abstract class ScriptedCommand extends ServerEvalSHA
     {
         if (false !== $numkeys = $this->getKeysCount()) {
             $numkeys = $numkeys >= 0 ? $numkeys : count($arguments) + $numkeys;
-        }
-        else {
+        } else {
             $numkeys = count($arguments);
         }
 

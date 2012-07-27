@@ -36,7 +36,7 @@ class HashRing implements DistributionStrategyInterface
     public function __construct($replicas = self::DEFAULT_REPLICAS)
     {
         $this->replicas = $replicas;
-        $this->nodes    = array();
+        $this->nodes = array();
     }
 
     /**
@@ -101,6 +101,7 @@ class HashRing implements DistributionStrategyInterface
     private function computeTotalWeight()
     {
         $totalWeight = 0;
+
         foreach ($this->nodes as $node) {
             $totalWeight += $node['weight'];
         }
@@ -123,14 +124,14 @@ class HashRing implements DistributionStrategyInterface
 
         $this->ring = array();
         $totalWeight = $this->computeTotalWeight();
-        $nodesCount  = count($this->nodes);
+        $nodesCount = count($this->nodes);
 
         foreach ($this->nodes as $node) {
             $weightRatio = $node['weight'] / $totalWeight;
             $this->addNodeToRing($this->ring, $node, $nodesCount, $this->replicas, $weightRatio);
         }
-        ksort($this->ring, SORT_NUMERIC);
 
+        ksort($this->ring, SORT_NUMERIC);
         $this->ringKeys = array_keys($this->ring);
         $this->ringKeysCount = count($this->ringKeys);
     }
@@ -199,13 +200,12 @@ class HashRing implements DistributionStrategyInterface
         while ($lower <= $upper) {
             $index = ($lower + $upper) >> 1;
             $item  = $ringKeys[$index];
+
             if ($item > $key) {
                 $upper = $index - 1;
-            }
-            else if ($item < $key) {
+            } else if ($item < $key) {
                 $lower = $index + 1;
-            }
-            else {
+            } else {
                 return $item;
             }
         }

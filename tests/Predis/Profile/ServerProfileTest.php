@@ -263,7 +263,7 @@ class ServerProfileTest extends StandardTestCase
         $processor->expects($this->once())
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-                  ->will($this->returnCallback(function($cmd) use(&$argsRef) {
+                  ->will($this->returnCallback(function ($cmd) use (&$argsRef) {
                         $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                     }));
 

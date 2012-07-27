@@ -50,13 +50,13 @@ $parameters = array(
 );
 
 $options = array(
-    'profile' => function($options) {
+    'profile' => function ($options) {
         $profile = ServerProfile::get('2.6');
         $profile->defineCommand('hmgetall', 'HashMultipleGetAll');
 
         return $profile;
     },
-    'replication' => function($options) {
+    'replication' => function ($options) {
         $replication = new MasterSlaveReplication();
         $replication->setScriptReadOnly(HashMultipleGetAll::BODY);
 

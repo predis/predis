@@ -45,6 +45,7 @@ class ClientCluster extends AbstractOption
         if (is_callable($value)) {
             return $this->checkInstance(call_user_func($value, $options));
         }
+
         $initializer = $this->getInitializer($options, $value);
 
         return $this->checkInstance($initializer());
@@ -61,12 +62,12 @@ class ClientCluster extends AbstractOption
     {
         switch ($fqnOrType) {
             case 'predis':
-                return function() {
+                return function () {
                     return new PredisCluster();
                 };
 
             case 'redis':
-                return function() use($options) {
+                return function () use ($options) {
                     $connectionFactory = $options->connections;
                     $cluster = new RedisCluster($connectionFactory);
 
@@ -78,7 +79,7 @@ class ClientCluster extends AbstractOption
                 if (is_string($fqnOrType) && !class_exists($fqnOrType)) {
                     throw new \InvalidArgumentException("Class $fqnOrType does not exist");
                 }
-                return function() use($fqnOrType) {
+                return function () use ($fqnOrType) {
                     return new $fqnOrType();
                 };
         }

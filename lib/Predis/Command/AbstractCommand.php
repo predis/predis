@@ -110,6 +110,7 @@ abstract class AbstractCommand implements CommandInterface
         if (strlen($argument) > 32) {
             $argument = substr($argument, 0, 32) . '[...]';
         }
+
         $accumulator .= " $argument";
 
         return $accumulator;
