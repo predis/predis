@@ -29,6 +29,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
 {
     private $pool;
     private $slots;
+    private $slotsMap;
     private $connections;
     private $distributor;
     private $cmdHasher;
@@ -40,6 +41,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         $this->pool = array();
         $this->slots = array();
+        $this->slotsMap = array();
         $this->connections = $connections ?: new ConnectionFactory();
         $this->distributor = new CRC16HashGenerator();
         $this->cmdHasher = new RedisClusterHashStrategy();
@@ -120,6 +122,27 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
+     * Preassociate a connection to a set of slots to avoid runtime guessing.
+     *
+     * @todo Check type or existence of the specified connection.
+     *
+     * @param int $first Initial slot.
+     * @param int $last Last slot.
+     * @param ConnectionSingleInterface|string $connection ID or connection instance.
+     */
+    public function setSlots($first, $last, $connection)
+    {
+        $connection = (string) $connection;
+
+        if ($first < 0 || $first > 4095 || $last < 0 || $last > 4095 || $last < $first) {
+            throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
+        }
+
+        $slots = array_fill($first, $last - $first + 1, $connection);
+        $this->slotsMap = array_merge($this->slotsMap, $slots);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConnection(CommandInterface $command)
@@ -142,7 +165,12 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             return $this->slots[$slot];
         }
 
-        $this->slots[$slot] = $connection = $this->pool[array_rand($this->pool)];
+        if (isset($this->slotsMap[$slot])) {
+            $this->slots[$slot] = $connection = $this->pool[$this->slotsMap[$slot]];
+        }
+
+        $connection = $this->pool[isset($this->slotsMap[$slot]) ? $this->slotsMap[$slot] : array_rand($this->pool)];
+        $this->slots[$slot] = $connection;
 
         return $connection;
     }
