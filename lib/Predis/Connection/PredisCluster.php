@@ -14,7 +14,7 @@ namespace Predis\Connection;
 use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
-use Predis\Command\Hash\CommandHashStrategy;
+use Predis\Command\Hash\PredisClusterHashStrategy;
 use Predis\Distribution\HashRing;
 use Predis\Distribution\DistributionStrategyInterface;
 
@@ -37,7 +37,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     public function __construct(DistributionStrategyInterface $distributor = null)
     {
         $this->pool = array();
-        $this->cmdHasher = new CommandHashStrategy();
+        $this->cmdHasher = new PredisClusterHashStrategy();
         $this->distributor = $distributor ?: new HashRing();
     }
 
@@ -150,7 +150,6 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
 
         return isset($this->pool[$alias]) ? $this->pool[$alias] : null;
     }
-
 
     /**
      * Retrieves a connection instance from the cluster using a key.

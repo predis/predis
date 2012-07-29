@@ -20,7 +20,7 @@ use Predis\Distribution\HashGeneratorInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class CommandHashStrategy implements CommandHashStrategyInterface
+class PredisClusterHashStrategy implements CommandHashStrategyInterface
 {
     private $commands;
 
@@ -40,11 +40,12 @@ class CommandHashStrategy implements CommandHashStrategyInterface
     protected function getDefaultCommands()
     {
         $keyIsFirstArgument = array($this, 'getKeyFromFirstArgument');
+        $keysAreAllArguments = array($this, 'getKeyFromAllArguments');
 
         return array(
             /* commands operating on the key space */
             'EXISTS'                => $keyIsFirstArgument,
-            'DEL'                   => array($this, 'getKeyFromAllArguments'),
+            'DEL'                   => $keysAreAllArguments,
             'TYPE'                  => $keyIsFirstArgument,
             'EXPIRE'                => $keyIsFirstArgument,
             'EXPIREAT'              => $keyIsFirstArgument,
@@ -61,7 +62,7 @@ class CommandHashStrategy implements CommandHashStrategyInterface
             'DECRBY'                => $keyIsFirstArgument,
             'GET'                   => $keyIsFirstArgument,
             'GETBIT'                => $keyIsFirstArgument,
-            'MGET'                  => array($this, 'getKeyFromAllArguments'),
+            'MGET'                  => $keysAreAllArguments,
             'SET'                   => $keyIsFirstArgument,
             'GETRANGE'              => $keyIsFirstArgument,
             'GETSET'                => $keyIsFirstArgument,
@@ -84,7 +85,7 @@ class CommandHashStrategy implements CommandHashStrategyInterface
             'LLEN'                  => $keyIsFirstArgument,
             'LPOP'                  => $keyIsFirstArgument,
             'RPOP'                  => $keyIsFirstArgument,
-            'RPOPLPUSH'             => array($this, 'getKeyFromAllArguments'),
+            'RPOPLPUSH'             => $keysAreAllArguments,
             'BLPOP'                 => array($this, 'getKeyFromBlockingListCommands'),
             'BRPOP'                 => array($this, 'getKeyFromBlockingListCommands'),
             'BRPOPLPUSH'            => array($this, 'getKeyFromBlockingListCommands'),
@@ -100,12 +101,12 @@ class CommandHashStrategy implements CommandHashStrategyInterface
             /* commands operating on sets */
             'SADD'                  => $keyIsFirstArgument,
             'SCARD'                 => $keyIsFirstArgument,
-            'SDIFF'                 => array($this, 'getKeyFromAllArguments'),
-            'SDIFFSTORE'            => array($this, 'getKeyFromAllArguments'),
-            'SINTER'                => array($this, 'getKeyFromAllArguments'),
-            'SINTERSTORE'           => array($this, 'getKeyFromAllArguments'),
-            'SUNION'                => array($this, 'getKeyFromAllArguments'),
-            'SUNIONSTORE'           => array($this, 'getKeyFromAllArguments'),
+            'SDIFF'                 => $keysAreAllArguments,
+            'SDIFFSTORE'            => $keysAreAllArguments,
+            'SINTER'                => $keysAreAllArguments,
+            'SINTERSTORE'           => $keysAreAllArguments,
+            'SUNION'                => $keysAreAllArguments,
+            'SUNIONSTORE'           => $keysAreAllArguments,
             'SISMEMBER'             => $keyIsFirstArgument,
             'SMEMBERS'              => $keyIsFirstArgument,
             'SPOP'                  => $keyIsFirstArgument,
