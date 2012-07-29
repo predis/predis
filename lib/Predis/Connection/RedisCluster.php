@@ -16,8 +16,6 @@ use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\Hash\RedisClusterHashStrategy;
-use Predis\Connection\ConnectionFactory;
-use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Distribution\CRC16HashGenerator;
 
 /**
