@@ -15,6 +15,9 @@ use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\Hash\RedisClusterHashStrategy;
+use Predis\Connection\ConnectionFactory;
+use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Distribution\CRC16HashGenerator;
 
 /**
@@ -27,17 +30,19 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     private $pool;
     private $slots;
     private $connections;
-    private $hashgenerator;
+    private $distributor;
+    private $cmdHasher;
 
     /**
-     * @param FactoryInterface $connections Connection factory object.
+     * @param ConnectionFactoryInterface $connections Connection factory object.
      */
-    public function __construct(FactoryInterface $connections = null)
+    public function __construct(ConnectionFactoryInterface $connections = null)
     {
         $this->pool = array();
         $this->slots = array();
-        $this->connections = $connections;
-        $this->hashgenerator = new CRC16HashGenerator();
+        $this->connections = $connections ?: new ConnectionFactory();
+        $this->distributor = new CRC16HashGenerator();
+        $this->cmdHasher = new RedisClusterHashStrategy();
     }
 
     /**
@@ -119,12 +124,16 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnection(CommandInterface $command)
     {
-        if ($hash = $command->getHash() === null) {
-            $hash = $this->hashgenerator->hash($command->getArgument(0));
+        $hash = $command->getHash();
+
+        if (!isset($hash)) {
+            $hash = $this->cmdHasher->getHash($this->distributor, $command);
 
             if (!isset($hash)) {
                 throw new NotSupportedException("Cannot send {$command->getId()} commands to redis-cluster");
             }
+
+            $command->setHash($hash);
         }
 
         $slot = $hash & 4095; // 0x0FFF
@@ -133,8 +142,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             return $this->slots[$slot];
         }
 
-        $connection = $this->pool[array_rand($this->pool)];
-        $this->slots[$slot] = $connection;
+        $this->slots[$slot] = $connection = $this->pool[array_rand($this->pool)];
 
         return $connection;
     }
@@ -174,7 +182,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
         switch ($request) {
             case 'MOVED':
                 $this->add($connection);
-                $this->slots[$slot] = $connection;
+                $this->slots[(int) $slot] = $connection;
                 return $this->executeCommand($command);
 
             case 'ASK':
@@ -183,6 +191,17 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             default:
                 throw new ClientException("Unexpected request type for a move request: $request");
         }
+    }
+
+    /**
+     * Returns the underlying command hash strategy used to hash
+     * commands by their keys.
+     *
+     * @return CommandHashStrategy
+     */
+    public function getCommandHashStrategy()
+    {
+        return $this->cmdHasher;
     }
 
     /**
