@@ -127,7 +127,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             }
         }
 
-        $slot = $hash & 0x0FFF;
+        $slot = $hash & 4095; // 0x0FFF
 
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
