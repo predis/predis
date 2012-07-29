@@ -87,7 +87,12 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function add(SingleConnectionInterface $connection)
     {
         $parameters = $connection->getParameters();
-        $this->pool["{$parameters->host}:{$parameters->port}"] = $connection;
+        $this->pool[$connectionID = "{$parameters->host}:{$parameters->port}"] = $connection;
+
+        if (isset($parameters->slots)) {
+            @list($first, $last) = explode('-', $parameters->slots, 2);
+            $this->setSlots($first, $last, $connectionID);
+        }
     }
 
     /**
@@ -128,17 +133,15 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      *
      * @param int $first Initial slot.
      * @param int $last Last slot.
-     * @param ConnectionSingleInterface|string $connection ID or connection instance.
+     * @param SingleConnectionInterface|string $connection ID or connection instance.
      */
     public function setSlots($first, $last, $connection)
     {
-        $connection = (string) $connection;
-
         if ($first < 0 || $first > 4095 || $last < 0 || $last > 4095 || $last < $first) {
             throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
         }
 
-        $slots = array_fill($first, $last - $first + 1, $connection);
+        $slots = array_fill($first, $last - $first + 1, (string) $connection);
         $this->slotsMap = array_merge($this->slotsMap, $slots);
     }
 
@@ -209,8 +212,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
 
         switch ($request) {
             case 'MOVED':
-                $this->add($connection);
-                $this->slots[(int) $slot] = $connection;
+                $this->move($connection, $slot);
                 return $this->executeCommand($command);
 
             case 'ASK':
@@ -219,6 +221,19 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             default:
                 throw new ClientException("Unexpected request type for a move request: $request");
         }
+    }
+
+    /**
+     * Assign the connection instance to a new slot and adds it to the
+     * pool if the connection was not already part of the pool.
+     *
+     * @param SingleConnectionInterface $connection Connection instance
+     * @param int $slot Target slot.
+     */
+    protected function move(SingleConnectionInterface $connection, $slot)
+    {
+        $this->pool[(string) $connection] = $connection;
+        $this->slots[(int) $slot] = $connection;
     }
 
     /**
