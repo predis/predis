@@ -41,7 +41,6 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         $this->pool = array();
         $this->slots = array();
-        $this->slotsMap = array();
         $this->connections = $connections ?: new ConnectionFactory();
         $this->distributor = new CRC16HashGenerator();
         $this->cmdHasher = new RedisClusterHashStrategy();
@@ -86,13 +85,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function add(SingleConnectionInterface $connection)
     {
-        $parameters = $connection->getParameters();
-        $this->pool[$connectionID = "{$parameters->host}:{$parameters->port}"] = $connection;
-
-        if (isset($parameters->slots)) {
-            @list($first, $last) = explode('-', $parameters->slots, 2);
-            $this->setSlots($first, $last, $connectionID);
-        }
+        $this->pool[(string) $connection] = $connection;
     }
 
     /**
@@ -127,6 +120,27 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
+     * Recreates the slots map for the cluster.
+     */
+    public function resetSlotsMap()
+    {
+        $this->slotsMap = array();
+
+        foreach ($this->pool as $connectionID => $connection) {
+            $parameters = $connection->getParameters();
+
+            if (!isset($parameters->slots)) {
+                continue;
+            }
+
+            list($first, $last) = explode('-', $parameters->slots, 2);
+            $this->setSlots($first, $last, $connectionID);
+        }
+
+        return $this->slotsMap;
+    }
+
+    /**
      * Preassociate a connection to a set of slots to avoid runtime guessing.
      *
      * @todo Check type or existence of the specified connection.
@@ -141,8 +155,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
         }
 
-        $slots = array_fill($first, $last - $first + 1, (string) $connection);
-        $this->slotsMap = array_merge($this->slotsMap, $slots);
+        $this->slotsMap = $this->slotsMap + array_fill($first, $last - $first + 1, (string) $connection);
     }
 
     /**
@@ -150,6 +163,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnection(CommandInterface $command)
     {
+        if (!isset($this->slotsMap)) {
+            $this->resetSlotsMap();
+        }
+
         $hash = $command->getHash();
 
         if (!isset($hash)) {
@@ -168,12 +185,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             return $this->slots[$slot];
         }
 
-        if (isset($this->slotsMap[$slot])) {
-            $this->slots[$slot] = $connection = $this->pool[$this->slotsMap[$slot]];
-        }
-
-        $connection = $this->pool[isset($this->slotsMap[$slot]) ? $this->slotsMap[$slot] : array_rand($this->pool)];
-        $this->slots[$slot] = $connection;
+        $connectionID = isset($this->slotsMap[$slot]) ? $this->slotsMap[$slot] : array_rand($this->pool);
+        $this->slots[$slot] = $connection = $this->pool[$connectionID];
 
         return $connection;
     }
