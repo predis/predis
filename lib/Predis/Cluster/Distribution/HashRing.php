@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Distribution;
+
+use Predis\Cluster\Hash\HashGeneratorInterface;
 
 /**
  * This class implements an hashring-based distributor that uses the same

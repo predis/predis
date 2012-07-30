@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Distribution;
 
 /**
  * A distributor implements the logic to automatically distribute
@@ -44,7 +44,7 @@ interface DistributionStrategyInterface
     /**
      * Returns the underlying hash generator instance.
      *
-     * @return HashGeneratorInterface
+     * @return Predis\Cluster\Hash\HashGeneratorInterface
      */
     public function getHashGenerator();
 }

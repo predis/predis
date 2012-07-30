@@ -9,28 +9,33 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Hash;
+namespace Predis\Cluster;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
+use Predis\Cluster\Distribution\HashRing;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class RedisClusterHashStrategyTest extends StandardTestCase
+class PredisClusterHashStrategyTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testDoesNotSupportKeyTags()
+    public function testSupportsKeyTags()
     {
+        $expected = -1938594527;
         $strategy = $this->getHashStrategy();
 
-        $this->assertSame(35910, $strategy->getKeyHash('{foo}'));
-        $this->assertSame(60032, $strategy->getKeyHash('{foo}:bar'));
-        $this->assertSame(27528, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame(34064, $strategy->getKeyHash('bar:{foo}:bar'));
+        $this->assertSame($expected, $strategy->getKeyHash('{foo}'));
+        $this->assertSame($expected, $strategy->getKeyHash('{foo}:bar'));
+        $this->assertSame($expected, $strategy->getKeyHash('{foo}:baz'));
+        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:bar'));
+
+        $this->assertSame(0, $strategy->getKeyHash(''));
+        $this->assertSame(0, $strategy->getKeyHash('{}'));
     }
 
     /**
@@ -72,11 +77,11 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testAllKeysCommandsWithOneKey()
+    public function testAllKeysCommands()
     {
         $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('key');
+        $arguments = array('{key}:1', '{key}:2', '{key}:3', '{key}:4');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
@@ -87,26 +92,11 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testAllKeysCommandsWithMoreKeys()
+    public function testInterleavedKeysCommands()
     {
         $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('key1', 'key2');
-
-        foreach ($this->getExpectedCommands('keys-all') as $commandID) {
-            $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
-        }
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testInterleavedKeysCommandsWithOneKey()
-    {
-        $strategy = $this->getHashStrategy();
-        $profile = ServerProfile::getDevelopment();
-        $arguments = array('key:1', 'value1');
+        $arguments = array('{key}:1', 'value1', '{key}:2', 'value2');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
@@ -117,26 +107,11 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testInterleavedKeysCommandsWithMoreKeys()
+    public function testKeysForBlockingListCommands()
     {
         $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('key:1', 'value1', 'key:2', 'value2');
-
-        foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
-            $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
-        }
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testKeysForBlockingListCommandsWithOneKey()
-    {
-        $strategy = $this->getHashStrategy();
-        $profile = ServerProfile::getDevelopment();
-        $arguments = array('key:1', 10);
+        $arguments = array('{key}:1', '{key}:2', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
@@ -147,15 +122,30 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForBlockingListCommandsWithMoreKeys()
+    public function testKeysForZsetAggregationCommands()
     {
         $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('key:1', 'key:2', 10);
+        $arguments = array('{key}:destination', 2, '{key}:1', '{key}:1', array('aggregate' => 'SUM'));
 
-        foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
+        foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForBitOpCommand()
+    {
+        $strategy = $this->getHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+        $arguments = array('AND', '{key}:destination', '{key}:src:1', '{key}:src:2');
+
+        foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
+            $command = $profile->createCommand($commandID, $arguments);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -208,7 +198,9 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     protected function getHashStrategy()
     {
-        $strategy = new RedisClusterHashStrategy();
+        $distributor = new HashRing();
+        $hashGenerator = $distributor->getHashGenerator();
+        $strategy = new PredisClusterHashStrategy($hashGenerator);
 
         return $strategy;
     }
@@ -255,6 +247,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'SETRANGE'              => 'keys-first',
             'STRLEN'                => 'keys-first',
             'SUBSTR'                => 'keys-first',
+            'BITOP'                 => 'keys-bitop',
             'BITCOUNT'              => 'keys-first',
 
             /* commands operating on lists */
@@ -263,8 +256,10 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'LLEN'                  => 'keys-first',
             'LPOP'                  => 'keys-first',
             'RPOP'                  => 'keys-first',
+            'RPOPLPUSH'             => 'keys-all',
             'BLPOP'                 => 'keys-blockinglist',
             'BRPOP'                 => 'keys-blockinglist',
+            'BRPOPLPUSH'            => 'keys-blockinglist',
             'LPUSH'                 => 'keys-first',
             'LPUSHX'                => 'keys-first',
             'RPUSH'                 => 'keys-first',
@@ -277,6 +272,12 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             /* commands operating on sets */
             'SADD'                  => 'keys-first',
             'SCARD'                 => 'keys-first',
+            'SDIFF'                 => 'keys-all',
+            'SDIFFSTORE'            => 'keys-all',
+            'SINTER'                => 'keys-all',
+            'SINTERSTORE'           => 'keys-all',
+            'SUNION'                => 'keys-all',
+            'SUNIONSTORE'           => 'keys-all',
             'SISMEMBER'             => 'keys-first',
             'SMEMBERS'              => 'keys-first',
             'SPOP'                  => 'keys-first',
@@ -288,6 +289,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'ZCARD'                 => 'keys-first',
             'ZCOUNT'                => 'keys-first',
             'ZINCRBY'               => 'keys-first',
+            'ZINTERSTORE'           => 'keys-zaggregated',
             'ZRANGE'                => 'keys-first',
             'ZRANGEBYSCORE'         => 'keys-first',
             'ZRANK'                 => 'keys-first',
@@ -298,6 +300,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'ZREVRANGEBYSCORE'      => 'keys-first',
             'ZREVRANK'              => 'keys-first',
             'ZSCORE'                => 'keys-first',
+            'ZUNIONSTORE'           => 'keys-zaggregated',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',

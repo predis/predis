@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Hash;
 
 /**
  * A generator of node keys implements the logic used to calculate the hash of

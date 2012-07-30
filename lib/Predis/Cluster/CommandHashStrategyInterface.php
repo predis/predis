@@ -9,10 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Hash;
+namespace Predis\Cluster;
 
 use Predis\Command\CommandInterface;
-use Predis\Distribution\HashGeneratorInterface;
 
 /**
  * Interface for classes defining the strategy used to calculate an hash

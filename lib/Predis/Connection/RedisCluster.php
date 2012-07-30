@@ -14,10 +14,8 @@ namespace Predis\Connection;
 use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
+use Predis\Cluster\RedisClusterHashStrategy;
 use Predis\Command\CommandInterface;
-use Predis\Command\Hash\CommandHashStrategyInterface;
-use Predis\Command\Hash\RedisClusterHashStrategy;
-use Predis\Distribution\CRC16HashGenerator;
 
 /**
  * Abstraction for Redis cluster (Redis v3.0).
@@ -266,7 +264,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      * Returns the underlying command hash strategy used to hash
      * commands by their keys.
      *
-     * @return CommandHashStrategy
+     * @return Predis\Cluster\CommandHashStrategyInterface
      */
     public function getCommandHashStrategy()
     {

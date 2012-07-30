@@ -13,10 +13,10 @@ namespace Predis\Connection;
 
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\Cluster\PredisClusterHashStrategy;
+use Predis\Cluster\Distribution\DistributionStrategyInterface;
+use Predis\Cluster\Distribution\HashRing;
 use Predis\Command\CommandInterface;
-use Predis\Command\Hash\PredisClusterHashStrategy;
-use Predis\Distribution\HashRing;
-use Predis\Distribution\DistributionStrategyInterface;
 
 /**
  * Abstraction for a cluster of aggregated connections to various Redis servers
@@ -168,7 +168,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      * Returns the underlying command hash strategy used to hash
      * commands by their keys.
      *
-     * @return CommandHashStrategy
+     * @return Predis\Cluster\CommandHashStrategyInterface
      */
     public function getCommandHashStrategy()
     {

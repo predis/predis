@@ -26,7 +26,7 @@ class PredisClusterTest extends StandardTestCase
     public function testExposesCommandHashStrategy()
     {
         $cluster = new PredisCluster();
-        $this->assertInstanceOf('Predis\Command\Hash\PredisClusterHashStrategy', $cluster->getCommandHashStrategy());
+        $this->assertInstanceOf('Predis\Cluster\PredisClusterHashStrategy', $cluster->getCommandHashStrategy());
     }
 
     /**
