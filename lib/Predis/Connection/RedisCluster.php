@@ -84,6 +84,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function add(SingleConnectionInterface $connection)
     {
         $this->pool[(string) $connection] = $connection;
+        unset($this->slotsMap);
     }
 
     /**
@@ -93,6 +94,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         if (($id = array_search($connection, $this->pool, true)) !== false) {
             unset($this->pool[$id]);
+            unset($this->slotsMap);
 
             return true;
         }
@@ -118,9 +120,9 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
-     * Recreates the slots map for the cluster.
+     * Builds the slots map for the cluster.
      */
-    public function resetSlotsMap()
+    public function buildSlotsMap()
     {
         $this->slotsMap = array();
 
@@ -161,10 +163,6 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnection(CommandInterface $command)
     {
-        if (!isset($this->slotsMap)) {
-            $this->resetSlotsMap();
-        }
-
         $hash = $command->getHash();
 
         if (!isset($hash)) {
@@ -183,10 +181,32 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             return $this->slots[$slot];
         }
 
-        $connectionID = isset($this->slotsMap[$slot]) ? $this->slotsMap[$slot] : array_rand($this->pool);
-        $this->slots[$slot] = $connection = $this->pool[$connectionID];
+        $this->slots[$slot] = $connection = $this->pool[$this->guessNode($slot)];
 
         return $connection;
+    }
+
+    /**
+     * Tries guessing the correct node associated to the given slot using a precalculated
+     * slots map or the same logic used by redis-trib to initialize a redis cluster.
+     *
+     * @param int $slot Slot ID.
+     * @return string
+     */
+    protected function guessNode($slot)
+    {
+        if (!isset($this->slotsMap)) {
+            $this->buildSlotsMap();
+        }
+
+        if (isset($this->slotsMap[$slot])) {
+            return $this->slotsMap[$slot];
+        }
+
+        $index = $slot / (int) (4096 / count($this->pool));
+        $nodes = array_keys($this->pool);
+
+        return $nodes[min($index, 4095)];
     }
 
     /**
