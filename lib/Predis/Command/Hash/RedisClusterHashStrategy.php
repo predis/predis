@@ -12,7 +12,7 @@
 namespace Predis\Command\Hash;
 
 use Predis\Command\CommandInterface;
-use Predis\Distribution\HashGeneratorInterface;
+use Predis\Distribution\CRC16HashGenerator;
 
 /**
  * Default class used by Predis to calculate hashes out of keys of
@@ -23,6 +23,7 @@ use Predis\Distribution\HashGeneratorInterface;
 class RedisClusterHashStrategy implements CommandHashStrategyInterface
 {
     private $commands;
+    private $hashGenerator;
 
     /**
      *
@@ -30,6 +31,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
+        $this->hashGenerator = new CRC16HashGenerator();
     }
 
     /**
@@ -235,20 +237,25 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getHash(HashGeneratorInterface $hasher, CommandInterface $command)
+    public function getHash(CommandInterface $command)
     {
-        if (isset($this->commands[$cmdID = $command->getId()])) {
-            if ($key = call_user_func($this->commands[$cmdID], $command)) {
-                return $this->getKeyHash($hasher, $key);
+        $hash = $command->getHash();
+
+        if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
+            if (null !== $key = call_user_func($this->commands[$cmdID], $command)) {
+                $hash = $this->hashGenerator->hash($key);
+                $command->setHash($hash);
             }
         }
+
+        return $hash;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeyHash(HashGeneratorInterface $hasher, $key)
+    public function getKeyHash($key)
     {
-        return $hasher->hash($key);
+        return $this->hashGenerator->hash($key);
     }
 }

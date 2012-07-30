@@ -15,6 +15,7 @@ use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\Hash\CommandHashStrategyInterface;
 use Predis\Command\Hash\RedisClusterHashStrategy;
 use Predis\Distribution\CRC16HashGenerator;
 
@@ -28,9 +29,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     private $pool;
     private $slots;
     private $slotsMap;
+    private $strategy;
     private $connections;
-    private $distributor;
-    private $cmdHasher;
 
     /**
      * @param ConnectionFactoryInterface $connections Connection factory object.
@@ -39,9 +39,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         $this->pool = array();
         $this->slots = array();
+        $this->strategy = new RedisClusterHashStrategy();
         $this->connections = $connections ?: new ConnectionFactory();
-        $this->distributor = new CRC16HashGenerator();
-        $this->cmdHasher = new RedisClusterHashStrategy();
     }
 
     /**
@@ -121,6 +120,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
 
     /**
      * Builds the slots map for the cluster.
+     *
+     * @return array
      */
     public function buildSlotsMap()
     {
@@ -163,16 +164,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $command->getHash();
+        $hash = $this->strategy->getHash($command);
 
         if (!isset($hash)) {
-            $hash = $this->cmdHasher->getHash($this->distributor, $command);
-
-            if (!isset($hash)) {
-                throw new NotSupportedException("Cannot send {$command->getId()} commands to redis-cluster");
-            }
-
-            $command->setHash($hash);
+            throw new NotSupportedException("Cannot use {$command->getId()} with redis-cluster");
         }
 
         $slot = $hash & 4095; // 0x0FFF

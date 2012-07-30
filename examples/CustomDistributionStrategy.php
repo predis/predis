@@ -17,8 +17,9 @@ require 'SharedConfigurations.php';
 
 use Predis\Connection\PredisCluster;
 use Predis\Distribution\DistributionStrategyInterface;
+use Predis\Distribution\HashGeneratorInterface;
 
-class NaiveDistributionStrategy implements DistributionStrategyInterface
+class NaiveDistributionStrategy implements DistributionStrategyInterface, HashGeneratorInterface
 {
     private $nodes;
     private $nodesCount;
@@ -56,6 +57,11 @@ class NaiveDistributionStrategy implements DistributionStrategyInterface
     public function hash($value)
     {
         return crc32($value);
+    }
+
+    public function getHashGenerator()
+    {
+        return $this;
     }
 }
 

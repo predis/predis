@@ -23,13 +23,15 @@ use Predis\Distribution\HashGeneratorInterface;
 class PredisClusterHashStrategy implements CommandHashStrategyInterface
 {
     private $commands;
+    private $hashGenerator;
 
     /**
-     *
+     * @param HashGeneratorInterface $hashGenerator Hash generator instance.
      */
-    public function __construct()
+    public function __construct(HashGeneratorInterface $hashGenerator)
     {
         $this->commands = $this->getDefaultCommands();
+        $this->hashGenerator = $hashGenerator;
     }
 
     /**
@@ -282,22 +284,27 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getHash(HashGeneratorInterface $hasher, CommandInterface $command)
+    public function getHash(CommandInterface $command)
     {
-        if (isset($this->commands[$cmdID = $command->getId()])) {
+        $hash = $command->getHash();
+
+        if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
             if ($key = call_user_func($this->commands[$cmdID], $command)) {
-                return $this->getKeyHash($hasher, $key);
+                $hash = $this->getKeyHash($key);
+                $command->setHash($hash);
             }
         }
+
+        return $hash;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeyHash(HashGeneratorInterface $hasher, $key)
+    public function getKeyHash($key)
     {
         $key = $this->extractKeyTag($key);
-        $hash = $hasher->hash($key);
+        $hash = $this->hashGenerator->hash($key);
 
         return $hash;
     }

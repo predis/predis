@@ -13,7 +13,6 @@ namespace Predis\Command\Hash;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Distribution\CRC16HashGenerator;
 use Predis\Profile\ServerProfile;
 
 /**
@@ -26,13 +25,12 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testDoesNotSupportKeyTags()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
 
-        $this->assertSame(35910, $hashstrategy->getKeyHash($distribution, '{foo}'));
-        $this->assertSame(60032, $hashstrategy->getKeyHash($distribution, '{foo}:bar'));
-        $this->assertSame(27528, $hashstrategy->getKeyHash($distribution, '{foo}:baz'));
-        $this->assertSame(34064, $hashstrategy->getKeyHash($distribution, 'bar:{foo}:bar'));
+        $this->assertSame(35910, $strategy->getKeyHash('{foo}'));
+        $this->assertSame(60032, $strategy->getKeyHash('{foo}:bar'));
+        $this->assertSame(27528, $strategy->getKeyHash('{foo}:baz'));
+        $this->assertSame(34064, $strategy->getKeyHash('bar:{foo}:bar'));
     }
 
     /**
@@ -40,9 +38,9 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
 
-        $this->assertSame($this->getExpectedCommands(), $hashstrategy->getSupportedCommands());
+        $this->assertSame($this->getExpectedCommands(), $strategy->getSupportedCommands());
     }
 
     /**
@@ -50,11 +48,10 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testReturnsNullOnUnsupportedCommand()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $command = ServerProfile::getDevelopment()->createCommand('ping');
 
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
     }
 
     /**
@@ -62,14 +59,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testFirstKeyCommands()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -78,14 +74,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testAllKeysCommandsWithOneKey()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -94,14 +89,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testAllKeysCommandsWithMoreKeys()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key1', 'key2');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -110,14 +104,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testInterleavedKeysCommandsWithOneKey()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'value1');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -126,14 +119,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testInterleavedKeysCommandsWithMoreKeys()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'value1', 'key:2', 'value2');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -142,14 +134,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBlockingListCommandsWithOneKey()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -158,14 +149,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBlockingListCommandsWithMoreKeys()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'key:2', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -174,18 +164,17 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testUnsettingCommandHandler()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
 
-        $hashstrategy->setCommandHandler('set');
-        $hashstrategy->setCommandHandler('get', null);
+        $strategy->setCommandHandler('set');
+        $strategy->setCommandHandler('get', null);
 
         $command = $profile->createCommand('set', array('key', 'value'));
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
     }
 
     /**
@@ -193,8 +182,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSettingCustomCommandHandler()
     {
-        $distribution = new CRC16HashGenerator();
-        $hashstrategy = new RedisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -203,15 +191,27 @@ class RedisClusterHashStrategyTest extends StandardTestCase
                  ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
                  ->will($this->returnValue('key'));
 
-        $hashstrategy->setCommandHandler('get', $callable);
+        $strategy->setCommandHandler('get', $callable);
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNotNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNotNull($strategy->getHash($command));
     }
 
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
+
+    /**
+     * Creates the default hash strategy object.
+     *
+     * @return CommandHashStrategyInterface
+     */
+    protected function getHashStrategy()
+    {
+        $strategy = new RedisClusterHashStrategy();
+
+        return $strategy;
+    }
 
     /**
      * Returns the list of expected supported commands.

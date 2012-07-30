@@ -28,17 +28,19 @@ use Predis\Distribution\DistributionStrategyInterface;
 class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \Countable
 {
     private $pool;
+    private $strategy;
     private $distributor;
-    private $cmdHasher;
 
     /**
      * @param DistributionStrategyInterface $distributor Distribution strategy used by the cluster.
      */
     public function __construct(DistributionStrategyInterface $distributor = null)
     {
+        $distributor = $distributor ?: new HashRing();
+
         $this->pool = array();
-        $this->cmdHasher = new PredisClusterHashStrategy();
-        $this->distributor = $distributor ?: new HashRing();
+        $this->strategy = new PredisClusterHashStrategy($distributor->getHashGenerator());
+        $this->distributor = $distributor;
     }
 
     /**
@@ -127,18 +129,15 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $command->getHash();
+        $hash = $this->strategy->getHash($command);
 
-        if (isset($hash)) {
-            return $this->distributor->get($hash);
+        if (!isset($hash)) {
+            throw new NotSupportedException("Cannot use {$command->getId()} with a cluster of connections");
         }
 
-        if ($hash = $this->cmdHasher->getHash($this->distributor, $command)) {
-            $command->setHash($hash);
-            return $this->distributor->get($hash);
-        }
+        $node = $this->distributor->get($hash);
 
-        throw new NotSupportedException("Cannot send {$command->getId()} to a cluster of connections");
+        return $node;
     }
 
     /**
@@ -159,7 +158,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnectionByKey($key)
     {
-        $hash = $this->cmdHasher->getKeyHash($this->distributor, $key);
+        $hash = $this->strategy->getKeyHash($key);
         $node = $this->distributor->get($hash);
 
         return $node;
@@ -173,7 +172,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getCommandHashStrategy()
     {
-        return $this->cmdHasher;
+        return $this->strategy;
     }
 
     /**

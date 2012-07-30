@@ -19,7 +19,7 @@ namespace Predis\Distribution;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
-class HashRing implements DistributionStrategyInterface
+class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
 {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
@@ -226,5 +226,13 @@ class HashRing implements DistributionStrategyInterface
         // Binary search for the last item in ringkeys with a value less or
         // equal to the key. If no such item exists, return the last item.
         return $upper >= 0 ? $upper : $ringKeysCount - 1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHashGenerator()
+    {
+        return $this;
     }
 }

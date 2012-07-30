@@ -28,18 +28,16 @@ interface CommandHashStrategyInterface
      * Returns the hash for the given command using the specified algorithm, or null
      * if the command cannot be hashed.
      *
-     * @param HashGeneratorInterface $hasher Hash algorithm.
      * @param CommandInterface $command Command to be hashed.
      * @return int
      */
-    public function getHash(HashGeneratorInterface $hasher, CommandInterface $command);
+    public function getHash(CommandInterface $command);
 
     /**
      * Returns the hash for the given key using the specified algorithm.
      *
-     * @param HashGeneratorInterface $hasher Hash algorithm.
      * @param string $key Key to be hashed.
      * @return string
      */
-    public function getKeyHash(HashGeneratorInterface $hasher, $key);
+    public function getKeyHash($key);
 }
