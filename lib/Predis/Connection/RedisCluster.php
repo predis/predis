@@ -28,6 +28,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     private $pool;
     private $slots;
     private $slotsMap;
+    private $slotsPerNode;
     private $connections;
     private $distributor;
     private $cmdHasher;
@@ -84,7 +85,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function add(SingleConnectionInterface $connection)
     {
         $this->pool[(string) $connection] = $connection;
-        unset($this->slotsMap);
+        unset(
+            $this->slotsMap,
+            $this->slotsPerNode
+        );
     }
 
     /**
@@ -93,8 +97,11 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function remove(SingleConnectionInterface $connection)
     {
         if (($id = array_search($connection, $this->pool, true)) !== false) {
-            unset($this->pool[$id]);
-            unset($this->slotsMap);
+            unset(
+                $this->pool[$id],
+                $this->slotsMap,
+                $this->slotsPerNode
+            );
 
             return true;
         }
@@ -111,7 +118,11 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function removeById($connectionId)
     {
         if (isset($this->pool[$connectionId])) {
-            unset($this->pool[$connectionId]);
+            unset(
+                $this->pool[$connectionId],
+                $this->slotsMap,
+                $this->slotsPerNode
+            );
 
             return true;
         }
@@ -125,6 +136,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function buildSlotsMap()
     {
         $this->slotsMap = array();
+        $this->slotsPerNode = (int) (4096 / count($this->pool));
 
         foreach ($this->pool as $connectionID => $connection) {
             $parameters = $connection->getParameters();
@@ -203,10 +215,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             return $this->slotsMap[$slot];
         }
 
-        $index = $slot / (int) (4096 / count($this->pool));
+        $index = min((int) ($slot / $this->slotsPerNode), count($this->pool) - 1);
         $nodes = array_keys($this->pool);
 
-        return $nodes[min($index, 4095)];
+        return $nodes[$index];
     }
 
     /**
