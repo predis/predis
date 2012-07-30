@@ -13,10 +13,10 @@ namespace Predis\Connection;
 
 use Predis\ClientException;
 use Predis\NotSupportedException;
+use Predis\Cluster\PredisClusterHashStrategy;
+use Predis\Cluster\Distribution\DistributionStrategyInterface;
+use Predis\Cluster\Distribution\HashRing;
 use Predis\Command\CommandInterface;
-use Predis\Command\Hash\PredisClusterHashStrategy;
-use Predis\Distribution\HashRing;
-use Predis\Distribution\DistributionStrategyInterface;
 
 /**
  * Abstraction for a cluster of aggregated connections to various Redis servers
@@ -28,17 +28,19 @@ use Predis\Distribution\DistributionStrategyInterface;
 class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \Countable
 {
     private $pool;
+    private $strategy;
     private $distributor;
-    private $cmdHasher;
 
     /**
      * @param DistributionStrategyInterface $distributor Distribution strategy used by the cluster.
      */
     public function __construct(DistributionStrategyInterface $distributor = null)
     {
+        $distributor = $distributor ?: new HashRing();
+
         $this->pool = array();
-        $this->cmdHasher = new PredisClusterHashStrategy();
-        $this->distributor = $distributor ?: new HashRing();
+        $this->strategy = new PredisClusterHashStrategy($distributor->getHashGenerator());
+        $this->distributor = $distributor;
     }
 
     /**
@@ -127,18 +129,15 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $command->getHash();
+        $hash = $this->strategy->getHash($command);
 
-        if (isset($hash)) {
-            return $this->distributor->get($hash);
+        if (!isset($hash)) {
+            throw new NotSupportedException("Cannot use {$command->getId()} with a cluster of connections");
         }
 
-        if ($hash = $this->cmdHasher->getHash($this->distributor, $command)) {
-            $command->setHash($hash);
-            return $this->distributor->get($hash);
-        }
+        $node = $this->distributor->get($hash);
 
-        throw new NotSupportedException("Cannot send {$command->getId()} to a cluster of connections");
+        return $node;
     }
 
     /**
@@ -159,7 +158,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      */
     public function getConnectionByKey($key)
     {
-        $hash = $this->cmdHasher->getKeyHash($this->distributor, $key);
+        $hash = $this->strategy->getKeyHash($key);
         $node = $this->distributor->get($hash);
 
         return $node;
@@ -169,11 +168,11 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      * Returns the underlying command hash strategy used to hash
      * commands by their keys.
      *
-     * @return CommandHashStrategy
+     * @return Predis\Cluster\CommandHashStrategyInterface
      */
     public function getCommandHashStrategy()
     {
-        return $this->cmdHasher;
+        return $this->strategy;
     }
 
     /**

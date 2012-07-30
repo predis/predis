@@ -14,9 +14,8 @@ namespace Predis\Connection;
 use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
+use Predis\Cluster\RedisClusterHashStrategy;
 use Predis\Command\CommandInterface;
-use Predis\Command\Hash\RedisClusterHashStrategy;
-use Predis\Distribution\CRC16HashGenerator;
 
 /**
  * Abstraction for Redis cluster (Redis v3.0).
@@ -29,9 +28,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     private $slots;
     private $slotsMap;
     private $slotsPerNode;
+    private $strategy;
     private $connections;
-    private $distributor;
-    private $cmdHasher;
 
     /**
      * @param ConnectionFactoryInterface $connections Connection factory object.
@@ -40,9 +38,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         $this->pool = array();
         $this->slots = array();
+        $this->strategy = new RedisClusterHashStrategy();
         $this->connections = $connections ?: new ConnectionFactory();
-        $this->distributor = new CRC16HashGenerator();
-        $this->cmdHasher = new RedisClusterHashStrategy();
     }
 
     /**
@@ -132,6 +129,8 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
 
     /**
      * Builds the slots map for the cluster.
+     *
+     * @return array
      */
     public function buildSlotsMap()
     {
@@ -175,16 +174,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $command->getHash();
+        $hash = $this->strategy->getHash($command);
 
         if (!isset($hash)) {
-            $hash = $this->cmdHasher->getHash($this->distributor, $command);
-
-            if (!isset($hash)) {
-                throw new NotSupportedException("Cannot send {$command->getId()} commands to redis-cluster");
-            }
-
-            $command->setHash($hash);
+            throw new NotSupportedException("Cannot use {$command->getId()} with redis-cluster");
         }
 
         $slot = $hash & 4095; // 0x0FFF
@@ -283,7 +276,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      * Returns the underlying command hash strategy used to hash
      * commands by their keys.
      *
-     * @return CommandHashStrategy
+     * @return Predis\Cluster\CommandHashStrategyInterface
      */
     public function getCommandHashStrategy()
     {

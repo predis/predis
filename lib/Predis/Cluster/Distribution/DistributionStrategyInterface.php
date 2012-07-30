@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Distribution;
 
 /**
  * A distributor implements the logic to automatically distribute
@@ -17,7 +17,7 @@ namespace Predis\Distribution;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface DistributionStrategyInterface extends HashGeneratorInterface
+interface DistributionStrategyInterface
 {
     /**
      * Adds a node to the distributor with an optional weight.
@@ -40,4 +40,11 @@ interface DistributionStrategyInterface extends HashGeneratorInterface
      * @return mixed
      */
     public function get($key);
+
+    /**
+     * Returns the underlying hash generator instance.
+     *
+     * @return Predis\Cluster\Hash\HashGeneratorInterface
+     */
+    public function getHashGenerator();
 }

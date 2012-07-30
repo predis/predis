@@ -9,27 +9,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Hash;
+namespace Predis\Cluster;
 
+use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Command\CommandInterface;
-use Predis\Distribution\HashGeneratorInterface;
 
 /**
- * Default class used by Predis to calculate hashes out of keys of
- * commands supported by redis-cluster.
+ * Default class used by Predis for client-side sharding to calculate
+ * hashes out of keys of supported commands.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisClusterHashStrategy implements CommandHashStrategyInterface
+class PredisClusterHashStrategy implements CommandHashStrategyInterface
 {
     private $commands;
+    private $hashGenerator;
 
     /**
-     *
+     * @param HashGeneratorInterface $hashGenerator Hash generator instance.
      */
-    public function __construct()
+    public function __construct(HashGeneratorInterface $hashGenerator)
     {
         $this->commands = $this->getDefaultCommands();
+        $this->hashGenerator = $hashGenerator;
     }
 
     /**
@@ -40,11 +42,12 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     protected function getDefaultCommands()
     {
         $keyIsFirstArgument = array($this, 'getKeyFromFirstArgument');
+        $keysAreAllArguments = array($this, 'getKeyFromAllArguments');
 
         return array(
             /* commands operating on the key space */
             'EXISTS'                => $keyIsFirstArgument,
-            'DEL'                   => array($this, 'getKeyFromAllArguments'),
+            'DEL'                   => $keysAreAllArguments,
             'TYPE'                  => $keyIsFirstArgument,
             'EXPIRE'                => $keyIsFirstArgument,
             'EXPIREAT'              => $keyIsFirstArgument,
@@ -61,7 +64,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'DECRBY'                => $keyIsFirstArgument,
             'GET'                   => $keyIsFirstArgument,
             'GETBIT'                => $keyIsFirstArgument,
-            'MGET'                  => array($this, 'getKeyFromAllArguments'),
+            'MGET'                  => $keysAreAllArguments,
             'SET'                   => $keyIsFirstArgument,
             'GETRANGE'              => $keyIsFirstArgument,
             'GETSET'                => $keyIsFirstArgument,
@@ -75,6 +78,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'SETRANGE'              => $keyIsFirstArgument,
             'STRLEN'                => $keyIsFirstArgument,
             'SUBSTR'                => $keyIsFirstArgument,
+            'BITOP'                 => array($this, 'getKeyFromBitOp'),
             'BITCOUNT'              => $keyIsFirstArgument,
 
             /* commands operating on lists */
@@ -83,8 +87,10 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'LLEN'                  => $keyIsFirstArgument,
             'LPOP'                  => $keyIsFirstArgument,
             'RPOP'                  => $keyIsFirstArgument,
+            'RPOPLPUSH'             => $keysAreAllArguments,
             'BLPOP'                 => array($this, 'getKeyFromBlockingListCommands'),
             'BRPOP'                 => array($this, 'getKeyFromBlockingListCommands'),
+            'BRPOPLPUSH'            => array($this, 'getKeyFromBlockingListCommands'),
             'LPUSH'                 => $keyIsFirstArgument,
             'LPUSHX'                => $keyIsFirstArgument,
             'RPUSH'                 => $keyIsFirstArgument,
@@ -97,6 +103,12 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             /* commands operating on sets */
             'SADD'                  => $keyIsFirstArgument,
             'SCARD'                 => $keyIsFirstArgument,
+            'SDIFF'                 => $keysAreAllArguments,
+            'SDIFFSTORE'            => $keysAreAllArguments,
+            'SINTER'                => $keysAreAllArguments,
+            'SINTERSTORE'           => $keysAreAllArguments,
+            'SUNION'                => $keysAreAllArguments,
+            'SUNIONSTORE'           => $keysAreAllArguments,
             'SISMEMBER'             => $keyIsFirstArgument,
             'SMEMBERS'              => $keyIsFirstArgument,
             'SPOP'                  => $keyIsFirstArgument,
@@ -108,6 +120,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'ZCARD'                 => $keyIsFirstArgument,
             'ZCOUNT'                => $keyIsFirstArgument,
             'ZINCRBY'               => $keyIsFirstArgument,
+            'ZINTERSTORE'           => array($this, 'getKeyFromZsetAggregationCommands'),
             'ZRANGE'                => $keyIsFirstArgument,
             'ZRANGEBYSCORE'         => $keyIsFirstArgument,
             'ZRANK'                 => $keyIsFirstArgument,
@@ -118,6 +131,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'ZREVRANGEBYSCORE'      => $keyIsFirstArgument,
             'ZREVRANK'              => $keyIsFirstArgument,
             'ZSCORE'                => $keyIsFirstArgument,
+            'ZUNIONSTORE'           => array($this, 'getKeyFromZsetAggregationCommands'),
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,
@@ -185,8 +199,8 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     }
 
     /**
-     * Extracts the key from a command that can accept multiple keys ensuring
-     * that only one key is actually specified to comply with redis-cluster.
+     * Extracts the key from a command with multiple keys only when all keys
+     * in the arguments array produce the same hash.
      *
      * @param CommandInterface $command Command instance.
      * @return string
@@ -195,14 +209,14 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if (count($arguments) === 1) {
+        if ($this->checkSameHashForKeys($arguments)) {
             return $arguments[0];
         }
     }
 
     /**
-     * Extracts the key from a command that can accept multiple keys ensuring
-     * that only one key is actually specified to comply with redis-cluster.
+     * Extracts the key from a command with multiple keys only when all keys
+     * in the arguments array produce the same hash.
      *
      * @param CommandInterface $command Command instance.
      * @return string
@@ -210,15 +224,19 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     protected function getKeyFromInterleavedArguments(CommandInterface $command)
     {
         $arguments = $command->getArguments();
+        $keys = array();
 
-        if (count($arguments) === 2) {
+        for ($i = 0; $i < count($arguments); $i += 2) {
+            $keys[] = $arguments[$i];
+        }
+
+        if ($this->checkSameHashForKeys($keys)) {
             return $arguments[0];
         }
     }
 
     /**
-     * Extracts the key from BLPOP and BRPOP commands ensuring that only one key
-     * is actually specified to comply with redis-cluster.
+     * Extracts the key from BLPOP and BRPOP commands.
      *
      * @param CommandInterface $command Command instance.
      * @return string
@@ -227,7 +245,38 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if (count($arguments) === 2) {
+        if ($this->checkSameHashForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
+            return $arguments[0];
+        }
+    }
+
+    /**
+     * Extracts the key from BITOP command.
+     *
+     * @param CommandInterface $command Command instance.
+     * @return string
+     */
+    protected function getKeyFromBitOp(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if ($this->checkSameHashForKeys(array_slice($arguments, 1, count($arguments)))) {
+            return $arguments[1];
+        }
+    }
+
+    /**
+     * Extracts the key from ZINTERSTORE and ZUNIONSTORE commands.
+     *
+     * @param CommandInterface $command Command instance.
+     * @return string
+     */
+    protected function getKeyFromZsetAggregationCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $keys = array_merge(array($arguments[0]), array_slice($arguments, 2, $arguments[1]));
+
+        if ($this->checkSameHashForKeys($keys)) {
             return $arguments[0];
         }
     }
@@ -235,20 +284,73 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getHash(HashGeneratorInterface $hasher, CommandInterface $command)
+    public function getHash(CommandInterface $command)
     {
-        if (isset($this->commands[$cmdID = $command->getId()])) {
+        $hash = $command->getHash();
+
+        if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
             if ($key = call_user_func($this->commands[$cmdID], $command)) {
-                return $this->getKeyHash($hasher, $key);
+                $hash = $this->getKeyHash($key);
+                $command->setHash($hash);
             }
         }
+
+        return $hash;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getKeyHash(HashGeneratorInterface $hasher, $key)
+    public function getKeyHash($key)
     {
-        return $hasher->hash($key);
+        $key = $this->extractKeyTag($key);
+        $hash = $this->hashGenerator->hash($key);
+
+        return $hash;
+    }
+
+    /**
+     * Checks if the specified array of keys will generate the same hash.
+     *
+     * @param array $keys Array of keys.
+     * @return Boolean
+     */
+    protected function checkSameHashForKeys(Array $keys)
+    {
+        if (($count = count($keys)) === 0) {
+            return false;
+        }
+
+        $currentKey = $this->extractKeyTag($keys[0]);
+
+        for ($i = 1; $i < $count; $i++) {
+            $nextKey = $this->extractKeyTag($keys[$i]);
+
+            if ($currentKey !== $nextKey) {
+                return false;
+            }
+
+            $currentKey = $nextKey;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns only the hashable part of a key (delimited by "{...}"), or the
+     * whole key if a key tag is not found in the string.
+     *
+     * @param string $key A key.
+     * @return string
+     */
+    protected function extractKeyTag($key)
+    {
+        if (false !== $start = strpos($key, '{')) {
+            if (false !== $end = strpos($key, '}', $start)) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+
+        return $key;
     }
 }

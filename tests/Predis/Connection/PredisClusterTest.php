@@ -26,7 +26,7 @@ class PredisClusterTest extends StandardTestCase
     public function testExposesCommandHashStrategy()
     {
         $cluster = new PredisCluster();
-        $this->assertInstanceOf('Predis\Command\Hash\PredisClusterHashStrategy', $cluster->getCommandHashStrategy());
+        $this->assertInstanceOf('Predis\Cluster\PredisClusterHashStrategy', $cluster->getCommandHashStrategy());
     }
 
     /**
@@ -257,7 +257,7 @@ class PredisClusterTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot send PING to a cluster of connections
+     * @expectedExceptionMessage Cannot use PING with a cluster of connections
      */
     public function testThrowsExceptionOnNonShardableCommand()
     {

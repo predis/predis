@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Distribution;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -21,7 +21,7 @@ abstract class DistributionStrategyTestCase extends StandardTestCase
     /**
      * Returns a new instance of the tested distributor.
      *
-     * @return Predis\Distribution\DistributionStrategyInterface
+     * @return Predis\Cluster\Distribution\DistributionStrategyInterface
      */
     protected abstract function getDistributorInstance();
 
@@ -49,7 +49,7 @@ abstract class DistributionStrategyTestCase extends StandardTestCase
      */
     public function testEmptyRingThrowsException()
     {
-        $this->setExpectedException('Predis\Distribution\EmptyRingException');
+        $this->setExpectedException('Predis\Cluster\Distribution\EmptyRingException');
 
         $ring = $this->getDistributorInstance();
         $ring->get('nodekey');

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Distribution;
 
 /**
  * This class implements an hashring-based distributor that uses the same

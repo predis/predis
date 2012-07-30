@@ -9,34 +9,28 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Hash;
+namespace Predis\Cluster;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Distribution\HashRing;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class PredisClusterHashStrategyTest extends StandardTestCase
+class RedisClusterHashStrategyTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testSupportsKeyTags()
+    public function testDoesNotSupportKeyTags()
     {
-        $expected = -1938594527;
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
 
-        $this->assertSame($expected, $hashstrategy->getKeyHash($distribution, '{foo}'));
-        $this->assertSame($expected, $hashstrategy->getKeyHash($distribution, '{foo}:bar'));
-        $this->assertSame($expected, $hashstrategy->getKeyHash($distribution, '{foo}:baz'));
-        $this->assertSame($expected, $hashstrategy->getKeyHash($distribution, 'bar:{foo}:bar'));
-
-        $this->assertSame(0, $hashstrategy->getKeyHash($distribution, ''));
-        $this->assertSame(0, $hashstrategy->getKeyHash($distribution, '{}'));
+        $this->assertSame(35910, $strategy->getKeyHash('{foo}'));
+        $this->assertSame(60032, $strategy->getKeyHash('{foo}:bar'));
+        $this->assertSame(27528, $strategy->getKeyHash('{foo}:baz'));
+        $this->assertSame(34064, $strategy->getKeyHash('bar:{foo}:bar'));
     }
 
     /**
@@ -44,9 +38,9 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
 
-        $this->assertSame($this->getExpectedCommands(), $hashstrategy->getSupportedCommands());
+        $this->assertSame($this->getExpectedCommands(), $strategy->getSupportedCommands());
     }
 
     /**
@@ -54,11 +48,10 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testReturnsNullOnUnsupportedCommand()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $command = ServerProfile::getDevelopment()->createCommand('ping');
 
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
     }
 
     /**
@@ -66,94 +59,103 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testFirstKeyCommands()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
     /**
      * @group disconnected
      */
-    public function testAllKeysCommands()
+    public function testAllKeysCommandsWithOneKey()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('{key}:1', '{key}:2', '{key}:3', '{key}:4');
+        $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
     /**
      * @group disconnected
      */
-    public function testInterleavedKeysCommands()
+    public function testAllKeysCommandsWithMoreKeys()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('{key}:1', 'value1', '{key}:2', 'value2');
+        $arguments = array('key1', 'key2');
+
+        foreach ($this->getExpectedCommands('keys-all') as $commandID) {
+            $command = $profile->createCommand($commandID, $arguments);
+            $this->assertNull($strategy->getHash($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testInterleavedKeysCommandsWithOneKey()
+    {
+        $strategy = $this->getHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+        $arguments = array('key:1', 'value1');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
     /**
      * @group disconnected
      */
-    public function testKeysForBlockingListCommands()
+    public function testInterleavedKeysCommandsWithMoreKeys()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('{key}:1', '{key}:2', 10);
+        $arguments = array('key:1', 'value1', 'key:2', 'value2');
+
+        foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
+            $command = $profile->createCommand($commandID, $arguments);
+            $this->assertNull($strategy->getHash($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForBlockingListCommandsWithOneKey()
+    {
+        $strategy = $this->getHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+        $arguments = array('key:1', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
         }
     }
 
     /**
      * @group disconnected
      */
-    public function testKeysForZsetAggregationCommands()
+    public function testKeysForBlockingListCommandsWithMoreKeys()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
-        $arguments = array('{key}:destination', 2, '{key}:1', '{key}:1', array('aggregate' => 'SUM'));
+        $arguments = array('key:1', 'key:2', 10);
 
-        foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
+        foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
-        }
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testKeysForBitOpCommand()
-    {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
-        $profile = ServerProfile::getDevelopment();
-        $arguments = array('AND', '{key}:destination', '{key}:src:1', '{key}:src:2');
-
-        foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
-            $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($hashstrategy->getHash($distribution, $command), $commandID);
+            $this->assertNull($strategy->getHash($command), $commandID);
         }
     }
 
@@ -162,18 +164,17 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testUnsettingCommandHandler()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
 
-        $hashstrategy->setCommandHandler('set');
-        $hashstrategy->setCommandHandler('get', null);
+        $strategy->setCommandHandler('set');
+        $strategy->setCommandHandler('get', null);
 
         $command = $profile->createCommand('set', array('key', 'value'));
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNull($strategy->getHash($command));
     }
 
     /**
@@ -181,8 +182,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSettingCustomCommandHandler()
     {
-        $distribution = new HashRing();
-        $hashstrategy = new PredisClusterHashStrategy();
+        $strategy = $this->getHashStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -191,15 +191,27 @@ class PredisClusterHashStrategyTest extends StandardTestCase
                  ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
                  ->will($this->returnValue('key'));
 
-        $hashstrategy->setCommandHandler('get', $callable);
+        $strategy->setCommandHandler('get', $callable);
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNotNull($hashstrategy->getHash($distribution, $command));
+        $this->assertNotNull($strategy->getHash($command));
     }
 
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
+
+    /**
+     * Creates the default hash strategy object.
+     *
+     * @return CommandHashStrategyInterface
+     */
+    protected function getHashStrategy()
+    {
+        $strategy = new RedisClusterHashStrategy();
+
+        return $strategy;
+    }
 
     /**
      * Returns the list of expected supported commands.
@@ -243,7 +255,6 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'SETRANGE'              => 'keys-first',
             'STRLEN'                => 'keys-first',
             'SUBSTR'                => 'keys-first',
-            'BITOP'                 => 'keys-bitop',
             'BITCOUNT'              => 'keys-first',
 
             /* commands operating on lists */
@@ -252,10 +263,8 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'LLEN'                  => 'keys-first',
             'LPOP'                  => 'keys-first',
             'RPOP'                  => 'keys-first',
-            'RPOPLPUSH'             => 'keys-all',
             'BLPOP'                 => 'keys-blockinglist',
             'BRPOP'                 => 'keys-blockinglist',
-            'BRPOPLPUSH'            => 'keys-blockinglist',
             'LPUSH'                 => 'keys-first',
             'LPUSHX'                => 'keys-first',
             'RPUSH'                 => 'keys-first',
@@ -268,12 +277,6 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             /* commands operating on sets */
             'SADD'                  => 'keys-first',
             'SCARD'                 => 'keys-first',
-            'SDIFF'                 => 'keys-all',
-            'SDIFFSTORE'            => 'keys-all',
-            'SINTER'                => 'keys-all',
-            'SINTERSTORE'           => 'keys-all',
-            'SUNION'                => 'keys-all',
-            'SUNIONSTORE'           => 'keys-all',
             'SISMEMBER'             => 'keys-first',
             'SMEMBERS'              => 'keys-first',
             'SPOP'                  => 'keys-first',
@@ -285,7 +288,6 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'ZCARD'                 => 'keys-first',
             'ZCOUNT'                => 'keys-first',
             'ZINCRBY'               => 'keys-first',
-            'ZINTERSTORE'           => 'keys-zaggregated',
             'ZRANGE'                => 'keys-first',
             'ZRANGEBYSCORE'         => 'keys-first',
             'ZRANK'                 => 'keys-first',
@@ -296,7 +298,6 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'ZREVRANGEBYSCORE'      => 'keys-first',
             'ZREVRANK'              => 'keys-first',
             'ZSCORE'                => 'keys-first',
-            'ZUNIONSTORE'           => 'keys-zaggregated',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',

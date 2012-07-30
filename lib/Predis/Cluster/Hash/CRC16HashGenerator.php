@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Distribution;
+namespace Predis\Cluster\Hash;
 
 /**
  * This class implements the CRC-CCITT-16 algorithm used by redis-cluster.
