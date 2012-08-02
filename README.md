@@ -2,23 +2,21 @@
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
-For a list of frequently asked questions about Predis, see the __FAQ__ file in the root of the repository.
-For a version compatible with PHP 5.2 you must use the backported version from the latest release in the
-0.6.x series. More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the
-project.
+For a list of frequently asked questions about Predis, see the __FAQ.md__ in the root of the repository.
+More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the project.
 
 
 ## Main features ##
 
-- Complete support for Redis from __1.2__ to __2.6__ and unstable versions using different server profiles.
+- Wide range of Redis versions supported (from __1.2__ to __2.6__ and unstable) using server profiles.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
-- Client-side sharding with support for consistent hashing or custom distribution strategies.
+- Client-side sharding via consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
-- Command pipelining on single and aggregated connections.
 - Transparent key prefixing strategy capable of handling any command known that has keys in its arguments.
+- Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
-- Abstraction for Lua scripting (Redis >= 2.6) capable of switching between EVAL and EVALSHA transparently.
-- Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
+- Abstraction for Lua scripting (Redis >= 2.6) capable of automatically switching between `EVAL` and `EVALSHA`.
+- Connections to Redis instances are lazily estabilished upon the first call to a command by the client.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
 - Ability to use alternative connection classes to use different types of network or protocol backends.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
@@ -36,11 +34,11 @@ by browsing the list of [tagged releases](http://github.com/nrk/predis/tags).
 
 ### Loading the library ###
 
-Predis relies on the autoloading features of PHP to automatically load the needed files and complies
-with the [PSR-0 standard](http://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) for
-interoperability with most of the major frameworks and libraries. Everything is transparently handled
-for you when installing the library using Composer, but you can also leverage its own autoloader class
-if you are going to use it in a project or script without any PSR-0 compliant autoloading facility:
+Predis relies on the autoloading features of PHP to load its files when needed and complies with the
+[PSR-0 standard](http://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) which makes it
+compatible with most of the major frameworks and libraries. Autoloading in your application is handled
+automatically when managing the dependencies with Composer, but you can also leverage its own autoloader
+class if you are going to use it in a project or script without any PSR-0 compliant autoloading facility:
 
 ``` php
 <?php
@@ -50,20 +48,19 @@ require 'Predis/Autoloader.php';
 Predis\Autoloader::register();
 ```
 
-You can create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the repository
-just by launching the `bin/create-phar.php` executable script. The generated Phar archive ships with a
-stub defining an autoloader function for Predis, so you just need to require the Phar to be able to use
-the library.
+It is possible to create a single [Phar](http://www.php.net/manual/en/intro.phar.php) archive from the
+repository just by launching `bin/create-phar.php`. The generated Phar archive ships with a stub defining
+an autoloader function for Predis, so you just need to require the Phar to be able to use the library.
 
-Alternatively you can generate a single PHP file that holds every class, just like older versions of
-Predis, using the `bin/create-single-file.php` executable script. In this way you can load Predis in your
-scripts simply by using functions such as `require` and `include`, but this practice is not encouraged.
+Alternatively it is possible to generate a single PHP file that holds every class, just like older versions
+of Predis, using `bin/create-single-file.php`. In this way you can load Predis in your scripts simply by
+using functions such as `require` and `include`, but this practice is not encouraged.
 
 
-### Connecting to a local instance of Redis ###
+### Connecting to Redis ###
 
-When connecting to local instance of Redis (`127.0.0.1` on port `6379`), you do not have to specify any
-additional parameter to create a new client instance:
+By default Predis uses `127.0.0.1` and `6379` as the default host and port when creating a new client
+instance without specifying any connection parameter:
 
 ``` php
 <?php
@@ -72,7 +69,7 @@ $redis->set('foo', 'bar');
 $value = $redis->get('foo');
 ```
 
-However you can use an URI string or a named array to specify the needed connection parameters:
+It is possible to specify the various connection parameters using URI strings or named arrays:
 
 ``` php
 <?php
@@ -88,7 +85,7 @@ $redis = new Predis\Client(array(
 ```
 
 
-### Pipelining multiple commands to multiple instances of Redis with client-side sharding ###
+### Pipelining commands to multiple instances of Redis with client-side sharding ###
 
 Pipelining helps with performances when there is the need to send many commands to a server in one go.
 Furthermore, pipelining works transparently even on aggregated connections. To achieve this, Predis
@@ -111,11 +108,21 @@ $replies = $redis->pipeline(function ($pipe) {
 ```
 
 
-### Overriding standard connection classes with custom ones ###
+### Multiple and customizable connection backends ###
 
-Predis allows developers to create new connection classes to add support for new protocols or override
-the existing ones and provide a different implementation compared to the default classes. This can be
-obtained by implementing `Predis\Connection\SingleConnectionInterface`.
+Predis can optionally use different connection backends to connect to Redis. One of them leverages
+the [phpiredis](http://github.com/seppo0010/phpiredis) C extension resulting in a major speed bump
+especially when dealing with long multibulk replies (the `socket` extension is also required):
+
+``` php
+$client = new Predis\Client('tcp://127.0.0.1', array(
+    'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
+));
+```
+
+Developers can also create their own connection backends to add support for new protocols, extend
+existing ones or provide different implementations. Connection backend classes must implement
+`Predis\Connection\SingleConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
 
 ``` php
 <?php
@@ -130,8 +137,8 @@ $client = new Predis\Client('tcp://127.0.0.1', array(
 ));
 ```
 
-The classes contained in the `Predis\Connection` namespace give you a better insight with actual code
-on how to create new connection classes.
+For a more in-depth insight on how to create new connection backends you can look at the actual
+implementation of the classes contained in `Predis\Connection` namespace.
 
 
 ### Defining and registering new commands on the client at runtime ###
@@ -187,6 +194,9 @@ The recommended way to contribute to Predis is to fork the project on GitHub, cr
 on your newly created repository to fix or add features (possibly with tests covering your modifications)
 and then open a new pull request with a description of the applied changes. Obviously you can use any
 other Git hosting provider of your preference.
+
+Please also follow some basic [commit guidelines](http://git-scm.com/book/ch5-2.html#Commit-Guidelines)
+before opening pull requests.
 
 
 ## Dependencies ##
