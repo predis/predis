@@ -13,6 +13,7 @@ namespace Predis\Cluster;
 
 use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\ScriptedCommand;
 
 /**
  * Default class used by Predis for client-side sharding to calculate
@@ -146,6 +147,10 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'HSET'                  => $keyIsFirstArgument,
             'HSETNX'                => $keyIsFirstArgument,
             'HVALS'                 => $keyIsFirstArgument,
+
+            /* scripting */
+            'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
+            'EVALSHA'               => array($this, 'getKeyFromScriptingCommands'),
         );
     }
 
@@ -278,6 +283,23 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
 
         if ($this->checkSameHashForKeys($keys)) {
             return $arguments[0];
+        }
+    }
+
+    /**
+     * Extracts the key from EVAL and EVALSHA commands.
+     *
+     * @param CommandInterface $command Command instance.
+     * @return string
+     */
+    protected function getKeyFromScriptingCommands(CommandInterface $command)
+    {
+        $keys = $command instanceof ScriptedCommand
+                    ? $command->getKeys()
+                    : array_slice($args = $command->getArguments(), 2, $args[1]);
+
+        if ($keys && $this->checkSameHashForKeys($keys)) {
+            return $keys[0];
         }
     }
 
