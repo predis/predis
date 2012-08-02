@@ -2,7 +2,7 @@
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
-For a list of frequently asked questions about Predis, see the __FAQ.md__ in the root of the repository.
+For a list of frequently asked questions about Predis, see __FAQ.md__ in the root of the repository.
 More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the project.
 
 
@@ -18,7 +18,7 @@ More details are available on the [official wiki](http://wiki.github.com/nrk/pre
 - Abstraction for Lua scripting (Redis >= 2.6) capable of automatically switching between `EVAL` and `EVALSHA`.
 - Connections to Redis instances are lazily estabilished upon the first call to a command by the client.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
-- Ability to use alternative connection classes to use different types of network or protocol backends.
+- Ability to specify alternative connection classes to use different types of network or protocol backends.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
 
 
@@ -115,6 +115,7 @@ the [phpiredis](http://github.com/seppo0010/phpiredis) C extension resulting in 
 especially when dealing with long multibulk replies (the `socket` extension is also required):
 
 ``` php
+<?php
 $client = new Predis\Client('tcp://127.0.0.1', array(
     'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
 ));
