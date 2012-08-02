@@ -34,6 +34,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
         $protocol = $protocol ?: new TextProtocol();
         $protocol->setOption('iterable_multibulk', $parameters->iterable_multibulk);
 
+        $this->mbiterable = null;
         $this->protocol = $protocol;
         $this->parameters = $this->checkParameters($parameters);
     }
