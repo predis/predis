@@ -36,9 +36,9 @@ class ResponseBulkHandler implements ResponseHandlerInterface
     {
         $length = (int) $lengthString;
 
-        if ($length != $lengthString) {
+        if ("$length" !== $lengthString) {
             Helpers::onCommunicationException(new ProtocolException(
-                $connection, "Cannot parse '$length' as data length"
+                $connection, "Cannot parse '$lengthString' as bulk length"
             ));
         }
 

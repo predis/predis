@@ -25,7 +25,7 @@ use Predis\Protocol\ResponseHandlerInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseErrorSilentHandler implements ResponseHandlerInterface
+class ResponseErrorHandler implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}

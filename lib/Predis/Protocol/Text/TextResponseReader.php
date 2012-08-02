@@ -91,7 +91,7 @@ class TextResponseReader implements ResponseReaderInterface
         $prefix = $header[0];
 
         if (!isset($this->handlers[$prefix])) {
-            $this->protocolError($connection, "Unknown prefix '$prefix'");
+            $this->protocolError($connection, "Unknown prefix: '$prefix'");
         }
 
         $handler = $this->handlers[$prefix];
