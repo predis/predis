@@ -134,6 +134,10 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'HSET'                  => $keyIsFirstArgument,
             'HSETNX'                => $keyIsFirstArgument,
             'HVALS'                 => $keyIsFirstArgument,
+
+            /* scripting */
+            'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
+            'EVALSHA'               => array($this, 'getKeyFromScriptingCommands'),
         );
     }
 
@@ -231,6 +235,23 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
 
         if (count($arguments) === 2) {
             return $arguments[0];
+        }
+    }
+
+    /**
+     * Extracts the key from EVAL and EVALSHA commands.
+     *
+     * @param CommandInterface $command Command instance.
+     * @return string
+     */
+    protected function getKeyFromScriptingCommands(CommandInterface $command)
+    {
+        $keys = $command instanceof ScriptedCommand
+                    ? $command->getKeys()
+                    : array_slice($args = $command->getArguments(), 2, $args[1]);
+
+        if (count($keys) === 1) {
+            return $keys[0];
         }
     }
 

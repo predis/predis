@@ -162,6 +162,41 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForScriptCommand()
+    {
+        $strategy = $this->getHashStrategy();
+        $profile = ServerProfile::getDevelopment();
+        $arguments = array('%SCRIPT%', 1, 'key:1', 'value1');
+
+        foreach ($this->getExpectedCommands('keys-script') as $commandID) {
+            $command = $profile->createCommand($commandID, $arguments);
+            $this->assertNotNull($strategy->getHash($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForScriptedCommand()
+    {
+        $strategy = $this->getHashStrategy();
+        $arguments = array('key:1', 'value1');
+
+        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command->expects($this->once())
+                ->method('getScript')
+                ->will($this->returnValue('return true'));
+        $command->expects($this->exactly(1))
+                ->method('getKeysCount')
+                ->will($this->returnValue(1));
+        $command->setArguments($arguments);
+
+        $this->assertNotNull($strategy->getHash($command), "Scripted Command [{$command->getId()}]");
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testUnsettingCommandHandler()
     {
         $strategy = $this->getHashStrategy();
@@ -312,6 +347,10 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'HSET'                  => 'keys-first',
             'HSETNX'                => 'keys-first',
             'HVALS'                 => 'keys-first',
+
+            /* scripting */
+            'EVAL'                  => 'keys-script',
+            'EVALSHA'               => 'keys-script',
         );
 
         if (isset($type)) {

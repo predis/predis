@@ -280,7 +280,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getCommandHashStrategy()
     {
-        return $this->cmdHasher;
+        return $this->strategy;
     }
 
     /**
