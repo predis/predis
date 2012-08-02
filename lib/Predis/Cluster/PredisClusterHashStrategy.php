@@ -311,7 +311,9 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
         $hash = $command->getHash();
 
         if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
-            if ($key = call_user_func($this->commands[$cmdID], $command)) {
+            $key = call_user_func($this->commands[$cmdID], $command);
+
+            if (isset($key)) {
                 $hash = $this->getKeyHash($key);
                 $command->setHash($hash);
             }

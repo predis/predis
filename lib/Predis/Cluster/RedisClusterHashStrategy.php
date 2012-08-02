@@ -263,7 +263,9 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
         $hash = $command->getHash();
 
         if (!isset($hash) && isset($this->commands[$cmdID = $command->getId()])) {
-            if (null !== $key = call_user_func($this->commands[$cmdID], $command)) {
+            $key = call_user_func($this->commands[$cmdID], $command);
+
+            if (isset($key)) {
                 $hash = $this->hashGenerator->hash($key);
                 $command->setHash($hash);
             }
