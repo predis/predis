@@ -94,6 +94,29 @@ class MultiExecExecutorTest extends StandardTestCase
 
     /**
      * @group disconnected
+     */
+    public function testExecutorWithErrorInCommandResponse()
+    {
+        $executor = new MultiExecExecutor();
+        $pipeline = $this->getCommandsQueue();
+        $queued = new ResponseQueued();
+        $error = new ResponseError('ERR Test error');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->exactly(3))
+                   ->method('readResponse')
+                   ->will($this->onConsecutiveCalls($queued, $queued, $queued));
+        $connection->expects($this->at(7))
+                   ->method('executeCommand')
+                   ->will($this->returnValue(array('PONG', 'PONG', $error)));
+
+        $replies = $executor->execute($connection, $pipeline);
+
+        $this->assertSame(array(true, true, $error), $replies);
+    }
+
+    /**
+     * @group disconnected
      * @expectedException Predis\ClientException
      * @expectedExceptionMessage Predis\Pipeline\MultiExecExecutor can be used only with single connections
      */

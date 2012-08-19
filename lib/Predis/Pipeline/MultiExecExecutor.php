@@ -13,8 +13,9 @@ namespace Predis\Pipeline;
 
 use SplQueue;
 use Predis\ClientException;
-use Predis\ResponseQueued;
 use Predis\ResponseErrorInterface;
+use Predis\ResponseObjectInterface;
+use Predis\ResponseQueued;
 use Predis\ServerException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
@@ -35,9 +36,9 @@ class MultiExecExecutor implements PipelineExecutorInterface
     /**
      *
      */
-    public function __construct()
+    public function __construct(ServerProfileInterface $profile = null)
     {
-        $this->setProfile(ServerProfile::getDefault());
+        $this->setProfile($profile ?: ServerProfile::getDefault());
     }
 
     /**
@@ -95,10 +96,19 @@ class MultiExecExecutor implements PipelineExecutorInterface
         }
 
         for ($i = 0; $i < $size; $i++) {
-            if ($response = $responses[$i] instanceof \Iterator) {
-                $response = iterator_to_array($response);
+            $commandReply = $responses[$i];
+
+            if ($commandReply instanceof ResponseObjectInterface) {
+                $values[$i] = $commandReply;
+                $commands->dequeue();
+            } else {
+                if ($commandReply instanceof \Iterator) {
+                    $commandReply = iterator_to_array($commandReply);
+                }
+
+                $values[$i] = $commands->dequeue()->parseResponse($commandReply);
             }
-            $values[$i] = $commands->dequeue()->parseResponse($responses[$i]);
+
             unset($responses[$i]);
         }
 
