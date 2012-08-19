@@ -42,7 +42,7 @@ interface ConnectionFactoryInterface
      * @param mixed $parameters Parameters for the connection.
      * @return Predis\Connection\SingleConnectionInterface
      */
-    public function create($parameters, ServerProfileInterface $profile = null);
+    public function create($parameters);
 
     /**
      * Prepares an aggregation of connection objects.
@@ -51,5 +51,5 @@ interface ConnectionFactoryInterface
      * @param array $parameters List of parameters for each connection object.
      * @return Predis\Connection\AggregatedConnectionInterface
      */
-    public function createAggregated(AggregatedConnectionInterface $cluster, $parameters, ServerProfileInterface $profile = null);
+    public function createAggregated(AggregatedConnectionInterface $cluster, Array $parameters);
 }

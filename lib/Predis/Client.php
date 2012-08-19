@@ -97,10 +97,10 @@ class Client implements ClientInterface
             $replication = isset($this->options->replication) && $this->options->replication;
             $connection = $this->options->{$replication ? 'replication' : 'cluster'};
 
-            return $this->connections->createAggregated($connection, $parameters, $this->profile);
+            return $this->connections->createAggregated($connection, $parameters);
         }
 
-        return $this->connections->create($parameters, $this->profile);
+        return $this->connections->create($parameters);
     }
 
     /**

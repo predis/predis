@@ -116,9 +116,9 @@ class ConnectionFactoryTest extends StandardTestCase
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->never())->method('create');
 
-        $factory = new ConnectionFactory();
+        $factory = new ConnectionFactory($profile);
         $parameters = new ConnectionParameters();
-        $connection = $factory->create($parameters, $profile);
+        $connection = $factory->create($parameters);
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
     }
@@ -146,14 +146,37 @@ class ConnectionFactoryTest extends StandardTestCase
                 ->with($this->isType('string'), $this->isType('array'))
                 ->will($this->returnCallback($createCommand));
 
-        $factory = new ConnectionFactory();
+        $factory = new ConnectionFactory($profile);
         $parameters = new ConnectionParameters(array('database' => $database, 'password' => $password));
-        $connection = $factory->create($parameters, $profile);
+        $connection = $factory->create($parameters);
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
         $this->assertEquals(2, count($commands));   // TODO: assertCount()?
         $this->assertEquals(array($database), $commands['select']);
         $this->assertEquals(array($password), $commands['auth']);
+    }
+
+    /**
+     * @group disconnected
+     * @todo This test smells but there's no other way around it right now.
+     */
+    public function testCreateConnectionWithDatabaseAndPasswordButNoProfile()
+    {
+        $parameters = new ConnectionParameters(array('database' => 0, 'password' => 'foobar'));
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->never())
+                   ->method('getParameters')
+                   ->will($this->returnValue($parameters));
+        $connection->expects($this->never())
+                   ->method('pushInitCommand');
+
+        $factory = new ConnectionFactory();
+
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
     }
 
     /**
@@ -299,7 +322,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->exactly(3))
                 ->method('create')
-                ->will($this->returnCallback(function ($_, $_) use ($connectionClass) {
+                ->will($this->returnCallback(function ($_) use ($connectionClass) {
                     return new $connectionClass;
                 }));
 
@@ -331,16 +354,16 @@ class ConnectionFactoryTest extends StandardTestCase
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
 
-        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
+        $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'), array($profile));
         $factory->expects($this->exactly(2))
                 ->method('create')
-                ->with($this->anything(), $profile)
-                ->will($this->returnCallback(function ($_, $_) use ($connectionClass) {
+                ->with($this->anything())
+                ->will($this->returnCallback(function ($_) use ($connectionClass) {
                     return new $connectionClass();
                 }));
 
         $nodes = array('tcp://127.0.0.1:7001?password=foo', 'tcp://127.0.0.1:7002?password=bar');
-        $factory->createAggregated($cluster, $nodes, $profile);
+        $factory->createAggregated($cluster, $nodes);
     }
 
 

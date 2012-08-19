@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use Predis\ClientException;
 use Predis\Option\OptionInterface;
 
 /**

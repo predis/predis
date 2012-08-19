@@ -29,6 +29,7 @@ class ClientConnectionFactory extends AbstractOption
         if ($value instanceof ConnectionFactoryInterface) {
             return $value;
         }
+
         if (is_array($value)) {
             $factory = $this->getDefault($options);
 
@@ -38,6 +39,7 @@ class ClientConnectionFactory extends AbstractOption
 
             return $factory;
         }
+
         if (is_string($value) && class_exists($value)) {
             if (!($factory = new $value()) && !$factory instanceof ConnectionFactoryInterface) {
                 throw new \InvalidArgumentException("Class $value must be an instance of Predis\Connection\ConnectionFactoryInterface");
@@ -54,6 +56,6 @@ class ClientConnectionFactory extends AbstractOption
      */
     public function getDefault(ClientOptionsInterface $options)
     {
-        return new ConnectionFactory();
+        return new ConnectionFactory($options->profile);
     }
 }

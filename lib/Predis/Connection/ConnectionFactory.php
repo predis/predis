@@ -22,14 +22,18 @@ use Predis\Profile\ServerProfileInterface;
  */
 class ConnectionFactory implements ConnectionFactoryInterface
 {
-    private $schemes;
+    protected $schemes;
+    protected $profile;
 
     /**
      * Initializes a new instance of the default connection factory class used by Predis.
+     *
+     * @param ServerProfileInterface $profile Server profile used to initialize new connections.
      */
-    public function __construct()
+    public function __construct(ServerProfileInterface $profile = null)
     {
         $this->schemes = $this->getDefaultSchemes();
+        $this->profile = $profile;
     }
 
     /**
@@ -40,7 +44,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     protected function getDefaultSchemes()
     {
         return array(
-            'tcp' => 'Predis\Connection\StreamConnection',
+            'tcp'  => 'Predis\Connection\StreamConnection',
             'unix' => 'Predis\Connection\StreamConnection',
             'http' => 'Predis\Connection\WebdisConnection',
         );
@@ -90,7 +94,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create($parameters, ServerProfileInterface $profile = null)
+    public function create($parameters)
     {
         if (!$parameters instanceof ConnectionParametersInterface) {
             $parameters = new ConnectionParameters($parameters ?: array());
@@ -104,14 +108,12 @@ class ConnectionFactory implements ConnectionFactoryInterface
 
         $initializer = $this->schemes[$scheme];
 
-        if (!is_callable($initializer)) {
+        if (is_callable($initializer)) {
+            $connection = call_user_func($initializer, $parameters, $this);
+        } else {
             $connection = new $initializer($parameters);
-            $this->prepareConnection($connection, $profile ?: ServerProfile::getDefault());
-
-            return $connection;
+            $this->prepareConnection($connection);
         }
-
-        $connection = call_user_func($initializer, $parameters, $profile);
 
         if (!$connection instanceof SingleConnectionInterface) {
             throw new \InvalidArgumentException(
@@ -126,10 +128,10 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createAggregated(AggregatedConnectionInterface $connection, $parameters, ServerProfileInterface $profile = null)
+    public function createAggregated(AggregatedConnectionInterface $connection, Array $parameters)
     {
         foreach ($parameters as $node) {
-            $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node, $profile));
+            $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node));
         }
 
         return $connection;
@@ -139,20 +141,41 @@ class ConnectionFactory implements ConnectionFactoryInterface
      * Prepares a connection object after its initialization.
      *
      * @param SingleConnectionInterface $connection Instance of a connection object.
-     * @param ServerProfileInterface $profile $connection Instance of a connection object.
      */
-    protected function prepareConnection(SingleConnectionInterface $connection, ServerProfileInterface $profile)
+    protected function prepareConnection(SingleConnectionInterface $connection)
     {
-        $parameters = $connection->getParameters();
+        if (isset($this->profile)) {
+            $parameters = $connection->getParameters();
 
-        if (isset($parameters->password)) {
-            $command = $profile->createCommand('auth', array($parameters->password));
-            $connection->pushInitCommand($command);
-        }
+            if (isset($parameters->password)) {
+                $command = $this->profile->createCommand('auth', array($parameters->password));
+                $connection->pushInitCommand($command);
+            }
 
-        if (isset($parameters->database)) {
-            $command = $profile->createCommand('select', array($parameters->database));
-            $connection->pushInitCommand($command);
+            if (isset($parameters->database)) {
+                $command = $this->profile->createCommand('select', array($parameters->database));
+                $connection->pushInitCommand($command);
+            }
         }
+    }
+
+    /**
+     * Sets the server profile used to create initialization commands for connections.
+     *
+     * @param ServerProfileInterface $profile Server profile instance.
+     */
+    public function setProfile(ServerProfileInterface $profile)
+    {
+        $this->profile = $profile;
+    }
+
+    /**
+     * Returns the server profile used to create initialization commands for connections.
+     *
+     * @return ServerProfileInterface
+     */
+    public function getProfile()
+    {
+        return $this->profile;
     }
 }
