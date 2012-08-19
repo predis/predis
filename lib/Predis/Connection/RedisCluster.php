@@ -152,9 +152,24 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
+     * Returns the current slots map for the cluster.
+     *
+     * @return array
+     */
+    public function getSlotsMap()
+    {
+        if (!isset($this->slotsMap)) {
+            $this->slotsMap = array();
+        }
+
+        return $this->slotsMap;
+    }
+
+    /**
      * Preassociate a connection to a set of slots to avoid runtime guessing.
      *
      * @todo Check type or existence of the specified connection.
+     * @todo Cluster loses the slots assigned with this methods when adding / removing connections.
      *
      * @param int $first Initial slot.
      * @param int $last Last slot.
@@ -166,7 +181,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
         }
 
-        $this->slotsMap = $this->slotsMap + array_fill($first, $last - $first + 1, (string) $connection);
+        $this->slotsMap = $this->getSlotsMap() + array_fill($first, $last - $first + 1, (string) $connection);
     }
 
     /**
@@ -192,6 +207,37 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
+     * Returns the connection associated to the specified slot.
+     *
+     * @param int $slot Slot ID.
+     * @return SingleConnectionInterface
+     */
+    public function getConnectionBySlot($slot)
+    {
+        if ($slot < 0 || $slot > 4095) {
+            throw new \OutOfBoundsException("Invalid slot value [$slot]");
+        }
+
+        if (isset($this->slots[$slot])) {
+            return $this->slots[$slot];
+        }
+
+        return $this->pool[$this->guessNode($slot)];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnectionById($id = null)
+    {
+        if (!isset($id)) {
+            throw new \InvalidArgumentException("A valid connection ID must be specified");
+        }
+
+        return isset($this->pool[$id]) ? $this->pool[$id] : null;
+    }
+
+    /**
      * Tries guessing the correct node associated to the given slot using a precalculated
      * slots map or the same logic used by redis-trib to initialize a redis cluster.
      *
@@ -212,18 +258,6 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
         $nodes = array_keys($this->pool);
 
         return $nodes[$index];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getConnectionById($id = null)
-    {
-        if (!isset($id)) {
-            throw new \InvalidArgumentException("A valid connection ID must be specified");
-        }
-
-        return isset($this->pool[$id]) ? $this->pool[$id] : null;
     }
 
     /**
@@ -296,7 +330,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->pool);
+        return new \ArrayIterator(array_values($this->pool));
     }
 
     /**
