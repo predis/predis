@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Iterator\MultiBulkResponseTuple;
-
 /**
  * @link http://redis.io/commands/zrange
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -90,10 +88,6 @@ class ZSetRange extends PrefixableCommand
     public function parseResponse($data)
     {
         if ($this->withScores()) {
-            if ($data instanceof \Iterator) {
-                return new MultiBulkResponseTuple($data);
-            }
-
             $result = array();
 
             for ($i = 0; $i < count($data); $i++) {

@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Iterator\MultiBulkResponse;
-
 /**
  * @link http://redis.io/commands/slowlog
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -32,26 +30,16 @@ class ServerSlowlog extends AbstractCommand
      */
     public function parseResponse($data)
     {
-        if (($iterable = $data instanceof \Iterator) || is_array($data)) {
-            // NOTE: we consume iterable multibulk replies inplace since it is not
-            // possible to do anything fancy on sub-elements.
+        if (is_array($data)) {
             $log = array();
 
             foreach ($data as $index => $entry) {
-                if ($iterable) {
-                    $entry = iterator_to_array($entry);
-                }
-
                 $log[$index] = array(
                     'id' => $entry[0],
                     'timestamp' => $entry[1],
                     'duration' => $entry[2],
-                    'command' => $iterable ? iterator_to_array($entry[3]) : $entry[3],
+                    'command' => $entry[3],
                 );
-            }
-
-            if ($iterable === true) {
-                unset($data);
             }
 
             return $log;

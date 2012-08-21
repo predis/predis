@@ -26,11 +26,29 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
      */
     public function __construct(MultiBulkResponseSimple $iterator)
     {
+        $this->checkPreconditions($iterator);
+
         $virtualSize = count($iterator) / 2;
         $this->iterator = $iterator;
         $this->position = $iterator->getPosition();
         $this->current = $virtualSize > 0 ? $this->getValue() : null;
         $this->replySize = $virtualSize;
+    }
+
+    /**
+     * Checks for valid preconditions.
+     *
+     * @param MultiBulkResponseSimple $iterator Multibulk reply iterator.
+     */
+    protected function checkPreconditions(MultiBulkResponseSimple $iterator)
+    {
+        if ($iterator->getPosition() !== 0) {
+            throw new \RuntimeException('Cannot initialize a tuple iterator with an already initiated iterator');
+        }
+
+        if (($size = count($iterator)) % 2 !== 0) {
+            throw new \UnexpectedValueException("Invalid reply size for a tuple iterator [$size]");
+        }
     }
 
     /**

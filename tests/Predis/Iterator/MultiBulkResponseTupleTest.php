@@ -21,6 +21,33 @@ use Predis\Client;
 class MultiBulkResponseTupleTest extends StandardTestCase
 {
     /**
+     * @group disconnected
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Cannot initialize a tuple iterator with an already initiated iterator
+     */
+    public function testInitiatedMultiBulkIteratorsAreNotValid()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $iterator = new MultiBulkResponseSimple($connection, 2);
+        $iterator->next();
+
+        new MultiBulkResponseTuple($iterator);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Invalid reply size for a tuple iterator [3]
+     */
+    public function testMultiBulkWithOddSizesAreInvalid()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $iterator = new MultiBulkResponseSimple($connection, 3);
+
+        new MultiBulkResponseTuple($iterator);
+    }
+
+    /**
      * @group connected
      */
     public function testIterableMultibulk()
@@ -28,7 +55,7 @@ class MultiBulkResponseTupleTest extends StandardTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $this->assertInstanceOf('OuterIterator', $iterator = $client->zrange('metavars', 0, -1, 'withscores'));
+        $this->assertInstanceOf('OuterIterator', $iterator = $client->zrange('metavars', 0, -1, 'withscores')->asTuple());
         $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseTuple', $iterator);
         $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator->getInnerIterator());
         $this->assertTrue($iterator->valid());
@@ -57,7 +84,7 @@ class MultiBulkResponseTupleTest extends StandardTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = $client->zrange('metavars', 0, -1, 'withscores');
+        $iterator = $client->zrange('metavars', 0, -1, 'withscores')->asTuple();
 
         unset($iterator);
 

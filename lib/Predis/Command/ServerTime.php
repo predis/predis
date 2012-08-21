@@ -32,12 +32,4 @@ class ServerTime extends AbstractCommand
     {
         return false;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return $data instanceof \Iterator ? iterator_to_array($data) : $data;
-    }
 }

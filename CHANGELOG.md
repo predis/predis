@@ -32,6 +32,11 @@ v0.8.0 (201x-xx-xx)
   `-NOSCRIPT` error. Automatic fallback to `EVAL` does not work with pipelines,
   inside a MULTI / EXEC context or with plain `EVALSHA` commands.
 
+- Iterators for multi-bulk replies now skip the response parsing method of the
+  command that generated the response and are passed directly to user code.
+  Pipeline and transaction objects still consume automatically the iterators
+  that are present in response elements.
+
 - Cluster and replication connections now extend a new common interface,
   `Predis\Connection\AggregatedConnectionInterface`.
 

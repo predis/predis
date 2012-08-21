@@ -75,4 +75,14 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     {
         return $this->connection->read();
     }
+
+    /**
+     * Returns an iterator that reads the multi-bulk response as a tuple.
+     *
+     * @return MultiBulkResponseTuple
+     */
+    public function asTuple()
+    {
+        return new MultiBulkResponseTuple($this);
+    }
 }

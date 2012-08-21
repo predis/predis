@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Iterator\MultiBulkResponseTuple;
-
 /**
  * @link http://redis.io/commands/hgetall
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -32,10 +30,6 @@ class HashGetAll extends PrefixableCommand
      */
     public function parseResponse($data)
     {
-        if ($data instanceof \Iterator) {
-            return new MultiBulkResponseTuple($data);
-        }
-
         $result = array();
 
         for ($i = 0; $i < count($data); $i++) {

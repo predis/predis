@@ -11,13 +11,15 @@
 
 namespace Predis\Iterator;
 
+use Predis\ResponseObjectInterface;
+
 /**
  * Iterator that abstracts the access to multibulk replies and allows
  * them to be consumed by user's code in a streaming fashion.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class MultiBulkResponse implements \Iterator, \Countable
+abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjectInterface
 {
     protected $position;
     protected $current;

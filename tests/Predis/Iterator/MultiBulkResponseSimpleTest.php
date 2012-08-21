@@ -51,6 +51,18 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
     /**
      * @group connected
      */
+    public function testIterableMultibulkCanBeWrappedAsTupleIterator()
+    {
+        $client = $this->getClient();
+        $client->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator = $client->mget('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseTuple', $iterator->asTuple());
+    }
+
+    /**
+     * @group connected
+     */
     public function testSyncWithFalseConsumesReplyFromUnderlyingConnection()
     {
         $client = $this->getClient();

@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Iterator\MultiBulkResponseTuple;
-
 /**
  * @link http://redis.io/commands/config-set
  * @link http://redis.io/commands/config-get
@@ -34,10 +32,6 @@ class ServerConfig extends AbstractCommand
      */
     public function parseResponse($data)
     {
-        if ($data instanceof \Iterator) {
-            return new MultiBulkResponseTuple($data);
-        }
-
         if (is_array($data)) {
             $result = array();
 
