@@ -103,8 +103,8 @@ class PhpiredisConnection extends AbstractConnection
     /**
      * Initializes the protocol reader resource.
      */
-    private function initializeReader()    {
-
+    private function initializeReader()
+    {
         $reader = phpiredis_reader_create();
 
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
@@ -251,7 +251,8 @@ class PhpiredisConnection extends AbstractConnection
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
-    private function connectWithTimeout(ConnectionParametersInterface $parameters) {
+    private function connectWithTimeout(ConnectionParametersInterface $parameters)
+    {
         $host = self::getAddress($parameters);
         $socket = $this->getResource();
 
