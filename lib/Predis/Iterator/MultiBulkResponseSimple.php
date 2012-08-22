@@ -77,7 +77,8 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     }
 
     /**
-     * Returns an iterator that reads the multi-bulk response as a tuple.
+     * Returns an iterator that reads the multi-bulk response as
+     * list of tuples.
      *
      * @return MultiBulkResponseTuple
      */
