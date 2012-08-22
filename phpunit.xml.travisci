@@ -25,6 +25,10 @@
         </whitelist>
     </filter>
 
+    <logging>
+        <log type="coverage-text" target="php://stdout" />
+    </logging>
+
     <php>
         <!-- Redis -->
         <const name="REDIS_SERVER_VERSION" value="2.4" />
