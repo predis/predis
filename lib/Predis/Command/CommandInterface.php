@@ -39,11 +39,18 @@ interface CommandInterface
     public function getHash();
 
     /**
-     * Sets the arguments of the command.
+     * Sets the arguments for the command.
      *
      * @param array $arguments List of arguments.
      */
     public function setArguments(Array $arguments);
+
+    /**
+     * Sets the raw arguments for the command without processing them.
+     *
+     * @param array $arguments List of arguments.
+     */
+    public function setRawArguments(Array $arguments);
 
     /**
      * Gets the arguments of the command.
