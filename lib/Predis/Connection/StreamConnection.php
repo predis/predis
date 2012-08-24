@@ -191,7 +191,8 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function read() {
+    public function read()
+    {
         $socket = $this->getResource();
         $chunk  = fgets($socket);
 
