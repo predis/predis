@@ -136,10 +136,10 @@ class Client implements ClientInterface
      *
      * @return Client
      */
-    public function getClientFor($connectionAlias)
+    public function getClientFor($connectionID)
     {
-        if (($connection = $this->getConnection($connectionAlias)) === null) {
-            throw new \InvalidArgumentException("Invalid connection alias: '$connectionAlias'");
+        if (($connection = $this->getConnectionById($connectionID)) === null) {
+            throw new \InvalidArgumentException("Invalid connection ID: '$connectionID'");
         }
 
         return new Client($connection, $this->options);
@@ -185,17 +185,24 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection($id = null)
+    public function getConnection()
     {
-        if (isset($id)) {
-            if (!$this->connection instanceof AggregatedConnectionInterface) {
-                throw new NotSupportedException('Retrieving connections by alias is supported only with aggregated connections');
-            }
+        return $this->connection;
+    }
 
-            return $this->connection->getConnectionById($id);
+    /**
+     * Retrieves a single connection out of an aggregated connections instance.
+     *
+     * @param string $connectionId Index or alias of the connection.
+     * @return SingleConnectionInterface
+     */
+    public function getConnectionById($connectionId)
+    {
+        if (!$this->connection instanceof AggregatedConnectionInterface) {
+            throw new NotSupportedException('Retrieving connections by ID is supported only when using aggregated connections');
         }
 
-        return $this->connection;
+        return $this->connection->getConnectionById($connectionId);
     }
 
     /**

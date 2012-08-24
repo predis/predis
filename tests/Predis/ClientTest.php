@@ -417,13 +417,13 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionFromClusterWithAlias()
+    public function testGetConnectionFromAggregatedConnectionWithAlias()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnection('node01'));
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnection('node02'));
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnectionById('node01'));
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
         $this->assertSame('host1', $node01->getParameters()->host);
         $this->assertSame('host2', $node02->getParameters()->host);
@@ -432,13 +432,13 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by alias is supported only with aggregated connections
+     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregated connections
      */
-    public function testGetConnectionWithAliasWorksOnlyWithCluster()
+    public function testGetConnectionByIdWorksOnlyWithAggregatedConnections()
     {
         $client = new Client();
 
-        $client->getConnection('node01');
+        $client->getConnectionById('node01');
     }
 
     /**

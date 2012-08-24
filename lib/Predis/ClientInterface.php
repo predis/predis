@@ -49,13 +49,11 @@ interface ClientInterface extends BasicClientInterface
     public function disconnect();
 
     /**
-     * Returns the underlying connection instance or, when connected to a cluster,
-     * one of the connection instances identified by its alias.
+     * Returns the underlying connection instance.
      *
-     * @param string $id The alias of a connection when connected to a cluster.
      * @return ConnectionInterface
      */
-    public function getConnection($id = null);
+    public function getConnection();
 
     /**
      * Creates a new instance of the specified Redis command.
