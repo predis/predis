@@ -444,6 +444,23 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testCreateClientWithConnectionFromAggregatedConnection()
+    {
+        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
+
+        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnectionById('node01'));
+        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnectionById('node02'));
+
+        $clientNode02 = $client->getClientFor('node02');
+
+        $this->assertSame($node02, $clientNode02->getConnection());
+        $this->assertSame($client->getOptions(), $clientNode02->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testPipelineWithoutArgumentsReturnsPipelineContext()
     {
         $client = new Client();
