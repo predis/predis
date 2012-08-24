@@ -143,11 +143,9 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($id = null)
+    public function getConnectionById($connectionId)
     {
-        $alias = $id ?: 0;
-
-        return isset($this->pool[$alias]) ? $this->pool[$alias] : null;
+        return isset($this->pool[$connectionId]) ? $this->pool[$connectionId] : null;
     }
 
     /**

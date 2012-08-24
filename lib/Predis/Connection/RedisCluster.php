@@ -228,13 +228,9 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($id = null)
+    public function getConnectionById($connectionId)
     {
-        if (!isset($id)) {
-            throw new \InvalidArgumentException("A valid connection ID must be specified");
-        }
-
-        return isset($this->pool[$id]) ? $this->pool[$id] : null;
+        return isset($this->pool[$connectionId]) ? $this->pool[$connectionId] : null;
     }
 
     /**
