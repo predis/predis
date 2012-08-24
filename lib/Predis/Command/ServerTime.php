@@ -24,12 +24,4 @@ class ServerTime extends AbstractCommand
     {
         return 'TIME';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function canBeHashed()
-    {
-        return false;
-    }
 }
