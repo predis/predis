@@ -18,7 +18,7 @@ Predis is also available in an asynchronous fashion through the experimental cli
 - Command pipelining on single and aggregated connections.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
 - Abstraction for Lua scripting (Redis >= 2.6) capable of automatically switching between `EVAL` and `EVALSHA`.
-- Connections to Redis instances are lazily estabilished upon the first call to a command by the client.
+- Connections to Redis instances are lazily established upon the first call to a command by the client.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
 - Ability to specify alternative connection classes to use different types of network or protocol backends.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
