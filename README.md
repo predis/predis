@@ -5,6 +5,8 @@ Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Re
 For a list of frequently asked questions about Predis, see __FAQ.md__ in the root of the repository.
 More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the project.
 
+Predis is also available in an asynchronous fashion through the experimental client provided by the
+[Predis\Async](http://github.com/nrk/predis-async) library.
 
 ## Main features ##
 
