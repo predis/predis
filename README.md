@@ -16,7 +16,7 @@ project.
 - Command pipelining on single and aggregated connections.
 - Transparent key prefixing strategy capable of handling any command known that has keys in its arguments.
 - Abstraction for Redis transactions (Redis >= 2.0) with support for CAS operations (Redis >= 2.2).
-- Connections to Redis instances are automatically and lazily estabilished upon the first call to a command.
+- Connections to Redis instances are automatically and lazily established upon the first call to a command.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
 - Ability to use alternative connection classes to use different types of network or protocol backends.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
