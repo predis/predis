@@ -168,6 +168,43 @@ $redis->newcmd();
 ```
 
 
+### Abstraction for handling Lua scripts as plain Redis commands ###
+
+A scripted command in Predis is an abstraction for [Lua scripting](http://redis.io/commands/eval)
+with Redis >= 2.6 that allows to use a Lua script as if it was a plain Redis command registered
+in the server profile being used by the client instance. Internally, scripted commands use
+[EVALSHA](http://redis.io/commands/evalsha) to refer to a Lua script by its SHA1 hash in order
+to save bandwidth, but they are capable of falling back to [EVAL](http://redis.io/commands/eval)
+when needed:
+
+``` php
+<?php
+class ListPushRandomValue extends Predis\Command\ScriptedCommand
+{
+    public function getKeysCount()
+    {
+        return 1;
+    }
+
+    public function getScript()
+    {
+        return
+<<<LUA
+math.randomseed(ARGV[1])
+local rnd = tostring(math.random())
+redis.call('lpush', KEYS[1], rnd)
+return rnd
+LUA;
+    }
+}
+
+$client = new Predis\Client();
+$client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
+
+$value = $client->lpushrand('random_values', $seed = mt_rand());
+```
+
+
 ## Test suite ##
 
 __ATTENTION__: Do not ever run the test suite shipped with Predis against instances of Redis running in
