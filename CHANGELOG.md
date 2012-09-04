@@ -37,6 +37,11 @@ v0.8.0 (201x-xx-xx)
   Pipeline and transaction objects still consume automatically the iterators
   that are present in response elements.
 
+- Command response parsers are no more handled by connection classes but should
+  be used by consumers such as Predis\Client. Nothing really changes when using
+  Predis\Client, but executing a command directly on a connection instance does
+  not return the response parsed using the handler associated to the command.
+
 - Cluster and replication connections now extend a new common interface,
   `Predis\Connection\AggregatedConnectionInterface`.
 
