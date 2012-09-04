@@ -287,19 +287,27 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommand()
+    public function testExecuteCommandReturnsParsedReplies()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $profile = ServerProfile::getDefault();
+
+        $ping = $profile->createCommand('ping', array());
+        $hgetall = $profile->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
 
         $connection= $this->getMock('Predis\Connection\ConnectionInterface');
-        $connection->expects($this->once())
+        $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($ping)
-                   ->will($this->returnValue(true));
+                   ->will($this->returnValue('PONG'));
+        $connection->expects($this->at(1))
+                   ->method('executeCommand')
+                   ->with($hgetall)
+                   ->will($this->returnValue(array('foo', 'bar', 'hoge', 'piyo')));
 
         $client = new Client($connection);
 
         $this->assertTrue($client->executeCommand($ping));
+        $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo'), $client->executeCommand($hgetall));
     }
 
     /**
@@ -351,7 +359,7 @@ class ClientTest extends StandardTestCase
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
-                   ->will($this->returnValue(true));
+                   ->will($this->returnValue('PONG'));
 
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->once())

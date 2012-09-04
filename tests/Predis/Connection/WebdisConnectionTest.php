@@ -130,7 +130,7 @@ class WebdisConnectionTest extends StandardTestCase
         $cmdRpush  = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
         $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
 
-        $this->assertTrue($connection->executeCommand($cmdPing));
+        $this->assertSame('PONG', $connection->executeCommand($cmdPing));
         $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
         $this->assertNull($connection->executeCommand($cmdGet));
         $this->assertSame(3, $connection->executeCommand($cmdRpush));

@@ -107,7 +107,7 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection = $this->getConnection($profile);
         $cmdPing = $profile->createCommand('ping');
 
-        $this->assertTrue($connection->executeCommand($cmdPing));
+        $this->assertSame('PONG', $connection->executeCommand($cmdPing));
         $this->assertTrue($connection->isConnected());
     }
 
@@ -119,12 +119,10 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection = $this->getConnection($profile);
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
-        $cmdPing->expects($this->once())
-                ->method('parseResponse')
-                ->with('PONG')
-                ->will($this->returnValue(true));
+        $cmdPing->expects($this->never())
+                ->method('parseResponse');
 
-        $this->assertTrue($connection->executeCommand($cmdPing));
+        $this->assertSame('PONG', $connection->executeCommand($cmdPing));
     }
 
     /**
@@ -150,13 +148,11 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection = $this->getConnection($profile);
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
-        $cmdPing->expects($this->once())
-                ->method('parseResponse')
-                ->with('PONG')
-                ->will($this->returnValue(true));
+        $cmdPing->expects($this->never())
+                ->method('parseResponse');
 
         $connection->writeCommand($cmdPing);
-        $this->assertTrue($connection->readResponse($cmdPing));
+        $this->assertSame('PONG', $connection->readResponse($cmdPing));
     }
 
     /**
@@ -167,24 +163,20 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection = $this->getConnection($profile);
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
-        $cmdPing->expects($this->once())
-                ->method('parseResponse')
-                ->with('PONG')
-                ->will($this->returnValue(true));
+        $cmdPing->expects($this->never())
+                ->method('parseResponse');
 
         $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
         $cmdEcho->setArguments(array('ECHOED'));
-        $cmdEcho->expects($this->once())
-                ->method('parseResponse')
-                ->with('ECHOED')
-                ->will($this->returnValue('ECHOED'));
+        $cmdEcho->expects($this->never())
+                ->method('parseResponse');
 
         $connection = $this->getConnection();
 
         $connection->writeCommand($cmdPing);
         $connection->writeCommand($cmdEcho);
 
-        $this->assertTrue($connection->readResponse($cmdPing));
+        $this->assertSame('PONG', $connection->readResponse($cmdPing));
         $this->assertSame('ECHOED', $connection->readResponse($cmdEcho));
     }
 
@@ -195,18 +187,15 @@ abstract class ConnectionTestCase extends StandardTestCase
     {
         $connection = $this->getConnection($profile, true);
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
+        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('getArguments'));
         $cmdPing->expects($this->once())
-                ->method('parseResponse')
-                ->with('PONG')
-                ->will($this->returnValue(true));
+                ->method('getArguments')
+                ->will($this->returnValue(array()));
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
-        $cmdEcho->setArguments(array('ECHOED'));
+        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('getArguments'));
         $cmdEcho->expects($this->once())
-                ->method('parseResponse')
-                ->with('ECHOED')
-                ->will($this->returnValue('ECHOED'));
+                ->method('getArguments')
+                ->will($this->returnValue(array('ECHOED')));
 
         $connection->pushInitCommand($cmdPing);
         $connection->pushInitCommand($cmdEcho);

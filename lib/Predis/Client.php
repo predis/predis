@@ -217,11 +217,15 @@ class Client implements ClientInterface
         $command = $this->profile->createCommand($method, $arguments);
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof ResponseErrorInterface) {
-            $response = $this->onResponseError($command, $response);
+        if ($response instanceof ResponseObjectInterface) {
+            if ($response instanceof ResponseErrorInterface) {
+                $response = $this->onResponseError($command, $response);
+            }
+
+            return $response;
         }
 
-        return $response;
+        return $command->parseResponse($response);
     }
 
     /**
@@ -239,11 +243,15 @@ class Client implements ClientInterface
     {
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof ResponseErrorInterface) {
-            return $this->onResponseError($command, $response);
+        if ($response instanceof ResponseObjectInterface) {
+            if ($response instanceof ResponseErrorInterface) {
+                $response = $this->onResponseError($command, $response);
+            }
+
+            return $response;
         }
 
-        return $response;
+        return $command->parseResponse($response);
     }
 
     /**

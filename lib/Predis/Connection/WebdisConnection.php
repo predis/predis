@@ -13,7 +13,6 @@ namespace Predis\Connection;
 
 use Predis\NotSupportedException;
 use Predis\ResponseError;
-use Predis\ResponseObjectInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionException;
 use Predis\Protocol\ProtocolException;
@@ -267,19 +266,11 @@ class WebdisConnection implements SingleConnectionInterface
             throw new ConnectionException($this, trim($error), $errno);
         }
 
-        $readerState = phpiredis_reader_get_state($this->reader);
-
-        if ($readerState === PHPIREDIS_READER_STATE_COMPLETE) {
-            $reply = phpiredis_reader_get_reply($this->reader);
-
-            if ($reply instanceof ResponseObjectInterface) {
-                return $reply;
-            }
-
-            return $command->parseResponse($reply);
-        } else {
+        if (phpiredis_reader_get_state($this->reader) !== PHPIREDIS_READER_STATE_COMPLETE) {
             throw new ProtocolException($this, phpiredis_reader_get_error($this->reader));
         }
+
+        return phpiredis_reader_get_reply($this->reader);
     }
 
     /**

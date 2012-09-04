@@ -14,7 +14,6 @@ namespace Predis\Connection;
 use Predis\ClientException;
 use Predis\Helpers;
 use Predis\NotSupportedException;
-use Predis\ResponseObjectInterface;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
 
@@ -126,13 +125,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     public function readResponse(CommandInterface $command)
     {
-        $reply = $this->read();
-
-        if ($reply instanceof ResponseObjectInterface) {
-            return $reply;
-        }
-
-        return $command->parseResponse($reply);
+        return $this->read();
     }
 
     /**
