@@ -45,6 +45,10 @@ v0.8.0 (201x-xx-xx)
 - Cluster and replication connections now extend a new common interface,
   `Predis\Connection\AggregatedConnectionInterface`.
 
+- The `Predis\Connection\MasterSlaveReplication` connection class now uses an
+  external strategy class to handle the logic for checking readable / writable
+  commands or Lua scripts.
+
 - Command pipelines have been optimized for both speed and code cleanness, but
   at the cost of bringing a breaking change in the signature of the interface
   for pipeline executors.

@@ -21,6 +21,7 @@ require 'SharedConfigurations.php';
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Profile\ServerProfile;
+use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
 
@@ -57,8 +58,10 @@ $options = array(
         return $profile;
     },
     'replication' => function ($options) {
-        $replication = new MasterSlaveReplication();
-        $replication->setScriptReadOnly(HashMultipleGetAll::BODY);
+        $strategy = new ReplicationStrategy();
+        $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
+
+        $replication = new MasterSlaveReplication($strategy);
 
         return $replication;
     },

@@ -14,6 +14,7 @@ namespace Predis\Connection;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Profile\ServerProfile;
+use Predis\Replication\ReplicationStrategy;
 
 /**
  *
@@ -467,8 +468,8 @@ class MasterSlaveReplicationTest extends StandardTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $replication->setCommandReadOnly($cmdSet->getId(), true);
-        $replication->setCommandReadOnly($cmdGet->getId(), false);
+        $replication->getReplicationStrategy()->setCommandReadOnly($cmdSet->getId(), true);
+        $replication->getReplicationStrategy()->setCommandReadOnly($cmdGet->getId(), false);
 
         $replication->executeCommand($cmdSet);
         $replication->executeCommand($cmdGet);
@@ -493,7 +494,7 @@ class MasterSlaveReplicationTest extends StandardTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $replication->setCommandReadOnly('exists', function ($cmd) {
+        $replication->getReplicationStrategy()->setCommandReadOnly('exists', function ($cmd) {
             list($arg1) = $cmd->getArguments();
             return $arg1 === 'foo';
         });
@@ -524,10 +525,23 @@ class MasterSlaveReplicationTest extends StandardTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $replication->setScriptReadOnly($script);
+        $replication->getReplicationStrategy()->setScriptReadOnly($script);
 
         $replication->executeCommand($cmdEval);
         $replication->executeCommand($cmdEvalSha);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExposesReplicationStrategy()
+    {
+        $replication = new MasterSlaveReplication();
+        $this->assertInstanceOf('Predis\Replication\ReplicationStrategy', $replication->getReplicationStrategy());
+
+        $strategy = new ReplicationStrategy();
+        $replication = new MasterSlaveReplication($strategy);
+        $this->assertSame($strategy, $replication->getReplicationStrategy());
     }
 
     /**
