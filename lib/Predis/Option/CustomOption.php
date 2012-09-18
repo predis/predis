@@ -12,7 +12,7 @@
 namespace Predis\Option;
 
 /**
- * Implements a generic class used to dinamically define a client option.
+ * Implements a generic class used to dynamically define a client option.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
