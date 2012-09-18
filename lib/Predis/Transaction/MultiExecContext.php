@@ -183,7 +183,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     }
 
     /**
-     * Dinamically invokes a Redis command with the specified arguments.
+     * Dynamically invokes a Redis command with the specified arguments.
      *
      * @param string $method Command ID.
      * @param array $arguments Arguments for the command.

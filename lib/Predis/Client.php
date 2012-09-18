@@ -206,7 +206,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Dinamically invokes a Redis command with the specified arguments.
+     * Dynamically invokes a Redis command with the specified arguments.
      *
      * @param string $method The name of a Redis command.
      * @param array $arguments The arguments for the command.

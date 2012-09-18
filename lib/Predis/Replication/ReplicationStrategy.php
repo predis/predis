@@ -99,7 +99,7 @@ class ReplicationStrategy
     /**
      * Marks a command as a read-only operation. When the behaviour of a
      * command can be decided only at runtime depending on its arguments,
-     * a callable object can be provided to dinamically check if the passed
+     * a callable object can be provided to dynamically check if the passed
      * instance of a command performs write operations or not.
      *
      * @param string $commandID ID of the command.
@@ -119,7 +119,7 @@ class ReplicationStrategy
     /**
      * Marks a Lua script for EVAL and EVALSHA as a read-only operation. When
      * the behaviour of a script can be decided only at runtime depending on
-     * its arguments, a callable object can be provided to dinamically check
+     * its arguments, a callable object can be provided to dynamically check
      * if the passed instance of EVAL or EVALSHA performs write operations or
      * not.
      *
