@@ -1,5 +1,5 @@
 # Some frequently asked questions about Predis #
-____________________________________________
+_________________________________________________
 
 
 ### What is the point of Predis? ###
@@ -13,34 +13,6 @@ directly in your own application. Given the fast pace at which Redis is develope
 features, this can be a great asset that allows you to add new and still missing features or commands,
 or change the behaviour of the library without the need to break your dependencies in production code
 (well, at least to some degree).
-
-
-### How about performances? ###
-
-Please refer to the dedicated __FAQ.PERFORMANCES__ file.
-
-
-### Why PHP 5.3? ###
-
-Seriously, are you still using PHP 5.2 to build new applications? I assume that if you are throwing Redis
-in the mix, then you are probably coding something new after all. PHP 5.3 is faster, less memory hungry
-and has a few nice features such as namespaces and closures (kind of). More importantly, PHP 5.2 is not
-even officially supported anymore (aside from security patches). PHP 5.3 is not the future of PHP, but
-its current present. Furthermore, most of the existing frameworks out there are also making the switch
-with their respective new major versions. If you still insist on using PHP 5.2, you can get any recent
-backported release of Predis 0.6.x, or just use a different library.
-
-
-### Why so many files for just one library? ###
-
-Before v0.7, Predis used the one-big-file approach to distribute the library. As much as you prefer having
-just one file for everything, this kind of solution is actually not that good. Predis now complies with the
-[PSR-0](http://groups.google.com/group/php-standards/web/psr-0-final-proposal) standard to play nice with
-the major recent frameworks and libraries, so it needs an autoloader function to be defined. If you still
-want to have just one file grouping all the classes for whatever reason, then the __bin/create-single-file.php__
-script in the repository can generate it for you. There is also the __bin/create-phar.php__ script that
-generates a single [Phar archive](http://www.php.net/manual/en/intro.phar.php) of the whole library.
-
 
 ### Does Predis support UNIX domain sockets and persistent connections? ###
 
@@ -97,3 +69,85 @@ $client->hmset('my:hash', array('field1'=>'value1', 'field2'=>'value2'); // valu
 
 The only exception to this _rule_ is the [SORT](http://redis.io/commands/sort) command for which modifiers are
 [passed using a named array](https://github.com/nrk/predis/blob/master/tests/Predis/Command/KeySortTest.php#L56-77).
+
+
+
+# Frequently asked questions about performances #
+_________________________________________________
+
+
+### Predis is a pure-PHP implementation: it can not be fast enough! ###
+
+It really depends, but most of the times the answer is: _yes, it is fast enough_. I will give you
+a couple of easy numbers using a single Predis client with PHP 5.3.5 (custom build) and Redis 2.2
+(localhost) under Ubuntu 11.04 (running on a Intel Q6600):
+
+    19600 SET/sec using 12 bytes for both key and value
+    18900 GET/sec while retrieving the very same values
+    0.200 seconds to fetch 30000 keys using _KEYS *_.
+
+How does it compare with a nice C-based extension such as [__phpredis__](http://github.com/nicolasff/phpredis)?
+
+    30500 SET/sec using 12 bytes for both key and value
+    31000 GET/sec while retrieving the very same values
+    0.030 seconds to fetch 30000 keys using "KEYS *"".
+
+Wow, __phpredis__ looks so much faster! Well we are comparing a C extension with a pure-PHP library so
+lower numbers are quite expected, but there is a fundamental flaw in them: is this really how you are
+going to use Redis in your application? Are you really going to send thousands of commands in a for-loop
+for each page request using a single client instance? If so, well I guess you are probably doing something
+wrong. Also, if you need to SET or GET multiple keys you should definitely use commands such as MSET and
+MGET. You can also use pipelining to get more performances when this technique can be used.
+
+There is one more thing. We have tested the overhead of Predis by connecting on a localhost instance of
+Redis, but how these numbers change when we hit the network by connecting to instances of Redis that
+reside on other servers?
+
+    Using Predis:
+    3600 SET/sec using 12 bytes for both key and value
+    3600 GET/sec while retrieving the very same values
+    0.210 seconds to fetch 30000 keys using "KEYS *".
+
+    Using phpredis:
+    4000 SET/sec using 12 bytes for both key and value
+    4000 GET/sec while retrieving the very same values
+    0.051 seconds to fetch 30000 keys using "KEYS *".
+
+There you go, you get almost the same average numbers and the reason is quite simple: network latency
+is a real performance killer and you cannot do (almost) anything about that. As a disclaimer, please
+remember that we are measuring the overhead of client libraries implementations and the effects of the
+network round-trip time, we are not really measuring how fast Redis is. Redis shines the best with
+thousands of concurrent clients doing requests! Also, actual performances should be measured according
+to how your application will use Redis.
+
+
+### I am convinced, but performances for multi-bulk replies (e.g. _KEYS *_) are still worse ###
+
+Fair enough, but there is actually an option for you if you need even more speed and it consists on
+installing __[phpiredis](http://github.com/seppo0010/phpiredis)__ (note the additional _i_ in the
+name) and let Predis using it. __phpiredis__ is a C-based extension that wraps __hiredis__ (the
+official Redis C client library) with a thin layer that exposes its features to PHP. You will now
+get the benefits of a faster protocol parser just by adding a single line of code in your application:
+
+    $client = new Predis\Client('tcp://127.0.0.1', array(
+        'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
+    ));
+
+As simple as it is, nothing will really change in the way you use the library in your application. So,
+how fast is it now? There are not much improvements for inline or short bulk replies (e.g. _SET_ or
+_GET_), but the speed for parsing multi-bulk replies is now on par with phpredis:
+
+    Using Predis with a phpiredis-based connection to fetch 30000 keys using _KEYS *_:
+
+    0.031 seconds from a local Redis instance
+    0.058 seconds from a remote Redis instance
+
+
+### If I need to install a C extension to get better performances, why not using phpredis? ###
+
+Good question. Generically speaking, if you need absolute uber-speed using localhost instances of Redis
+and you do not care about abstractions built around some Redis features such as MULTI / EXEC, or if you
+do not need any kind of extensibility or guaranteed backwards compatibility with different versions of
+Redis (Predis currently supports from 1.2 up to 2.6, and even the current development version), then
+using __phpredis__ can make sense for you. Otherwise, Predis is perfect for the job. __phpiredis__
+can give you a nice speed bump, but using it is not mandatory.
