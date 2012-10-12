@@ -31,5 +31,9 @@ on your newly created repository to fix or add features (possibly with tests cov
 and then open a new pull request with a description of the applied changes. Obviously you can use any
 other Git hosting provider of your preference.
 
+When writing code please follow the [basic coding (PSR-1)](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md)
+and [coding style (PSR-2)](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md)
+standards and stick with the conventions used in Predis to name classes and interfaces.
+
 Please also follow some basic [commit guidelines](http://git-scm.com/book/ch5-2.html#Commit-Guidelines)
 before opening pull requests.
