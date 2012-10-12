@@ -227,22 +227,6 @@ Predis uses Travis CI for continuous integration. You can find the results of th
 history [on its project page](http://travis-ci.org/nrk/predis).
 
 
-## Contributing ##
-
-If you want to work on Predis, it is highly recommended that you first run the test suite in order to
-check that everything is OK, and report strange behaviours or bugs. When modifying Predis please make
-sure that no warnings or notices are emitted by PHP by running the interpreter in your development
-environment with the `error_reporting` variable set to `E_ALL | E_STRICT`.
-
-The recommended way to contribute to Predis is to fork the project on GitHub, create new topic branches
-on your newly created repository to fix or add features (possibly with tests covering your modifications)
-and then open a new pull request with a description of the applied changes. Obviously you can use any
-other Git hosting provider of your preference.
-
-Please also follow some basic [commit guidelines](http://git-scm.com/book/ch5-2.html#Commit-Guidelines)
-before opening pull requests.
-
-
 ## Dependencies ##
 
 - PHP >= 5.3.2
