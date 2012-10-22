@@ -2,9 +2,9 @@
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
-The library does not require any additional extension loaded in PHP, but it can be optionally paired
-with the [phpiredis](https://github.com/seppo0010/phpiredis) extension to lower the overhead of the
-serialization and parsing of the Redis protocol. Predis is also available in an asynchronous fashion
+The library does not require any additional extension loaded in PHP but it can be optionally paired
+with the [phpiredis](https://github.com/seppo0010/phpiredis) C extension to lower the overhead of
+serializing and parsing the Redis protocol. Predis is also available in an asynchronous fashion
 through the experimental client provided by the [Predis\Async](http://github.com/nrk/predis-async)
 library.
 
