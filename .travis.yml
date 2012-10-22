@@ -6,5 +6,6 @@ branches:
   only:
     - master
     - v0.7
+    - v0.8
 services: redis-server
 script: phpunit -c phpunit.xml.travisci

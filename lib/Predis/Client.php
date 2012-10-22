@@ -33,7 +33,7 @@ use Predis\Transaction\MultiExecContext;
  */
 class Client implements ClientInterface
 {
-    const VERSION = '0.8.0-dev';
+    const VERSION = '0.8.0';
 
     private $options;
     private $profile;
