@@ -328,7 +328,7 @@ class PhpiredisConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    private function write($buffer)
+    protected function write($buffer)
     {
         $socket = $this->getResource();
 
