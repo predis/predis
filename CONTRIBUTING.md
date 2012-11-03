@@ -6,10 +6,11 @@ section of the project.
 When reporting bugs, in addition to the obvious description of your issue you __must__ always provide
 some essential information about your environment such as:
 
-  1. version of Predis.
-  2. version of PHP.
-  3. name and version of the operating system.
-  4. when possible, a small snippet of code that reproduces the issue.
+  1. version of Predis (check the `VERSION` file or the `Predis\Client::VERSION` constant).
+  2. version of Redis (check the `redis_version` field returned by [`INFO`](http://redis.io/commands/info)).
+  3. version of PHP.
+  4. name and version of the operating system.
+  5. when possible, a small snippet of code that reproduces the issue.
 
 __Think about it__: we do not have a crystal ball and cannot predict things and peer into the unknown,
 so please provide as much details as possible to help us isolating issues and fix them.
