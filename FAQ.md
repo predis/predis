@@ -79,18 +79,18 @@ _________________________________________________
 ### Predis is a pure-PHP implementation: it can not be fast enough! ###
 
 It really depends, but most of the times the answer is: _yes, it is fast enough_. I will give you
-a couple of easy numbers using a single Predis client with PHP 5.3.5 (custom build) and Redis 2.2
-(localhost) under Ubuntu 11.04 (running on a Intel Q6600):
+a couple of easy numbers using a single Predis client with PHP 5.4.7 (custom build) and Redis 2.2
+(localhost) under Ubuntu 12.04.1 (running on a Intel Q6600):
 
-    19600 SET/sec using 12 bytes for both key and value
-    18900 GET/sec while retrieving the very same values
-    0.200 seconds to fetch 30000 keys using _KEYS *_.
+    21500 SET/sec using 12 bytes for both key and value
+    21000 GET/sec while retrieving the very same values
+    0.130 seconds to fetch 30000 keys using _KEYS *_.
 
 How does it compare with a nice C-based extension such as [__phpredis__](http://github.com/nicolasff/phpredis)?
 
-    30500 SET/sec using 12 bytes for both key and value
-    31000 GET/sec while retrieving the very same values
-    0.030 seconds to fetch 30000 keys using "KEYS *"".
+    30100 SET/sec using 12 bytes for both key and value
+    29400 GET/sec while retrieving the very same values
+    0.035 seconds to fetch 30000 keys using "KEYS *"".
 
 Wow, __phpredis__ looks so much faster! Well we are comparing a C extension with a pure-PHP library so
 lower numbers are quite expected, but there is a fundamental flaw in them: is this really how you are
@@ -104,14 +104,14 @@ Redis, but how these numbers change when we hit the network by connecting to ins
 reside on other servers?
 
     Using Predis:
-    3600 SET/sec using 12 bytes for both key and value
-    3600 GET/sec while retrieving the very same values
-    0.210 seconds to fetch 30000 keys using "KEYS *".
+    3200 SET/sec using 12 bytes for both key and value
+    3200 GET/sec while retrieving the very same values
+    0.132 seconds to fetch 30000 keys using "KEYS *".
 
     Using phpredis:
-    4000 SET/sec using 12 bytes for both key and value
-    4000 GET/sec while retrieving the very same values
-    0.051 seconds to fetch 30000 keys using "KEYS *".
+    3500 SET/sec using 12 bytes for both key and value
+    3500 GET/sec while retrieving the very same values
+    0.045 seconds to fetch 30000 keys using "KEYS *".
 
 There you go, you get almost the same average numbers and the reason is quite simple: network latency
 is a real performance killer and you cannot do (almost) anything about that. As a disclaimer, please
@@ -139,8 +139,8 @@ _GET_), but the speed for parsing multi-bulk replies is now on par with phpredis
 
     Using Predis with a phpiredis-based connection to fetch 30000 keys using _KEYS *_:
 
-    0.031 seconds from a local Redis instance
-    0.058 seconds from a remote Redis instance
+    0.035 seconds from a local Redis instance
+    0.047 seconds from a remote Redis instance
 
 
 ### If I need to install a C extension to get better performances, why not using phpredis? ###
