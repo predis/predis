@@ -262,7 +262,7 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection->writeCommand($profile->createCommand('rpush', array('foo', 'baz')));
 
         $this->assertInstanceOf('Predis\ResponseError', $error = $connection->read());
-        $this->assertSame('ERR Operation against a key holding the wrong kind of value', $error->getMessage());
+        $this->assertRegExp('/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage());
     }
 
     /**
