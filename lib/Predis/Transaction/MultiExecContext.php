@@ -17,6 +17,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\CommunicationException;
 use Predis\ExecutableContextInterface;
+use Predis\Helpers;
 use Predis\NotSupportedException;
 use Predis\ResponseErrorInterface;
 use Predis\ResponseQueued;

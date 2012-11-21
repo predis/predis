@@ -1,3 +1,10 @@
+v0.8.1 (201x-xx-xx)
+
+- __FIX__: a missing use directive in `Predis\Transaction\MultiExecContext`
+  caused PHP errors when Redis did not return `+QUEUED` replies to commands
+  when inside a MULTI / EXEC context.
+
+
 v0.8.0 (2012-10-23)
 ===============================================================================
 
