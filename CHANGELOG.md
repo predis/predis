@@ -4,6 +4,10 @@ v0.8.1 (201x-xx-xx)
   caused PHP errors when Redis did not return `+QUEUED` replies to commands
   when inside a MULTI / EXEC context.
 
+- __FIX__: the `parseResponse()` method implemented for a scripted command was
+  ignored when retrying to execute a Lua script by falling back to `EVAL` after
+  a `-NOSCRIPT` error (ISSUE #94).
+
 
 v0.8.0 (2012-10-23)
 ===============================================================================

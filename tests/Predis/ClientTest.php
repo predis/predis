@@ -656,10 +656,14 @@ class ClientTest extends StandardTestCase
      */
     public function testClientResendScriptedCommandUsingEvalOnNoScriptErrors()
     {
-        $command = $this->getMockForAbstractClass('Predis\Command\ScriptedCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\ScriptedCommand', array(), '', true, true, true, array('parseResponse'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return redis.call(\'exists\', KEYS[1])'));
+        $command->expects($this->once())
+                ->method('parseResponse')
+                ->with('OK')
+                ->will($this->returnValue(true));
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->at(0))
@@ -669,7 +673,7 @@ class ClientTest extends StandardTestCase
         $connection->expects($this->at(1))
                    ->method('executeCommand')
                    ->with($this->isInstanceOf('Predis\Command\ServerEval'))
-                   ->will($this->returnValue(true));
+                   ->will($this->returnValue('OK'));
 
         $client = new Client($connection);
 
