@@ -81,6 +81,9 @@ default_role = 'php:class'
 # Default highlight language
 highlight_language = 'php'
 
+# Primary domain, too :-)
+primary_domain = 'php'
+
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
 
