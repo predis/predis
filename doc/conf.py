@@ -76,6 +76,10 @@ exclude_patterns = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
+default_role = 'php:class'
+
+# Default highlight language
+highlight_language = 'php'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -172,7 +176,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Predisdoc'
+htmlhelp_basename = 'Predis'
 
 
 # -- Options for LaTeX output --------------------------------------------------
