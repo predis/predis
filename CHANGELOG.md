@@ -1,5 +1,11 @@
 v0.8.1 (201x-xx-xx)
 
+- The `connections` client option can now accept a callable object returning
+  an instance of `Predis\Connection\ConnectionFactoryInterface`.
+
+- Client options accepting callable objects as factories now pass their actual
+  instance to the callable as the second argument.
+
 - __FIX__: a missing use directive in `Predis\Transaction\MultiExecContext`
   caused PHP errors when Redis did not return `+QUEUED` replies to commands
   when inside a MULTI / EXEC context.
