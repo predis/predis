@@ -42,7 +42,7 @@ class ClientReplication extends AbstractOption
     public function filter(ClientOptionsInterface $options, $value)
     {
         if (is_callable($value)) {
-            $connection = call_user_func($value, $options);
+            $connection = call_user_func($value, $options, $this);
 
             if (!$connection instanceof ReplicationConnectionInterface) {
                 throw new \InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');

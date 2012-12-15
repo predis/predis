@@ -53,16 +53,16 @@ class ClientClusterTest extends StandardTestCase
     {
         $value = $this->getMock('Predis\Connection\ClusterConnectionInterface');
 
-        $initializer = $this->getMock('stdClass', array('__invoke'));
-        $initializer->expects($this->once())
-                    ->method('__invoke')
-                    ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'))
-                    ->will($this->returnValue($value));
-
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
         $option = new ClientCluster();
 
-        $cluster = $option->filter($options, $initializer);
+        $initializer = $this->getMock('stdClass', array('__invoke'));
+        $initializer->expects($this->once())
+                    ->method('__invoke')
+                    ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'), $option)
+                    ->will($this->returnValue($value));
+
+        $cluster = $option->filter($options, $initializer, $option);
 
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster);
         $this->assertSame($value, $cluster);

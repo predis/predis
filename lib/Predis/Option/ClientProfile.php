@@ -35,7 +35,7 @@ class ClientProfile extends AbstractOption
         }
 
         if (is_callable($value)) {
-            $value = call_user_func($value, $options);
+            $value = call_user_func($value, $options, $this);
         }
 
         if (!$value instanceof ServerProfileInterface) {

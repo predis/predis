@@ -59,16 +59,16 @@ class ClientProfileTest extends StandardTestCase
     {
         $value = $this->getMock('Predis\Profile\ServerProfileInterface');
 
-        $initializer = $this->getMock('stdClass', array('__invoke'));
-        $initializer->expects($this->once())
-                    ->method('__invoke')
-                    ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'))
-                    ->will($this->returnValue($value));
-
         $options = $this->getMock('Predis\Option\ClientOptionsInterface');
         $option = new ClientProfile();
 
-        $profile = $option->filter($options, $initializer);
+        $initializer = $this->getMock('stdClass', array('__invoke'));
+        $initializer->expects($this->once())
+                    ->method('__invoke')
+                    ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'), $option)
+                    ->will($this->returnValue($value));
+
+        $profile = $option->filter($options, $initializer, $option);
 
         $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
         $this->assertSame($value, $profile);

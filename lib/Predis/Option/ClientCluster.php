@@ -43,7 +43,7 @@ class ClientCluster extends AbstractOption
     public function filter(ClientOptionsInterface $options, $value)
     {
         if (is_callable($value)) {
-            return $this->checkInstance(call_user_func($value, $options));
+            return $this->checkInstance(call_user_func($value, $options, $this));
         }
 
         $initializer = $this->getInitializer($options, $value);
