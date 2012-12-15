@@ -40,8 +40,20 @@ class ClientConnectionFactory extends AbstractOption
             return $factory;
         }
 
-        if (is_string($value) && class_exists($value)) {
-            if (!($factory = new $value()) && !$factory instanceof ConnectionFactoryInterface) {
+        if (is_callable($value)) {
+            $factory = call_user_func($value, $options, $this);
+
+            if (!$factory instanceof ConnectionFactoryInterface) {
+                throw new \InvalidArgumentException('Instance of Predis\Connection\ConnectionFactoryInterface expected');
+            }
+
+            return $factory;
+        }
+
+        if (@class_exists($value)) {
+            $factory = new $value();
+
+            if (!$factory instanceof ConnectionFactoryInterface) {
                 throw new \InvalidArgumentException("Class $value must be an instance of Predis\Connection\ConnectionFactoryInterface");
             }
 

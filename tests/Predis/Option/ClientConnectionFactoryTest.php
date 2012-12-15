@@ -64,6 +64,27 @@ class ClientConnectionFactoryTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testValidationAcceptsCallableObjectAsInitializers()
+    {
+        $value = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
+        $options = $this->getMock('Predis\Option\ClientOptionsInterface');
+        $option = new ClientConnectionFactory();
+
+        $initializer = $this->getMock('stdClass', array('__invoke'));
+        $initializer->expects($this->once())
+                    ->method('__invoke')
+                    ->with($this->isInstanceOf('Predis\Option\ClientOptionsInterface'), $option)
+                    ->will($this->returnValue($value));
+
+        $cluster = $option->filter($options, $initializer, $option);
+
+        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $cluster);
+        $this->assertSame($value, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testValidationAcceptsStringAsValue()
     {
         $factory = 'Predis\Connection\ConnectionFactory';
