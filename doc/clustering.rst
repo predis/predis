@@ -1,5 +1,4 @@
 .. vim: set ts=3 sw=3 et :
-
 .. php:namespace:: Predis
 
 Clustering
@@ -17,24 +16,6 @@ Clustering has obvious advantages. As you add Redis instances to your
 cluster, your available space increases. At the same time, commands should be
 distributed between the nodes, meaning each individual node has to service
 less requests.
-
-
-Distribution Strategy
-=====================
-
-Exactly how keys are split across a cluster is specified by a
-:term:`distribution strategy`. There are two distribution strategy classes shipped
-with Predis. What they have in common is that they try to manage the task of
-adding and removing servers from the cluster cleverly.
-
-When a server is added or removed, the distribution strategy takes care of
-ensuring that as few keys as possible have to be moved between the remaining
-servers. When you remove a server from a clustered connection of ten servers,
-ideally you'd only like 10% of your keys to be newly missing.
-
-This is broadly known as "`consistent hashing`_".
-
-.. _consistent hashing: https://en.wikipedia.org/wiki/Consistent_hashing
 
 Configuring a Cluster
 =====================
@@ -72,8 +53,8 @@ all in an array::
 You can still use the URI syntax to configure the connections::
 
    $client = new Predis\Client(array(
-       'tcp://127.0.0.1:6370?alias=first&db=0',
-       'tcp://127.0.0.1:6370?alias=second&db=1'
+       'tcp://127.0.0.1:6370?alias=first&database=0',
+       'tcp://127.0.0.1:6370?alias=second&database=1'
    ), $options);
 
 .. note::
@@ -91,7 +72,7 @@ The ``cluster`` Client Option
 '''''''''''''''''''''''''''''
 .. php:namespace:: Predis\Connection
 
-You can optionally confiugre your client's clustering by using the ``cluster``
+You can optionally configure your client's clustering by using the ``cluster``
 client option. This option can take a few different types of value. It can take
 the special strings ``"predis"`` or ``"redis"`` to switch between the two
 built-in cluster connection classes `PredisCluster` and
@@ -105,10 +86,67 @@ If the value is any other string, it's expected to be the fully qualified name
 of a class implementing `ClusterConnectionInterface`.
 
 Finally, you can also configure the option with a callable. This callable is
-expected to return an instance of `ClusterConnectionInterface`. The two
-built-in clustered connection types both accept a
-`Predis\\Cluster\\Distribution\\DistributionStrategyInterface` instance as
-their first argument, allowing you to configure that as well::
+expected to return an instance of `ClusterConnectionInterface`::
+
+   $client = new Predis\Client(array(
+       // ...
+   ), array(
+      'cluster' => function () {
+         return new Predis\Connection\PredisCluster();
+      }
+   ));
+
+
+Provided Connection Classes
+===========================
+
+PredisCluster
+'''''''''''''
+
+.. php:class:: PredisCluster
+
+   ``PredisCluster`` is a simple Predis-native clustered connection implementation.
+
+This form of clustered connection does *not* provide redundancy. If your
+application makes requests for 100 different keys, with the default
+distribution strategy these keys are likely to be spit across all the servers
+in your pool.
+
+Distribution Strategy
+:::::::::::::::::::::
+
+Exactly how keys are split across a cluster is specified by a
+:term:`distribution strategy`. There are two distribution strategy classes
+shipped with Predis. What they have in common is that they try to manage the
+task of adding and removing servers from the cluster cleverly. When a server is
+added or removed, the distribution strategy takes care of ensuring that as few
+keys as possible have to be moved between the remaining servers. When you
+remove a server from a clustered connection of ten servers, ideally you'd only
+like 10% of your keys to be newly missing.
+
+This is broadly known as "`consistent hashing`_".
+
+It's also worth noting what a distribution strategy doesn't do: it doesn't
+actually ensure availability of your data between different cluster
+configurations. Or, more accurately, it leaves this up to you.
+
+You might decide to take the naive approach: that if a node goes offline, it'll take a
+portion of your keyspace with it. This might not matter to your application,
+especially if you can recalculate the data you were storing, or if you're using
+your cluster as a cache.
+
+If this sort of availability does matter for your application, it's up to you
+to take care of it, using tools external to Predis. You may want to move data
+before taking a node offline, for instance, ensuring minimal disruption. The
+fact that you can customize or replace the distribution strategy should make
+integrating such tools with `PredisCluster` much easier. For example, you may
+want to use a `Predis\\Cluster\\Distribution\\KetamaPureRing` strategy,
+combined with `libketama`_-based tools.
+
+The distribution strategy for a `PredisCluster` must implement
+`Predis\\Cluster\\Distribution\\DistributionStrategyInterface`. You pass your
+strategy into the `PredisCluster` instance as the first argument, using a
+'cluster' client-option callback::
 
    $client = new Predis\Client(array(
        // ...
@@ -119,23 +157,22 @@ their first argument, allowing you to configure that as well::
       }
    ));
 
-Connection Classes
-""""""""""""""""""
+.. _consistent hashing: https://en.wikipedia.org/wiki/Consistent_hashing
+.. _libketama:          https://github.com/RJ/ketama
 
-.. php:class:: PredisCluster
-
-  ``PredisCluster`` is a simple Predis-native clustered connection implementation.
-
-  This form of clustered connection does *not* provide redundancy. If your application
-  makes requests for 100 different keys, with the default distribution strategy
-  these keys are likely to be spit across all the servers in your pool.
+RedisCluster
+''''''''''''
 
 .. php:class:: RedisCluster
 
-  ``RedisCluster`` is a clustered connection implementation intended for use with
-  Redis Cluster. Redis Cluster is not yet finalized, but it already includes some
-  pretty cool features. Nodes in a Redis Cluster arrangement configure
-  themselves to deal with changes in availability.
+   ``RedisCluster`` is a clustered connection implementation intended for use with
+   Redis Cluster.
+
+Redis Cluster is not yet finalized, but it already includes some
+pretty cool features. Nodes in a Redis Cluster arrangement configure
+themselves to deal with changes in availability. Once consequence of this is
+that a distribution strategy is unnecessary: nodes in this cluster type agree
+and decide themselves about which node is to serve a portion of the keyspace.
 
 Disallowed Commands
 ===================
@@ -145,7 +182,7 @@ example, the ``INFO`` command returns information about the server on which
 it's run, so running it on a cluster would be meaningless.
 
 If you try to run one of these commands, you'll get a
-``Predis\\NotSupportedException``.
+`Predis\\NotSupportedException`.
 
 Running Commands on Nodes
 =========================
