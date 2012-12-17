@@ -168,11 +168,13 @@ RedisCluster
    ``RedisCluster`` is a clustered connection implementation intended for use with
    Redis Cluster.
 
-Redis Cluster is not yet finalized, but it already includes some
+`Redis Cluster`_ is not yet finalized, but it already includes some
 pretty cool features. Nodes in a Redis Cluster arrangement configure
 themselves to deal with changes in availability. Once consequence of this is
 that a distribution strategy is unnecessary: nodes in this cluster type agree
 and decide themselves about which node is to serve a portion of the keyspace.
+
+.. _Redis Cluster: http://redis.io/topics/cluster-spec
 
 Disallowed Commands
 ===================
