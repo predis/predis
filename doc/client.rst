@@ -156,7 +156,7 @@ Just like standard options, they are accessible from callable initializers::
            'get' => Predis\Command\StringGet,
        ),
        'profile'     => function ($options, $option) {
-           $profile = $option->getDefault();
+           $profile = $option->getDefault($options);
 
            if (is_array($options->commands)) {
                foreach ($options->commands as $command => $class) {
