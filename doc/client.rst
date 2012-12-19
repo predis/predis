@@ -72,6 +72,10 @@ path                Path of the UNIX domain socket the server is   not set    `P
 database            Redis database to select when connecting.      not set    `Predis\\Connection\\StreamConnection`
                     Its effect is the same of using `SELECT`_.                `Predis\\Connection\\PhpiredisConnection`
 ------------------  ---------------------------------------------  ---------  -----------------------------------------
+password            Password for accessing a password-protected    not set    `Predis\\Connection\\StreamConnection`
+                    Redis instance. Its effect is the same of                 `Predis\\Connection\\PhpiredisConnection`
+                    using `AUTH`_.
+------------------  ---------------------------------------------  ---------  -----------------------------------------
 timeout             Timeout to perform the connection to Redis.    5.0        `Predis\\Connection\\StreamConnection`
                     Its value is expressed in seconds as a float              `Predis\\Connection\\PhpiredisConnection`
                     allowing sub-second resolution.                           `Predis\\Connection\\WebdisConnection`
@@ -106,6 +110,7 @@ pass                Password for HTTP authentication (`Webdis`_).  not set    `P
 ==================  =============================================  =========  =========================================
 
 .. _SELECT: http://redis.io/commands/select
+.. _AUTH: http://redis.io/commands/auth
 .. _Multi-bulk replies: http://redis.io/topics/protocol#multi-bulk-reply
 .. _Webdis: http://webd.is/
 
