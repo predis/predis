@@ -142,7 +142,7 @@ class Client implements ClientInterface
             throw new \InvalidArgumentException("Invalid connection ID: '$connectionID'");
         }
 
-        return new Client($connection, $this->options);
+        return new static($connection, $this->options);
     }
 
     /**

@@ -462,8 +462,20 @@ class ClientTest extends StandardTestCase
 
         $clientNode02 = $client->getClientFor('node02');
 
+        $this->assertInstanceOf('Predis\Client', $clientNode02);
         $this->assertSame($node02, $clientNode02->getConnection());
         $this->assertSame($client->getOptions(), $clientNode02->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientForReturnsInstanceOfSubclass()
+    {
+        $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
+        $client = $this->getMock('Predis\Client', array('dummy'), array($nodes), 'SubclassedClient');
+
+        $this->assertInstanceOf('SubclassedClient', $client->getClientFor('node02'));
     }
 
     /**

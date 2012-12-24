@@ -14,6 +14,9 @@ v0.8.1 (201x-xx-xx)
   ignored when retrying to execute a Lua script by falling back to `EVAL` after
   a `-NOSCRIPT` error (ISSUE #94).
 
+- __FIX__: When subclassing Predis\Client, the `getClientFor()` method returns
+  a new instance of the subclass instead of a new instance of Predis\Client.
+
 
 v0.8.0 (2012-10-23)
 ===============================================================================
