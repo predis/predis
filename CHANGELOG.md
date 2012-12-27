@@ -6,6 +6,9 @@ v0.8.1 (201x-xx-xx)
 - Client options accepting callable objects as factories now pass their actual
   instance to the callable as the second argument.
 
+- `Predis\Command\Processor\KeyPrefixProcessor` can now be directly casted to
+  string to obtain the current prefix, useful with string interpolation.
+
 - __FIX__: a missing use directive in `Predis\Transaction\MultiExecContext`
   caused PHP errors when Redis did not return `+QUEUED` replies to commands
   when inside a MULTI / EXEC context.

@@ -61,4 +61,12 @@ class KeyPrefixProcessor implements CommandProcessorInterface
             $command->prefixKeys($this->prefix);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getPrefix();
+    }
 }

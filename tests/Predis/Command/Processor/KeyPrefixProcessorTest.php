@@ -80,4 +80,15 @@ class KeyPrefixProcessorTest extends StandardTestCase
 
         $processor->process($command);
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testInstanceCanBeCastedToString()
+    {
+        $prefix = 'prefix:';
+        $processor = new KeyPrefixProcessor($prefix);
+
+        $this->assertEquals($prefix, (string) $processor);
+    }
 }
