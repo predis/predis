@@ -124,10 +124,10 @@ to how your application will use Redis.
 ### I am convinced, but performances for multi-bulk replies (e.g. _KEYS *_) are still worse ###
 
 Fair enough, but there is actually an option for you if you need even more speed and it consists on
-installing __[phpiredis](http://github.com/seppo0010/phpiredis)__ (note the additional _i_ in the
-name) and let Predis using it. __phpiredis__ is a C-based extension that wraps __hiredis__ (the
-official Redis C client library) with a thin layer that exposes its features to PHP. You will now
-get the benefits of a faster protocol parser just by adding a single line of code in your application:
+installing __[phpiredis](http://github.com/nrk/phpiredis)__ (note the additional _i_ in the name)
+and let Predis using it. __phpiredis__ is a C-based extension that wraps __hiredis__ (the official
+Redis C client library) with a thin layer that exposes its features to PHP. You will now get the
+benefits of a faster protocol parser just by adding a single line of code in your application:
 
     $client = new Predis\Client('tcp://127.0.0.1', array(
         'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')

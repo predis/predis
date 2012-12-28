@@ -3,7 +3,7 @@
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
 The library does not require any additional extension loaded in PHP but it can be optionally paired
-with the [phpiredis](https://github.com/seppo0010/phpiredis) C extension to lower the overhead of
+with the [phpiredis](https://github.com/nrk/phpiredis) C-based extension to lower the overhead of
 serializing and parsing the Redis protocol. Predis is also available in an asynchronous fashion
 through the experimental client provided by the [Predis\Async](http://github.com/nrk/predis-async)
 library.
@@ -117,7 +117,7 @@ $replies = $redis->pipeline(function ($pipe) {
 ### Multiple and customizable connection backends ###
 
 Predis can optionally use different connection backends to connect to Redis. One of them leverages
-the [phpiredis](http://github.com/seppo0010/phpiredis) C extension resulting in a major speed bump
+the [phpiredis](http://github.com/nrk/phpiredis) C-based extension resulting in a major speed bump
 especially when dealing with long multibulk replies (the `socket` extension is also required):
 
 ``` php
@@ -255,7 +255,7 @@ history [on its project page](http://travis-ci.org/nrk/predis).
 - [Lorenzo Castelli](http://github.com/lcastelli)
 - [Jordi Boggiano](http://github.com/Seldaek) ([twitter](http://twitter.com/seldaek))
 - [Sebastian Waisbrot](http://github.com/seppo0010) ([twitter](http://twitter.com/seppo0010))
-  for his work on extending [phpiredis](http://github.com/seppo0010/phpiredis) for Predis
+  for his past work on extending [phpiredis](http://github.com/nrk/phpiredis) for Predis.
 
 ## License ##
 
