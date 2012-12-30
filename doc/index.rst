@@ -13,6 +13,7 @@ Welcome to the end-user Predis documentation.
    pipelining
    clustering
    replication
+   lua-scripting
    glossary
    license
 
