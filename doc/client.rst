@@ -146,6 +146,11 @@ them to `Client`::
        },
    ));
 
+.. note::
+   When using callables, the configuration of the returned value must be fully
+   handled by the user's code since Predis will not attempt to use its standard
+   configuration path for that option.
+
 Users can also specify their own custom options to pass additional information.
 Just like standard options, they are accessible from callable initializers::
 
@@ -196,6 +201,11 @@ profile         Changes the Redis version `Client` is expected to       2.6
                 a `Predis\\Profile\\ServerProfileInterface`
                 or its instance passed either directly or returned by
                 a callable initializer.
+
+                .. note::
+                   In the latter case, Predis will not automatically
+                   apply the specified key prefix to the profile so
+                   it must be manually set by the user's code.
 --------------  ------------------------------------------------------  ------------------------------------------------
 connections     Overrides :doc:`connection backends` by scheme using    - tcp: `Predis\\Connection\\StreamConnection`
                 a named array, with keys being the connection schemes   - unix: `Predis\\Connection\\StreamConnection`
