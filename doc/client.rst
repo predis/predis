@@ -117,7 +117,136 @@ pass                Password for HTTP authentication (`Webdis`_).  not set    `P
 Users can also specify their own parameters, they will simply be ignored by the
 client but can be used later to pass additional information for custom purposes.
 
+
 Client Options
 ''''''''''''''
 
+Several behaviours of `Client` can be controlled via client options with values
+that vary depending on the nature of each option: some of them accept primitive
+types while others can also take instances of classes implementing some specific
+interfaces defined by Predis, which can be useful to completely override the
+standard ones used by `Client`::
 
+   $client = new Predis\Client($parameters, array(
+       'prefix'      => 'predis:'
+       'profile'     => '2.6',
+       'connections' => array(
+           'tcp'  => 'Predis\Connection\PhpiredisConnection',
+           'unix' => 'Predis\Connection\PhpiredisConnection',
+       ),
+   ));
+
+To achieve an even higher level of customizability, certain options also accept
+callables acting as initializers that can be leveraged to gain full control over
+the initialization of option values (e.g. instances of classes) before returning
+them to `Client`::
+
+   $client = new Predis\Client('tcp://127.0.0.1', array(
+       'prefix'  => 'predis:',
+       'profile' => function ($options, $option) {
+           // Callable initializers have access to the whole set of options
+           // (1st argument) and to the current option instance (2nd argument).
+
+           return new Predis\Profile\ServerVersion26();
+       },
+   ));
+
+.. note::
+   When using callables, the configuration of the returned value must be fully
+   handled by the user's code since Predis will not attempt to use its standard
+   configuration path for that option.
+
+Users can also specify their own custom options to pass additional information.
+Just like standard options, they are accessible from callable initializers::
+
+   $client = new Predis\Client('tcp://127.0.0.1', array(
+        // 'commands' is a custom option, actually unknown to Predis.
+       'commands' => array(
+           'set' => Predis\Command\StringSet,
+           'get' => Predis\Command\StringGet,
+       ),
+       'profile'     => function ($options, $option) {
+           $profile = $option->getDefault($options);
+
+           if (is_array($options->commands)) {
+               foreach ($options->commands as $command => $class) {
+                   $profile->defineCommand($command, $class);
+               }
+           }
+
+           return $profile
+       },
+   ));
+
+This is the full list of client options supported by `Client`:
+
+==============  ======================================================  ================================================
+option          description                                             default
+==============  ======================================================  ================================================
+exceptions      Changes how `Client` treats `error replies`_:           true
+
+                - when ``true``, it throws `Predis\\ServerException`.
+                - when ``false``, it returns `Predis\\ResponseError`.
+--------------  ------------------------------------------------------  ------------------------------------------------
+prefix          When set, the passed string is transparently applied    not set
+                as a prefix to each key present in command arguments.
+
+                .. note::
+                   Keys are prefixed using rules defined by each
+                   command in order to be able to support even complex
+                   cases such as `SORT`_, `EVAL`_ and `EVALSHA`_.
+--------------  ------------------------------------------------------  ------------------------------------------------
+profile         Changes the Redis version `Client` is expected to       2.6
+                connect to, among a list of :doc:`server profiles`
+                predefined by Predis. Supported versions are: ``1.2``,
+                ``2.0``, ``2.2``, ``2.4``, ``2.6``, ``dev`` (unstable
+                branch in the Redis repository).
+
+                This option accepts also the fully-qualified name of
+                a `Predis\\Profile\\ServerProfileInterface`
+                or its instance passed either directly or returned by
+                a callable initializer.
+
+                .. note::
+                   In the latter case, Predis will not automatically
+                   apply the specified key prefix to the profile so
+                   it must be manually set by the user's code.
+--------------  ------------------------------------------------------  ------------------------------------------------
+connections     Overrides :doc:`connection backends` by scheme using    - tcp: `Predis\\Connection\\StreamConnection`
+                a named array, with keys being the connection schemes   - unix: `Predis\\Connection\\StreamConnection`
+                subject to change and values being the fully-qualified  - http: `Predis\\Connection\\WebdisConnection`
+                name of classes implementing
+                `Predis\\Connection\\SingleConnectionInterface`.
+
+                This option accepts also the fully-qualified name of
+                a `Predis\\Connection\\ConnectionFactoryInterface`
+                or its instance passed either directly or returned by
+                a callable initializer.
+--------------  ------------------------------------------------------  ------------------------------------------------
+cluster         Changes how `Client` handles :doc:`clustering`:         predis
+
+                - ``predis`` indicates the use of client-side
+                  sharding.
+
+                - ``redis`` indicates the use `redis cluster`_.
+
+                This option accepts also the fully-qualified name of
+                a `Predis\\Connection\\ClusterConnectionInterface`
+                or its instance passed either directly or returned by
+                a callable initializer.
+--------------  ------------------------------------------------------  ------------------------------------------------
+replication     When ``true``, the array of connection parameters is    not set
+                used in a master and slaves :doc:`replication` setup
+                instead of treating the servers as a cluster of nodes.
+
+                This option accepts also the fully-qualified name of
+                a `Predis\\Connection\\ReplicationConnectionInterface`
+                or its instance passed either directly or returned by
+                a callable initializer.
+==============  ======================================================  ================================================
+
+.. _error replies: http://redis.io/topics/protocol#status-reply
+.. _redis cluster: http://redis.io/topics/cluster-spec
+.. _SORT: http://redis.io/commands/eval
+.. _EVAL: http://redis.io/commands/eval
+.. _EVALSHA: http://redis.io/commands/evalsha
