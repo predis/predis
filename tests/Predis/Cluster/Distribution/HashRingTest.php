@@ -129,4 +129,25 @@ class HashRingTest extends DistributionStrategyTestCase
         $this->assertSame($expected2, $actual2);
         $this->assertSame($expected3, $actual3);
     }
+
+    /**
+     * @todo This tests should be moved in Predis\Cluster\Distribution\DistributionStrategyTestCase
+     * @group disconnected
+     */
+    public function testCallbackToGetNodeHash()
+    {
+        $node = '127.0.0.1:7000';
+        $replicas = HashRing::DEFAULT_REPLICAS;
+        $callable = $this->getMock('stdClass', array('__invoke'));
+
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($node)
+                 ->will($this->returnValue($node));
+
+        $ring = new HashRing($replicas, $callable);
+        $ring->add($node);
+
+        $this->getNodes($ring);
+    }
 }

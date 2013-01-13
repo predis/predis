@@ -26,19 +26,21 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;
 
-    private $nodes;
     private $ring;
     private $ringKeys;
     private $ringKeysCount;
     private $replicas;
+    private $nodeHashCallback;
+    private $nodes = array();
 
     /**
      * @param int $replicas Number of replicas in the ring.
+     * @param mixed $nodeHashCallback Callback returning the string used to calculate the hash of a node.
      */
-    public function __construct($replicas = self::DEFAULT_REPLICAS)
+    public function __construct($replicas = self::DEFAULT_REPLICAS, $nodeHashCallback = null)
     {
         $this->replicas = $replicas;
-        $this->nodes = array();
+        $this->nodeHashCallback = $nodeHashCallback;
     }
 
     /**
@@ -164,7 +166,11 @@ class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
      */
     protected function getNodeHash($nodeObject)
     {
-        return (string) $nodeObject;
+        if ($this->nodeHashCallback === null) {
+            return (string) $nodeObject;
+        }
+
+        return call_user_func($this->nodeHashCallback, $nodeObject);
     }
 
     /**

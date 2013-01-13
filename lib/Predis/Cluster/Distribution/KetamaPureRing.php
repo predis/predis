@@ -26,9 +26,9 @@ class KetamaPureRing extends HashRing
     /**
      *
      */
-    public function __construct()
+    public function __construct($nodeHashCallback = null)
     {
-        parent::__construct($this::DEFAULT_REPLICAS);
+        parent::__construct($this::DEFAULT_REPLICAS, $nodeHashCallback);
     }
 
     /**
