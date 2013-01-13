@@ -24,7 +24,7 @@ class KetamaPureRing extends HashRing
     const DEFAULT_REPLICAS = 160;
 
     /**
-     *
+     * @param mixed $nodeHashCallback Callback returning the string used to calculate the hash of a node.
      */
     public function __construct($nodeHashCallback = null)
     {
