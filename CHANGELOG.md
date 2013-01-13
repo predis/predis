@@ -1,4 +1,4 @@
-v0.8.1 (201x-xx-xx)
+v0.8.1 (2013-01-xx)
 
 - The `connections` client option can now accept a callable object returning
   an instance of `Predis\Connection\ConnectionFactoryInterface`.
@@ -8,6 +8,11 @@ v0.8.1 (201x-xx-xx)
 
 - `Predis\Command\Processor\KeyPrefixProcessor` can now be directly casted to
   string to obtain the current prefix, useful with string interpolation.
+
+- Added an optional callable argument to `Predis\Cluster\Distribution\HashRing`
+  and `Predis\Cluster\Distribution\KetamaPureRing` constructor that can be used
+  to customize how the distributor should extract the connection hash when
+  initializing the nodes distribution (ISSUE #36).
 
 - __FIX__: a missing use directive in `Predis\Transaction\MultiExecContext`
   caused PHP errors when Redis did not return `+QUEUED` replies to commands
