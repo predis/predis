@@ -46,7 +46,7 @@ compatible with most of the major frameworks and libraries. Autoloading in your 
 automatically when managing the dependencies with Composer, but you can also leverage its own autoloader
 class if you are going to use it in a project or script without any PSR-0 compliant autoloading facility:
 
-``` php
+```php
 <?php
 // prepend a base path if Predis is not present in your "include_path".
 require 'Predis/Autoloader.php';
@@ -68,8 +68,7 @@ using functions such as `require` and `include`, but this practice is not encour
 By default Predis uses `127.0.0.1` and `6379` as the default host and port when creating a new client
 instance without specifying any connection parameter:
 
-``` php
-<?php
+```php
 $redis = new Predis\Client();
 $redis->set('foo', 'bar');
 $value = $redis->get('foo');
@@ -77,8 +76,7 @@ $value = $redis->get('foo');
 
 It is possible to specify the various connection parameters using URI strings or named arrays:
 
-``` php
-<?php
+```php
 $redis = new Predis\Client('tcp://10.0.0.1:6379');
 
 // is equivalent to:
@@ -98,8 +96,7 @@ Furthermore, pipelining works transparently even on aggregated connections. To a
 supports client-side sharding using consistent-hashing on keys while clustered connections are supported
 natively by the client class.
 
-``` php
-<?php
+```php
 $redis = new Predis\Client(array(
     array('host' => '10.0.0.1', 'port' => 6379),
     array('host' => '10.0.0.2', 'port' => 6379)
@@ -120,8 +117,7 @@ Predis can optionally use different connection backends to connect to Redis. One
 the [phpiredis](http://github.com/nrk/phpiredis) C-based extension resulting in a major speed bump
 especially when dealing with long multibulk replies (the `socket` extension is also required):
 
-``` php
-<?php
+```php
 $client = new Predis\Client('tcp://127.0.0.1', array(
     'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
 ));
@@ -131,8 +127,7 @@ Developers can also create their own connection backends to add support for new 
 existing ones or provide different implementations. Connection backend classes must implement
 `Predis\Connection\SingleConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
 
-``` php
-<?php
+```php
 class MyConnectionClass implements Predis\Connection\SingleConnectionInterface
 {
     // implementation goes here
@@ -156,8 +151,7 @@ code or waiting for it to find its way into a stable Predis release, then you ca
 a new class that matches the command type and its behaviour and then bind it to a client instance at
 runtime. Actually, it is easier done than said:
 
-``` php
-<?php
+```php
 class BrandNewRedisCommand extends Predis\Command\AbstractCommand
 {
     public function getId()
@@ -181,8 +175,7 @@ in the server profile being used by the client instance. Internally, scripted co
 to save bandwidth, but they are capable of falling back to [EVAL](http://redis.io/commands/eval)
 when needed:
 
-``` php
-<?php
+```php
 class ListPushRandomValue extends Predis\Command\ScriptedCommand
 {
     public function getKeysCount()
