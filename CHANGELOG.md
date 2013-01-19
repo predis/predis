@@ -1,4 +1,4 @@
-v0.8.1 (2013-01-xx)
+v0.8.1 (2013-01-19)
 ===============================================================================
 
 - The `connections` client option can now accept a callable object returning
