@@ -1,4 +1,5 @@
 v0.8.1 (2013-01-xx)
+===============================================================================
 
 - The `connections` client option can now accept a callable object returning
   an instance of `Predis\Connection\ConnectionFactoryInterface`.
@@ -22,8 +23,8 @@ v0.8.1 (2013-01-xx)
   ignored when retrying to execute a Lua script by falling back to `EVAL` after
   a `-NOSCRIPT` error (ISSUE #94).
 
-- __FIX__: When subclassing Predis\Client, the `getClientFor()` method returns
-  a new instance of the subclass instead of a new instance of Predis\Client.
+- __FIX__: when subclassing `Predis\Client` the `getClientFor()` method returns
+  a new instance of the subclass instead of a new instance of `Predis\Client`.
 
 
 v0.8.0 (2012-10-23)
@@ -379,7 +380,7 @@ v0.6.0 (2010-05-24)
   to instances of Redis 1.2.x).
 
 - Support for Redis 1.0 is now optional and it is provided by requiring
-  'Predis_Compatibility.php' before creating an instance of Predis\Client.
+  'Predis_Compatibility.php' before creating an instance of `Predis\Client`.
 
 - New commands added to the Redis 2.0 profile since Predis 0.5.1:
   - Strings: `SETEX`, `APPEND`, `SUBSTR`
@@ -392,7 +393,7 @@ v0.6.0 (2010-05-24)
 
 - Introduced client-level options with the new `Predis\ClientOptions` class.
   Options can be passed to the constructor of `Predis\Client` in its second
-  argument as an array or an instance of Predis\ClientOptions. For brevity's
+  argument as an array or an instance of `Predis\ClientOptions`. For brevity's
   sake and compatibility with older versions, the constructor still accepts
   an instance of `Predis\RedisServerProfile` in its second argument. The
   currently supported client options are:
