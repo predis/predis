@@ -15,6 +15,9 @@ v0.8.1 (2013-01-xx)
   to customize how the distributor should extract the connection hash when
   initializing the nodes distribution (ISSUE #36).
 
+- Correctly handle `TTL` and `PTTL` returning -2 on non existing keys starting
+  with Redis 2.8.
+
 - __FIX__: a missing use directive in `Predis\Transaction\MultiExecContext`
   caused PHP errors when Redis did not return `+QUEUED` replies to commands
   when inside a MULTI / EXEC context.
