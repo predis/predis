@@ -2,10 +2,12 @@ language: php
 php:
   - 5.3
   - 5.4
+  - 5.5
 branches:
-  only:
-    - master
-    - v0.7
-    - v0.8
+  except:
+    - v0.5
+    - v0.6
+    - php5.2_backport
+    - documentation
 services: redis-server
 script: phpunit -c phpunit.xml.travisci
