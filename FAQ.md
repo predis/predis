@@ -37,7 +37,7 @@ connections to the server, but this behavior can be inconvenient in certain scen
 need to do an upfront check to detect if the server is up and running and eventually catch exceptions on
 failures. In this case developers can use `Predis\Client::connect()` to explicitly connect to the server:
 
-```
+```php
 $client = new Predis\Client();
 
 try {
@@ -59,7 +59,7 @@ Redis works or if you need to look up how to use certain commands. Alternatively
 accept an array for keys or values (depending on the command) instead of a list of arguments. See for
 example how [RPUSH](http://redis.io/commands/rpush) or [HMSET](http://redis.io/commands/hmset) work:
 
-```
+```php
 $client->rpush('my:list', 'value1', 'value2', 'value3');                 // values as arguments
 $client->rpush('my:list', array('value1', 'value2', 'value3'));          // values as single argument array
 
@@ -129,9 +129,11 @@ and let Predis using it. __phpiredis__ is a C-based extension that wraps __hired
 Redis C client library) with a thin layer that exposes its features to PHP. You will now get the
 benefits of a faster protocol parser just by adding a single line of code in your application:
 
-    $client = new Predis\Client('tcp://127.0.0.1', array(
-        'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
-    ));
+```php
+$client = new Predis\Client('tcp://127.0.0.1', array(
+    'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
+));
+```
 
 As simple as it is, nothing will really change in the way you use the library in your application. So,
 how fast is it now? There are not much improvements for inline or short bulk replies (e.g. _SET_ or
