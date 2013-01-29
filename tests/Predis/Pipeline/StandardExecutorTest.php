@@ -15,6 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
 use Predis\ResponseError;
+use Predis\ResponseObjectInterface;
 use Predis\Profile\ServerProfile;
 
 /**
@@ -40,7 +41,7 @@ class StandardExecutorTest extends StandardTestCase
         $replies = $executor->execute($connection, $pipeline);
 
         $this->assertTrue($pipeline->isEmpty());
-        $this->assertSame(array('PONG', 'PONG', 'PONG'), $replies);
+        $this->assertSame(array(true, true, true), $replies);
     }
 
     /**
@@ -64,7 +65,29 @@ class StandardExecutorTest extends StandardTestCase
         $replies = $executor->execute($connection, $pipeline);
 
         $this->assertTrue($pipeline->isEmpty());
-        $this->assertSame(array('PONG', 'PONG', 'PONG'), $replies);
+        $this->assertSame(array(true, true, true), $replies);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecutorDoesNotParseResponseObjects()
+    {
+        $executor = new StandardExecutor();
+        $response = $this->getMock('Predis\ResponseObjectInterface');
+
+        $this->simpleResponseObjectTest($executor, $response);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecutorCanReturnRedisErrors()
+    {
+        $executor = new StandardExecutor(false);
+        $response = $this->getMock('Predis\ResponseErrorInterface');
+
+        $this->simpleResponseObjectTest($executor, $response);
     }
 
     /**
@@ -89,6 +112,34 @@ class StandardExecutorTest extends StandardTestCase
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
+
+    /**
+     * Executes a test for the Predis\ResponseObjectInterface type.
+     *
+     * @param PipelineExecutorInterface $executor
+     * @param ResponseObjectInterface $response
+     */
+    protected function simpleResponseObjectTest(PipelineExecutorInterface $executor, ResponseObjectInterface $response)
+    {
+        $pipeline = new SplQueue();
+
+        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command->expects($this->never())
+                ->method('parseResponse');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('writeCommand');
+        $connection->expects($this->once())
+                   ->method('readResponse')
+                   ->will($this->returnValue($response));
+
+        $pipeline->enqueue($command);
+        $replies = $executor->execute($connection, $pipeline);
+
+        $this->assertTrue($pipeline->isEmpty());
+        $this->assertSame(array($response), $replies);
+    }
 
     /**
      * Returns a list of queued command instances.

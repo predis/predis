@@ -1,3 +1,10 @@
+v0.8.2 (2013-xx-xx)
+===============================================================================
+
+- __FIX__: the standard pipeline executor was not using the response parser
+  methods associated to commands to process raw responses (ISSUE #101).
+
+
 v0.8.1 (2013-01-19)
 ===============================================================================
 
