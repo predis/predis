@@ -11,6 +11,7 @@
 
 namespace Predis\Pipeline;
 
+use Iterator;
 use SplQueue;
 use Predis\ResponseErrorInterface;
 use Predis\ResponseObjectInterface;
@@ -66,7 +67,7 @@ class StandardExecutor implements PipelineExecutorInterface
             return $this->onResponseError($connection, $response);
         }
 
-        if ($response instanceof \Iterator) {
+        if ($response instanceof Iterator) {
             return $command->parseResponse(iterator_to_array($response));
         }
 
@@ -97,23 +98,22 @@ class StandardExecutor implements PipelineExecutorInterface
      */
     public function execute(ConnectionInterface $connection, SplQueue $commands)
     {
-        $size = count($commands);
-        $values = array();
-
         $this->checkConnection($connection);
 
         foreach ($commands as $command) {
             $connection->writeCommand($command);
         }
 
-        for ($i = 0; $i < $size; $i++) {
+        $values = array();
+
+        while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
             $response = $connection->readResponse($command);
 
             if ($response instanceof ResponseObjectInterface) {
-                $values[$i] = $this->onResponseObject($connection, $command, $response);
+                $values[] = $this->onResponseObject($connection, $command, $response);
             } else {
-                $values[$i] = $command->parseResponse($response);
+                $values[] = $command->parseResponse($response);
             }
         }
 
