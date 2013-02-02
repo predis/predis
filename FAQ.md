@@ -68,7 +68,7 @@ $client->hmset('my:hash', array('field1'=>'value1', 'field2'=>'value2'); // valu
 ```
 
 The only exception to this _rule_ is the [SORT](http://redis.io/commands/sort) command for which modifiers are
-[passed using a named array](https://github.com/nrk/predis/blob/master/tests/Predis/Command/KeySortTest.php#L56-77).
+[passed using a named array](tests/Predis/Command/KeySortTest.php#L56-77).
 
 
 

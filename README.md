@@ -214,7 +214,7 @@ Redis. If you do not have Redis up and running, integration tests can be disable
 suite is configured to execute integration tests using the server profile for Redis v2.4 (which is the
 current stable version of Redis). You can optionally run the suite against a Redis instance built from
 the `unstable` branch with the development profile by changing the `REDIS_SERVER_VERSION` to `dev` in
-the `phpunit.xml` file. More details about testing Predis are available in `tests/README.md`.
+the `phpunit.xml` file. More details on testing Predis can be found in [the tests README](tests/README.md).
 
 Predis uses Travis CI for continuous integration. You can find the results of the test suite and the build
 history [on its project page](http://travis-ci.org/nrk/predis).
@@ -252,4 +252,4 @@ history [on its project page](http://travis-ci.org/nrk/predis).
 
 ## License ##
 
-The code for Predis is distributed under the terms of the MIT license (see LICENSE).
+The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
