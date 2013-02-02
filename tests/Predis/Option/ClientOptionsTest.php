@@ -78,4 +78,51 @@ class ClientOptionsTest extends StandardTestCase
         $this->assertTrue(isset($options->custom));
         $this->assertFalse(isset($options->profile));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetDefaultUsingOptionName()
+    {
+        $options = new ClientOptions();
+
+        $this->assertInstanceOf('Predis\Connection\PredisCluster', $options->getDefault('cluster'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetDefaultUsingUnhandledOptionName()
+    {
+        $options = new ClientOptions();
+        $option = new ClientCluster();
+
+        $this->assertNull($options->getDefault('foo'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetDefaultUsingOptionInstance()
+    {
+        $options = new ClientOptions();
+        $option = new ClientCluster();
+
+        $this->assertInstanceOf('Predis\Connection\PredisCluster', $options->getDefault($option));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetDefaultUsingUnhandledOptionInstance()
+    {
+        $options = new ClientOptions();
+        $option = new CustomOption(array(
+            'default' => function ($options) {
+                return 'foo';
+            },
+        ));
+
+        $this->assertSame('foo', $options->getDefault($option));
+    }
 }

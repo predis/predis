@@ -103,4 +103,23 @@ class ClientOptions implements ClientOptionsInterface
             return $value;
         }
     }
+
+    /**
+     * Returns the default value for the specified option.
+     *
+     * @param string|OptionInterface $option Name or instance of the option.
+     * @return mixed
+     */
+    public function getDefault($option)
+    {
+        if ($option instanceof OptionInterface) {
+            return $option->getDefault($this);
+        }
+
+        $options = $this->getDefaultOptions();
+
+        if (isset($options[$option])) {
+            return $options[$option]->getDefault($this);
+        }
+    }
 }

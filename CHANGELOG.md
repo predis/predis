@@ -1,6 +1,10 @@
 v0.8.2 (2013-xx-xx)
 ===============================================================================
 
+- Added the ability to get the default value of a client option directly from
+  `Predis\Option\ClientOption` using the `getDefault()` method by passing the
+  option name or its instance.
+
 - __FIX__: the standard pipeline executor was not using the response parser
   methods associated to commands to process raw responses (ISSUE #101).
 
