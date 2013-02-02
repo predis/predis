@@ -1,6 +1,10 @@
 v0.8.2 (2013-xx-xx)
 ===============================================================================
 
+- Added `Predis\Session\SessionHandler` to make it easy to store PHP sessions
+  on Redis using Predis. Please note that this class needs either PHP >= 5.4.0
+  or a polyfill for PHP's `SessionHandlerInterface`.
+
 - Added the ability to get the default value of a client option directly from
   `Predis\Option\ClientOption` using the `getDefault()` method by passing the
   option name or its instance.
