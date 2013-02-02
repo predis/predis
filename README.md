@@ -140,7 +140,7 @@ $client = new Predis\Client('tcp://127.0.0.1', array(
 ```
 
 For a more in-depth insight on how to create new connection backends you can look at the actual
-implementation of the classes contained in `Predis\Connection` namespace.
+implementation of the classes contained in the `Predis\Connection` namespace.
 
 
 ### Defining and registering new commands on the client at runtime ###
