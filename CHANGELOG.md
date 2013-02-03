@@ -1,4 +1,4 @@
-v0.8.2 (2013-xx-xx)
+v0.8.2 (2013-02-03)
 ===============================================================================
 
 - Added `Predis\Session\SessionHandler` to make it easy to store PHP sessions
