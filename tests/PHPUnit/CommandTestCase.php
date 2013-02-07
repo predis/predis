@@ -160,6 +160,34 @@ abstract class CommandTestCase extends StandardTestCase
     }
 
     /**
+     * @param  string $expectedRedisVersion
+     * @param  string $message Optional message.
+     * @throws \RuntimeException when unable to retrieve server info or redis version
+     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     */
+    protected function markTestSkippedOnRedisVersionBelow($expectedRedisVersion, $message = '')
+    {
+        $client = $this->getClient();
+        $serverInfo = $client->info('SERVER');
+        $serverInfo = array_change_key_case($serverInfo);
+        if (!isset($serverInfo['server'])
+            || !isset($serverInfo['server']['redis_version']))
+        {
+            throw new \RuntimeException('Unable to retrieve server info');
+        }
+        $serverVersion = $serverInfo['server']['redis_version'];
+        if (version_compare($serverVersion, $expectedRedisVersion) <= -1) {
+            if ($message === '') {
+                $message = sprintf(
+                    'Test skipped as required Redis version %s was not met.',
+                    $expectedRedisVersion
+                );
+            }
+            throw new \PHPUnit_Framework_SkippedTestError($message);
+        }
+    }
+
+    /**
      * @group disconnected
      */
     public function testRawArguments()
