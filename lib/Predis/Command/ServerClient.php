@@ -35,8 +35,9 @@ class ServerClient extends AbstractCommand
         switch (strtoupper($args[0])) {
             case 'LIST':
                 return $this->parseClientList($data);
-
             case 'KILL':
+            case 'GETNAME':
+            case 'SETNAME':
             default:
                 return $data;
         }

@@ -66,6 +66,32 @@ class ServerClientTest extends CommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsOfClientGetname()
+    {
+        $arguments = $expected = array('getname');
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsOfClientSetname()
+    {
+        $arguments = $expected = array('setname', 'connection-a');
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponseOfClientKill()
     {
         $command = $this->getCommand();
@@ -115,6 +141,61 @@ BUFFER;
         $this->assertArrayHasKey('db', $clients[0]);
         $this->assertArrayHasKey('sub', $clients[0]);
         $this->assertArrayHasKey('psub', $clients[0]);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testGetsNameOfConnection()
+    {
+         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
+
+         $redis = $this->getClient();
+         $clientName = $redis->client('GETNAME');
+         $this->assertNull($clientName);
+
+         $expectedConnectionName = 'foo-bar';
+         $this->assertTrue($redis->client('SETNAME', $expectedConnectionName));
+         $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+    }
+
+    /**
+     * @group connected
+     */
+    public function testSetsNameOfConnection()
+    {
+         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
+
+         $redis = $this->getClient();
+
+         $expectedConnectionName = 'foo-baz';
+         $this->assertTrue($redis->client('SETNAME', $expectedConnectionName));
+         $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidConnectionNameProvider()
+    {
+        return array(
+            array('foo space'),
+            array('foo \n'),
+            array('foo $'),
+        );
+    }
+
+    /**
+     * @group connected
+     * @expectedException Predis\ServerException
+     * @dataProvider invalidConnectionNameProvider
+     */
+    public function testInvalidSetNameOfConnection($invalidConnectionName)
+    {
+         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
+
+         $redis = $this->getClient();
+         $redis->client('SETNAME', $invalidConnectionName);
     }
 
     /**
