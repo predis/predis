@@ -8,7 +8,7 @@ serializing and parsing the Redis protocol. Predis is also available in an async
 through the experimental client provided by the [Predis\Async](http://github.com/nrk/predis-async)
 library.
 
-For a list of frequently asked questions about Predis, see __FAQ.md__ in the root of the repository.
+For a list of frequently asked questions about Predis see our [FAQ](FAQ.md).
 More details are available on the [official wiki](http://wiki.github.com/nrk/predis) of the project.
 
 
