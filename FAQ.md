@@ -126,12 +126,17 @@ to how your application will use Redis.
 Fair enough, but there is actually an option for you if you need even more speed and it consists on
 installing __[phpiredis](http://github.com/nrk/phpiredis)__ (note the additional _i_ in the name)
 and let Predis using it. __phpiredis__ is a C-based extension that wraps __hiredis__ (the official
-Redis C client library) with a thin layer that exposes its features to PHP. You will now get the
-benefits of a faster protocol parser just by adding a single line of code in your application:
+Redis C client library) with a thin layer that exposes its features to PHP. You can choose between
+two different connection backend classes: `Predis\Connection\PhpiredisConnection` (it depends on the
+`socket` extension) and `Predis\Connection\PhpiredisStreamConnection` (it uses PHP's native streams).
+You will now get the benefits of a faster protocol parser just by adding a couple of lines of code:
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', array(
-    'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
+    'connections' => array(
+    	'tcp'  => 'Predis\Connection\PhpiredisConnection',
+    	'unix' => 'Predis\Connection\PhpiredisConnection',
+	),
 ));
 ```
 
