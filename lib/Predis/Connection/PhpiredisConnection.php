@@ -90,10 +90,10 @@ class PhpiredisConnection extends AbstractConnection
      */
     protected function checkParameters(ConnectionParametersInterface $parameters)
     {
-        if ($parameters->iterable_multibulk === true) {
+        if (isset($parameters->iterable_multibulk)) {
             $this->onInvalidOption('iterable_multibulk', $parameters);
         }
-        if ($parameters->persistent === true) {
+        if (isset($parameters->persistent)) {
             $this->onInvalidOption('persistent', $parameters);
         }
 

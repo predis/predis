@@ -30,7 +30,6 @@ class ParametersTest extends StandardTestCase
         $this->assertEquals($defaults['scheme'], $parameters->scheme);
         $this->assertEquals($defaults['host'], $parameters->host);
         $this->assertEquals($defaults['port'], $parameters->port);
-        $this->assertEquals($defaults['iterable_multibulk'], $parameters->iterable_multibulk);
         $this->assertEquals($defaults['timeout'], $parameters->timeout);
     }
 
@@ -140,7 +139,6 @@ class ParametersTest extends StandardTestCase
             'host' => '127.0.0.1',
             'port' => 6379,
             'timeout' => 5.0,
-            'iterable_multibulk' => false,
         );
     }
 
