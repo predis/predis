@@ -113,13 +113,19 @@ $replies = $redis->pipeline(function ($pipe) {
 
 ### Multiple and customizable connection backends ###
 
-Predis can optionally use different connection backends to connect to Redis. One of them leverages
+Predis can optionally use different connection backends to connect to Redis. Two of them leverage
 the [phpiredis](http://github.com/nrk/phpiredis) C-based extension resulting in a major speed bump
-especially when dealing with long multibulk replies (the `socket` extension is also required):
+especially when dealing with long multibulk replies, namely `Predis\Connection\PhpiredisConnection`
+(the `socket` extension is also required) and `Predis\Connection\StreamPhpiredisConnection` (it
+does not require additional extensions since it relies on PHP's native streams). Both of them can
+connect to Redis using standard TCP/IP connections or UNIX domain sockets:
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', array(
-    'connections' => array('tcp' => 'Predis\Connection\PhpiredisConnection')
+    'connections' => array(
+        'tcp'  => 'Predis\Connection\PhpiredisConnection',
+        'unix' => 'Predis\Connection\PhpiredisStreamConnection',
+    )
 ));
 ```
 

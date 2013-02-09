@@ -3,6 +3,10 @@ v0.8.3 (2013-xx-xx)
 
 - Added `CLIENT SETNAME` and `CLIENT GETNAME` (ISSUE #102).
 
+- Added the `Predis\Connection\PhpiredisStreamConnection` class which uses the
+  `phpiredis` extension just like `Predis\Connection\PhpiredisStreamConnection`
+  but does not require the `socket` extension since it relies on PHP's stream.
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================
