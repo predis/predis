@@ -279,9 +279,9 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testCanAssignConnectionsToCustomSlotsFromParameters()
     {
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-1364');
-        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=1365-2729');
-        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=2730-4095');
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-5460');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-10921');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10922-16383');
 
         $cluster = new RedisCluster();
         $cluster->add($connection1);
@@ -289,9 +289,9 @@ class RedisClusterTest extends StandardTestCase
         $cluster->add($connection3);
 
         $expectedMap = array_merge(
-            array_fill(0, 1365, '127.0.0.1:6379'),
-            array_fill(1364, 1365, '127.0.0.1:6380'),
-            array_fill(2729, 1366, '127.0.0.1:6381')
+            array_fill(0, 5461, '127.0.0.1:6379'),
+            array_fill(5460, 5461, '127.0.0.1:6380'),
+            array_fill(10921, 5462, '127.0.0.1:6381')
         );
 
         $cluster->buildSlotsMap();
@@ -314,11 +314,11 @@ class RedisClusterTest extends StandardTestCase
         $cluster->add($connection3);
 
         $this->assertSame($connection1, $cluster->getConnectionBySlot(0));
-        $this->assertSame($connection2, $cluster->getConnectionBySlot(1365));
-        $this->assertSame($connection3, $cluster->getConnectionBySlot(2730));
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(5461));
+        $this->assertSame($connection3, $cluster->getConnectionBySlot(10922));
 
-        $cluster->setSlots(1365, 3000, '127.0.0.1:6380');
-        $this->assertSame($connection2, $cluster->getConnectionBySlot(2730));
+        $cluster->setSlots(5461, 7096, '127.0.0.1:6380');
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(5461));
     }
 
     /**
@@ -337,8 +337,8 @@ class RedisClusterTest extends StandardTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $set = $profile->createCommand('set', array('node:1024', 'foobar'));
-        $get = $profile->createCommand('get', array('node:1024'));
+        $set = $profile->createCommand('set', array('node:1001', 'foobar'));
+        $get = $profile->createCommand('get', array('node:1001'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
 
@@ -358,7 +358,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1024'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->once())->method('writeCommand')->with($command);
@@ -378,7 +378,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1048'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1050'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->never())->method('readResponse');
@@ -407,13 +407,13 @@ class RedisClusterTest extends StandardTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $set = $profile->createCommand('set', array('{node:1024}:foo', 'foobar'));
-        $get = $profile->createCommand('get', array('{node:1024}:foo'));
+        $set = $profile->createCommand('set', array('{node:1001}:foo', 'foobar'));
+        $get = $profile->createCommand('get', array('{node:1001}:foo'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
 
-        $set = $profile->createCommand('set', array('{node:1024}:bar', 'foobar'));
-        $get = $profile->createCommand('get', array('{node:1024}:bar'));
+        $set = $profile->createCommand('set', array('{node:1001}:bar', 'foobar'));
+        $get = $profile->createCommand('get', array('{node:1001}:bar'));
         $this->assertSame($connection2, $cluster->getConnection($set));
         $this->assertSame($connection2, $cluster->getConnection($get));
     }
@@ -423,9 +423,9 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testAskResponseWithConnectionInPool()
     {
-        $askResponse = new ResponseError('ASK 373 127.0.0.1:6380');
+        $askResponse = new ResponseError('ASK 1970 127.0.0.1:6380');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1024'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(2))
@@ -456,9 +456,9 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testAskResponseWithConnectionNotInPool()
     {
-        $askResponse = new ResponseError('ASK 373 127.0.0.1:6381');
+        $askResponse = new ResponseError('ASK 1970 127.0.0.1:6381');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1024'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(2))
@@ -496,9 +496,9 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testMovedResponseWithConnectionInPool()
     {
-        $movedResponse = new ResponseError('MOVED 373 127.0.0.1:6380');
+        $movedResponse = new ResponseError('MOVED 1970 127.0.0.1:6380');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1024'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(1))
@@ -530,9 +530,9 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testMovedResponseWithConnectionNotInPool()
     {
-        $movedResponse = new ResponseError('MOVED 373 127.0.0.1:6381');
+        $movedResponse = new ResponseError('MOVED 1970 127.0.0.1:6381');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1024'));
+        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->once())

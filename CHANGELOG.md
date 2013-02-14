@@ -7,6 +7,10 @@ v0.8.3 (2013-xx-xx)
   `phpiredis` extension just like `Predis\Connection\PhpiredisStreamConnection`
   but does not require the `socket` extension since it relies on PHP's stream.
 
+- Updated the aggregated connection class for redis-cluster to work with 16384
+  hash slots instead of 4096 to reflect this recent change from redis unstable
+  ([see this commit](https://github.com/antirez/redis/commit/ebd666d)).
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================

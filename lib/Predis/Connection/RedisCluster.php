@@ -135,7 +135,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function buildSlotsMap()
     {
         $this->slotsMap = array();
-        $this->slotsPerNode = (int) (4096 / count($this->pool));
+        $this->slotsPerNode = (int) (16384 / count($this->pool));
 
         foreach ($this->pool as $connectionID => $connection) {
             $parameters = $connection->getParameters();
@@ -177,7 +177,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function setSlots($first, $last, $connection)
     {
-        if ($first < 0 || $first > 4095 || $last < 0 || $last > 4095 || $last < $first) {
+        if ($first < 0x0000 || $first > 0x3FFF || $last < 0x0000 || $last > 0x3FFF || $last < $first) {
             throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
         }
 
@@ -195,7 +195,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
             throw new NotSupportedException("Cannot use {$command->getId()} with redis-cluster");
         }
 
-        $slot = $hash & 4095; // 0x0FFF
+        $slot = $hash & 0x3FFF;
 
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
@@ -214,7 +214,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getConnectionBySlot($slot)
     {
-        if ($slot < 0 || $slot > 4095) {
+        if ($slot < 0x0000 || $slot > 0x3FFF) {
             throw new \OutOfBoundsException("Invalid slot value [$slot]");
         }
 
