@@ -100,6 +100,18 @@ class Client implements ClientInterface
             return $this->connections->createAggregated($connection, $parameters);
         }
 
+        if (is_callable($parameters)) {
+            $connection = call_user_func($parameters, $this->options);
+
+            if (!$connection instanceof ConnectionInterface) {
+                throw new \InvalidArgumentException(
+                    'Callable parameters must return instances of Predis\Connection\ConnectionInterface'
+                );
+            }
+
+            return $connection;
+        }
+
         return $this->connections->create($parameters);
     }
 

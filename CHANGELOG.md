@@ -11,6 +11,10 @@ v0.8.3 (2013-xx-xx)
   hash slots instead of 4096 to reflect this recent change from redis unstable
   ([see this commit](https://github.com/antirez/redis/commit/ebd666d)).
 
+- The constructor of `Predis\Client` now accepts a callable as first argument
+  returning `Predis\Connection\ConnectionInterface`. Users can create their
+  own self-contained strategies to create and set up the underlying connection.
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================

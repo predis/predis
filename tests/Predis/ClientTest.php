@@ -200,6 +200,42 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testConstructorWithCallableArgument()
+    {
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($this->isInstanceOf('Predis\Option\ClientOptions'))
+                 ->will($this->returnValue($connection));
+
+        $client = new Client($callable);
+
+        $this->assertSame($connection, $client->getConnection());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Callable parameters must return instances of Predis\Connection\ConnectionInterface
+     */
+    public function testConstructorWithCallableArgumentButInvalidReturnType()
+    {
+        $wrongType = $this->getMock('stdClass');
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($this->isInstanceOf('Predis\Option\ClientOptions'))
+                 ->will($this->returnValue($wrongType));
+
+        $client = new Client($callable);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testConstructorWithNullAndArrayArgument()
     {
         $factory = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
