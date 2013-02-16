@@ -61,6 +61,16 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function __destruct()
+    {
+        phpiredis_reader_destroy($this->reader);
+
+        parent::__destruct();
+    }
+
+    /**
      * Checks if the phpiredis extension is loaded in PHP.
      */
     protected function checkExtensions()
@@ -172,9 +182,15 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     public function __sleep()
     {
+        return array_diff(parent::__sleep(), array('mbiterable'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __wakeup()
+    {
         $this->checkExtensions();
         $this->initializeReader();
-
-        return array_diff(parent::__sleep(), array('mbiterable'));
     }
 }
