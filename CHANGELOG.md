@@ -3,21 +3,21 @@ v0.8.3 (2013-xx-xx)
 
 - Added `CLIENT SETNAME` and `CLIENT GETNAME` (ISSUE #102).
 
-- Added the `Predis\Connection\PhpiredisStreamConnection` class which uses the
-  `phpiredis` extension just like `Predis\Connection\PhpiredisStreamConnection`
-  but does not require the `socket` extension since it relies on PHP's stream.
+- Implemented the `Predis\Connection\PhpiredisStreamConnection` class using the
+  `phpiredis` extension like `Predis\Connection\PhpiredisStreamConnection`, but
+  without requiring the `socket` extension since it relies on PHP's streams.
+
+- Added support for the TCP_NODELAY flag via the `tcp_nodelay` parameter for
+  stream-based connections, namely `Predis\Connection\StreamConnection` and
+  `Predis\Connection\PhpiredisStreamConnection` (requires PHP >= 5.4.0).
 
 - Updated the aggregated connection class for redis-cluster to work with 16384
-  hash slots instead of 4096 to reflect this recent change from redis unstable
+  hash slots instead of 4096 to reflect the recent change from redis unstable
   ([see this commit](https://github.com/antirez/redis/commit/ebd666d)).
 
 - The constructor of `Predis\Client` now accepts a callable as first argument
   returning `Predis\Connection\ConnectionInterface`. Users can create their
   own self-contained strategies to create and set up the underlying connection.
-
-- Added support for the TCP_NODELAY flag via the `tcp_nodelay` parameter for
-  for stream-based connections, namely `Predis\Connection\StreamConnection` and
-  `Predis\Connection\PhpiredisStreamConnection` (__requires PHP >= 5.4.0__).
 
 
 v0.8.2 (2013-02-03)
