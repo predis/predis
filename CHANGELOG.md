@@ -15,6 +15,10 @@ v0.8.3 (2013-xx-xx)
   returning `Predis\Connection\ConnectionInterface`. Users can create their
   own self-contained strategies to create and set up the underlying connection.
 
+- Added support for the TCP_NODELAY flag via the `tcp_nodelay` parameter for
+  for stream-based connections, namely `Predis\Connection\StreamConnection` and
+  `Predis\Connection\PhpiredisStreamConnection` (__requires PHP >= 5.4.0__).
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================
