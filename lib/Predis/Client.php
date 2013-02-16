@@ -38,7 +38,6 @@ class Client implements ClientInterface
     private $options;
     private $profile;
     private $connection;
-    private $connections;
 
     /**
      * Initializes a new client with optional connection parameters and client options.
@@ -50,7 +49,6 @@ class Client implements ClientInterface
     {
         $this->options = $this->filterOptions($options);
         $this->profile = $this->options->profile;
-        $this->connections = $this->options->connections;
         $this->connection = $this->initializeConnection($parameters);
     }
 
@@ -94,10 +92,11 @@ class Client implements ClientInterface
         }
 
         if (is_array($parameters) && isset($parameters[0])) {
-            $replication = isset($this->options->replication) && $this->options->replication;
-            $connection = $this->options->{$replication ? 'replication' : 'cluster'};
+            $options = $this->options;
+            $replication = isset($options->replication) && $options->replication;
+            $connection = $options->{$replication ? 'replication' : 'cluster'};
 
-            return $this->connections->createAggregated($connection, $parameters);
+            return $options->connections->createAggregated($connection, $parameters);
         }
 
         if (is_callable($parameters)) {
@@ -112,7 +111,7 @@ class Client implements ClientInterface
             return $connection;
         }
 
-        return $this->connections->create($parameters);
+        return $this->options->connections->create($parameters);
     }
 
     /**
@@ -138,7 +137,7 @@ class Client implements ClientInterface
      */
     public function getConnectionFactory()
     {
-        return $this->connections;
+        return $this->options->connections;
     }
 
     /**
