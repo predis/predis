@@ -19,6 +19,10 @@ v0.8.3 (2013-xx-xx)
   returning `Predis\Connection\ConnectionInterface`. Users can create their
   own self-contained strategies to create and set up the underlying connection.
 
+- Users should return `0` from `Predis\Command\ScriptedCommand::getKeysCount()`
+  instead of `FALSE` to indicate that all of the arguments of a Lua script must
+  be used to populate `ARGV[]`. This does not represent a breaking change.
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================
