@@ -62,7 +62,7 @@ class Client implements ClientInterface
      */
     protected function filterOptions($options)
     {
-        if ($options === null) {
+        if (!isset($options)) {
             return new ClientOptions();
         }
 
@@ -149,7 +149,7 @@ class Client implements ClientInterface
      */
     public function getClientFor($connectionID)
     {
-        if (($connection = $this->getConnectionById($connectionID)) === null) {
+        if (!$connection = $this->getConnectionById($connectionID)) {
             throw new \InvalidArgumentException("Invalid connection ID: '$connectionID'");
         }
 
@@ -280,14 +280,14 @@ class Client implements ClientInterface
 
             $response = $this->executeCommand($eval);
 
-            if (false === $response instanceof ResponseObjectInterface) {
+            if (!$response instanceof ResponseObjectInterface) {
                 $response = $command->parseResponse($response);
             }
 
             return $response;
         }
 
-        if ($this->options->exceptions === true) {
+        if ($this->options->exceptions) {
             throw new ServerException($response->getMessage());
         }
 

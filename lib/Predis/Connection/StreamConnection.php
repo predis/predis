@@ -81,10 +81,10 @@ class StreamConnection extends AbstractConnection
         $uri = "tcp://{$parameters->host}:{$parameters->port}/";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if (isset($parameters->async_connect) && $parameters->async_connect === true) {
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
-        if (isset($parameters->persistent) && $parameters->persistent === true) {
+        if (isset($parameters->persistent) && $parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
@@ -121,7 +121,7 @@ class StreamConnection extends AbstractConnection
         $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if ($parameters->persistent === true) {
+        if ($parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
