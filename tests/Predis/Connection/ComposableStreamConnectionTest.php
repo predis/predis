@@ -74,7 +74,8 @@ class ComposableStreamConnectionTest extends ConnectionTestCase
      */
     public function testReadsMultibulkRepliesAsIterators()
     {
-        $connection = $this->getConnection($profile, true, array('iterable_multibulk' => true));
+        $connection = $this->getConnection($profile, true);
+        $connection->getProtocol()->setOption('iterable_multibulk', true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
         $connection->writeCommand($profile->createCommand('lrange', array('metavars', 0, -1)));
