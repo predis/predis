@@ -26,7 +26,9 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSupportsKeyTags()
     {
-        $expected = -1938594527;
+        // NOTE: 32 and 64 bits PHP runtimes can produce different hash values.
+        $expected = PHP_INT_SIZE == 4 ? -1938594527 : 2356372769;
+
         $strategy = $this->getHashStrategy();
 
         $this->assertSame($expected, $strategy->getKeyHash('{foo}'));
