@@ -27,6 +27,7 @@ use Predis\Iterator\MultiBulkResponseSimple;
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
  *  - async_connect: performs the connection asynchronously.
+ *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *  - iterable_multibulk: multibulk replies treated as iterable objects.
  *
