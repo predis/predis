@@ -36,7 +36,7 @@ class ConnectionParameters implements ConnectionParametersInterface
     public function __construct($parameters = array())
     {
         if (!is_array($parameters)) {
-            $parameters = $this->parseURI($parameters);
+            $parameters = self::parseURI($parameters);
         }
 
         $this->parameters = $this->filter($parameters) + $this->getDefaults();
@@ -108,7 +108,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      * @param string $uri Connection string.
      * @return array
      */
-    private function parseURI($uri)
+    public static function parseURI($uri)
     {
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort.

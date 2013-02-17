@@ -123,6 +123,52 @@ class ParametersTest extends StandardTestCase
         $this->assertNull($unserialized->unknown);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testParsingURI()
+    {
+        $uri = 'tcp://10.10.10.10:6400?timeout=0.5&persistent=1';
+
+        $expected = array(
+            'scheme' => 'tcp',
+            'host' => '10.10.10.10',
+            'port' => 6400,
+            'timeout' => '0.5',
+            'persistent' => '1',
+        );
+
+        $this->assertSame($expected, ConnectionParameters::parseURI($uri));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsingUnixDomainURI()
+    {
+        $uri = 'unix:///tmp/redis.sock?timeout=0.5&persistent=1';
+
+        $expected = array(
+            'scheme' => 'unix',
+            'host' => 'localhost',
+            'path' => '/tmp/redis.sock',
+            'timeout' => '0.5',
+            'persistent' => '1',
+        );
+
+        $this->assertSame($expected, ConnectionParameters::parseURI($uri));
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\ClientException
+     * @expectedExceptionMessage Invalid URI: tcp://invalid:uri
+     */
+    public function testParsingURIThrowOnInvalidURI()
+    {
+        ConnectionParameters::parseURI('tcp://invalid:uri');
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
