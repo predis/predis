@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\Helpers;
+use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
 use Predis\Protocol\ProtocolException;
@@ -38,7 +38,7 @@ class ResponseMultiBulkStreamHandler implements ResponseHandlerInterface
         $length = (int) $lengthString;
 
         if ("$length" != $lengthString) {
-            Helpers::onCommunicationException(new ProtocolException(
+            CommunicationException::handle(new ProtocolException(
                 $connection, "Cannot parse '$lengthString' as multi-bulk length"
             ));
         }

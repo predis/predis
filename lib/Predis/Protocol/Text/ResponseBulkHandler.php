@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\Helpers;
+use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ResponseHandlerInterface;
@@ -37,7 +37,7 @@ class ResponseBulkHandler implements ResponseHandlerInterface
         $length = (int) $lengthString;
 
         if ("$length" !== $lengthString) {
-            Helpers::onCommunicationException(new ProtocolException(
+            CommunicationException::handle(new ProtocolException(
                 $connection, "Cannot parse '$lengthString' as bulk length"
             ));
         }

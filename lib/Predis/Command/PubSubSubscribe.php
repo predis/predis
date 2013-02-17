@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Helpers;
-
 /**
  * @link http://redis.io/commands/subscribe
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -32,7 +30,7 @@ class PubSubSubscribe extends AbstractCommand implements PrefixableCommandInterf
      */
     protected function filterArguments(Array $arguments)
     {
-        return Helpers::filterArrayArguments($arguments);
+        return self::normalizeArguments($arguments);
     }
 
     /**

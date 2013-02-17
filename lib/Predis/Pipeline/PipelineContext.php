@@ -16,7 +16,6 @@ use Predis\BasicClientInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\ExecutableContextInterface;
-use Predis\Helpers;
 use Predis\Command\CommandInterface;
 
 /**

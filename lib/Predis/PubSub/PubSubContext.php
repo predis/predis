@@ -13,7 +13,7 @@ namespace Predis\PubSub;
 
 use Predis\ClientException;
 use Predis\ClientInterface;
-use Predis\Helpers;
+use Predis\Command\AbstractCommand as Command;
 use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
 
@@ -77,7 +77,7 @@ class PubSubContext extends AbstractPubSubContext
      */
     protected function writeCommand($method, $arguments)
     {
-        $arguments = Helpers::filterArrayArguments($arguments);
+        $arguments = Command::normalizeArguments($arguments);
         $command = $this->client->createCommand($method, $arguments);
         $this->client->getConnection()->writeCommand($command);
     }

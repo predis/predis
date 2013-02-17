@@ -129,4 +129,34 @@ abstract class AbstractCommand implements CommandInterface
             $this->getId()
         );
     }
+
+    /**
+     * Normalizes the arguments array passed to a Redis command.
+     *
+     * @param array $arguments Arguments for a command.
+     * @return array
+     */
+    public static function normalizeArguments(Array $arguments)
+    {
+        if (count($arguments) === 1 && is_array($arguments[0])) {
+            return $arguments[0];
+        }
+
+        return $arguments;
+    }
+
+    /**
+     * Normalizes the arguments array passed to a variadic Redis command.
+     *
+     * @param array $arguments Arguments for a command.
+     * @return array
+     */
+    public static function normalizeVariadic(Array $arguments)
+    {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            return array_merge(array($arguments[0]), $arguments[1]);
+        }
+
+        return $arguments;
+    }
 }

@@ -140,4 +140,35 @@ class CommandTest extends StandardTestCase
 
         $this->assertEquals($expected, (string) $command);
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testNormalizeArguments()
+    {
+        $arguments = array('arg1', 'arg2', 'arg3', 'arg4');
+
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments(array($arguments)));
+
+        $arguments = array(array(), array());
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
+
+        $arguments = array(new \stdClass());
+        $this->assertSame($arguments, AbstractCommand::normalizeArguments($arguments));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testNormalizeVariadic()
+    {
+        $arguments = array('key', 'value1', 'value2', 'value3');
+
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic($arguments));
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic(array('key', array('value1', 'value2', 'value3'))));
+
+        $arguments = array(new \stdClass());
+        $this->assertSame($arguments, AbstractCommand::normalizeVariadic($arguments));
+    }
 }

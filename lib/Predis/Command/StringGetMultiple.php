@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Helpers;
-
 /**
  * @link http://redis.io/commands/mget
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -32,7 +30,7 @@ class StringGetMultiple extends AbstractCommand implements PrefixableCommandInte
      */
     protected function filterArguments(Array $arguments)
     {
-        return Helpers::filterArrayArguments($arguments);
+        return self::normalizeArguments($arguments);
     }
 
     /**

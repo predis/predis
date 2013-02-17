@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Helpers;
-
 /**
  * @link http://redis.io/commands/object
  * @author Daniele Alessandri <suppakilla@gmail.com>

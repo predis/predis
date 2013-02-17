@@ -56,6 +56,22 @@ class CommunicationExceptionTest extends StandardTestCase
         $this->assertTrue($exception->shouldResetConnection());
     }
 
+    /**
+     * @group disconnected
+     * @expectedException Predis\CommunicationException
+     * @expectedExceptionMessage Communication error
+     */
+    public function testCommunicationExceptionHandling()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())->method('isConnected')->will($this->returnValue(true));
+        $connection->expects($this->once())->method('disconnect');
+
+        $exception = $this->getException($connection, 'Communication error');
+
+        CommunicationException::handle($exception);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

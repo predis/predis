@@ -23,6 +23,9 @@ v0.8.3 (2013-xx-xx)
   instead of `FALSE` to indicate that all of the arguments of a Lua script must
   be used to populate `ARGV[]`. This does not represent a breaking change.
 
+- The `Predis\Helpers` class has been deprecated and it will be removed in
+  future releases.
+
 
 v0.8.2 (2013-02-03)
 ===============================================================================

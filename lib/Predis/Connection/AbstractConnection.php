@@ -12,7 +12,7 @@
 namespace Predis\Connection;
 
 use Predis\ClientException;
-use Predis\Helpers;
+use Predis\CommunicationException;
 use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
@@ -136,7 +136,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     protected function onConnectionError($message, $code = null)
     {
-        Helpers::onCommunicationException(new ConnectionException($this, $message, $code));
+        CommunicationException::handle(new ConnectionException($this, $message, $code));
     }
 
     /**
@@ -146,7 +146,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     protected function onProtocolError($message)
     {
-        Helpers::onCommunicationException(new ProtocolException($this, $message));
+        CommunicationException::handle(new ProtocolException($this, $message));
     }
 
     /**
