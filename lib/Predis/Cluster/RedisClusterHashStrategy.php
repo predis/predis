@@ -246,9 +246,11 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
     {
-        $keys = $command instanceof ScriptedCommand
-                    ? $command->getKeys()
-                    : array_slice($args = $command->getArguments(), 2, $args[1]);
+        if ($command instanceof ScriptedCommand) {
+            $keys = $command->getKeys();
+        } else {
+            $keys = array_slice($args = $command->getArguments(), 2, $args[1]);
+        }
 
         if (count($keys) === 1) {
             return $keys[0];
