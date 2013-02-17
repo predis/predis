@@ -98,7 +98,7 @@ class TextProtocol implements ProtocolInterface
                 if ($count === -1) {
                     return null;
                 }
-                if ($this->mbiterable == true) {
+                if ($this->mbiterable) {
                     return new MultiBulkResponseSimple($connection, $count);
                 }
 

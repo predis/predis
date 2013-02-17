@@ -296,7 +296,7 @@ class PhpiredisConnection extends AbstractConnection
 
         $this->connectWithTimeout($this->parameters);
 
-        if (count($this->initCmds) > 0) {
+        if ($this->initCmds) {
             $this->sendInitializationCommands();
         }
     }

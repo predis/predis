@@ -341,7 +341,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
      */
     protected function checkSameHashForKeys(Array $keys)
     {
-        if (($count = count($keys)) === 0) {
+        if (!$count = count($keys)) {
             return false;
         }
 

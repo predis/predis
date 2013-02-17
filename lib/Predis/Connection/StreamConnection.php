@@ -141,7 +141,7 @@ class StreamConnection extends AbstractConnection
     {
         parent::connect();
 
-        if (count($this->initCmds) > 0){
+        if ($this->initCmds) {
             $this->sendInitializationCommands();
         }
     }

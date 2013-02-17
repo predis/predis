@@ -130,7 +130,7 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     public function supportsCommands(Array $commands)
     {
         foreach ($commands as $command) {
-            if ($this->supportsCommand($command) === false) {
+            if (!$this->supportsCommand($command)) {
                 return false;
             }
         }
