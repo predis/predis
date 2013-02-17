@@ -65,7 +65,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @param array $arguments Position of the argument.
      */
-    public function getArgument($index = 0)
+    public function getArgument($index)
     {
         if (isset($this->arguments[$index])) {
             return $this->arguments[$index];
