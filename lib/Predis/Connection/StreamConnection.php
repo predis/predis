@@ -54,7 +54,7 @@ class StreamConnection extends AbstractConnection
      */
     public function __destruct()
     {
-        if (!$this->parameters->persistent) {
+        if (isset($this->parameters) && !$this->parameters->persistent) {
             $this->disconnect();
         }
     }
