@@ -115,7 +115,7 @@ class ConnectionParameters implements ConnectionParametersInterface
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
 
-        if (($parsed = @parse_url($uri)) === false || !isset($parsed['host'])) {
+        if (!($parsed = @parse_url($uri)) || !isset($parsed['host'])) {
             throw new ClientException("Invalid URI: $uri");
         }
 
@@ -139,7 +139,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      */
     private function filter(Array $parameters)
     {
-        if (count($parameters) > 0) {
+        if ($parameters) {
             $casters = array_intersect_key($this->getValueCasters(), $parameters);
 
             foreach ($casters as $parameter => $caster) {
