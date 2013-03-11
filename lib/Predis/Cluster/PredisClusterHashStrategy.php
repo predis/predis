@@ -140,6 +140,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'HGET'                  => $keyIsFirstArgument,
             'HGETALL'               => $keyIsFirstArgument,
             'HMGET'                 => $keyIsFirstArgument,
+            'HMSET'                 => $keyIsFirstArgument,
             'HINCRBY'               => $keyIsFirstArgument,
             'HINCRBYFLOAT'          => $keyIsFirstArgument,
             'HKEYS'                 => $keyIsFirstArgument,
