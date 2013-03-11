@@ -345,6 +345,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'HGET'                  => 'keys-first',
             'HGETALL'               => 'keys-first',
             'HMGET'                 => 'keys-first',
+            'HMSET'                 => 'keys-first',
             'HINCRBY'               => 'keys-first',
             'HINCRBYFLOAT'          => 'keys-first',
             'HKEYS'                 => 'keys-first',
