@@ -32,6 +32,14 @@ class ServerEval extends AbstractCommand implements PrefixableCommandInterface
     {
         $arguments = $this->getArguments();
 
+        if ('EVAL' === $this->getId() && empty($arguments)) {
+            /* this is needed because when executing an EVAL following an EVALSHA which gives an
+               error, arguments are not passed to CreateCommand EVAL to avoid a double filterArguments
+               (they are set afterwards using setRawArguments)
+            */
+            return;
+        }
+
         for ($i = 2; $i < $arguments[1] + 2; $i++) {
             $arguments[$i] = "$prefix{$arguments[$i]}";
         }
