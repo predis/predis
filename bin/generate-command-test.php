@@ -116,7 +116,8 @@ class CommandTestCaseGenerator
             return $this->options['realm'];
         }
 
-        $class = array_pop(explode('\\', $this->options['fqn']));
+        $fqnParts = explode('\\', $this->options['fqn']);
+        $class = array_pop($fqnParts);
         list($realm,) = preg_split('/([[:upper:]][[:lower:]]+)/', $class, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         return strtolower($realm);
@@ -152,7 +153,8 @@ class CommandTestCaseGenerator
     {
         $id = $instance->getId();
         $fqn = get_class($instance);
-        $class = array_pop(explode('\\', $fqn)) . "Test";
+        $fqnParts = explode('\\', $fqn);
+        $class = array_pop($fqnParts) . "Test";
         $realm = $this->getTestRealm();
 
         $buffer =<<<PHP
