@@ -104,6 +104,24 @@ class ZSetRangeTest extends CommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue()
+    {
+        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => true));
+        $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
+
+        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => 1));
+        $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
+
+        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => false));
+        $this->assertSame(array('zset', 0, 100), $command->getArguments());
+
+        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => 0));
+        $this->assertSame(array('zset', 0, 100), $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsElementsInRange()

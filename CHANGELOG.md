@@ -4,6 +4,10 @@ v0.8.4 (2013-xx-xx)
 - __FIX__: allow `HMSET` when using a cluster of Redis nodes with client-side
   sharding or redis-cluster (ISSUE #106).
 
+- __FIX__: set `WITHSCORES` modifer for `ZRANGE`, `ZREVRANGE`, `ZRANGEBYSCORE`
+  and `ZREVRANGEBYSCORE` only when the options array passed to these commands
+  has `WITHSCORES` set to `true` (ISSUE #107).
+
 
 v0.8.3 (2013-02-18)
 ===============================================================================
