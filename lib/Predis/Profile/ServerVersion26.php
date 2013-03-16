@@ -47,6 +47,8 @@ class ServerVersion26 extends ServerProfile
             'ttl'                       => 'Predis\Command\KeyTimeToLive',
             'move'                      => 'Predis\Command\KeyMove',
             'sort'                      => 'Predis\Command\KeySort',
+            'dump'                      => 'Predis\Command\KeyDump',
+            'restore'                   => 'Predis\Command\KeyRestore',
 
             /* commands operating on string values */
             'set'                       => 'Predis\Command\StringSet',

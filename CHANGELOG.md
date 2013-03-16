@@ -1,6 +1,8 @@
 v0.8.4 (2013-xx-xx)
 ===============================================================================
 
+- Added `DUMP` and `RESTORE` to the server profile for Redis 2.6.
+
 - __FIX__: allow `HMSET` when using a cluster of Redis nodes with client-side
   sharding or redis-cluster (ISSUE #106).
 
