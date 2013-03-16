@@ -186,7 +186,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return true'));
-        $command->expects($this->exactly(1))
+        $command->expects($this->exactly(2))
                 ->method('getKeysCount')
                 ->will($this->returnValue(1));
         $command->setArguments($arguments);
