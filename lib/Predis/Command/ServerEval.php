@@ -30,13 +30,13 @@ class ServerEval extends AbstractCommand implements PrefixableCommandInterface
      */
     public function prefixKeys($prefix)
     {
-        $arguments = $this->getArguments();
+        if ($arguments = $this->getArguments()) {
+            for ($i = 2; $i < $arguments[1] + 2; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
 
-        for ($i = 2; $i < $arguments[1] + 2; $i++) {
-            $arguments[$i] = "$prefix{$arguments[$i]}";
+            $this->setRawArguments($arguments);
         }
-
-        $this->setRawArguments($arguments);
     }
 
     /**

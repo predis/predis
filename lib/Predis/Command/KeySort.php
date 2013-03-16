@@ -86,31 +86,32 @@ class KeySort extends AbstractCommand implements PrefixableCommandInterface
      */
     public function prefixKeys($prefix)
     {
-        $arguments = $this->getArguments();
-        $arguments[0] = "$prefix{$arguments[0]}";
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
 
-        if (($count = count($arguments)) > 1) {
-            for ($i = 1; $i < $count; $i++) {
-                switch ($arguments[$i]) {
-                    case 'BY':
-                    case 'STORE':
-                        $arguments[$i] = "$prefix{$arguments[++$i]}";
-                        break;
+            if (($count = count($arguments)) > 1) {
+                for ($i = 1; $i < $count; $i++) {
+                    switch ($arguments[$i]) {
+                        case 'BY':
+                        case 'STORE':
+                            $arguments[$i] = "$prefix{$arguments[++$i]}";
+                            break;
 
-                    case 'GET':
-                        $value = $arguments[++$i];
-                        if ($value !== '#') {
-                            $arguments[$i] = "$prefix$value";
-                        }
-                        break;
+                        case 'GET':
+                            $value = $arguments[++$i];
+                            if ($value !== '#') {
+                                $arguments[$i] = "$prefix$value";
+                            }
+                            break;
 
-                    case 'LIMIT';
-                        $i += 2;
-                        break;
+                        case 'LIMIT';
+                            $i += 2;
+                            break;
+                    }
                 }
             }
-        }
 
-        $this->setRawArguments($arguments);
+            $this->setRawArguments($arguments);
+        }
     }
 }

@@ -78,6 +78,17 @@ class ServerEvalSHATest extends CommandTestCase
     /**
      * @group disconnected
      */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
+
+        $this->assertSame(array(), $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testGetScriptHash()
     {
         $command = $this->getCommandWithArgumentsArray(array($sha1 = sha1('return true')), 0);

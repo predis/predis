@@ -10,6 +10,9 @@ v0.8.4 (2013-xx-xx)
   and `ZREVRANGEBYSCORE` only when the options array passed to these commands
   has `WITHSCORES` set to `true` (ISSUE #107).
 
+- __FIX__: scripted commands falling back from `EVALSHA` to `EVAL` resulted in
+  PHP errors when using a prefixed client (ISSUE #109).
+
 
 v0.8.3 (2013-02-18)
 ===============================================================================

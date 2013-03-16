@@ -77,6 +77,17 @@ class ListRangeTest extends CommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
+
+        $this->assertSame(array(), $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsListSliceWithPositiveStartAndStop()

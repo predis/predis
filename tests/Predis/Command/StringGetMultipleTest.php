@@ -90,6 +90,16 @@ class StringGetMultipleTest extends CommandTestCase
         $this->assertSame($expected, $command->getArguments());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeysIgnoredOnEmptyArguments()
+    {
+        $command = $this->getCommand();
+        $command->prefixKeys('prefix:');
+
+        $this->assertSame(array(), $command->getArguments());
+    }
 
     /**
      * @group connected

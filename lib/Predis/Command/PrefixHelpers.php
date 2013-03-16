@@ -40,13 +40,13 @@ class PrefixHelpers
      */
     public static function all(CommandInterface $command, $prefix)
     {
-        $arguments = $command->getArguments();
+        if ($arguments = $command->getArguments()) {
+            foreach ($arguments as &$key) {
+                $key = "$prefix$key";
+            }
 
-        foreach ($arguments as &$key) {
-            $key = "$prefix$key";
+            $command->setRawArguments($arguments);
         }
-
-        $command->setRawArguments($arguments);
     }
 
     /**
@@ -57,14 +57,15 @@ class PrefixHelpers
      */
     public static function interleaved(CommandInterface $command, $prefix)
     {
-        $arguments = $command->getArguments();
-        $length = count($arguments);
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-        for ($i = 0; $i < $length; $i += 2) {
-            $arguments[$i] = "$prefix{$arguments[$i]}";
+            for ($i = 0; $i < $length; $i += 2) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $command->setRawArguments($arguments);
         }
-
-        $command->setRawArguments($arguments);
     }
 
     /**
@@ -75,14 +76,15 @@ class PrefixHelpers
      */
     public static function skipFirst(CommandInterface $command, $prefix)
     {
-        $arguments = $command->getArguments();
-        $length = count($arguments);
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-        for ($i = 1; $i < $length; $i++) {
-            $arguments[$i] = "$prefix{$arguments[$i]}";
+            for ($i = 1; $i < $length; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $command->setRawArguments($arguments);
         }
-
-        $command->setRawArguments($arguments);
     }
 
     /**
@@ -93,13 +95,14 @@ class PrefixHelpers
      */
     public static function skipLast(CommandInterface $command, $prefix)
     {
-        $arguments = $command->getArguments();
-        $length = count($arguments);
+        if ($arguments = $command->getArguments()) {
+            $length = count($arguments);
 
-        for ($i = 0; $i < $length - 1; $i++) {
-            $arguments[$i] = "$prefix{$arguments[$i]}";
+            for ($i = 0; $i < $length - 1; $i++) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $command->setRawArguments($arguments);
         }
-
-        $command->setRawArguments($arguments);
     }
 }
