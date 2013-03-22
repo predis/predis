@@ -96,6 +96,7 @@ class KeyPreciseExpireTest extends CommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */

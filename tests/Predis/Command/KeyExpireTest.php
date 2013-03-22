@@ -96,6 +96,7 @@ class KeyExpireTest extends CommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */
@@ -114,6 +115,7 @@ class KeyExpireTest extends CommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */

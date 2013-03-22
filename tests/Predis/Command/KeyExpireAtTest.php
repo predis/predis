@@ -96,6 +96,7 @@ class KeyExpireAtTest extends CommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */
