@@ -91,7 +91,7 @@ class StreamConnection extends AbstractConnection
         $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
 
         if (!$resource) {
-            $this->onConnectionError(trim($errstr), $errno);
+            $this->onConnectionError(trim($errstr.' on '.$uri), $errno);
         }
 
         if (isset($parameters->read_write_timeout)) {
@@ -128,7 +128,7 @@ class StreamConnection extends AbstractConnection
         $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
 
         if (!$resource) {
-            $this->onConnectionError(trim($errstr), $errno);
+            $this->onConnectionError(trim($errstr.' on '.$uri), $errno);
         }
 
         return $resource;

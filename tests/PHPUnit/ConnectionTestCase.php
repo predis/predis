@@ -282,7 +282,6 @@ abstract class ConnectionTestCase extends StandardTestCase
      * @group connected
      * @group slow
      * @expectedException Predis\Connection\ConnectionException
-     * @expectedExceptionMessage Connection timed out
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
