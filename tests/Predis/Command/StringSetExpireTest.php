@@ -95,6 +95,7 @@ class StringSetExpireTest extends CommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */
