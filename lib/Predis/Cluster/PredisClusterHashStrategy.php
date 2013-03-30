@@ -58,6 +58,8 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'TTL'                   => $keyIsFirstArgument,
             'PTTL'                  => $keyIsFirstArgument,
             'SORT'                  => $keyIsFirstArgument, // TODO
+            'DUMP'                  => $keyIsFirstArgument,
+            'RESTORE'               => $keyIsFirstArgument,
 
             /* commands operating on string values */
             'APPEND'                => $keyIsFirstArgument,

@@ -263,6 +263,8 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'TTL'                   => 'keys-first',
             'PTTL'                  => 'keys-first',
             'SORT'                  => 'keys-first', // TODO
+            'DUMP'                  => 'keys-first',
+            'RESTORE'               => 'keys-first',
 
             /* commands operating on string values */
             'APPEND'                => 'keys-first',
