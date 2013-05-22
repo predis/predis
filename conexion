@@ -1,0 +1,15 @@
+require __DIR__.'/lib/Predis/Autoloader.php';
+PredisAutoloader::register();
+ 
+$config = array(
+    'host' => '127.0.0.1',
+    'port' => 6379,
+    'database' => 15
+);
+ 
+$client = new PredisClient($config);
+ 
+$client->set('hello', 'world');
+$retval = $client->get('hello');
+ 
+var_dump($retval);
