@@ -22,9 +22,10 @@ use Predis\ClientInterface;
 class DispatcherLoop
 {
     private $pubSubContext;
-    private $callbacks;
-    private $defaultCallback;
-    private $subscriptionCallback;
+
+    protected $callbacks;
+    protected $defaultCallback;
+    protected $subscriptionCallback;
 
     /**
      * @param ClientInterface Client instance used by the context.
