@@ -21,7 +21,6 @@ use Predis\ClientInterface;
  */
 class DispatcherLoop
 {
-    private $client;
     private $pubSubContext;
     private $callbacks;
     private $defaultCallback;
@@ -33,7 +32,6 @@ class DispatcherLoop
     public function __construct(ClientInterface $client)
     {
         $this->callbacks = array();
-        $this->client = $client;
         $this->pubSubContext = $client->pubSub();
     }
 
@@ -160,8 +158,12 @@ class DispatcherLoop
      */
     protected function getPrefixKeys()
     {
-        $prefix = $this->client->getOptions()->prefix;
+        $options = $this->pubSubContext->getClient()->getOptions();
 
-        return $prefix ? $prefix->getPrefix() : '';
+        if (isset($options->prefix)) {
+            return $options->prefix->getPrefix();
+        }
+
+        return '';
     }
 }
