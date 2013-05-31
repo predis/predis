@@ -82,4 +82,46 @@ class DispatcherLoopTest extends StandardTestCase
 
         $this->assertTrue($consumer->ping());
     }
+
+    /**
+     * @group connected
+     */
+    public function testDispatcherLoopAgainstRedisServerWithPrefix()
+    {
+        $parameters = array(
+            'host' => REDIS_SERVER_HOST,
+            'port' => REDIS_SERVER_PORT,
+            'database' => REDIS_SERVER_DBNUM,
+            // Prevents suite from handing on broken test
+            'read_write_timeout' => 2,
+        );
+
+        $options = array('profile' => REDIS_SERVER_VERSION);
+
+        $producerNonPfx = new Client($parameters, $options);
+        $producerNonPfx->connect();
+
+        $producerPfx = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $producerPfx->connect();
+
+        $consumer = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $dispatcher = new DispatcherLoop($consumer);
+
+        $callback = $this->getMock('stdClass', array('__invoke'));
+        $callback->expects($this->exactly(1))
+                 ->method('__invoke')
+                 ->with($this->equalTo('arg:prefixed'))
+                 ->will($this->returnCallback(function ($arg) use ($dispatcher) {
+                     $dispatcher->stop();
+                 }));
+
+        $dispatcher->attachCallback('callback', $callback);
+
+        $producerNonPfx->publish('callback', 'arg:non-prefixed');
+        $producerPfx->publish('callback', 'arg:prefixed');
+
+        $dispatcher->run();
+
+        $this->assertTrue($consumer->ping());
+    }
 }

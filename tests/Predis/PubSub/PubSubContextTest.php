@@ -245,6 +245,19 @@ class PubSubContextTest extends StandardTestCase
         $this->assertFalse($pubsub->valid());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testGetUnderlyingClientInstance()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+
+        $client = new Client($connection);
+        $pubsub = new PubSubContext($client);
+
+        $this->assertSame($client, $pubsub->getClient());
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
