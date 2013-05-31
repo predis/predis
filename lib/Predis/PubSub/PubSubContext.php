@@ -42,6 +42,16 @@ class PubSubContext extends AbstractPubSubContext
     }
 
     /**
+     * Returns the underlying client instance used by the pub/sub iterator.
+     *
+     * @return ClientInterface
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a Publish / Subscribe context.
      *
