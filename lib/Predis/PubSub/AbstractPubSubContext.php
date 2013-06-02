@@ -11,10 +11,6 @@
 
 namespace Predis\PubSub;
 
-use Predis\ClientException;
-use Predis\ClientInterface;
-use Predis\NotSupportedException;
-
 /**
  * Client-side abstraction of a Publish / Subscribe context.
  *

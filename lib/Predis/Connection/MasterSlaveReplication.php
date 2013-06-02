@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 use Predis\Replication\ReplicationStrategy;
 

@@ -14,7 +14,6 @@ namespace Predis\Protocol\Text;
 use Predis\CommunicationException;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
-use Predis\ServerException;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;

@@ -11,10 +11,6 @@
 
 namespace Predis;
 
-use Predis\Connection\AggregatedConnectionInterface;
-use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\ConnectionInterface;
-
 /**
  * Defines a few helper methods.
  *

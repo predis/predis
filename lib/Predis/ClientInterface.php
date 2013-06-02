@@ -60,7 +60,7 @@ interface ClientInterface extends BasicClientInterface
      *
      * @param string $method The name of a Redis command.
      * @param array $arguments The arguments for the command.
-     * @return CommandInterface
+     * @return Command\CommandInterface
      */
     public function createCommand($method, $arguments = array());
 }

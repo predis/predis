@@ -15,14 +15,12 @@ use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Connection\ConnectionFactory;
 use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Monitor\MonitorContext;
 use Predis\Option\ClientOptions;
 use Predis\Option\ClientOptionsInterface;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
-use Predis\Profile\ServerProfileInterface;
 use Predis\PubSub\PubSubContext;
 use Predis\Transaction\MultiExecContext;
 
@@ -205,7 +203,7 @@ class Client implements ClientInterface
      * Retrieves a single connection out of an aggregated connections instance.
      *
      * @param string $connectionId Index or alias of the connection.
-     * @return SingleConnectionInterface
+     * @return Connection\SingleConnectionInterface
      */
     public function getConnectionById($connectionId)
     {

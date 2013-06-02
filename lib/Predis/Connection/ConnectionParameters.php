@@ -12,7 +12,6 @@
 namespace Predis\Connection;
 
 use Predis\ClientException;
-use Predis\Option\OptionInterface;
 
 /**
  * Handles parsing and validation of connection parameters.

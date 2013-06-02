@@ -48,7 +48,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
      * Returns a pipeline executor depending on the kind of the underlying
      * connection and the passed options.
      *
-     * @param ClientInterface Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the context.
      * @return PipelineExecutorInterface
      */
     protected function createExecutor(ClientInterface $client)

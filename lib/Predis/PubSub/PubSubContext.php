@@ -28,8 +28,8 @@ class PubSubContext extends AbstractPubSubContext
     private $options;
 
     /**
-     * @param ClientInterface Client instance used by the context.
-     * @param array Options for the context initialization.
+     * @param ClientInterface $client Client instance used by the context.
+     * @param array $options Options for the context initialization.
      */
     public function __construct(ClientInterface $client, Array $options = null)
     {
@@ -55,7 +55,7 @@ class PubSubContext extends AbstractPubSubContext
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a Publish / Subscribe context.
      *
-     * @param ClientInterface Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the context.
      */
     private function checkCapabilities(ClientInterface $client)
     {

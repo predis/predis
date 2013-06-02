@@ -11,6 +11,8 @@
 
 namespace Predis\Cluster\Distribution;
 
+use Predis\Cluster\Hash\HashGeneratorInterface;
+
 /**
  * A distributor implements the logic to automatically distribute
  * keys among several nodes for client-side sharding.
@@ -44,7 +46,7 @@ interface DistributionStrategyInterface
     /**
      * Returns the underlying hash generator instance.
      *
-     * @return Predis\Cluster\Hash\HashGeneratorInterface
+     * @return HashGeneratorInterface
      */
     public function getHashGenerator();
 }

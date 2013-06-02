@@ -28,7 +28,7 @@ class FireAndForgetExecutor implements PipelineExecutorInterface
      * connection before starting to execute the commands stored
      * in the pipeline.
      *
-     * @param ConnectionInterface Connection instance.
+     * @param ConnectionInterface $connection Connection instance.
      */
     protected function checkConnection(ConnectionInterface $connection)
     {
