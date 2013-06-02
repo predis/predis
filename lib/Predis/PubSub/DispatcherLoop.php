@@ -28,7 +28,7 @@ class DispatcherLoop
     protected $subscriptionCallback;
 
     /**
-     * @param ClientInterface Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the context.
      */
     public function __construct(ClientInterface $client)
     {
@@ -39,7 +39,7 @@ class DispatcherLoop
     /**
      * Checks if the passed argument is a valid callback.
      *
-     * @param mixed A callback.
+     * @param mixed $callable A callback.
      */
     protected function validateCallback($callable)
     {

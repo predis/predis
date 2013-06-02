@@ -11,6 +11,7 @@
 
 namespace Predis\Profile;
 
+use Predis\Command\CommandInterface;
 
 /**
  * A server profile defines features and commands supported by certain
@@ -49,7 +50,7 @@ interface ServerProfileInterface
      *
      * @param string $method Command ID.
      * @param array $arguments Arguments for the command.
-     * @return Predis\Command\CommandInterface
+     * @return CommandInterface
      */
     public function createCommand($method, $arguments = array());
 }

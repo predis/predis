@@ -27,7 +27,7 @@ class MonitorContext implements \Iterator
     private $position;
 
     /**
-     * @param ClientInterface Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the context.
      */
     public function __construct(ClientInterface $client)
     {
@@ -48,7 +48,7 @@ class MonitorContext implements \Iterator
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a monitor context.
      *
-     * @param ClientInterface Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the context.
      */
     private function checkCapabilities(ClientInterface $client)
     {

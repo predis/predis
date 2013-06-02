@@ -11,8 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\CommandInterface;
-
 /**
  * Defines a cluster of Redis servers formed by aggregating multiple
  * connection objects.

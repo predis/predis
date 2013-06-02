@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
