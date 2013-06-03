@@ -11,8 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\CommandInterface;
-
 /**
  * Defines a group of Redis servers in a master/slave replication configuration.
  *

@@ -13,7 +13,6 @@ namespace Predis\Pipeline;
 
 use SplQueue;
 use Predis\CommunicationException;
-use Predis\ServerException;
 use Predis\Connection\ConnectionInterface;
 
 /**
