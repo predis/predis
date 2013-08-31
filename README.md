@@ -1,4 +1,6 @@
 # Predis #
+[![Latest Stable Version](https://poser.pugx.org/predis/predis/v/stable.png)](https://packagist.org/packages/predis/predis)
+[![Total Downloads](https://poser.pugx.org/predis/predis/downloads.png)](https://packagist.org/packages/predis/predis)
 
 Predis is a flexible and feature-complete PHP (>= 5.3) client library for the Redis key-value store.
 
