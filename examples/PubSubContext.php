@@ -18,7 +18,7 @@ require 'SharedConfigurations.php';
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 
 // Initialize a new pubsub context
-$pubsub = $client->pubSub();
+$pubsub = $client->pubSubLoop();
 
 // Subscribe to your channels
 $pubsub->subscribe('control_channel', 'notifications');

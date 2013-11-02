@@ -394,10 +394,27 @@ class Client implements ClientInterface
      * Creates a new Publish / Subscribe context and returns it, or executes it
      * inside the optionally provided callable object.
      *
+     * @deprecated This method will change in the next major release to support
+     *             the new PUBSUB command introduced in Redis 2.8. Please use
+     *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
+     *             instances from now on.
+     *
      * @param mixed $arg,... Options for the context, a callable object, or both.
-     * @return MultiExecContext|array
+     * @return PubSubExecContext|array
      */
     public function pubSub(/* arguments */)
+    {
+        return call_user_func_array(array($this, 'pubSubLoop'), func_get_args());
+    }
+
+    /**
+     * Creates a new Publish / Subscribe context and returns it, or executes it
+     * inside the optionally provided callable object.
+     *
+     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @return PubSubExecContext|array
+     */
+    public function pubSubLoop(/* arguments */)
     {
         return $this->sharedInitializer(func_get_args(), 'initPubSub');
     }

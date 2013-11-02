@@ -584,24 +584,24 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubWithoutArgumentsReturnsPubSubContext()
+    public function testPubSubLoopWithoutArgumentsReturnsPubSubContext()
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSub());
+        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSubLoop());
     }
 
     /**
      * @group disconnected
      */
-    public function testPubSubWithArrayReturnsPubSubContextWithOptions()
+    public function testPubSubLoopWithArrayReturnsPubSubContextWithOptions()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $options = array('subscribe' => 'channel');
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSub($options));
+        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new \ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
@@ -612,7 +612,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubWithArrayAndCallableExecutesPubSub()
+    public function testPubSubLoopWithArrayAndCallableExecutesPubSub()
     {
         // NOTE: we use a subscribe count of 0 in the fake message to trick
         //       the context and to make it think that it can be closed
@@ -631,7 +631,17 @@ class ClientTest extends StandardTestCase
                  ->method('__invoke');
 
         $client = new Client($connection);
-        $client->pubSub($options, $callable);
+        $client->pubSubLoop($options, $callable);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPubSubIsAliasForPubSubLoop()
+    {
+        $client = new Client();
+
+        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $client->pubSub());
     }
 
     /**
