@@ -521,7 +521,7 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline());
+        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $client->pipeline());
     }
 
     /**
@@ -588,7 +588,7 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $client->pubSubLoop());
     }
 
     /**
@@ -651,7 +651,7 @@ class ClientTest extends StandardTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $pubsub = $client->multiExec());
+        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $client->multiExec());
     }
 
     /**
