@@ -77,6 +77,7 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
             '2.2'     => 'Predis\Profile\ServerVersion22',
             '2.4'     => 'Predis\Profile\ServerVersion24',
             '2.6'     => 'Predis\Profile\ServerVersion26',
+            '2.8'     => 'Predis\Profile\ServerVersion28',
             'default' => 'Predis\Profile\ServerVersion26',
             'dev'     => 'Predis\Profile\ServerVersionNext',
         );
