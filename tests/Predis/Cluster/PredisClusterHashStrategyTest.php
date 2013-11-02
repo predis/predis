@@ -341,6 +341,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
             'ZREVRANK'              => 'keys-first',
             'ZSCORE'                => 'keys-first',
             'ZUNIONSTORE'           => 'keys-zaggregated',
+            'ZSCAN'                 => 'keys-first',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',

@@ -136,6 +136,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'ZREVRANK'              => $keyIsFirstArgument,
             'ZSCORE'                => $keyIsFirstArgument,
             'ZUNIONSTORE'           => array($this, 'getKeyFromZsetAggregationCommands'),
+            'ZSCAN'                 => $keyIsFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,

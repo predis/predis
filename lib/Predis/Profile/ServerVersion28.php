@@ -242,6 +242,9 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on sets */
             'sscan'                     => 'Predis\Command\SetScan',
+
+            /* commands operating on sorted sets */
+            'zscan'                     => 'Predis\Command\ZSetScan',
         );
     }
 }

@@ -334,6 +334,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'ZREVRANGEBYSCORE'      => 'keys-first',
             'ZREVRANK'              => 'keys-first',
             'ZSCORE'                => 'keys-first',
+            'ZSCAN'                 => 'keys-first',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',

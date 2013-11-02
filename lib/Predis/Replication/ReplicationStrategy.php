@@ -199,6 +199,7 @@ class ReplicationStrategy
             'ZCOUNT'            => true,
             'ZRANK'             => true,
             'ZREVRANK'          => true,
+            'ZSCAN'             => true,
             'HGET'              => true,
             'HMGET'             => true,
             'HEXISTS'           => true,

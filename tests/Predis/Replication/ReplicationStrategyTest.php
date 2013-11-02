@@ -345,6 +345,7 @@ class ReplicationStrategyTest extends StandardTestCase
             'ZREVRANGEBYSCORE'      => 'read',
             'ZREVRANK'              => 'read',
             'ZSCORE'                => 'read',
+            'ZSCAN'                 => 'read',
 
             /* commands operating on hashes */
             'HDEL'                  => 'write',
