@@ -360,6 +360,7 @@ class ReplicationStrategyTest extends StandardTestCase
             'HSET'                  => 'write',
             'HSETNX'                => 'write',
             'HVALS'                 => 'read',
+            'HSCAN'                 => 'read',
 
             /* scripting */
             'EVAL'                  => 'write',

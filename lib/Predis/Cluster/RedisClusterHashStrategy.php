@@ -138,6 +138,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'HSET'                  => $keyIsFirstArgument,
             'HSETNX'                => $keyIsFirstArgument,
             'HVALS'                 => $keyIsFirstArgument,
+            'HSCAN'                 => $keyIsFirstArgument,
 
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),

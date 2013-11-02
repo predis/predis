@@ -176,6 +176,7 @@ class ServerVersionNextTest extends ServerVersionTestCase
             135 => 'scan',
             136 => 'sscan',
             137 => 'zscan',
+            138 => 'hscan',
         );
     }
 }

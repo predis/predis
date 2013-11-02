@@ -207,6 +207,7 @@ class ReplicationStrategy
             'HKEYS'             => true,
             'HVALS'             => true,
             'HGETALL'           => true,
+            'HSCAN'             => true,
             'PING'              => true,
             'AUTH'              => true,
             'SELECT'            => true,
