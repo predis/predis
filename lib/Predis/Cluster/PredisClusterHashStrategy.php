@@ -114,6 +114,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'SUNIONSTORE'           => $keysAreAllArguments,
             'SISMEMBER'             => $keyIsFirstArgument,
             'SMEMBERS'              => $keyIsFirstArgument,
+            'SSCAN'                 => $keyIsFirstArgument,
             'SPOP'                  => $keyIsFirstArgument,
             'SRANDMEMBER'           => $keyIsFirstArgument,
             'SREM'                  => $keyIsFirstArgument,

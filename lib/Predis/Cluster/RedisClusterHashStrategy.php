@@ -102,6 +102,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'SCARD'                 => $keyIsFirstArgument,
             'SISMEMBER'             => $keyIsFirstArgument,
             'SMEMBERS'              => $keyIsFirstArgument,
+            'SSCAN'                 => $keyIsFirstArgument,
             'SPOP'                  => $keyIsFirstArgument,
             'SRANDMEMBER'           => $keyIsFirstArgument,
             'SREM'                  => $keyIsFirstArgument,

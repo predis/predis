@@ -314,6 +314,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
             'SCARD'                 => 'keys-first',
             'SISMEMBER'             => 'keys-first',
             'SMEMBERS'              => 'keys-first',
+            'SSCAN'                 => 'keys-first',
             'SPOP'                  => 'keys-first',
             'SRANDMEMBER'           => 'keys-first',
             'SREM'                  => 'keys-first',

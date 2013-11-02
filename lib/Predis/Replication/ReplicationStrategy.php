@@ -188,6 +188,7 @@ class ReplicationStrategy
             'SUNION'            => true,
             'SDIFF'             => true,
             'SMEMBERS'          => true,
+            'SSCAN'             => true,
             'SRANDMEMBER'       => true,
             'ZRANGE'            => true,
             'ZREVRANGE'         => true,

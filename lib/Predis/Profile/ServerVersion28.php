@@ -239,6 +239,9 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on the key space */
             'scan'                      => 'Predis\Command\KeyScan',
+
+            /* commands operating on sets */
+            'sscan'                     => 'Predis\Command\SetScan',
         );
     }
 }
