@@ -1,3 +1,17 @@
+v0.8.5 (2013-xx-xx)
+===============================================================================
+
+- Added `2.8` in the server profiles aliases list for the upcoming Redis 2.8.
+  `2.6` is still the default server profile. `dev` now targets Redis 3.0.
+
+- Added `SCAN`, `SSCAN`, `ZSCAN`, `HSCAN` to the server profile for Redis 2.8.
+
+- `Predis\Client::pubSubLoop()` should now be used instead of the deprecated
+  `Predis\Client::pubSub()` (which still works like usual to avoid B/C breaks).
+  `Predis\Client::pubSub()` will change in the next major version of Predis to
+  support the new PUBSUB command recently added in Redis 2.8.
+
+
 v0.8.4 (2013-07-27)
 ===============================================================================
 
