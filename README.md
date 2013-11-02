@@ -16,7 +16,7 @@ More details are available on the [official wiki](http://wiki.github.com/nrk/pre
 
 ## Main features ##
 
-- Wide range of Redis versions supported (from __1.2__ to __2.6__ and unstable) using server profiles.
+- Wide range of Redis versions supported (from __1.2__ to __2.8__ and unstable) using server profiles.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
 - Client-side sharding via consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
