@@ -276,6 +276,7 @@ class ReplicationStrategyTest extends StandardTestCase
             'PTTL'                  => 'write',
             'SORT'                  => 'variable',
             'KEYS'                  => 'read',
+            'SCAN'                  => 'read',
             'RANDOMKEY'             => 'read',
 
             /* commands operating on string values */

@@ -170,6 +170,7 @@ class ReplicationStrategy
             'EXISTS'            => true,
             'TYPE'              => true,
             'KEYS'              => true,
+            'SCAN'              => true,
             'RANDOMKEY'         => true,
             'TTL'               => true,
             'GET'               => true,

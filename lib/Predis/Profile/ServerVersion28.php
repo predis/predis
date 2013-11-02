@@ -236,6 +236,9 @@ class ServerVersion28 extends ServerProfile
 
 
             /* ---------------- Redis 2.8 ---------------- */
+
+            /* commands operating on the key space */
+            'scan'                      => 'Predis\Command\KeyScan',
         );
     }
 }
