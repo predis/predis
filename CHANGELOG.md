@@ -6,6 +6,8 @@ v0.8.5 (2013-xx-xx)
 
 - Added `SCAN`, `SSCAN`, `ZSCAN`, `HSCAN` to the server profile for Redis 2.8.
 
+- Implemented iterator-based abstraction for `SCAN`, `SSCAN`, `ZSCAN`, `HSCAN`.
+
 - `Predis\Client::pubSubLoop()` should now be used instead of the deprecated
   `Predis\Client::pubSub()` (which still works like usual to avoid B/C breaks).
   `Predis\Client::pubSub()` will change in the next major version of Predis to
