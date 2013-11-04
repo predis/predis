@@ -61,7 +61,7 @@ abstract class AbstractScanIterator implements Iterator
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
         if (!$client->getProfile()->supportsCommand($commandID)) {
-            throw new NotSupportedException("The specified server profile does not support the $commandID command.");
+            throw new NotSupportedException("The specified server profile does not support the `$commandID` command.");
         }
     }
 
@@ -137,7 +137,6 @@ abstract class AbstractScanIterator implements Iterator
     public function rewind()
     {
         $this->reset();
-        $this->next();
     }
 
     /**
@@ -167,6 +166,8 @@ abstract class AbstractScanIterator implements Iterator
 
         if ($this->elements) {
             $this->extractNext();
+        } else if ($this->cursor) {
+            $this->next();
         } else {
             $this->valid = false;
         }
