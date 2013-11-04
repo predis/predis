@@ -40,6 +40,27 @@ class KeyspaceIteratorTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testIterationWithNoResults()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(ServerProfile::get('2.8')));
+        $client->expects($this->once())
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(0, array())));
+
+        $iterator = new KeyspaceIterator($client);
+
+        $iterator->rewind();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testIterationOnSingleFetch()
     {
         $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
@@ -116,7 +137,42 @@ class KeyspaceIteratorTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithMultipleFetchesAndHoles()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(ServerProfile::get('2.8')));
+        $client->expects($this->at(1))
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(4, array())));
+        $client->expects($this->at(2))
+               ->method('scan')
+               ->with(4, array())
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+
+        $iterator = new KeyspaceIterator($client);
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
+
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
         $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 

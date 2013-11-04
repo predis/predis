@@ -40,6 +40,27 @@ class SortedSetIteratorTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testIterationWithNoResults()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(ServerProfile::get('2.8')));
+        $client->expects($this->once())
+               ->method('zscan')
+               ->with('key:zset', 0, array())
+               ->will($this->returnValue(array(0, array())));
+
+        $iterator = new SortedSetIterator($client, 'key:zset');
+
+        $iterator->rewind();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testIterationOnSingleFetch()
     {
         $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
@@ -122,7 +143,44 @@ class SortedSetIteratorTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithMultipleFetchesAndHoles()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(ServerProfile::get('2.8')));
+        $client->expects($this->at(1))
+               ->method('zscan')
+               ->with('key:zset', 0, array())
+               ->will($this->returnValue(array(4, array())));
+        $client->expects($this->at(2))
+               ->method('zscan')
+               ->with('key:zset', 4, array())
+               ->will($this->returnValue(array(0, array(
+                    array('member:1st', 1.0), array('member:2nd', 2.0),
+               ))));
+
+        $iterator = new SortedSetIterator($client, 'key:zset');
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
+
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
         $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
 
