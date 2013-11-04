@@ -56,20 +56,20 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:3rd', $iterator->key());
         $this->assertSame('value:3rd', $iterator->current());
+        $this->assertSame('field:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -100,20 +100,20 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:3rd', $iterator->key());
         $this->assertSame('value:3rd', $iterator->current());
+        $this->assertSame('field:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -148,20 +148,20 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:3rd', $iterator->key());
         $this->assertSame('value:3rd', $iterator->current());
+        $this->assertSame('field:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -186,15 +186,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', 'field:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -225,15 +225,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', 'field:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -258,15 +258,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', null, 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -297,15 +297,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', null, 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -330,15 +330,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', 'field:*', 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -369,15 +369,15 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash', 'field:*', 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -402,22 +402,20 @@ class HashIteratorTest extends StandardTestCase
 
         $iterator = new HashIterator($client, 'key:hash');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->rewind();
-
-        $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:1st', $iterator->key());
         $this->assertSame('value:1st', $iterator->current());
+        $this->assertSame('field:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('field:2nd', $iterator->key());
         $this->assertSame('value:2nd', $iterator->current());
+        $this->assertSame('field:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());

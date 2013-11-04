@@ -56,20 +56,20 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->key());
         $this->assertSame(3.0, $iterator->current());
+        $this->assertSame('member:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -100,20 +100,20 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->key());
         $this->assertSame(3.0, $iterator->current());
+        $this->assertSame('member:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -148,20 +148,20 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->key());
         $this->assertSame(3.0, $iterator->current());
+        $this->assertSame('member:3rd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -186,15 +186,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', 'member:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -225,15 +225,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', 'member:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -258,15 +258,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', null, 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -297,15 +297,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', null, 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -330,15 +330,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', 'member:*', 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -369,15 +369,15 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset', 'member:*', 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -402,22 +402,20 @@ class SortedSetIteratorTest extends StandardTestCase
 
         $iterator = new SortedSetIterator($client, 'key:zset');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->rewind();
-
-        $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->key());
         $this->assertSame(1.0, $iterator->current());
+        $this->assertSame('member:1st', $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->key());
         $this->assertSame(2.0, $iterator->current());
+        $this->assertSame('member:2nd', $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());

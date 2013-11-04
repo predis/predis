@@ -54,20 +54,20 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(2, $iterator->key());
         $this->assertSame('key:3rd', $iterator->current());
+        $this->assertSame(2, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -94,20 +94,20 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(2, $iterator->key());
         $this->assertSame('key:3rd', $iterator->current());
+        $this->assertSame(2, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -138,20 +138,20 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(2, $iterator->key());
         $this->assertSame('key:3rd', $iterator->current());
+        $this->assertSame(2, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -174,15 +174,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, 'key:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -209,15 +209,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, 'key:*');
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -240,15 +240,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, null, 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -275,15 +275,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, null, 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -306,15 +306,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, 'key:*', 2);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -341,15 +341,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client, 'key:*', 1);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(1, $iterator->key());
         $this->assertSame('key:2nd', $iterator->current());
+        $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());
@@ -372,17 +372,15 @@ class KeyspaceIteratorTest extends StandardTestCase
 
         $iterator = new KeyspaceIterator($client);
 
-        $iterator->next();
+        $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->rewind();
-
-        $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
         $this->assertSame('key:1st', $iterator->current());
+        $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());

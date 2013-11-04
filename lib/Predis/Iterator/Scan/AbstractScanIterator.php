@@ -137,6 +137,7 @@ abstract class AbstractScanIterator implements Iterator
     public function rewind()
     {
         $this->reset();
+        $this->next();
     }
 
     /**
