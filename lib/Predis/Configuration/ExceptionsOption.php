@@ -9,27 +9,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Option;
+namespace Predis\Configuration;
 
 /**
- * Option class used to specify if the client should throw server exceptions.
+ * Configures whether consumers (such as the client) should
+ * throw exceptions on Redis errors (-ERR responses) or just
+ * return error objects.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ClientExceptions extends AbstractOption
+class ExceptionsOption implements OptionInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function filter(ClientOptionsInterface $options, $value)
+    public function filter(OptionsInterface $options, $value)
     {
-        return (bool) $value;
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDefault(ClientOptionsInterface $options)
+    public function getDefault(OptionsInterface $options)
     {
         return true;
     }

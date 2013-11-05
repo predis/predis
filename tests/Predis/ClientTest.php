@@ -207,7 +207,7 @@ class ClientTest extends StandardTestCase
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Option\ClientOptions'))
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($connection));
 
         $client = new Client($callable);
@@ -227,7 +227,7 @@ class ClientTest extends StandardTestCase
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Option\ClientOptions'))
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($wrongType));
 
         $client = new Client($callable);

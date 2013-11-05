@@ -11,14 +11,15 @@
 
 namespace Predis;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
+use Predis\Configuration\Options;
+use Predis\Configuration\OptionsInterface;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Monitor\MonitorContext;
-use Predis\Option\ClientOptions;
-use Predis\Option\ClientOptionsInterface;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub\PubSubContext;
@@ -45,34 +46,34 @@ class Client implements ClientInterface
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options = $this->filterOptions($options);
+        $this->options = $this->createOptions($options);
         $this->profile = $this->options->profile;
         $this->connection = $this->initializeConnection($parameters);
     }
 
     /**
-     * Creates an instance of Predis\Option\ClientOptions from various types of
-     * arguments (string, array, Predis\Profile\ServerProfile) or returns the
-     * passed object if it is an instance of Predis\Option\ClientOptions.
+     * Creates a new instance of Predis\Configuration\Options from various
+     * types of arguments or returns the passed object if it is an instance
+     * of Predis\Configuration\OptionsInterface.
      *
      * @param mixed $options Client options.
-     * @return ClientOptions
+     * @return OptionsInterface
      */
-    protected function filterOptions($options)
+    protected function createOptions($options)
     {
         if (!isset($options)) {
-            return new ClientOptions();
+            return new Options();
         }
 
         if (is_array($options)) {
-            return new ClientOptions($options);
+            return new Options($options);
         }
 
-        if ($options instanceof ClientOptionsInterface) {
+        if ($options instanceof OptionsInterface) {
             return $options;
         }
 
-        throw new \InvalidArgumentException("Invalid type for client options");
+        throw new InvalidArgumentException("Invalid type for client options");
     }
 
     /**
