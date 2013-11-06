@@ -9,19 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator\Scan;
+namespace Predis\Collection\Iterator;
 
 use Predis\ClientInterface;
 
 /**
- * Abstracts the iteration of fields and values of an hash
- * by leveraging the HSCAN command (Redis >= 2.8) wrapped
- * in a fully-rewindable PHP iterator.
+ * Abstracts the iteration of members stored in a set by
+ * leveraging the SSCAN command (Redis >= 2.8) wrapped in
+ * a fully-rewindable PHP iterator.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class HashIterator extends AbstractScanIterator
+class SetIterator extends RedisCollectionIterator
 {
     protected $key;
 
@@ -30,7 +30,7 @@ class HashIterator extends AbstractScanIterator
      */
     public function __construct(ClientInterface $client, $key, $match = null, $count = null)
     {
-        $this->requiredCommand($client, 'HSCAN');
+        $this->requiredCommand($client, 'SSCAN');
 
         parent::__construct($client, $match, $count);
 
@@ -40,17 +40,8 @@ class HashIterator extends AbstractScanIterator
     /**
      * {@inheritdoc}
      */
-    protected function executeScanCommand()
+    protected function executeCommand()
     {
-        return $this->client->hscan($this->key, $this->cursor, $this->getScanOptions());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function extractNext()
-    {
-        $this->position = key($this->elements);
-        $this->current = array_shift($this->elements);
+        return $this->client->sscan($this->key, $this->cursor, $this->getScanOptions());
     }
 }

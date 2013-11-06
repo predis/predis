@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator\Scan;
+namespace Predis\Collection\Iterator;
 
 use Predis\ClientInterface;
 
@@ -21,7 +21,7 @@ use Predis\ClientInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class KeyspaceIterator extends AbstractScanIterator
+class KeyspaceIterator extends RedisCollectionIterator
 {
     /**
      * {@inheritdoc}
@@ -36,7 +36,7 @@ class KeyspaceIterator extends AbstractScanIterator
     /**
      * {@inheritdoc}
      */
-    protected function executeScanCommand()
+    protected function executeCommand()
     {
         return $this->client->scan($this->cursor, $this->getScanOptions());
     }

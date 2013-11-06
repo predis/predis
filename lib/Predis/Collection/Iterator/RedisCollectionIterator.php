@@ -9,22 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator\Scan;
+namespace Predis\Collection\Iterator;
 
 use Iterator;
-use Countable;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
 
 /**
- * This class provides the base implementation for a fully-rewindable
- * PHP iterator that can incrementally iterate over collections stored
- * on Redis by leveraging the SCAN family of commands (Redis >= 2.8).
+ * Provides the base implementation for a fully-rewindable PHP iterator
+ * that can incrementally iterate over collections stored on Redis.
+ *
+ * Given their incremental nature with multiple fetches, these kind of
+ * iterators offer limited guarantees about the returned elements because
+ * the collection can change several times during the iteration process.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
- * @link http://redis.io/commands/scan
  */
-abstract class AbstractScanIterator implements Iterator
+abstract class RedisCollectionIterator implements Iterator
 {
     protected $client;
     protected $match;
@@ -52,8 +53,9 @@ abstract class AbstractScanIterator implements Iterator
     }
 
     /**
-     * Ensures that the client instance supports the specified
-     * Redis command required to perform the server-side iteration.
+     * Ensures that the client instance supports the specified Redis
+     * command required to fetch elements from the server to perform
+     * the iteration.
      *
      * @param ClientInterface Client connected to Redis.
      * @param string $commandID Command ID (e.g. `SCAN`).
@@ -79,7 +81,7 @@ abstract class AbstractScanIterator implements Iterator
     }
 
     /**
-     * Returns an array of options for the SCAN command.
+     * Returns an array of options for the `SCAN` command.
      *
      * @return array
      */
@@ -99,20 +101,20 @@ abstract class AbstractScanIterator implements Iterator
     }
 
     /**
-     * Performs a new SCAN to fetch new elements in the collection from
-     * Redis, effectively advancing the iteration process.
+     * Fetches a new set of elements from the remote collection,
+     * effectively advancing the iteration process.
      *
      * @return array
      */
-    protected abstract function executeScanCommand();
+    protected abstract function executeCommand();
 
     /**
-     * Populates the local buffer of elements fetched from the server
-     * during the iteration.
+     * Populates the local buffer of elements fetched from the
+     * server during the iteration.
      */
-    protected function feed()
+    protected function fetch()
     {
-        list($cursor, $elements) = $this->executeScanCommand();
+        list($cursor, $elements) = $this->executeCommand();
 
         if (!$cursor) {
             $this->scanmore = false;
@@ -162,7 +164,7 @@ abstract class AbstractScanIterator implements Iterator
     public function next()
     {
         if (!$this->elements && $this->scanmore) {
-            $this->feed();
+            $this->fetch();
         }
 
         if ($this->elements) {

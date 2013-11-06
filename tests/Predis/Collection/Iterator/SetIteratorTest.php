@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator\Scan;
+namespace Predis\Collection\Iterator;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 

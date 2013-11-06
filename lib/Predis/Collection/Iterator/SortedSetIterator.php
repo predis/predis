@@ -9,19 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator\Scan;
+namespace Predis\Collection\Iterator;
 
 use Predis\ClientInterface;
 
 /**
- * Abstracts the iteration of members stored in a set by
- * leveraging the SSCAN command (Redis >= 2.8) wrapped in
+ * Abstracts the iteration of members stored in a sorted set
+ * by leveraging the ZSCAN command (Redis >= 2.8) wrapped in
  * a fully-rewindable PHP iterator.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class SetIterator extends AbstractScanIterator
+class SortedSetIterator extends RedisCollectionIterator
 {
     protected $key;
 
@@ -30,7 +30,7 @@ class SetIterator extends AbstractScanIterator
      */
     public function __construct(ClientInterface $client, $key, $match = null, $count = null)
     {
-        $this->requiredCommand($client, 'SSCAN');
+        $this->requiredCommand($client, 'ZSCAN');
 
         parent::__construct($client, $match, $count);
 
@@ -40,8 +40,19 @@ class SetIterator extends AbstractScanIterator
     /**
      * {@inheritdoc}
      */
-    protected function executeScanCommand()
+    protected function executeCommand()
     {
-        return $this->client->sscan($this->key, $this->cursor, $this->getScanOptions());
+        return $this->client->zscan($this->key, $this->cursor, $this->getScanOptions());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function extractNext()
+    {
+        $element = array_shift($this->elements);
+
+        $this->position = $element[0];
+        $this->current = $element[1];
     }
 }

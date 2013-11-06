@@ -11,10 +11,10 @@
 
 require 'SharedConfigurations.php';
 
-use Predis\Iterator\Scan\KeyspaceIterator;
-use Predis\Iterator\Scan\SetIterator;
-use Predis\Iterator\Scan\SortedSetIterator;
-use Predis\Iterator\Scan\HashIterator;
+use Predis\Collection\Iterator\KeyspaceIterator;
+use Predis\Collection\Iterator\SetIterator;
+use Predis\Collection\Iterator\SortedSetIterator;
+use Predis\Collection\Iterator\HashIterator;
 
 // Redis 2.8 features new commands allowing clients to incrementally
 // iterate over collections without blocking the server like it happens
