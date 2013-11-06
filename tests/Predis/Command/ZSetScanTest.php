@@ -138,15 +138,13 @@ class ZSetScanTest extends CommandTestCase
      */
     public function testScanWithMatchingMembers()
     {
-        $this->markTestSkipped('This test currently makes Redis crash.');
-
         $redis = $this->getClient();
-        $redis->hmset('key', array('member:one' => 1, 'member:two' => 2, 'member:three' => 3, 'member:four' => 4));
+        $redis->zadd('key', array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));
 
-        $response = $redis->hscan('key', 0, 'MATCH', 'member:t*');
+        $response = $redis->zscan('key', 0, 'MATCH', 'member:t*');
 
-        $this->assertSame(array('member:two', 'member:three'), array_keys($response[1]));
-        $this->assertSame(array(2.0, 3.0), array_values($response[1]));
+        $this->assertSame(array('member:two', 'member:three'), array_map(function($e) { return $e[0]; }, $response[1]));
+        $this->assertSame(array(2.0, 3.0), array_map(function($e) { return $e[1]; }, $response[1]));
     }
 
     /**
@@ -155,7 +153,7 @@ class ZSetScanTest extends CommandTestCase
     public function testScanWithNoMatchingMembers()
     {
         $redis = $this->getClient();
-        $redis->zadd('key', $members = array('member:one' => 1, 'member:two' => 2, 'member:three' => 3, 'member:four' => 4));
+        $redis->zadd('key', $members = array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));
 
         $response = $redis->zscan('key', 0, 'MATCH', 'nomember:*');
 
