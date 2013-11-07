@@ -21,7 +21,7 @@ use Predis\ClientInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class SortedSetIterator extends RedisCollectionIterator
+class SortedSetKey extends CursorBasedIterator
 {
     protected $key;
 

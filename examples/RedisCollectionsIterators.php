@@ -11,10 +11,7 @@
 
 require 'SharedConfigurations.php';
 
-use Predis\Collection\Iterator\KeyspaceIterator;
-use Predis\Collection\Iterator\SetIterator;
-use Predis\Collection\Iterator\SortedSetIterator;
-use Predis\Collection\Iterator\HashIterator;
+use Predis\Collection\Iterator;
 
 // Redis 2.8 features new commands allowing clients to incrementally
 // iterate over collections without blocking the server like it happens
@@ -40,9 +37,9 @@ for ($i = 0; $i < 5; $i++) {
     $client->hset('predis:hash', "field:$i", "value:$i");
 }
 
-// === KeyspaceIterator based on SCAN ===
+// === Keyspace iterator based on SCAN ===
 echo 'Scan the keyspace matching only our prefixed keys:' . PHP_EOL;
-foreach (new KeyspaceIterator($client, 'predis:*') as $key) {
+foreach (new Iterator\Keyspace($client, 'predis:*') as $key) {
     echo " - $key" . PHP_EOL;
 }
 
@@ -53,9 +50,9 @@ Scan the keyspace matching only our prefixed keys:
  - predis:hash
 */
 
-// === SetIterator class based on SSCAN ===
+// === Set iterator based on SSCAN ===
 echo 'Scan members of `predis:set`:' . PHP_EOL;
-foreach (new SetIterator($client, 'predis:set') as $member) {
+foreach (new Iterator\SetKey($client, 'predis:set') as $member) {
     echo " - $member" . PHP_EOL;
 }
 
@@ -68,9 +65,9 @@ Scan members of `predis:set`:
  - member:2
 */
 
-// === SortedSetIterator class based on ZSCAN ===
+// === Sorted set iterator based on ZSCAN ===
 echo 'Scan members and ranks of `predis:zset`:' . PHP_EOL;
-foreach (new SortedSetIterator($client, 'predis:zset') as $member => $rank) {
+foreach (new Iterator\SortedSetKey($client, 'predis:zset') as $member => $rank) {
     echo " - $member [rank: $rank]" . PHP_EOL;
 }
 
@@ -83,9 +80,9 @@ Scan members and ranks of `predis:zset`:
  - member:0 [rank: 0]
 */
 
-// === HashIterator class based on HSCAN ===
+// === Hash iterator based on HSCAN ===
 echo 'Scan fields and values of `predis:hash`:' . PHP_EOL;
-foreach (new HashIterator($client, 'predis:hash') as $field => $value) {
+foreach (new Iterator\HashKey($client, 'predis:hash') as $field => $value) {
     echo " - $field => $value" . PHP_EOL;
 }
 

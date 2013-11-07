@@ -19,7 +19,7 @@ use Predis\Profile\ServerProfile;
 /**
  * @group realm-iterators
  */
-class SortedSetIteratorTest extends StandardTestCase
+class SortedSetTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -34,7 +34,7 @@ class SortedSetIteratorTest extends StandardTestCase
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.0')));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
     }
 
     /**
@@ -52,7 +52,7 @@ class SortedSetIteratorTest extends StandardTestCase
                ->with('key:zset', 0, array())
                ->will($this->returnValue(array(0, array())));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertFalse($iterator->valid());
@@ -75,7 +75,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0), array('member:3rd', 3.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -119,7 +119,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:3rd', 3.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -161,7 +161,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -204,7 +204,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:3rd', 3.0)
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -242,7 +242,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', 'member:*');
+        $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -281,7 +281,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:2nd', 2.0),
                 ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', 'member:*');
+        $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -314,7 +314,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', null, 2);
+        $iterator = new SortedSetKey($client, 'key:zset', null, 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -353,7 +353,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:2nd', 2.0),
                 ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', null, 1);
+        $iterator = new SortedSetKey($client, 'key:zset', null, 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -386,7 +386,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', 'member:*', 2);
+        $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -425,7 +425,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:2nd', 2.0),
                 ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset', 'member:*', 1);
+        $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -458,7 +458,7 @@ class SortedSetIteratorTest extends StandardTestCase
                     array('member:1st', 1.0), array('member:2nd', 2.0),
                ))));
 
-        $iterator = new SortedSetIterator($client, 'key:zset');
+        $iterator = new SortedSetKey($client, 'key:zset');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());

@@ -19,12 +19,12 @@ use Predis\Profile\ServerProfile;
 /**
  * @group realm-iterators
  */
-class SetIteratorTest extends StandardTestCase
+class KeyspaceTest extends StandardTestCase
 {
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The specified server profile does not support the `SSCAN` command.
+     * @expectedExceptionMessage The specified server profile does not support the `SCAN` command.
      */
     public function testThrowsExceptionOnInvalidServerProfile()
     {
@@ -34,7 +34,7 @@ class SetIteratorTest extends StandardTestCase
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.0')));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
     }
 
     /**
@@ -42,17 +42,17 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->once())
-               ->method('sscan')
-               ->with('key:set', 0, array())
+               ->method('scan')
+               ->with(0, array())
                ->will($this->returnValue(array(0, array())));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertFalse($iterator->valid());
@@ -63,31 +63,31 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->once())
-               ->method('sscan')
-               ->with('key:set', 0, array())
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd', 'member:3rd'))));
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd', 'key:3rd'))));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->current());
+        $this->assertSame('key:3rd', $iterator->current());
         $this->assertSame(2, $iterator->key());
 
         $iterator->next();
@@ -99,35 +99,35 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array())
-               ->will($this->returnValue(array(2, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(2, array('key:1st', 'key:2nd'))));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 2, array())
-               ->will($this->returnValue(array(0, array('member:3rd'))));
+               ->method('scan')
+               ->with(2, array())
+               ->will($this->returnValue(array(0, array('key:3rd'))));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->current());
+        $this->assertSame('key:3rd', $iterator->current());
         $this->assertSame(2, $iterator->key());
 
         $iterator->next();
@@ -139,30 +139,30 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array())
+               ->method('scan')
+               ->with(0, array())
                ->will($this->returnValue(array(4, array())));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 4, array())
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(4, array())
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -174,39 +174,39 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array())
-               ->will($this->returnValue(array(2, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(2, array('key:1st', 'key:2nd'))));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 2, array())
+               ->method('scan')
+               ->with(2, array())
                ->will($this->returnValue(array(5, array())));
         $client->expects($this->at(3))
-               ->method('sscan')
-               ->with('key:set', 5, array())
-               ->will($this->returnValue(array(0, array('member:3rd'))));
+               ->method('scan')
+               ->with(5, array())
+               ->will($this->returnValue(array(0, array('key:3rd'))));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:3rd', $iterator->current());
+        $this->assertSame('key:3rd', $iterator->current());
         $this->assertSame(2, $iterator->key());
 
         $iterator->next();
@@ -218,26 +218,26 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('MATCH' => 'member:*'))
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array('MATCH' => 'key:*'))
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', 'member:*');
+        $iterator = new Keyspace($client, 'key:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -249,30 +249,30 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('MATCH' => 'member:*'))
-               ->will($this->returnValue(array(1, array('member:1st'))));
+               ->method('scan')
+               ->with(0, array('MATCH' => 'key:*'))
+               ->will($this->returnValue(array(1, array('key:1st'))));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 1, array('MATCH' => 'member:*'))
-               ->will($this->returnValue(array(0, array('member:2nd'))));
+               ->method('scan')
+               ->with(1, array('MATCH' => 'key:*'))
+               ->will($this->returnValue(array(0, array('key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', 'member:*');
+        $iterator = new Keyspace($client, 'key:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -284,26 +284,26 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('COUNT' => 2))
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array('COUNT' => 2))
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', null, 2);
+        $iterator = new Keyspace($client, null, 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -315,30 +315,30 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('COUNT' => 1))
-               ->will($this->returnValue(array(1, array('member:1st'))));
+               ->method('scan')
+               ->with(0, array('COUNT' => 1))
+               ->will($this->returnValue(array(1, array('key:1st'))));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 1, array('COUNT' => 1))
-               ->will($this->returnValue(array(0, array('member:2nd'))));
+               ->method('scan')
+               ->with(1, array('COUNT' => 1))
+               ->will($this->returnValue(array(0, array('key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', null, 1);
+        $iterator = new Keyspace($client, null, 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -350,26 +350,26 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array('MATCH' => 'key:*', 'COUNT' => 2))
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', 'member:*', 2);
+        $iterator = new Keyspace($client, 'key:*', 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -381,30 +381,30 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->at(1))
-               ->method('sscan')
-               ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
-               ->will($this->returnValue(array(1, array('member:1st'))));
+               ->method('scan')
+               ->with(0, array('MATCH' => 'key:*', 'COUNT' => 1))
+               ->will($this->returnValue(array(1, array('key:1st'))));
         $client->expects($this->at(2))
-               ->method('sscan')
-               ->with('key:set', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
-               ->will($this->returnValue(array(0, array('member:2nd'))));
+               ->method('scan')
+               ->with(1, array('MATCH' => 'key:*', 'COUNT' => 1))
+               ->will($this->returnValue(array(0, array('key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set', 'member:*', 1);
+        $iterator = new Keyspace($client, 'key:*', 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
+        $this->assertSame('key:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
 
         $iterator->next();
@@ -416,32 +416,32 @@ class SetIteratorTest extends StandardTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
 
         $client->expects($this->any())
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.8')));
         $client->expects($this->exactly(2))
-               ->method('sscan')
-               ->with('key:set', 0, array())
-               ->will($this->returnValue(array(0, array('member:1st', 'member:2nd'))));
+               ->method('scan')
+               ->with(0, array())
+               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
 
-        $iterator = new SetIterator($client, 'key:set');
+        $iterator = new Keyspace($client);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:1st', $iterator->current());
+        $this->assertSame('key:1st', $iterator->current());
         $this->assertSame(0, $iterator->key());
 
         $iterator->next();
         $this->assertTrue($iterator->valid());
-        $this->assertSame('member:2nd', $iterator->current());
         $this->assertSame(1, $iterator->key());
+        $this->assertSame('key:2nd', $iterator->current());
 
         $iterator->next();
         $this->assertFalse($iterator->valid());

@@ -25,7 +25,7 @@ use Predis\NotSupportedException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class RedisCollectionIterator implements Iterator
+abstract class CursorBasedIterator implements Iterator
 {
     protected $client;
     protected $match;

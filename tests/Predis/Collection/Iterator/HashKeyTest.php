@@ -19,7 +19,7 @@ use Predis\Profile\ServerProfile;
 /**
  * @group realm-iterators
  */
-class HashIteratorTest extends StandardTestCase
+class HashKeyTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -34,7 +34,7 @@ class HashIteratorTest extends StandardTestCase
                ->method('getProfile')
                ->will($this->returnValue(ServerProfile::get('2.0')));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
     }
 
     /**
@@ -52,7 +52,7 @@ class HashIteratorTest extends StandardTestCase
                ->with('key:hash', 0, array())
                ->will($this->returnValue(array(0, array())));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertFalse($iterator->valid());
@@ -75,7 +75,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd', 'field:3rd' => 'value:3rd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -119,7 +119,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:3rd' => 'value:3rd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -161,7 +161,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -204,7 +204,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:3rd' => 'value:3rd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -242,7 +242,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash', 'field:*');
+        $iterator = new HashKey($client, 'key:hash', 'field:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -281,7 +281,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:2nd' => 'value:2nd',
                 ))));
 
-        $iterator = new HashIterator($client, 'key:hash', 'field:*');
+        $iterator = new HashKey($client, 'key:hash', 'field:*');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -314,7 +314,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash', null, 2);
+        $iterator = new HashKey($client, 'key:hash', null, 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -353,7 +353,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:2nd' => 'value:2nd',
                 ))));
 
-        $iterator = new HashIterator($client, 'key:hash', null, 1);
+        $iterator = new HashKey($client, 'key:hash', null, 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -386,7 +386,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash', 'field:*', 2);
+        $iterator = new HashKey($client, 'key:hash', 'field:*', 2);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -425,7 +425,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:2nd' => 'value:2nd',
                 ))));
 
-        $iterator = new HashIterator($client, 'key:hash', 'field:*', 1);
+        $iterator = new HashKey($client, 'key:hash', 'field:*', 1);
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());
@@ -458,7 +458,7 @@ class HashIteratorTest extends StandardTestCase
                     'field:1st' => 'value:1st', 'field:2nd' => 'value:2nd',
                ))));
 
-        $iterator = new HashIterator($client, 'key:hash');
+        $iterator = new HashKey($client, 'key:hash');
 
         $iterator->rewind();
         $this->assertTrue($iterator->valid());

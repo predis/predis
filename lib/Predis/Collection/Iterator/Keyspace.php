@@ -21,7 +21,7 @@ use Predis\ClientInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class KeyspaceIterator extends RedisCollectionIterator
+class Keyspace extends CursorBasedIterator
 {
     /**
      * {@inheritdoc}

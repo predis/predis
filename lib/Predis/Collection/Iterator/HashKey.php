@@ -21,7 +21,7 @@ use Predis\ClientInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan
  */
-class HashIterator extends RedisCollectionIterator
+class HashKey extends CursorBasedIterator
 {
     protected $key;
 
