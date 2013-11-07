@@ -281,17 +281,10 @@ abstract class ConnectionTestCase extends StandardTestCase
     /**
      * @group connected
      * @group slow
+     * @expectedException Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
-        // We must differentiate here since OS X can randomly emit up to three
-        // different error messages while other platforms are more consistent.
-        if (strcasecmp(PHP_OS, 'darwin') == 0) {
-            $this->setExpectedException('Predis\Connection\ConnectionException');
-        } else {
-            $this->setExpectedException('Predis\Connection\ConnectionException', 'Connection timed out');
-        }
-
         $connection = $this->getConnection($_, false, array('host' => '169.254.10.10', 'timeout' => 0.5));
 
         $connection->connect();
