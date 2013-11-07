@@ -35,7 +35,7 @@ abstract class CursorBasedIterator implements Iterator
     protected $count;
 
     protected $valid;
-    protected $scanmore;
+    protected $fetchmore;
     protected $elements;
     protected $cursor;
     protected $position;
@@ -76,7 +76,7 @@ abstract class CursorBasedIterator implements Iterator
     protected function reset()
     {
         $this->valid = true;
-        $this->scanmore = true;
+        $this->fetchmore = true;
         $this->elements = array();
         $this->cursor = 0;
         $this->position = -1;
@@ -120,7 +120,7 @@ abstract class CursorBasedIterator implements Iterator
         list($cursor, $elements) = $this->executeCommand();
 
         if (!$cursor) {
-            $this->scanmore = false;
+            $this->fetchmore = false;
         }
 
         $this->cursor = $cursor;
@@ -166,7 +166,7 @@ abstract class CursorBasedIterator implements Iterator
      */
     public function next()
     {
-        if (!$this->elements && $this->scanmore) {
+        if (!$this->elements && $this->fetchmore) {
             $this->fetch();
         }
 
