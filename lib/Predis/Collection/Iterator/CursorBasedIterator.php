@@ -17,11 +17,14 @@ use Predis\NotSupportedException;
 
 /**
  * Provides the base implementation for a fully-rewindable PHP iterator
- * that can incrementally iterate over collections stored on Redis.
+ * that can incrementally iterate over cursor-based collections stored
+ * on Redis using commands in the `SCAN` family.
  *
  * Given their incremental nature with multiple fetches, these kind of
  * iterators offer limited guarantees about the returned elements because
  * the collection can change several times during the iteration process.
+ *
+ * @see http://redis.io/commands/scan
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -58,7 +61,7 @@ abstract class CursorBasedIterator implements Iterator
      * the iteration.
      *
      * @param ClientInterface Client connected to Redis.
-     * @param string $commandID Command ID (e.g. `SCAN`).
+     * @param string $commandID Command ID.
      */
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
