@@ -1,6 +1,8 @@
 v0.9.0 (201x-xx-xx)
 ===============================================================================
 
+- The default server profile for Redis is now `2.8`.
+
 - The `Predis\Option` namespace is now known as `Predis\Configuration` and have
   a fully-reworked `Options` class with the ability to lazily initialize values
   using objects that responds to `__invoke()` (not all the kinds of callables)
