@@ -27,7 +27,8 @@ class ReplicationOption implements OptionInterface
      * {@inheritdoc}
      *
      * @todo There's more code than needed due to a bug in filter_var()
-     *       as discussed here https://bugs.php.net/bug.php?id=49510.
+     *       as discussed here https://bugs.php.net/bug.php?id=49510
+     *       and a different behaviour with NULL values on PHP 5.3.
      */
     public function filter(OptionsInterface $options, $value)
     {
@@ -35,7 +36,7 @@ class ReplicationOption implements OptionInterface
             return $value;
         }
 
-        if (is_bool($value)) {
+        if (is_bool($value) || $value === null) {
             return $value ? $this->getDefault($options) : null;
         }
 
