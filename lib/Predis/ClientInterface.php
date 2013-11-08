@@ -11,8 +11,8 @@
 
 namespace Predis;
 
+use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Option\ClientOptionsInterface;
 use Predis\Profile\ServerProfileInterface;
 
 /**
@@ -34,7 +34,7 @@ interface ClientInterface extends BasicClientInterface
     /**
      * Returns the client options specified upon initialization.
      *
-     * @return ClientOptionsInterface
+     * @return OptionsInterface
      */
     public function getOptions();
 

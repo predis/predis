@@ -9,22 +9,32 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Option;
+namespace Predis\Configuration;
 
 use Predis\Command\Processor\KeyPrefixProcessor;
 
 /**
- * Option class that handles the prefixing of keys in commands.
+ * Configures a command processor that apply the specified
+ * prefix string to a series of Redis commands considered
+ * prefixable.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ClientPrefix extends AbstractOption
+class PrefixOption implements OptionInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function filter(ClientOptionsInterface $options, $value)
+    public function filter(OptionsInterface $options, $value)
     {
         return new KeyPrefixProcessor($value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefault(OptionsInterface $options)
+    {
+        // NOOP
     }
 }

@@ -1,3 +1,12 @@
+v0.9.0 (201x-xx-xx)
+===============================================================================
+
+- The `Predis\Option` namespace is now known as `Predis\Configuration` and have
+  a fully-reworked `Options` class with the ability to lazily initialize values
+  using objects that responds to `__invoke()` (not all the kinds of callables)
+  even for custom options defined by the user.
+
+
 v0.8.5 (2013-xx-xx)
 ===============================================================================
 
