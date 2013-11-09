@@ -27,13 +27,13 @@ class RequestSerializer implements RequestSerializerInterface
      */
     public function serialize(CommandInterface $command)
     {
-        $commandId = $command->getId();
+        $commandID = $command->getId();
         $arguments = $command->getArguments();
 
-        $cmdlen = strlen($commandId);
+        $cmdlen = strlen($commandID);
         $reqlen = count($arguments) + 1;
 
-        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
         for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $arguments[$i];

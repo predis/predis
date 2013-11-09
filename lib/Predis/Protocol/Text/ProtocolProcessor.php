@@ -45,7 +45,8 @@ class ProtocolProcessor implements ProtocolProcessorInterface
      */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command)
     {
-        $connection->writeBytes($this->serializer->serialize($command));
+        $request = $this->serializer->serialize($command);
+        $connection->writeBytes($request);
     }
 
     /**

@@ -44,14 +44,6 @@ class ComposableProtocolProcessor implements ProtocolProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize(CommandInterface $command)
-    {
-        return $this->serializer->serialize($command);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command)
     {
         $connection->writeBytes($this->serializer->serialize($command));
