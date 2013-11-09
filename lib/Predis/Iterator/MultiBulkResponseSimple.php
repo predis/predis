@@ -55,7 +55,7 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     {
         if ($disconnect) {
             if ($this->valid()) {
-                $this->position = $this->replySize;
+                $this->position = $this->size;
                 $this->connection->disconnect();
             }
         } else {
