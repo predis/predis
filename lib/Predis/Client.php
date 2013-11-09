@@ -130,16 +130,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Returns the connection factory object used by the client.
-     *
-     * @return ConnectionFactoryInterface
-     */
-    public function getConnectionFactory()
-    {
-        return $this->options->connections;
-    }
-
-    /**
      * Returns a new instance of a client for the specified connection when the
      * client is connected to a cluster. The new instance will use the same
      * options of the original client.
@@ -389,23 +379,6 @@ class Client implements ClientInterface
     {
         $transaction = new MultiExecContext($this, $options ?: array());
         return isset($callable) ? $transaction->execute($callable) : $transaction;
-    }
-
-    /**
-     * Creates a new Publish / Subscribe context and returns it, or executes it
-     * inside the optionally provided callable object.
-     *
-     * @deprecated This method will change in the next major release to support
-     *             the new PUBSUB command introduced in Redis 2.8. Please use
-     *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
-     *             instances from now on.
-     *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
-     * @return PubSubExecContext|array
-     */
-    public function pubSub(/* arguments */)
-    {
-        return call_user_func_array(array($this, 'pubSubLoop'), func_get_args());
     }
 
     /**

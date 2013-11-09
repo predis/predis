@@ -247,8 +247,6 @@ class ClientTest extends StandardTestCase
         $this->assertSame($profile->getVersion(), ServerProfile::get('2.0')->getVersion());
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
-
-        $this->assertSame($factory, $client->getConnectionFactory());
     }
 
     /**
@@ -632,16 +630,6 @@ class ClientTest extends StandardTestCase
 
         $client = new Client($connection);
         $client->pubSubLoop($options, $callable);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPubSubIsAliasForPubSubLoop()
-    {
-        $client = new Client();
-
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $client->pubSub());
     }
 
     /**
