@@ -16,14 +16,14 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseMultiBulkStreamHandlerTest extends StandardTestCase
+class StreamableMultiBulkResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testOk()
     {
-        $handler = new ResponseMultiBulkStreamHandler();
+        $handler = new Handler\StreamableMultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -36,11 +36,11 @@ class ResponseMultiBulkStreamHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as multi-bulk length
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
      */
     public function testInvalid()
     {
-        $handler = new ResponseMultiBulkStreamHandler();
+        $handler = new Handler\StreamableMultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

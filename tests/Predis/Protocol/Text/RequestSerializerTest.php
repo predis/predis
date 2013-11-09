@@ -16,14 +16,14 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class TextCommandSerializerTest extends StandardTestCase
+class RequestSerializerTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testSerializerIdWithNoArguments()
     {
-        $serializer = new TextCommandSerializer();
+        $serializer = new RequestSerializer();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
 
@@ -45,7 +45,7 @@ class TextCommandSerializerTest extends StandardTestCase
      */
     public function testSerializerIdWithArguments()
     {
-        $serializer = new TextCommandSerializer();
+        $serializer = new RequestSerializer();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
 

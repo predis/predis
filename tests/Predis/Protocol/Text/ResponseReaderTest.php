@@ -16,20 +16,20 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class TextResponseReaderTest extends StandardTestCase
+class ResponseReaderTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testDefaultHandlers()
     {
-        $reader = new TextResponseReader();
+        $reader = new ResponseReader();
 
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseStatusHandler', $reader->getHandler('+'));
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseErrorHandler', $reader->getHandler('-'));
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseIntegerHandler', $reader->getHandler(':'));
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseBulkHandler', $reader->getHandler('$'));
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseMultiBulkHandler', $reader->getHandler('*'));
+        $this->assertInstanceOf('Predis\Protocol\Text\Handler\StatusResponse', $reader->getHandler('+'));
+        $this->assertInstanceOf('Predis\Protocol\Text\Handler\ErrorResponse', $reader->getHandler('-'));
+        $this->assertInstanceOf('Predis\Protocol\Text\Handler\IntegerResponse', $reader->getHandler(':'));
+        $this->assertInstanceOf('Predis\Protocol\Text\Handler\BulkResponse', $reader->getHandler('$'));
+        $this->assertInstanceOf('Predis\Protocol\Text\Handler\MultiBulkResponse', $reader->getHandler('*'));
 
         $this->assertNull($reader->getHandler('!'));
     }
@@ -39,9 +39,9 @@ class TextResponseReaderTest extends StandardTestCase
      */
     public function testReplaceHandler()
     {
-        $handler = $this->getMock('Predis\Protocol\ResponseHandlerInterface');
+        $handler = $this->getMock('Predis\Protocol\Text\Handler\ResponseHandlerInterface');
 
-        $reader = new TextResponseReader();
+        $reader = new ResponseReader();
         $reader->setHandler('+', $handler);
 
         $this->assertSame($handler, $reader->getHandler('+'));
@@ -52,10 +52,10 @@ class TextResponseReaderTest extends StandardTestCase
      */
     public function testReadResponse()
     {
-        $reader = new TextResponseReader();
+        $reader = new ResponseReader();
 
-        $protocol = new ComposableTextProtocol();
-        $protocol->setReader($reader);
+        $protocol = new ComposableProtocolProcessor();
+        $protocol->setResponseReader($reader);
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -93,7 +93,7 @@ class TextResponseReaderTest extends StandardTestCase
      */
     public function testEmptyResponseHeader()
     {
-        $reader = new TextResponseReader();
+        $reader = new ResponseReader();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -110,7 +110,7 @@ class TextResponseReaderTest extends StandardTestCase
      */
     public function testUnknownResponsePrefix()
     {
-        $reader = new TextResponseReader();
+        $reader = new ResponseReader();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

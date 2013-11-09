@@ -17,14 +17,14 @@ use Predis\ResponseQueued;
 /**
  *
  */
-class ResponseIntegerHandlerTest extends StandardTestCase
+class IntegerResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testInteger()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\IntegerResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -42,7 +42,7 @@ class ResponseIntegerHandlerTest extends StandardTestCase
      */
     public function testNull()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\IntegerResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -55,11 +55,11 @@ class ResponseIntegerHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as numeric response
+     * @expectedExceptionMessage Cannot parse 'invalid' as a numeric response
      */
     public function testInvalid()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\IntegerResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

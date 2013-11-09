@@ -12,8 +12,8 @@
 namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
-use Predis\Protocol\ProtocolInterface;
-use Predis\Protocol\Text\TextProtocol;
+use Predis\Protocol\ProtocolProcessorInterface;
+use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 
 /**
  * Connection abstraction to Redis servers based on PHP's stream that uses an
@@ -23,28 +23,18 @@ use Predis\Protocol\Text\TextProtocol;
  */
 class ComposableStreamConnection extends StreamConnection implements ComposableConnectionInterface
 {
-    private $protocol;
+    protected $protocol;
 
     /**
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     * @param ProtocolInterface $protocol A protocol processor.
+     * @param ProtocolProcessorInterface $protocol Protocol processor.
      */
-    public function __construct(ConnectionParametersInterface $parameters, ProtocolInterface $protocol = null)
-    {
+    public function __construct(
+        ConnectionParametersInterface $parameters,
+        ProtocolProcessorInterface $protocol = null
+    ) {
         $this->parameters = $this->checkParameters($parameters);
-        $this->protocol = $protocol ?: new TextProtocol();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setProtocol(ProtocolInterface $protocol)
-    {
-        if ($protocol === null) {
-            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
-        }
-
-        $this->protocol = $protocol;
+        $this->protocol = $protocol ?: new TextProtocolProcessor();
     }
 
     /**

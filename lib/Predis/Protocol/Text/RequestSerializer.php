@@ -12,29 +12,28 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
-use Predis\Protocol\CommandSerializerInterface;
+use Predis\Protocol\RequestSerializerInterface;
 
 /**
- * Implements a pluggable command serializer using the standard  wire protocol
- * defined by Redis.
+ * Request serializer for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextCommandSerializer implements CommandSerializerInterface
+class RequestSerializer implements RequestSerializerInterface
 {
     /**
      * {@inheritdoc}
      */
     public function serialize(CommandInterface $command)
     {
-        $commandId = $command->getId();
+        $commandID = $command->getId();
         $arguments = $command->getArguments();
 
-        $cmdlen = strlen($commandId);
+        $cmdlen = strlen($commandID);
         $reqlen = count($arguments) + 1;
 
-        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
         for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $arguments[$i];

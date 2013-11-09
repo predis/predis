@@ -16,32 +16,61 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ComposableTextProtocolTest extends StandardTestCase
+class ComposableProtocolProcessorTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testCustomSerializer()
+    public function testConstructor()
     {
-        $serializer = $this->getMock('Predis\Protocol\CommandSerializerInterface');
+        $protocol = new ComposableProtocolProcessor();
 
-        $protocol = new ComposableTextProtocol();
-        $protocol->setSerializer($serializer);
-
-        $this->assertSame($serializer, $protocol->getSerializer());
+        $this->assertInstanceOf(
+            'Predis\Protocol\Text\RequestSerializer', $protocol->getRequestSerializer()
+        );
+        $this->assertInstanceOf(
+            'Predis\Protocol\Text\ResponseReader', $protocol->getResponseReader()
+        );
     }
 
     /**
      * @group disconnected
      */
-    public function testCustomReader()
+    public function testConstructorWithArguments()
+    {
+        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
+        $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
+
+        $protocol = new ComposableProtocolProcessor($serializer, $reader);
+
+        $this->assertSame($serializer, $protocol->getRequestSerializer());
+        $this->assertSame($reader, $protocol->getResponseReader());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCustomRequestSerializer()
+    {
+        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
+
+        $protocol = new ComposableProtocolProcessor();
+        $protocol->setRequestSerializer($serializer);
+
+        $this->assertSame($serializer, $protocol->getRequestSerializer());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCustomResponseReader()
     {
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableTextProtocol();
-        $protocol->setReader($reader);
+        $protocol = new ComposableProtocolProcessor();
+        $protocol->setResponseReader($reader);
 
-        $this->assertSame($reader, $protocol->getReader());
+        $this->assertSame($reader, $protocol->getResponseReader());
     }
 
     /**
@@ -53,10 +82,9 @@ class ComposableTextProtocolTest extends StandardTestCase
 
         $command = $this->getMock('Predis\Command\CommandInterface');
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
-        $serializer = $this->getMock('Predis\Protocol\CommandSerializerInterface');
+        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
 
-        $protocol = new ComposableTextProtocol();
-        $protocol->setSerializer($serializer);
+        $protocol = new ComposableProtocolProcessor($serializer);
 
         $connection->expects($this->once())
                    ->method('writeBytes')
@@ -80,8 +108,7 @@ class ComposableTextProtocolTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableTextProtocol();
-        $protocol->setReader($reader);
+        $protocol = new ComposableProtocolProcessor(null, $reader);
 
         $reader->expects($this->once())
                    ->method('read')
@@ -89,31 +116,5 @@ class ComposableTextProtocolTest extends StandardTestCase
                    ->will($this->returnValue('bulk'));
 
         $this->assertSame('bulk', $protocol->read($connection));
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSetMultibulkOption()
-    {
-        $protocol = new ComposableTextProtocol();
-        $reader = $protocol->getReader();
-
-        $protocol->setOption('iterable_multibulk', true);
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseMultiBulkStreamHandler', $reader->getHandler('*'));
-
-        $protocol->setOption('iterable_multibulk', false);
-        $this->assertInstanceOf('Predis\Protocol\Text\ResponseMultiBulkHandler', $reader->getHandler('*'));
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage The option unknown_option is not supported by the current protocol
-     */
-    public function testSetInvalidOption()
-    {
-        $protocol = new ComposableTextProtocol();
-        $protocol->setOption('unknown_option', true);
     }
 }

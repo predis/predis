@@ -16,7 +16,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class TextProtocolTest extends StandardTestCase
+class ProtocolProcessorTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -24,7 +24,7 @@ class TextProtocolTest extends StandardTestCase
     public function testConnectionWrite()
     {
         $serialized = "*1\r\n$4\r\nPING\r\n";
-        $protocol = new TextProtocol();
+        $protocol = new ProtocolProcessor();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
 
@@ -52,7 +52,7 @@ class TextProtocolTest extends StandardTestCase
      */
     public function testConnectionRead()
     {
-        $protocol = new TextProtocol();
+        $protocol = new ProtocolProcessor();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -88,8 +88,8 @@ class TextProtocolTest extends StandardTestCase
      */
     public function testIterableMultibulkSupport()
     {
-        $protocol = new TextProtocol();
-        $protocol->setOption('iterable_multibulk', true);
+        $protocol = new ProtocolProcessor();
+        $protocol->useIterableMultibulk(true);
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -107,7 +107,7 @@ class TextProtocolTest extends StandardTestCase
      */
     public function testUnknownResponsePrefix()
     {
-        $protocol = new TextProtocol();
+        $protocol = new ProtocolProcessor();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

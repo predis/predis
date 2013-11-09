@@ -16,14 +16,14 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseBulkHandlerTest extends StandardTestCase
+class BulkResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testZeroLengthBulk()
     {
-        $handler = new ResponseBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -44,7 +44,7 @@ class ResponseBulkHandlerTest extends StandardTestCase
         $bulk = "This is a bulk string.";
         $bulkLengh = (string) strlen($bulk);
 
-        $handler = new ResponseBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -62,7 +62,7 @@ class ResponseBulkHandlerTest extends StandardTestCase
      */
     public function testNull()
     {
-        $handler = new ResponseBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -75,11 +75,11 @@ class ResponseBulkHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as bulk length
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the bulk response
      */
     public function testInvalidLength()
     {
-        $handler = new ResponseBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

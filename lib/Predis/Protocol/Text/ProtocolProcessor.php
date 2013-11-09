@@ -18,32 +18,18 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ProtocolInterface;
+use Predis\Protocol\ProtocolProcessorInterface;
 
 /**
- * Implements a protocol processor for the standard wire protocol defined by Redis.
+ * Protocol processor for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextProtocol implements ProtocolInterface
+class ProtocolProcessor implements ProtocolProcessorInterface
 {
-    const NEWLINE = "\r\n";
-    const OK      = 'OK';
-    const ERROR   = 'ERR';
-    const QUEUED  = 'QUEUED';
-    const NULL    = 'nil';
-
-    const PREFIX_STATUS     = '+';
-    const PREFIX_ERROR      = '-';
-    const PREFIX_INTEGER    = ':';
-    const PREFIX_BULK       = '$';
-    const PREFIX_MULTI_BULK = '*';
-
-    const BUFFER_SIZE = 4096;
-
-    private $mbiterable;
-    private $serializer;
+    protected $mbiterable;
+    protected $serializer;
 
     /**
      *
@@ -51,7 +37,7 @@ class TextProtocol implements ProtocolInterface
     public function __construct()
     {
         $this->mbiterable = false;
-        $this->serializer = new TextCommandSerializer();
+        $this->serializer = new RequestSerializer();
     }
 
     /**
@@ -59,7 +45,8 @@ class TextProtocol implements ProtocolInterface
      */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command)
     {
-        $connection->writeBytes($this->serializer->serialize($command));
+        $request = $this->serializer->serialize($command);
+        $connection->writeBytes($request);
     }
 
     /**
@@ -123,14 +110,18 @@ class TextProtocol implements ProtocolInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Enables or disables returning multibulk responses as specialized PHP
+     * iterators used to stream bulk elements of a multibulk response instead
+     * returning a plain array.
+     *
+     * Please note that streamable multibulk replies are not globally supported
+     * by the abstractions built-in into Predis such as for transactions or
+     * pipelines. Use them with care!
+     *
+     * @param bool $value Enable or disable streamable multibulk responses.
      */
-    public function setOption($option, $value)
+    public function useIterableMultibulk($value)
     {
-        switch ($option) {
-            case 'iterable_multibulk':
-                $this->mbiterable = (bool) $value;
-                break;
-        }
+        $this->mbiterable = (bool) $value;
     }
 }

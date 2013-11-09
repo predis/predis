@@ -14,11 +14,11 @@ namespace Predis\Protocol;
 use Predis\Command\CommandInterface;
 
 /**
- * Interface that defines a custom serializer for Redis commands.
+ * Defines a pluggable serializer for Redis commands.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface CommandSerializerInterface
+interface RequestSerializerInterface
 {
     /**
      * Serializes a Redis command.

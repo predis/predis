@@ -16,20 +16,20 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseMultiBulkHandlerTest extends StandardTestCase
+class MultiBulkResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testMultiBulk()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('getProtocol')
-                   ->will($this->returnValue(new ComposableTextProtocol()));
+                   ->will($this->returnValue(new ComposableProtocolProcessor()));
 
         $connection->expects($this->at(1))
                    ->method('readLine')
@@ -55,7 +55,7 @@ class ResponseMultiBulkHandlerTest extends StandardTestCase
      */
     public function testNull()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -68,11 +68,11 @@ class ResponseMultiBulkHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as multi-bulk length
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
      */
     public function testInvalid()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

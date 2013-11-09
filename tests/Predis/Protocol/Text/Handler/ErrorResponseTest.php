@@ -16,14 +16,14 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseErrorHandlerTest extends StandardTestCase
+class ErrorResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testOk()
     {
-        $handler = new ResponseErrorHandler();
+        $handler = new Handler\ErrorResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

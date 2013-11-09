@@ -9,36 +9,31 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol\Text;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Implements a response handler for bulk replies using the standard wire
- * protocol defined by Redis.
+ * Handler for the bulk response type in the standard Redis wire protocol.
+ * It translates the payload to a string or a NULL.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseBulkHandler implements ResponseHandlerInterface
+class BulkResponse implements ResponseHandlerInterface
 {
     /**
-     * Handles a bulk reply returned by Redis.
-     *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $lengthString Bytes size of the bulk reply.
-     * @return string
+     * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $lengthString)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        $length = (int) $lengthString;
+        $length = (int) $payload;
 
-        if ("$length" !== $lengthString) {
+        if ("$length" !== $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$lengthString' as bulk length"
+                $connection, "Cannot parse '$payload' as the length of the bulk response"
             ));
         }
 

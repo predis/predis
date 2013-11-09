@@ -9,36 +9,31 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol\Text;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Implements a response handler for multi-bulk replies using the standard
- * wire protocol defined by Redis.
+ * Handler for the multibulk response type in the standard Redis wire protocol.
+ * It returns multibulk responses as PHP arrays.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseMultiBulkHandler implements ResponseHandlerInterface
+class MultiBulkResponse implements ResponseHandlerInterface
 {
     /**
-     * Handles a multi-bulk reply returned by Redis.
-     *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $lengthString Number of items in the multi-bulk reply.
-     * @return array
+     * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $lengthString)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        $length = (int) $lengthString;
+        $length = (int) $payload;
 
-        if ("$length" !== $lengthString) {
+        if ("$length" !== $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$lengthString' as multi-bulk length"
+                $connection, "Cannot parse '$payload' as the length of the multibulk response"
             ));
         }
 
@@ -50,7 +45,7 @@ class ResponseMultiBulkHandler implements ResponseHandlerInterface
 
         if ($length > 0) {
             $handlersCache = array();
-            $reader = $connection->getProtocol()->getReader();
+            $reader = $connection->getProtocol()->getResponseReader();
 
             for ($i = 0; $i < $length; $i++) {
                 $header = $connection->readLine();
