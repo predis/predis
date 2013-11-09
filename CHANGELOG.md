@@ -5,7 +5,8 @@ v0.9.0 (201x-xx-xx)
 
 - Dropped support for streamable multibulk responses. Actually we still ship the
   iterator response classes just in case anyone would want to build custom stuff
-  at a level lower than the client abstraction.
+  at a level lower than the client abstraction (our standard and composable text
+  protocol processors still handle them and can be used as an example).
 
 - The `Predis\Option` namespace is now known as `Predis\Configuration` and have
   a fully-reworked `Options` class with the ability to lazily initialize values

@@ -21,7 +21,7 @@ use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ProtocolInterface;
 
 /**
- * Implements a protocol processor for the standard wire protocol defined by Redis.
+ * Protocol processor for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -51,7 +51,7 @@ class TextProtocol implements ProtocolInterface
     public function __construct()
     {
         $this->mbiterable = false;
-        $this->serializer = new TextCommandSerializer();
+        $this->serializer = new TextRequestSerializer();
     }
 
     /**
@@ -123,14 +123,18 @@ class TextProtocol implements ProtocolInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Enables or disables returning multibulk responses as specialized PHP
+     * iterators used to stream bulk elements of a multibulk response instead
+     * returning a plain array.
+     *
+     * Please note that streamable multibulk replies are not globally supported
+     * by the abstractions built-in into Predis such as for transactions or
+     * pipelines. Use them with care!
+     *
+     * @param bool $value Enable or disable streamable multibulk responses.
      */
-    public function setOption($option, $value)
+    public function useIterableMultibulk($value)
     {
-        switch ($option) {
-            case 'iterable_multibulk':
-                $this->mbiterable = (bool) $value;
-                break;
-        }
+        $this->mbiterable = (bool) $value;
     }
 }

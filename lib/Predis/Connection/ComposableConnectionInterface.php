@@ -23,13 +23,6 @@ use Predis\Protocol\ProtocolInterface;
 interface ComposableConnectionInterface extends SingleConnectionInterface
 {
     /**
-     * Sets the protocol processor used by the connection.
-     *
-     * @param ProtocolInterface $protocol Protocol processor.
-     */
-    public function setProtocol(ProtocolInterface $protocol);
-
-    /**
      * Gets the protocol processor used by the connection.
      */
     public function getProtocol();

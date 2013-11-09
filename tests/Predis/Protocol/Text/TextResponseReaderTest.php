@@ -55,7 +55,7 @@ class TextResponseReaderTest extends StandardTestCase
         $reader = new TextResponseReader();
 
         $protocol = new ComposableTextProtocol();
-        $protocol->setReader($reader);
+        $protocol->setResponseReader($reader);
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

@@ -17,8 +17,8 @@ use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Implements a response handler for integer replies using the standard wire
- * protocol defined by Redis.
+ * Handler for the integer response type of the standard Redis wire protocol.
+ * It translates the payload an integer or NULL.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -26,21 +26,17 @@ use Predis\Protocol\ResponseHandlerInterface;
 class ResponseIntegerHandler implements ResponseHandlerInterface
 {
     /**
-     * Handles an integer reply returned by Redis.
-     *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $number String representation of an integer.
-     * @return int
+     * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $number)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        if (is_numeric($number)) {
-            return (int) $number;
+        if (is_numeric($payload)) {
+            return (int) $payload;
         }
 
-        if ($number !== 'nil') {
+        if ($payload !== 'nil') {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$number' as numeric response"
+                $connection, "Cannot parse '$payload' as a numeric response"
             ));
         }
 

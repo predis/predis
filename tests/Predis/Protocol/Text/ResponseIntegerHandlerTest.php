@@ -55,7 +55,7 @@ class ResponseIntegerHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as numeric response
+     * @expectedExceptionMessage Cannot parse 'invalid' as a numeric response
      */
     public function testInvalid()
     {

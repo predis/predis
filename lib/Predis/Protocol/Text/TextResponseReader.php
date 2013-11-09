@@ -18,15 +18,14 @@ use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Protocol\ResponseReaderInterface;
 
 /**
- * Implements a pluggable response reader using the standard wire protocol
- * defined by Redis.
+ * Response reader for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class TextResponseReader implements ResponseReaderInterface
 {
-    private $handlers;
+    protected $handlers;
 
     /**
      *
@@ -37,10 +36,11 @@ class TextResponseReader implements ResponseReaderInterface
     }
 
     /**
-     * Returns the default set of response handlers for all the type of replies
-     * that can be returned by Redis.
+     * Returns the default handlers for the supported type of responses.
+     *
+     * @return array
      */
-    private function getDefaultHandlers()
+    protected function getDefaultHandlers()
     {
         return array(
             TextProtocol::PREFIX_STATUS     => new ResponseStatusHandler(),
@@ -53,10 +53,10 @@ class TextResponseReader implements ResponseReaderInterface
 
     /**
      * Sets a response handler for a certain prefix that identifies a type of
-     * reply that can be returned by Redis.
+     * response that can be returned by Redis.
      *
-     * @param string $prefix Identifier for a type of reply.
-     * @param ResponseHandlerInterface $handler Response handler for the reply.
+     * @param string $prefix Identifier of the type of response.
+     * @param ResponseHandlerInterface $handler Response handler.
      */
     public function setHandler($prefix, ResponseHandlerInterface $handler)
     {
@@ -64,10 +64,9 @@ class TextResponseReader implements ResponseReaderInterface
     }
 
     /**
-     * Returns the response handler associated to a certain type of reply that
-     * can be returned by Redis.
+     * Returns the response handler associated to a certain type of response.
      *
-     * @param string $prefix Identifier for a type of reply.
+     * @param string $prefix Identifier of the type of response.
      * @return ResponseHandlerInterface
      */
     public function getHandler($prefix)
@@ -85,13 +84,13 @@ class TextResponseReader implements ResponseReaderInterface
         $header = $connection->readLine();
 
         if ($header === '') {
-            $this->protocolError($connection, 'Unexpected empty header');
+            $this->onProtocolError($connection, 'Unexpected empty header');
         }
 
         $prefix = $header[0];
 
         if (!isset($this->handlers[$prefix])) {
-            $this->protocolError($connection, "Unknown prefix: '$prefix'");
+            $this->onProtocolError($connection, "Unknown prefix: '$prefix'");
         }
 
         $handler = $this->handlers[$prefix];
@@ -100,14 +99,16 @@ class TextResponseReader implements ResponseReaderInterface
     }
 
     /**
-     * Helper method used to handle a protocol error generated while reading a
-     * reply from a connection to Redis.
+     * Handles protocol errors generated while reading responses from the
+     * connection.
      *
      * @param ComposableConnectionInterface $connection Connection to Redis that generated the error.
      * @param string $message Error message.
      */
-    private function protocolError(ComposableConnectionInterface $connection, $message)
+    protected function onProtocolError(ComposableConnectionInterface $connection, $message)
     {
-        CommunicationException::handle(new ProtocolException($connection, $message));
+        CommunicationException::handle(
+            new ProtocolException($connection, $message)
+        );
     }
 }

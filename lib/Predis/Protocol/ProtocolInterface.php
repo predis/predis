@@ -15,15 +15,15 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
 
 /**
- * Interface that defines a protocol processor that serializes Redis commands
- * and parses replies returned by the server to PHP objects.
+ * Defines a pluggable protocol processor capable of serializing commands and
+ * deserializing responses into PHP objects directly from a connection.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ProtocolInterface extends ResponseReaderInterface
+interface ProtocolInterface
 {
     /**
-     * Writes a Redis command on the specified connection.
+     * Writes a command to the specified connection.
      *
      * @param ComposableConnectionInterface $connection Connection to Redis.
      * @param CommandInterface $command Redis command.
@@ -31,10 +31,10 @@ interface ProtocolInterface extends ResponseReaderInterface
     public function write(ComposableConnectionInterface $connection, CommandInterface $command);
 
     /**
-     * Sets the options for the protocol processor.
+     * Reads a response from the specified connection and deserializes it.
      *
-     * @param string $option Name of the option.
-     * @param mixed $value Value of the option.
+     * @param ComposableConnectionInterface $connection Connection to Redis.
+     * @return mixed
      */
-    public function setOption($option, $value);
+    public function read(ComposableConnectionInterface $connection);
 }

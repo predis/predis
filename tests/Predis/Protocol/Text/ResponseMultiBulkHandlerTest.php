@@ -68,7 +68,7 @@ class ResponseMultiBulkHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as multi-bulk length
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
      */
     public function testInvalid()
     {

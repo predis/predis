@@ -89,7 +89,7 @@ class TextProtocolTest extends StandardTestCase
     public function testIterableMultibulkSupport()
     {
         $protocol = new TextProtocol();
-        $protocol->setOption('iterable_multibulk', true);
+        $protocol->useIterableMultibulk(true);
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

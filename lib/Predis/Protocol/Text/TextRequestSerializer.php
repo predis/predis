@@ -12,16 +12,15 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
-use Predis\Protocol\CommandSerializerInterface;
+use Predis\Protocol\RequestSerializerInterface;
 
 /**
- * Implements a pluggable command serializer using the standard  wire protocol
- * defined by Redis.
+ * Request serializer for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextCommandSerializer implements CommandSerializerInterface
+class TextRequestSerializer implements RequestSerializerInterface
 {
     /**
      * {@inheritdoc}

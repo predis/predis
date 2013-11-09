@@ -18,8 +18,12 @@ use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Implements a response handler for iterable multi-bulk replies using the
- * standard wire protocol defined by Redis.
+ * Handler for the multibulk response type of the standard Redis wire protocol.
+ * It returns multibulk responses as iterators that can stream bulk elements.
+ *
+ * Please note that streamable multibulk replies are not globally supported
+ * by the abstractions built-in into Predis such as for transactions or
+ * pipelines. Use them with care!
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -27,19 +31,15 @@ use Predis\Protocol\ResponseHandlerInterface;
 class ResponseMultiBulkStreamHandler implements ResponseHandlerInterface
 {
     /**
-     * Handles a multi-bulk reply returned by Redis in a streamable fashion.
-     *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $lengthString Number of items in the multi-bulk reply.
-     * @return MultiBulkResponseSimple
+     * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $lengthString)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        $length = (int) $lengthString;
+        $length = (int) $payload;
 
-        if ("$length" != $lengthString) {
+        if ("$length" != $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$lengthString' as multi-bulk length"
+                $connection, "Cannot parse '$payload' as the length of the multibulk response"
             ));
         }
 

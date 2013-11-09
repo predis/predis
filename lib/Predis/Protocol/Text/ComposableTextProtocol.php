@@ -13,62 +13,32 @@ namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Protocol\RequestSerializerInterface;
+use Predis\Protocol\ProtocolInterface;
 use Predis\Protocol\ResponseReaderInterface;
-use Predis\Protocol\CommandSerializerInterface;
-use Predis\Protocol\ComposableProtocolInterface;
 
 /**
- * Implements a customizable protocol processor that uses the standard Redis
- * wire protocol to serialize Redis commands and parse replies returned by
- * the server using a pluggable set of classes.
+ * Composable protocol processor for the standard Redis wire protocol using
+ * pluggable handlers to serialize requests and deserialize responses.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ComposableTextProtocol implements ComposableProtocolInterface
+class ComposableTextProtocol implements ProtocolInterface
 {
     private $serializer;
     private $reader;
 
     /**
-     * @param array $options Set of options used to initialize the protocol processor.
+     * @param RequestSerializerInterface $serializer Request serializer.
+     * @param ResponseReaderInterface $reader Response reader.
      */
-    public function __construct(Array $options = array())
-    {
-        $this->setSerializer(new TextCommandSerializer());
-        $this->setReader(new TextResponseReader());
-
-        if (count($options) > 0) {
-            $this->initializeOptions($options);
-        }
-    }
-
-    /**
-     * Initializes the protocol processor using a set of options.
-     *
-     * @param array $options Set of options.
-     */
-    private function initializeOptions(Array $options)
-    {
-        foreach ($options as $k => $v) {
-            $this->setOption($k, $v);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOption($option, $value)
-    {
-        switch ($option) {
-            case 'iterable_multibulk':
-                $handler = $value ? new ResponseMultiBulkStreamHandler() : new ResponseMultiBulkHandler();
-                $this->reader->setHandler(TextProtocol::PREFIX_MULTI_BULK, $handler);
-                break;
-
-            default:
-                throw new \InvalidArgumentException("The option $option is not supported by the current protocol");
-        }
+    public function __construct(
+        RequestSerializerInterface $serializer = null,
+        ResponseReaderInterface $reader = null
+    ) {
+        $this->setRequestSerializer($serializer ?: new TextRequestSerializer());
+        $this->setResponseReader($reader ?: new TextResponseReader());
     }
 
     /**
@@ -96,33 +66,41 @@ class ComposableTextProtocol implements ComposableProtocolInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the request serializer used by the protocol processor.
+     *
+     * @param RequestSerializerInterface $serializer Request serializer.
      */
-    public function setSerializer(CommandSerializerInterface $serializer)
+    public function setRequestSerializer(RequestSerializerInterface $serializer)
     {
         $this->serializer = $serializer;
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the request serializer used by the protocol processor.
+     *
+     * @return RequestSerializerInterface
      */
-    public function getSerializer()
+    public function getRequestSerializer()
     {
         return $this->serializer;
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the response reader used by the protocol processor.
+     *
+     * @param ResponseReaderInterface $reader Response reader.
      */
-    public function setReader(ResponseReaderInterface $reader)
+    public function setResponseReader(ResponseReaderInterface $reader)
     {
         $this->reader = $reader;
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the Response reader used by the protocol processor.
+     *
+     * @return ResponseReaderInterface
      */
-    public function getReader()
+    public function getResponseReader()
     {
         return $this->reader;
     }

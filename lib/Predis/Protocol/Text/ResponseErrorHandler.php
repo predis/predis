@@ -16,8 +16,8 @@ use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Implements a response handler for error replies using the standard wire
- * protocol defined by Redis.
+ * Handler for the error response type of the standard Redis wire protocol.
+ * It translates the payload to a complex response object for Predis.
  *
  * This handler returns a reply object to notify the user that an error has
  * occurred on the server.
@@ -30,8 +30,8 @@ class ResponseErrorHandler implements ResponseHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $errorMessage)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        return new ResponseError($errorMessage);
+        return new ResponseError($payload);
     }
 }

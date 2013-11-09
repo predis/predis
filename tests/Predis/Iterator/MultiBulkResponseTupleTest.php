@@ -117,7 +117,7 @@ class MultiBulkResponseTupleTest extends StandardTestCase
         );
 
         $protocol = new TextProtocol();
-        $protocol->setOption('iterable_multibulk', true);
+        $protocol->useIterableMultibulk(true);
 
         $connection = new ComposableStreamConnection($parameters, $protocol);
 

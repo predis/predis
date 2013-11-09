@@ -23,7 +23,7 @@ use Predis\Protocol\Text\TextProtocol;
  */
 class ComposableStreamConnection extends StreamConnection implements ComposableConnectionInterface
 {
-    private $protocol;
+    protected $protocol;
 
     /**
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
@@ -33,18 +33,6 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     {
         $this->parameters = $this->checkParameters($parameters);
         $this->protocol = $protocol ?: new TextProtocol();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setProtocol(ProtocolInterface $protocol)
-    {
-        if ($protocol === null) {
-            throw new \InvalidArgumentException("The protocol instance cannot be a null value");
-        }
-
-        $this->protocol = $protocol;
     }
 
     /**
