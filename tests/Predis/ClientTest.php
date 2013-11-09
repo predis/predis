@@ -657,6 +657,16 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testMethodTransactionIsAliasForMethodMultiExec()
+    {
+        $client = new Client();
+
+        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $client->transaction());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMultiExecWithArrayReturnsMultiExecContextWithOptions()
     {
         $options = array('cas' => true, 'retry' => 3);

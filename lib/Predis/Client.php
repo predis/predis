@@ -369,10 +369,26 @@ class Client implements ClientInterface
      * Creates a new transaction context and returns it, or returns the results of
      * a transaction executed inside the optionally provided callable object.
      *
+     * @deprecated You should start using the new Client::transaction() method
+     *             as it will replace Client::multiExec() in the next major
+     *             version of the library.
+     *
      * @param mixed $arg,... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
     public function multiExec(/* arguments */)
+    {
+        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
+    }
+
+    /**
+     * Creates a new transaction context and returns it, or returns the results of
+     * a transaction executed inside the optionally provided callable object.
+     *
+     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @return MultiExecContext|array
+     */
+    public function transaction(/* arguments */)
     {
         return $this->sharedInitializer(func_get_args(), 'initMultiExec');
     }
