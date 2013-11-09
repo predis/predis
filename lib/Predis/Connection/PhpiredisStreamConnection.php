@@ -84,18 +84,6 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function checkParameters(ConnectionParametersInterface $parameters)
-    {
-        if (isset($parameters->iterable_multibulk)) {
-            $this->onInvalidOption('iterable_multibulk', $parameters);
-        }
-
-        return parent::checkParameters($parameters);
-    }
-
-    /**
      * Initializes the protocol reader resource.
      */
     protected function initializeReader()
@@ -176,14 +164,6 @@ class PhpiredisStreamConnection extends StreamConnection
         $cmdargs = $command->getArguments();
         array_unshift($cmdargs, $command->getId());
         $this->writeBytes(phpiredis_format_command($cmdargs));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __sleep()
-    {
-        return array_diff(parent::__sleep(), array('mbiterable'));
     }
 
     /**

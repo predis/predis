@@ -3,6 +3,10 @@ v0.9.0 (201x-xx-xx)
 
 - The default server profile for Redis is now `2.8`.
 
+- Dropped support for streamable multibulk responses. Actually we still ship the
+  iterator response classes just in case anyone would want to build custom stuff
+  at a level lower than the client abstraction.
+
 - The `Predis\Option` namespace is now known as `Predis\Configuration` and have
   a fully-reworked `Options` class with the ability to lazily initialize values
   using objects that responds to `__invoke()` (not all the kinds of callables)

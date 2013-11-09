@@ -43,8 +43,7 @@ class SafeExecutor implements PipelineExecutorInterface
             $command = $commands->dequeue();
 
             try {
-                $response = $connection->readResponse($command);
-                $values[$i] = $response instanceof \Iterator ? iterator_to_array($response) : $response;
+                $values[$i] = $connection->readResponse($command);
             } catch (CommunicationException $exception) {
                 $toAdd = count($commands) - count($values);
                 $values = array_merge($values, array_fill(0, $toAdd, $exception));

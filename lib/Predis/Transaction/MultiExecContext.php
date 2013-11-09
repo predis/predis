@@ -375,10 +375,9 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             break;
         } while ($attempts-- > 0);
 
-        $exec = $reply instanceof \Iterator ? iterator_to_array($reply) : $reply;
         $commands = $this->commands;
+        $size = count($reply);
 
-        $size = count($exec);
         if ($size !== count($commands)) {
             $this->onProtocolError("EXEC returned an unexpected number of replies");
         }
@@ -387,15 +386,11 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
         $useExceptions = isset($clientOpts->exceptions) ? $clientOpts->exceptions : true;
 
         for ($i = 0; $i < $size; $i++) {
-            $commandReply = $exec[$i];
+            $commandReply = $reply[$i];
 
             if ($commandReply instanceof ResponseErrorInterface && $useExceptions) {
                 $message = $commandReply->getMessage();
                 throw new ServerException($message);
-            }
-
-            if ($commandReply instanceof \Iterator) {
-                $commandReply = iterator_to_array($commandReply);
             }
 
             $values[$i] = $commands->dequeue()->parseResponse($commandReply);

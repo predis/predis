@@ -74,7 +74,6 @@ class ParametersTest extends StandardTestCase
         $overrides = array(
             'port' => 7000,
             'database' => 5,
-            'iterable_multibulk' => false,
             'custom' => 'foobar',
         );
 
@@ -85,7 +84,6 @@ class ParametersTest extends StandardTestCase
         $this->assertEquals($overrides['port'], $parameters->port);
 
         $this->assertEquals($overrides['database'], $parameters->database);
-        $this->assertEquals($overrides['iterable_multibulk'], $parameters->iterable_multibulk);
 
         $this->assertTrue(isset($parameters->custom));
         $this->assertEquals($overrides['custom'], $parameters->custom);
