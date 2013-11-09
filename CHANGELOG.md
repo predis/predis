@@ -14,10 +14,13 @@ v0.8.5 (2013-xx-xx)
     - hashes (cursor-based iterator using `HSCAN`)
     - lists (plain iterator using `LRANGE`)
 
-- `Predis\Client::pubSubLoop()` should now be used instead of the deprecated
-  `Predis\Client::pubSub()` (which still works like usual to avoid B/C breaks).
-  `Predis\Client::pubSub()` will change in the next major version of Predis to
-  support the new PUBSUB command recently added in Redis 2.8.
+- List of deprecated methods:
+
+    - `Predis\Client::multiExec()`: superseded by `Predis\Client::transaction()`
+      and to be removed in the next major release.
+    - `Predis\Client::pubSub()`: superseded by `Predis\Client::pubSubLoop()` and
+      to be removed in the next major release. This change was needed due to the
+      recently introduced `PUBSUB` command in Redis 2.8.
 
 
 v0.8.4 (2013-07-27)
