@@ -13,6 +13,9 @@ v0.9.0 (201x-xx-xx)
   using objects that responds to `__invoke()` (not all the kinds of callables)
   even for custom options defined by the user.
 
+- Most classes and interfaces in the `Predis\Protocol` namespace have been moved
+  or renamed while rationalizing the whole API of external protocol processors.
+
 
 v0.8.5 (2013-xx-xx)
 ===============================================================================
