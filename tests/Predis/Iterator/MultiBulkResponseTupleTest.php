@@ -40,7 +40,7 @@ class MultiBulkResponseTupleTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Invalid reply size for a tuple iterator [3]
+     * @expectedExceptionMessage Invalid response size for a tuple iterator [3]
      */
     public function testMultiBulkWithOddSizesAreInvalid()
     {

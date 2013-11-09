@@ -14,7 +14,7 @@ namespace Predis\Iterator;
 use Predis\Connection\SingleConnectionInterface;
 
 /**
- * Streams a multibulk reply.
+ * Streamable multibulk response.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -29,9 +29,9 @@ class MultiBulkResponseSimple extends MultiBulkResponse
     public function __construct(SingleConnectionInterface $connection, $size)
     {
         $this->connection = $connection;
+        $this->size = $size;
         $this->position = 0;
-        $this->current = $size > 0 ? $this->getValue() : null;
-        $this->replySize = $size;
+        $this->current  = $size > 0 ? $this->getValue() : null;
     }
 
     /**
@@ -41,20 +41,19 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      */
     public function __destruct()
     {
-        $this->sync(true);
+        $this->drop(true);
     }
 
     /**
-     * Synchronizes the client with the queued elements that have not been
-     * read from the connection by consuming the rest of the multibulk reply,
-     * or simply by dropping the connection.
+     * Drop queued elements that have not been read from the connection either
+     * by consuming the rest of the multibulk response or quickly by closing the
+     * underlying connection.
      *
-     * @param Boolean $drop True to synchronize the client by dropping the connection.
-     *                      False to synchronize the client by consuming the multibulk reply.
+     * @param bool $disconnect Consume the iterator or drop the connection.
      */
-    public function sync($drop = false)
+    public function drop($disconnect = false)
     {
-        if ($drop == true) {
+        if ($disconnect) {
             if ($this->valid()) {
                 $this->position = $this->replySize;
                 $this->connection->disconnect();

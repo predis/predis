@@ -66,13 +66,13 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
     /**
      * @group connected
      */
-    public function testSyncWithFalseConsumesReplyFromUnderlyingConnection()
+    public function testDropWithFalseConsumesReplyFromUnderlyingConnection()
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
         $iterator = $client->lrange('metavars', 0, -1);
-        $iterator->sync(false);
+        $iterator->drop(false);
 
         $this->assertTrue($client->isConnected());
         $this->assertTrue($client->ping());
@@ -81,13 +81,13 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
     /**
      * @group connected
      */
-    public function testSyncWithTrueDropsUnderlyingConnection()
+    public function testDropWithTrueDropsUnderlyingConnection()
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
         $iterator = $client->lrange('metavars', 0, -1);
-        $iterator->sync(true);
+        $iterator->drop(true);
 
         $this->assertFalse($client->isConnected());
         $this->assertTrue($client->ping());

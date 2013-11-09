@@ -11,43 +11,49 @@
 
 namespace Predis\Iterator;
 
+use OuterIterator;
+use RuntimeException;
+use UnexpectedValueException;
+
 /**
- * Abstracts the access to a streamable list of tuples represented
- * as a multibulk reply that alternates keys and values.
+ * Outer iterator consuming streamable multibulk responses by yielding tuples of
+ * keys and values.
+ *
+ * This wrapper is useful for responses to commands such as `HGETALL` that can
+ * be iterater as $key => $value pairs.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
+class MultiBulkResponseTuple extends MultiBulkResponse implements OuterIterator
 {
     private $iterator;
 
     /**
-     * @param MultiBulkResponseSimple $iterator Multibulk reply iterator.
+     * @param MultiBulkResponseSimple $iterator Inner multibulk response iterator.
      */
     public function __construct(MultiBulkResponseSimple $iterator)
     {
         $this->checkPreconditions($iterator);
 
-        $virtualSize = count($iterator) / 2;
+        $this->size = count($iterator) / 2;
         $this->iterator = $iterator;
         $this->position = $iterator->getPosition();
-        $this->current = $virtualSize > 0 ? $this->getValue() : null;
-        $this->replySize = $virtualSize;
+        $this->current  = $this->size > 0 ? $this->getValue() : null;
     }
 
     /**
      * Checks for valid preconditions.
      *
-     * @param MultiBulkResponseSimple $iterator Multibulk reply iterator.
+     * @param MultiBulkResponseSimple $iterator Inner multibulk response iterator.
      */
     protected function checkPreconditions(MultiBulkResponseSimple $iterator)
     {
         if ($iterator->getPosition() !== 0) {
-            throw new \RuntimeException('Cannot initialize a tuple iterator with an already initiated iterator');
+            throw new RuntimeException('Cannot initialize a tuple iterator with an already initiated iterator');
         }
 
         if (($size = count($iterator)) % 2 !== 0) {
-            throw new \UnexpectedValueException("Invalid reply size for a tuple iterator [$size]");
+            throw new UnexpectedValueException("Invalid response size for a tuple iterator [$size]");
         }
     }
 
@@ -64,7 +70,7 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements \OuterIterator
      */
     public function __destruct()
     {
-        $this->iterator->sync(true);
+        $this->iterator->drop(true);
     }
 
     /**

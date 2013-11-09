@@ -11,19 +11,27 @@
 
 namespace Predis\Iterator;
 
+use Iterator;
+use Countable;
 use Predis\ResponseObjectInterface;
 
 /**
- * Iterator that abstracts the access to multibulk replies and allows
- * them to be consumed by user's code in a streaming fashion.
+ * Iterator that abstracts the access to multibulk responses allowing them to be
+ * consumed in a streamable fashion without keeping the whole payload in memory.
+ *
+ * This iterator does not support rewinding which means that the iteration, once
+ * consumed, cannot be restarted.
+ *
+ * Always make sure that the whole iteration is consumed (or dropped) to prevent
+ * protocol desynchronization issues.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjectInterface
+abstract class MultiBulkResponse implements Iterator, Countable, ResponseObjectInterface
 {
-    protected $position;
     protected $current;
-    protected $replySize;
+    protected $position;
+    protected $size;
 
     /**
      * {@inheritdoc}
@@ -54,7 +62,7 @@ abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjec
      */
     public function next()
     {
-        if (++$this->position < $this->replySize) {
+        if (++$this->position < $this->size) {
             $this->current = $this->getValue();
         }
 
@@ -66,21 +74,21 @@ abstract class MultiBulkResponse implements \Iterator, \Countable, ResponseObjec
      */
     public function valid()
     {
-        return $this->position < $this->replySize;
+        return $this->position < $this->size;
     }
 
     /**
-     * Returns the number of items of the whole multibulk reply.
+     * Returns the number of items comprising the whole multibulk response.
      *
-     * This method should be used to get the size of the current multibulk
-     * reply without using iterator_count, which actually consumes the
-     * iterator to calculate the size (rewinding is not supported).
+     * This method should be used instead of iterator_count() to get the size of
+     * the current multibulk response since the former consumes the iteration to
+     * count the number of elements, but our iterators do not support rewinding.
      *
      * @return int
      */
     public function count()
     {
-        return $this->replySize;
+        return $this->size;
     }
 
     /**
