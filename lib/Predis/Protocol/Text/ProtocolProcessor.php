@@ -28,20 +28,6 @@ use Predis\Protocol\ProtocolProcessorInterface;
  */
 class ProtocolProcessor implements ProtocolProcessorInterface
 {
-    const NEWLINE = "\r\n";
-    const OK      = 'OK';
-    const ERROR   = 'ERR';
-    const QUEUED  = 'QUEUED';
-    const NULL    = 'nil';
-
-    const PREFIX_STATUS     = '+';
-    const PREFIX_ERROR      = '-';
-    const PREFIX_INTEGER    = ':';
-    const PREFIX_BULK       = '$';
-    const PREFIX_MULTI_BULK = '*';
-
-    const BUFFER_SIZE = 4096;
-
     private $mbiterable;
     private $serializer;
 
