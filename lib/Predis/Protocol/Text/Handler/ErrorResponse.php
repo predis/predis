@@ -15,11 +15,8 @@ use Predis\ResponseError;
 use Predis\Connection\ComposableConnectionInterface;
 
 /**
- * Handler for the error response type of the standard Redis wire protocol.
+ * Handler for the error response type in the standard Redis wire protocol.
  * It translates the payload to a complex response object for Predis.
- *
- * This handler returns a reply object to notify the user that an error has
- * occurred on the server.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>

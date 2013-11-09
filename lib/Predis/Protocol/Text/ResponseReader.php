@@ -51,8 +51,7 @@ class ResponseReader implements ResponseReaderInterface
     }
 
     /**
-     * Sets a response handler for a certain prefix that identifies a type of
-     * response that can be returned by Redis.
+     * Sets the handler for the specified prefix identifying the response type.
      *
      * @param string $prefix Identifier of the type of response.
      * @param Handler\ResponseHandlerInterface $handler Response handler.

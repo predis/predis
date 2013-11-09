@@ -31,7 +31,7 @@ interface ProtocolProcessorInterface
     public function write(ComposableConnectionInterface $connection, CommandInterface $command);
 
     /**
-     * Reads a response from the specified connection and deserializes it.
+     * Reads a response from the specified connection.
      *
      * @param ComposableConnectionInterface $connection Connection to Redis.
      * @return mixed

@@ -16,7 +16,7 @@ use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
- * Handler for the integer response type of the standard Redis wire protocol.
+ * Handler for the integer response type in the standard Redis wire protocol.
  * It translates the payload an integer or NULL.
  *
  * @link http://redis.io/topics/protocol

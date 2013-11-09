@@ -16,7 +16,7 @@ use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
- * Handler for the bulk response type of the standard Redis wire protocol.
+ * Handler for the bulk response type in the standard Redis wire protocol.
  * It translates the payload to a string or a NULL.
  *
  * @link http://redis.io/topics/protocol

@@ -15,7 +15,7 @@ use Predis\ResponseQueued;
 use Predis\Connection\ComposableConnectionInterface;
 
 /**
- * Handler for the status response type of the standard Redis wire protocol.
+ * Handler for the status response type in the standard Redis wire protocol.
  * It translates certain classes of status response to PHP objects or just
  * returns the payload as a string.
  *
