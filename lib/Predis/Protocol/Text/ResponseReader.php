@@ -14,7 +14,6 @@ namespace Predis\Protocol\Text;
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ResponseHandlerInterface;
 use Predis\Protocol\ResponseReaderInterface;
 
 /**
@@ -23,7 +22,7 @@ use Predis\Protocol\ResponseReaderInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextResponseReader implements ResponseReaderInterface
+class ResponseReader implements ResponseReaderInterface
 {
     protected $handlers;
 
@@ -43,11 +42,11 @@ class TextResponseReader implements ResponseReaderInterface
     protected function getDefaultHandlers()
     {
         return array(
-            TextProtocol::PREFIX_STATUS     => new ResponseStatusHandler(),
-            TextProtocol::PREFIX_ERROR      => new ResponseErrorHandler(),
-            TextProtocol::PREFIX_INTEGER    => new ResponseIntegerHandler(),
-            TextProtocol::PREFIX_BULK       => new ResponseBulkHandler(),
-            TextProtocol::PREFIX_MULTI_BULK => new ResponseMultiBulkHandler(),
+            '+' => new Handler\StatusResponse(),
+            '-' => new Handler\ErrorResponse(),
+            ':' => new Handler\IntegerResponse(),
+            '$' => new Handler\BulkResponse(),
+            '*' => new Handler\MultiBulkResponse(),
         );
     }
 
@@ -56,9 +55,9 @@ class TextResponseReader implements ResponseReaderInterface
      * response that can be returned by Redis.
      *
      * @param string $prefix Identifier of the type of response.
-     * @param ResponseHandlerInterface $handler Response handler.
+     * @param Handler\ResponseHandlerInterface $handler Response handler.
      */
-    public function setHandler($prefix, ResponseHandlerInterface $handler)
+    public function setHandler($prefix, Handler\ResponseHandlerInterface $handler)
     {
         $this->handlers[$prefix] = $handler;
     }

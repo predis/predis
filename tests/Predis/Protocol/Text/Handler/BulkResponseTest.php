@@ -16,38 +16,45 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseMultiBulkHandlerTest extends StandardTestCase
+class BulkResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testMultiBulk()
+    public function testZeroLengthBulk()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
+        $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
-                   ->method('getProtocol')
-                   ->will($this->returnValue(new ComposableTextProtocol()));
-
-        $connection->expects($this->at(1))
-                   ->method('readLine')
-                   ->will($this->returnValue("$3"));
-
-        $connection->expects($this->at(2))
                    ->method('readBytes')
-                   ->will($this->returnValue("foo\r\n"));
+                   ->with($this->equalTo(2))
+                   ->will($this->returnValue("\r\n"));
 
-        $connection->expects($this->at(3))
-                   ->method('readLine')
-                   ->will($this->returnValue("$3"));
+        $this->assertSame('', $handler->handle($connection, '0'));
+    }
 
-        $connection->expects($this->at(4))
+    /**
+     * @group disconnected
+     */
+    public function testBulk()
+    {
+        $bulk = "This is a bulk string.";
+        $bulkLengh = (string) strlen($bulk);
+
+        $handler = new Handler\BulkResponse();
+
+        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->once())
                    ->method('readBytes')
-                   ->will($this->returnValue("bar\r\n"));
+                   ->with($this->equalTo($bulkLengh + 2))
+                   ->will($this->returnValue("$bulk\r\n"));
 
-        $this->assertSame(array('foo', 'bar'), $handler->handle($connection, '2'));
+        $this->assertSame($bulk, $handler->handle($connection, $bulkLengh));
     }
 
     /**
@@ -55,7 +62,7 @@ class ResponseMultiBulkHandlerTest extends StandardTestCase
      */
     public function testNull()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -68,11 +75,11 @@ class ResponseMultiBulkHandlerTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the bulk response
      */
-    public function testInvalid()
+    public function testInvalidLength()
     {
-        $handler = new ResponseMultiBulkHandler();
+        $handler = new Handler\BulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

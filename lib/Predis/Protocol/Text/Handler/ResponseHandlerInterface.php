@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\Connection\ComposableConnectionInterface;
 

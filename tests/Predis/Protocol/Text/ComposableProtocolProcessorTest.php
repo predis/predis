@@ -16,20 +16,20 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ComposableTextProtocolTest extends StandardTestCase
+class ComposableProtocolProcessorTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testConstructor()
     {
-        $protocol = new ComposableTextProtocol();
+        $protocol = new ComposableProtocolProcessor();
 
         $this->assertInstanceOf(
-            'Predis\Protocol\Text\TextRequestSerializer', $protocol->getRequestSerializer()
+            'Predis\Protocol\Text\RequestSerializer', $protocol->getRequestSerializer()
         );
         $this->assertInstanceOf(
-            'Predis\Protocol\Text\TextResponseReader', $protocol->getResponseReader()
+            'Predis\Protocol\Text\ResponseReader', $protocol->getResponseReader()
         );
     }
 
@@ -41,7 +41,7 @@ class ComposableTextProtocolTest extends StandardTestCase
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableTextProtocol($serializer, $reader);
+        $protocol = new ComposableProtocolProcessor($serializer, $reader);
 
         $this->assertSame($serializer, $protocol->getRequestSerializer());
         $this->assertSame($reader, $protocol->getResponseReader());
@@ -54,7 +54,7 @@ class ComposableTextProtocolTest extends StandardTestCase
     {
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
 
-        $protocol = new ComposableTextProtocol();
+        $protocol = new ComposableProtocolProcessor();
         $protocol->setRequestSerializer($serializer);
 
         $this->assertSame($serializer, $protocol->getRequestSerializer());
@@ -67,7 +67,7 @@ class ComposableTextProtocolTest extends StandardTestCase
     {
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableTextProtocol();
+        $protocol = new ComposableProtocolProcessor();
         $protocol->setResponseReader($reader);
 
         $this->assertSame($reader, $protocol->getResponseReader());
@@ -84,7 +84,7 @@ class ComposableTextProtocolTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
 
-        $protocol = new ComposableTextProtocol($serializer);
+        $protocol = new ComposableProtocolProcessor($serializer);
 
         $connection->expects($this->once())
                    ->method('writeBytes')
@@ -108,7 +108,7 @@ class ComposableTextProtocolTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableTextProtocol(null, $reader);
+        $protocol = new ComposableProtocolProcessor(null, $reader);
 
         $reader->expects($this->once())
                    ->method('read')

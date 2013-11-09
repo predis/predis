@@ -16,7 +16,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 use Predis\Client;
 use Predis\Connection\ComposableStreamConnection;
 use Predis\Connection\ConnectionParameters;
-use Predis\Protocol\Text\TextProtocol;
+use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 
 /**
  * @group realm-iterators
@@ -116,7 +116,7 @@ class MultiBulkResponseTupleTest extends StandardTestCase
             'profile' => REDIS_SERVER_VERSION,
         );
 
-        $protocol = new TextProtocol();
+        $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
         $connection = new ComposableStreamConnection($parameters, $protocol);

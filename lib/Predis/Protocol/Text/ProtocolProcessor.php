@@ -18,7 +18,7 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Iterator\MultiBulkResponseSimple;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ProtocolInterface;
+use Predis\Protocol\ProtocolProcessorInterface;
 
 /**
  * Protocol processor for the standard Redis wire protocol.
@@ -26,7 +26,7 @@ use Predis\Protocol\ProtocolInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextProtocol implements ProtocolInterface
+class ProtocolProcessor implements ProtocolProcessorInterface
 {
     const NEWLINE = "\r\n";
     const OK      = 'OK';
@@ -51,7 +51,7 @@ class TextProtocol implements ProtocolInterface
     public function __construct()
     {
         $this->mbiterable = false;
-        $this->serializer = new TextRequestSerializer();
+        $this->serializer = new RequestSerializer();
     }
 
     /**

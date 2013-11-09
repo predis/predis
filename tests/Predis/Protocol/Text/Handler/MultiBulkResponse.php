@@ -12,29 +12,42 @@
 namespace Predis\Protocol\Text;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\ResponseQueued;
 
 /**
  *
  */
-class ResponseIntegerHandlerTest extends StandardTestCase
+class MultiBulkResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testInteger()
+    public function testMultiBulk()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->once())
+                   ->method('getProtocol')
+                   ->will($this->returnValue(new ComposableProtocolProcessor()));
 
-        $this->assertSame(0, $handler->handle($connection, '0'));
-        $this->assertSame(1, $handler->handle($connection, '1'));
-        $this->assertSame(10, $handler->handle($connection, '10'));
-        $this->assertSame(-10, $handler->handle($connection, '-10'));
+        $connection->expects($this->at(1))
+                   ->method('readLine')
+                   ->will($this->returnValue("$3"));
+
+        $connection->expects($this->at(2))
+                   ->method('readBytes')
+                   ->will($this->returnValue("foo\r\n"));
+
+        $connection->expects($this->at(3))
+                   ->method('readLine')
+                   ->will($this->returnValue("$3"));
+
+        $connection->expects($this->at(4))
+                   ->method('readBytes')
+                   ->will($this->returnValue("bar\r\n"));
+
+        $this->assertSame(array('foo', 'bar'), $handler->handle($connection, '2'));
     }
 
     /**
@@ -42,24 +55,24 @@ class ResponseIntegerHandlerTest extends StandardTestCase
      */
     public function testNull()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertNull($handler->handle($connection, 'nil'));
+        $this->assertNull($handler->handle($connection, '-1'));
     }
 
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a numeric response
+     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
      */
     public function testInvalid()
     {
-        $handler = new ResponseIntegerHandler();
+        $handler = new Handler\MultiBulkResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

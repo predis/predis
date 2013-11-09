@@ -9,12 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol\Text;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ResponseHandlerInterface;
 
 /**
  * Handler for the multibulk response type of the standard Redis wire protocol.
@@ -23,7 +22,7 @@ use Predis\Protocol\ResponseHandlerInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseMultiBulkHandler implements ResponseHandlerInterface
+class MultiBulkResponse implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}

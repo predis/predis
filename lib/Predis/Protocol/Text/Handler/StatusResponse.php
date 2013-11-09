@@ -9,11 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol\Text;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\ResponseQueued;
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Protocol\ResponseHandlerInterface;
 
 /**
  * Handler for the status response type of the standard Redis wire protocol.
@@ -23,7 +22,7 @@ use Predis\Protocol\ResponseHandlerInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseStatusHandler implements ResponseHandlerInterface
+class StatusResponse implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}

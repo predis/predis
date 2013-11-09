@@ -17,14 +17,14 @@ use Predis\ResponseQueued;
 /**
  *
  */
-class ResponseStatusHandlerTest extends StandardTestCase
+class StatusResponseTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testOk()
     {
-        $handler = new ResponseStatusHandler();
+        $handler = new Handler\StatusResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -39,7 +39,7 @@ class ResponseStatusHandlerTest extends StandardTestCase
      */
     public function testQueued()
     {
-        $handler = new ResponseStatusHandler();
+        $handler = new Handler\StatusResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
@@ -54,7 +54,7 @@ class ResponseStatusHandlerTest extends StandardTestCase
      */
     public function testPlainString()
     {
-        $handler = new ResponseStatusHandler();
+        $handler = new Handler\StatusResponse();
 
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 

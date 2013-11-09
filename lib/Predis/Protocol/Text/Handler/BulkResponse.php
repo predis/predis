@@ -9,37 +9,40 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Protocol\Text;
+namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
-use Predis\Protocol\ResponseHandlerInterface;
 
 /**
- * Handler for the integer response type of the standard Redis wire protocol.
- * It translates the payload an integer or NULL.
+ * Handler for the bulk response type of the standard Redis wire protocol.
+ * It translates the payload to a string or a NULL.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseIntegerHandler implements ResponseHandlerInterface
+class BulkResponse implements ResponseHandlerInterface
 {
     /**
      * {@inheritdoc}
      */
     public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        if (is_numeric($payload)) {
-            return (int) $payload;
-        }
+        $length = (int) $payload;
 
-        if ($payload !== 'nil') {
+        if ("$length" !== $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$payload' as a numeric response"
+                $connection, "Cannot parse '$payload' as the length of the bulk response"
             ));
         }
 
-        return null;
+        if ($length >= 0) {
+            return substr($connection->readBytes($length + 2), 0, -2);
+        }
+
+        if ($length == -1) {
+            return null;
+        }
     }
 }

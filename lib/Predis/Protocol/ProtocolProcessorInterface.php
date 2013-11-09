@@ -20,7 +20,7 @@ use Predis\Connection\ComposableConnectionInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ProtocolInterface
+interface ProtocolProcessorInterface
 {
     /**
      * Writes a command to the specified connection.

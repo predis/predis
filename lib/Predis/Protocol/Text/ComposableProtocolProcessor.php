@@ -13,8 +13,8 @@ namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\RequestSerializerInterface;
-use Predis\Protocol\ProtocolInterface;
 use Predis\Protocol\ResponseReaderInterface;
 
 /**
@@ -24,7 +24,7 @@ use Predis\Protocol\ResponseReaderInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ComposableTextProtocol implements ProtocolInterface
+class ComposableProtocolProcessor implements ProtocolProcessorInterface
 {
     private $serializer;
     private $reader;
@@ -37,8 +37,8 @@ class ComposableTextProtocol implements ProtocolInterface
         RequestSerializerInterface $serializer = null,
         ResponseReaderInterface $reader = null
     ) {
-        $this->setRequestSerializer($serializer ?: new TextRequestSerializer());
-        $this->setResponseReader($reader ?: new TextResponseReader());
+        $this->setRequestSerializer($serializer ?: new RequestSerializer());
+        $this->setResponseReader($reader ?: new ResponseReader());
     }
 
     /**

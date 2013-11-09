@@ -20,7 +20,7 @@ use Predis\Protocol\RequestSerializerInterface;
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TextRequestSerializer implements RequestSerializerInterface
+class RequestSerializer implements RequestSerializerInterface
 {
     /**
      * {@inheritdoc}
