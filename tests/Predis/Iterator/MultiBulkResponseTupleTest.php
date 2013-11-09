@@ -14,6 +14,9 @@ namespace Predis\Iterator;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
+use Predis\Connection\ComposableStreamConnection;
+use Predis\Connection\ConnectionParameters;
+use Predis\Protocol\Text\TextProtocol;
 
 /**
  * @group realm-iterators
@@ -103,18 +106,22 @@ class MultiBulkResponseTupleTest extends StandardTestCase
      */
     protected function getClient()
     {
-        $parameters = array(
+        $parameters = new ConnectionParameters(array(
             'host' => REDIS_SERVER_HOST,
             'port' => REDIS_SERVER_PORT,
-            'iterable_multibulk' => true,
             'read_write_timeout' => 2,
-        );
+        ));
 
         $options = array(
             'profile' => REDIS_SERVER_VERSION,
         );
 
-        $client = new Client($parameters, $options);
+        $protocol = new TextProtocol();
+        $protocol->setOption('iterable_multibulk', true);
+
+        $connection = new ComposableStreamConnection($parameters, $protocol);
+
+        $client = new Client($connection, $options);
         $client->connect();
         $client->select(REDIS_SERVER_DBNUM);
         $client->flushdb();

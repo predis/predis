@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use Iterator;
 use SplQueue;
 use Predis\ResponseErrorInterface;
 use Predis\ResponseObjectInterface;
@@ -65,10 +64,6 @@ class StandardExecutor implements PipelineExecutorInterface
     {
         if ($response instanceof ResponseErrorInterface) {
             return $this->onResponseError($connection, $response);
-        }
-
-        if ($response instanceof Iterator) {
-            return $command->parseResponse(iterator_to_array($response));
         }
 
         return $response;

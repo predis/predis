@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use Iterator;
 use SplQueue;
 use Predis\ClientException;
 use Predis\ResponseErrorInterface;
@@ -92,38 +91,7 @@ class MultiExecExecutor implements PipelineExecutorInterface
             throw new ClientException("Invalid number of replies [expected: ".count($commands)." - actual: ".count($responses)."]");
         }
 
-        $consumer = $responses instanceof Iterator ? 'consumeIteratorResponse' : 'consumeArrayResponse';
-
-        return $this->$consumer($commands, $responses);
-    }
-
-    /**
-     * Consumes an iterator response returned by EXEC.
-     *
-     * @param SplQueue $commands Pipelined commands
-     * @param Iterator $responses Responses returned by EXEC.
-     * @return array
-     */
-    protected function consumeIteratorResponse(SplQueue $commands, Iterator $responses)
-    {
-        $values = array();
-
-        foreach ($responses as $response) {
-            $command = $commands->dequeue();
-
-            if ($response instanceof ResponseObjectInterface) {
-                if ($response instanceof Iterator) {
-                    $response = iterator_to_array($response);
-                    $values[] = $command->parseResponse($response);
-                } else {
-                    $values[] = $response;
-                }
-            } else {
-                $values[] = $command->parseResponse($response);
-            }
-        }
-
-        return $values;
+        return $this->consumeArrayResponse($commands, $responses);
     }
 
     /**

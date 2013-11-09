@@ -130,6 +130,6 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
      */
     public function __sleep()
     {
-        return array_diff(array_merge(parent::__sleep(), array('protocol')), array('mbiterable'));
+        return array_merge(parent::__sleep(), array('protocol'));
     }
 }

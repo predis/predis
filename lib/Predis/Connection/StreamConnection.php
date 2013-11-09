@@ -14,8 +14,6 @@ namespace Predis\Connection;
 use Predis\ResponseError;
 use Predis\ResponseQueued;
 use Predis\Command\CommandInterface;
-use Predis\Iterator\MultiBulkResponseSimple;
-
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
  * The connection parameters supported by this class are:
@@ -28,24 +26,11 @@ use Predis\Iterator\MultiBulkResponseSimple;
  *  - async_connect: performs the connection asynchronously.
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
- *  - iterable_multibulk: multibulk replies treated as iterable objects.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StreamConnection extends AbstractConnection
 {
-    private $mbiterable;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(ConnectionParametersInterface $parameters)
-    {
-        $this->mbiterable = (bool) $parameters->iterable_multibulk;
-
-        parent::__construct($parameters);
-    }
-
     /**
      * Disconnects from the server and destroys the underlying resource when
      * PHP's garbage collector kicks in only if the connection has not been
@@ -249,9 +234,6 @@ class StreamConnection extends AbstractConnection
                 if ($count === -1) {
                     return null;
                 }
-                if ($this->mbiterable) {
-                    return new MultiBulkResponseSimple($this, $count);
-                }
 
                 $multibulk = array();
 
@@ -292,13 +274,5 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->writeBytes($buffer);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __sleep()
-    {
-        return array_merge(parent::__sleep(), array('mbiterable'));
     }
 }

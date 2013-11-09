@@ -13,19 +13,11 @@ namespace Predis\Pipeline;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use ArrayIterator;
 use SplQueue;
 use Predis\ResponseError;
 use Predis\ResponseObjectInterface;
 use Predis\ResponseQueued;
 use Predis\Profile\ServerProfile;
-
-/**
- *
- */
-class ResponseIteratorStub extends ArrayIterator implements ResponseObjectInterface
-{
-}
 
 /**
  *
@@ -45,32 +37,6 @@ class MultiExecExecutorTest extends StandardTestCase
         $connection->expects($this->exactly(2))
                    ->method('executeCommand')
                    ->will($this->onConsecutiveCalls(true, array('PONG', 'PONG', 'PONG')));
-        $connection->expects($this->exactly(3))
-                   ->method('writeCommand');
-        $connection->expects($this->at(3))
-                   ->method('readResponse')
-                   ->will($this->onConsecutiveCalls($queued, $queued, $queued));
-
-        $replies = $executor->execute($connection, $pipeline);
-
-        $this->assertTrue($pipeline->isEmpty());
-        $this->assertSame(array(true, true, true), $replies);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testExecutorWithSingleConnectionReturningIterator()
-    {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
-        $queued = new ResponseQueued();
-        $execResponse = new ResponseIteratorStub(array('PONG', 'PONG', 'PONG'));
-
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->exactly(2))
-                   ->method('executeCommand')
-                   ->will($this->onConsecutiveCalls(true, $execResponse));
         $connection->expects($this->exactly(3))
                    ->method('writeCommand');
         $connection->expects($this->at(3))

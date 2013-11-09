@@ -64,7 +64,6 @@ class ConnectionParameters implements ConnectionParametersInterface
             'persistent' => 'self::castBoolean',
             'timeout' => 'self::castFloat',
             'read_write_timeout' => 'self::castFloat',
-            'iterable_multibulk' => 'self::castBoolean',
         );
     }
 
