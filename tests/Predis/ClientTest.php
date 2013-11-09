@@ -635,23 +635,23 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testMultiExecWithoutArgumentsReturnsMultiExecContext()
+    public function testTransactionWithoutArgumentsReturnsMultiExecContext()
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $client->multiExec());
+        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $client->transaction());
     }
 
     /**
      * @group disconnected
      */
-    public function testMultiExecWithArrayReturnsMultiExecContextWithOptions()
+    public function testTransactionWithArrayReturnsMultiExecContextWithOptions()
     {
         $options = array('cas' => true, 'retry' => 3);
 
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $tx = $client->multiExec($options));
+        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $tx = $client->transaction($options));
 
         $reflection = new \ReflectionProperty($tx, 'options');
         $reflection->setAccessible(true);
@@ -662,7 +662,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testMultiExecWithArrayAndCallableExecutesMultiExec()
+    public function testTransactionWithArrayAndCallableExecutesMultiExec()
     {
         // NOTE: we use CAS since testing the actual MULTI/EXEC context
         //       here is not the point.
@@ -683,7 +683,7 @@ class ClientTest extends StandardTestCase
                  ->will($this->returnCallback($txCallback));
 
         $client = new Client($connection);
-        $client->multiExec($options, $callable);
+        $client->transaction($options, $callable);
     }
 
     /**

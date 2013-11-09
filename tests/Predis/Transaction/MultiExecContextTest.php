@@ -483,7 +483,7 @@ class MultiExecContextTest extends StandardTestCase
         $exception = null;
 
         try {
-            $client->multiExec(function ($tx) {
+            $client->transaction(function ($tx) {
                 $tx->set('foo', 'bar');
                 throw new \RuntimeException("TEST");
             });
@@ -505,7 +505,7 @@ class MultiExecContextTest extends StandardTestCase
         $value = (string) rand();
 
         try {
-            $client->multiExec(function ($tx) use ($value) {
+            $client->transaction(function ($tx) use ($value) {
                 $tx->set('foo', 'bar');
                 $tx->lpush('foo', 'bar');
                 $tx->set('foo', $value);
@@ -525,7 +525,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $client = $this->getClient(array(), array('exceptions' => false));
 
-        $replies = $client->multiExec(function ($tx) {
+        $replies = $client->transaction(function ($tx) {
             $tx->set('foo', 'bar');
             $tx->lpush('foo', 'bar');
             $tx->echo('foobar');
@@ -543,7 +543,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $client = $this->getClient();
 
-        $replies = $client->multiExec(function ($tx) {
+        $replies = $client->transaction(function ($tx) {
             $tx->set('foo', 'bar');
             $tx->discard();
             $tx->set('hoge', 'piyo');
@@ -564,7 +564,7 @@ class MultiExecContextTest extends StandardTestCase
         $client2 = $this->getClient();
 
         try {
-            $client1->multiExec(array('watch' => 'sentinel'), function ($tx) use ($client2) {
+            $client1->transaction(array('watch' => 'sentinel'), function ($tx) use ($client2) {
                 $tx->set('sentinel', 'client1');
                 $tx->get('sentinel');
                 $client2->set('sentinel', 'client2');
@@ -587,7 +587,7 @@ class MultiExecContextTest extends StandardTestCase
         $client->set('foo', 'bar');
         $options = array('watch' => 'foo', 'cas' => true);
 
-        $replies = $client->multiExec($options, function ($tx) {
+        $replies = $client->transaction($options, function ($tx) {
             $tx->watch('foobar');
             $foo = $tx->get('foo');
 
@@ -605,7 +605,7 @@ class MultiExecContextTest extends StandardTestCase
         $client->set('foo', 'bar');
 
         $options = array('watch' => 'foo', 'cas' => true, 'retry' => 1);
-        $replies = $client->multiExec($options, function ($tx) use ($client2, &$hijack) {
+        $replies = $client->transaction($options, function ($tx) use ($client2, &$hijack) {
             $foo = $tx->get('foo');
             $tx->multi();
 

@@ -361,9 +361,9 @@ class Client implements ClientInterface
      * @param mixed $arg,... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
-    public function multiExec(/* arguments */)
+    public function transaction(/* arguments */)
     {
-        return $this->sharedContextFactory('createMultiExec', func_get_args());
+        return $this->sharedContextFactory('createTransaction', func_get_args());
     }
 
     /**
@@ -373,7 +373,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable object used to execute the context.
      * @return MultiExecContext|array
      */
-    protected function createMultiExec(Array $options = null, $callable = null)
+    protected function createTransaction(Array $options = null, $callable = null)
     {
         $transaction = new MultiExecContext($this, $options ?: array());
         return isset($callable) ? $transaction->execute($callable) : $transaction;

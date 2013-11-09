@@ -33,7 +33,7 @@ function zpop($client, $key)
                             // which the client bails out with an exception.
     );
 
-    $client->multiExec($options, function ($tx) use ($key, &$element) {
+    $client->transaction($options, function ($tx) use ($key, &$element) {
         @list($element) = $tx->zrange($key, 0, 0);
 
         if (isset($element)) {
