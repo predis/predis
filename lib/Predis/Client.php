@@ -286,13 +286,11 @@ class Client implements ClientInterface
     /**
      * Calls the specified initializer method on $this with 0, 1 or 2 arguments.
      *
-     * TODO: Invert $argv and $initializer.
-     *
-     * @param array $argv Arguments for the initializer.
      * @param string $initializer The initializer method.
+     * @param array $argv Arguments for the initializer.
      * @return mixed
      */
-    private function sharedInitializer($argv, $initializer)
+    private function sharedContextFactory($initializer, $argv = null)
     {
         switch (count($argv)) {
             case 0:
@@ -320,7 +318,7 @@ class Client implements ClientInterface
      */
     public function pipeline(/* arguments */)
     {
-        return $this->sharedInitializer(func_get_args(), 'initPipeline');
+        return $this->sharedContextFactory('createPipeline', func_get_args());
     }
 
     /**
@@ -330,7 +328,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable object used to execute the context.
      * @return PipelineContext|array
      */
-    protected function initPipeline(Array $options = null, $callable = null)
+    protected function createPipeline(Array $options = null, $callable = null)
     {
         $executor = isset($options['executor']) ? $options['executor'] : null;
 
@@ -365,7 +363,7 @@ class Client implements ClientInterface
      */
     public function multiExec(/* arguments */)
     {
-        return $this->sharedInitializer(func_get_args(), 'initMultiExec');
+        return $this->sharedContextFactory('createMultiExec', func_get_args());
     }
 
     /**
@@ -375,7 +373,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable object used to execute the context.
      * @return MultiExecContext|array
      */
-    protected function initMultiExec(Array $options = null, $callable = null)
+    protected function createMultiExec(Array $options = null, $callable = null)
     {
         $transaction = new MultiExecContext($this, $options ?: array());
         return isset($callable) ? $transaction->execute($callable) : $transaction;
@@ -390,7 +388,7 @@ class Client implements ClientInterface
      */
     public function pubSubLoop(/* arguments */)
     {
-        return $this->sharedInitializer(func_get_args(), 'initPubSub');
+        return $this->sharedContextFactory('createPubSub', func_get_args());
     }
 
     /**
@@ -400,7 +398,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable object used to execute the context.
      * @return PubSubContext
      */
-    protected function initPubSub(Array $options = null, $callable = null)
+    protected function createPubSub(Array $options = null, $callable = null)
     {
         $pubsub = new PubSubContext($this, $options);
 
