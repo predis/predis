@@ -28,8 +28,8 @@ use Predis\Protocol\ProtocolProcessorInterface;
  */
 class ProtocolProcessor implements ProtocolProcessorInterface
 {
-    private $mbiterable;
-    private $serializer;
+    protected $mbiterable;
+    protected $serializer;
 
     /**
      *

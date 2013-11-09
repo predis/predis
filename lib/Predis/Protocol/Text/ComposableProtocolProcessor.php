@@ -26,8 +26,8 @@ use Predis\Protocol\ResponseReaderInterface;
  */
 class ComposableProtocolProcessor implements ProtocolProcessorInterface
 {
-    private $serializer;
-    private $reader;
+    protected $serializer;
+    protected $reader;
 
     /**
      * @param RequestSerializerInterface $serializer Request serializer.
