@@ -34,9 +34,9 @@ class Client implements ClientInterface
 {
     const VERSION = '0.9.0-dev';
 
-    private $options;
+    protected $connection;
+    protected $options;
     private $profile;
-    private $connection;
 
     /**
      * Initializes a new client with optional connection parameters and client options.
@@ -46,9 +46,9 @@ class Client implements ClientInterface
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options = $this->createOptions($options);
-        $this->profile = $this->options->profile;
+        $this->options    = $this->createOptions($options);
         $this->connection = $this->createConnection($parameters);
+        $this->profile    = $this->options->profile;
     }
 
     /**
