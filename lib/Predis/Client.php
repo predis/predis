@@ -366,8 +366,13 @@ class Client implements ClientInterface
      */
     protected function createTransaction(Array $options = null, $callable = null)
     {
-        $transaction = new MultiExecContext($this, $options ?: array());
-        return isset($callable) ? $transaction->execute($callable) : $transaction;
+        $transaction = new MultiExecContext($this, $options);
+
+        if (isset($callable)) {
+            return $transaction->execute($callable);
+        }
+
+        return $transaction;
     }
 
     /**
