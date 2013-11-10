@@ -48,7 +48,7 @@ class Client implements ClientInterface
     {
         $this->options = $this->createOptions($options);
         $this->profile = $this->options->profile;
-        $this->connection = $this->initializeConnection($parameters);
+        $this->connection = $this->createConnection($parameters);
     }
 
     /**
@@ -84,7 +84,7 @@ class Client implements ClientInterface
      * @param mixed $parameters Connection parameters or instance.
      * @return ConnectionInterface
      */
-    protected function initializeConnection($parameters)
+    protected function createConnection($parameters)
     {
         if ($parameters instanceof ConnectionInterface) {
             return $parameters;
