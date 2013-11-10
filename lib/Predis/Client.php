@@ -337,21 +337,12 @@ class Client implements ClientInterface
         }
 
         $pipeline = new PipelineContext($this, $executor);
-        $replies  = $this->pipelineExecute($pipeline, $callable);
 
-        return $replies;
-    }
+        if (isset($callable)) {
+            return $pipeline->execute($callable);
+        }
 
-    /**
-     * Executes a pipeline context when a callable object is passed.
-     *
-     * @param array $options Options of the context initialization.
-     * @param mixed $callable Optional callable object used to execute the context.
-     * @return PipelineContext|array
-     */
-    private function pipelineExecute(PipelineContext $pipeline, $callable)
-    {
-        return isset($callable) ? $pipeline->execute($callable) : $pipeline;
+        return $pipeline;
     }
 
     /**
