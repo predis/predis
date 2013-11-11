@@ -108,7 +108,7 @@ class Client implements ClientInterface
                 $replication = isset($options->replication) && $options->replication;
                 $connection = $options->{$replication ? 'replication' : 'cluster'};
 
-                $options->connections->createAggregated($connection, $parameters);
+                $options->connections->aggregate($connection, $parameters);
 
                 return $connection;
             }

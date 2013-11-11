@@ -304,7 +304,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory->expects($this->never())
                 ->method('create');
 
-        $factory->createAggregated($cluster, array(new $connectionClass(), new $connectionClass()));
+        $factory->aggregate($cluster, array(new $connectionClass(), new $connectionClass()));
     }
 
     /**
@@ -326,7 +326,7 @@ class ConnectionFactoryTest extends StandardTestCase
                     return new $connectionClass;
                 }));
 
-        $factory->createAggregated($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
+        $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
     }
 
     /**
@@ -340,7 +340,7 @@ class ConnectionFactoryTest extends StandardTestCase
         $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'));
         $factory->expects($this->never())->method('create');
 
-        $factory->createAggregated($cluster, array());
+        $factory->aggregate($cluster, array());
     }
 
     /**
@@ -363,7 +363,7 @@ class ConnectionFactoryTest extends StandardTestCase
                 }));
 
         $nodes = array('tcp://127.0.0.1:7001?password=foo', 'tcp://127.0.0.1:7002?password=bar');
-        $factory->createAggregated($cluster, $nodes);
+        $factory->aggregate($cluster, $nodes);
     }
 
 

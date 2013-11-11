@@ -43,11 +43,10 @@ interface ConnectionFactoryInterface
     public function create($parameters);
 
     /**
-     * Prepares an aggregation of connection objects.
+     * Aggregates single connections into an aggregate connection instance.
      *
      * @param AggregatedConnectionInterface $cluster Instance of an aggregated connection class.
      * @param array $parameters List of parameters for each connection object.
-     * @return AggregatedConnectionInterface
      */
-    public function createAggregated(AggregatedConnectionInterface $cluster, Array $parameters);
+    public function aggregate(AggregatedConnectionInterface $cluster, Array $parameters);
 }
