@@ -153,7 +153,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      */
     public function __get($parameter)
     {
-        if (isset($this->{$parameter})) {
+        if (isset($this->parameters[$parameter])) {
             return $this->parameters[$parameter];
         }
     }
