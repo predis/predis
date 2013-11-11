@@ -217,10 +217,10 @@ class ClientTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Callable parameters must return instances of Predis\Connection\ConnectionInterface
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage The callable connection initializer returned an invalid type
      */
-    public function testConstructorWithCallableArgumentButInvalidReturnType()
+    public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
     {
         $wrongType = $this->getMock('stdClass');
 
@@ -261,6 +261,58 @@ class ClientTest extends StandardTestCase
         $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $connection = $client->getConnection());
         $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
         $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithArrayAndOptionAggregateArgument()
+    {
+        $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
+
+        $fnaggregate = $this->getMock('stdClass', array('__invoke'));
+        $fnaggregate->expects($this->once())
+                    ->method('__invoke')
+                    ->with($arg1)
+                    ->will($this->returnValue($connection));
+
+        $fncluster = $this->getMock('stdClass', array('__invoke'));
+        $fncluster->expects($this->never())->method('__invoke');
+
+        $fnreplication = $this->getMock('stdClass', array('__invoke'));
+        $fnreplication->expects($this->never())->method('__invoke');
+
+        $arg2 = array(
+            'aggregate'   => function () use ($fnaggregate) { return $fnaggregate; },
+            'cluster'     => function () use ($fncluster) { return $fncluster; },
+            'replication' => function () use ($fnreplication) { return $fncluster; },
+        );
+
+        $client = new Client($arg1, $arg2);
+
+        $this->assertSame($connection, $client->getConnection());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage The callable connection initializer returned an invalid type
+     */
+    public function testConstructorWithArrayAndOptionAggregateArgumentThrowExceptionOnInvalidReturnType()
+    {
+        $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $fnaggregate = $this->getMock('stdClass', array('__invoke'));
+        $fnaggregate->expects($this->once())
+                    ->method('__invoke')
+                    ->with($arg1)
+                    ->will($this->returnValue(false));
+
+        $arg2 = array('aggregate' => function () use ($fnaggregate) { return $fnaggregate; });
+
+        $client = new Client($arg1, $arg2);
     }
 
     /**

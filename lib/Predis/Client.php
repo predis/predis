@@ -12,13 +12,13 @@
 namespace Predis;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Connection\ConnectionFactoryInterface;
 use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
@@ -102,33 +102,56 @@ class Client implements ClientInterface
         }
 
         if (is_array($parameters)) {
-            $options = $this->options;
-
-            if (isset($parameters[0])) {
-                $replication = isset($options->replication) && $options->replication;
-                $connection = $options->{$replication ? 'replication' : 'cluster'};
-
-                $options->connections->aggregate($connection, $parameters);
-
-                return $connection;
+            if (!isset($parameters[0])) {
+                return $this->options->connections->create($parameters);
             }
 
-            return $options->connections->create($parameters);
-        }
+            $options = $this->options;
 
-        if (is_callable($parameters)) {
-            $connection = call_user_func($parameters, $this->options);
+            if ($options->defined('aggregate')) {
+                $initializer = $this->getConnectionInitializerWrapper($options->aggregate);
+                $connection = $initializer($parameters, $options);
+            } else {
+                if ($options->defined('replication') && $replication = $options->replication) {
+                    $connection = $replication;
+                } else {
+                    $connection = $options->cluster;
+                }
 
-            if (!$connection instanceof ConnectionInterface) {
-                throw new InvalidArgumentException(
-                    'Callable parameters must return instances of Predis\Connection\ConnectionInterface'
-                );
+                $options->connections->aggregate($connection, $parameters);
             }
 
             return $connection;
         }
 
+        if (is_callable($parameters)) {
+            $initializer = $this->getConnectionInitializerWrapper($parameters);
+            $connection = $initializer($this->options);
+
+            return $connection;
+        }
+
         throw new InvalidArgumentException('Invalid type for connection parameters');
+    }
+
+    /**
+     * Wraps a callable to make sure that its returned value represents a valid
+     * connection type.
+     *
+     * @param mixed $callable
+     * @return mixed
+     */
+    protected function getConnectionInitializerWrapper($callable)
+    {
+        return function () use ($callable) {
+            $connection = call_user_func_array($callable, func_get_args());
+
+            if (!$connection instanceof ConnectionInterface) {
+                throw new UnexpectedValueException('The callable connection initializer returned an invalid type');
+            }
+
+            return $connection;
+        };
     }
 
     /**
