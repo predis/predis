@@ -11,7 +11,7 @@
 
 namespace Predis\Connection;
 
-use Predis\ClientException;
+use InvalidArgumentException;
 
 /**
  * Handles parsing and validation of connection parameters.
@@ -113,14 +113,16 @@ class ConnectionParameters implements ConnectionParametersInterface
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
         }
 
-        if (!($parsed = @parse_url($uri)) || !isset($parsed['host'])) {
-            throw new ClientException("Invalid URI: $uri");
+        if (!($parsed = parse_url($uri)) || !isset($parsed['host'])) {
+            throw new InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
         if (isset($parsed['query'])) {
             foreach (explode('&', $parsed['query']) as $kv) {
-                @list($k, $v) = explode('=', $kv);
-                $parsed[$k] = $v;
+                $kv = explode('=', $kv);
+                if (isset($kv[0], $kv[1])) {
+                    $parsed[$kv[0]] = $kv[1];
+                }
             }
 
             unset($parsed['query']);

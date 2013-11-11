@@ -159,8 +159,25 @@ class ParametersTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Invalid URI: tcp://invalid:uri
+     */
+    public function testParsingURIWithIncompletePairInQueryString()
+    {
+        $uri = 'tcp://10.10.10.10?persistent=1&foo=&bar';
+
+        $expected = array(
+            'scheme' => 'tcp',
+            'host' => '10.10.10.10',
+            'persistent' => '1',
+            'foo' => '',
+        );
+
+        $this->assertSame($expected, ConnectionParameters::parse($uri));
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */
     public function testParsingURIThrowOnInvalidURI()
     {
