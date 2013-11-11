@@ -104,7 +104,7 @@ class Client implements ClientInterface
             $connection = call_user_func($parameters, $this->options);
 
             if (!$connection instanceof ConnectionInterface) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'Callable parameters must return instances of Predis\Connection\ConnectionInterface'
                 );
             }
@@ -141,7 +141,7 @@ class Client implements ClientInterface
     public function getClientFor($connectionID)
     {
         if (!$connection = $this->getConnectionById($connectionID)) {
-            throw new \InvalidArgumentException("Invalid connection ID: '$connectionID'");
+            throw new InvalidArgumentException("Invalid connection ID: $connectionID");
         }
 
         return new static($connection, $this->options);
@@ -196,29 +196,31 @@ class Client implements ClientInterface
      * Retrieves the specified connection from the aggregate connection when the
      * client is in cluster or replication mode.
      *
-     * @param string $connectionId Index or alias of the single connection.
+     * @param string $connectionID Index or alias of the single connection.
      * @return Connection\SingleConnectionInterface
      */
-    public function getConnectionById($connectionId)
+    public function getConnectionById($connectionID)
     {
         if (!$this->connection instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Retrieving connections by ID is supported only when using aggregated connections');
+            throw new NotSupportedException(
+                'Retrieving connections by ID is supported only when using aggregated connections'
+            );
         }
 
-        return $this->connection->getConnectionById($connectionId);
+        return $this->connection->getConnectionById($connectionID);
     }
 
     /**
      * Creates a Redis command with the specified arguments and sends a request
      * to the server.
      *
-     * @param string $method Command ID.
+     * @param string $commandID Command ID.
      * @param array $arguments Arguments for the command.
      * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call($commandID, $arguments)
     {
-        $command  = $this->createCommand($method, $arguments);
+        $command  = $this->createCommand($commandID, $arguments);
         $response = $this->executeCommand($command);
 
         return $response;
@@ -227,9 +229,9 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function createCommand($method, $arguments = array())
+    public function createCommand($commandID, $arguments = array())
     {
-        return $this->profile->createCommand($method, $arguments);
+        return $this->profile->createCommand($commandID, $arguments);
     }
 
     /**
