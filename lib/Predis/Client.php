@@ -218,18 +218,10 @@ class Client implements ClientInterface
      */
     public function __call($method, $arguments)
     {
-        $command = $this->profile->createCommand($method, $arguments);
-        $response = $this->connection->executeCommand($command);
+        $command  = $this->createCommand($method, $arguments);
+        $response = $this->executeCommand($command);
 
-        if ($response instanceof ResponseObjectInterface) {
-            if ($response instanceof ResponseErrorInterface) {
-                $response = $this->onResponseError($command, $response);
-            }
-
-            return $response;
-        }
-
-        return $command->parseResponse($response);
+        return $response;
     }
 
     /**
