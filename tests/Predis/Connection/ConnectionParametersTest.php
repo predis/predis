@@ -136,7 +136,7 @@ class ParametersTest extends StandardTestCase
             'persistent' => '1',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parseURI($uri));
+        $this->assertSame($expected, ConnectionParameters::parse($uri));
     }
 
     /**
@@ -154,7 +154,7 @@ class ParametersTest extends StandardTestCase
             'persistent' => '1',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parseURI($uri));
+        $this->assertSame($expected, ConnectionParameters::parse($uri));
     }
 
     /**
@@ -164,7 +164,7 @@ class ParametersTest extends StandardTestCase
      */
     public function testParsingURIThrowOnInvalidURI()
     {
-        ConnectionParameters::parseURI('tcp://invalid:uri');
+        ConnectionParameters::parse('tcp://invalid:uri');
     }
 
     // ******************************************************************** //
