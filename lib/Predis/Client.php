@@ -26,7 +26,11 @@ use Predis\PubSub\PubSubContext;
 use Predis\Transaction\MultiExecContext;
 
 /**
- * Main class that exposes the most high-level interface to interact with Redis.
+ * Client class used for connecting and executing commands on Redis.
+ *
+ * This is the main high-level abstraction of Predis upon which various other
+ * abstractions are built. Internally it aggregates various other classes each
+ * one with its own responsibility and scope.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -39,10 +43,8 @@ class Client implements ClientInterface
     private $profile;
 
     /**
-     * Initializes a new client with optional connection parameters and client options.
-     *
-     * @param mixed $parameters Connection parameters for one or multiple servers.
-     * @param mixed $options Options that specify certain behaviours for the client.
+     * @param mixed $parameters Connection parameters for one or more servers.
+     * @param mixed $options Options to configure some behaviours of the client.
      */
     public function __construct($parameters = null, $options = null)
     {
@@ -52,9 +54,9 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new instance of Predis\Configuration\Options from various
-     * types of arguments or returns the passed object if it is an instance
-     * of Predis\Configuration\OptionsInterface.
+     * Creates a new instance of Predis\Configuration\Options from different
+     * types of arguments or simply returns the passed argument if it is an
+     * instance of Predis\Configuration\OptionsInterface.
      *
      * @param mixed $options Client options.
      * @return OptionsInterface
@@ -77,11 +79,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * Initializes one or multiple connection (cluster) objects from various
-     * types of arguments (string, array) or returns the passed object if it
-     * implements Predis\Connection\ConnectionInterface.
+     * Creates single or aggregate connections from different types of arguments
+     * (string, array) or returns the passed argument if it is an instance of a
+     * class implementing Predis\Connection\ConnectionInterface.
      *
-     * @param mixed $parameters Connection parameters or instance.
+     * @param mixed $parameters Connection parameters or connection instance.
      * @return ConnectionInterface
      */
     protected function createConnection($parameters)
@@ -130,9 +132,9 @@ class Client implements ClientInterface
     }
 
     /**
-     * Returns a new instance of a client for the specified connection when the
-     * client is connected to a cluster. The new instance will use the same
-     * options of the original client.
+     * Creates a new client instance for the specified connection ID or alias,
+     * only when working with an aggregate connection (cluster, replication).
+     * The new client instances uses the same options of the original one.
      *
      * @return Client
      */
@@ -146,7 +148,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Opens the connection to the server.
+     * Opens the underlying connection and connects to the server.
      */
     public function connect()
     {
@@ -154,7 +156,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Disconnects from the server.
+     * Closes the underlying connection and disconnect from the server.
      */
     public function disconnect()
     {
@@ -162,9 +164,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * Disconnects from the server.
+     * Closes the underlying connection and disconnect from the server.
      *
-     * This method is an alias of disconnect().
+     * This is the same as `Client::disconnect()` as it does not actually send
+     * the `QUIT` command to Redis, but simply closes the connection.
      */
     public function quit()
     {
@@ -172,10 +175,9 @@ class Client implements ClientInterface
     }
 
     /**
-     * Checks if the underlying connection is connected to Redis.
+     * Returns the current state of the underlying connection.
      *
-     * @return Boolean True means that the connection is open.
-     *                 False means that the connection is closed.
+     * @return bool
      */
     public function isConnected()
     {
@@ -191,9 +193,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * Retrieves a single connection out of an aggregated connections instance.
+     * Retrieves the specified connection from the aggregate connection when the
+     * client is in cluster or replication mode.
      *
-     * @param string $connectionId Index or alias of the connection.
+     * @param string $connectionId Index or alias of the single connection.
      * @return Connection\SingleConnectionInterface
      */
     public function getConnectionById($connectionId)
@@ -206,10 +209,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * Dynamically invokes a Redis command with the specified arguments.
+     * Creates a Redis command with the specified arguments and sends a request
+     * to the server.
      *
-     * @param string $method The name of a Redis command.
-     * @param array $arguments The arguments for the command.
+     * @param string $method Command ID.
+     * @param array $arguments Arguments for the command.
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -257,8 +261,8 @@ class Client implements ClientInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param CommandInterface $command The command that generated the error.
-     * @param ResponseErrorInterface $response The error response instance.
+     * @param CommandInterface $command Redis command that generated the error.
+     * @param ResponseErrorInterface $response Instance of the error response.
      * @return mixed
      */
     protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
@@ -284,10 +288,13 @@ class Client implements ClientInterface
     }
 
     /**
-     * Calls the specified initializer method on $this with 0, 1 or 2 arguments.
+     * Executes the specified initializer method on `$this` by adjusting the
+     * actual invokation depending on the arity (0, 1 or 2 arguments). This is
+     * simply an utility method to create Redis contexts instances since they
+     * follow a common initialization path.
      *
-     * @param string $initializer The initializer method.
-     * @param array $argv Arguments for the initializer.
+     * @param string $initializer Method name.
+     * @param array $argv Arguments for the method.
      * @return mixed
      */
     private function sharedContextFactory($initializer, $argv = null)
@@ -313,7 +320,7 @@ class Client implements ClientInterface
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param mixed $arg,... Options for the context, or a callable, or both.
      * @return PipelineContext|array
      */
     public function pipeline(/* arguments */)
@@ -322,10 +329,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * Pipeline context initializer.
+     * Actual pipeline context initializer method.
      *
      * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param mixed $callable Optional callable used to execute the context.
      * @return PipelineContext|array
      */
     protected function createPipeline(Array $options = null, $callable = null)
@@ -346,10 +353,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new transaction context and returns it, or returns the results of
-     * a transaction executed inside the optionally provided callable object.
+     * Creates a new transaction context and returns it, or returns the results
+     * of a transaction executed inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param mixed $arg,... Options for the context, or a callable, or both.
      * @return MultiExecContext|array
      */
     public function transaction(/* arguments */)
@@ -358,10 +365,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * Transaction context initializer.
+     * Actual transaction context initializer method.
      *
      * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param mixed $callable Optional callable used to execute the context.
      * @return MultiExecContext|array
      */
     protected function createTransaction(Array $options = null, $callable = null)
@@ -376,11 +383,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new Publish / Subscribe context and returns it, or executes it
+     * Creates a new publis/subscribe context and returns it, or starts its loop
      * inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
-     * @return PubSubExecContext|array
+     * @param mixed $arg,... Options for the context, or a callable, or both.
+     * @return PubSubExecContext|NULL
      */
     public function pubSubLoop(/* arguments */)
     {
@@ -388,11 +395,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * Publish / Subscribe context initializer.
+     * Actual publish/subscribe context initializer method.
      *
      * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
-     * @return PubSubContext
+     * @param mixed $callable Optional callable used to execute the context.
+     * @return PubSubContext|NULL
      */
     protected function createPubSub(Array $options = null, $callable = null)
     {
@@ -410,7 +417,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Returns a new monitor context.
+     * Creates a new monitor context and returns it.
      *
      * @return MonitorContext
      */
