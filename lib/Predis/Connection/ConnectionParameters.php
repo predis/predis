@@ -32,13 +32,13 @@ class ConnectionParameters implements ConnectionParametersInterface
     /**
      * @param string|array Connection parameters in the form of an URI string or a named array.
      */
-    public function __construct($parameters = array())
+    public function __construct($parameters = null)
     {
-        if (!is_array($parameters)) {
+        if (is_string($parameters)) {
             $parameters = self::parseURI($parameters);
         }
 
-        $this->parameters = $this->filter($parameters) + $this->getDefaults();
+        $this->parameters = $this->filter($parameters ?: array()) + $this->getDefaults();
     }
 
     /**

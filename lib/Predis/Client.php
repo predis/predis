@@ -19,6 +19,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionFactoryInterface;
+use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
@@ -48,8 +49,8 @@ class Client implements ClientInterface
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options    = $this->createOptions($options);
-        $this->connection = $this->createConnection($parameters);
+        $this->options    = $this->createOptions($options ?: array());
+        $this->connection = $this->createConnection($parameters ?: array());
         $this->profile    = $this->options->profile;
     }
 
@@ -63,10 +64,6 @@ class Client implements ClientInterface
      */
     protected function createOptions($options)
     {
-        if (!isset($options)) {
-            return new Options();
-        }
-
         if (is_array($options)) {
             return new Options($options);
         }
@@ -83,6 +80,14 @@ class Client implements ClientInterface
      * (string, array) or returns the passed argument if it is an instance of a
      * class implementing Predis\Connection\ConnectionInterface.
      *
+     * Accepted types for connection parameters are:
+     *
+     *  - Instance of Predis\Connection\ConnectionInterface.
+     *  - Instance of Predis\Connection\ConnectionParametersInterface.
+     *  - Array
+     *  - String
+     *  - Callable
+     *
      * @param mixed $parameters Connection parameters or connection instance.
      * @return ConnectionInterface
      */
@@ -92,12 +97,23 @@ class Client implements ClientInterface
             return $parameters;
         }
 
-        if (is_array($parameters) && isset($parameters[0])) {
-            $options = $this->options;
-            $replication = isset($options->replication) && $options->replication;
-            $connection = $options->{$replication ? 'replication' : 'cluster'};
+        if ($parameters instanceof ConnectionParametersInterface || is_string($parameters)) {
+            return $this->options->connections->create($parameters);
+        }
 
-            return $options->connections->createAggregated($connection, $parameters);
+        if (is_array($parameters)) {
+            $options = $this->options;
+
+            if (isset($parameters[0])) {
+                $replication = isset($options->replication) && $options->replication;
+                $connection = $options->{$replication ? 'replication' : 'cluster'};
+
+                $options->connections->createAggregated($connection, $parameters);
+
+                return $connection;
+            }
+
+            return $options->connections->create($parameters);
         }
 
         if (is_callable($parameters)) {
@@ -112,7 +128,7 @@ class Client implements ClientInterface
             return $connection;
         }
 
-        return $this->options->connections->create($parameters);
+        throw new InvalidArgumentException('Invalid type for connection parameters');
     }
 
     /**
