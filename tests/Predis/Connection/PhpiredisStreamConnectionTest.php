@@ -109,6 +109,7 @@ class PhpiredisStreamConnectionTest extends ConnectionTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @expectedException Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Protocol error, got "P" as reply type byte
