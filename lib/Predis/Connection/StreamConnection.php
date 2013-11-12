@@ -126,7 +126,9 @@ class StreamConnection extends AbstractConnection
         parent::connect();
 
         if ($this->initCmds) {
-            $this->sendInitializationCommands();
+            foreach ($this->initCmds as $command) {
+                $this->executeCommand($command);
+            }
         }
     }
 
@@ -138,19 +140,6 @@ class StreamConnection extends AbstractConnection
         if ($this->isConnected()) {
             fclose($this->getResource());
             parent::disconnect();
-        }
-    }
-
-    /**
-     * Sends the initialization commands to Redis when the connection is opened.
-     */
-    private function sendInitializationCommands()
-    {
-        foreach ($this->initCmds as $command) {
-            $this->writeCommand($command);
-        }
-        foreach ($this->initCmds as $command) {
-            $this->readResponse($command);
         }
     }
 
