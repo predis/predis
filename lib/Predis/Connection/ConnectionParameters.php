@@ -119,7 +119,7 @@ class ConnectionParameters implements ConnectionParametersInterface
 
         if (isset($parsed['query'])) {
             foreach (explode('&', $parsed['query']) as $kv) {
-                $kv = explode('=', $kv);
+                $kv = explode('=', $kv, 2);
                 if (isset($kv[0], $kv[1])) {
                     $parsed[$kv[0]] = $kv[1];
                 }

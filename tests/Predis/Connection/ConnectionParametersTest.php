@@ -176,6 +176,23 @@ class ParametersTest extends StandardTestCase
 
     /**
      * @group disconnected
+     */
+    public function testParsingURIWithMoreThanOneEqualSignInQueryStringPairValue()
+    {
+        $uri = 'tcp://10.10.10.10?foobar=a=b=c&persistent=1';
+
+        $expected = array(
+            'scheme' => 'tcp',
+            'host' => '10.10.10.10',
+            'foobar' => 'a=b=c',
+            'persistent' => '1',
+        );
+
+        $this->assertSame($expected, ConnectionParameters::parse($uri));
+    }
+
+    /**
+     * @group disconnected
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */
