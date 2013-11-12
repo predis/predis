@@ -195,7 +195,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Closes the underlying connection and disconnect from the server.
+     * Closes the underlying connection and disconnects from the server.
      */
     public function disconnect()
     {
@@ -203,7 +203,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Closes the underlying connection and disconnect from the server.
+     * Closes the underlying connection and disconnects from the server.
      *
      * This is the same as `Client::disconnect()` as it does not actually send
      * the `QUIT` command to Redis, but simply closes the connection.
