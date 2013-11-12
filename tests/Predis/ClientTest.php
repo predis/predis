@@ -252,7 +252,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayAndOptionReplicationArgument()
+    public function testConstructorWithArrayAndOptionReplication()
     {
         $arg1 = array('tcp://host1?alias=master', 'tcp://host2?alias=slave');
         $arg2 = array('replication' => true);
@@ -266,7 +266,7 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayAndOptionAggregateArgument()
+    public function testConstructorWithArrayAndOptionAggregate()
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
@@ -300,7 +300,7 @@ class ClientTest extends StandardTestCase
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type
      */
-    public function testConstructorWithArrayAndOptionAggregateArgumentThrowExceptionOnInvalidReturnType()
+    public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
