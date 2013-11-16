@@ -97,7 +97,7 @@ class ProtocolProcessorTest extends StandardTestCase
                    ->method('readLine')
                    ->will($this->returnValue("*1"));
 
-        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $protocol->read($connection));
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $protocol->read($connection));
     }
 
     /**

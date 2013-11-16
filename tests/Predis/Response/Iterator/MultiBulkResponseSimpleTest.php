@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator;
+namespace Predis\Response\Iterator;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -32,7 +32,7 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
-        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator);
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $iterator);
         $this->assertTrue($iterator->valid());
         $this->assertSame(3, $iterator->count());
 
@@ -59,8 +59,8 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
         $client = $this->getClient();
         $client->mset('foo', 'bar', 'hoge', 'piyo');
 
-        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseSimple', $iterator = $client->mget('foo', 'bar'));
-        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponseTuple', $iterator->asTuple());
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $iterator = $client->mget('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseTuple', $iterator->asTuple());
     }
 
     /**
