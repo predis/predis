@@ -23,7 +23,7 @@ use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
-use Predis\PubSub\PubSubContext;
+use Predis\PubSub;
 use Predis\Response;
 use Predis\Transaction\MultiExecContext;
 
@@ -421,7 +421,7 @@ class Client implements ClientInterface
      * inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return PubSubExecContext|NULL
+     * @return PubSub\Consumer|NULL
      */
     public function pubSubLoop(/* arguments */)
     {
@@ -433,11 +433,11 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return PubSubContext|NULL
+     * @return PubSub\Consumer|NULL
      */
     protected function createPubSub(Array $options = null, $callable = null)
     {
-        $pubsub = new PubSubContext($this, $options);
+        $pubsub = new PubSub\Consumer($this, $options);
 
         if (!isset($callable)) {
             return $pubsub;
@@ -445,7 +445,7 @@ class Client implements ClientInterface
 
         foreach ($pubsub as $message) {
             if (call_user_func($callable, $pubsub, $message) === false) {
-                $pubsub->closeContext();
+                $pubsub->stop();
             }
         }
     }

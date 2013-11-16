@@ -635,24 +635,24 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithoutArgumentsReturnsPubSubContext()
+    public function testPubSubLoopWithoutArgumentsReturnsPubSubConsumer()
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\PubSub\Consumer', $client->pubSubLoop());
     }
 
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithArrayReturnsPubSubContextWithOptions()
+    public function testPubSubLoopWithArrayReturnsPubSubConsumerWithOptions()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $options = array('subscribe' => 'channel');
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\PubSubContext', $pubsub = $client->pubSubLoop($options));
+        $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new \ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);

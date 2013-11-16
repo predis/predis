@@ -11,12 +11,14 @@
 
 namespace Predis\PubSub;
 
+use Iterator;
+
 /**
  * Client-side abstraction of a Publish / Subscribe context.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class AbstractPubSubContext implements \Iterator
+abstract class AbstractConsumer implements Iterator
 {
     const SUBSCRIBE    = 'subscribe';
     const UNSUBSCRIBE  = 'unsubscribe';
@@ -37,7 +39,7 @@ abstract class AbstractPubSubContext implements \Iterator
      */
     public function __destruct()
     {
-        $this->closeContext(true);
+        $this->stop(true);
     }
 
     /**
@@ -98,16 +100,16 @@ abstract class AbstractPubSubContext implements \Iterator
      * Optionally, the context can be forcefully closed by dropping the
      * underlying connection.
      *
-     * @param Boolean $force Forcefully close the context by closing the connection.
-     * @return Boolean Returns false if there are no pending messages.
+     * @param bool $drop Forcefully close the context by closing the connection.
+     * @return bool Returns false if there are no pending messages.
      */
-    public function closeContext($force = false)
+    public function stop($drop = false)
     {
         if (!$this->valid()) {
             return false;
         }
 
-        if ($force) {
+        if ($drop) {
             $this->invalidate();
             $this->disconnect();
         } else {
@@ -119,7 +121,7 @@ abstract class AbstractPubSubContext implements \Iterator
             }
         }
 
-        return !$force;
+        return !$drop;
     }
 
     /**
