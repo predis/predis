@@ -15,18 +15,19 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\Profile\ServerProfile;
+use Predis\PubSub\Consumer as PubSubConsumer;
 
 /**
  * @group realm-pubsub
  */
-class PubSubContextTest extends StandardTestCase
+class ConsumerTest extends StandardTestCase
 {
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support PUB/SUB related commands
      */
-    public function testPubSubContextRequirePubSubRelatedCommand()
+    public function testPubSubConsumerRequirePubSubRelatedCommand()
     {
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->any())
@@ -34,39 +35,39 @@ class PubSubContextTest extends StandardTestCase
                 ->will($this->returnValue(false));
 
         $client = new Client(null, array('profile' => $profile));
-        $pubsub = new PubSubContext($client);
+        $pubsub = new PubSubConsumer($client);
     }
 
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a PUB/SUB context when using aggregated connections
+     * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer when using aggregated connections
      */
-    public function testPubSubContextDoesNotWorkOnClusters()
+    public function testPubSubConsumerDoesNotWorkOnClusters()
     {
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
 
         $client = new Client($cluster);
-        $pubsub = new PubSubContext($client);
+        $pubsub = new PubSubConsumer($client);
     }
 
     /**
      * @group disconnected
      */
-    public function testConstructorWithoutSubscriptionsDoesNotOpenContext()
+    public function testConstructorWithoutSubscriptionsDoesNotStartConsumer()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('executeCommand'), array($connection));
         $client->expects($this->never())->method('executeCommand');
 
-        $pubsub = new PubSubContext($client);
+        $pubsub = new PubSubConsumer($client);
     }
 
     /**
      * @group disconnected
      */
-    public function testConstructorWithSubscriptionsOpensContext()
+    public function testConstructorWithSubscriptionsStartsConsumer()
     {
         $profile = ServerProfile::get(REDIS_SERVER_VERSION);
 
@@ -85,30 +86,30 @@ class PubSubContextTest extends StandardTestCase
                }));
 
         $options = array('subscribe' => 'channel:foo', 'psubscribe' => 'channels:*');
-        $pubsub = new PubSubContext($client, $options);
+        $pubsub = new PubSubConsumer($client, $options);
     }
 
     /**
      * @group disconnected
      */
-    public function testClosingContextWithTrueClosesConnection()
+    public function testStoppingConsumerWithTrueClosesConnection()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
         $client->expects($this->exactly(1))->method('disconnect');
 
-        $pubsub = new PubSubContext($client, array('subscribe' => 'channel:foo'));
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
         $connection->expects($this->never())->method('writeCommand');
 
-        $pubsub->closeContext(true);
+        $pubsub->stop(true);
     }
 
     /**
      * @group disconnected
      */
-    public function testClosingContextWithFalseSendsUnsubscriptions()
+    public function testStoppingConsumerWithFalseSendsUnsubscriptions()
     {
         $profile = ServerProfile::get(REDIS_SERVER_VERSION);
         $classUnsubscribe = $profile->getCommandClass('unsubscribe');
@@ -119,7 +120,7 @@ class PubSubContextTest extends StandardTestCase
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
 
         $options = array('subscribe' => 'channel:foo', 'psubscribe' => 'channels:*');
-        $pubsub = new PubSubContext($client, $options);
+        $pubsub = new PubSubConsumer($client, $options);
 
         $connection->expects($this->exactly(2))
                    ->method('writeCommand')
@@ -128,7 +129,7 @@ class PubSubContextTest extends StandardTestCase
                        $this->isInstanceOf($classPunsubscribe)
                    ));
 
-        $pubsub->closeContext(false);
+        $pubsub->stop(false);
     }
 
     /**
@@ -139,7 +140,7 @@ class PubSubContextTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
 
-        $pubsub = new PubSubContext($client);
+        $pubsub = new PubSubConsumer($client);
 
         $this->assertFalse($pubsub->valid());
         $this->assertNull($pubsub->next());
@@ -156,7 +157,7 @@ class PubSubContextTest extends StandardTestCase
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client, array('subscribe' => 'channel:foo'));
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
         $message = $pubsub->current();
         $this->assertSame('message', $message->kind);
@@ -175,7 +176,7 @@ class PubSubContextTest extends StandardTestCase
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client, array('psubscribe' => 'channel:*'));
+        $pubsub = new PubSubConsumer($client, array('psubscribe' => 'channel:*'));
 
         $message = $pubsub->current();
         $this->assertSame('pmessage', $message->kind);
@@ -195,7 +196,7 @@ class PubSubContextTest extends StandardTestCase
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client, array('subscribe' => 'channel:foo'));
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
         $message = $pubsub->current();
         $this->assertSame('subscribe', $message->kind);
@@ -214,7 +215,7 @@ class PubSubContextTest extends StandardTestCase
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client, array('subscribe' => 'channel:foo'));
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
         $message = $pubsub->current();
         $this->assertSame('unsubscribe', $message->kind);
@@ -225,7 +226,7 @@ class PubSubContextTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testUnsubscriptionMessageWithZeroChannelCountInvalidatesContext()
+    public function testUnsubscriptionMessageWithZeroChannelCountInvalidatesConsumer()
     {
         $rawmessage = array('unsubscribe', 'channel:foo', 0);
 
@@ -233,7 +234,7 @@ class PubSubContextTest extends StandardTestCase
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client, array('subscribe' => 'channel:foo'));
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
         $this->assertTrue($pubsub->valid());
 
@@ -253,7 +254,7 @@ class PubSubContextTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = new Client($connection);
-        $pubsub = new PubSubContext($client);
+        $pubsub = new PubSubConsumer($client);
 
         $this->assertSame($client, $pubsub->getClient());
     }
@@ -284,7 +285,7 @@ class PubSubContextTest extends StandardTestCase
         $consumer = new Client($parameters, $options);
         $consumer->connect();
 
-        $pubsub = new PubSubContext($consumer);
+        $pubsub = new PubSubConsumer($consumer);
         $pubsub->subscribe('channel:foo');
 
         $producer->publish('channel:foo', 'message1');
@@ -297,7 +298,7 @@ class PubSubContextTest extends StandardTestCase
             }
             $messages[] = ($payload = $message->payload);
             if ($payload === 'QUIT') {
-                $pubsub->closeContext();
+                $pubsub->stop();
             }
         }
 

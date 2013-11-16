@@ -22,7 +22,7 @@ use Predis\Connection\AggregatedConnectionInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PubSubContext extends AbstractPubSubContext
+class Consumer extends AbstractConsumer
 {
     private $client;
     private $options;
@@ -60,13 +60,17 @@ class PubSubContext extends AbstractPubSubContext
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a PUB/SUB context when using aggregated connections');
+            throw new NotSupportedException(
+                'Cannot initialize a PUB/SUB consumer when using aggregated connections'
+            );
         }
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
 
         if ($client->getProfile()->supportsCommands($commands) === false) {
-            throw new NotSupportedException('The current profile does not support PUB/SUB related commands');
+            throw new NotSupportedException(
+                'The current profile does not support PUB/SUB related commands'
+            );
         }
     }
 
@@ -132,8 +136,9 @@ class PubSubContext extends AbstractPubSubContext
                 );
 
             default:
-                $message = "Received an unknown message type {$response[0]} inside of a pubsub context";
-                throw new ClientException($message);
+                throw new ClientException(
+                    "Received an unknown message type {$response[0]} inside PUB/SUB"
+                );
         }
     }
 }

@@ -17,7 +17,7 @@ require 'SharedConfigurations.php';
 // Create a client and disable r/w timeout on the socket
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 
-// Initialize a new pubsub context
+// Initialize a new pubsub consumer.
 $pubsub = $client->pubSubLoop();
 
 // Subscribe to your channels
@@ -49,7 +49,7 @@ foreach ($pubsub as $message) {
     }
 }
 
-// Always unset the pubsub context instance when you are done! The
+// Always unset the pubsub consumer instance when you are done! The
 // class destructor will take care of cleanups and prevent protocol
 // desynchronizations between the client and the server.
 unset($pubsub);

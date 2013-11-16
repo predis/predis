@@ -11,6 +11,7 @@
 
 namespace Predis\PubSub;
 
+use InvalidArgumentException;
 use Predis\ClientInterface;
 
 /**
@@ -21,7 +22,7 @@ use Predis\ClientInterface;
  */
 class DispatcherLoop
 {
-    private $pubSubContext;
+    private $pubsub;
 
     protected $callbacks;
     protected $defaultCallback;
@@ -33,7 +34,7 @@ class DispatcherLoop
     public function __construct(ClientInterface $client)
     {
         $this->callbacks = array();
-        $this->pubSubContext = $client->pubSubLoop();
+        $this->pubsub = $client->pubSubLoop();
     }
 
     /**
@@ -44,18 +45,18 @@ class DispatcherLoop
     protected function validateCallback($callable)
     {
         if (!is_callable($callable)) {
-            throw new \InvalidArgumentException("A valid callable object must be provided");
+            throw new InvalidArgumentException("A valid callable object must be provided");
         }
     }
 
     /**
      * Returns the underlying Publish / Subscribe context.
      *
-     * @return PubSubContext
+     * @return Consumer
      */
-    public function getPubSubContext()
+    public function getPubSubConsumer()
     {
-        return $this->pubSubContext;
+        return $this->pubsub;
     }
 
     /**
@@ -99,7 +100,7 @@ class DispatcherLoop
 
         $this->validateCallback($callback);
         $this->callbacks[$callbackName] = $callback;
-        $this->pubSubContext->subscribe($channel);
+        $this->pubsub->subscribe($channel);
     }
 
     /**
@@ -113,7 +114,7 @@ class DispatcherLoop
 
         if (isset($this->callbacks[$callbackName])) {
             unset($this->callbacks[$callbackName]);
-            $this->pubSubContext->unsubscribe($channel);
+            $this->pubsub->unsubscribe($channel);
         }
     }
 
@@ -122,10 +123,10 @@ class DispatcherLoop
      */
     public function run()
     {
-        foreach ($this->pubSubContext as $message) {
+        foreach ($this->pubsub as $message) {
             $kind = $message->kind;
 
-            if ($kind !== PubSubContext::MESSAGE && $kind !== PubSubContext::PMESSAGE) {
+            if ($kind !== Consumer::MESSAGE && $kind !== Consumer::PMESSAGE) {
                 if (isset($this->subscriptionCallback)) {
                     $callback = $this->subscriptionCallback;
                     call_user_func($callback, $message);
@@ -149,7 +150,7 @@ class DispatcherLoop
      */
     public function stop()
     {
-        $this->pubSubContext->closeContext();
+        $this->pubsub->stop();
     }
 
     /**
@@ -159,7 +160,7 @@ class DispatcherLoop
      */
     protected function getPrefixKeys()
     {
-        $options = $this->pubSubContext->getClient()->getOptions();
+        $options = $this->pubsub->getClient()->getOptions();
 
         if (isset($options->prefix)) {
             return $options->prefix->getPrefix();
