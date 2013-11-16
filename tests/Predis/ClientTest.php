@@ -568,28 +568,22 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithoutArgumentsReturnsPipelineContext()
+    public function testPipelineWithoutArgumentsReturnsPipeline()
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $client->pipeline());
+        $this->assertInstanceOf('Predis\Pipeline\Pipeline', $client->pipeline());
     }
 
     /**
      * @group disconnected
      */
-    public function testPipelineWithArrayReturnsPipelineContextWithOptions()
+    public function testPipelineWithArrayReturnsPipeline()
     {
         $client = new Client();
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
+        $options = array();
 
-        $options = array('executor' => $executor);
-        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline($options));
-        $this->assertSame($executor, $pipeline->getExecutor());
-
-        $options = array('executor' => function ($client, $options) use ($executor) { return $executor; });
-        $this->assertInstanceOf('Predis\Pipeline\PipelineContext', $pipeline = $client->pipeline($options));
-        $this->assertSame($executor, $pipeline->getExecutor());
+        $this->assertInstanceOf('Predis\Pipeline\Pipeline', $client->pipeline($options));
     }
 
     /**
@@ -600,36 +594,10 @@ class ClientTest extends StandardTestCase
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Pipeline\PipelineContext'));
+                 ->with($this->isInstanceOf('Predis\Pipeline\Pipeline'));
 
         $client = new Client();
         $client->pipeline($callable);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPipelineWithArrayAndCallableExecutesPipelineWithOptions()
-    {
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $options = array('executor' => $executor);
-
-        $test = $this;
-        $mockCallback = function ($pipeline) use ($executor, $test) {
-            $reflection = new \ReflectionProperty($pipeline, 'executor');
-            $reflection->setAccessible(true);
-
-            $test->assertSame($executor, $reflection->getValue($pipeline));
-        };
-
-        $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Pipeline\PipelineContext'))
-                 ->will($this->returnCallback($mockCallback));
-
-        $client = new Client();
-        $client->pipeline($options, $callable);
     }
 
     /**

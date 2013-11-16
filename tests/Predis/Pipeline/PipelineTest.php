@@ -16,34 +16,22 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\Profile\ServerProfile;
+use Predis\Response;
 
 /**
  *
  */
-class PipelineContextTest extends StandardTestCase
+class PipelineTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testConstructorWithoutOptions()
+    public function testConstructor()
     {
         $client = new Client();
-        $pipeline = new PipelineContext($client);
+        $pipeline = new Pipeline($client);
 
         $this->assertSame($client, $pipeline->getClient());
-        $this->assertInstanceOf('Predis\Pipeline\StandardExecutor', $pipeline->getExecutor());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testConstructorWithExecutorArgument()
-    {
-        $client = new Client();
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-
-        $pipeline = new PipelineContext($client, $executor);
-        $this->assertSame($executor, $pipeline->getExecutor());
     }
 
     /**
@@ -51,10 +39,11 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testCallDoesNotSendCommandsWithoutExecute()
     {
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $executor->expects($this->never())->method('executor');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('readResponse');
 
-        $pipeline = new PipelineContext(new Client(), $executor);
+        $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->echo('one');
         $pipeline->echo('two');
@@ -66,13 +55,77 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testCallReturnsPipelineForFluentInterface()
     {
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $executor->expects($this->never())->method('executor');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('readResponse');
 
-        $pipeline = new PipelineContext(new Client(), $executor);
+        $pipeline = new Pipeline(new Client($connection));
 
         $this->assertSame($pipeline, $pipeline->echo('one'));
         $this->assertSame($pipeline, $pipeline->echo('one')->echo('two')->echo('three'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDoesNotParseComplexResponseObjects()
+    {
+        $object = $this->getMock('Predis\Response\ObjectInterface');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('readResponse')
+                   ->will($this->returnValue($object));
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $pipeline->ping();
+
+        $this->assertSame(array($object), $pipeline->execute());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\Response\ServerException
+     * @expectedExceptionMessage ERR Test error
+     */
+    public function testThrowsServerExceptionOnResponseErrorByDefault()
+    {
+        $error = new Response\Error('ERR Test error');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('readResponse')
+                   ->will($this->returnValue($error));
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $pipeline->execute();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
+    {
+        $error = $this->getMock('Predis\Response\ErrorInterface');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->exactly(2))
+                   ->method('readResponse')
+                   ->will($this->returnValue($error));
+
+        $client = new Client($connection, array('exceptions' => false));
+
+        $pipeline = new Pipeline($client);
+
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $this->assertSame(array($error, $error), $pipeline->execute());
     }
 
     /**
@@ -82,10 +135,11 @@ class PipelineContextTest extends StandardTestCase
     {
         $profile = ServerProfile::getDefault();
 
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $executor->expects($this->never())->method('executor');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('readResponse');
 
-        $pipeline = new PipelineContext(new Client(), $executor);
+        $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->executeCommand($profile->createCommand('echo', array('one')));
         $pipeline->executeCommand($profile->createCommand('echo', array('two')));
@@ -97,10 +151,11 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteWithEmptyBuffer()
     {
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $executor->expects($this->never())->method('executor');
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('readResponse');
 
-        $pipeline = new PipelineContext(new Client(), $executor);
+        $pipeline = new Pipeline(new Client($connection));
 
         $this->assertSame(array(), $pipeline->execute());
     }
@@ -117,7 +172,7 @@ class PipelineContextTest extends StandardTestCase
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
 
-        $pipeline = new PipelineContext(new Client($connection));
+        $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->echo('one');
         $pipeline->echo('two');
@@ -133,10 +188,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testFlushWithFalseArgumentDiscardsBuffer()
     {
-        $executor = $this->getMock('Predis\Pipeline\PipelineExecutorInterface');
-        $executor->expects($this->never())->method('executor');
-
-        $pipeline = new PipelineContext(new Client(), $executor);
+        $pipeline = new Pipeline(new Client());
 
         $pipeline->echo('one');
         $pipeline->echo('two');
@@ -159,7 +211,7 @@ class PipelineContextTest extends StandardTestCase
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
 
-        $pipeline = new PipelineContext(new Client($connection));
+        $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->echo('one');
         $pipeline->echo('two');
@@ -173,10 +225,34 @@ class PipelineContextTest extends StandardTestCase
     /**
      * @group disconnected
      */
+    public function testSwitchesToMasterWithReplicationConnection()
+    {
+        $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('switchTo')
+                   ->with('master');
+        $connection->expects($this->exactly(3))
+                   ->method('writeCommand');
+        $connection->expects($this->exactly(3))
+                   ->method('readResponse')
+                   ->will($this->returnValue('PONG'));
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $pipeline->ping();
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $this->assertSame(array(true, true, true), $pipeline->execute());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testExecuteAcceptsCallableArgument()
     {
         $test = $this;
-        $pipeline = new PipelineContext(new Client());
+        $pipeline = new Pipeline(new Client());
 
         $callable = function ($pipe) use ($test, $pipeline) {
             $test->assertSame($pipeline, $pipe);
@@ -194,7 +270,7 @@ class PipelineContextTest extends StandardTestCase
     {
         $noncallable = new \stdClass();
 
-        $pipeline = new PipelineContext(new Client());
+        $pipeline = new Pipeline(new Client());
         $pipeline->execute($noncallable);
     }
 
@@ -204,7 +280,7 @@ class PipelineContextTest extends StandardTestCase
      */
     public function testExecuteInsideCallableArgumentThrowsException()
     {
-        $pipeline = new PipelineContext(new Client());
+        $pipeline = new Pipeline(new Client());
 
         $pipeline->execute(function ($pipe) {
             $pipe->execute();
@@ -223,7 +299,7 @@ class PipelineContextTest extends StandardTestCase
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
 
-        $pipeline = new PipelineContext(new Client($connection));
+        $pipeline = new Pipeline(new Client($connection));
 
         $replies = $pipeline->execute(function ($pipe) {
             $pipe->echo('one');
@@ -244,7 +320,7 @@ class PipelineContextTest extends StandardTestCase
         $connection->expects($this->never())->method('writeCommand');
         $connection->expects($this->never())->method('readResponse');
 
-        $pipeline = new PipelineContext(new Client($connection));
+        $pipeline = new Pipeline(new Client($connection));
 
         $exception = null;
         $replies = null;

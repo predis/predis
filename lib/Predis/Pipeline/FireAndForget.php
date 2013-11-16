@@ -16,33 +16,20 @@ use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
 
 /**
- * Implements a pipeline executor strategy that writes a list of commands to
- * the connection object but does not read back their replies.
+ * Command pipeline that writes commands to the servers but discards responses.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class FireAndForgetExecutor implements PipelineExecutorInterface
+class FireAndForget extends Pipeline
 {
     /**
-     * Allows the pipeline executor to perform operations on the
-     * connection before starting to execute the commands stored
-     * in the pipeline.
-     *
-     * @param ConnectionInterface $connection Connection instance.
+     * {@inheritdoc}
      */
-    protected function checkConnection(ConnectionInterface $connection)
+    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         if ($connection instanceof ReplicationConnectionInterface) {
             $connection->switchTo('master');
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function execute(ConnectionInterface $connection, SplQueue $commands)
-    {
-        $this->checkConnection($connection);
 
         while (!$commands->isEmpty()) {
             $connection->writeCommand($commands->dequeue());

@@ -11,8 +11,9 @@
 
 require 'SharedConfigurations.php';
 
-// When you have a whole set of consecutive commands to send to
-// a redis server, you can use a pipeline to improve performances.
+// When you have a whole set of consecutive commands to send to a redis server,
+// you can use a pipeline to dramatically improve performances. Pipelines can
+// greatly reduce the effects of network round-trips.
 
 $client = new Predis\Client($single_server);
 
