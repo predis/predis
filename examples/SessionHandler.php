@@ -21,7 +21,7 @@ if (!interface_exists('SessionHandlerInterface')) {
 $client = new Predis\Client($single_server, array('prefix' => 'sessions:'));
 
 // Set `gc_maxlifetime` so that a session will be expired after 5 seconds since last access.
-$handler = new Predis\Session\SessionHandler($client, array('gc_maxlifetime' => 5));
+$handler = new Predis\Session\Handler($client, array('gc_maxlifetime' => 5));
 
 // Register our session handler (it uses `session_set_save_handler()` internally).
 $handler->register();

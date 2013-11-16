@@ -24,7 +24,7 @@ use Predis\ClientInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SessionHandler implements SessionHandlerInterface
+class Handler implements SessionHandlerInterface
 {
     protected $client;
     protected $ttl;
