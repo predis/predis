@@ -24,9 +24,7 @@ use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub\PubSubContext;
-use Predis\Response\ResponseErrorInterface;
-use Predis\Response\ResponseObjectInterface;
-use Predis\Response\ServerException;
+use Predis\Response;
 use Predis\Transaction\MultiExecContext;
 
 /**
@@ -283,8 +281,8 @@ class Client implements ClientInterface
     {
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof ResponseObjectInterface) {
-            if ($response instanceof ResponseErrorInterface) {
+        if ($response instanceof Response\ObjectInterface) {
+            if ($response instanceof Response\ErrorInterface) {
                 $response = $this->onResponseError($command, $response);
             }
 
@@ -298,10 +296,10 @@ class Client implements ClientInterface
      * Handles -ERR responses returned by Redis.
      *
      * @param CommandInterface $command Redis command that generated the error.
-     * @param ResponseErrorInterface $response Instance of the error response.
+     * @param Response\ErrorInterface $response Instance of the error response.
      * @return mixed
      */
-    protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
+    protected function onResponseError(CommandInterface $command, Response\ErrorInterface $response)
     {
         if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
@@ -309,7 +307,7 @@ class Client implements ClientInterface
 
             $response = $this->executeCommand($eval);
 
-            if (!$response instanceof ResponseObjectInterface) {
+            if (!$response instanceof Response\ObjectInterface) {
                 $response = $command->parseResponse($response);
             }
 
@@ -317,7 +315,7 @@ class Client implements ClientInterface
         }
 
         if ($this->options->exceptions) {
-            throw new ServerException($response->getMessage());
+            throw new Response\ServerException($response->getMessage());
         }
 
         return $response;

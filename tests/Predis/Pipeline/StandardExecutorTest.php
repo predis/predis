@@ -15,8 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
 use Predis\Profile\ServerProfile;
-use Predis\Response\ResponseError;
-use Predis\Response\ResponseObjectInterface;
+use Predis\Response;
 
 /**
  *
@@ -74,7 +73,7 @@ class StandardExecutorTest extends StandardTestCase
     public function testExecutorDoesNotParseResponseObjects()
     {
         $executor = new StandardExecutor();
-        $response = $this->getMock('Predis\Response\ResponseObjectInterface');
+        $response = $this->getMock('Predis\Response\ObjectInterface');
 
         $this->simpleResponseObjectTest($executor, $response);
     }
@@ -85,7 +84,7 @@ class StandardExecutorTest extends StandardTestCase
     public function testExecutorCanReturnRedisErrors()
     {
         $executor = new StandardExecutor(false);
-        $response = $this->getMock('Predis\Response\ResponseErrorInterface');
+        $response = $this->getMock('Predis\Response\ErrorInterface');
 
         $this->simpleResponseObjectTest($executor, $response);
     }
@@ -99,7 +98,7 @@ class StandardExecutorTest extends StandardTestCase
     {
         $executor = new StandardExecutor(true);
         $pipeline = $this->getCommandsQueue();
-        $error = new ResponseError('ERR Test error');
+        $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
@@ -114,12 +113,12 @@ class StandardExecutorTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Executes a test for the Predis\Response\ResponseObjectInterface type.
+     * Executes a test for the Predis\Response\ObjectInterface type.
      *
      * @param PipelineExecutorInterface $executor
      * @param ResponseObjectInterface $response
      */
-    protected function simpleResponseObjectTest(PipelineExecutorInterface $executor, ResponseObjectInterface $response)
+    protected function simpleResponseObjectTest(PipelineExecutorInterface $executor, Response\ObjectInterface $response)
     {
         $pipeline = new SplQueue();
 

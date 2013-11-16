@@ -377,7 +377,7 @@ class PipelineContextTest extends StandardTestCase
         });
 
         $this->assertTrue($results[0]);
-        $this->assertInstanceOf('Predis\Response\ResponseError', $results[1]);
+        $this->assertInstanceOf('Predis\Response\Error', $results[1]);
         $this->assertSame('bar', $results[2]);
     }
 

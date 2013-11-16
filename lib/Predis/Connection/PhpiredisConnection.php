@@ -13,8 +13,7 @@ namespace Predis\Connection;
 
 use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
-use Predis\Response\ResponseError;
-use Predis\Response\ResponseQueued;
+use Predis\Response;
 
 /**
  * This class provides the implementation of a Predis connection that uses the
@@ -122,7 +121,7 @@ class PhpiredisConnection extends AbstractConnection
                     return true;
 
                 case 'QUEUED':
-                    return new ResponseQueued();
+                    return new Response\StatusQueued();
 
                 default:
                     return $payload;
@@ -139,7 +138,7 @@ class PhpiredisConnection extends AbstractConnection
     private function getErrorHandler()
     {
         return function ($errorMessage) {
-            return new ResponseError($errorMessage);
+            return new Response\Error($errorMessage);
         };
     }
 

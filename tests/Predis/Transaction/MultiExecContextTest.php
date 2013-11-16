@@ -15,8 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\Command\CommandInterface;
-use Predis\Response\ResponseQueued;
-use Predis\Response\ServerException;
+use Predis\Response;
 
 /**
  * @group realm-transaction
@@ -462,7 +461,7 @@ class MultiExecContextTest extends StandardTestCase
                 $tx->echo('ERR Invalid operation');
                 $tx->get('foo');
             });
-        } catch (ServerException $ex) {
+        } catch (Response\ServerException $ex) {
             $tx->discard();
         }
 
@@ -510,11 +509,11 @@ class MultiExecContextTest extends StandardTestCase
                 $tx->lpush('foo', 'bar');
                 $tx->set('foo', $value);
             });
-        } catch (ServerException $ex) {
+        } catch (Response\ServerException $ex) {
             $exception = $ex;
         }
 
-        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ErrorInterface', $exception);
         $this->assertSame($value, $client->get('foo'));
     }
 
@@ -532,7 +531,7 @@ class MultiExecContextTest extends StandardTestCase
         });
 
         $this->assertTrue($replies[0]);
-        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $replies[1]);
+        $this->assertInstanceOf('Predis\Response\ErrorInterface', $replies[1]);
         $this->assertSame('foobar', $replies[2]);
     }
 
@@ -685,21 +684,21 @@ class MultiExecContextTest extends StandardTestCase
             switch ($cmd) {
                 case 'WATCH':
                     if ($multi) {
-                        throw new ServerException("ERR $cmd inside MULTI is not allowed");
+                        throw new Response\ServerException("ERR $cmd inside MULTI is not allowed");
                     }
 
                     return $watch = true;
 
                 case 'MULTI':
                     if ($multi) {
-                        throw new ServerException("ERR MULTI calls can not be nested");
+                        throw new Response\ServerException("ERR MULTI calls can not be nested");
                     }
 
                     return $multi = true;
 
                 case 'EXEC':
                     if (!$multi) {
-                        throw new ServerException("ERR $cmd without MULTI");
+                        throw new Response\ServerException("ERR $cmd without MULTI");
                     }
 
                     $watch = $multi = false;
@@ -714,7 +713,7 @@ class MultiExecContextTest extends StandardTestCase
 
                 case 'DISCARD':
                     if (!$multi) {
-                        throw new ServerException("ERR $cmd without MULTI");
+                        throw new Response\ServerException("ERR $cmd without MULTI");
                     }
 
                     $watch = $multi = false;
@@ -724,20 +723,20 @@ class MultiExecContextTest extends StandardTestCase
                 case 'ECHO':
                     @list($trigger) = $command->getArguments();
                     if (strpos($trigger, 'ERR ') === 0) {
-                        throw new ServerException($trigger);
+                        throw new Response\ServerException($trigger);
                     }
 
                     if ($trigger === '!!ABORT!!' && $multi) {
                         $abort = true;
                     }
 
-                    return new ResponseQueued();
+                    return new Response\StatusQueued();
 
                 case 'UNWATCH':
                     $watch = false;
 
                 default:
-                    return $multi ? new ResponseQueued() : 'DUMMY_REPLY';
+                    return $multi ? new Response\StatusQueued() : 'DUMMY_REPLY';
             }
         };
     }

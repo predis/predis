@@ -18,7 +18,7 @@ use Predis\Connection\SingleConnectionInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiBulkResponseSimple extends MultiBulkResponse
+class MultiBulk extends MultiBulkIterator
 {
     private $connection;
 
@@ -79,10 +79,10 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      * Returns an iterator that reads the multi-bulk response as
      * list of tuples.
      *
-     * @return MultiBulkResponseTuple
+     * @return MultiBulkTuple
      */
     public function asTuple()
     {
-        return new MultiBulkResponseTuple($this);
+        return new MultiBulkTuple($this);
     }
 }

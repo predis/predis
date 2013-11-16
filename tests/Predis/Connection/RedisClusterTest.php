@@ -14,7 +14,7 @@ namespace Predis\Connection;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Profile\ServerProfile;
-use Predis\Response\ResponseError;
+use Predis\Response;
 
 /**
  *
@@ -423,7 +423,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testAskResponseWithConnectionInPool()
     {
-        $askResponse = new ResponseError('ASK 1970 127.0.0.1:6380');
+        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6380');
 
         $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
@@ -456,7 +456,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testAskResponseWithConnectionNotInPool()
     {
-        $askResponse = new ResponseError('ASK 1970 127.0.0.1:6381');
+        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
 
         $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
@@ -496,7 +496,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testMovedResponseWithConnectionInPool()
     {
-        $movedResponse = new ResponseError('MOVED 1970 127.0.0.1:6380');
+        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');
 
         $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 
@@ -530,7 +530,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testMovedResponseWithConnectionNotInPool()
     {
-        $movedResponse = new ResponseError('MOVED 1970 127.0.0.1:6381');
+        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
 
         $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
 

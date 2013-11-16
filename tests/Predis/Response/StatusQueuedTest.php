@@ -16,16 +16,16 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseQueuedTest extends StandardTestCase
+class StatusQueuedTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testResponseQueuedClass()
     {
-        $queued = new ResponseQueued();
+        $queued = new StatusQueued();
 
-        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $queued);
+        $this->assertInstanceOf('Predis\Response\ObjectInterface', $queued);
     }
 
     /**
@@ -33,7 +33,7 @@ class ResponseQueuedTest extends StandardTestCase
      */
     public function testToString()
     {
-        $queued = new ResponseQueued();
+        $queued = new StatusQueued();
 
         $this->assertEquals('QUEUED', (string) $queued);
     }
@@ -43,7 +43,7 @@ class ResponseQueuedTest extends StandardTestCase
      */
     public function testQueuedProperty()
     {
-        $queued = new ResponseQueued();
+        $queued = new StatusQueued();
 
         $this->assertTrue(isset($queued->queued));
         $this->assertTrue($queued->queued);

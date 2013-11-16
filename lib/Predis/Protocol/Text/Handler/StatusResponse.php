@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text\Handler;
 
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Response\ResponseQueued;
+use Predis\Response;
 
 /**
  * Handler for the status response type in the standard Redis wire protocol.
@@ -34,7 +34,7 @@ class StatusResponse implements ResponseHandlerInterface
                 return true;
 
             case 'QUEUED':
-                return new ResponseQueued();
+                return new Response\StatusQueued();
 
             default:
                 return $status;

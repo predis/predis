@@ -38,8 +38,8 @@ class ServerExceptionTest extends StandardTestCase
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertInstanceOf('Predis\Response\ServerException', $exception);
-        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $exception);
-        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ErrorInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ObjectInterface', $exception);
         $this->assertInstanceOf('Predis\PredisException', $exception);
     }
 
@@ -56,12 +56,12 @@ class ServerExceptionTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testToResponseError()
+    public function testToErrorResponse()
     {
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
-        $error = $exception->toResponseError();
+        $error = $exception->toErrorResponse();
 
-        $this->assertInstanceOf('Predis\Response\ResponseError', $error);
+        $this->assertInstanceOf('Predis\Response\Error', $error);
 
         $this->assertEquals($exception->getMessage(), $error->getMessage());
         $this->assertEquals($exception->getErrorType(), $error->getErrorType());

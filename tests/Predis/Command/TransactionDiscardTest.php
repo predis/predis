@@ -63,7 +63,7 @@ class TransactionDiscardTest extends CommandTestCase
 
         $redis->multi();
 
-        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis->set('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->set('foo', 'bar'));
         $this->assertTrue($redis->discard());
         $this->assertFalse($redis->exists('foo'));
     }

@@ -12,8 +12,7 @@
 namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
-use Predis\Response\ResponseError;
-use Predis\Response\ResponseQueued;
+use Predis\Response;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -190,7 +189,7 @@ class StreamConnection extends AbstractConnection
                         return true;
 
                     case 'QUEUED':
-                        return new ResponseQueued();
+                        return new Response\StatusQueued();
 
                     default:
                         return $payload;
@@ -237,7 +236,7 @@ class StreamConnection extends AbstractConnection
                 return (int) $payload;
 
             case '-':    // error
-                return new ResponseError($payload);
+                return new Response\Error($payload);
 
             default:
                 $this->onProtocolError("Unknown prefix: '$prefix'");

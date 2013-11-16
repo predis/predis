@@ -17,8 +17,7 @@ use Predis\Connection\ConnectionFactory;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\PredisCluster;
 use Predis\Profile\ServerProfile;
-use Predis\Response\ResponseError;
-use Predis\Response\ResponseQueued;
+use Predis\Response;
 
 /**
  *
@@ -406,7 +405,7 @@ class ClientTest extends StandardTestCase
     public function testExecuteCommandThrowsExceptionOnRedisError()
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
-        $expectedResponse = new ResponseError('ERR Operation against a key holding the wrong kind of value');
+        $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection= $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -423,7 +422,7 @@ class ClientTest extends StandardTestCase
     public function testExecuteCommandReturnsErrorResponseOnRedisError()
     {
         $ping = ServerProfile::getDefault()->createCommand('ping', array());
-        $expectedResponse = new ResponseError('ERR Operation against a key holding the wrong kind of value');
+        $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection= $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -468,7 +467,7 @@ class ClientTest extends StandardTestCase
      */
     public function testCallingRedisCommandThrowsExceptionOnServerError()
     {
-        $expectedResponse = new ResponseError('ERR Operation against a key holding the wrong kind of value');
+        $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -485,7 +484,7 @@ class ClientTest extends StandardTestCase
      */
     public function testCallingRedisCommandReturnsErrorResponseOnRedisError()
     {
-        $expectedResponse = new ResponseError('ERR Operation against a key holding the wrong kind of value');
+        $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -725,7 +724,7 @@ class ClientTest extends StandardTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->will($this->returnValue(new ResponseQueued()));
+                   ->will($this->returnValue(new Response\StatusQueued()));
 
         $txCallback = function ($tx) {
             $tx->ping();
@@ -769,7 +768,7 @@ class ClientTest extends StandardTestCase
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($command)
-                   ->will($this->returnValue(new ResponseError('NOSCRIPT')));
+                   ->will($this->returnValue(new Response\Error('NOSCRIPT')));
         $connection->expects($this->at(1))
                    ->method('executeCommand')
                    ->with($this->isInstanceOf('Predis\Command\ServerEval'))

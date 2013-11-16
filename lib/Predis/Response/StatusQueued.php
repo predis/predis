@@ -17,7 +17,7 @@ namespace Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseQueued implements ResponseObjectInterface
+class StatusQueued implements ObjectInterface
 {
     /**
      * Converts the object to its string representation.

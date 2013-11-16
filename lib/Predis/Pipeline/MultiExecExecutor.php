@@ -17,9 +17,7 @@ use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
 use Predis\Profile\ServerProfile;
 use Predis\Profile\ServerProfileInterface;
-use Predis\Response\ResponseErrorInterface;
-use Predis\Response\ResponseObjectInterface;
-use Predis\Response\ServerException;
+use Predis\Response;
 
 /**
  * Implements a pipeline executor that wraps the whole pipeline
@@ -72,11 +70,11 @@ class MultiExecExecutor implements PipelineExecutorInterface
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
 
-            if ($response instanceof ResponseErrorInterface) {
+            if ($response instanceof Response\ErrorInterface) {
                 $cmd = $this->profile->createCommand('discard');
                 $connection->executeCommand($cmd);
 
-                throw new ServerException($response->getMessage());
+                throw new Response\ServerException($response->getMessage());
             }
         }
 
@@ -110,7 +108,7 @@ class MultiExecExecutor implements PipelineExecutorInterface
             $command = $commands->dequeue();
             $response = $responses[$i];
 
-            if ($response instanceof ResponseObjectInterface) {
+            if ($response instanceof Response\ObjectInterface) {
                 $values[$i] = $response;
             } else {
                 $values[$i] = $command->parseResponse($response);

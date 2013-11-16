@@ -16,7 +16,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  *
  */
-class ResponseErrorTest extends StandardTestCase
+class ErrorTest extends StandardTestCase
 {
     const ERR_WRONG_KEY_TYPE = 'ERR Operation against a key holding the wrong kind of value';
 
@@ -25,10 +25,10 @@ class ResponseErrorTest extends StandardTestCase
      */
     public function testResponseErrorClass()
     {
-        $error = new ResponseError(self::ERR_WRONG_KEY_TYPE);
+        $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
-        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $error);
-        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $error);
+        $this->assertInstanceOf('Predis\Response\ErrorInterface', $error);
+        $this->assertInstanceOf('Predis\Response\ObjectInterface', $error);
     }
 
     /**
@@ -36,7 +36,7 @@ class ResponseErrorTest extends StandardTestCase
      */
     public function testErrorMessage()
     {
-        $error = new ResponseError(self::ERR_WRONG_KEY_TYPE);
+        $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertEquals(self::ERR_WRONG_KEY_TYPE, $error->getMessage());
     }
@@ -46,7 +46,7 @@ class ResponseErrorTest extends StandardTestCase
      */
     public function testErrorType()
     {
-        $exception = new ResponseError(self::ERR_WRONG_KEY_TYPE);
+        $exception = new Error(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertEquals('ERR', $exception->getErrorType());
     }
@@ -56,7 +56,7 @@ class ResponseErrorTest extends StandardTestCase
      */
     public function testToString()
     {
-        $error = new ResponseError(self::ERR_WRONG_KEY_TYPE);
+        $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertEquals(self::ERR_WRONG_KEY_TYPE, (string) $error);
     }

@@ -81,6 +81,6 @@ class TransactionUnwatchTest extends CommandTestCase
         $redis = $this->getClient();
 
         $redis->multi();
-        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis->unwatch());
+        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->unwatch());
     }
 }

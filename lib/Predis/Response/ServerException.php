@@ -18,7 +18,7 @@ use Predis\PredisException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerException extends PredisException implements ResponseErrorInterface
+class ServerException extends PredisException implements ErrorInterface
 {
     /**
      * Gets the type of the error returned by Redis.
@@ -33,12 +33,12 @@ class ServerException extends PredisException implements ResponseErrorInterface
     }
 
     /**
-     * Converts the exception to an instance of ResponseError.
+     * Converts the exception to an instance of Predis\Response\Error.
      *
-     * @return ResponseError
+     * @return Error
      */
-    public function toResponseError()
+    public function toErrorResponse()
     {
-        return new ResponseError($this->getMessage());
+        return new Error($this->getMessage());
     }
 }

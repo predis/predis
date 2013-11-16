@@ -219,7 +219,7 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection->writeCommand($profile->createCommand('multi'));
         $connection->writeCommand($profile->createCommand('ping'));
         $this->assertTrue($connection->read());
-        $this->assertInstanceOf('Predis\Response\ResponseQueued', $connection->read());
+        $this->assertInstanceOf('Predis\Response\StatusQueued', $connection->read());
     }
 
     /**
@@ -261,7 +261,7 @@ abstract class ConnectionTestCase extends StandardTestCase
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
         $connection->writeCommand($profile->createCommand('rpush', array('foo', 'baz')));
 
-        $this->assertInstanceOf('Predis\Response\ResponseError', $error = $connection->read());
+        $this->assertInstanceOf('Predis\Response\Error', $error = $connection->read());
         $this->assertRegExp('/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage());
     }
 
