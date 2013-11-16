@@ -11,73 +11,80 @@
 
 namespace Predis\Monitor;
 
+use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
 
 /**
- * Client-side abstraction of a Redis MONITOR context.
+ * Redis MONITOR consumer.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MonitorContext implements \Iterator
+class Consumer implements Iterator
 {
     private $client;
-    private $isValid;
+    private $valid;
     private $position;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the consumer.
      */
     public function __construct(ClientInterface $client)
     {
         $this->checkCapabilities($client);
         $this->client = $client;
-        $this->openContext();
+
+        $this->start();
     }
 
     /**
-     * Automatically closes the context when PHP's garbage collector kicks in.
+     * Automatically stops the consumer when PHP's garbage collector kicks in.
      */
     public function __destruct()
     {
-        $this->closeContext();
+        $this->stop();
     }
 
     /**
      * Checks if the passed client instance satisfies the required conditions
-     * needed to initialize a monitor context.
+     * needed to initialize a monitor consumer.
      *
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the consumer.
      */
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a monitor context when using aggregated connections');
+            throw new NotSupportedException(
+                'Cannot initialize a monitor consumer when using aggregated connections'
+            );
         }
+
         if ($client->getProfile()->supportsCommand('monitor') === false) {
-            throw new NotSupportedException('The current profile does not support the MONITOR command');
+            throw new NotSupportedException(
+                'The current profile does not support the MONITOR command'
+            );
         }
     }
 
     /**
-     * Initializes the context and sends the MONITOR command to the server.
+     * Initializes the consumer and sends the MONITOR command to the server.
      */
-    protected function openContext()
+    protected function start()
     {
-        $this->isValid = true;
+        $this->valid = true;
         $monitor = $this->client->createCommand('monitor');
         $this->client->executeCommand($monitor);
     }
 
     /**
-     * Closes the context. Internally this is done by disconnecting from server
+     * Stops the consumer. Internally this is done by disconnecting from server
      * since there is no way to terminate the stream initialized by MONITOR.
      */
-    public function closeContext()
+    public function stop()
     {
         $this->client->disconnect();
-        $this->isValid = false;
+        $this->valid = false;
     }
 
     /**
@@ -115,13 +122,13 @@ class MonitorContext implements \Iterator
     }
 
     /**
-     * Checks if the the context is still in a valid state to continue.
+     * Checks if the the consumer is still in a valid state to continue.
      *
      * @return Boolean
      */
     public function valid()
     {
-        return $this->isValid;
+        return $this->valid;
     }
 
     /**

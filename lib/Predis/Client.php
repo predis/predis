@@ -20,7 +20,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionParametersInterface;
-use Predis\Monitor\MonitorContext;
+use Predis\Monitor;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub;
@@ -451,12 +451,12 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a new monitor context and returns it.
+     * Creates a new monitor consumer and returns it.
      *
-     * @return MonitorContext
+     * @return Monitor\Consumer
      */
     public function monitor()
     {
-        return new MonitorContext($this);
+        return new Monitor\Consumer($this);
     }
 }

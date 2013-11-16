@@ -15,18 +15,19 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\Profile\ServerProfile;
+use Predis\Monitor\Consumer as MonitorConsumer;
 
 /**
  * @group realm-monitor
  */
-class MonitorContextTest extends StandardTestCase
+class ConsumerTest extends StandardTestCase
 {
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support the MONITOR command
      */
-    public function testMonitorContextRequireMonitorCommand()
+    public function testMonitorConsumerRequireMonitorCommand()
     {
         $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
         $profile->expects($this->once())
@@ -35,26 +36,26 @@ class MonitorContextTest extends StandardTestCase
                 ->will($this->returnValue(false));
 
         $client = new Client(null, array('profile' => $profile));
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
     }
 
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a monitor context when using aggregated connections
+     * @expectedExceptionMessage Cannot initialize a monitor consumer when using aggregated connections
      */
-    public function testMonitorContextDoesNotWorkOnClusters()
+    public function testMonitorConsumerDoesNotWorkOnClusters()
     {
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
 
         $client = new Client($cluster);
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
     }
 
     /**
      * @group disconnected
      */
-    public function testConstructorOpensContext()
+    public function testConstructorStartsConsumer()
     {
         $cmdMonitor = ServerProfile::getDefault()->createCommand('monitor');
 
@@ -69,7 +70,7 @@ class MonitorContextTest extends StandardTestCase
                ->method('executeCommand')
                ->with($cmdMonitor);
 
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
     }
 
     /**
@@ -78,28 +79,28 @@ class MonitorContextTest extends StandardTestCase
      *       but the reason is probably that the GC invokes __destruct() on monitor
      *       thus calling $client->disconnect() a second time at the end of the test.
      */
-    public function testClosingContextClosesConnection()
+    public function testStoppingConsumerClosesConnection()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
         $client->expects($this->exactly(2))->method('disconnect');
 
-        $monitor = new MonitorContext($client);
-        $monitor->closeContext();
+        $monitor = new MonitorConsumer($client);
+        $monitor->stop();
     }
 
     /**
      * @group disconnected
      */
-    public function testGarbageCollectorRunClosesContext()
+    public function testGarbageCollectorRunStopsConsumer()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
         $client->expects($this->once())->method('disconnect');
 
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
         unset($monitor);
     }
 
@@ -116,7 +117,7 @@ class MonitorContextTest extends StandardTestCase
                    ->will($this->returnValue($message));
 
         $client = new Client($connection);
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
 
         $payload = $monitor->current();
         $this->assertSame(1323367530, (int) $payload->timestamp);
@@ -139,7 +140,7 @@ class MonitorContextTest extends StandardTestCase
                    ->will($this->returnValue($message));
 
         $client = new Client($connection);
-        $monitor = new MonitorContext($client);
+        $monitor = new MonitorConsumer($client);
 
         $payload = $monitor->current();
         $this->assertSame(1323367530, (int) $payload->timestamp);
@@ -175,7 +176,7 @@ class MonitorContextTest extends StandardTestCase
         $consumer = new Client($parameters, $options);
         $consumer->connect();
 
-        $monitor = new MonitorContext($consumer);
+        $monitor = new MonitorConsumer($consumer);
 
         $producer->echo('message1');
         $producer->echo('message2');
@@ -185,7 +186,7 @@ class MonitorContextTest extends StandardTestCase
             if ($message->command == 'ECHO') {
                 $echoed[] = $arguments = trim($message->arguments, '"');
                 if ($arguments == 'QUIT') {
-                    $monitor->closeContext();
+                    $monitor->stop();
                 }
             }
         }
