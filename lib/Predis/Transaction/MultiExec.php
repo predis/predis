@@ -28,7 +28,7 @@ use Predis\Protocol\ProtocolException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiExecContext implements BasicClientInterface, ExecutableContextInterface
+class MultiExec implements BasicClientInterface, ExecutableContextInterface
 {
     const STATE_RESET       = 0;    // 0b00000
     const STATE_INITIALIZED = 1;    // 0b00001
@@ -45,8 +45,8 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     protected $commands;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
-     * @param array $options Options for the context initialization.
+     * @param ClientInterface $client Client instance used by the transaction.
+     * @param array $options Initialization options.
      */
     public function __construct(ClientInterface $client, Array $options = null)
     {
@@ -109,20 +109,24 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
 
     /**
      * Checks if the passed client instance satisfies the required conditions
-     * needed to initialize a transaction context.
+     * needed to initialize the transaction object.
      *
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the transaction object.
      */
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregatedConnectionInterface) {
-            throw new NotSupportedException('Cannot initialize a MULTI/EXEC context when using aggregated connections');
+            throw new NotSupportedException(
+                'Cannot initialize a MULTI/EXEC transaction when using aggregated connections'
+            );
         }
 
         $profile = $client->getProfile();
 
         if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
-            throw new NotSupportedException('The current profile does not support MULTI, EXEC and DISCARD');
+            throw new NotSupportedException(
+                'The current profile does not support MULTI, EXEC and DISCARD'
+            );
         }
 
         $this->canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
@@ -242,7 +246,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Finalizes the transaction on the server by executing MULTI on the server.
      *
-     * @return MultiExecContext
+     * @return MultiExec
      */
     public function multi()
     {
@@ -259,7 +263,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Executes UNWATCH.
      *
-     * @return MultiExecContext
+     * @return MultiExec
      */
     public function unwatch()
     {
@@ -274,7 +278,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
      * Resets a transaction by UNWATCHing the keys that are being WATCHed and
      * DISCARDing the pending commands that have been already sent to the server.
      *
-     * @return MultiExecContext
+     * @return MultiExec
      */
     public function discard()
     {
@@ -398,7 +402,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     }
 
     /**
-     * Passes the current transaction context to a callable block for execution.
+     * Passes the current transaction object to a callable block for execution.
      *
      * @param mixed $callable Callback.
      */

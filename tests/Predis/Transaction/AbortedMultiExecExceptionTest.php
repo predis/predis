@@ -26,7 +26,7 @@ class AbortedMultiExecExceptionTest extends StandardTestCase
     public function testExceptionClass()
     {
         $client = new Client();
-        $transaction = new MultiExecContext($client);
+        $transaction = new MultiExec($client);
         $exception = new AbortedMultiExecException($transaction, 'ABORTED');
 
         $this->assertInstanceOf('Predis\PredisException', $exception);

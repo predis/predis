@@ -25,7 +25,7 @@ use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub;
 use Predis\Response;
-use Predis\Transaction\MultiExecContext;
+use Predis\Transaction;
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -391,7 +391,7 @@ class Client implements ClientInterface
      * of a transaction executed inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return MultiExecContext|array
+     * @return Transaction\MultiExec|array
      */
     public function transaction(/* arguments */)
     {
@@ -403,11 +403,11 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return MultiExecContext|array
+     * @return Transaction\MultiExec|array
      */
     protected function createTransaction(Array $options = null, $callable = null)
     {
-        $transaction = new MultiExecContext($this, $options);
+        $transaction = new Transaction\MultiExec($this, $options);
 
         if (isset($callable)) {
             return $transaction->execute($callable);
