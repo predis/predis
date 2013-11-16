@@ -109,7 +109,7 @@ class StringIncrementByFloatTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnDecrementValueNotFloat()
@@ -121,7 +121,7 @@ class StringIncrementByFloatTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnKeyValueNotFloat()
@@ -134,7 +134,7 @@ class StringIncrementByFloatTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()

@@ -107,7 +107,7 @@ class KeyMoveTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR index out of range
      */
     public function testThrowsExceptionOnInvalidDatabases()

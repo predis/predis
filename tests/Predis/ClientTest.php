@@ -17,6 +17,8 @@ use Predis\Connection\ConnectionFactory;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\PredisCluster;
 use Predis\Profile\ServerProfile;
+use Predis\Response\ResponseError;
+use Predis\Response\ResponseQueued;
 
 /**
  *
@@ -398,7 +400,7 @@ class ClientTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testExecuteCommandThrowsExceptionOnRedisError()
@@ -461,7 +463,7 @@ class ClientTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testCallingRedisCommandThrowsExceptionOnServerError()

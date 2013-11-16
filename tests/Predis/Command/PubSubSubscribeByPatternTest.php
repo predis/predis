@@ -171,7 +171,7 @@ class PubSubSubscribeByPatternTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR only (P)SUBSCRIBE / (P)UNSUBSCRIBE / QUIT allowed in this context
      */
     public function testCannotSendOtherCommandsAfterPsubscribe()

@@ -108,7 +108,7 @@ class TransactionWatchTest extends CommandTestCase
 
         $this->assertTrue($redis1->watch('foo', 'hoge'));
         $this->assertTrue($redis1->multi());
-        $this->assertInstanceOf('Predis\ResponseQueued', $redis1->get('foo'));
+        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis1->get('foo'));
         $this->assertTrue($redis2->set('foo', 'hijacked'));
         $this->assertNull($redis1->exec());
         $this->assertSame('hijacked', $redis1->get('foo'));
@@ -124,7 +124,7 @@ class TransactionWatchTest extends CommandTestCase
 
         $this->assertTrue($redis1->watch('foo'));
         $this->assertTrue($redis1->multi());
-        $this->assertInstanceOf('Predis\ResponseQueued', $redis1->set('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis1->set('foo', 'bar'));
         $this->assertTrue($redis2->set('foo', 'hijacked'));
         $this->assertNull($redis1->exec());
         $this->assertSame('hijacked', $redis1->get('foo'));
@@ -132,7 +132,7 @@ class TransactionWatchTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR WATCH inside MULTI is not allowed
      */
     public function testThrowsExceptionWhenCallingInsideTransaction()

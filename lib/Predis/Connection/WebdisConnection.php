@@ -12,10 +12,10 @@
 namespace Predis\Connection;
 
 use Predis\NotSupportedException;
-use Predis\ResponseError;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionException;
 use Predis\Protocol\ProtocolException;
+use Predis\Response\ResponseError;
 
 /**
  * This class implements a Predis connection that actually talks with Webdis

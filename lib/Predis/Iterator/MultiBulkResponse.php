@@ -13,7 +13,7 @@ namespace Predis\Iterator;
 
 use Iterator;
 use Countable;
-use Predis\ResponseObjectInterface;
+use Predis\Response\ResponseObjectInterface;
 
 /**
  * Iterator that abstracts the access to multibulk responses allowing them to be

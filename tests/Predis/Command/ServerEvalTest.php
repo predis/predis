@@ -110,7 +110,7 @@ class ServerEvalTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      */
     public function testThrowsExceptionOnWrongNumberOfKeys()
     {
@@ -122,7 +122,7 @@ class ServerEvalTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidScript()
     {

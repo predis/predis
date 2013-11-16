@@ -187,7 +187,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @dataProvider invalidConnectionNameProvider
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
@@ -200,7 +200,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      */
     public function testThrowsExceptioOnWrongModifier()
     {
@@ -211,7 +211,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR No such client
      */
     public function testThrowsExceptionWhenKillingUnknownClient()

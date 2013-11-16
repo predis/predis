@@ -358,7 +358,7 @@ class PipelineContextTest extends StandardTestCase
             $exception = $ex;
         }
 
-        $this->assertInstanceOf('Predis\ServerException', $exception);
+        $this->assertInstanceOf('Predis\Response\ServerException', $exception);
         $this->assertTrue($client->exists('foo'));
         $this->assertTrue($client->exists('hoge'));
     }
@@ -377,7 +377,7 @@ class PipelineContextTest extends StandardTestCase
         });
 
         $this->assertTrue($results[0]);
-        $this->assertInstanceOf('Predis\ResponseError', $results[1]);
+        $this->assertInstanceOf('Predis\Response\ResponseError', $results[1]);
         $this->assertSame('bar', $results[2]);
     }
 

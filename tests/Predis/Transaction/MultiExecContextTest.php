@@ -14,9 +14,9 @@ namespace Predis\Transaction;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\ResponseQueued;
-use Predis\ServerException;
 use Predis\Command\CommandInterface;
+use Predis\Response\ResponseQueued;
+use Predis\Response\ServerException;
 
 /**
  * @group realm-transaction
@@ -514,7 +514,7 @@ class MultiExecContextTest extends StandardTestCase
             $exception = $ex;
         }
 
-        $this->assertInstanceOf('Predis\ResponseErrorInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $exception);
         $this->assertSame($value, $client->get('foo'));
     }
 
@@ -532,7 +532,7 @@ class MultiExecContextTest extends StandardTestCase
         });
 
         $this->assertTrue($replies[0]);
-        $this->assertInstanceOf('Predis\ResponseErrorInterface', $replies[1]);
+        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $replies[1]);
         $this->assertSame('foobar', $replies[2]);
     }
 

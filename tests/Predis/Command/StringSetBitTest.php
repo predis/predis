@@ -113,7 +113,7 @@ class StringSetBitTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit is not an integer or out of range
      */
     public function testThrowsExceptionOnInvalidBitValue()
@@ -123,7 +123,7 @@ class StringSetBitTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnNegativeOffset()
@@ -133,7 +133,7 @@ class StringSetBitTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnInvalidOffset()
@@ -143,7 +143,7 @@ class StringSetBitTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()

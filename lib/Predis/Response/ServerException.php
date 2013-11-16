@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
+
+use Predis\PredisException;
 
 /**
  * Exception class that identifies server-side Redis errors.

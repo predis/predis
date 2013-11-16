@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\ResponseQueued;
+use Predis\Response\ResponseQueued;
 
 /**
  *

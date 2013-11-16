@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -27,8 +27,8 @@ class ResponseErrorTest extends StandardTestCase
     {
         $error = new ResponseError(self::ERR_WRONG_KEY_TYPE);
 
-        $this->assertInstanceOf('Predis\ResponseErrorInterface', $error);
-        $this->assertInstanceOf('Predis\ResponseObjectInterface', $error);
+        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $error);
+        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $error);
     }
 
     /**

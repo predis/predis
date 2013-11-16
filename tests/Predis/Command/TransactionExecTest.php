@@ -102,7 +102,7 @@ class TransactionExecTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR EXEC without MULTI
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction()

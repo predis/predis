@@ -14,9 +14,9 @@ namespace Predis\Pipeline;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
-use Predis\ResponseError;
-use Predis\ResponseObjectInterface;
 use Predis\Profile\ServerProfile;
+use Predis\Response\ResponseError;
+use Predis\Response\ResponseObjectInterface;
 
 /**
  *
@@ -74,7 +74,7 @@ class StandardExecutorTest extends StandardTestCase
     public function testExecutorDoesNotParseResponseObjects()
     {
         $executor = new StandardExecutor();
-        $response = $this->getMock('Predis\ResponseObjectInterface');
+        $response = $this->getMock('Predis\Response\ResponseObjectInterface');
 
         $this->simpleResponseObjectTest($executor, $response);
     }
@@ -85,14 +85,14 @@ class StandardExecutorTest extends StandardTestCase
     public function testExecutorCanReturnRedisErrors()
     {
         $executor = new StandardExecutor(false);
-        $response = $this->getMock('Predis\ResponseErrorInterface');
+        $response = $this->getMock('Predis\Response\ResponseErrorInterface');
 
         $this->simpleResponseObjectTest($executor, $response);
     }
 
     /**
      * @group disconnected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testExecutorCanThrowExceptions()
@@ -114,7 +114,7 @@ class StandardExecutorTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Executes a test for the Predis\ResponseObjectInterface type.
+     * Executes a test for the Predis\Response\ResponseObjectInterface type.
      *
      * @param PipelineExecutorInterface $executor
      * @param ResponseObjectInterface $response

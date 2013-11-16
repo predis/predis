@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
 
 /**
  * Represents a complex reply object from Redis.
