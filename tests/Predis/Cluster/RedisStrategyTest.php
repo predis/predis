@@ -18,14 +18,14 @@ use Predis\Profile\ServerProfile;
 /**
  *
  */
-class RedisClusterHashStrategyTest extends StandardTestCase
+class RedisStrategyTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
     public function testDoesNotSupportKeyTags()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
 
         $this->assertSame(35910, $strategy->getKeyHash('{foo}'));
         $this->assertSame(60032, $strategy->getKeyHash('{foo}:bar'));
@@ -38,7 +38,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
 
         $this->assertSame($this->getExpectedCommands(), $strategy->getSupportedCommands());
     }
@@ -48,7 +48,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testReturnsNullOnUnsupportedCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $command = ServerProfile::getDevelopment()->createCommand('ping');
 
         $this->assertNull($strategy->getHash($command));
@@ -59,7 +59,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testFirstKeyCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
@@ -74,7 +74,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testAllKeysCommandsWithOneKey()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
@@ -89,7 +89,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testAllKeysCommandsWithMoreKeys()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key1', 'key2');
 
@@ -104,7 +104,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testInterleavedKeysCommandsWithOneKey()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'value1');
 
@@ -119,7 +119,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testInterleavedKeysCommandsWithMoreKeys()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'value1', 'key:2', 'value2');
 
@@ -134,7 +134,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBlockingListCommandsWithOneKey()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 10);
 
@@ -149,7 +149,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBlockingListCommandsWithMoreKeys()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key:1', 'key:2', 10);
 
@@ -164,7 +164,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForScriptCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('%SCRIPT%', 1, 'key:1', 'value1');
 
@@ -179,7 +179,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForScriptedCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $arguments = array('key:1', 'value1');
 
         $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
@@ -199,7 +199,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testUnsettingCommandHandler()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $strategy->setCommandHandler('set');
@@ -217,7 +217,7 @@ class RedisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSettingCustomCommandHandler()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -237,13 +237,13 @@ class RedisClusterHashStrategyTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Creates the default hash strategy object.
+     * Creates the default cluster strategy object.
      *
-     * @return CommandHashStrategyInterface
+     * @return StrategyInterface
      */
-    protected function getHashStrategy()
+    protected function getClusterStrategy()
     {
-        $strategy = new RedisClusterHashStrategy();
+        $strategy = new RedisStrategy();
 
         return $strategy;
     }

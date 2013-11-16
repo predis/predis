@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 /**
  * This class implements an hashring-based distributor that uses the same
@@ -19,7 +19,7 @@ namespace Predis\Cluster\Distribution;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
-class KetamaPureRing extends HashRing
+class KetamaRing extends HashRing
 {
     const DEFAULT_REPLICAS = 160;
 

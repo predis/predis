@@ -9,13 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
+
+use Exception;
 
 /**
  * Exception class that identifies empty rings.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class EmptyRingException extends \Exception
+class EmptyRingException extends Exception
 {
 }

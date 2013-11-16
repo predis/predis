@@ -21,7 +21,7 @@ use Predis\Command\ScriptedCommand;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PredisClusterHashStrategy implements CommandHashStrategyInterface
+class PredisStrategy implements StrategyInterface
 {
     private $commands;
     private $hashGenerator;

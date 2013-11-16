@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -24,7 +24,7 @@ class EmptyRingExceptionTest extends StandardTestCase
     public function testExceptionMessage()
     {
         $message = 'Empty Ring';
-        $this->setExpectedException('Predis\Cluster\Distribution\EmptyRingException', $message);
+        $this->setExpectedException('Predis\Cluster\Distributor\EmptyRingException', $message);
 
         throw new EmptyRingException($message);
     }
