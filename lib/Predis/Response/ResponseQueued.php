@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
 
 /**
  * Represents a +QUEUED response returned by Redis as a reply to each command

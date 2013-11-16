@@ -12,9 +12,9 @@
 namespace Predis\Connection;
 
 use Predis\NotSupportedException;
-use Predis\ResponseError;
-use Predis\ResponseQueued;
 use Predis\Command\CommandInterface;
+use Predis\Response\ResponseError;
+use Predis\Response\ResponseQueued;
 
 /**
  * This class provides the implementation of a Predis connection that uses PHP's

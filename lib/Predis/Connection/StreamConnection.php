@@ -11,9 +11,10 @@
 
 namespace Predis\Connection;
 
-use Predis\ResponseError;
-use Predis\ResponseQueued;
 use Predis\Command\CommandInterface;
+use Predis\Response\ResponseError;
+use Predis\Response\ResponseQueued;
+
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
  * The connection parameters supported by this class are:

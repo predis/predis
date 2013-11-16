@@ -74,13 +74,13 @@ class TransactionMultiTest extends CommandTestCase
         $redis = $this->getClient();
 
         $this->assertTrue($redis->multi());
-        $this->assertInstanceOf('Predis\ResponseObjectInterface', $redis->echo('tx1'));
-        $this->assertInstanceOf('Predis\ResponseQueued', $redis->echo('tx2'));
+        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $redis->echo('tx1'));
+        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis->echo('tx2'));
     }
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR MULTI calls can not be nested
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction()

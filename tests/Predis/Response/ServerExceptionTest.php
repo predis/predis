@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -25,7 +25,7 @@ class ServerExceptionTest extends StandardTestCase
      */
     public function testExceptionMessage()
     {
-        $this->setExpectedException('Predis\ServerException', self::ERR_WRONG_KEY_TYPE);
+        $this->setExpectedException('Predis\Response\ServerException', self::ERR_WRONG_KEY_TYPE);
 
         throw new ServerException(self::ERR_WRONG_KEY_TYPE);
     }
@@ -37,9 +37,9 @@ class ServerExceptionTest extends StandardTestCase
     {
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
 
-        $this->assertInstanceOf('Predis\ServerException', $exception);
-        $this->assertInstanceOf('Predis\ResponseErrorInterface', $exception);
-        $this->assertInstanceOf('Predis\ResponseObjectInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ServerException', $exception);
+        $this->assertInstanceOf('Predis\Response\ResponseErrorInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $exception);
         $this->assertInstanceOf('Predis\PredisException', $exception);
     }
 
@@ -61,7 +61,7 @@ class ServerExceptionTest extends StandardTestCase
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
         $error = $exception->toResponseError();
 
-        $this->assertInstanceOf('Predis\ResponseError', $error);
+        $this->assertInstanceOf('Predis\Response\ResponseError', $error);
 
         $this->assertEquals($exception->getMessage(), $error->getMessage());
         $this->assertEquals($exception->getErrorType(), $error->getErrorType());

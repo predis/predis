@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\ResponseQueued;
+use Predis\Response\ResponseQueued;
 
 /**
  *
@@ -46,7 +46,7 @@ class StatusResponseTest extends StandardTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertInstanceOf('Predis\ResponseQueued', $handler->handle($connection, 'QUEUED'));
+        $this->assertInstanceOf('Predis\Response\ResponseQueued', $handler->handle($connection, 'QUEUED'));
     }
 
     /**

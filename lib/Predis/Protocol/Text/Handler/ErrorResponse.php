@@ -11,8 +11,8 @@
 
 namespace Predis\Protocol\Text\Handler;
 
-use Predis\ResponseError;
 use Predis\Connection\ComposableConnectionInterface;
+use Predis\Response\ResponseError;
 
 /**
  * Handler for the error response type in the standard Redis wire protocol.

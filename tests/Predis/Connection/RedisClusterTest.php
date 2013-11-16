@@ -13,8 +13,8 @@ namespace Predis\Connection;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\ResponseError;
 use Predis\Profile\ServerProfile;
+use Predis\Response\ResponseError;
 
 /**
  *

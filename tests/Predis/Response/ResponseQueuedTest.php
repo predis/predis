@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis;
+namespace Predis\Response;
 
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
@@ -25,7 +25,7 @@ class ResponseQueuedTest extends StandardTestCase
     {
         $queued = new ResponseQueued();
 
-        $this->assertInstanceOf('Predis\ResponseObjectInterface', $queued);
+        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $queued);
     }
 
     /**

@@ -13,7 +13,7 @@ namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Iterator\MultiBulkResponseSimple;
+use Predis\Response\Iterator\MultiBulkResponseSimple;
 use Predis\Protocol\ProtocolException;
 
 /**

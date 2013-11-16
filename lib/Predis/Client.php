@@ -24,6 +24,9 @@ use Predis\Monitor\MonitorContext;
 use Predis\Pipeline\PipelineContext;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub\PubSubContext;
+use Predis\Response\ResponseErrorInterface;
+use Predis\Response\ResponseObjectInterface;
+use Predis\Response\ServerException;
 use Predis\Transaction\MultiExecContext;
 
 /**

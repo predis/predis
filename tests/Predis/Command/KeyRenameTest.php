@@ -98,7 +98,7 @@ class KeyRenameTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR no such key
      */
     public function testThrowsExceptionOnNonExistingKeys()

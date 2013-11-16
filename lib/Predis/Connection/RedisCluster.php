@@ -14,9 +14,9 @@ namespace Predis\Connection;
 use Predis\ClientException;
 use Predis\Cluster\CommandHashStrategyInterface;
 use Predis\NotSupportedException;
-use Predis\ResponseErrorInterface;
 use Predis\Cluster\RedisClusterHashStrategy;
 use Predis\Command\CommandInterface;
+use Predis\Response\ResponseErrorInterface;
 
 /**
  * Abstraction for Redis cluster (Redis v3.0).

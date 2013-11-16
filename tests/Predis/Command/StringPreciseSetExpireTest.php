@@ -109,7 +109,7 @@ class StringPreciseSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not an integer or out of range
      */
     public function testThrowsExceptionOnNonIntegerTTL()
@@ -119,7 +119,7 @@ class StringPreciseSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time in SETEX
      * @todo Should not Redis return PSETEX instead of SETEX here?
      */
@@ -130,7 +130,7 @@ class StringPreciseSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time in SETEX
      * @todo Should not Redis return PSETEX instead of SETEX here?
      */

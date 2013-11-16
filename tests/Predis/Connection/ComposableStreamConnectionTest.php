@@ -80,7 +80,7 @@ class ComposableStreamConnectionTest extends ConnectionTestCase
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
         $connection->writeCommand($profile->createCommand('lrange', array('metavars', 0, -1)));
 
-        $this->assertInstanceOf('Predis\Iterator\MultiBulkResponse', $iterator = $connection->read());
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponse', $iterator = $connection->read());
         $this->assertSame(array('foo', 'hoge', 'lol'), iterator_to_array($iterator));
     }
 

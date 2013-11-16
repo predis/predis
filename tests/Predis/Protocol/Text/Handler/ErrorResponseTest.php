@@ -33,7 +33,7 @@ class ErrorResponseTest extends StandardTestCase
         $message = "ERR Operation against a key holding the wrong kind of value";
         $response = $handler->handle($connection, $message);
 
-        $this->assertInstanceOf('Predis\ResponseError', $response);
+        $this->assertInstanceOf('Predis\Response\ResponseError', $response);
         $this->assertSame($message, $response->getMessage());
     }
 }

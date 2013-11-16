@@ -63,14 +63,14 @@ class TransactionDiscardTest extends CommandTestCase
 
         $redis->multi();
 
-        $this->assertInstanceOf('Predis\ResponseQueued', $redis->set('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis->set('foo', 'bar'));
         $this->assertTrue($redis->discard());
         $this->assertFalse($redis->exists('foo'));
     }
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR DISCARD without MULTI
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction()

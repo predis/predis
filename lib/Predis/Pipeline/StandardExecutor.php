@@ -12,12 +12,12 @@
 namespace Predis\Pipeline;
 
 use SplQueue;
-use Predis\ResponseErrorInterface;
-use Predis\ResponseObjectInterface;
-use Predis\ServerException;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Response\ResponseErrorInterface;
+use Predis\Response\ResponseObjectInterface;
+use Predis\Response\ServerException;
 
 /**
  * Implements the standard pipeline executor strategy used

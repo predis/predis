@@ -14,10 +14,10 @@ namespace Predis\Pipeline;
 use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
-use Predis\ResponseError;
-use Predis\ResponseObjectInterface;
-use Predis\ResponseQueued;
 use Predis\Profile\ServerProfile;
+use Predis\Response\ResponseError;
+use Predis\Response\ResponseObjectInterface;
+use Predis\Response\ResponseQueued;
 
 /**
  *
@@ -69,7 +69,7 @@ class MultiExecExecutorTest extends StandardTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testExecutorWithErrorInTransaction()

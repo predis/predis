@@ -110,7 +110,7 @@ class StringSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not an integer or out of range
      */
     public function testThrowsExceptionOnNonIntegerTTL()
@@ -120,7 +120,7 @@ class StringSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time in SETEX
      */
     public function testThrowsExceptionOnZeroTTL()
@@ -130,7 +130,7 @@ class StringSetExpireTest extends CommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time in SETEX
      */
     public function testThrowsExceptionOnNegativeTTL()

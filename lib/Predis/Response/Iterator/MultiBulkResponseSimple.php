@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Iterator;
+namespace Predis\Response\Iterator;
 
 use Predis\Connection\SingleConnectionInterface;
 
