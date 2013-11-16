@@ -33,7 +33,7 @@ class Handler implements SessionHandlerInterface
      * @param ClientInterface $client Fully initialized client instance.
      * @param array $options Session handler options.
      */
-    public function __construct(ClientInterface $client, Array $options = array())
+    public function __construct(ClientInterface $client, array $options = array())
     {
         $this->client = $client;
         $this->ttl = (int) (isset($options['gc_maxlifetime']) ? $options['gc_maxlifetime'] : ini_get('session.gc_maxlifetime'));

@@ -28,7 +28,7 @@ class SetScan extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
             $options = $this->prepareOptions(array_pop($arguments));

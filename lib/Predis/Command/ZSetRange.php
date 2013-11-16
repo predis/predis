@@ -28,7 +28,7 @@ class ZSetRange extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);

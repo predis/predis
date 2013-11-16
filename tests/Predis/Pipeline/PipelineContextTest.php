@@ -393,7 +393,7 @@ class PipelineContextTest extends StandardTestCase
      * @return array Additional client options.
      * @return Client New client instance.
      */
-    protected function getClient(Array $parameters = array(), Array $options = array())
+    protected function getClient(array $parameters = array(), array $options = array())
     {
         $parameters = array_merge(array(
             'scheme' => 'tcp',

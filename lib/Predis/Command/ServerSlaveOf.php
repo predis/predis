@@ -28,7 +28,7 @@ class ServerSlaveOf extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
             return array('NO', 'ONE');

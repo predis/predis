@@ -28,7 +28,7 @@ class SetIntersection extends AbstractCommand implements PrefixableCommandInterf
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         return self::normalizeArguments($arguments);
     }

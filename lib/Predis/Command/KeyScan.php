@@ -28,7 +28,7 @@ class KeyScan extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $options = $this->prepareOptions(array_pop($arguments));

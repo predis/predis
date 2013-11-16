@@ -31,7 +31,7 @@ class Consumer extends AbstractConsumer
      * @param ClientInterface $client Client instance used by the consumer.
      * @param array $options Options for the consumer initialization.
      */
-    public function __construct(ClientInterface $client, Array $options = null)
+    public function __construct(ClientInterface $client, array $options = null)
     {
         $this->checkCapabilities($client);
         $this->options = $options ?: array();

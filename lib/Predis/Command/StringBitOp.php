@@ -28,7 +28,7 @@ class StringBitOp extends AbstractCommand implements PrefixableCommandInterface
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
             list($operation, $destination, ) = $arguments;

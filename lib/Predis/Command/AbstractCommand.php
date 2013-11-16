@@ -27,7 +27,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param array $arguments List of arguments.
      * @return array
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         return $arguments;
     }
@@ -35,7 +35,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function setArguments(Array $arguments)
+    public function setArguments(array $arguments)
     {
         $this->arguments = $this->filterArguments($arguments);
         unset($this->hash);
@@ -46,7 +46,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @param array $arguments List of arguments.
      */
-    public function setRawArguments(Array $arguments)
+    public function setRawArguments(array $arguments)
     {
         $this->arguments = $arguments;
         unset($this->hash);
@@ -136,7 +136,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param array $arguments Arguments for a command.
      * @return array
      */
-    public static function normalizeArguments(Array $arguments)
+    public static function normalizeArguments(array $arguments)
     {
         if (count($arguments) === 1 && is_array($arguments[0])) {
             return $arguments[0];
@@ -151,7 +151,7 @@ abstract class AbstractCommand implements CommandInterface
      * @param array $arguments Arguments for a command.
      * @return array
      */
-    public static function normalizeVariadic(Array $arguments)
+    public static function normalizeVariadic(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             return array_merge(array($arguments[0]), $arguments[1]);

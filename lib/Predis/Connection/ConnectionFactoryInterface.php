@@ -48,5 +48,5 @@ interface ConnectionFactoryInterface
      * @param AggregatedConnectionInterface $cluster Instance of an aggregated connection class.
      * @param array $parameters List of parameters for each connection object.
      */
-    public function aggregate(AggregatedConnectionInterface $cluster, Array $parameters);
+    public function aggregate(AggregatedConnectionInterface $cluster, array $parameters);
 }

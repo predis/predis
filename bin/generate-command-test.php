@@ -40,7 +40,7 @@ class CommandTestCaseGenerator
 {
     private $options;
 
-    public function __construct(Array $options)
+    public function __construct(array $options)
     {
         if (!isset($options['class'])) {
             throw new RuntimeException("Missing 'class' option.");

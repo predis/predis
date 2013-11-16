@@ -43,7 +43,7 @@ interface ServerProfileInterface
      * @param array $commands List of command IDs.
      * @return string
      */
-    public function supportsCommands(Array $commands);
+    public function supportsCommands(array $commands);
 
     /**
      * Creates a new command instance.

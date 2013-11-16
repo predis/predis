@@ -28,7 +28,7 @@ class PubSubUnsubscribe extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         return self::normalizeArguments($arguments);
     }

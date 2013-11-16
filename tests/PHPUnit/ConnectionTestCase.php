@@ -309,7 +309,7 @@ abstract class ConnectionTestCase extends StandardTestCase
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return Array Default connection parameters.
+     * @return array Default connection parameters.
      */
     protected function getDefaultParametersArray()
     {
@@ -355,5 +355,5 @@ abstract class ConnectionTestCase extends StandardTestCase
      * @param array $parameters Additional connection parameters.
      * @return StreamConnection
      */
-    protected abstract function getConnection(&$profile = null, $initialize = false, Array $parameters = array());
+    protected abstract function getConnection(&$profile = null, $initialize = false, array $parameters = array());
 }

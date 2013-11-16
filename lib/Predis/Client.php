@@ -369,7 +369,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable used to execute the context.
      * @return PipelineContext|array
      */
-    protected function createPipeline(Array $options = null, $callable = null)
+    protected function createPipeline(array $options = null, $callable = null)
     {
         $executor = isset($options['executor']) ? $options['executor'] : null;
 
@@ -405,7 +405,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable used to execute the context.
      * @return Transaction\MultiExec|array
      */
-    protected function createTransaction(Array $options = null, $callable = null)
+    protected function createTransaction(array $options = null, $callable = null)
     {
         $transaction = new Transaction\MultiExec($this, $options);
 
@@ -435,7 +435,7 @@ class Client implements ClientInterface
      * @param mixed $callable Optional callable used to execute the context.
      * @return PubSub\Consumer|NULL
      */
-    protected function createPubSub(Array $options = null, $callable = null)
+    protected function createPubSub(array $options = null, $callable = null)
     {
         $pubsub = new PubSub\Consumer($this, $options);
 

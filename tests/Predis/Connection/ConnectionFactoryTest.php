@@ -374,7 +374,7 @@ class ConnectionFactoryTest extends StandardTestCase
     /**
      * Returns a mocked Predis\Connection\SingleConnectionInterface.
      *
-     * @return Array Mock instance and class name
+     * @return array Mock instance and class name
      */
     protected function getMockConnectionClass()
     {

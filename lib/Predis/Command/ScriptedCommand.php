@@ -54,7 +54,7 @@ abstract class ScriptedCommand extends ServerEvalSHA
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (($numkeys = $this->getKeysCount()) && $numkeys < 0) {
             $numkeys = count($arguments) + $numkeys;

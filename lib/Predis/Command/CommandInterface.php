@@ -43,14 +43,14 @@ interface CommandInterface
      *
      * @param array $arguments List of arguments.
      */
-    public function setArguments(Array $arguments);
+    public function setArguments(array $arguments);
 
     /**
      * Sets the raw arguments for the command without processing them.
      *
      * @param array $arguments List of arguments.
      */
-    public function setRawArguments(Array $arguments);
+    public function setRawArguments(array $arguments);
 
     /**
      * Gets the arguments of the command.

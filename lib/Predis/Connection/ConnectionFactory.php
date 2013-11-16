@@ -128,7 +128,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function aggregate(AggregatedConnectionInterface $connection, Array $parameters)
+    public function aggregate(AggregatedConnectionInterface $connection, array $parameters)
     {
         foreach ($parameters as $node) {
             $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node));

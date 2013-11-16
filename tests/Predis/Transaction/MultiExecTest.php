@@ -760,7 +760,7 @@ class MultiExecTest extends StandardTestCase
      * @param array Additional client options.
      * @return Client client instance.
      */
-    protected function getClient(Array $parameters = array(), Array $options = array())
+    protected function getClient(array $parameters = array(), array $options = array())
     {
         $parameters = array_merge(array(
             'scheme' => 'tcp',

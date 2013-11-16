@@ -80,7 +80,7 @@ class PredisFile
         $this->namespaces = array();
     }
 
-    public static function from($libraryPath, Array $exclude = array())
+    public static function from($libraryPath, array $exclude = array())
     {
         $nsroot = self::NS_ROOT;
         $predisFile = new PredisFile();

@@ -128,7 +128,7 @@ abstract class ServerProfile implements ServerProfileInterface, CommandProcessin
     /**
      * {@inheritdoc}
      */
-    public function supportsCommands(Array $commands)
+    public function supportsCommands(array $commands)
     {
         foreach ($commands as $command) {
             if (!$this->supportsCommand($command)) {

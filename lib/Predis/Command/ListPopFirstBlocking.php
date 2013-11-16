@@ -28,7 +28,7 @@ class ListPopFirstBlocking extends AbstractCommand implements PrefixableCommandI
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[0])) {
             list($arguments, $timeout) = $arguments;

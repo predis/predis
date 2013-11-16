@@ -119,7 +119,7 @@ abstract class CommandTestCase extends StandardTestCase
      * @param array $arguments Arguments for the command.
      * @return CommandInterface
      */
-    protected function getCommandWithArgumentsArray(Array $arguments)
+    protected function getCommandWithArgumentsArray(array $arguments)
     {
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -140,10 +140,10 @@ abstract class CommandTestCase extends StandardTestCase
     /**
      * Asserts that two arrays have the same values, even if with different order.
      *
-     * @param Array $expected Expected array.
-     * @param Array $actual Actual array.
+     * @param array $expected Expected array.
+     * @param array $actual Actual array.
      */
-    protected function assertSameValues(Array $expected, Array $actual)
+    protected function assertSameValues(array $expected, array $actual)
     {
         $this->assertThat($expected, new \ArrayHasSameValuesConstraint($actual));
     }

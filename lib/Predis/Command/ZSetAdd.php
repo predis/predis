@@ -28,7 +28,7 @@ class ZSetAdd extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $flattened = array($arguments[0]);

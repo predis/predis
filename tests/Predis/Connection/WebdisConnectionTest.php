@@ -156,7 +156,7 @@ class WebdisConnectionTest extends StandardTestCase
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return Array Default connection parameters.
+     * @return array Default connection parameters.
      */
     protected function getDefaultParametersArray()
     {
@@ -198,7 +198,7 @@ class WebdisConnectionTest extends StandardTestCase
      * @param array $parameters Additional connection parameters.
      * @return WebdisConnection
      */
-    protected function getConnection(&$profile = null, Array $parameters = array())
+    protected function getConnection(&$profile = null, array $parameters = array())
     {
         $parameters = $this->getParameters($parameters);
         $profile = $this->getProfile();

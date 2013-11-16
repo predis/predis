@@ -347,7 +347,7 @@ class PredisStrategy implements StrategyInterface
      * @param array $keys Array of keys.
      * @return Boolean
      */
-    protected function checkSameHashForKeys(Array $keys)
+    protected function checkSameHashForKeys(array $keys)
     {
         if (!$count = count($keys)) {
             return false;

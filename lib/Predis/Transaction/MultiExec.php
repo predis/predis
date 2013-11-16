@@ -48,7 +48,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      * @param ClientInterface $client Client instance used by the transaction.
      * @param array $options Initialization options.
      */
-    public function __construct(ClientInterface $client, Array $options = null)
+    public function __construct(ClientInterface $client, array $options = null)
     {
         $this->checkCapabilities($client);
         $this->options = $options ?: array();

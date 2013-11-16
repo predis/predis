@@ -28,7 +28,7 @@ class StringSetMultiple extends AbstractCommand implements PrefixableCommandInte
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 1 && is_array($arguments[0])) {
             $flattenedKVs = array();

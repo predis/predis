@@ -137,7 +137,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      * @param array $parameters Connection parameters.
      * @return array
      */
-    private function filter(Array $parameters)
+    private function filter(array $parameters)
     {
         if ($parameters) {
             $casters = array_intersect_key($this->getValueCasters(), $parameters);

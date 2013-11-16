@@ -107,7 +107,7 @@ class ComposableStreamConnectionTest extends ConnectionTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getConnection(&$profile = null, $initialize = false, Array $parameters = array())
+    protected function getConnection(&$profile = null, $initialize = false, array $parameters = array())
     {
         $parameters = $this->getParameters($parameters);
         $profile = $this->getProfile();

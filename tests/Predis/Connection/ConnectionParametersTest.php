@@ -208,7 +208,7 @@ class ParametersTest extends StandardTestCase
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return Array Default connection parameters.
+     * @return array Default connection parameters.
      */
     protected function getDefaultParametersArray()
     {
@@ -224,10 +224,10 @@ class ParametersTest extends StandardTestCase
      * Returns a named array with the default connection parameters merged with
      * the specified additional parameters.
      *
-     * @param Array $additional Additional connection parameters.
-     * @return Array Connection parameters.
+     * @param array $additional Additional connection parameters.
+     * @return array Connection parameters.
      */
-    protected function getParametersArray(Array $additional)
+    protected function getParametersArray(array $additional)
     {
         return array_merge($this->getDefaultParametersArray(), $additional);
     }
@@ -235,10 +235,10 @@ class ParametersTest extends StandardTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param Array $parameters Array of connection parameters.
+     * @param array $parameters array of connection parameters.
      * @return String URI string.
      */
-    protected function getParametersString(Array $parameters)
+    protected function getParametersString(array $parameters)
     {
         $defaults = $this->getDefaultParametersArray();
 

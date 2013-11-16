@@ -96,10 +96,10 @@ class MultiExecExecutor implements PipelineExecutorInterface
      * Consumes an array response returned by EXEC.
      *
      * @param SplQueue $commands Pipelined commands
-     * @param Array $responses Responses returned by EXEC.
+     * @param array $responses Responses returned by EXEC.
      * @return array
      */
-    protected function consumeArrayResponse(SplQueue $commands, Array &$responses)
+    protected function consumeArrayResponse(SplQueue $commands, array &$responses)
     {
         $size = count($commands);
         $values = array();

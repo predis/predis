@@ -28,7 +28,7 @@ class ZSetUnionStore extends PrefixableCommand
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(Array $arguments)
+    protected function filterArguments(array $arguments)
     {
         $options = array();
         $argc = count($arguments);
