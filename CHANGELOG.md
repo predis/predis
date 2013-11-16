@@ -3,6 +3,10 @@ v0.9.0 (201x-xx-xx)
 
 - The default server profile for Redis is now `2.8`.
 
+- Added the `aggregate` client option, useful to fully customize how the client
+  should aggregate multiple connections when an array of connection parameters
+  is passed to `Predis\Client::__construct()`.
+
 - Dropped support for streamable multibulk responses. Actually we still ship the
   iterator response classes just in case anyone would want to build custom stuff
   at a level lower than the client abstraction (our standard and composable text
