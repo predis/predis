@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 use Predis\Cluster\Hash\HashGeneratorInterface;
 
@@ -21,7 +21,7 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
-class HashRing implements DistributionStrategyInterface, HashGeneratorInterface
+class HashRing implements DistributorInterface, HashGeneratorInterface
 {
     const DEFAULT_REPLICAS = 128;
     const DEFAULT_WEIGHT   = 100;

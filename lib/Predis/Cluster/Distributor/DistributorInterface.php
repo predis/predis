@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 use Predis\Cluster\Hash\HashGeneratorInterface;
 
 /**
- * A distributor implements the logic to automatically distribute
- * keys among several nodes for client-side sharding.
+ * Distributors implement the logic to automatically distribute keys among
+ * several nodes for client-side sharding.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface DistributionStrategyInterface
+interface DistributorInterface
 {
     /**
      * Adds a node to the distributor with an optional weight.

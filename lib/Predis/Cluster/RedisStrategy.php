@@ -11,7 +11,6 @@
 
 namespace Predis\Cluster;
 
-use Predis\Cluster\Hash\CRC16HashGenerator;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
 
@@ -21,7 +20,7 @@ use Predis\Command\ScriptedCommand;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisClusterHashStrategy implements CommandHashStrategyInterface
+class RedisStrategy implements StrategyInterface
 {
     private $commands;
     private $hashGenerator;
@@ -32,7 +31,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
-        $this->hashGenerator = new CRC16HashGenerator();
+        $this->hashGenerator = new Hash\CRC16HashGenerator();
     }
 
     /**

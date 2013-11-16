@@ -9,30 +9,30 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 /**
  *
  */
-abstract class DistributionStrategyTestCase extends StandardTestCase
+abstract class DistributorTestCase extends StandardTestCase
 {
     /**
      * Returns a new instance of the tested distributor.
      *
-     * @return Predis\Cluster\Distribution\DistributionStrategyInterface
+     * @return Predis\Cluster\Distributor\DistributorInterface
      */
     protected abstract function getDistributorInstance();
 
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param DistributionStrategyInterface $ring Hashring instance.
+     * @param DistributorInterface $ring Hashring instance.
      * @param int $iterations Number of nodes to fetch.
      * @return array Nodes from the hashring.
      */
-    protected function getNodes(DistributionStrategyInterface $ring, $iterations = 10)
+    protected function getNodes(DistributorInterface $ring, $iterations = 10)
     {
         $nodes = array();
 
@@ -49,7 +49,7 @@ abstract class DistributionStrategyTestCase extends StandardTestCase
      */
     public function testEmptyRingThrowsException()
     {
-        $this->setExpectedException('Predis\Cluster\Distribution\EmptyRingException');
+        $this->setExpectedException('Predis\Cluster\Distributor\EmptyRingException');
 
         $ring = $this->getDistributorInstance();
         $ring->get('nodekey');

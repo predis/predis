@@ -11,11 +11,11 @@
 
 namespace Predis\Connection;
 
-use Predis\Cluster\CommandHashStrategyInterface;
+use Countable;
+use IteratorAggregate;
 use Predis\NotSupportedException;
-use Predis\Cluster\PredisClusterHashStrategy;
-use Predis\Cluster\Distribution\DistributionStrategyInterface;
-use Predis\Cluster\Distribution\HashRing;
+use Predis\Cluster;
+use Predis\Cluster\Distributor;
 use Predis\Command\CommandInterface;
 
 /**
@@ -25,21 +25,21 @@ use Predis\Command\CommandInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @todo Add the ability to remove connections from pool.
  */
-class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \Countable
+class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Countable
 {
     private $pool;
     private $strategy;
     private $distributor;
 
     /**
-     * @param DistributionStrategyInterface $distributor Distribution strategy used by the cluster.
+     * @param Distributor\DistributorInterface $distributor Distribution strategy used by the cluster.
      */
-    public function __construct(DistributionStrategyInterface $distributor = null)
+    public function __construct(Distributor\DistributorInterface $distributor = null)
     {
-        $distributor = $distributor ?: new HashRing();
+        $distributor = $distributor ?: new Distributor\HashRing();
 
         $this->pool = array();
-        $this->strategy = new PredisClusterHashStrategy($distributor->getHashGenerator());
+        $this->strategy = new Cluster\PredisStrategy($distributor->getHashGenerator());
         $this->distributor = $distributor;
     }
 
@@ -166,9 +166,9 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
      * Returns the underlying command hash strategy used to hash
      * commands by their keys.
      *
-     * @return CommandHashStrategyInterface
+     * @return Cluster\StrategyInterface
      */
-    public function getCommandHashStrategy()
+    public function getClusterStrategy()
     {
         return $this->strategy;
     }

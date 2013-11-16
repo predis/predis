@@ -12,9 +12,8 @@
 namespace Predis\Connection;
 
 use Predis\ClientException;
-use Predis\Cluster\CommandHashStrategyInterface;
 use Predis\NotSupportedException;
-use Predis\Cluster\RedisClusterHashStrategy;
+use Predis\Cluster;
 use Predis\Command\CommandInterface;
 use Predis\Response;
 
@@ -39,7 +38,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     {
         $this->pool = array();
         $this->slots = array();
-        $this->strategy = new RedisClusterHashStrategy();
+        $this->strategy = new Cluster\RedisStrategy();
         $this->connections = $connections ?: new ConnectionFactory();
     }
 
@@ -304,12 +303,11 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     }
 
     /**
-     * Returns the underlying command hash strategy used to hash
-     * commands by their keys.
+     * Returns the underlying hash strategy used to hash commands by their keys.
      *
-     * @return CommandHashStrategyInterface
+     * @return Cluster\StrategyInterface
      */
-    public function getCommandHashStrategy()
+    public function getClusterStrategy()
     {
         return $this->strategy;
     }

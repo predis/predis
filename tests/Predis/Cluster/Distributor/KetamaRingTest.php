@@ -9,19 +9,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Cluster\Distribution;
+namespace Predis\Cluster\Distributor;
 
 /**
  * @todo To be improved.
  */
-class HashRingTest extends DistributionStrategyTestCase
+class KetamaRingTest extends DistributorTestCase
 {
     /**
      * {@inheritdoc}
      */
     public function getDistributorInstance()
     {
-        return new HashRing();
+        return new KetamaRing();
     }
 
     /**
@@ -30,8 +30,9 @@ class HashRingTest extends DistributionStrategyTestCase
     public function testHash()
     {
         $ring = $this->getDistributorInstance();
+        list(, $hash) = unpack('V', md5('foobar', true));
 
-        $this->assertEquals(crc32('foobar'), $ring->hash('foobar'));
+        $this->assertEquals($hash, $ring->hash('foobar'));
     }
 
     /**
@@ -67,24 +68,24 @@ class HashRingTest extends DistributionStrategyTestCase
         }
 
         $expected = array(
+            '127.0.0.1:7000',
             '127.0.0.1:7001',
-            '127.0.0.1:7001',
-            '127.0.0.1:7001',
+            '127.0.0.1:7000',
             '127.0.0.1:7002',
-            '127.0.0.1:7002',
+            '127.0.0.1:7000',
             '127.0.0.1:7001',
+            '127.0.0.1:7000',
+            '127.0.0.1:7001',
+            '127.0.0.1:7000',
+            '127.0.0.1:7002',
+            '127.0.0.1:7000',
+            '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-            '127.0.0.1:7002',
-            '127.0.0.1:7002',
-            '127.0.0.1:7002',
             '127.0.0.1:7000',
             '127.0.0.1:7002',
-            '127.0.0.1:7002',
-            '127.0.0.1:7002',
-            '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
         );
@@ -104,16 +105,16 @@ class HashRingTest extends DistributionStrategyTestCase
         $expected1 = array_fill(0, 10, '127.0.0.1:7000');
         $expected3 = array_fill(0, 10, '127.0.0.1:7001');
         $expected2 = array(
+            '127.0.0.1:7000',
             '127.0.0.1:7001',
-            '127.0.0.1:7001',
-            '127.0.0.1:7001',
-            '127.0.0.1:7001',
-            '127.0.0.1:7001',
-            '127.0.0.1:7001',
+            '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7000',
+            '127.0.0.1:7001',
+            '127.0.0.1:7000',
+            '127.0.0.1:7001',
         );
 
         $ring->add('127.0.0.1:7000');
@@ -131,13 +132,12 @@ class HashRingTest extends DistributionStrategyTestCase
     }
 
     /**
-     * @todo This tests should be moved in Predis\Cluster\Distribution\DistributionStrategyTestCase
+     * @todo This tests should be moved in Predis\Cluster\Distributor\DistributorTestCase
      * @group disconnected
      */
     public function testCallbackToGetNodeHash()
     {
         $node = '127.0.0.1:7000';
-        $replicas = HashRing::DEFAULT_REPLICAS;
         $callable = $this->getMock('stdClass', array('__invoke'));
 
         $callable->expects($this->once())
@@ -145,7 +145,7 @@ class HashRingTest extends DistributionStrategyTestCase
                  ->with($node)
                  ->will($this->returnValue($node));
 
-        $ring = new HashRing($replicas, $callable);
+        $ring = new KetamaRing($callable);
         $ring->add($node);
 
         $this->getNodes($ring);

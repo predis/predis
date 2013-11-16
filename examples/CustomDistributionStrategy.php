@@ -13,13 +13,13 @@ require 'SharedConfigurations.php';
 
 // Developers can customize the distribution strategy used by the client
 // to distribute keys among a cluster of servers simply by creating a class
-// that implements Predis\Distribution\DistributionStrategyInterface.
+// that implements Predis\Distribution\DistributorInterface.
 
 use Predis\Connection\PredisCluster;
-use Predis\Cluster\Distribution\DistributionStrategyInterface;
+use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 
-class NaiveDistributionStrategy implements DistributionStrategyInterface, HashGeneratorInterface
+class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 {
     private $nodes;
     private $nodesCount;
@@ -67,7 +67,7 @@ class NaiveDistributionStrategy implements DistributionStrategyInterface, HashGe
 
 $options = array(
     'cluster' => function () {
-        $distributor = new NaiveDistributionStrategy();
+        $distributor = new NaiveDistributor();
         $cluster = new PredisCluster($distributor);
 
         return $cluster;

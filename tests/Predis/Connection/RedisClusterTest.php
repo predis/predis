@@ -27,7 +27,7 @@ class RedisClusterTest extends StandardTestCase
     public function testExposesCommandHashStrategy()
     {
         $cluster = new RedisCluster();
-        $this->assertInstanceOf('Predis\Cluster\RedisClusterHashStrategy', $cluster->getCommandHashStrategy());
+        $this->assertInstanceOf('Predis\Cluster\RedisStrategy', $cluster->getClusterStrategy());
     }
 
     /**

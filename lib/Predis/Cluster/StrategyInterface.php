@@ -21,7 +21,7 @@ use Predis\Command\CommandInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface CommandHashStrategyInterface
+interface StrategyInterface
 {
     /**
      * Returns the hash for the given command using the specified algorithm, or null

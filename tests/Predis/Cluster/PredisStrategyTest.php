@@ -13,13 +13,12 @@ namespace Predis\Cluster;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Cluster\Distribution\HashRing;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class PredisClusterHashStrategyTest extends StandardTestCase
+class PredisStrategyTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -29,7 +28,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
         // NOTE: 32 and 64 bits PHP runtimes can produce different hash values.
         $expected = PHP_INT_SIZE == 4 ? -1938594527 : 2356372769;
 
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
 
         $this->assertSame($expected, $strategy->getKeyHash('{foo}'));
         $this->assertSame($expected, $strategy->getKeyHash('{foo}:bar'));
@@ -45,7 +44,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
 
         $this->assertSame($this->getExpectedCommands(), $strategy->getSupportedCommands());
     }
@@ -55,7 +54,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testReturnsNullOnUnsupportedCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $command = ServerProfile::getDevelopment()->createCommand('ping');
 
         $this->assertNull($strategy->getHash($command));
@@ -66,7 +65,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testFirstKeyCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('key');
 
@@ -81,7 +80,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testAllKeysCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('{key}:1', '{key}:2', '{key}:3', '{key}:4');
 
@@ -96,7 +95,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testInterleavedKeysCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('{key}:1', 'value1', '{key}:2', 'value2');
 
@@ -111,7 +110,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBlockingListCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('{key}:1', '{key}:2', 10);
 
@@ -126,7 +125,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForZsetAggregationCommands()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('{key}:destination', 2, '{key}:1', '{key}:1', array('aggregate' => 'SUM'));
 
@@ -141,7 +140,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForBitOpCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('AND', '{key}:destination', '{key}:src:1', '{key}:src:2');
 
@@ -156,7 +155,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForScriptCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
         $arguments = array('%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2');
 
@@ -171,7 +170,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testKeysForScriptedCommand()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $arguments = array('{key}:1', '{key}:2', 'value1', 'value2');
 
         $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
@@ -191,7 +190,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testUnsettingCommandHandler()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $strategy->setCommandHandler('set');
@@ -209,7 +208,7 @@ class PredisClusterHashStrategyTest extends StandardTestCase
      */
     public function testSettingCustomCommandHandler()
     {
-        $strategy = $this->getHashStrategy();
+        $strategy = $this->getClusterStrategy();
         $profile = ServerProfile::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -229,15 +228,15 @@ class PredisClusterHashStrategyTest extends StandardTestCase
     // ******************************************************************** //
 
     /**
-     * Creates the default hash strategy object.
+     * Creates the default cluster strategy object.
      *
-     * @return CommandHashStrategyInterface
+     * @return StrategyInterface
      */
-    protected function getHashStrategy()
+    protected function getClusterStrategy()
     {
-        $distributor = new HashRing();
+        $distributor = new Distributor\HashRing();
         $hashGenerator = $distributor->getHashGenerator();
-        $strategy = new PredisClusterHashStrategy($hashGenerator);
+        $strategy = new PredisStrategy($hashGenerator);
 
         return $strategy;
     }
