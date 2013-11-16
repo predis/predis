@@ -74,8 +74,8 @@ class TransactionMultiTest extends CommandTestCase
         $redis = $this->getClient();
 
         $this->assertTrue($redis->multi());
-        $this->assertInstanceOf('Predis\Response\ResponseObjectInterface', $redis->echo('tx1'));
-        $this->assertInstanceOf('Predis\Response\ResponseQueued', $redis->echo('tx2'));
+        $this->assertInstanceOf('Predis\Response\ObjectInterface', $redis->echo('tx1'));
+        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->echo('tx2'));
     }
 
     /**

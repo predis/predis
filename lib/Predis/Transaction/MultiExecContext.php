@@ -18,9 +18,7 @@ use Predis\ClientInterface;
 use Predis\CommunicationException;
 use Predis\ExecutableContextInterface;
 use Predis\NotSupportedException;
-use Predis\Response\ResponseErrorInterface;
-use Predis\Response\ResponseQueued;
-use Predis\Response\ServerException;
+use Predis\Response;
 use Predis\Command\CommandInterface;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Protocol\ProtocolException;
@@ -212,7 +210,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             return $response;
         }
 
-        if (!$response instanceof ResponseQueued) {
+        if (!$response instanceof Response\StatusQueued) {
             $this->onProtocolError('The server did not respond with a QUEUED status reply');
         }
 
@@ -388,9 +386,9 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
         for ($i = 0; $i < $size; $i++) {
             $commandReply = $reply[$i];
 
-            if ($commandReply instanceof ResponseErrorInterface && $useExceptions) {
+            if ($commandReply instanceof Response\ErrorInterface && $useExceptions) {
                 $message = $commandReply->getMessage();
-                throw new ServerException($message);
+                throw new Response\ServerException($message);
             }
 
             $values[$i] = $commands->dequeue()->parseResponse($commandReply);
@@ -413,7 +411,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
             call_user_func($callable, $this);
         } catch (CommunicationException $exception) {
             $blockException = $exception;
-        } catch (ServerException $exception) {
+        } catch (Response\ServerException $exception) {
             $blockException = $exception;
         } catch (\Exception $exception) {
             $blockException = $exception;

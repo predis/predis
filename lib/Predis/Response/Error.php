@@ -17,7 +17,7 @@ namespace Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ResponseError implements ResponseErrorInterface
+class Error implements ErrorInterface
 {
     private $message;
 

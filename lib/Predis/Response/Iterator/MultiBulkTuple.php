@@ -24,14 +24,14 @@ use UnexpectedValueException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiBulkResponseTuple extends MultiBulkResponse implements OuterIterator
+class MultiBulkTuple extends MultiBulk implements OuterIterator
 {
     private $iterator;
 
     /**
-     * @param MultiBulkResponseSimple $iterator Inner multibulk response iterator.
+     * @param MultiBulk $iterator Inner multibulk response iterator.
      */
-    public function __construct(MultiBulkResponseSimple $iterator)
+    public function __construct(MultiBulk $iterator)
     {
         $this->checkPreconditions($iterator);
 
@@ -44,9 +44,9 @@ class MultiBulkResponseTuple extends MultiBulkResponse implements OuterIterator
     /**
      * Checks for valid preconditions.
      *
-     * @param MultiBulkResponseSimple $iterator Inner multibulk response iterator.
+     * @param MultiBulk $iterator Inner multibulk response iterator.
      */
-    protected function checkPreconditions(MultiBulkResponseSimple $iterator)
+    protected function checkPreconditions(MultiBulk $iterator)
     {
         if ($iterator->getPosition() !== 0) {
             throw new RuntimeException('Cannot initialize a tuple iterator with an already initiated iterator');

@@ -15,9 +15,7 @@ use SplQueue;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
-use Predis\Response\ResponseErrorInterface;
-use Predis\Response\ResponseObjectInterface;
-use Predis\Response\ServerException;
+use Predis\Response;
 
 /**
  * Implements the standard pipeline executor strategy used
@@ -57,12 +55,15 @@ class StandardExecutor implements PipelineExecutorInterface
      *
      * @param ConnectionInterface $connection
      * @param CommandInterface $command
-     * @param ResponseObjectInterface $response
+     * @param Response\ObjectInterface $response
      * @return mixed
      */
-    protected function onResponseObject(ConnectionInterface $connection, CommandInterface $command, ResponseObjectInterface $response)
+    protected function onResponseObject(
+        ConnectionInterface $connection,
+        CommandInterface $command,
+        Response\ObjectInterface $response)
     {
-        if ($response instanceof ResponseErrorInterface) {
+        if ($response instanceof Response\ErrorInterface) {
             return $this->onResponseError($connection, $response);
         }
 
@@ -73,9 +74,9 @@ class StandardExecutor implements PipelineExecutorInterface
      * Handles -ERR responses returned by Redis.
      *
      * @param ConnectionInterface $connection The connection that returned the error.
-     * @param ResponseErrorInterface $response The error response instance.
+     * @param Response\ErrorInterface $response The error response instance.
      */
-    protected function onResponseError(ConnectionInterface $connection, ResponseErrorInterface $response)
+    protected function onResponseError(ConnectionInterface $connection, Response\ErrorInterface $response)
     {
         if (!$this->exceptions) {
             return $response;
@@ -85,7 +86,7 @@ class StandardExecutor implements PipelineExecutorInterface
         $connection->disconnect();
         $message = $response->getMessage();
 
-        throw new ServerException($message);
+        throw new Response\ServerException($message);
     }
 
     /**
@@ -105,7 +106,7 @@ class StandardExecutor implements PipelineExecutorInterface
             $command = $commands->dequeue();
             $response = $connection->readResponse($command);
 
-            if ($response instanceof ResponseObjectInterface) {
+            if ($response instanceof Response\ObjectInterface) {
                 $values[] = $this->onResponseObject($connection, $command, $response);
             } else {
                 $values[] = $command->parseResponse($response);

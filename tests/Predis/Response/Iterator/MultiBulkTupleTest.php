@@ -21,7 +21,7 @@ use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 /**
  * @group realm-iterators
  */
-class MultiBulkResponseTupleTest extends StandardTestCase
+class MultiBulkTupleTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -31,10 +31,10 @@ class MultiBulkResponseTupleTest extends StandardTestCase
     public function testInitiatedMultiBulkIteratorsAreNotValid()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $iterator = new MultiBulkResponseSimple($connection, 2);
+        $iterator = new MultiBulk($connection, 2);
         $iterator->next();
 
-        new MultiBulkResponseTuple($iterator);
+        new MultiBulkTuple($iterator);
     }
 
     /**
@@ -45,9 +45,9 @@ class MultiBulkResponseTupleTest extends StandardTestCase
     public function testMultiBulkWithOddSizesAreInvalid()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $iterator = new MultiBulkResponseSimple($connection, 3);
+        $iterator = new MultiBulk($connection, 3);
 
-        new MultiBulkResponseTuple($iterator);
+        new MultiBulkTuple($iterator);
     }
 
     /**
@@ -59,8 +59,8 @@ class MultiBulkResponseTupleTest extends StandardTestCase
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
         $this->assertInstanceOf('OuterIterator', $iterator = $client->zrange('metavars', 0, -1, 'withscores')->asTuple());
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseTuple', $iterator);
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $iterator->getInnerIterator());
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator);
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator->getInnerIterator());
         $this->assertTrue($iterator->valid());
         $this->assertSame(3, $iterator->count());
 

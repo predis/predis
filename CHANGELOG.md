@@ -21,7 +21,8 @@ v0.9.0 (201x-xx-xx)
   or renamed while rationalizing the whole API of external protocol processors.
 
 - All of the interfaces and classes related to translated Redis response types
-  have been moved in the new `Predis\Response` namespace.
+  have been moved in the new `Predis\Response` namespace and most of them have
+  been renamed to make their fully-qualified name shorter and less redundant.
 
 
 v0.8.5 (2013-xx-xx)

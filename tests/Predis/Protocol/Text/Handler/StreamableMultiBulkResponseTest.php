@@ -30,7 +30,7 @@ class StreamableMultiBulkResponseTest extends StandardTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $handler->handle($connection, '1'));
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $handler->handle($connection, '1'));
     }
 
     /**

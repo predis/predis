@@ -16,6 +16,6 @@ namespace Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ResponseObjectInterface
+interface ObjectInterface
 {
 }

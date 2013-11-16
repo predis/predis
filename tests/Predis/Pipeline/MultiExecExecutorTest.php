@@ -15,9 +15,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
 use Predis\Profile\ServerProfile;
-use Predis\Response\ResponseError;
-use Predis\Response\ResponseObjectInterface;
-use Predis\Response\ResponseQueued;
+use Predis\Response;
 
 /**
  *
@@ -31,7 +29,7 @@ class MultiExecExecutorTest extends StandardTestCase
     {
         $executor = new MultiExecExecutor();
         $pipeline = $this->getCommandsQueue();
-        $queued = new ResponseQueued();
+        $queued = new Response\StatusQueued();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(2))
@@ -76,8 +74,8 @@ class MultiExecExecutorTest extends StandardTestCase
     {
         $executor = new MultiExecExecutor();
         $pipeline = $this->getCommandsQueue();
-        $queued = new ResponseQueued();
-        $error = new ResponseError('ERR Test error');
+        $queued = new Response\StatusQueued();
+        $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->at(0))
@@ -100,8 +98,8 @@ class MultiExecExecutorTest extends StandardTestCase
     {
         $executor = new MultiExecExecutor();
         $pipeline = $this->getCommandsQueue();
-        $queued = new ResponseQueued();
-        $error = new ResponseError('ERR Test error');
+        $queued = new Response\StatusQueued();
+        $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(3))

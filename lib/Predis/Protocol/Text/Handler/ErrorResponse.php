@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text\Handler;
 
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Response\ResponseError;
+use Predis\Response;
 
 /**
  * Handler for the error response type in the standard Redis wire protocol.
@@ -28,6 +28,6 @@ class ErrorResponse implements ResponseHandlerInterface
      */
     public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        return new ResponseError($payload);
+        return new Response\Error($payload);
     }
 }

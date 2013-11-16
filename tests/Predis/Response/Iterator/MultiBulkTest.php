@@ -21,7 +21,7 @@ use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 /**
  * @group realm-iterators
  */
-class MultiBulkResponseSimpleTest extends StandardTestCase
+class MultiBulkTest extends StandardTestCase
 {
     /**
      * @group connected
@@ -32,7 +32,7 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $iterator);
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator);
         $this->assertTrue($iterator->valid());
         $this->assertSame(3, $iterator->count());
 
@@ -59,8 +59,8 @@ class MultiBulkResponseSimpleTest extends StandardTestCase
         $client = $this->getClient();
         $client->mset('foo', 'bar', 'hoge', 'piyo');
 
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseSimple', $iterator = $client->mget('foo', 'bar'));
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkResponseTuple', $iterator->asTuple());
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator = $client->mget('foo', 'bar'));
+        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator->asTuple());
     }
 
     /**

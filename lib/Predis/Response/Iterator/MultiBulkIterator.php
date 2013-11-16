@@ -13,7 +13,7 @@ namespace Predis\Response\Iterator;
 
 use Iterator;
 use Countable;
-use Predis\Response\ResponseObjectInterface;
+use Predis\Response;
 
 /**
  * Iterator that abstracts the access to multibulk responses allowing them to be
@@ -27,7 +27,7 @@ use Predis\Response\ResponseObjectInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class MultiBulkResponse implements Iterator, Countable, ResponseObjectInterface
+abstract class MultiBulkIterator implements Iterator, Countable, Response\ObjectInterface
 {
     protected $current;
     protected $position;

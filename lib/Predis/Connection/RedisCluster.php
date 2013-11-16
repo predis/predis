@@ -16,7 +16,7 @@ use Predis\Cluster\CommandHashStrategyInterface;
 use Predis\NotSupportedException;
 use Predis\Cluster\RedisClusterHashStrategy;
 use Predis\Command\CommandInterface;
-use Predis\Response\ResponseErrorInterface;
+use Predis\Response;
 
 /**
  * Abstraction for Redis cluster (Redis v3.0).
@@ -334,10 +334,10 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      * Handles -ERR replies from Redis.
      *
      * @param CommandInterface $command Command that generated the -ERR reply.
-     * @param ResponseErrorInterface $error Redis error reply object.
+     * @param Response\ErrorInterface $error Redis error reply object.
      * @return mixed
      */
-    protected function handleServerError(CommandInterface $command, ResponseErrorInterface $error)
+    protected function handleServerError(CommandInterface $command, Response\ErrorInterface $error)
     {
         list($type, $details) = explode(' ', $error->getMessage(), 2);
 
@@ -375,7 +375,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
         $connection = $this->getConnection($command);
         $reply = $connection->executeCommand($command);
 
-        if ($reply instanceof ResponseErrorInterface) {
+        if ($reply instanceof Response\ErrorInterface) {
             return $this->handleServerError($command, $reply);
         }
 
