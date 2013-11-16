@@ -20,7 +20,7 @@ use Predis\Response;
 /**
  * @group realm-transaction
  */
-class MultiExecContextTest extends StandardTestCase
+class MultiExecTest extends StandardTestCase
 {
     /**
      * @group disconnected
@@ -31,7 +31,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection, array('profile' => '1.2'));
-        $tx = new MultiExecContext($client);
+        $tx = new MultiExec($client);
     }
 
     /**
@@ -43,7 +43,7 @@ class MultiExecContextTest extends StandardTestCase
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection, array('profile' => '2.0'));
-        $tx = new MultiExecContext($client, array('options' => 'cas'));
+        $tx = new MultiExec($client, array('options' => 'cas'));
 
         $tx->watch('foo');
     }
@@ -645,18 +645,18 @@ class MultiExecContextTest extends StandardTestCase
     }
 
     /**
-     * Returns a mocked instance of Predis\Transaction\MultiExecContext using
+     * Returns a mocked instance of Predis\Transaction\MultiExec using
      * the specified callback to return values from the executeCommand method
      * of the underlying connection.
      *
      * @param \Closure $executeCallback
-     * @return MultiExecContext
+     * @return MultiExec
      */
     protected function getMockedTransaction($executeCallback, $options = array())
     {
         $connection = $this->getMockedConnection($executeCallback);
         $client = new Client($connection);
-        $transaction = new MultiExecContext($client, $options);
+        $transaction = new MultiExec($client, $options);
 
         return $transaction;
     }

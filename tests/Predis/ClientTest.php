@@ -688,23 +688,23 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testTransactionWithoutArgumentsReturnsMultiExecContext()
+    public function testTransactionWithoutArgumentsReturnsMultiExec()
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $client->transaction());
+        $this->assertInstanceOf('Predis\Transaction\MultiExec', $client->transaction());
     }
 
     /**
      * @group disconnected
      */
-    public function testTransactionWithArrayReturnsMultiExecContextWithOptions()
+    public function testTransactionWithArrayReturnsTransactionMultiExecWithOptions()
     {
         $options = array('cas' => true, 'retry' => 3);
 
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\Transaction\MultiExecContext', $tx = $client->transaction($options));
+        $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
         $reflection = new \ReflectionProperty($tx, 'options');
         $reflection->setAccessible(true);
