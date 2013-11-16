@@ -5,6 +5,9 @@
     "keywords": ["nosql", "redis", "predis"],
     "homepage": "http://github.com/nrk/predis",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/nrk/predis/issues"
+    },
     "authors": [
         {
             "name": "Daniele Alessandri",
