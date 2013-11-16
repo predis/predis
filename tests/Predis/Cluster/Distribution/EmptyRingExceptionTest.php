@@ -11,7 +11,7 @@
 
 namespace Predis\Cluster\Distribution;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 /**
  * @todo Not really useful right now.

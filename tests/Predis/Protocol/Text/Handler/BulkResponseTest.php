@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol\Text;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 /**
  *

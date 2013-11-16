@@ -11,7 +11,7 @@
 
 namespace Predis\Cluster;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Cluster\Distribution\HashRing;
 use Predis\Profile\ServerProfile;

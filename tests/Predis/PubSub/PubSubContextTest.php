@@ -11,7 +11,7 @@
 
 namespace Predis\PubSub;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\Profile\ServerProfile;

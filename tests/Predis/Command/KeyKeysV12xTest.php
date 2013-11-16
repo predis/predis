@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 /**
  * We only perform disconnected tests for this commands because

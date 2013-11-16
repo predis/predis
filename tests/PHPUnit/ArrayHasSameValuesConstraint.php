@@ -9,9 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use \PHPUnit_Framework_Constraint;
-use \PHPUnit_Framework_ExpectationFailedException;
-
 /**
  * Constraint that accepts arrays with the same elements but different order.
  */

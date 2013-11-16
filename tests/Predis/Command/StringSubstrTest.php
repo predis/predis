@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 /**
  * SUBSTR is actually the old name of GETRANGE in version of Redis <= 2.0.

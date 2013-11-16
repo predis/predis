@@ -11,7 +11,7 @@
 
 namespace Predis\Pipeline;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
 use Predis\Profile\ServerProfile;

@@ -11,7 +11,7 @@
 
 namespace Predis\Replication;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Command\CommandInterface;
 use Predis\Profile\ServerProfile;
