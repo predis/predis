@@ -581,9 +581,10 @@ class ClientTest extends StandardTestCase
     public function testPipelineWithArrayReturnsPipeline()
     {
         $client = new Client();
-        $options = array();
 
-        $this->assertInstanceOf('Predis\Pipeline\Pipeline', $client->pipeline($options));
+        $this->assertInstanceOf('Predis\Pipeline\Pipeline', $client->pipeline(array()));
+        $this->assertInstanceOf('Predis\Pipeline\Atomic', $client->pipeline(array('atomic' => true)));
+        $this->assertInstanceOf('Predis\Pipeline\FireAndForget', $client->pipeline(array('fire-and-forget' => true)));
     }
 
     /**

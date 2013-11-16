@@ -371,7 +371,15 @@ class Client implements ClientInterface
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
-        $pipeline = new Pipeline\Pipeline($this);
+        if (isset($options['atomic']) && $options['atomic']) {
+            $class = 'Predis\Pipeline\Atomic';
+        } else if (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+            $class = 'Predis\Pipeline\FireAndForget';
+        } else {
+            $class = 'Predis\Pipeline\Pipeline';
+        }
+
+        $pipeline = new $class($this);
 
         if (isset($callable)) {
             return $pipeline->execute($callable);
