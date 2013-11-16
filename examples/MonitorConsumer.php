@@ -11,7 +11,7 @@
 
 require 'SharedConfigurations.php';
 
-// This is a basic example on how to use the Predis\MonitorContext class.
+// This is a basic example on how to use the Predis\Monitor\Consumer class.
 // You can use redis-cli to send commands to the same Redis instance your client is
 // connected to, and then type "ECHO QUIT_MONITOR" in redis-cli when you want to
 // exit the monitor loop and terminate this script in a graceful way.
@@ -25,11 +25,11 @@ $timestamp = new DateTime();
 foreach (($monitor = $client->monitor()) as $event) {
     $timestamp->setTimestamp((int) $event->timestamp);
 
-    // If we notice a ECHO command with the message QUIT_MONITOR, we close the
-    // monitor context and then break the loop.
+    // If we notice a ECHO command with the message QUIT_MONITOR, we stop the
+    // monitor consumer and then break the loop.
     if ($event->command === 'ECHO' && $event->arguments === '"QUIT_MONITOR"') {
         echo "Exiting the monitor loop...\n";
-        $monitor->closeContext();
+        $monitor->stop();
         break;
     }
 

@@ -742,12 +742,12 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testMonitorReturnsMonitorContext()
+    public function testMonitorReturnsMonitorConsumer()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\Monitor\MonitorContext', $monitor = $client->monitor());
+        $this->assertInstanceOf('Predis\Monitor\Consumer', $monitor = $client->monitor());
     }
 
     /**
