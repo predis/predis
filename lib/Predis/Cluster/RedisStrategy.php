@@ -31,7 +31,7 @@ class RedisStrategy implements StrategyInterface
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
-        $this->hashGenerator = new Hash\CRC16HashGenerator();
+        $this->hashGenerator = new Hash\CRC16();
     }
 
     /**

@@ -16,7 +16,7 @@ namespace Predis\Cluster\Hash;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class CRC16HashGenerator implements HashGeneratorInterface
+class CRC16 implements HashGeneratorInterface
 {
     private static $CCITT_16 = array(
         0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
