@@ -18,7 +18,7 @@ use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
 
 /**
- * Client-side abstraction of a Publish / Subscribe context.
+ * PUB/SUB consumer abstraction.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -28,8 +28,8 @@ class Consumer extends AbstractConsumer
     private $options;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
-     * @param array $options Options for the context initialization.
+     * @param ClientInterface $client Client instance used by the consumer.
+     * @param array $options Options for the consumer initialization.
      */
     public function __construct(ClientInterface $client, Array $options = null)
     {
@@ -53,9 +53,9 @@ class Consumer extends AbstractConsumer
 
     /**
      * Checks if the passed client instance satisfies the required conditions
-     * needed to initialize a Publish / Subscribe context.
+     * needed to initialize a PUB/SUB consumer.
      *
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface $client Client instance used by the consumer.
      */
     private function checkCapabilities(ClientInterface $client)
     {

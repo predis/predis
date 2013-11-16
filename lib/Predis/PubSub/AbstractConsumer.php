@@ -14,7 +14,7 @@ namespace Predis\PubSub;
 use Iterator;
 
 /**
- * Client-side abstraction of a Publish / Subscribe context.
+ * Base implementation of a PUB/SUB consumer abstraction.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -35,7 +35,7 @@ abstract class AbstractConsumer implements Iterator
     private $statusFlags = self::STATUS_VALID;
 
     /**
-     * Automatically closes the context when PHP's garbage collector kicks in.
+     * Automatically stops the consumer when PHP's garbage collector kicks in.
      */
     public function __destruct()
     {
@@ -43,7 +43,7 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Checks if the specified flag is valid in the state of the context.
+     * Checks if the specified flag is valid based on the state of the consumer.
      *
      * @param int $value Flag.
      * @return Boolean
@@ -177,7 +177,7 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Checks if the the context is still in a valid state to continue.
+     * Checks if the the consumer is still in a valid state to continue.
      *
      * @return Boolean
      */
@@ -191,7 +191,7 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Resets the state of the context.
+     * Resets the state of the consumer.
      */
     protected function invalidate()
     {
