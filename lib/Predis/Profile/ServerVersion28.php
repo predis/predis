@@ -249,6 +249,9 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on hashes */
             'hscan'                     => 'Predis\Command\HashScan',
+
+            /* publish - subscribe */
+            'pubsub'                    => 'Predis\Command\PubSubPubsub',
         );
     }
 }
