@@ -35,7 +35,6 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
 
     protected $client;
     protected $commands;
-    protected $canwatch   = false;
     protected $exceptions = true;
     protected $attempts   = 0;
     protected $watchKeys  = array();
@@ -102,8 +101,6 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         if (isset($options['retry'])) {
             $this->attempts = (int) $options['retry'];
         }
-
-        $this->canwatch = $client->getProfile()->supportsCommands(array('watch', 'unwatch'));
     }
 
     /**
@@ -213,7 +210,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     public function watch($keys)
     {
-        if (!$this->canwatch) {
+        if (!$this->client->getProfile()->supportsCommand('WATCH')) {
             throw new NotSupportedException('WATCH is not supported by the current profile');
         }
 
@@ -252,7 +249,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     public function unwatch()
     {
-        if (!$this->canwatch) {
+        if (!$this->client->getProfile()->supportsCommand('WATCH')) {
             throw new NotSupportedException('UNWATCH is not supported by the current profile');
         }
 
