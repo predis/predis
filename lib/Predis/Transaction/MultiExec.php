@@ -30,13 +30,6 @@ use Predis\Protocol\ProtocolException;
  */
 class MultiExec implements BasicClientInterface, ExecutableContextInterface
 {
-    const STATE_RESET       = 0;    // 0b00000
-    const STATE_INITIALIZED = 1;    // 0b00001
-    const STATE_INSIDEBLOCK = 2;    // 0b00010
-    const STATE_DISCARDED   = 4;    // 0b00100
-    const STATE_CAS         = 8;    // 0b01000
-    const STATE_WATCH       = 16;   // 0b10000
-
     private $state;
     private $canWatch;
 
@@ -51,60 +44,12 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     public function __construct(ClientInterface $client, array $options = null)
     {
         $this->checkCapabilities($client);
+
         $this->options = $options ?: array();
         $this->client = $client;
+        $this->state = new MultiExecState();
+
         $this->reset();
-    }
-
-    /**
-     * Sets the internal state flags.
-     *
-     * @param int $flags Set of flags
-     */
-    protected function setState($flags)
-    {
-        $this->state = $flags;
-    }
-
-    /**
-     * Gets the internal state flags.
-     *
-     * @return int
-     */
-    protected function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * Sets one or more flags.
-     *
-     * @param int $flags Set of flags
-     */
-    protected function flagState($flags)
-    {
-        $this->state |= $flags;
-    }
-
-    /**
-     * Resets one or more flags.
-     *
-     * @param int $flags Set of flags
-     */
-    protected function unflagState($flags)
-    {
-        $this->state &= ~$flags;
-    }
-
-    /**
-     * Checks is a flag is set.
-     *
-     * @param int $flags Flag
-     * @return Boolean
-     */
-    protected function checkState($flags)
-    {
-        return ($this->state & $flags) === $flags;
     }
 
     /**
@@ -147,7 +92,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     protected function reset()
     {
-        $this->setState(self::STATE_RESET);
+        $this->state->reset();
         $this->commands = new SplQueue();
     }
 
@@ -156,32 +101,32 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     protected function initialize()
     {
-        if ($this->checkState(self::STATE_INITIALIZED)) {
+        if ($this->state->isInitialized()) {
             return;
         }
 
         $options = $this->options;
 
         if (isset($options['cas']) && $options['cas']) {
-            $this->flagState(self::STATE_CAS);
+            $this->state->flag(MultiExecState::CAS);
         }
         if (isset($options['watch'])) {
             $this->watch($options['watch']);
         }
 
-        $cas = $this->checkState(self::STATE_CAS);
-        $discarded = $this->checkState(self::STATE_DISCARDED);
+        $cas = $this->state->isCAS();
+        $discarded = $this->state->isDiscarded();
 
         if (!$cas || ($cas && $discarded)) {
             $this->client->multi();
 
             if ($discarded) {
-                $this->unflagState(self::STATE_CAS);
+                $this->state->unflag(MultiExecState::CAS);
             }
         }
 
-        $this->unflagState(self::STATE_DISCARDED);
-        $this->flagState(self::STATE_INITIALIZED);
+        $this->state->unflag(MultiExecState::DISCARDED);
+        $this->state->flag(MultiExecState::INITIALIZED);
     }
 
     /**
@@ -210,7 +155,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         $this->initialize();
         $response = $this->client->executeCommand($command);
 
-        if ($this->checkState(self::STATE_CAS)) {
+        if ($this->state->isCAS()) {
             return $response;
         }
 
@@ -233,12 +178,12 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         $this->isWatchSupported();
 
-        if ($this->checkState(self::STATE_INITIALIZED) && !$this->checkState(self::STATE_CAS)) {
+        if ($this->state->isWatchAllowed()) {
             throw new ClientException('WATCH after MULTI is not allowed');
         }
 
         $reply = $this->client->watch($keys);
-        $this->flagState(self::STATE_WATCH);
+        $this->state->flag(MultiExecState::WATCH);
 
         return $reply;
     }
@@ -250,8 +195,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     public function multi()
     {
-        if ($this->checkState(self::STATE_INITIALIZED | self::STATE_CAS)) {
-            $this->unflagState(self::STATE_CAS);
+        if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
+            $this->state->unflag(MultiExecState::CAS);
             $this->client->multi();
         } else {
             $this->initialize();
@@ -268,7 +213,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     public function unwatch()
     {
         $this->isWatchSupported();
-        $this->unflagState(self::STATE_WATCH);
+        $this->state->unflag(MultiExecState::WATCH);
         $this->__call('unwatch', array());
 
         return $this;
@@ -282,11 +227,11 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     public function discard()
     {
-        if ($this->checkState(self::STATE_INITIALIZED)) {
-            $command = $this->checkState(self::STATE_CAS) ? 'unwatch' : 'discard';
+        if ($this->state->isInitialized()) {
+            $command = $this->state->isCAS() ? 'unwatch' : 'discard';
             $this->client->$command();
             $this->reset();
-            $this->flagState(self::STATE_DISCARDED);
+            $this->state->flag(MultiExecState::DISCARDED);
         }
 
         return $this;
@@ -309,7 +254,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     private function checkBeforeExecution($callable)
     {
-        if ($this->checkState(self::STATE_INSIDEBLOCK)) {
+        if ($this->state->isExecuting()) {
             throw new ClientException("Cannot invoke 'execute' or 'exec' inside an active client transaction block");
         }
 
@@ -350,7 +295,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             }
 
             if ($this->commands->isEmpty()) {
-                if ($this->checkState(self::STATE_WATCH)) {
+                if ($this->state->isWatching()) {
                     $this->discard();
                 }
 
@@ -409,7 +354,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     protected function executeTransactionBlock($callable)
     {
         $blockException = null;
-        $this->flagState(self::STATE_INSIDEBLOCK);
+        $this->state->flag(MultiExecState::INSIDEBLOCK);
 
         try {
             call_user_func($callable, $this);
@@ -422,7 +367,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             $this->discard();
         }
 
-        $this->unflagState(self::STATE_INSIDEBLOCK);
+        $this->state->unflag(MultiExecState::INSIDEBLOCK);
 
         if ($blockException !== null) {
             throw $blockException;
