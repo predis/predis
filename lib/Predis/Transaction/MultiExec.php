@@ -136,7 +136,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         $discarded = $this->state->isDiscarded();
 
         if (!$cas || ($cas && $discarded)) {
-            $this->client->multi();
+            $this->call('multi');
 
             if ($discarded) {
                 $this->state->unflag(MultiExecState::CAS);
@@ -158,6 +158,25 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         $command = $this->client->createCommand($method, $arguments);
         $response = $this->executeCommand($command);
+
+        return $response;
+    }
+
+    /**
+     * Sends a Redis command bypassing the transaction logic.
+     *
+     * @param string $method Command ID.
+     * @param array $arguments Arguments for the command.
+     * @return mixed
+     */
+    protected function call($commandID, $arguments = array())
+    {
+        $command  = $this->client->createCommand($commandID, $arguments);
+        $response = $this->client->executeCommand($command);
+
+        if ($response instanceof Response\Error) {
+            throw new Response\ServerException($response->getMessage());
+        }
 
         return $response;
     }
@@ -202,7 +221,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             throw new ClientException('WATCH after MULTI is not allowed');
         }
 
-        $response = $this->client->watch($keys);
+        $response = $this->call('watch', array($keys));
+
         $this->state->flag(MultiExecState::WATCH);
 
         return $response;
@@ -217,7 +237,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
             $this->state->unflag(MultiExecState::CAS);
-            $this->client->multi();
+            $this->call('multi');
         } else {
             $this->initialize();
         }
@@ -251,7 +271,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     public function discard()
     {
         if ($this->state->isInitialized()) {
-            $this->client->{$this->state->isCAS() ? 'unwatch' : 'discard'}();
+            $this->call($this->state->isCAS() ? 'unwatch' : 'discard');
+
             $this->reset();
             $this->state->flag(MultiExecState::DISCARDED);
         }
@@ -329,7 +350,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
                 return;
             }
 
-            $execResponse = $this->client->exec();
+            $execResponse = $this->call('exec');
 
             if ($execResponse === null) {
                 if ($attempts === 0) {

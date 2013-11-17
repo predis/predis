@@ -483,6 +483,92 @@ class MultiExecTest extends StandardTestCase
         $this->assertSame(array('MULTI', 'SET', 'ECHO', 'DISCARD'), self::commandsToIDs($commands));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenFalse()
+    {
+        $expected = array('before', new Response\Error('ERR simulated error'), 'after');
+
+        $connection = $this->getMockedConnection(function (CommandInterface $command) use ($expected) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return true;
+
+                case 'EXEC':
+                    return $expected;
+
+                default:
+                    return new Response\StatusQueued();
+            }
+        });
+
+        $client = new Client($connection, array('exceptions' => true));
+        $tx = new MultiExec($client, array('exceptions' => false));
+
+        $result = $tx->multi()
+                     ->echo('before')
+                     ->echo('ERROR PLEASE!')
+                     ->echo('after')
+                     ->exec();
+
+        $this->assertSame($expected, $result);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\Response\ServerException
+     * @expectedExceptionMessage ERR simulated error
+     */
+    public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenTrue()
+    {
+        $expected = array('before', new Response\Error('ERR simulated error'), 'after');
+
+        $connection = $this->getMockedConnection(function (CommandInterface $command) use ($expected) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return true;
+
+                case 'EXEC':
+                    return $expected;
+
+                default:
+                    return new Response\StatusQueued();
+            }
+        });
+
+        $client = new Client($connection, array('exceptions' => false));
+        $tx = new MultiExec($client, array('exceptions' => true));
+
+        $tx->multi()->echo('before')->echo('ERROR PLEASE!')->echo('after')->exec();
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\Response\ServerException
+     * @expectedExceptionMessage ERR simulated failure on EXEC
+     */
+    public function testExceptionsOptionDoesNotAffectTransactionControlCommands()
+    {
+        $connection = $this->getMockedConnection(function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return true;
+
+                case 'EXEC':
+                    return new Response\Error('ERR simulated failure on EXEC');
+
+                default:
+                    return new Response\StatusQueued();
+            }
+        });
+
+        $client = new Client($connection, array('exceptions' => false));
+        $tx = new MultiExec($client);
+
+        $tx->multi()->echo('test')->exec();
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
@@ -666,11 +752,11 @@ class MultiExecTest extends StandardTestCase
      * @param \Closure $executeCallback
      * @return MultiExec
      */
-    protected function getMockedTransaction($executeCallback, $options = array())
+    protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null)
     {
         $connection = $this->getMockedConnection($executeCallback);
-        $client = new Client($connection);
-        $transaction = new MultiExec($client, $options);
+        $client = new Client($connection, $clientOpts ?: array());
+        $transaction = new MultiExec($client, $txOpts ?: array());
 
         return $transaction;
     }
@@ -698,21 +784,21 @@ class MultiExecTest extends StandardTestCase
             switch ($cmd) {
                 case 'WATCH':
                     if ($multi) {
-                        throw new Response\ServerException("ERR $cmd inside MULTI is not allowed");
+                        return new Response\Error("ERR $cmd inside MULTI is not allowed");
                     }
 
                     return $watch = true;
 
                 case 'MULTI':
                     if ($multi) {
-                        throw new Response\ServerException("ERR MULTI calls can not be nested");
+                        return new Response\Error("ERR MULTI calls can not be nested");
                     }
 
                     return $multi = true;
 
                 case 'EXEC':
                     if (!$multi) {
-                        throw new Response\ServerException("ERR $cmd without MULTI");
+                        return new Response\Error("ERR $cmd without MULTI");
                     }
 
                     $watch = $multi = false;
@@ -727,7 +813,7 @@ class MultiExecTest extends StandardTestCase
 
                 case 'DISCARD':
                     if (!$multi) {
-                        throw new Response\ServerException("ERR $cmd without MULTI");
+                        return new Response\Error("ERR $cmd without MULTI");
                     }
 
                     $watch = $multi = false;
