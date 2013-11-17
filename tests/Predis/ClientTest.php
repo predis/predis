@@ -666,6 +666,7 @@ class ClientTest extends StandardTestCase
 
     /**
      * @group disconnected
+     * @todo I hate this test but reflection is the easiest way in this case.
      */
     public function testTransactionWithArrayReturnsTransactionMultiExecWithOptions()
     {
@@ -675,10 +676,13 @@ class ClientTest extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
-        $reflection = new \ReflectionProperty($tx, 'options');
-        $reflection->setAccessible(true);
+        $property = new \ReflectionProperty($tx, 'modeCAS');
+        $property->setAccessible(true);
+        $this->assertSame($options['cas'], $property->getValue($tx));
 
-        $this->assertSame($options, $reflection->getValue($tx));
+        $property = new \ReflectionProperty($tx, 'attempts');
+        $property->setAccessible(true);
+        $this->assertSame($options['retry'], $property->getValue($tx));
     }
 
     /**
