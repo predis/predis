@@ -233,6 +233,7 @@ class ServerVersion26 extends ServerProfile
             /* remote server control commands */
             'info'                      => 'Predis\Command\ServerInfoV26x',
             'time'                      => 'Predis\Command\ServerTime',
+            'sentinel'                  => 'Predis\Command\ServerSentinel',
         );
     }
 }

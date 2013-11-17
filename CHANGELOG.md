@@ -3,6 +3,9 @@ v0.9.0 (201x-xx-xx)
 
 - The default server profile for Redis is now `2.8`.
 
+- Added `SENTINEL` to the profile for Redis 2.6 and `PUBSUB` to the profile for
+  Redis 2.8.
+
 - Added the `aggregate` client option, useful to fully customize how the client
   should aggregate multiple connections when an array of connection parameters
   is passed to `Predis\Client::__construct()`.

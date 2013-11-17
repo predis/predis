@@ -233,6 +233,7 @@ class ServerVersion28 extends ServerProfile
             /* remote server control commands */
             'info'                      => 'Predis\Command\ServerInfoV26x',
             'time'                      => 'Predis\Command\ServerTime',
+            'sentinel'                  => 'Predis\Command\ServerSentinel',
 
 
             /* ---------------- Redis 2.8 ---------------- */
@@ -248,6 +249,9 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on hashes */
             'hscan'                     => 'Predis\Command\HashScan',
+
+            /* publish - subscribe */
+            'pubsub'                    => 'Predis\Command\PubSubPubsub',
         );
     }
 }

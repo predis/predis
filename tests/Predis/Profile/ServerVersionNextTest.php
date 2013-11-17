@@ -173,10 +173,12 @@ class ServerVersionNextTest extends ServerVersionTestCase
             132 => 'evalsha',
             133 => 'script',
             134 => 'time',
-            135 => 'scan',
-            136 => 'sscan',
-            137 => 'zscan',
-            138 => 'hscan',
+            135 => 'sentinel',
+            136 => 'scan',
+            137 => 'sscan',
+            138 => 'zscan',
+            139 => 'hscan',
+            140 => 'pubsub',
         );
     }
 }

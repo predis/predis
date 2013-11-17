@@ -173,6 +173,7 @@ class ServerVersion26Test extends ServerVersionTestCase
             132 => 'evalsha',
             133 => 'script',
             134 => 'time',
+            135 => 'sentinel',
         );
     }
 }
