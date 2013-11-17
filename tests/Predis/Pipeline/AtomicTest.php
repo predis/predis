@@ -14,21 +14,19 @@ namespace Predis\Pipeline;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
-use Predis\Profile\ServerProfile;
+use Predis\Client;
 use Predis\Response;
 
 /**
  *
  */
-class MultiExecExecutorTest extends StandardTestCase
+class AtomicTest extends StandardTestCase
 {
     /**
      * @group disconnected
      */
-    public function testExecutorWithSingleConnection()
+    public function testPipelineWithSingleConnection()
     {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
         $queued = new Response\StatusQueued();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
@@ -41,10 +39,13 @@ class MultiExecExecutorTest extends StandardTestCase
                    ->method('readResponse')
                    ->will($this->onConsecutiveCalls($queued, $queued, $queued));
 
-        $replies = $executor->execute($connection, $pipeline);
+        $pipeline = new Atomic(new Client($connection));
 
-        $this->assertTrue($pipeline->isEmpty());
-        $this->assertSame(array(true, true, true), $replies);
+        $pipeline->ping();
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $this->assertSame(array(true, true, true), $pipeline->execute());
     }
 
     /**
@@ -52,17 +53,20 @@ class MultiExecExecutorTest extends StandardTestCase
      * @expectedException Predis\ClientException
      * @expectedExceptionMessage The underlying transaction has been aborted by the server
      */
-    public function testExecutorWithAbortedTransaction()
+    public function testThrowsExceptionOnAbortedTransaction()
     {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
-
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(2))
                    ->method('executeCommand')
                    ->will($this->onConsecutiveCalls(true, null));
 
-        $executor->execute($connection, $pipeline);
+        $pipeline = new Atomic(new Client($connection));
+
+        $pipeline->ping();
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $pipeline->execute();
     }
 
     /**
@@ -70,10 +74,8 @@ class MultiExecExecutorTest extends StandardTestCase
      * @expectedException Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
-    public function testExecutorWithErrorInTransaction()
+    public function testPipelineWithErrorInTransaction()
     {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
         $queued = new Response\StatusQueued();
         $error = new Response\Error('ERR Test error');
 
@@ -88,16 +90,42 @@ class MultiExecExecutorTest extends StandardTestCase
                    ->method('executeCommand')
                    ->with($this->isInstanceOf('Predis\Command\TransactionDiscard'));
 
-        $executor->execute($connection, $pipeline);
+        $pipeline = new Atomic(new Client($connection));
+
+        $pipeline->ping();
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $pipeline->execute();
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\Response\ServerException
+     * @expectedExceptionMessage ERR Test error
+     */
+    public function testThrowsServerExceptionOnResponseErrorByDefault()
+    {
+        $error = new Response\Error('ERR Test error');
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('readResponse')
+                   ->will($this->returnValue($error));
+
+        $pipeline = new Atomic(new Client($connection));
+
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $pipeline->execute();
     }
 
     /**
      * @group disconnected
      */
-    public function testExecutorWithErrorInCommandResponse()
+    public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
     {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
         $queued = new Response\StatusQueued();
         $error = new Response\Error('ERR Test error');
 
@@ -109,44 +137,27 @@ class MultiExecExecutorTest extends StandardTestCase
                    ->method('executeCommand')
                    ->will($this->returnValue(array('PONG', 'PONG', $error)));
 
-        $replies = $executor->execute($connection, $pipeline);
+        $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
 
-        $this->assertSame(array(true, true, $error), $replies);
+        $pipeline->ping();
+        $pipeline->ping();
+        $pipeline->ping();
+
+        $this->assertSame(array(true, true, $error), $pipeline->execute());
     }
 
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Predis\Pipeline\MultiExecExecutor can be used only with single connections
+     * @expectedExceptionMessage Predis\Pipeline\Atomic can be used only with connections to single nodes
      */
     public function testExecutorWithAggregatedConnection()
     {
-        $executor = new MultiExecExecutor();
-        $pipeline = $this->getCommandsQueue();
+        $connection = $this->getMock('Predis\Connection\ClusterConnectionInterface');
+        $pipeline = new Atomic(new Client($connection));
 
-        $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
+        $pipeline->ping();
 
-        $replies = $executor->execute($connection, $pipeline);
-    }
-
-    // ******************************************************************** //
-    // ---- HELPER METHODS ------------------------------------------------ //
-    // ******************************************************************** //
-
-    /**
-     * Returns a list of queued command instances.
-     *
-     * @return SplQueue
-     */
-    protected function getCommandsQueue()
-    {
-        $profile = ServerProfile::getDevelopment();
-
-        $pipeline = new SplQueue();
-        $pipeline->enqueue($profile->createCommand('ping'));
-        $pipeline->enqueue($profile->createCommand('ping'));
-        $pipeline->enqueue($profile->createCommand('ping'));
-
-        return $pipeline;
+        $pipeline->execute();
     }
 }

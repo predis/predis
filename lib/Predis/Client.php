@@ -21,7 +21,7 @@ use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor;
-use Predis\Pipeline\PipelineContext;
+use Predis\Pipeline;
 use Predis\Profile\ServerProfile;
 use Predis\PubSub;
 use Predis\Response;
@@ -355,7 +355,7 @@ class Client implements ClientInterface
      * a pipeline executed inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return PipelineContext|array
+     * @return Pipeline\Pipeline|array
      */
     public function pipeline(/* arguments */)
     {
@@ -367,17 +367,19 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return PipelineContext|array
+     * @return Pipeline\Pipeline|array
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
-        $executor = isset($options['executor']) ? $options['executor'] : null;
-
-        if (is_callable($executor)) {
-            $executor = call_user_func($executor, $this, $options);
+        if (isset($options['atomic']) && $options['atomic']) {
+            $class = 'Predis\Pipeline\Atomic';
+        } else if (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+            $class = 'Predis\Pipeline\FireAndForget';
+        } else {
+            $class = 'Predis\Pipeline\Pipeline';
         }
 
-        $pipeline = new PipelineContext($this, $executor);
+        $pipeline = new $class($this);
 
         if (isset($callable)) {
             return $pipeline->execute($callable);

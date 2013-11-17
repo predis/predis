@@ -20,6 +20,15 @@ v0.9.0 (201x-xx-xx)
   using objects that responds to `__invoke()` (not all the kinds of callables)
   even for custom options defined by the user.
 
+- Removed pipeline executors, now command pipelines can be easily customized by
+  extending the standard `Predis\Pipeline\Pipeline` class. Accepted options when
+  creating a pipeline using `Predis\Client::pipeline()` are:
+
+    - `atomic`: returns a pipeline wrapped in a MULTI / EXEC transaction
+      (class: `Predis\Pipeline\Atomic`).
+    - `fire-and-forget`: returns a pipeline that does not read back responses
+      (class: `Predis\Pipeline\FireAndForget`).
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API of external protocol processors.
 
