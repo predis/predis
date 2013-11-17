@@ -37,15 +37,29 @@ class MultiExecTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support WATCH and UNWATCH
+     * @expectedExceptionMessage WATCH is not supported by the current profile
      */
-    public function testThrowsExceptionOnUnsupportedWatchUnwatchInProfile()
+    public function testThrowsExceptionOnUnsupportedWatchInProfile()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $client = new Client($connection, array('profile' => '2.0'));
         $tx = new MultiExec($client, array('options' => 'cas'));
 
         $tx->watch('foo');
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException Predis\NotSupportedException
+     * @expectedExceptionMessage UNWATCH is not supported by the current profile
+     */
+    public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
+    {
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $client = new Client($connection, array('profile' => '2.0'));
+        $tx = new MultiExec($client, array('options' => 'cas'));
+
+        $tx->unwatch('foo');
     }
 
     /**
@@ -129,7 +143,7 @@ class MultiExecTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Cannot invoke 'execute' or 'exec' inside an active client transaction block
+     * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context
      */
     public function testThrowsExceptionOnExecInsideTransactionBlock()
     {
@@ -356,7 +370,7 @@ class MultiExecTest extends StandardTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Automatic retries can be used only when a transaction block is provided
+     * @expectedExceptionMessage Automatic retries can be used only when a callable block is provided
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()
     {
@@ -629,7 +643,7 @@ class MultiExecTest extends StandardTestCase
 
     /**
      * Returns a mocked instance of Predis\Connection\SingleConnectionInterface
-     * usingthe specified callback to return values from executeCommand().
+     * using the specified callback to return values from executeCommand().
      *
      * @param \Closure $executeCallback
      * @return \Predis\Connection\SingleConnectionInterface
