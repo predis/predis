@@ -20,6 +20,13 @@ v0.9.0 (201x-xx-xx)
   using objects that responds to `__invoke()` (not all the kinds of callables)
   even for custom options defined by the user.
 
+- Changed a couple of options for our transaction abstraction:
+
+    - `exceptions`: overrides the value of the client option with the same name.
+      Please note that it does not affect all the transaction control commands
+      such as `MULTI`, `EXEC`, `DISCARD`, `WATCH` and `UNWATCH`.
+    - `on_retry`: this option has been removed.
+
 - Removed pipeline executors, now command pipelines can be easily customized by
   extending the standard `Predis\Pipeline\Pipeline` class. Accepted options when
   creating a pipeline using `Predis\Client::pipeline()` are:
