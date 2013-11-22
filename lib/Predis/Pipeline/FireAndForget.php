@@ -13,7 +13,6 @@ namespace Predis\Pipeline;
 
 use SplQueue;
 use Predis\Connection\ConnectionInterface;
-use Predis\Connection\ReplicationConnectionInterface;
 
 /**
  * Command pipeline that writes commands to the servers but discards responses.
@@ -27,10 +26,6 @@ class FireAndForget extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
-        if ($connection instanceof ReplicationConnectionInterface) {
-            $connection->switchTo('master');
-        }
-
         while (!$commands->isEmpty()) {
             $connection->writeCommand($commands->dequeue());
         }

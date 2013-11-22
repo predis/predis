@@ -96,6 +96,22 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
+     * Returns the underlying connection to be used by the pipeline.
+     *
+     * @return ConnectionInterface
+     */
+    protected function getConnection()
+    {
+        $connection = $this->getClient()->getConnection();
+
+        if ($connection instanceof ReplicationConnectionInterface) {
+            $connection->switchTo('master');
+        }
+
+        return $connection;
+    }
+
+    /**
      * Implements the logic to flush the queued commands and read the responses
      * from the current connection.
      *
@@ -105,10 +121,6 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
-        if ($connection instanceof ReplicationConnectionInterface) {
-            $connection->switchTo('master');
-        }
-
         foreach ($commands as $command) {
             $connection->writeCommand($command);
         }
@@ -141,9 +153,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     public function flushPipeline($send = true)
     {
         if ($send && !$this->pipeline->isEmpty()) {
-            $connection = $this->client->getConnection();
-            $responses = $this->executePipeline($connection, $this->pipeline);
-
+            $responses = $this->executePipeline($this->getConnection(), $this->pipeline);
             $this->responses = array_merge($this->responses, $responses);
         } else {
             $this->pipeline = new SplQueue();

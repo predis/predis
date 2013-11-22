@@ -13,6 +13,7 @@ namespace Predis\Pipeline;
 
 use SplQueue;
 use Predis\ClientException;
+use Predis\ClientInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
 use Predis\Profile;
@@ -28,11 +29,41 @@ class Atomic extends Pipeline
     /**
      * {@inheritdoc}
      */
+    public function __construct(ClientInterface $client)
+    {
+        if (!$client->getProfile()->supportsCommands(array('multi', 'exec', 'discard'))) {
+            throw new ClientException(
+                'The specified server profile must support MULTI, EXEC and DISCARD.'
+            );
+        }
+
+        parent::__construct($client);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getConnection()
+    {
+        $connection = $this->getClient()->getConnection();
+
+        if (!$connection instanceof SingleConnectionInterface) {
+            $class = __CLASS__;
+
+            throw new ClientException(
+                "$class can be used only with connections to single nodes"
+            );
+        }
+
+        return $connection;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $profile = $this->getClient()->getProfile();
-        $this->check($connection, $profile);
-
         $connection->executeCommand($profile->createCommand('multi'));
 
         foreach ($commands as $command) {
@@ -83,28 +114,5 @@ class Atomic extends Pipeline
         }
 
         return $responses;
-    }
-
-    /**
-     * Verifies all the needed preconditions before executing the pipeline.
-     *
-     * @param ConnectionInterface $connection Connection instance.
-     * @param Profile\ProfileInterface $profile Server profile.
-     */
-    protected function check(ConnectionInterface $connection, Profile\ProfileInterface $profile)
-    {
-        if (!$connection instanceof SingleConnectionInterface) {
-            $class = __CLASS__;
-
-            throw new ClientException(
-                "$class can be used only with connections to single nodes"
-            );
-        }
-
-        if (!$profile->supportsCommands(array('multi', 'exec', 'discard'))) {
-            throw new ClientException(
-                'The specified server profile must support MULTI, EXEC and DISCARD.'
-            );
-        }
     }
 }

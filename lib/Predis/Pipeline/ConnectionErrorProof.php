@@ -30,12 +30,20 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
+    protected function getConnection()
+    {
+        return $this->getClient()->getConnection();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         if ($connection instanceof SingleConnectionInterface) {
-            return $this->executePipelineNode($connection, $commands);
+            return $this->executeSingleNode($connection, $commands);
         } else if ($connection instanceof ClusterConnectionInterface) {
-            return $this->executePipelineCluster($connection, $commands);
+            return $this->executeCluster($connection, $commands);
         } else {
             throw new NotSupportedException("Unsupported connection type");
         }
@@ -44,7 +52,7 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
-    public function executePipelineNode(SingleConnectionInterface $connection, SplQueue $commands)
+    public function executeSingleNode(SingleConnectionInterface $connection, SplQueue $commands)
     {
         $responses  = array();
         $sizeOfPipe = count($commands);
@@ -76,7 +84,7 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
-    public function executePipelineCluster(ClusterConnectionInterface $connection, SplQueue $commands)
+    public function executeCluster(ClusterConnectionInterface $connection, SplQueue $commands)
     {
         $responses  = array();
         $sizeOfPipe = count($commands);
