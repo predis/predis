@@ -15,8 +15,7 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptedCommand;
-use Predis\Configuration\Options;
-use Predis\Configuration\OptionsInterface;
+use Predis\Configuration;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionParametersInterface;
@@ -65,10 +64,10 @@ class Client implements ClientInterface
     protected function createOptions($options)
     {
         if (is_array($options)) {
-            return new Options($options);
+            return new Configuration\Options($options);
         }
 
-        if ($options instanceof OptionsInterface) {
+        if ($options instanceof Configuration\OptionsInterface) {
             return $options;
         }
 
