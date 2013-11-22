@@ -14,7 +14,7 @@ namespace Predis\Collection\Iterator;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  * @group realm-iterators
@@ -30,7 +30,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->once())
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -51,7 +51,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->once())
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -87,7 +87,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -120,7 +120,7 @@ class ListKeyTest extends StandardTestCase
         $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
 
         $iterator = new ListKey($client, 'key:list', 'wrong');
     }
@@ -135,7 +135,7 @@ class ListKeyTest extends StandardTestCase
         $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
 
         $iterator = new ListKey($client, 'key:list', 'wrong');
     }
@@ -149,7 +149,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 4)
@@ -180,7 +180,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 1)
@@ -220,7 +220,7 @@ class ListKeyTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::getDefault()));
+               ->will($this->returnValue(Profile\Factory::getDefault()));
         $client->expects($this->exactly(2))
                ->method('lrange')
                ->with('key:list', 0, 9)

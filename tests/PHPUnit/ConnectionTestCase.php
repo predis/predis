@@ -13,7 +13,7 @@ namespace Predis\Connection;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  * @group realm-connection
@@ -340,17 +340,17 @@ abstract class ConnectionTestCase extends StandardTestCase
      * Returns a new instance of server profile.
      *
      * @param array $additional Additional connection parameters.
-     * @return ServerProfile
+     * @return Profile\ProfileInterface
      */
     protected function getProfile($version = null)
     {
-        return ServerProfile::get($version ?: REDIS_SERVER_VERSION);
+        return Profile\Factory::get($version ?: REDIS_SERVER_VERSION);
     }
 
     /**
      * Returns a new instance of a connection instance.
      *
-     * @param ServerProfile $profile Reference to the server profile instance.
+     * @param Profile\ProfileInterface $profile Reference to the server profile instance.
      * @param Boolean $initialize Push default initialization commands (SELECT and FLUSHDB).
      * @param array $parameters Additional connection parameters.
      * @return StreamConnection

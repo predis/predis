@@ -18,81 +18,63 @@ use Predis\Command\Processor\ProcessorChain;
 /**
  *
  */
-class ServerProfileTest extends StandardTestCase
+abstract class RedisProfileTestCase extends StandardTestCase
 {
-    const DEFAULT_PROFILE_VERSION = '2.8';
-    const DEVELOPMENT_PROFILE_VERSION = '3.0';
+    /**
+     * Returns a new instance of the tested profile.
+     *
+     * @return ProfileInterface
+     */
+    protected abstract function getProfileInstance();
+
+    /**
+     * Returns the expected version string for the tested profile.
+     *
+     * @return string Version string.
+     */
+    protected abstract function getExpectedVersion();
+
+    /**
+     * Returns the expected list of commands supported by the tested profile.
+     *
+     * @return array List of supported commands.
+     */
+    protected abstract function getExpectedCommands();
+
+    /**
+     * Returns the list of commands supported by the current
+     * server profile.
+     *
+     * @param ProfileInterface $profile Server profile instance.
+     * @return array
+     */
+    protected function getCommands(ProfileInterface $profile)
+    {
+        $commands = $profile->getSupportedCommands();
+
+        return array_keys($commands);
+    }
 
     /**
      * @group disconnected
      */
     public function testGetVersion()
     {
-        $profile = ServerProfile::get('2.0');
+        $profile = $this->getProfileInstance();
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
-        $this->assertEquals('2.0', $profile->getVersion());
+        $this->assertEquals($this->getExpectedVersion(), $profile->getVersion());
     }
 
     /**
      * @group disconnected
      */
-    public function testGetDefault()
+    public function testSupportedCommands()
     {
-        $profile1 = ServerProfile::get(self::DEFAULT_PROFILE_VERSION);
-        $profile2 = ServerProfile::get('default');
-        $profile3 = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
+        $expected = $this->getExpectedCommands();
+        $commands = $this->getCommands($profile);
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile1);
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile2);
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile3);
-        $this->assertEquals($profile1->getVersion(), $profile2->getVersion());
-        $this->assertEquals($profile2->getVersion(), $profile3->getVersion());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testGetDevelopment()
-    {
-        $profile1 = ServerProfile::get('dev');
-        $profile2 = ServerProfile::getDevelopment();
-
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile1);
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile2);
-        $this->assertEquals(self::DEVELOPMENT_PROFILE_VERSION, $profile2->getVersion());
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Unknown server profile: 1.0
-     */
-    public function testGetUndefinedProfile()
-    {
-        ServerProfile::get('1.0');
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testDefineProfile()
-    {
-        $profileClass = get_class($this->getMock('Predis\Profile\ServerProfileInterface'));
-
-        ServerProfile::define('mock', $profileClass);
-
-        $this->assertInstanceOf($profileClass, ServerProfile::get('mock'));
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Cannot register 'stdClass' as it is not a valid profile class
-     */
-    public function testDefineInvalidProfile()
-    {
-        ServerProfile::define('bogus', 'stdClass');
+        $this->assertSame($expected, $commands);
     }
 
     /**
@@ -100,7 +82,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testToString()
     {
-        $this->assertEquals('2.0', (string) ServerProfile::get('2.0'));
+        $this->assertEquals($this->getExpectedVersion(), $this->getProfileInstance());
     }
 
     /**
@@ -108,7 +90,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testSupportCommand()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $this->assertTrue($profile->supportsCommand('info'));
         $this->assertTrue($profile->supportsCommand('INFO'));
@@ -122,7 +104,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testSupportCommands()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $this->assertTrue($profile->supportsCommands(array('get', 'set')));
         $this->assertTrue($profile->supportsCommands(array('GET', 'SET')));
@@ -137,7 +119,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testGetCommandClass()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('ping'));
         $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('PING'));
@@ -151,7 +133,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testDefineCommand()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $command = $this->getMock('Predis\Command\CommandInterface');
 
         $profile->defineCommand('mock', get_class($command));
@@ -169,7 +151,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testDefineInvalidCommand()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $profile->defineCommand('mock', 'stdClass');
     }
@@ -179,7 +161,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testCreateCommandWithoutArguments()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $command = $profile->createCommand('info');
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
@@ -192,7 +174,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testCreateCommandWithArguments()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $arguments = array('foo', 'bar');
 
         $command = $profile->createCommand('set', $arguments);
@@ -208,7 +190,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testCreateUndefinedCommand()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $profile->createCommand('unknown');
     }
 
@@ -217,7 +199,7 @@ class ServerProfileTest extends StandardTestCase
      */
     public function testGetDefaultProcessor()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $this->assertNull($profile->getProcessor());
     }
@@ -229,7 +211,7 @@ class ServerProfileTest extends StandardTestCase
     {
         $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
 
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $profile->setProcessor($processor);
 
         $this->assertSame($processor, $profile->getProcessor());
@@ -241,7 +223,7 @@ class ServerProfileTest extends StandardTestCase
     public function testSetAndUnsetProcessor()
     {
         $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
 
         $profile->setProcessor($processor);
         $this->assertSame($processor, $profile->getProcessor());
@@ -267,7 +249,7 @@ class ServerProfileTest extends StandardTestCase
                         $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                     }));
 
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $profile->setProcessor($processor);
         $command = $profile->createCommand('set', array('foo', 'bar'));
 
@@ -287,7 +269,7 @@ class ServerProfileTest extends StandardTestCase
         $chain->add($processor);
         $chain->add($processor);
 
-        $profile = ServerProfile::getDefault();
+        $profile = $this->getProfileInstance();
         $profile->setProcessor($chain);
         $profile->createCommand('info');
     }

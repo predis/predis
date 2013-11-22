@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for Redis v2.2.x.
+ * Server profile for Redis v2.0.x.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersion22 extends ServerProfile
+class RedisVersion200 extends RedisProfile
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '2.2';
+        return '2.0';
     }
 
     /**
@@ -169,36 +169,6 @@ class ServerVersion22 extends ServerProfile
 
             /* remote server control commands */
             'config'                    => 'Predis\Command\ServerConfig',
-
-
-            /* ---------------- Redis 2.2 ---------------- */
-
-            /* commands operating on the key space */
-            'persist'                   => 'Predis\Command\KeyPersist',
-
-            /* commands operating on string values */
-            'strlen'                    => 'Predis\Command\StringStrlen',
-            'setrange'                  => 'Predis\Command\StringSetRange',
-            'getrange'                  => 'Predis\Command\StringGetRange',
-            'setbit'                    => 'Predis\Command\StringSetBit',
-            'getbit'                    => 'Predis\Command\StringGetBit',
-
-            /* commands operating on lists */
-            'rpushx'                    => 'Predis\Command\ListPushTailX',
-            'lpushx'                    => 'Predis\Command\ListPushHeadX',
-            'linsert'                   => 'Predis\Command\ListInsert',
-            'brpoplpush'                => 'Predis\Command\ListPopLastPushHeadBlocking',
-
-            /* commands operating on sorted sets */
-            'zrevrangebyscore'          => 'Predis\Command\ZSetReverseRangeByScore',
-
-            /* transactions */
-            'watch'                     => 'Predis\Command\TransactionWatch',
-            'unwatch'                   => 'Predis\Command\TransactionUnwatch',
-
-            /* remote server control commands */
-            'object'                    => 'Predis\Command\ServerObject',
-            'slowlog'                   => 'Predis\Command\ServerSlowlog',
         );
     }
 }

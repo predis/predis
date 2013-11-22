@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 use Predis\Connection\ConnectionFactory;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\PredisCluster;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 use Predis\Response;
 
 /**
@@ -39,7 +39,7 @@ class ClientTest extends StandardTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), ServerProfile::getDefault()->getVersion());
+        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
 
         $this->assertFalse($client->isConnected());
     }
@@ -59,7 +59,7 @@ class ClientTest extends StandardTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), ServerProfile::getDefault()->getVersion());
+        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
 
         $this->assertFalse($client->isConnected());
     }
@@ -79,7 +79,7 @@ class ClientTest extends StandardTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), ServerProfile::getDefault()->getVersion());
+        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
 
         $this->assertFalse($client->isConnected());
     }
@@ -245,7 +245,7 @@ class ClientTest extends StandardTestCase
         $client = new Client(null, $arg2);
 
         $profile = $client->getProfile();
-        $this->assertSame($profile->getVersion(), ServerProfile::get('2.0')->getVersion());
+        $this->assertSame($profile->getVersion(), Profile\Factory::get('2.0')->getVersion());
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
     }
@@ -359,9 +359,9 @@ class ClientTest extends StandardTestCase
      */
     public function testCreatesNewCommandUsingSpecifiedProfile()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('createCommand')
                 ->with('ping', array())
@@ -376,7 +376,7 @@ class ClientTest extends StandardTestCase
      */
     public function testExecuteCommandReturnsParsedReplies()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $ping = $profile->createCommand('ping', array());
         $hgetall = $profile->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
@@ -404,7 +404,7 @@ class ClientTest extends StandardTestCase
      */
     public function testExecuteCommandThrowsExceptionOnRedisError()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection= $this->getMock('Predis\Connection\ConnectionInterface');
@@ -421,7 +421,7 @@ class ClientTest extends StandardTestCase
      */
     public function testExecuteCommandReturnsErrorResponseOnRedisError()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection= $this->getMock('Predis\Connection\ConnectionInterface');
@@ -440,7 +440,7 @@ class ClientTest extends StandardTestCase
      */
     public function testCallingRedisCommandExecutesInstanceOfCommand()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -448,7 +448,7 @@ class ClientTest extends StandardTestCase
                    ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
                    ->will($this->returnValue('PONG'));
 
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('createCommand')
                 ->with('ping', array())

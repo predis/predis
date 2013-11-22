@@ -13,7 +13,7 @@ namespace Predis\Cluster;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -55,7 +55,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testReturnsNullOnUnsupportedCommand()
     {
         $strategy = $this->getClusterStrategy();
-        $command = ServerProfile::getDevelopment()->createCommand('ping');
+        $command = Profile\Factory::getDevelopment()->createCommand('ping');
 
         $this->assertNull($strategy->getHash($command));
     }
@@ -66,7 +66,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testFirstKeyCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
@@ -81,7 +81,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testAllKeysCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('{key}:1', '{key}:2', '{key}:3', '{key}:4');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
@@ -96,7 +96,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testInterleavedKeysCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('{key}:1', 'value1', '{key}:2', 'value2');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
@@ -111,7 +111,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testKeysForBlockingListCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('{key}:1', '{key}:2', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
@@ -126,7 +126,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testKeysForZsetAggregationCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('{key}:destination', 2, '{key}:1', '{key}:1', array('aggregate' => 'SUM'));
 
         foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
@@ -141,7 +141,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testKeysForBitOpCommand()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('AND', '{key}:destination', '{key}:src:1', '{key}:src:2');
 
         foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
@@ -156,7 +156,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testKeysForScriptCommand()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2');
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
@@ -191,7 +191,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testUnsettingCommandHandler()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $strategy->setCommandHandler('set');
         $strategy->setCommandHandler('get', null);
@@ -209,7 +209,7 @@ class PredisStrategyTest extends StandardTestCase
     public function testSettingCustomCommandHandler()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())

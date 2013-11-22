@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for Redis v2.4.x.
+ * Server profile for Redis v2.6.x.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersion24 extends ServerProfile
+class RedisVersion260 extends RedisProfile
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '2.4';
+        return '2.6';
     }
 
     /**
@@ -47,6 +47,8 @@ class ServerVersion24 extends ServerProfile
             'ttl'                       => 'Predis\Command\KeyTimeToLive',
             'move'                      => 'Predis\Command\KeyMove',
             'sort'                      => 'Predis\Command\KeySort',
+            'dump'                      => 'Predis\Command\KeyDump',
+            'restore'                   => 'Predis\Command\KeyRestore',
 
             /* commands operating on string values */
             'set'                       => 'Predis\Command\StringSet',
@@ -205,6 +207,33 @@ class ServerVersion24 extends ServerProfile
 
             /* remote server control commands */
             'client'                    => 'Predis\Command\ServerClient',
+
+
+            /* ---------------- Redis 2.6 ---------------- */
+
+            /* commands operating on the key space */
+            'pttl'                      => 'Predis\Command\KeyPreciseTimeToLive',
+            'pexpire'                   => 'Predis\Command\KeyPreciseExpire',
+            'pexpireat'                 => 'Predis\Command\KeyPreciseExpireAt',
+
+            /* commands operating on string values */
+            'psetex'                    => 'Predis\Command\StringPreciseSetExpire',
+            'incrbyfloat'               => 'Predis\Command\StringIncrementByFloat',
+            'bitop'                     => 'Predis\Command\StringBitOp',
+            'bitcount'                  => 'Predis\Command\StringBitCount',
+
+            /* commands operating on hashes */
+            'hincrbyfloat'              => 'Predis\Command\HashIncrementByFloat',
+
+            /* scripting */
+            'eval'                      => 'Predis\Command\ServerEval',
+            'evalsha'                   => 'Predis\Command\ServerEvalSHA',
+            'script'                    => 'Predis\Command\ServerScript',
+
+            /* remote server control commands */
+            'info'                      => 'Predis\Command\ServerInfoV26x',
+            'time'                      => 'Predis\Command\ServerTime',
+            'sentinel'                  => 'Predis\Command\ServerSentinel',
         );
     }
 }

@@ -15,7 +15,7 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
 use Predis\ClientException;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 use Predis\Response;
 
 /**
@@ -133,7 +133,7 @@ class PipelineTest extends StandardTestCase
      */
     public function testExecuteCommandDoesNotSendCommandsWithoutExecute()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->never())->method('writeCommand');

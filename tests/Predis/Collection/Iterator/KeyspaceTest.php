@@ -14,7 +14,7 @@ namespace Predis\Collection\Iterator;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  * @group realm-iterators
@@ -26,13 +26,13 @@ class KeyspaceTest extends StandardTestCase
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The specified server profile does not support the `SCAN` command.
      */
-    public function testThrowsExceptionOnInvalidServerProfile()
+    public function testThrowsExceptionOnInvalidProfile()
     {
         $client = $this->getMock('Predis\ClientInterface');
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.0')));
+               ->will($this->returnValue(Profile\Factory::get('2.0')));
 
         $iterator = new Keyspace($client);
     }
@@ -46,7 +46,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->once())
                ->method('scan')
                ->with(0, array())
@@ -67,7 +67,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->once())
                ->method('scan')
                ->with(0, array())
@@ -103,7 +103,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array())
@@ -143,7 +143,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array())
@@ -178,7 +178,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array())
@@ -222,7 +222,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('MATCH' => 'key:*'))
@@ -253,7 +253,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('MATCH' => 'key:*'))
@@ -288,7 +288,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('COUNT' => 2))
@@ -319,7 +319,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('COUNT' => 1))
@@ -354,7 +354,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('MATCH' => 'key:*', 'COUNT' => 2))
@@ -385,7 +385,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('scan')
                ->with(0, array('MATCH' => 'key:*', 'COUNT' => 1))
@@ -420,7 +420,7 @@ class KeyspaceTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->exactly(2))
                ->method('scan')
                ->with(0, array())

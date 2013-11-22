@@ -14,7 +14,7 @@ namespace Predis\Monitor;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 use Predis\Monitor\Consumer as MonitorConsumer;
 
 /**
@@ -29,7 +29,7 @@ class ConsumerTest extends StandardTestCase
      */
     public function testMonitorConsumerRequireMonitorCommand()
     {
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommand')
                 ->with('monitor')
@@ -57,7 +57,7 @@ class ConsumerTest extends StandardTestCase
      */
     public function testConstructorStartsConsumer()
     {
-        $cmdMonitor = ServerProfile::getDefault()->createCommand('monitor');
+        $cmdMonitor = Profile\Factory::getDefault()->createCommand('monitor');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 

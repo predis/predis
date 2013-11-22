@@ -15,7 +15,7 @@ use SplQueue;
 use Predis\ClientException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
-use Predis\Profile\ServerProfileInterface;
+use Predis\Profile;
 use Predis\Response;
 
 /**
@@ -89,9 +89,9 @@ class Atomic extends Pipeline
      * Verifies all the needed preconditions before executing the pipeline.
      *
      * @param ConnectionInterface $connection Connection instance.
-     * @param ServerProfileInterface $profile Server profile.
+     * @param Profile\ProfileInterface $profile Server profile.
      */
-    protected function check(ConnectionInterface $connection, ServerProfileInterface $profile)
+    protected function check(ConnectionInterface $connection, Profile\ProfileInterface $profile)
     {
         if (!$connection instanceof SingleConnectionInterface) {
             $class = __CLASS__;

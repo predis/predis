@@ -14,7 +14,7 @@ namespace Predis\Replication;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Command\CommandInterface;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -26,7 +26,7 @@ class ReplicationStrategyTest extends StandardTestCase
      */
     public function testReadCommands()
     {
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
         foreach ($this->getExpectedCommands('read') as $commandId) {
@@ -40,7 +40,7 @@ class ReplicationStrategyTest extends StandardTestCase
      */
     public function testWriteCommands()
     {
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
         foreach ($this->getExpectedCommands('write') as $commandId) {
@@ -54,7 +54,7 @@ class ReplicationStrategyTest extends StandardTestCase
      */
     public function testDisallowedCommands()
     {
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
         foreach ($this->getExpectedCommands('disallowed') as $commandId) {
@@ -68,7 +68,7 @@ class ReplicationStrategyTest extends StandardTestCase
      */
     public function testSortCommand()
     {
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
         $cmdReadSort = $profile->createCommand('SORT', array('key:list'));
@@ -85,7 +85,7 @@ class ReplicationStrategyTest extends StandardTestCase
      */
     public function testUsingDisallowedCommandThrowsException()
     {
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
         $command = $profile->createCommand('INFO');
@@ -150,7 +150,7 @@ class ReplicationStrategyTest extends StandardTestCase
     public function testCanUseCallableToCheckCommand()
     {
         $strategy = new ReplicationStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $strategy->setCommandReadOnly('SET', function ($command) {
             return $command->getArgument(1) === true;
@@ -169,7 +169,7 @@ class ReplicationStrategyTest extends StandardTestCase
     public function testSetLuaScriptAsReadOperation()
     {
         $strategy = new ReplicationStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $writeScript = 'redis.call("set", "foo", "bar")';
         $readScript = 'return true';

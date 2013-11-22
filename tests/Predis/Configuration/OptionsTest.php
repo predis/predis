@@ -28,7 +28,7 @@ class OptionsTest extends StandardTestCase
         $options = new Options();
 
         $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);
         $this->assertTrue($options->exceptions);
@@ -50,7 +50,7 @@ class OptionsTest extends StandardTestCase
         ));
 
         $this->assertInternalType('bool', $options->exceptions);
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $options->prefix);
         $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
@@ -122,7 +122,7 @@ class OptionsTest extends StandardTestCase
     {
         $options = new Options();
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $options->getDefault('profile'));
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->getDefault('profile'));
     }
 
     /**
@@ -140,7 +140,7 @@ class OptionsTest extends StandardTestCase
      */
     public function testLazilyInitializesOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
