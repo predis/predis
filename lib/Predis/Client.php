@@ -215,34 +215,27 @@ class Client implements ClientInterface
     }
 
     /**
-     * Dynamically invokes a Redis command with the specified arguments.
+     * Creates a Redis command with the specified arguments and sends a request
+     * to the server.
      *
-     * @param string $method The name of a Redis command.
-     * @param array $arguments The arguments for the command.
+     * @param string $commandID Command ID.
+     * @param array $arguments Arguments for the command.
      * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call($commandID, $arguments)
     {
-        $command = $this->profile->createCommand($method, $arguments);
-        $response = $this->connection->executeCommand($command);
+        $command = $this->createCommand($commandID, $arguments);
+        $response = $this->executeCommand($command);
 
-        if ($response instanceof ResponseObjectInterface) {
-            if ($response instanceof ResponseErrorInterface) {
-                $response = $this->onResponseError($command, $response);
-            }
-
-            return $response;
-        }
-
-        return $command->parseResponse($response);
+        return $response;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createCommand($method, $arguments = array())
+    public function createCommand($commandID, $arguments = array())
     {
-        return $this->profile->createCommand($method, $arguments);
+        return $this->profile->createCommand($commandID, $arguments);
     }
 
     /**

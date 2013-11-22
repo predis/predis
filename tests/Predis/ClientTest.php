@@ -404,7 +404,7 @@ class ClientTest extends StandardTestCase
                 ->will($this->returnValue($ping));
 
         $options = array('profile' => $profile);
-        $client = $this->getMock('Predis\Client', array('createCommand'), array($connection, $options));
+        $client = $this->getMock('Predis\Client', null, array($connection, $options));
 
         $this->assertTrue($client->ping());
     }
