@@ -11,8 +11,7 @@
 
 namespace Predis\Connection;
 
-use Predis\Profile\ServerProfile;
-use Predis\Profile\ServerProfileInterface;
+use Predis\Profile;
 
 /**
  * Provides a default factory for Redis connections that maps URI schemes
@@ -28,9 +27,9 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * Initializes a new instance of the default connection factory class used by Predis.
      *
-     * @param ServerProfileInterface $profile Server profile used to initialize new connections.
+     * @param Profile\ProfileInterface $profile Server profile used to initialize new connections.
      */
-    public function __construct(ServerProfileInterface $profile = null)
+    public function __construct(Profile\ProfileInterface $profile = null)
     {
         $this->schemes = $this->getDefaultSchemes();
         $this->profile = $profile;
@@ -160,9 +159,9 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * Sets the server profile used to create initialization commands for connections.
      *
-     * @param ServerProfileInterface $profile Server profile instance.
+     * @param Profile\ProfileInterface $profile Server profile instance.
      */
-    public function setProfile(ServerProfileInterface $profile)
+    public function setProfile(Profile\ProfileInterface $profile)
     {
         $this->profile = $profile;
     }
@@ -170,7 +169,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * Returns the server profile used to create initialization commands for connections.
      *
-     * @return ServerProfileInterface
+     * @return Profile\ProfileInterface
      */
     public function getProfile()
     {

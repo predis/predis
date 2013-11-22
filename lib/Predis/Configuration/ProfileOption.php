@@ -12,8 +12,7 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use Predis\Profile\ServerProfile;
-use Predis\Profile\ServerProfileInterface;
+use Predis\Profile;
 
 /**
  * Configures the server profile to be used by the client
@@ -28,9 +27,9 @@ class ProfileOption implements OptionInterface
      * Sets the needed commands processors that should be applied to the profile.
      *
      * @param OptionsInterface $options Client options.
-     * @param ServerProfileInterface $profile Server profile.
+     * @param Profile\ProfileInterface $profile Server profile.
      */
-    protected function setProcessors(OptionsInterface $options, ServerProfileInterface $profile)
+    protected function setProcessors(OptionsInterface $options, Profile\ProfileInterface $profile)
     {
         if (isset($options->prefix)) {
             $profile->setProcessor($options->prefix);
@@ -43,9 +42,9 @@ class ProfileOption implements OptionInterface
     public function filter(OptionsInterface $options, $value)
     {
         if (is_string($value)) {
-            $value = ServerProfile::get($value);
+            $value = Profile\Factory::get($value);
             $this->setProcessors($options, $value);
-        } else if (!$value instanceof ServerProfileInterface) {
+        } else if (!$value instanceof Profile\ProfileInterface) {
             throw new InvalidArgumentException('Invalid value for the profile option');
         }
 
@@ -57,7 +56,7 @@ class ProfileOption implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
         $this->setProcessors($options, $profile);
 
         return $profile;

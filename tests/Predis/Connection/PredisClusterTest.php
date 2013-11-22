@@ -13,7 +13,7 @@ namespace Predis\Connection;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -224,7 +224,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testReturnsCorrectConnectionUsingCommandInstance()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection2 = $this->getMockConnection('tcp://host1:7002');
@@ -261,7 +261,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testThrowsExceptionOnNonShardableCommand()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping');
+        $ping = Profile\Factory::getDefault()->createCommand('ping');
 
         $cluster = new PredisCluster();
         $cluster->add($this->getMockConnection());
@@ -274,7 +274,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node01:5431'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->once())->method('writeCommand')->with($command);
@@ -294,7 +294,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node02:3212'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node02:3212'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->never())->method('readResponse');
@@ -314,7 +314,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testExecutesCommandOnCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node01:5431'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->once())->method('executeCommand')->with($command);
@@ -334,7 +334,7 @@ class PredisClusterTest extends StandardTestCase
      */
     public function testExecuteCommandOnEachNode()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping', array());
+        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
         $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection1->expects($this->once())

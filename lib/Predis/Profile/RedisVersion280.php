@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for Redis v2.6.x.
+ * Server profile for Redis v2.8.x.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersion26 extends ServerProfile
+class RedisVersion280 extends RedisProfile
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '2.6';
+        return '2.8';
     }
 
     /**
@@ -234,6 +234,24 @@ class ServerVersion26 extends ServerProfile
             'info'                      => 'Predis\Command\ServerInfoV26x',
             'time'                      => 'Predis\Command\ServerTime',
             'sentinel'                  => 'Predis\Command\ServerSentinel',
+
+
+            /* ---------------- Redis 2.8 ---------------- */
+
+            /* commands operating on the key space */
+            'scan'                      => 'Predis\Command\KeyScan',
+
+            /* commands operating on sets */
+            'sscan'                     => 'Predis\Command\SetScan',
+
+            /* commands operating on sorted sets */
+            'zscan'                     => 'Predis\Command\ZSetScan',
+
+            /* commands operating on hashes */
+            'hscan'                     => 'Predis\Command\HashScan',
+
+            /* publish - subscribe */
+            'pubsub'                    => 'Predis\Command\PubSubPubsub',
         );
     }
 }

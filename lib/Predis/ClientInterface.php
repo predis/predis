@@ -11,9 +11,10 @@
 
 namespace Predis;
 
+use Predis\Command\CommandInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Profile\ServerProfileInterface;
+use Predis\Profile\ProfileInterface;
 
 /**
  * Interface defining the most important parts needed to create an
@@ -27,7 +28,7 @@ interface ClientInterface extends BasicClientInterface
     /**
      * Returns the server profile used by the client.
      *
-     * @return ServerProfileInterface
+     * @return ProfileInterface
      */
     public function getProfile();
 
@@ -60,7 +61,7 @@ interface ClientInterface extends BasicClientInterface
      *
      * @param string $method The name of a Redis command.
      * @param array $arguments The arguments for the command.
-     * @return Command\CommandInterface
+     * @return CommandInterface
      */
     public function createCommand($method, $arguments = array());
 }

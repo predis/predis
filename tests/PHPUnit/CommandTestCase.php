@@ -14,8 +14,7 @@ namespace Predis\Command;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
-use Predis\Profile\ServerProfileInterface;
+use Predis\Profile;
 
 /**
  *
@@ -51,11 +50,11 @@ abstract class CommandTestCase extends StandardTestCase
     /**
      * Return the server profile used during the tests.
      *
-     * @return ServerProfileInterface
+     * @return Profile\ProfileInterface
      */
     protected function getProfile()
     {
-        return ServerProfile::get(REDIS_SERVER_VERSION);
+        return Profile\Factory::get(REDIS_SERVER_VERSION);
     }
 
     /**

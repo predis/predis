@@ -16,7 +16,7 @@ More details are available on the [official wiki](http://wiki.github.com/nrk/pre
 
 ## Main features ##
 
-- Wide range of Redis versions supported (from __1.2__ to __2.8__ and unstable) using server profiles.
+- Wide range of Redis versions supported (from __1.2__ to __2.8__ and unstable) using profiles.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
 - Client-side sharding via consistent hashing or custom distribution strategies.
 - Support for master / slave replication configurations (write on master, read from slaves).
@@ -28,7 +28,7 @@ More details are available on the [official wiki](http://wiki.github.com/nrk/pre
 - Connections to Redis instances are lazily established upon the first call to a command by the client.
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets with support for persistent connections.
 - Ability to specify alternative connection classes to use different types of network or protocol backends.
-- Flexible system to define and register your own set of commands or server profiles to client instances.
+- Flexible system to define and register your own set of commands or profiles to client instances.
 
 
 ## How to use Predis ##
@@ -178,11 +178,10 @@ $redis->newcmd();
 ### Abstraction for handling Lua scripts as plain Redis commands ###
 
 A scripted command in Predis is an abstraction for [Lua scripting](http://redis.io/commands/eval)
-with Redis >= 2.6 that allows to use a Lua script as if it was a plain Redis command registered
-in the server profile being used by the client instance. Internally, scripted commands use
-[EVALSHA](http://redis.io/commands/evalsha) to refer to a Lua script by its SHA1 hash in order
-to save bandwidth, but they are capable of falling back to [EVAL](http://redis.io/commands/eval)
-when needed:
+in Redis >= 2.6 allowing to use a Lua script as if it was a Redis command registered in the profile
+used by the client. Internally scripted commands use [EVALSHA](http://redis.io/commands/evalsha) to
+refer to a Lua script by its SHA1 hash in order to save bandwidth, but they are capable of falling
+back to [EVAL](http://redis.io/commands/eval) when needed:
 
 ```php
 class ListPushRandomValue extends Predis\Command\ScriptedCommand
@@ -220,10 +219,10 @@ Predis has a comprehensive test suite covering every aspect of the library. The 
 tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct behaviour of the
 implementation of each command and automatically skips commands not defined in the selected version of
 Redis. If you do not have Redis up and running, integration tests can be disabled. By default, the test
-suite is configured to execute integration tests using the server profile for Redis v2.4 (which is the
-current stable version of Redis). You can optionally run the suite against a Redis instance built from
-the `unstable` branch with the development profile by changing the `REDIS_SERVER_VERSION` to `dev` in
-the `phpunit.xml` file. More details on testing Predis can be found in [the tests README](tests/README.md).
+suite is configured to execute integration tests using the profile for Redis v2.4 (which is the current
+stable version of Redis). You can optionally run the suite against a Redis instance built from the `unstable`
+branch with the development profile by changing the `REDIS_SERVER_VERSION` to `dev` in the `phpunit.xml`
+file. More details on testing Predis can be found in [the tests README](tests/README.md).
 
 Predis uses Travis CI for continuous integration. You can find the results of the test suite and the build
 history [on its project page](http://travis-ci.org/nrk/predis).

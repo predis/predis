@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for Redis v1.2.x.
+ * Server profile for Redis v2.4.x.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersion12 extends ServerProfile
+class RedisVersion240 extends RedisProfile
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '1.2';
+        return '2.4';
     }
 
     /**
@@ -38,7 +38,7 @@ class ServerVersion12 extends ServerProfile
             'exists'                    => 'Predis\Command\KeyExists',
             'del'                       => 'Predis\Command\KeyDelete',
             'type'                      => 'Predis\Command\KeyType',
-            'keys'                      => 'Predis\Command\KeyKeysV12x',
+            'keys'                      => 'Predis\Command\KeyKeys',
             'randomkey'                 => 'Predis\Command\KeyRandom',
             'rename'                    => 'Predis\Command\KeyRename',
             'renamenx'                  => 'Predis\Command\KeyRenamePreserve',
@@ -120,6 +120,91 @@ class ServerVersion12 extends ServerProfile
             'lastsave'                  => 'Predis\Command\ServerLastSave',
             'shutdown'                  => 'Predis\Command\ServerShutdown',
             'bgrewriteaof'              => 'Predis\Command\ServerBackgroundRewriteAOF',
+
+
+            /* ---------------- Redis 2.0 ---------------- */
+
+            /* commands operating on string values */
+            'setex'                     => 'Predis\Command\StringSetExpire',
+            'append'                    => 'Predis\Command\StringAppend',
+            'substr'                    => 'Predis\Command\StringSubstr',
+
+            /* commands operating on lists */
+            'blpop'                     => 'Predis\Command\ListPopFirstBlocking',
+            'brpop'                     => 'Predis\Command\ListPopLastBlocking',
+
+            /* commands operating on sorted sets */
+            'zunionstore'               => 'Predis\Command\ZSetUnionStore',
+            'zinterstore'               => 'Predis\Command\ZSetIntersectionStore',
+            'zcount'                    => 'Predis\Command\ZSetCount',
+            'zrank'                     => 'Predis\Command\ZSetRank',
+            'zrevrank'                  => 'Predis\Command\ZSetReverseRank',
+            'zremrangebyrank'           => 'Predis\Command\ZSetRemoveRangeByRank',
+
+            /* commands operating on hashes */
+            'hset'                      => 'Predis\Command\HashSet',
+            'hsetnx'                    => 'Predis\Command\HashSetPreserve',
+            'hmset'                     => 'Predis\Command\HashSetMultiple',
+            'hincrby'                   => 'Predis\Command\HashIncrementBy',
+            'hget'                      => 'Predis\Command\HashGet',
+            'hmget'                     => 'Predis\Command\HashGetMultiple',
+            'hdel'                      => 'Predis\Command\HashDelete',
+            'hexists'                   => 'Predis\Command\HashExists',
+            'hlen'                      => 'Predis\Command\HashLength',
+            'hkeys'                     => 'Predis\Command\HashKeys',
+            'hvals'                     => 'Predis\Command\HashValues',
+            'hgetall'                   => 'Predis\Command\HashGetAll',
+
+            /* transactions */
+            'multi'                     => 'Predis\Command\TransactionMulti',
+            'exec'                      => 'Predis\Command\TransactionExec',
+            'discard'                   => 'Predis\Command\TransactionDiscard',
+
+            /* publish - subscribe */
+            'subscribe'                 => 'Predis\Command\PubSubSubscribe',
+            'unsubscribe'               => 'Predis\Command\PubSubUnsubscribe',
+            'psubscribe'                => 'Predis\Command\PubSubSubscribeByPattern',
+            'punsubscribe'              => 'Predis\Command\PubSubUnsubscribeByPattern',
+            'publish'                   => 'Predis\Command\PubSubPublish',
+
+            /* remote server control commands */
+            'config'                    => 'Predis\Command\ServerConfig',
+
+
+            /* ---------------- Redis 2.2 ---------------- */
+
+            /* commands operating on the key space */
+            'persist'                   => 'Predis\Command\KeyPersist',
+
+            /* commands operating on string values */
+            'strlen'                    => 'Predis\Command\StringStrlen',
+            'setrange'                  => 'Predis\Command\StringSetRange',
+            'getrange'                  => 'Predis\Command\StringGetRange',
+            'setbit'                    => 'Predis\Command\StringSetBit',
+            'getbit'                    => 'Predis\Command\StringGetBit',
+
+            /* commands operating on lists */
+            'rpushx'                    => 'Predis\Command\ListPushTailX',
+            'lpushx'                    => 'Predis\Command\ListPushHeadX',
+            'linsert'                   => 'Predis\Command\ListInsert',
+            'brpoplpush'                => 'Predis\Command\ListPopLastPushHeadBlocking',
+
+            /* commands operating on sorted sets */
+            'zrevrangebyscore'          => 'Predis\Command\ZSetReverseRangeByScore',
+
+            /* transactions */
+            'watch'                     => 'Predis\Command\TransactionWatch',
+            'unwatch'                   => 'Predis\Command\TransactionUnwatch',
+
+            /* remote server control commands */
+            'object'                    => 'Predis\Command\ServerObject',
+            'slowlog'                   => 'Predis\Command\ServerSlowlog',
+
+
+            /* ---------------- Redis 2.4 ---------------- */
+
+            /* remote server control commands */
+            'client'                    => 'Predis\Command\ServerClient',
         );
     }
 }

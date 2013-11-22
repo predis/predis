@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 use stdClass;
 
 use Predis\Command\Processor\KeyPrefixProcessor;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -33,19 +33,19 @@ class ProfileOptionTest extends StandardTestCase
 
         $profile = $option->getDefault($options);
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
-        $this->assertInstanceOf(get_class(ServerProfile::getDefault()), $profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $profile);
+        $this->assertInstanceOf(get_class(Profile\Factory::getDefault()), $profile);
         $this->assertNull($profile->getProcessor());
     }
 
     /**
      * @group disconnected
      */
-    public function testAcceptsServerProfileInstanceAsValue()
+    public function testAcceptsProfileInstanceAsValue()
     {
         $option = new ProfileOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = ServerProfile::get('2.0');
+        $value = Profile\Factory::get('2.0');
 
         $profile = $option->filter($options, $value);
 
@@ -56,14 +56,14 @@ class ProfileOptionTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsStringInterpretedAsServerProfileVersion()
+    public function testAcceptsStringInterpretedAsProfileVersion()
     {
         $option = new ProfileOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $profile = $option->filter($options, '2.0');
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $profile);
         $this->assertEquals('2.0', $profile->getVersion());
         $this->assertNull($profile->getProcessor());
     }
@@ -87,8 +87,8 @@ class ProfileOptionTest extends StandardTestCase
 
         $profile = $option->getDefault($options);
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
-        $this->assertInstanceOf(get_class(ServerProfile::getDefault()), $profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $profile);
+        $this->assertInstanceOf(get_class(Profile\Factory::getDefault()), $profile);
 
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
@@ -113,8 +113,8 @@ class ProfileOptionTest extends StandardTestCase
 
         $profile = $option->filter($options, '2.0');
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
-        $this->assertInstanceOf(get_class(ServerProfile::get('2.0')), $profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $profile);
+        $this->assertInstanceOf(get_class(Profile\Factory::get('2.0')), $profile);
 
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
         $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
@@ -123,19 +123,19 @@ class ProfileOptionTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testDoesNotApplyPrefixOnServerProfileValue()
+    public function testDoesNotApplyPrefixOnProfileValue()
     {
         $option = new ProfileOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = ServerProfile::getDefault();
+        $value = Profile\Factory::getDefault();
 
         $options->expects($this->never())->method('__isset');
         $options->expects($this->never())->method('__get');
 
         $profile = $option->filter($options, $value);
 
-        $this->assertInstanceOf('Predis\Profile\ServerProfileInterface', $profile);
-        $this->assertInstanceOf(get_class(ServerProfile::getDefault()), $profile);
+        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $profile);
+        $this->assertInstanceOf(get_class(Profile\Factory::getDefault()), $profile);
         $this->assertNull($profile->getProcessor());
     }
 

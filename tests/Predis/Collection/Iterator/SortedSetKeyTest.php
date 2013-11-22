@@ -14,7 +14,7 @@ namespace Predis\Collection\Iterator;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  * @group realm-iterators
@@ -26,13 +26,13 @@ class SortedSetTest extends StandardTestCase
      * @expectedException Predis\NotSupportedException
      * @expectedExceptionMessage The specified server profile does not support the `ZSCAN` command.
      */
-    public function testThrowsExceptionOnInvalidServerProfile()
+    public function testThrowsExceptionOnInvalidProfile()
     {
         $client = $this->getMock('Predis\ClientInterface');
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.0')));
+               ->will($this->returnValue(Profile\Factory::get('2.0')));
 
         $iterator = new SortedSetKey($client, 'key:zset');
     }
@@ -46,7 +46,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->once())
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -67,7 +67,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->once())
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -105,7 +105,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -149,7 +149,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -186,7 +186,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -234,7 +234,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*'))
@@ -267,7 +267,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*'))
@@ -306,7 +306,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('COUNT' => 2))
@@ -339,7 +339,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('COUNT' => 1))
@@ -378,7 +378,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
@@ -411,7 +411,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
@@ -450,7 +450,7 @@ class SortedSetTest extends StandardTestCase
 
         $client->expects($this->any())
                ->method('getProfile')
-               ->will($this->returnValue(ServerProfile::get('2.8')));
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
         $client->expects($this->exactly(2))
                ->method('zscan')
                ->with('key:zset', 0, array())

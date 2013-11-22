@@ -22,7 +22,6 @@ use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor;
 use Predis\Pipeline;
-use Predis\Profile\ServerProfile;
 use Predis\PubSub;
 use Predis\Response;
 use Predis\Transaction;

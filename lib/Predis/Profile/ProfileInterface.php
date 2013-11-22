@@ -14,16 +14,16 @@ namespace Predis\Profile;
 use Predis\Command\CommandInterface;
 
 /**
- * A server profile defines features and commands supported by certain
- * versions of Redis. Instances of Predis\Client should use a server
- * profile matching the version of Redis in use.
+ * A profile defines all the features and commands supported by certain versions
+ * of Redis. Instances of Predis\Client should use a server profile matching the
+ * version of Redis being used.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ServerProfileInterface
+interface ProfileInterface
 {
     /**
-     * Gets a profile version corresponding to a Redis version.
+     * Returns the profile version corresponding to the Redis version.
      *
      * @return string
      */
@@ -32,25 +32,25 @@ interface ServerProfileInterface
     /**
      * Checks if the profile supports the specified command.
      *
-     * @param string $command Command ID.
+     * @param string $commandID Command ID.
      * @return Boolean
      */
-    public function supportsCommand($command);
+    public function supportsCommand($commandID);
 
     /**
      * Checks if the profile supports the specified list of commands.
      *
-     * @param array $commands List of command IDs.
+     * @param array $commandIDs List of command IDs.
      * @return string
      */
-    public function supportsCommands(array $commands);
+    public function supportsCommands(array $commandIDs);
 
     /**
      * Creates a new command instance.
      *
-     * @param string $method Command ID.
+     * @param string $commandID Command ID.
      * @param array $arguments Arguments for the command.
      * @return CommandInterface
      */
-    public function createCommand($method, $arguments = array());
+    public function createCommand($commandID, $arguments = array());
 }

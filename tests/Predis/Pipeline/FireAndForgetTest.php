@@ -15,7 +15,7 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use SplQueue;
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -27,7 +27,7 @@ class FireAndForgetTest extends StandardTestCase
      */
     public function testPipelineWithSingleConnection()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(3))->method('writeCommand');
@@ -47,7 +47,7 @@ class FireAndForgetTest extends StandardTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
         $connection->expects($this->once())

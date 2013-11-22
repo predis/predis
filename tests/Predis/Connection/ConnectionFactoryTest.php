@@ -113,7 +113,7 @@ class ConnectionFactoryTest extends StandardTestCase
      */
     public function testCreateConnectionWithoutInitializationCommands()
     {
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->never())->method('create');
 
         $factory = new ConnectionFactory($profile);
@@ -140,7 +140,7 @@ class ConnectionFactoryTest extends StandardTestCase
             return $command;
         };
 
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->exactly(2))
                 ->method('createCommand')
                 ->with($this->isType('string'), $this->isType('array'))
@@ -347,12 +347,12 @@ class ConnectionFactoryTest extends StandardTestCase
      * @group disconnected
      * @todo We might want to add a test for SingleConnectionInterface::pushInitCommand().
      */
-    public function testAggregatedConnectionWithServerProfileArgument()
+    public function testAggregatedConnectionWithProfileArgument()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
 
         $factory = $this->getMock('Predis\Connection\ConnectionFactory', array('create'), array($profile));
         $factory->expects($this->exactly(2))

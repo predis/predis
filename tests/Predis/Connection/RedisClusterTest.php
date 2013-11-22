@@ -13,7 +13,7 @@ namespace Predis\Connection;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 use Predis\Response;
 
 /**
@@ -326,7 +326,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testReturnsCorrectConnectionUsingCommandInstance()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
@@ -358,7 +358,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->once())->method('writeCommand')->with($command);
@@ -378,7 +378,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1050'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1050'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->never())->method('readResponse');
@@ -398,7 +398,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testDoesNotSupportKeyTags()
     {
-        $profile = ServerProfile::getDefault();
+        $profile = Profile\Factory::getDefault();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
@@ -425,7 +425,7 @@ class RedisClusterTest extends StandardTestCase
     {
         $askResponse = new Response\Error('ASK 1970 127.0.0.1:6380');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(2))
@@ -458,7 +458,7 @@ class RedisClusterTest extends StandardTestCase
     {
         $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(2))
@@ -498,7 +498,7 @@ class RedisClusterTest extends StandardTestCase
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(1))
@@ -532,7 +532,7 @@ class RedisClusterTest extends StandardTestCase
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
 
-        $command = ServerProfile::getDefault()->createCommand('get', array('node:1001'));
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->once())
@@ -572,7 +572,7 @@ class RedisClusterTest extends StandardTestCase
      */
     public function testThrowsExceptionOnNonSupportedCommand()
     {
-        $ping = ServerProfile::getDefault()->createCommand('ping');
+        $ping = Profile\Factory::getDefault()->createCommand('ping');
 
         $cluster = new RedisCluster();
         $cluster->add($this->getMockConnection('tcp://127.0.0.1:6379'));

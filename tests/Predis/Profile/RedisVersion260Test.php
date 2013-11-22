@@ -14,14 +14,14 @@ namespace Predis\Profile;
 /**
  *
  */
-class ServerVersionNextTest extends ServerVersionTestCase
+class RedisVersion260Test extends RedisProfileTestCase
 {
     /**
      * {@inheritdoc}
      */
     public function getProfileInstance()
     {
-        return new ServerVersionNext();
+        return new RedisVersion260();
     }
 
     /**
@@ -29,7 +29,7 @@ class ServerVersionNextTest extends ServerVersionTestCase
      */
     public function getExpectedVersion()
     {
-        return '3.0';
+        return '2.6';
     }
 
     /**
@@ -174,11 +174,6 @@ class ServerVersionNextTest extends ServerVersionTestCase
             133 => 'script',
             134 => 'time',
             135 => 'sentinel',
-            136 => 'scan',
-            137 => 'sscan',
-            138 => 'zscan',
-            139 => 'hscan',
-            140 => 'pubsub',
         );
     }
 }

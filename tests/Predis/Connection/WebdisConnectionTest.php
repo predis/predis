@@ -13,7 +13,7 @@ namespace Predis\Connection;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  * @group ext-curl
@@ -185,11 +185,11 @@ class WebdisConnectionTest extends StandardTestCase
      * Returns a new instance of server profile.
      *
      * @param array $additional Additional connection parameters.
-     * @return ServerProfile
+     * @return Profile\ProfileInterface
      */
     protected function getProfile($version = null)
     {
-        return ServerProfile::get($version ?: REDIS_SERVER_VERSION);
+        return Profile\Factory::get($version ?: REDIS_SERVER_VERSION);
     }
 
     /**

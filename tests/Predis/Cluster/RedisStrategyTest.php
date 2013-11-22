@@ -13,7 +13,7 @@ namespace Predis\Cluster;
 
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 
 /**
  *
@@ -49,7 +49,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testReturnsNullOnUnsupportedCommand()
     {
         $strategy = $this->getClusterStrategy();
-        $command = ServerProfile::getDevelopment()->createCommand('ping');
+        $command = Profile\Factory::getDevelopment()->createCommand('ping');
 
         $this->assertNull($strategy->getHash($command));
     }
@@ -60,7 +60,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testFirstKeyCommands()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
@@ -75,7 +75,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testAllKeysCommandsWithOneKey()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
@@ -90,7 +90,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testAllKeysCommandsWithMoreKeys()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key1', 'key2');
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
@@ -105,7 +105,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testInterleavedKeysCommandsWithOneKey()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key:1', 'value1');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
@@ -120,7 +120,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testInterleavedKeysCommandsWithMoreKeys()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key:1', 'value1', 'key:2', 'value2');
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
@@ -135,7 +135,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testKeysForBlockingListCommandsWithOneKey()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key:1', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
@@ -150,7 +150,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testKeysForBlockingListCommandsWithMoreKeys()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('key:1', 'key:2', 10);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
@@ -165,7 +165,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testKeysForScriptCommand()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
         $arguments = array('%SCRIPT%', 1, 'key:1', 'value1');
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
@@ -200,7 +200,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testUnsettingCommandHandler()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $strategy->setCommandHandler('set');
         $strategy->setCommandHandler('get', null);
@@ -218,7 +218,7 @@ class RedisStrategyTest extends StandardTestCase
     public function testSettingCustomCommandHandler()
     {
         $strategy = $this->getClusterStrategy();
-        $profile = ServerProfile::getDevelopment();
+        $profile = Profile\Factory::getDevelopment();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())

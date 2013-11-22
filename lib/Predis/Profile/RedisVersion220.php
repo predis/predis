@@ -12,18 +12,18 @@
 namespace Predis\Profile;
 
 /**
- * Server profile for Redis v2.8.x.
+ * Server profile for Redis v2.2.x.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerVersion28 extends ServerProfile
+class RedisVersion220 extends RedisProfile
 {
     /**
      * {@inheritdoc}
      */
     public function getVersion()
     {
-        return '2.8';
+        return '2.2';
     }
 
     /**
@@ -47,8 +47,6 @@ class ServerVersion28 extends ServerProfile
             'ttl'                       => 'Predis\Command\KeyTimeToLive',
             'move'                      => 'Predis\Command\KeyMove',
             'sort'                      => 'Predis\Command\KeySort',
-            'dump'                      => 'Predis\Command\KeyDump',
-            'restore'                   => 'Predis\Command\KeyRestore',
 
             /* commands operating on string values */
             'set'                       => 'Predis\Command\StringSet',
@@ -201,57 +199,6 @@ class ServerVersion28 extends ServerProfile
             /* remote server control commands */
             'object'                    => 'Predis\Command\ServerObject',
             'slowlog'                   => 'Predis\Command\ServerSlowlog',
-
-
-            /* ---------------- Redis 2.4 ---------------- */
-
-            /* remote server control commands */
-            'client'                    => 'Predis\Command\ServerClient',
-
-
-            /* ---------------- Redis 2.6 ---------------- */
-
-            /* commands operating on the key space */
-            'pttl'                      => 'Predis\Command\KeyPreciseTimeToLive',
-            'pexpire'                   => 'Predis\Command\KeyPreciseExpire',
-            'pexpireat'                 => 'Predis\Command\KeyPreciseExpireAt',
-
-            /* commands operating on string values */
-            'psetex'                    => 'Predis\Command\StringPreciseSetExpire',
-            'incrbyfloat'               => 'Predis\Command\StringIncrementByFloat',
-            'bitop'                     => 'Predis\Command\StringBitOp',
-            'bitcount'                  => 'Predis\Command\StringBitCount',
-
-            /* commands operating on hashes */
-            'hincrbyfloat'              => 'Predis\Command\HashIncrementByFloat',
-
-            /* scripting */
-            'eval'                      => 'Predis\Command\ServerEval',
-            'evalsha'                   => 'Predis\Command\ServerEvalSHA',
-            'script'                    => 'Predis\Command\ServerScript',
-
-            /* remote server control commands */
-            'info'                      => 'Predis\Command\ServerInfoV26x',
-            'time'                      => 'Predis\Command\ServerTime',
-            'sentinel'                  => 'Predis\Command\ServerSentinel',
-
-
-            /* ---------------- Redis 2.8 ---------------- */
-
-            /* commands operating on the key space */
-            'scan'                      => 'Predis\Command\KeyScan',
-
-            /* commands operating on sets */
-            'sscan'                     => 'Predis\Command\SetScan',
-
-            /* commands operating on sorted sets */
-            'zscan'                     => 'Predis\Command\ZSetScan',
-
-            /* commands operating on hashes */
-            'hscan'                     => 'Predis\Command\HashScan',
-
-            /* publish - subscribe */
-            'pubsub'                    => 'Predis\Command\PubSubPubsub',
         );
     }
 }

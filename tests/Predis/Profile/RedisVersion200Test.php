@@ -14,14 +14,14 @@ namespace Predis\Profile;
 /**
  *
  */
-class ServerVersion20Test extends ServerVersionTestCase
+class RedisVersion200Test extends RedisProfileTestCase
 {
     /**
      * {@inheritdoc}
      */
     public function getProfileInstance()
     {
-        return new ServerVersion20();
+        return new RedisVersion200();
     }
 
     /**

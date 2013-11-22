@@ -14,7 +14,7 @@ namespace Predis\PubSub;
 use PHPUnit_Framework_TestCase as StandardTestCase;
 
 use Predis\Client;
-use Predis\Profile\ServerProfile;
+use Predis\Profile;
 use Predis\PubSub\Consumer as PubSubConsumer;
 
 /**
@@ -29,7 +29,7 @@ class ConsumerTest extends StandardTestCase
      */
     public function testPubSubConsumerRequirePubSubRelatedCommand()
     {
-        $profile = $this->getMock('Predis\Profile\ServerProfileInterface');
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->any())
                 ->method('supportsCommands')
                 ->will($this->returnValue(false));
@@ -69,7 +69,7 @@ class ConsumerTest extends StandardTestCase
      */
     public function testConstructorWithSubscriptionsStartsConsumer()
     {
-        $profile = ServerProfile::get(REDIS_SERVER_VERSION);
+        $profile = Profile\Factory::get(REDIS_SERVER_VERSION);
 
         $cmdSubscribe = $profile->createCommand('subscribe', array('channel:foo'));
         $cmdPsubscribe = $profile->createCommand('psubscribe', array('channels:*'));
@@ -111,7 +111,7 @@ class ConsumerTest extends StandardTestCase
      */
     public function testStoppingConsumerWithFalseSendsUnsubscriptions()
     {
-        $profile = ServerProfile::get(REDIS_SERVER_VERSION);
+        $profile = Profile\Factory::get(REDIS_SERVER_VERSION);
         $classUnsubscribe = $profile->getCommandClass('unsubscribe');
         $classPunsubscribe = $profile->getCommandClass('punsubscribe');
 

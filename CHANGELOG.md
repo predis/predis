@@ -43,6 +43,9 @@ v0.9.0 (201x-xx-xx)
   have been moved in the new `Predis\Response` namespace and most of them have
   been renamed to make their fully-qualified name shorter and less redundant.
 
+- The profile factory code has been extrapolated from the abstract Redis profile
+  class and it's now in `Predis\Profile\Factory`.
+
 
 v0.8.5 (2013-xx-xx)
 ===============================================================================

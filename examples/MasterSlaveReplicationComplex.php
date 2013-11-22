@@ -20,7 +20,6 @@ require 'SharedConfigurations.php';
 
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\MasterSlaveReplication;
-use Predis\Profile\ServerProfile;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
