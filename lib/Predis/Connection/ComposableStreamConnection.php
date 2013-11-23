@@ -33,7 +33,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
         ConnectionParametersInterface $parameters,
         ProtocolProcessorInterface $protocol = null
     ) {
-        $this->parameters = $this->checkParameters($parameters);
+        $this->parameters = $this->assertParameters($parameters);
         $this->protocol = $protocol ?: new TextProtocolProcessor();
     }
 

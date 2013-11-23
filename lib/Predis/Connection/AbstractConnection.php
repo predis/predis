@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\CommunicationException;
 use Predis\NotSupportedException;
@@ -35,7 +36,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
-        $this->parameters = $this->checkParameters($parameters);
+        $this->parameters = $this->assertParameters($parameters);
     }
 
     /**
@@ -52,20 +53,19 @@ abstract class AbstractConnection implements SingleConnectionInterface
      *
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      */
-    protected function checkParameters(ConnectionParametersInterface $parameters)
+    protected function assertParameters(ConnectionParametersInterface $parameters)
     {
-        switch ($parameters->scheme) {
-            case 'unix':
-                if (!isset($parameters->path)) {
-                    throw new \InvalidArgumentException('Missing UNIX domain socket path');
-                }
+        $scheme = $parameters->scheme;
 
-            case 'tcp':
-                return $parameters;
-
-            default:
-                throw new \InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+        if ($scheme !== 'tcp' && $scheme !== 'unix') {
+            throw new InvalidArgumentException("Invalid scheme: $scheme");
         }
+
+        if ($scheme === 'unix' && !isset($parameters->path)) {
+            throw new InvalidArgumentException('Missing UNIX domain socket path');
+        }
+
+        return $parameters;
     }
 
     /**
@@ -147,24 +147,6 @@ abstract class AbstractConnection implements SingleConnectionInterface
     protected function onProtocolError($message)
     {
         CommunicationException::handle(new ProtocolException($this, "$message [{$this->parameters->scheme}://{$this->getIdentifier()}]"));
-    }
-
-    /**
-     * Helper method to handle not supported connection parameters.
-     *
-     * @param string $option Name of the option.
-     * @param mixed $parameters Parameters used to initialize the connection.
-     */
-    protected function onInvalidOption($option, $parameters = null)
-    {
-        $class = get_called_class();
-        $message = "Invalid option for connection $class: $option";
-
-        if (isset($parameters)) {
-            $message .= sprintf(' [%s => %s]', $option, $parameters->{$option});
-        }
-
-        throw new NotSupportedException($message);
     }
 
     /**

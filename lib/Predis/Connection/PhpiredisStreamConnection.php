@@ -54,10 +54,11 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
-        $this->checkExtensions();
-        $this->initializeReader();
+        $this->assertExtensions();
 
         parent::__construct($parameters);
+
+        $this->reader = $this->createReader();
     }
 
     /**
@@ -73,30 +74,42 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Checks if the phpiredis extension is loaded in PHP.
      */
-    protected function checkExtensions()
+    private function assertExtensions()
     {
-        if (!function_exists('phpiredis_reader_create')) {
+        if (!extension_loaded('phpiredis')) {
             throw new NotSupportedException(
-                'The phpiredis extension must be loaded in order to be able to use this connection class'
+                'The "phpiredis" extension is required by this connection backend'
             );
         }
     }
 
     /**
-     * Initializes the protocol reader resource.
+     * Creates a new instance of the protocol reader resource.
+     *
+     * @return resource
      */
-    protected function initializeReader()
+    private function createReader()
     {
         $reader = phpiredis_reader_create();
 
         phpiredis_reader_set_status_handler($reader, $this->getStatusHandler());
         phpiredis_reader_set_error_handler($reader, $this->getErrorHandler());
 
-        $this->reader = $reader;
+        return $reader;
     }
 
     /**
-     * Gets the handler used by the protocol reader to handle status replies.
+     * Returns the underlying protocol reader resource.
+     *
+     * @return resource
+     */
+    protected function getReader()
+    {
+        return $this->reader;
+    }
+
+    /**
+     * Returns the handler used by the protocol reader to handle status replies.
      *
      * @return \Closure
      */
@@ -117,9 +130,8 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * Gets the handler used by the protocol reader to handle Redis errors.
+     * Returns the handler used by the protocol reader to handle Redis errors.
      *
-     * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
     protected function getErrorHandler()
@@ -142,6 +154,7 @@ class PhpiredisStreamConnection extends StreamConnection
 
             if ($buffer === false || $buffer === '') {
                 $this->onConnectionError('Error while reading bytes from the server');
+
                 return;
             }
 
@@ -160,9 +173,10 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     public function writeCommand(CommandInterface $command)
     {
-        $cmdargs = $command->getArguments();
-        array_unshift($cmdargs, $command->getId());
-        $this->writeBytes(phpiredis_format_command($cmdargs));
+        $arguments = $command->getArguments();
+        array_unshift($arguments, $command->getId());
+
+        $this->writeBytes(phpiredis_format_command($arguments));
     }
 
     /**
@@ -170,7 +184,7 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     public function __wakeup()
     {
-        $this->checkExtensions();
-        $this->initializeReader();
+        $this->assertExtensions();
+        $this->reader = $this->createReader();
     }
 }

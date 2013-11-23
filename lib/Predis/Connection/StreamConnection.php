@@ -159,6 +159,7 @@ class StreamConnection extends AbstractConnection
             if ($length === $written) {
                 return;
             }
+
             if ($written === false || $written === 0) {
                 $this->onConnectionError('Error while writing bytes to the server');
             }
@@ -197,6 +198,7 @@ class StreamConnection extends AbstractConnection
 
             case '$':    // bulk
                 $size = (int) $payload;
+
                 if ($size === -1) {
                     return null;
                 }
@@ -248,13 +250,13 @@ class StreamConnection extends AbstractConnection
      */
     public function writeCommand(CommandInterface $command)
     {
-        $commandId = $command->getId();
+        $commandID = $command->getId();
         $arguments = $command->getArguments();
 
-        $cmdlen = strlen($commandId);
+        $cmdlen = strlen($commandID);
         $reqlen = count($arguments) + 1;
 
-        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
         for ($i = 0; $i < $reqlen - 1; $i++) {
             $argument = $arguments[$i];
