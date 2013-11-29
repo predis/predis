@@ -110,13 +110,15 @@ class KeyTimeToLiveTest extends CommandTestCase
 
     /**
      * @group connected
-     * @todo TTL changed in Redis >= 2.8 to return -2 on non existing keys, we
-     *       should handle this case with a better solution than the current one.
      */
     public function testReturnsLessThanZeroOnNonExistingKeys()
     {
-        $redis = $this->getClient();
+        $this->executeOnRedisVersion('2.8.0', '<', function ($test) {
+            $test->assertSame(-1, $test->getClient()->ttl('foo'));
+        });
 
-        $this->assertLessThanOrEqual(-1, $redis->ttl('foo'));
+        $this->executeOnRedisVersion('2.8.0', '>=', function ($test) {
+            $test->assertSame(-2, $test->getClient()->ttl('foo'));
+        });
     }
 }
