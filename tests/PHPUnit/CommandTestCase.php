@@ -41,7 +41,7 @@ abstract class CommandTestCase extends StandardTestCase
      *
      * @return CommandInterface
      */
-    protected function getCommand()
+    public function getCommand()
     {
         $command = $this->getExpectedCommand();
 
@@ -53,7 +53,7 @@ abstract class CommandTestCase extends StandardTestCase
      *
      * @return ServerProfileInterface
      */
-    protected function getProfile()
+    public function getProfile()
     {
         return ServerProfile::get(REDIS_SERVER_VERSION);
     }
@@ -64,7 +64,7 @@ abstract class CommandTestCase extends StandardTestCase
      * @param Boolean $connect Flush selected database before returning the client.
      * @return Client
      */
-    protected function getClient($flushdb = true)
+    public function getClient($flushdb = true)
     {
         $profile = $this->getProfile();
 
