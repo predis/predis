@@ -160,12 +160,11 @@ abstract class CommandTestCase extends StandardTestCase
     }
 
     /**
-     * @param  string $expectedVersion
-     * @param  string $message Optional message.
-     * @throws \RuntimeException when unable to retrieve server info or redis version
+     * @param  string $expectedVersion Expected redis version
+     * @param  string $operator Comparison operator.
      * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
      */
-    protected function markTestSkippedOnRedisVersionBelow($expectedVersion, $message = '')
+    protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
     {
         $client = $this->getClient();
         $info = array_change_key_case($client->info());
@@ -180,9 +179,47 @@ abstract class CommandTestCase extends StandardTestCase
             throw new \RuntimeException('Unable to retrieve server info');
         }
 
-        if (version_compare($version, $expectedVersion) <= -1) {
-            $this->markTestSkipped($message ?: "Test requires Redis $expectedVersion, current is $version.");
+        $comparation = version_compare($version, $expectedVersion);
+
+        if ($match = eval("return $comparation $operator 0;")) {
+            call_user_func($callback, $this, $version);
         }
+
+        return $match;
+    }
+
+    /**
+     * @param  string $expectedVersion Expected redis version
+     * @param  string $operator Comparison operator.
+     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     */
+    protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
+    {
+        $profile = $this->getProfile();
+        $comparation = version_compare($profile->getVersion(), $expectedVersion);
+
+        if ($match = eval("return $comparation $operator 0;")) {
+            call_user_func($callback, $this, $version);
+        }
+
+        return $match;
+    }
+
+    /**
+     * @param  string $expectedVersion Expected redis version.
+     * @param  string $message Optional message.
+     * @param  bool $remote Based on local profile or remote redis version.
+     * @throws \RuntimeException when unable to retrieve server info or redis version
+     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     */
+    protected function markTestSkippedOnRedisVersionBelow($expectedVersion, $message = '', $remote = true)
+    {
+        $callback = function ($test, $version) use ($message, $expectedVersion) {
+            $test->markTestSkipped($message ?: "Test requires Redis $expectedVersion, current is $version.");
+        };
+
+        $method = $remote ? 'executeOnRedisVersion' : 'executeOnProfileVersion';
+        $this->$method($expectedVersion, '<', $callback);
     }
 
     /**
