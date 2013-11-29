@@ -58,29 +58,4 @@ class ListPopLastPushHeadBlockingTest extends CommandTestCase
     {
         $this->assertSame('element', $this->getCommand()->parseResponse('element'));
     }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeys()
-    {
-        $arguments = array('key:source', 'key:destination', 10);
-        $expected = array('prefix:key:source', 'prefix:key:destination', 10);
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
 }

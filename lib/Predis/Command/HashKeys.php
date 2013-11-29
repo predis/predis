@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/hkeys
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashKeys extends PrefixableCommand
+class HashKeys extends AbstractCommand
 {
     /**
      * {@inheritdoc}

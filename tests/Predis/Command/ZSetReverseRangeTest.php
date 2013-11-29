@@ -92,31 +92,6 @@ class ZSetReverseRangeTest extends CommandTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixKeys()
-    {
-        $arguments = array('zset', 0, 100, array('withscores' => true));
-        $expected = array('prefix:zset', 0, 100, 'WITHSCORES');
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue()
     {
         $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => true));

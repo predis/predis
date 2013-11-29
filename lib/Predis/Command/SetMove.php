@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/smove
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetMove extends AbstractCommand implements PrefixableCommandInterface
+class SetMove extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -23,14 +23,6 @@ class SetMove extends AbstractCommand implements PrefixableCommandInterface
     public function getId()
     {
         return 'SMOVE';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        PrefixHelpers::skipLast($this, $prefix);
     }
 
     /**

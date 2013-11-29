@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/sort
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeySort extends AbstractCommand implements PrefixableCommandInterface
+class KeySort extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -79,39 +79,5 @@ class KeySort extends AbstractCommand implements PrefixableCommandInterface
         }
 
         return $query;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        if ($arguments = $this->getArguments()) {
-            $arguments[0] = "$prefix{$arguments[0]}";
-
-            if (($count = count($arguments)) > 1) {
-                for ($i = 1; $i < $count; $i++) {
-                    switch ($arguments[$i]) {
-                        case 'BY':
-                        case 'STORE':
-                            $arguments[$i] = "$prefix{$arguments[++$i]}";
-                            break;
-
-                        case 'GET':
-                            $value = $arguments[++$i];
-                            if ($value !== '#') {
-                                $arguments[$i] = "$prefix$value";
-                            }
-                            break;
-
-                        case 'LIMIT';
-                            $i += 2;
-                            break;
-                    }
-                }
-            }
-
-            $this->setRawArguments($arguments);
-        }
     }
 }

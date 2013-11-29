@@ -56,29 +56,4 @@ class KeyRestoreTest extends CommandTestCase
     {
         $this->assertTrue($this->getCommand()->parseResponse(true));
     }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeys()
-    {
-        $arguments = array('key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
-        $expected = array('prefix:key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
 }

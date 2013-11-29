@@ -16,7 +16,7 @@ namespace Predis\Command;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface PrefixableCommandInterface
+interface PrefixableCommandInterface extends CommandInterface
 {
     /**
      * Prefixes all the keys found in the arguments of the command.

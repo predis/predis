@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/getbit
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringGetBit extends PrefixableCommand
+class StringGetBit extends AbstractCommand
 {
     /**
      * {@inheritdoc}

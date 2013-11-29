@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/setbit
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringSetBit extends PrefixableCommand
+class StringSetBit extends AbstractCommand
 {
     /**
      * {@inheritdoc}

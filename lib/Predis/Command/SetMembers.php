@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/smembers
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetMembers extends PrefixableCommand
+class SetMembers extends AbstractCommand
 {
     /**
      * {@inheritdoc}

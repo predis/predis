@@ -104,43 +104,6 @@ class KeySortTest extends CommandTestCase
     }
 
     /**
-     * @group disconnected
-     */
-    public function testPrefixKeys()
-    {
-        $modifiers = array(
-            'by' => 'by_key_*',
-            'limit' => array(1, 4),
-            'get' => array('object_*', '#'),
-            'sort'  => 'asc',
-            'alpha' => true,
-            'store' => 'destination_key',
-        );
-        $arguments = array('key', $modifiers);
-
-        $expected = array(
-            'prefix:key', 'BY', 'prefix:by_key_*', 'GET', 'prefix:object_*', 'GET', '#',
-            'LIMIT', 1, 4, 'ASC', 'ALPHA', 'STORE', 'prefix:destination_key'
-        );
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
-
-    /**
      * @group connected
      */
     public function testBasicSort()

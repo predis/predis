@@ -62,33 +62,6 @@ class ServerEvalSHATest extends CommandTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixKeys()
-    {
-        $sha1 = 'a42059b356c875f0717db19a51f6aaca9ae659ea';
-
-        $arguments = array($sha1, 2, 'foo', 'hoge', 'bar', 'piyo');
-        $expected = array($sha1, 2, 'prefix:foo', 'prefix:hoge', 'bar', 'piyo');
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testGetScriptHash()
     {
         $command = $this->getCommandWithArgumentsArray(array($sha1 = sha1('return true')), 0);

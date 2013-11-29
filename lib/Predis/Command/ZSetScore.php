@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zscore
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetScore extends PrefixableCommand
+class ZSetScore extends AbstractCommand
 {
     /**
      * {@inheritdoc}

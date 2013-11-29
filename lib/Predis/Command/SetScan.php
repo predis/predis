@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/sscan
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetScan extends PrefixableCommand
+class SetScan extends AbstractCommand
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zadd
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetAdd extends PrefixableCommand
+class ZSetAdd extends AbstractCommand
 {
     /**
      * {@inheritdoc}
