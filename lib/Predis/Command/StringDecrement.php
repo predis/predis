@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/decr
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringDecrement extends PrefixableCommand
+class StringDecrement extends AbstractCommand
 {
     /**
      * {@inheritdoc}

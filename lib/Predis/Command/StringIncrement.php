@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/incr
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringIncrement extends PrefixableCommand
+class StringIncrement extends AbstractCommand
 {
     /**
      * {@inheritdoc}

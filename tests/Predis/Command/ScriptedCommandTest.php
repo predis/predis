@@ -139,50 +139,6 @@ class ScriptedCommandTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixKeys()
-    {
-        $arguments = array('foo', 'hoge', 'bar', 'piyo');
-        $expected = array('prefix:foo', 'prefix:hoge');
-
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
-                ->method('getScript')
-                ->will($this->returnValue(self::LUA_SCRIPT));
-        $command->expects($this->exactly(2))
-                ->method('getKeysCount')
-                ->will($this->returnValue(2));
-        $command->setArguments($arguments);
-
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getKeys());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysWithNegativeKeysCount()
-    {
-        $arguments = array('foo', 'hoge', 'bar', 'piyo');
-        $expected = array('prefix:foo', 'prefix:hoge');
-
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
-                ->method('getScript')
-                ->will($this->returnValue(self::LUA_SCRIPT));
-        $command->expects($this->exactly(2))
-                ->method('getKeysCount')
-                ->will($this->returnValue(-2));
-        $command->setArguments($arguments);
-
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getKeys());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testGetScriptHash()
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');

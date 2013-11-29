@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/hscan
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashScan extends PrefixableCommand
+class HashScan extends AbstractCommand
 {
     /**
      * {@inheritdoc}

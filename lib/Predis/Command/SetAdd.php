@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/sadd
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetAdd extends PrefixableCommand
+class SetAdd extends AbstractCommand
 {
     /**
      * {@inheritdoc}

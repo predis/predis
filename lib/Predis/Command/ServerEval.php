@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/eval
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerEval extends AbstractCommand implements PrefixableCommandInterface
+class ServerEval extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -23,20 +23,6 @@ class ServerEval extends AbstractCommand implements PrefixableCommandInterface
     public function getId()
     {
         return 'EVAL';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        if ($arguments = $this->getArguments()) {
-            for ($i = 2; $i < $arguments[1] + 2; $i++) {
-                $arguments[$i] = "$prefix{$arguments[$i]}";
-            }
-
-            $this->setRawArguments($arguments);
-        }
     }
 
     /**

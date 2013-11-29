@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/del
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyDelete extends AbstractCommand implements PrefixableCommandInterface
+class KeyDelete extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -31,13 +31,5 @@ class KeyDelete extends AbstractCommand implements PrefixableCommandInterface
     protected function filterArguments(array $arguments)
     {
         return self::normalizeArguments($arguments);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        PrefixHelpers::all($this, $prefix);
     }
 }

@@ -86,39 +86,6 @@ class ZSetIntersectionStoreTest extends CommandTestCase
     }
 
     /**
-     * @group disconnected
-     */
-    public function testPrefixKeys()
-    {
-        $modifiers = array(
-            'aggregate' => 'sum',
-            'weights' => array(10, 100),
-        );
-        $arguments = array('zset:destination', 2, 'zset1', 'zset2', $modifiers);
-
-        $expected = array(
-            'prefix:zset:destination', 2, 'prefix:zset1', 'prefix:zset2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum'
-        );
-
-
-        $command = $this->getCommandWithArgumentsArray($arguments);
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
-    {
-        $command = $this->getCommand();
-        $command->prefixKeys('prefix:');
-
-        $this->assertSame(array(), $command->getArguments());
-    }
-
-    /**
      * @group connected
      */
     public function testStoresIntersectionInNewSortedSet()

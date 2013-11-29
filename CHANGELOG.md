@@ -46,6 +46,11 @@ v0.9.0 (201x-xx-xx)
 - The profile factory code has been extrapolated from the abstract Redis profile
   class and it's now in `Predis\Profile\Factory`.
 
+- The key prefixing logic has been moved from command classes to the key prefix
+  processor. Developers can define or override handlers used to prefix keys, but
+  they can also define the needed logic in their command classes by implementing
+  `Predis\Command\PrefixableCommandInterface` just like before.
+
 
 v0.8.5 (2013-xx-xx)
 ===============================================================================

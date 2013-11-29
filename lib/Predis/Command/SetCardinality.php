@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/scard
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetCardinality extends PrefixableCommand
+class SetCardinality extends AbstractCommand
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/lindex
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListIndex extends PrefixableCommand
+class ListIndex extends AbstractCommand
 {
     /**
      * {@inheritdoc}

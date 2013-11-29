@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zunionstore
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetUnionStore extends PrefixableCommand
+class ZSetUnionStore extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -72,22 +72,5 @@ class ZSetUnionStore extends PrefixableCommand
         }
 
         return $finalizedOpts;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefixKeys($prefix)
-    {
-        if ($arguments = $this->getArguments()) {
-            $arguments[0] = "$prefix{$arguments[0]}";
-            $length = ((int) $arguments[1]) + 2;
-
-            for ($i = 2; $i < $length; $i++) {
-                $arguments[$i] = "$prefix{$arguments[$i]}";
-            }
-
-            $this->setRawArguments($arguments);
-        }
     }
 }
