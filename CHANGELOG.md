@@ -62,8 +62,8 @@ v0.9.0 (201x-xx-xx)
 v0.8.5 (2013-xx-xx)
 ===============================================================================
 
-- Added `2.8` in the server profiles aliases list for the upcoming Redis 2.8.
-  `2.6` is still the default server profile. `dev` now targets Redis 3.0.
+- Added `2.8` in the server profiles aliases list for Redis 2.8. `2.6` is still
+  the default server profile and `dev` now targets Redis 3.0.
 
 - Added `SCAN`, `SSCAN`, `ZSCAN`, `HSCAN` to the server profile for Redis 2.8.
 
