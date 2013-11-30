@@ -43,4 +43,18 @@ class PrefixOptionTest extends StandardTestCase
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $return);
         $this->assertSame($value, $return->getPrefix());
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testAcceptsCommandProcessorInstance()
+    {
+        $option = new PrefixOption();
+        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+
+        $return = $option->filter($options, $processor);
+
+        $this->assertSame($processor, $return);
+    }
 }

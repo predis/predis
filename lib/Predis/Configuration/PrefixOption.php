@@ -12,6 +12,7 @@
 namespace Predis\Configuration;
 
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Command\Processor\CommandProcessorInterface;
 
 /**
  * Configures a command processor that apply the specified
@@ -27,6 +28,10 @@ class PrefixOption implements OptionInterface
      */
     public function filter(OptionsInterface $options, $value)
     {
+        if ($value instanceof CommandProcessorInterface) {
+            return $value;
+        }
+
         return new KeyPrefixProcessor($value);
     }
 
