@@ -36,11 +36,6 @@ v0.9.0 (201x-xx-xx)
     - `fire-and-forget`: returns a pipeline that does not read back responses
       (class: `Predis\Pipeline\FireAndForget`).
 
-- It is now possible to execute "raw commands" using `Predis\Command\RawCommand`
-  and a variable list of command arguments. Input arguments are not filtered and
-  responses are not parsed, which means arguments must follow the signature of
-  the command as defined by Redis and complex responses are left untouched.
-
 - The two base abstract command classes have been renamed in the following way:
 
     - `Predis\Command\AbstractCommand` is now `Predis\Command\Command`
@@ -59,7 +54,9 @@ v0.9.0 (201x-xx-xx)
 - The key prefixing logic has been moved from command classes to the key prefix
   processor. Developers can define or override handlers used to prefix keys, but
   they can also define the needed logic in their command classes by implementing
-  `Predis\Command\PrefixableCommandInterface` just like before.
+  `Predis\Command\PrefixableCommandInterface` just like before. Prefixes are now
+  applied also to raw commands if the command ID is a recognized one and handled
+  by the key prefix processor.
 
 
 v0.8.5 (2013-xx-xx)
@@ -77,6 +74,11 @@ v0.8.5 (2013-xx-xx)
     - sorted sets (cursor-based iterator using `ZSCAN`)
     - hashes (cursor-based iterator using `HSCAN`)
     - lists (plain iterator using `LRANGE`)
+
+- It is now possible to execute "raw commands" using `Predis\Command\RawCommand`
+  and a variable list of command arguments. Input arguments are not filtered and
+  responses are not parsed, which means arguments must follow the signature of
+  the command as defined by Redis and complex responses are left untouched.
 
 - List of deprecated methods:
 
