@@ -13,7 +13,7 @@ namespace Predis\Command\Processor;
 
 use stdClass;
 use PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\Command\Command;
+use Predis\Command\RawCommand;
 
 /**
  *
@@ -321,7 +321,7 @@ class KeyPrefixProcessorTest extends StandardTestCase
 
     public function getCommandInstance($commandID, array $arguments)
     {
-        $command = new DummyCommand($commandID);
+        $command = new RawCommand(array($commandID));
         $command->setRawArguments($arguments);
 
         return $command;
@@ -801,20 +801,5 @@ class KeyPrefixProcessorTest extends StandardTestCase
                 array('prefix:key', '0', 'MATCH', 'field:*', 'COUNT', 10),
             ),
         );
-    }
-}
-
-class DummyCommand extends Command
-{
-    protected $commandID;
-
-    public function __construct($commandID)
-    {
-        $this->commandID = $commandID;
-    }
-
-    public function getId()
-    {
-        return $this->commandID;
     }
 }

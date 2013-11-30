@@ -36,6 +36,11 @@ v0.9.0 (201x-xx-xx)
     - `fire-and-forget`: returns a pipeline that does not read back responses
       (class: `Predis\Pipeline\FireAndForget`).
 
+- It is now possible to execute "raw commands" using `Predis\Command\RawCommand`
+  and a variable list of command arguments. Input arguments are not filtered and
+  responses are not parsed, which means arguments must follow the signature of
+  the command as defined by Redis and complex responses are left untouched.
+
 - The two base abstract command classes have been renamed in the following way:
 
     - `Predis\Command\AbstractCommand` is now `Predis\Command\Command`
