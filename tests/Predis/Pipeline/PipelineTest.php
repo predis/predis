@@ -11,8 +11,9 @@
 
 namespace Predis\Pipeline;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use Exception;
+use InvalidArgumentException;
+use PredisTestCase;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\Profile;
@@ -21,7 +22,7 @@ use Predis\Response;
 /**
  *
  */
-class PipelineTest extends StandardTestCase
+class PipelineTest extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -331,7 +332,7 @@ class PipelineTest extends StandardTestCase
                 throw new ClientException('TEST');
                 $pipe->echo('two');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exception = $ex;
         }
 
@@ -406,7 +407,7 @@ class PipelineTest extends StandardTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exception = $ex;
         }
 
@@ -430,7 +431,7 @@ class PipelineTest extends StandardTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exception = $ex;
         }
 
@@ -471,23 +472,7 @@ class PipelineTest extends StandardTestCase
      */
     protected function getClient(array $parameters = array(), array $options = array())
     {
-        $parameters = array_merge(array(
-            'scheme' => 'tcp',
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
-        ), $parameters);
-
-        $options = array_merge(array(
-            'profile' => REDIS_SERVER_VERSION,
-        ), $options);
-
-        $client = new Client($parameters, $options);
-
-        $client->connect();
-        $client->flushdb();
-
-        return $client;
+        return $this->createClient($parameters, $options);
     }
 
     /**
@@ -500,7 +485,7 @@ class PipelineTest extends StandardTestCase
     {
         return function ($command) {
             if (($id = $command->getId()) !== 'ECHO') {
-                throw new \InvalidArgumentException("Expected ECHO, got {$id}");
+                throw new InvalidArgumentException("Expected ECHO, got {$id}");
             }
 
             list($echoed) = $command->getArguments();

@@ -11,12 +11,12 @@
 
 namespace Predis\Response;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class StatusQueuedTest extends StandardTestCase
+class StatusQueuedTest extends PredisTestCase
 {
     /**
      * @group disconnected

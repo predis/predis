@@ -11,16 +11,15 @@
 
 namespace Predis\Pipeline;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
 use SplQueue;
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
 
 /**
  *
  */
-class FireAndForgetTest extends StandardTestCase
+class FireAndForgetTest extends PredisTestCase
 {
     /**
      * @group disconnected

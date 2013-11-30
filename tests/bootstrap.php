@@ -13,6 +13,7 @@ require __DIR__.'/../autoload.php';
 
 require __DIR__.'/PHPUnit/ArrayHasSameValuesConstraint.php';
 require __DIR__.'/PHPUnit/RedisCommandConstraint.php';
+require __DIR__.'/PHPUnit/PredisTestCase.php';
 require __DIR__.'/PHPUnit/CommandTestCase.php';
 require __DIR__.'/PHPUnit/ConnectionTestCase.php';
 require __DIR__.'/PHPUnit/RedisProfileTestCase.php';

@@ -11,15 +11,14 @@
 
 namespace Predis\Command;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
 
 /**
  *
  */
-abstract class CommandTestCase extends StandardTestCase
+abstract class CommandTestCase extends PredisTestCase
 {
     /**
      * Returns the expected command.
@@ -48,45 +47,20 @@ abstract class CommandTestCase extends StandardTestCase
     }
 
     /**
-     * Return the server profile used during the tests.
-     *
-     * @return Profile\ProfileInterface
-     */
-    public function getProfile()
-    {
-        return Profile\Factory::get(REDIS_SERVER_VERSION);
-    }
-
-    /**
      * Returns a new client instance.
      *
-     * @param Boolean $connect Flush selected database before returning the client.
+     * @param bool $connect Flush selected database before returning the client.
      * @return Client
      */
     public function getClient($flushdb = true)
     {
-        $profile = $this->getProfile();
-
-        if (!$profile->supportsCommand($id = $this->getExpectedId())) {
-            $this->markTestSkipped("The profile {$profile->getVersion()} does not support command {$id}");
+        if (!$this->getProfile()->supportsCommand($id = $this->getExpectedId())) {
+            $this->markTestSkipped(
+                "The profile {$profile->getVersion()} does not support command {$id}"
+            );
         }
 
-        $parameters = array(
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-        );
-
-        $options = array(
-            'profile' => $profile
-        );
-
-        $client = new Client($parameters, $options);
-        $client->connect();
-        $client->select(REDIS_SERVER_DBNUM);
-
-        if ($flushdb) {
-            $client->flushdb();
-        }
+        $client = $this->createClient(null, null, $flushdb);
 
         return $client;
     }
@@ -127,27 +101,6 @@ abstract class CommandTestCase extends StandardTestCase
     }
 
     /**
-     * Sleep the test case with microseconds resolution.
-     *
-     * @param float $seconds Seconds to sleep.
-     */
-    protected function sleep($seconds)
-    {
-        usleep($seconds * 1000000);
-    }
-
-    /**
-     * Asserts that two arrays have the same values, even if with different order.
-     *
-     * @param array $expected Expected array.
-     * @param array $actual Actual array.
-     */
-    protected function assertSameValues(array $expected, array $actual)
-    {
-        $this->assertThat($expected, new \ArrayHasSameValuesConstraint($actual));
-    }
-
-    /**
      * @group disconnected
      */
     public function testCommandId()
@@ -156,69 +109,6 @@ abstract class CommandTestCase extends StandardTestCase
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals($this->getExpectedId(), $command->getId());
-    }
-
-    /**
-     * @param  string $expectedVersion Expected redis version
-     * @param  string $operator Comparison operator.
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
-     */
-    protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
-    {
-        $client = $this->getClient();
-        $info = array_change_key_case($client->info());
-
-        if (isset($info['server']['redis_version'])) {
-            // Redis >= 2.6
-            $version = $info['server']['redis_version'];
-        } else if (isset($info['redis_version'])) {
-            // Redis < 2.6
-            $version = $info['redis_version'];
-        } else {
-            throw new \RuntimeException('Unable to retrieve server info');
-        }
-
-        $comparation = version_compare($version, $expectedVersion);
-
-        if ($match = eval("return $comparation $operator 0;")) {
-            call_user_func($callback, $this, $version);
-        }
-
-        return $match;
-    }
-
-    /**
-     * @param  string $expectedVersion Expected redis version
-     * @param  string $operator Comparison operator.
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
-     */
-    protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
-    {
-        $profile = $this->getProfile();
-        $comparation = version_compare($profile->getVersion(), $expectedVersion);
-
-        if ($match = eval("return $comparation $operator 0;")) {
-            call_user_func($callback, $this, $version);
-        }
-
-        return $match;
-    }
-
-    /**
-     * @param  string $expectedVersion Expected redis version.
-     * @param  string $message Optional message.
-     * @param  bool $remote Based on local profile or remote redis version.
-     * @throws \RuntimeException when unable to retrieve server info or redis version
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
-     */
-    protected function markTestSkippedOnRedisVersionBelow($expectedVersion, $message = '', $remote = true)
-    {
-        $callback = function ($test, $version) use ($message, $expectedVersion) {
-            $test->markTestSkipped($message ?: "Test requires Redis $expectedVersion, current is $version.");
-        };
-
-        $method = $remote ? 'executeOnRedisVersion' : 'executeOnProfileVersion';
-        $this->$method($expectedVersion, '<', $callback);
     }
 
     /**

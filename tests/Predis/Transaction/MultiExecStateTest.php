@@ -11,12 +11,12 @@
 
 namespace Predis\Transaction;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * @group realm-transaction
  */
-class MultiExecStateTest extends StandardTestCase
+class MultiExecStateTest extends PredisTestCase
 {
     /**
      * @group disconnected

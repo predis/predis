@@ -11,12 +11,12 @@
 
 namespace Predis\Protocol\Text;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class ProtocolProcessorTest extends StandardTestCase
+class ProtocolProcessorTest extends PredisTestCase
 {
     /**
      * @group disconnected

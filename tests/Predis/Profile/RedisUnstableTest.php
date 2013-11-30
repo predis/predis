@@ -19,7 +19,7 @@ class RedisUnstableTest extends RedisProfileTestCase
     /**
      * {@inheritdoc}
      */
-    public function getProfileInstance()
+    public function getProfile($version = null)
     {
         return new RedisUnstable();
     }

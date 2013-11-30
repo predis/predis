@@ -11,14 +11,13 @@
 
 namespace Predis\PubSub;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 
 /**
  * @group realm-pubsub
  */
-class DispatcherLoopTest extends StandardTestCase
+class DispatcherLoopTest extends PredisTestCase
 {
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //

@@ -11,8 +11,7 @@
 
 namespace Predis\PubSub;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
 use Predis\PubSub\Consumer as PubSubConsumer;
@@ -20,7 +19,7 @@ use Predis\PubSub\Consumer as PubSubConsumer;
 /**
  * @group realm-pubsub
  */
-class ConsumerTest extends StandardTestCase
+class ConsumerTest extends PredisTestCase
 {
     /**
      * @group disconnected

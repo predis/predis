@@ -12,13 +12,13 @@
 namespace Predis\Command\Processor;
 
 use stdClass;
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 use Predis\Command\RawCommand;
 
 /**
  *
  */
-class KeyPrefixProcessorTest extends StandardTestCase
+class KeyPrefixProcessorTest extends PredisTestCase
 {
     /**
      * @group disconnected

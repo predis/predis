@@ -11,21 +11,23 @@
 
 namespace Predis\Profile;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Command\Processor\ProcessorChain;
 
 /**
  *
  */
-abstract class RedisProfileTestCase extends StandardTestCase
+abstract class RedisProfileTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested profile.
      *
      * @return ProfileInterface
      */
-    protected abstract function getProfileInstance();
+    protected function getProfile($version = null)
+    {
+        $this->markTestIncomplete("Server profile must be defined in ".get_class($this));
+    }
 
     /**
      * Returns the expected version string for the tested profile.
@@ -60,7 +62,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testGetVersion()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertEquals($this->getExpectedVersion(), $profile->getVersion());
     }
@@ -70,7 +72,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $expected = $this->getExpectedCommands();
         $commands = $this->getCommands($profile);
 
@@ -82,7 +84,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testToString()
     {
-        $this->assertEquals($this->getExpectedVersion(), $this->getProfileInstance());
+        $this->assertEquals($this->getExpectedVersion(), $this->getProfile());
     }
 
     /**
@@ -90,7 +92,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testSupportCommand()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertTrue($profile->supportsCommand('info'));
         $this->assertTrue($profile->supportsCommand('INFO'));
@@ -104,7 +106,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testSupportCommands()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertTrue($profile->supportsCommands(array('get', 'set')));
         $this->assertTrue($profile->supportsCommands(array('GET', 'SET')));
@@ -119,7 +121,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testGetCommandClass()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('ping'));
         $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('PING'));
@@ -133,7 +135,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testDefineCommand()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $command = $this->getMock('Predis\Command\CommandInterface');
 
         $profile->defineCommand('mock', get_class($command));
@@ -151,7 +153,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testDefineInvalidCommand()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $profile->defineCommand('mock', 'stdClass');
     }
@@ -161,7 +163,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testCreateCommandWithoutArguments()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $command = $profile->createCommand('info');
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
@@ -174,7 +176,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testCreateCommandWithArguments()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $arguments = array('foo', 'bar');
 
         $command = $profile->createCommand('set', $arguments);
@@ -190,7 +192,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testCreateUndefinedCommand()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $profile->createCommand('unknown');
     }
 
@@ -199,7 +201,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
      */
     public function testGetDefaultProcessor()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertNull($profile->getProcessor());
     }
@@ -211,7 +213,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
     {
         $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
 
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $profile->setProcessor($processor);
 
         $this->assertSame($processor, $profile->getProcessor());
@@ -223,7 +225,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
     public function testSetAndUnsetProcessor()
     {
         $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $profile->setProcessor($processor);
         $this->assertSame($processor, $profile->getProcessor());
@@ -249,7 +251,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
                         $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                     }));
 
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $profile->setProcessor($processor);
         $command = $profile->createCommand('set', array('foo', 'bar'));
 
@@ -269,7 +271,7 @@ abstract class RedisProfileTestCase extends StandardTestCase
         $chain->add($processor);
         $chain->add($processor);
 
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $profile->setProcessor($chain);
         $profile->createCommand('info');
     }

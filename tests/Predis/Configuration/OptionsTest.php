@@ -11,14 +11,14 @@
 
 namespace Predis\Configuration;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
 use stdClass;
+use PredisTestCase;
 
 /**
  * @todo We should test the inner work performed by this class
  *       using mock objects, but it is quite hard to to that.
  */
-class OptionsTest extends StandardTestCase
+class OptionsTest extends PredisTestCase
 {
     /**
      * @group disconnected
