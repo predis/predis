@@ -31,7 +31,7 @@ class ProfileOption implements OptionInterface
      */
     protected function setProcessors(OptionsInterface $options, Profile\ProfileInterface $profile)
     {
-        if (isset($options->prefix)) {
+        if (isset($options->prefix) && $profile instanceof Profile\RedisProfile) {
             $profile->setProcessor($options->prefix);
         }
     }

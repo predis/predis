@@ -14,7 +14,6 @@ namespace Predis\Profile;
 use InvalidArgumentException;
 use ReflectionClass;
 use Predis\ClientException;
-use Predis\Command\Processor\CommandProcessingInterface;
 use Predis\Command\Processor\CommandProcessorInterface;
 
 /**
@@ -22,7 +21,7 @@ use Predis\Command\Processor\CommandProcessorInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class RedisProfile implements ProfileInterface, CommandProcessingInterface
+abstract class RedisProfile implements ProfileInterface
 {
     private $commands;
     private $processor;
