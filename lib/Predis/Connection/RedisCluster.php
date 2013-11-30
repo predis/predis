@@ -15,6 +15,7 @@ use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Cluster;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\Response;
 
 /**
@@ -279,10 +280,13 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
         switch ($request) {
             case 'MOVED':
                 $this->move($connection, $slot);
-                return $this->executeCommand($command);
+                $response = $this->executeCommand($command);
+                return $response;
 
             case 'ASK':
-                return $connection->executeCommand($command);
+                $connection->executeCommand(RawCommand::create('ASKING'));
+                $response = $connection->executeCommand($command);
+                return $response;
 
             default:
                 throw new ClientException("Unexpected request type for a move request: $request");

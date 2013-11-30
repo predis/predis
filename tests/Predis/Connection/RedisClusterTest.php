@@ -434,7 +434,10 @@ class RedisClusterTest extends StandardTestCase
                     ->will($this->onConsecutiveCalls($askResponse, 'foobar'));
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
-        $connection2->expects($this->exactly(1))
+        $connection2->expects($this->at(2))
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand('ASKING'));
+        $connection2->expects($this->at(3))
                     ->method('executeCommand')
                     ->with($command)
                     ->will($this->returnValue('foobar'));
@@ -471,7 +474,10 @@ class RedisClusterTest extends StandardTestCase
                     ->method('executeCommand');
 
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
-        $connection3->expects($this->once())
+        $connection3->expects($this->at(0))
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand('ASKING'));
+        $connection3->expects($this->at(1))
                     ->method('executeCommand')
                     ->with($command)
                     ->will($this->returnValue('foobar'));
@@ -604,6 +610,17 @@ class RedisClusterTest extends StandardTestCase
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
+
+    /**
+     * Asserts that two arrays have the same values, even if with different order.
+     *
+     * @param string|CommandInterface $command Expected command or command ID.
+     * @param array $arguments Expected command arguments.
+     */
+    protected function isRedisCommand($command = null, array $arguments = null)
+    {
+        return new \RedisCommandConstraint($command, $arguments);
+    }
 
     /**
      * Returns a base mocked connection from Predis\Connection\SingleConnectionInterface.
