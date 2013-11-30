@@ -54,7 +54,9 @@ abstract class CommandTestCase extends PredisTestCase
      */
     public function getClient($flushdb = true)
     {
-        if (!$this->getProfile()->supportsCommand($id = $this->getExpectedId())) {
+        $profile = $this->getProfile();
+
+        if (!$profile->supportsCommand($id = $this->getExpectedId())) {
             $this->markTestSkipped(
                 "The profile {$profile->getVersion()} does not support command {$id}"
             );
