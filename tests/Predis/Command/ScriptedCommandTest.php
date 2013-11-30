@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase as StandardTestCase;
 /**
  * @group realm-scripting
  */
-class ScriptedCommandTest extends StandardTestCase
+class ScriptCommandTest extends StandardTestCase
 {
     const LUA_SCRIPT = 'return { KEYS[1], KEYS[2], ARGV[1], ARGV[2] }';
     const LUA_SCRIPT_SHA1 = '6e07f61f502e36d123fe28523076af588f5c315e';
@@ -28,7 +28,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -48,7 +48,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -67,7 +67,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('value1', 'value2', 'value3');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -86,7 +86,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -105,7 +105,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('value1', 'value2', 'value3');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -124,7 +124,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
@@ -143,7 +143,7 @@ class ScriptedCommandTest extends StandardTestCase
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));

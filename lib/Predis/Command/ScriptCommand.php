@@ -13,12 +13,12 @@ namespace Predis\Command;
 
 /**
  * Base class used to implement an higher level abstraction for "virtual"
- * commands based on EVAL.
+ * commands for Lua scripting based on EVAL and EVALSHA.
  *
  * @link http://redis.io/commands/eval
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class ScriptedCommand extends ServerEvalSHA
+abstract class ScriptCommand extends ServerEvalSHA
 {
     /**
      * Gets the body of a Lua script.

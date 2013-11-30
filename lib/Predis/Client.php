@@ -14,7 +14,7 @@ namespace Predis;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use Predis\Command\CommandInterface;
-use Predis\Command\ScriptedCommand;
+use Predis\Command\ScriptCommand;
 use Predis\Configuration;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
@@ -299,7 +299,7 @@ class Client implements ClientInterface
      */
     protected function onResponseError(CommandInterface $command, Response\ErrorInterface $response)
     {
-        if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
+        if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
             $eval->setRawArguments($command->getEvalArguments());
 

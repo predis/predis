@@ -190,11 +190,11 @@ class ReplicationStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testSetLuaScriptAsReadOperationWorksWithScriptedCommand()
+    public function testSetLuaScriptAsReadOperationWorksWithScriptCommand()
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
@@ -213,11 +213,11 @@ class ReplicationStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testSetLuaScriptAsReadOperationWorksWithScriptedCommandAndCallableCheck()
+    public function testSetLuaScriptAsReadOperationWorksWithScriptCommandAndCallableCheck()
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
