@@ -12,7 +12,7 @@
 namespace Predis\Cluster;
 
 use Predis\Command\CommandInterface;
-use Predis\Command\ScriptedCommand;
+use Predis\Command\ScriptCommand;
 
 /**
  * Default class used by Predis to calculate hashes out of keys of
@@ -250,7 +250,7 @@ class RedisStrategy implements StrategyInterface
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
     {
-        if ($command instanceof ScriptedCommand) {
+        if ($command instanceof ScriptCommand) {
             $keys = $command->getKeys();
         } else {
             $keys = array_slice($args = $command->getArguments(), 2, $args[1]);

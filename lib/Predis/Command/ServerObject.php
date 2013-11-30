@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/object
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerObject extends AbstractCommand
+class ServerObject extends Command
 {
     /**
      * {@inheritdoc}

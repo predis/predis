@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/hmget
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashGetMultiple extends AbstractCommand
+class HashGetMultiple extends Command
 {
     /**
      * {@inheritdoc}

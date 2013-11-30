@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/rpushx
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPushTailX extends AbstractCommand
+class ListPushTailX extends Command
 {
     /**
      * {@inheritdoc}

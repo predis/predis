@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/hgetall
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class HashGetAll extends AbstractCommand
+class HashGetAll extends Command
 {
     /**
      * {@inheritdoc}

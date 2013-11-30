@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/setnx
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringSetPreserve extends AbstractCommand
+class StringSetPreserve extends Command
 {
     /**
      * {@inheritdoc}

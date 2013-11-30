@@ -18,7 +18,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/client-setname
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerClient extends AbstractCommand
+class ServerClient extends Command
 {
     /**
      * {@inheritdoc}

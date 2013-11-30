@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/linsert
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListInsert extends AbstractCommand
+class ListInsert extends Command
 {
     /**
      * {@inheritdoc}

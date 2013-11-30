@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/subscribe
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PubSubSubscribe extends AbstractCommand
+class PubSubSubscribe extends Command
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/ping
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionPing extends AbstractCommand
+class ConnectionPing extends Command
 {
     /**
      * {@inheritdoc}

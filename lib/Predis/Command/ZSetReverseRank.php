@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zrevrank
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetReverseRank extends AbstractCommand
+class ZSetReverseRank extends Command
 {
     /**
      * {@inheritdoc}

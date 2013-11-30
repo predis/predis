@@ -11,23 +11,23 @@
 
 require 'SharedConfigurations.php';
 
-// Predis allows to set Lua scripts as read-only operations in the context of
-// replication. This works for both EVAL and EVALSHA and also for the client-side
-// abstraction built upon them (Predis\Command\ScriptedCommand). This example
-// shows a slightly more complex configuration that injects a new scripted command
-// in the server profile used by the new client instance and marks it marks it as
-// a read-only operation for replication so that it will be executed on slaves.
+// Predis allows to set Lua scripts as read-only operations for replication.
+// This works for both EVAL and EVALSHA and also for the client-side abstraction
+// built upon them (Predis\Command\ScriptCommand). This example shows a slightly
+// more complex configuration that injects a new script command in the server
+// profile used by the new client instance and marks it marks it as a read-only
+// operation for replication so that it will be executed on slaves.
 
-use Predis\Command\ScriptedCommand;
+use Predis\Command\ScriptCommand;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
 
-// Define a new scripted command that returns all the fields
-// of a variable number of hashes with a single roundtrip.
+// Define a new script command that returns all the fields of a variable number
+// of hashes with a single roundtrip.
 
-class HashMultipleGetAll extends ScriptedCommand {
+class HashMultipleGetAll extends ScriptCommand {
     const BODY = <<<EOS
 local hashes = {}
 for _, key in pairs(KEYS) do

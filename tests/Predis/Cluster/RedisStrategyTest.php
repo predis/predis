@@ -162,7 +162,7 @@ class RedisStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForScriptCommand()
+    public function testKeysForEvalCommand()
     {
         $strategy = $this->getClusterStrategy();
         $profile = Profile\Factory::getDevelopment();
@@ -177,12 +177,12 @@ class RedisStrategyTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForScriptedCommand()
+    public function testKeysForScriptCommand()
     {
         $strategy = $this->getClusterStrategy();
         $arguments = array('key:1', 'value1');
 
-        $command = $this->getMock('Predis\Command\ScriptedCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return true'));
@@ -191,7 +191,7 @@ class RedisStrategyTest extends StandardTestCase
                 ->will($this->returnValue(1));
         $command->setArguments($arguments);
 
-        $this->assertNotNull($strategy->getHash($command), "Scripted Command [{$command->getId()}]");
+        $this->assertNotNull($strategy->getHash($command), "Script Command [{$command->getId()}]");
     }
 
     /**

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/sort
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeySort extends AbstractCommand
+class KeySort extends Command
 {
     /**
      * {@inheritdoc}

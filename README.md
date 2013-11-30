@@ -161,7 +161,7 @@ a new class that matches the command type and its behaviour and then bind it to 
 runtime. Actually, it is easier done than said:
 
 ```php
-class BrandNewRedisCommand extends Predis\Command\AbstractCommand
+class BrandNewRedisCommand extends Predis\Command\Command
 {
     public function getId()
     {
@@ -177,14 +177,14 @@ $redis->newcmd();
 
 ### Abstraction for handling Lua scripts as plain Redis commands ###
 
-A scripted command in Predis is an abstraction for [Lua scripting](http://redis.io/commands/eval)
+A scriptable command in Predis is an abstraction for [Lua scripting](http://redis.io/commands/eval)
 in Redis >= 2.6 allowing to use a Lua script as if it was a Redis command registered in the profile
-used by the client. Internally scripted commands use [EVALSHA](http://redis.io/commands/evalsha) to
-refer to a Lua script by its SHA1 hash in order to save bandwidth, but they are capable of falling
+used by the client. Internally scriptable commands use [EVALSHA](http://redis.io/commands/evalsha) to
+identify a Lua script by its SHA1 hash in order to save bandwidth, but they are capable of falling
 back to [EVAL](http://redis.io/commands/eval) when needed:
 
 ```php
-class ListPushRandomValue extends Predis\Command\ScriptedCommand
+class ListPushRandomValue extends Predis\Command\ScriptCommand
 {
     public function getKeysCount()
     {

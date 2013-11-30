@@ -726,9 +726,9 @@ class ClientTest extends StandardTestCase
     /**
      * @group disconnected
      */
-    public function testClientResendScriptedCommandUsingEvalOnNoScriptErrors()
+    public function testClientResendScriptCommandUsingEvalOnNoScriptErrors()
     {
-        $command = $this->getMockForAbstractClass('Predis\Command\ScriptedCommand', array(), '', true, true, true, array('parseResponse'));
+        $command = $this->getMockForAbstractClass('Predis\Command\ScriptCommand', array(), '', true, true, true, array('parseResponse'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return redis.call(\'exists\', KEYS[1])'));

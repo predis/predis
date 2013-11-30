@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/unwatch
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class TransactionUnwatch extends AbstractCommand
+class TransactionUnwatch extends Command
 {
     /**
      * {@inheritdoc}

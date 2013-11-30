@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zrem
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetRemove extends AbstractCommand
+class ZSetRemove extends Command
 {
     /**
      * {@inheritdoc}

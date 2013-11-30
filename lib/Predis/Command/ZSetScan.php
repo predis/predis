@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zscan
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetScan extends AbstractCommand
+class ZSetScan extends Command
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/ttl
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyTimeToLive extends AbstractCommand
+class KeyTimeToLive extends Command
 {
     /**
      * {@inheritdoc}

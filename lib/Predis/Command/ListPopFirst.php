@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/lpop
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPopFirst extends AbstractCommand
+class ListPopFirst extends Command
 {
     /**
      * {@inheritdoc}

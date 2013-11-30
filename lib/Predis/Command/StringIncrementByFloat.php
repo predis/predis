@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/incrbyfloat
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringIncrementByFloat extends AbstractCommand
+class StringIncrementByFloat extends Command
 {
     /**
      * {@inheritdoc}

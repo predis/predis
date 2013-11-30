@@ -13,7 +13,7 @@ namespace Predis\Cluster;
 
 use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Command\CommandInterface;
-use Predis\Command\ScriptedCommand;
+use Predis\Command\ScriptCommand;
 
 /**
  * Default class used by Predis for client-side sharding to calculate
@@ -300,7 +300,7 @@ class PredisStrategy implements StrategyInterface
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
     {
-        if ($command instanceof ScriptedCommand) {
+        if ($command instanceof ScriptCommand) {
             $keys = $command->getKeys();
         } else {
             $keys = array_slice($args = $command->getArguments(), 2, $args[1]);

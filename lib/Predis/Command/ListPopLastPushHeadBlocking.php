@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/brpoplpush
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListPopLastPushHeadBlocking extends AbstractCommand
+class ListPopLastPushHeadBlocking extends Command
 {
     /**
      * {@inheritdoc}

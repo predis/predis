@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/srem
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetRemove extends AbstractCommand
+class SetRemove extends Command
 {
     /**
      * {@inheritdoc}

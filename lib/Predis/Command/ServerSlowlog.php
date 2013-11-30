@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/slowlog
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerSlowlog extends AbstractCommand
+class ServerSlowlog extends Command
 {
     /**
      * {@inheritdoc}

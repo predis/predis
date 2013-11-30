@@ -13,7 +13,7 @@ namespace Predis\PubSub;
 
 use Predis\ClientException;
 use Predis\ClientInterface;
-use Predis\Command\AbstractCommand as Command;
+use Predis\Command\Command;
 use Predis\NotSupportedException;
 use Predis\Connection\AggregatedConnectionInterface;
 
