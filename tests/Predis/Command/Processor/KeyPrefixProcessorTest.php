@@ -13,7 +13,7 @@ namespace Predis\Command\Processor;
 
 use stdClass;
 use PHPUnit_Framework_TestCase as StandardTestCase;
-use Predis\Command\AbstractCommand;
+use Predis\Command\Command;
 
 /**
  *
@@ -101,14 +101,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', '2nd', '3rd', '4th');
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::first($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::skipLast($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -122,14 +122,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', 'prefix:4th');
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::all($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::skipLast($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -143,14 +143,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', '2nd', 'prefix:3rd', '4th');
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::interleaved($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::skipLast($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -164,14 +164,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', '4th');
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::skipLast($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::skipLast($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -185,14 +185,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
         $arguments = array('key', 'BY', 'by_key_*', 'STORE', 'destination_key');
         $expected = array('prefix:key', 'BY', 'prefix:by_key_*', 'STORE', 'prefix:destination_key');
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::sort($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::sort($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -208,14 +208,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
             'prefix:key:destination', 2, 'prefix:key1', 'prefix:key2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum'
         );
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::zsetStore($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::zsetStore($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -230,14 +230,14 @@ class KeyPrefixProcessorTest extends StandardTestCase
             'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'prefix:foo', 'prefix:hoge', 'bar', 'piyo'
         );
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
 
         KeyPrefixProcessor::evalKeys($command, 'prefix:');
         $this->assertSame($expected, $command->getArguments());
 
         // Empty arguments
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::evalKeys($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
@@ -804,7 +804,7 @@ class KeyPrefixProcessorTest extends StandardTestCase
     }
 }
 
-class DummyCommand extends AbstractCommand
+class DummyCommand extends Command
 {
     protected $commandID;
 

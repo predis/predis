@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/del
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyDelete extends AbstractCommand
+class KeyDelete extends Command
 {
     /**
      * {@inheritdoc}

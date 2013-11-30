@@ -161,7 +161,7 @@ a new class that matches the command type and its behaviour and then bind it to 
 runtime. Actually, it is easier done than said:
 
 ```php
-class BrandNewRedisCommand extends Predis\Command\AbstractCommand
+class BrandNewRedisCommand extends Predis\Command\Command
 {
     public function getId()
     {

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/smove
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class SetMove extends AbstractCommand
+class SetMove extends Command
 {
     /**
      * {@inheritdoc}

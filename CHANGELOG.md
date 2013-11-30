@@ -36,6 +36,8 @@ v0.9.0 (201x-xx-xx)
     - `fire-and-forget`: returns a pipeline that does not read back responses
       (class: `Predis\Pipeline\FireAndForget`).
 
+- The base abstract command class has been renamed to Predis\Command\Command.
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API of external protocol processors.
 

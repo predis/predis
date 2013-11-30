@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/lrem
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ListRemove extends AbstractCommand
+class ListRemove extends Command
 {
     /**
      * {@inheritdoc}

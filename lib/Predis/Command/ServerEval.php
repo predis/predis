@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/eval
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerEval extends AbstractCommand
+class ServerEval extends Command
 {
     /**
      * {@inheritdoc}

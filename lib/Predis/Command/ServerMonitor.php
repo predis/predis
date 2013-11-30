@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/monitor
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerMonitor extends AbstractCommand
+class ServerMonitor extends Command
 {
     /**
      * {@inheritdoc}

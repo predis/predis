@@ -16,7 +16,7 @@ namespace Predis\Command;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class AbstractCommand implements CommandInterface
+abstract class Command implements CommandInterface
 {
     private $hash;
     private $arguments = array();

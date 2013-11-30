@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/bitop
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringBitOp extends AbstractCommand
+class StringBitOp extends Command
 {
     /**
      * {@inheritdoc}

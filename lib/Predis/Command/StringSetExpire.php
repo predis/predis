@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/setex
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringSetExpire extends AbstractCommand
+class StringSetExpire extends Command
 {
     /**
      * {@inheritdoc}

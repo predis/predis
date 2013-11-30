@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/bgsave
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerBackgroundSave extends AbstractCommand
+class ServerBackgroundSave extends Command
 {
     /**
      * {@inheritdoc}

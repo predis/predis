@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/topics/sentinel
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerSentinel extends AbstractCommand
+class ServerSentinel extends Command
 {
     /**
      * {@inheritdoc}

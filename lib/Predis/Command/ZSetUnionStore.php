@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/zunionstore
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ZSetUnionStore extends AbstractCommand
+class ZSetUnionStore extends Command
 {
     /**
      * {@inheritdoc}

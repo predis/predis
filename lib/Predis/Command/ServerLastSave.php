@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/lastsave
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ServerLastSave extends AbstractCommand
+class ServerLastSave extends Command
 {
     /**
      * {@inheritdoc}
