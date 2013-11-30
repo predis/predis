@@ -14,6 +14,11 @@ v0.8.5 (2013-xx-xx)
     - hashes (cursor-based iterator using `HSCAN`)
     - lists (plain iterator using `LRANGE`)
 
+- It is now possible to execute "raw commands" using `Predis\Command\RawCommand`
+  and a variable list of command arguments. Input arguments are not filtered and
+  responses are not parsed, which means arguments must follow the signature of
+  the command as defined by Redis and complex responses are left untouched.
+
 - List of deprecated methods:
 
     - `Predis\Client::multiExec()`: superseded by `Predis\Client::transaction()`
