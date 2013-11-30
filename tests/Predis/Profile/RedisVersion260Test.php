@@ -19,7 +19,7 @@ class RedisVersion260Test extends RedisProfileTestCase
     /**
      * {@inheritdoc}
      */
-    public function getProfileInstance()
+    public function getProfile($version = null)
     {
         return new RedisVersion260();
     }

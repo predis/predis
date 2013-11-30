@@ -11,8 +11,7 @@
 
 namespace Predis\Monitor;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
 use Predis\Monitor\Consumer as MonitorConsumer;
@@ -20,7 +19,7 @@ use Predis\Monitor\Consumer as MonitorConsumer;
 /**
  * @group realm-monitor
  */
-class ConsumerTest extends StandardTestCase
+class ConsumerTest extends PredisTestCase
 {
     /**
      * @group disconnected

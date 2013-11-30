@@ -11,13 +11,13 @@
 
 namespace Predis\Configuration;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
 use stdClass;
+use PredisTestCase;
 
 /**
  *
  */
-class ClusterOptionTest extends StandardTestCase
+class ClusterOptionTest extends PredisTestCase
 {
     /**
      * @group disconnected

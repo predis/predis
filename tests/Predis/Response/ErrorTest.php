@@ -11,12 +11,12 @@
 
 namespace Predis\Response;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class ErrorTest extends StandardTestCase
+class ErrorTest extends PredisTestCase
 {
     const ERR_WRONG_KEY_TYPE = 'ERR Operation against a key holding the wrong kind of value';
 

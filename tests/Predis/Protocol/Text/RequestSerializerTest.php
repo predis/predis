@@ -11,12 +11,12 @@
 
 namespace Predis\Protocol\Text;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class RequestSerializerTest extends StandardTestCase
+class RequestSerializerTest extends PredisTestCase
 {
     /**
      * @group disconnected

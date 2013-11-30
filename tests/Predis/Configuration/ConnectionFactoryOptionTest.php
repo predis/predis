@@ -12,15 +12,14 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use PHPUnit_Framework_TestCase as StandardTestCase;
 use stdClass;
-
+use PredisTestCase;
 use Predis\Connection\ConnectionFactory;
 
 /**
  *
  */
-class ConnectionFactoryOptionTest extends StandardTestCase
+class ConnectionFactoryOptionTest extends PredisTestCase
 {
     /**
      * @group disconnected

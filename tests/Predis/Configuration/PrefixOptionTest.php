@@ -11,12 +11,12 @@
 
 namespace Predis\Configuration;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class PrefixOptionTest extends StandardTestCase
+class PrefixOptionTest extends PredisTestCase
 {
     /**
      * @group disconnected

@@ -11,12 +11,12 @@
 
 namespace Predis\Cluster\Distributor;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-abstract class DistributorTestCase extends StandardTestCase
+abstract class DistributorTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested distributor.

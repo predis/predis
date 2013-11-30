@@ -11,8 +11,7 @@
 
 namespace Predis\Pipeline;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use SplQueue;
 use Predis\Client;
 use Predis\Response;
@@ -20,7 +19,7 @@ use Predis\Response;
 /**
  *
  */
-class AtomicTest extends StandardTestCase
+class AtomicTest extends PredisTestCase
 {
     /**
      * @group disconnected

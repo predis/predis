@@ -11,8 +11,6 @@
 
 namespace Predis\Connection;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
 /**
  *
  */

@@ -12,16 +12,15 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use PHPUnit_Framework_TestCase as StandardTestCase;
 use stdClass;
-
+use PredisTestCase;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile;
 
 /**
  *
  */
-class ProfileOptionTest extends StandardTestCase
+class ProfileOptionTest extends PredisTestCase
 {
     /**
      * @group disconnected

@@ -11,14 +11,13 @@
 
 namespace Predis\Cluster;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Profile;
 
 /**
  *
  */
-class RedisStrategyTest extends StandardTestCase
+class RedisStrategyTest extends PredisTestCase
 {
     /**
      * @group disconnected

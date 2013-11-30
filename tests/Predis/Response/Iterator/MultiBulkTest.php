@@ -11,8 +11,7 @@
 
 namespace Predis\Response\Iterator;
 
-use PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Connection\ComposableStreamConnection;
 use Predis\Connection\ConnectionParameters;
@@ -21,7 +20,7 @@ use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 /**
  * @group realm-iterators
  */
-class MultiBulkTest extends StandardTestCase
+class MultiBulkTest extends PredisTestCase
 {
     /**
      * @group connected
@@ -120,27 +119,17 @@ class MultiBulkTest extends StandardTestCase
      */
     protected function getClient()
     {
-        $parameters = new ConnectionParameters(array(
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'read_write_timeout' => 2,
-        ));
-
-        $options = array(
-            'profile' => REDIS_SERVER_VERSION,
-        );
+        $parameters = $this->getParameters(array('read_write_timeout' => 2));
 
         $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
         $connection = new ComposableStreamConnection($parameters, $protocol);
 
-        $client = new Client($connection, $options);
+        $client = new Client($connection);
         $client->connect();
-        $client->select(REDIS_SERVER_DBNUM);
         $client->flushdb();
 
         return $client;
     }
-
 }
