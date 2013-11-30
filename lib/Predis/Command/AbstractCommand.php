@@ -42,9 +42,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Sets the arguments array without filtering.
-     *
-     * @param array $arguments List of arguments.
+     * {@inheritdoc}
      */
     public function setRawArguments(Array $arguments)
     {
