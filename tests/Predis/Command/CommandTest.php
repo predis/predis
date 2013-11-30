@@ -100,15 +100,21 @@ class CommandTest extends StandardTestCase
     {
         $hash = "key-hash";
 
-        $command = $this->getMockForAbstractClass('Predis\Command\AbstractCommand');
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments(array('key'));
 
         $this->assertNull($command->getHash());
 
         $command->setHash($hash);
         $this->assertSame($hash, $command->getHash());
-    }
 
+        $command->setArguments(array('key'));
+        $this->assertNull($command->getHash());
+
+        $command->setHash($hash);
+        $command->setRawArguments(array('key'));
+        $this->assertNull($command->getHash());
+    }
     /**
      * @group disconnected
      */
