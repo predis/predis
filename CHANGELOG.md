@@ -54,9 +54,7 @@ v0.9.0 (201x-xx-xx)
 - The key prefixing logic has been moved from command classes to the key prefix
   processor. Developers can define or override handlers used to prefix keys, but
   they can also define the needed logic in their command classes by implementing
-  `Predis\Command\PrefixableCommandInterface` just like before. Prefixes are now
-  applied also to raw commands if the command ID is a recognized one and handled
-  by the key prefix processor.
+  `Predis\Command\PrefixableCommandInterface` just like before.
 
 
 v0.8.5 (2013-xx-xx)
