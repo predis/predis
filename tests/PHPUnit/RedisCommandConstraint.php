@@ -25,10 +25,10 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
     public function __construct($command = null, array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
-            $this->commandID = $command->getId();
+            $this->commandID = strtoupper($command->getId());
             $this->arguments = $arguments ?: $commant->getArguments();
         } else {
-            $this->commandID = $command;
+            $this->commandID = strtoupper($command);
             $this->arguments = $arguments;
         }
     }
@@ -42,7 +42,7 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
             return false;
         }
 
-        if ($this->commandID && $other->getId() !== $this->commandID) {
+        if ($this->commandID && strtoupper($other->getId()) !== $this->commandID) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
         $string = 'is a Redis command';
 
         if ($this->commandID) {
-            $string .= " with ID `{$this->commandID}";
+            $string .= " with ID '{$this->commandID}'";
         }
 
         if ($this->arguments) {
