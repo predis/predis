@@ -500,7 +500,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage 'invalidcommand' is not a registered Redis command
+     * @expectedExceptionMessage 'INVALIDCOMMAND' is not a registered Redis command
      */
     public function testThrowsExceptionOnNonRegisteredRedisCommand()
     {

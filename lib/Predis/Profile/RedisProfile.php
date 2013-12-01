@@ -47,7 +47,7 @@ abstract class RedisProfile implements ProfileInterface
      */
     public function supportsCommand($commandID)
     {
-        return isset($this->commands[strtolower($commandID)]);
+        return isset($this->commands[strtoupper($commandID)]);
     }
 
     /**
@@ -73,7 +73,7 @@ abstract class RedisProfile implements ProfileInterface
      */
     public function getCommandClass($commandID)
     {
-        if (isset($this->commands[$commandID = strtolower($commandID)])) {
+        if (isset($this->commands[$commandID = strtoupper($commandID)])) {
             return $this->commands[$commandID];
         }
     }
@@ -83,7 +83,7 @@ abstract class RedisProfile implements ProfileInterface
      */
     public function createCommand($commandID, $arguments = array())
     {
-        $commandID = strtolower($commandID);
+        $commandID = strtoupper($commandID);
 
         if (!isset($this->commands[$commandID])) {
             throw new ClientException("'$commandID' is not a registered Redis command");
@@ -114,7 +114,7 @@ abstract class RedisProfile implements ProfileInterface
             throw new InvalidArgumentException("Cannot register '$commandClass' as it is not a valid Redis command");
         }
 
-        $this->commands[strtolower($commandID)] = $commandClass;
+        $this->commands[strtoupper($commandID)] = $commandClass;
     }
 
     /**

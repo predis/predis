@@ -19,6 +19,7 @@ interface CommandInterface
 {
     /**
      * Gets the ID of a Redis command.
+     * By convention, command identifiers myst be uppercase.
      *
      * @return string
      */

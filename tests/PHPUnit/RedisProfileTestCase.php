@@ -188,7 +188,7 @@ abstract class RedisProfileTestCase extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage 'unknown' is not a registered Redis command
+     * @expectedExceptionMessage 'UNKNOWN' is not a registered Redis command
      */
     public function testCreateUndefinedCommand()
     {
