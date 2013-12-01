@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * We only perform disconnected tests for this commands because
@@ -21,7 +21,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
  * @group commands
  * @group realm-key
  */
-class KeyKeysV12xTest extends CommandTestCase
+class KeyKeysV12xTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -11,15 +11,14 @@
 
 namespace Predis\Monitor;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-monitor
  */
-class MonitorContextTest extends StandardTestCase
+class MonitorContextTest extends PredisTestCase
 {
     /**
      * @group disconnected

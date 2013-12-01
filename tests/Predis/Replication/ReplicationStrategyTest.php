@@ -11,15 +11,14 @@
 
 namespace Predis\Replication;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Command\CommandInterface;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class ReplicationStrategyTest extends StandardTestCase
+class ReplicationStrategyTest extends PredisTestCase
 {
     /**
      * @group disconnected

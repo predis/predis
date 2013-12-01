@@ -11,13 +11,13 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * @group commands
  * @group realm-server
  */
-class ServerBackgroundSaveTest extends CommandTestCase
+class ServerBackgroundSaveTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

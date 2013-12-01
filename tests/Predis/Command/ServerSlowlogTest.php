@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * In order to support the output of SLOWLOG, the backend connection
@@ -20,7 +20,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
  * @group commands
  * @group realm-server
  */
-class ServerSlowlogTest extends CommandTestCase
+class ServerSlowlogTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

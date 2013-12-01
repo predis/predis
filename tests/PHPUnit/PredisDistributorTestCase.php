@@ -11,12 +11,12 @@
 
 namespace Predis\Cluster\Distribution;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-abstract class DistributionStrategyTestCase extends StandardTestCase
+abstract class PredisDistributorTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested distributor.

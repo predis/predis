@@ -11,12 +11,12 @@
 
 namespace Predis\Command\Processor;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class KeyPrefixProcessorTest extends StandardTestCase
+class KeyPrefixProcessorTest extends PredisTestCase
 {
     /**
      * @group disconnected

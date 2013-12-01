@@ -11,10 +11,9 @@
 
 namespace Predis\Pipeline;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
 use ArrayIterator;
 use SplQueue;
+use PredisTestCase;
 use Predis\ResponseError;
 use Predis\ResponseObjectInterface;
 use Predis\ResponseQueued;
@@ -30,7 +29,7 @@ class ResponseIteratorStub extends ArrayIterator implements ResponseObjectInterf
 /**
  *
  */
-class MultiExecExecutorTest extends StandardTestCase
+class MultiExecExecutorTest extends PredisTestCase
 {
     /**
      * @group disconnected

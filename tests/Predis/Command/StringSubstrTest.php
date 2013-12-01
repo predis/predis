@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * SUBSTR is actually the old name of GETRANGE in version of Redis <= 2.0.
@@ -21,7 +21,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
  * @group commands
  * @group realm-string
  */
-class StringSubstrTest extends CommandTestCase
+class StringSubstrTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

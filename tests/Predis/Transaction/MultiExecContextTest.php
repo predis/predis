@@ -11,8 +11,7 @@
 
 namespace Predis\Transaction;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\ResponseQueued;
 use Predis\ServerException;
@@ -21,7 +20,7 @@ use Predis\Command\CommandInterface;
 /**
  * @group realm-transaction
  */
-class MultiExecContextTest extends StandardTestCase
+class MultiExecContextTest extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -761,24 +760,8 @@ class MultiExecContextTest extends StandardTestCase
      * @param array Additional client options.
      * @return Client client instance.
      */
-    protected function getClient(Array $parameters = array(), Array $options = array())
+    protected function getClient(array $parameters = array(), array $options = array())
     {
-        $parameters = array_merge(array(
-            'scheme' => 'tcp',
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
-        ), $parameters);
-
-        $options = array_merge(array(
-            'profile' => REDIS_SERVER_VERSION
-        ), $options);
-
-        $client = new Client($parameters, $options);
-
-        $client->connect();
-        $client->flushdb();
-
-        return $client;
+        return $this->createClient($parameters, $options);
     }
 }

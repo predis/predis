@@ -11,7 +11,7 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * @group commands
@@ -19,7 +19,7 @@ use \PHPUnit_Framework_TestCase as StandardTestCase;
  * @todo Testing blocking pop operations against Redis using PHP is
  *       tricky, so we will skip these kind of tests for now.
  */
-class ListPopFirstBlockingTest extends CommandTestCase
+class ListPopFirstBlockingTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

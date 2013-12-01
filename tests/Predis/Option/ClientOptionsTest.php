@@ -11,13 +11,13 @@
 
 namespace Predis\Option;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  * @todo We should test the inner work performed by this class
  *       using mock objects, but it is quite hard to to that.
  */
-class ClientOptionsTest extends StandardTestCase
+class ClientOptionsTest extends PredisTestCase
 {
     /**
      * @group disconnected
