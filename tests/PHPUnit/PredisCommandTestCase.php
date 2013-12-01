@@ -18,7 +18,7 @@ use Predis\Profile;
 /**
  *
  */
-abstract class CommandTestCase extends PredisTestCase
+abstract class PredisCommandTestCase extends PredisTestCase
 {
     /**
      * Returns the expected command.

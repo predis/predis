@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-key
  */
-class KeyExpireTest extends CommandTestCase
+class KeyExpireTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-server
  */
-class ServerShutdownTest extends CommandTestCase
+class ServerShutdownTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

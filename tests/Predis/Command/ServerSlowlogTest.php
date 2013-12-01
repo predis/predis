@@ -18,7 +18,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-server
  */
-class ServerSlowlogTest extends CommandTestCase
+class ServerSlowlogTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

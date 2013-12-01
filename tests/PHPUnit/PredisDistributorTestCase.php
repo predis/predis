@@ -16,7 +16,7 @@ use PredisTestCase;
 /**
  *
  */
-abstract class DistributorTestCase extends PredisTestCase
+abstract class PredisDistributorTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested distributor.

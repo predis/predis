@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-connection
  */
-class ConnectionSelectTest extends CommandTestCase
+class ConnectionSelectTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-zset
  */
-class ZSetIntersectionStoreTest extends CommandTestCase
+class ZSetIntersectionStoreTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

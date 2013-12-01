@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-string
  */
-class StringPreciseSetExpireTest extends CommandTestCase
+class StringPreciseSetExpireTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

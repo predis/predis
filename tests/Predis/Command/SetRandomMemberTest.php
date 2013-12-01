@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-set
  */
-class SetRandomMemberTest extends CommandTestCase
+class SetRandomMemberTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

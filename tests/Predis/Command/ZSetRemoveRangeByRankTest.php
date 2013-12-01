@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-zset
  */
-class ZSetRemoveRangeByRankTest extends CommandTestCase
+class ZSetRemoveRangeByRankTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

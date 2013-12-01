@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-zset
  */
-class ZSetCardinalityTest extends CommandTestCase
+class ZSetCardinalityTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

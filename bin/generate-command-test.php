@@ -175,7 +175,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-$realm
  */
-class $class extends CommandTestCase
+class $class extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

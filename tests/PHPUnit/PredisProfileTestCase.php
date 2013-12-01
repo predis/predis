@@ -17,7 +17,7 @@ use Predis\Command\Processor\ProcessorChain;
 /**
  *
  */
-abstract class RedisProfileTestCase extends PredisTestCase
+abstract class PredisProfileTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested profile.

@@ -14,7 +14,7 @@ namespace Predis\Connection;
 /**
  *
  */
-class StreamConnectionTest extends ConnectionTestCase
+class StreamConnectionTest extends PredisConnectionTestCase
 {
     /**
      * @group disconnected

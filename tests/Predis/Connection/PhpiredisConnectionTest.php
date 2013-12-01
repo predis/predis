@@ -14,7 +14,7 @@ namespace Predis\Connection;
 /**
  * @group ext-phpiredis
  */
-class PhpiredisConnectionTest extends ConnectionTestCase
+class PhpiredisConnectionTest extends PredisConnectionTestCase
 {
     /**
      * @group disconnected

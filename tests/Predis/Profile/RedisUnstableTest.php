@@ -14,7 +14,7 @@ namespace Predis\Profile;
 /**
  *
  */
-class RedisUnstableTest extends RedisProfileTestCase
+class RedisUnstableTest extends PredisProfileTestCase
 {
     /**
      * {@inheritdoc}

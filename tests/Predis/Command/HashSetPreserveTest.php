@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-hash
  */
-class HashSetPreserveTest extends CommandTestCase
+class HashSetPreserveTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -17,7 +17,7 @@ use Predis\Profile;
 /**
  * @group realm-connection
  */
-abstract class ConnectionTestCase extends PredisTestCase
+abstract class PredisConnectionTestCase extends PredisTestCase
 {
     /**
      * @group disconnected

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-pubsub
  */
-class PubSubSubscribeByPatternTest extends CommandTestCase
+class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

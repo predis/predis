@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-server
  */
-class ServerFlushDatabaseTest extends CommandTestCase
+class ServerFlushDatabaseTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-scripting
  */
-class ServerScriptTest extends CommandTestCase
+class ServerScriptTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

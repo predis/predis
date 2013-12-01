@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-list
  */
-class ListInsertTest extends CommandTestCase
+class ListInsertTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

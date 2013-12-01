@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-zset
  */
-class ZSetRangeTest extends CommandTestCase
+class ZSetRangeTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

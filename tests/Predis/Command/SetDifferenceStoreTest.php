@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-set
  */
-class SetDifferenceStoreTest extends CommandTestCase
+class SetDifferenceStoreTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -16,7 +16,7 @@ namespace Predis\Command;
  * @group realm-server
  * @group realm-monitor
  */
-class ServerMonitorTest extends CommandTestCase
+class ServerMonitorTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

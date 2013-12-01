@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-key
  */
-class KeyTimeToLiveTest extends CommandTestCase
+class KeyTimeToLiveTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

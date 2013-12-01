@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-server
  */
-class ServerBackgroundRewriteAOFTest extends CommandTestCase
+class ServerBackgroundRewriteAOFTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

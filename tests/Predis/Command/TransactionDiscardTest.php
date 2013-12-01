@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @group commands
  * @group realm-transaction
  */
-class TransactionDiscardTest extends CommandTestCase
+class TransactionDiscardTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}
