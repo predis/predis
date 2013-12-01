@@ -14,6 +14,7 @@ namespace Predis;
 use InvalidArgumentException;
 use UnexpectedValueException;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration;
 use Predis\Connection\AggregatedConnectionInterface;
@@ -246,6 +247,38 @@ class Client implements ClientInterface
         }
 
         return $this->connection->getConnectionById($connectionID);
+    }
+
+    /**
+     * Executes a command without filtering its arguments, parsing the response,
+     * applying any prefix to keys or throwing exceptions on Redis errors even
+     * regardless of client options.
+     *
+     * It is possibile to indentify Redis error responses from normal responses
+     * using the second optional argument which is populated by reference.
+     *
+     * @param array $arguments Command arguments as defined by the command signature.
+     * @param bool $error Set to TRUE when Redis returned an error response.
+     * @return mixed
+     */
+    public function raw(array $arguments, &$error = null)
+    {
+        $error = false;
+
+        $command = new RawCommand($arguments);
+        $response = $this->connection->executeCommand($command);
+
+        if ($response instanceof Response\ObjectInterface) {
+            if ($response instanceof Response\ErrorInterface) {
+                $error = true;
+            }
+
+            return (string) $response;
+        } else if ($response === true) {
+            return 'OK';
+        } else {
+            return $response;
+        }
     }
 
     /**

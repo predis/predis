@@ -499,6 +499,76 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testRawCommand()
+    {
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection->expects($this->at(0))
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('SET', array('foo', 'bar')))
+                   ->will($this->returnValue(true));
+        $connection->expects($this->at(1))
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('GET', array('foo')))
+                   ->will($this->returnValue('bar'));
+        $connection->expects($this->at(2))
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('PING'))
+                   ->will($this->returnValue('PONG'));
+
+        $client = new Client($connection);
+
+        $this->assertSame('OK', $client->raw(['SET', 'foo', 'bar']));
+        $this->assertSame('bar', $client->raw(['GET', 'foo']));
+
+        $error = true;  // $error is always populated by reference.
+        $this->assertSame('PONG', $client->raw(['PING'], $error));
+        $this->assertFalse($error);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRawCommandNeverAppliesPrefix()
+    {
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection->expects($this->at(0))
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('SET', array('foo', 'bar')))
+                   ->will($this->returnValue(true));
+        $connection->expects($this->at(1))
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('GET', array('foo')))
+                   ->will($this->returnValue('bar'));
+
+        $client = new Client($connection, array('prefix' => 'predis:'));
+
+        $this->assertSame('OK', $client->raw(['SET', 'foo', 'bar']));
+        $this->assertSame('bar', $client->raw(['GET', 'foo']));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRawCommandNeverThrowsExceptions()
+    {
+        $message = 'ERR Mock error response';
+        $response = new Response\Error($message);
+
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('executeCommand')
+                   ->with($this->isRedisCommand('PING'))
+                   ->will($this->returnValue($response));
+
+        $client = new Client($connection, array('exceptions' => true));
+
+        $this->assertSame($message, $client->raw(['PING'], $error));
+        $this->assertTrue($error);
+    }
+
+    /**
+     * @group disconnected
      * @expectedException Predis\ClientException
      * @expectedExceptionMessage 'INVALIDCOMMAND' is not a registered Redis command
      */
