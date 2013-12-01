@@ -518,11 +518,11 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertSame('OK', $client->raw(['SET', 'foo', 'bar']));
-        $this->assertSame('bar', $client->raw(['GET', 'foo']));
+        $this->assertSame('OK', $client->raw(array('SET', 'foo', 'bar')));
+        $this->assertSame('bar', $client->raw(array('GET', 'foo')));
 
         $error = true;  // $error is always populated by reference.
-        $this->assertSame('PONG', $client->raw(['PING'], $error));
+        $this->assertSame('PONG', $client->raw(array('PING'), $error));
         $this->assertFalse($error);
     }
 
@@ -543,8 +543,8 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection, array('prefix' => 'predis:'));
 
-        $this->assertSame('OK', $client->raw(['SET', 'foo', 'bar']));
-        $this->assertSame('bar', $client->raw(['GET', 'foo']));
+        $this->assertSame('OK', $client->raw(array('SET', 'foo', 'bar')));
+        $this->assertSame('bar', $client->raw(array('GET', 'foo')));
     }
 
     /**
@@ -563,7 +563,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection, array('exceptions' => true));
 
-        $this->assertSame($message, $client->raw(['PING'], $error));
+        $this->assertSame($message, $client->raw(array('PING'), $error));
         $this->assertTrue($error);
     }
 
