@@ -28,14 +28,14 @@ use Predis\Replication\ReplicationStrategy;
 // of hashes with a single roundtrip.
 
 class HashMultipleGetAll extends ScriptCommand {
-    const BODY = <<<EOS
+    const BODY = <<<LUA
 local hashes = {}
 for _, key in pairs(KEYS) do
     table.insert(hashes, key)
     table.insert(hashes, redis.call('hgetall', key))
 end
 return hashes
-EOS;
+LUA;
 
     public function getScript() {
         return self::BODY;
@@ -79,5 +79,5 @@ $hashes = $client->hmgetall('metavars', 'servers');
 $replication = $client->getConnection();
 $stillOnSlave = $replication->getCurrent() === $replication->getConnectionById('slave');
 
-echo "Is still on slave? ", $stillOnSlave ? 'YES' : 'NO', "!\n";
+echo "Is still on slave? ", $stillOnSlave ? 'YES!' : 'NO!', PHP_EOL;
 var_export($hashes);

@@ -32,8 +32,7 @@ class IncrementExistingKeysBy extends ScriptCommand
 
     public function getScript()
     {
-        return
-<<<LUA
+        return <<<LUA
 local cmd, insert = redis.call, table.insert
 local increment, results = ARGV[1], { }
 
@@ -50,9 +49,14 @@ LUA;
     }
 }
 
-$client = new Predis\Client($single_server);
+$client = new Predis\Client($single_server, array(
+    'profile' => function ($options) {
+        $profile = $options->getDefault('profile');
+        $profile->defineCommand('increxby', 'IncrementExistingKeysBy');
 
-$client->getProfile()->defineCommand('increxby', 'IncrementExistingKeysBy');
+        return $profile;
+    }
+));
 
 $client->mset('foo', 10, 'foobar', 100);
 

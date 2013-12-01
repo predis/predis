@@ -33,20 +33,20 @@ $client = new Predis\Client($parameters, $options);
 // Read operation.
 $exists = $client->exists('foo') ? 'yes' : 'no';
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Does 'foo' exist on {$current->alias}? $exists.\n";
+echo "Does 'foo' exist on {$current->alias}? $exists.", PHP_EOL;
 
 // Write operation.
 $client->set('foo', 'bar');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Now 'foo' has been set to 'bar' on {$current->alias}!\n";
+echo "Now 'foo' has been set to 'bar' on {$current->alias}!", PHP_EOL;
 
 // Read operation.
 $bar = $client->get('foo');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "We just fetched 'foo' from {$current->alias} and its value is '$bar'.\n";
+echo "We fetched 'foo' from {$current->alias} and its value is '$bar'.", PHP_EOL;
 
 /* OUTPUT:
 Does 'foo' exist on slave? yes.
 Now 'foo' has been set to 'bar' on master!
-We just fetched 'foo' from master and its value is 'bar'.
+We fetched 'foo' from master and its value is 'bar'.
 */

@@ -28,17 +28,17 @@ foreach (($monitor = $client->monitor()) as $event) {
     // If we notice a ECHO command with the message QUIT_MONITOR, we stop the
     // monitor consumer and then break the loop.
     if ($event->command === 'ECHO' && $event->arguments === '"QUIT_MONITOR"') {
-        echo "Exiting the monitor loop...\n";
+        echo "Exiting the monitor loop...", PHP_EOL;
         $monitor->stop();
         break;
     }
 
-    echo "* Received {$event->command} on DB {$event->database} at {$timestamp->format(DateTime::W3C)}\n";
+    echo "* Received {$event->command} on DB {$event->database} at {$timestamp->format(DateTime::W3C)}", PHP_EOL;
     if (isset($event->arguments)) {
-        echo "    Arguments: {$event->arguments}\n";
+        echo "    Arguments: {$event->arguments}", PHP_EOL;
     }
 }
 
 // Say goodbye :-)
-$info = $client->info();
-print_r("Goodbye from Redis v{$info['redis_version']}!\n");
+$version = redis_version($client->info());
+echo "Goodbye from Redis $version!", PHP_EOL;

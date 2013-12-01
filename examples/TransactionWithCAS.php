@@ -22,6 +22,9 @@ require 'SharedConfigurations.php';
 // ZADD zset 1 a
 // ZADD zset 2 b
 // ZADD zset 3 c
+//
+// Then execute this script four times and see its output.
+//
 
 function zpop($client, $key)
 {
@@ -48,4 +51,4 @@ function zpop($client, $key)
 $client = new Predis\Client($single_server);
 $zpopped = zpop($client, 'zset');
 
-echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", "\n";
+echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", PHP_EOL;

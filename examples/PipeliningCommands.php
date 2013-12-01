@@ -27,22 +27,20 @@ $replies = $client->pipeline(function ($pipe) {
     $pipe->mget('does_not_exist', 'counter');
 });
 
-print_r($replies);
+var_export($replies);
 
 /* OUTPUT:
-Array
-(
-    [0] => 1
-    [1] => 1
-    [2] => 10
-    [3] => 40
-    [4] => 1
-    [5] => 40
-    [6] => Array
-        (
-            [0] =>
-            [1] => 40
-        )
-
+array (
+  0 => true,
+  1 => true,
+  2 => 10,
+  3 => 40,
+  4 => true,
+  5 => '40',
+  6 =>
+  array (
+    0 => NULL,
+    1 => '40',
+  ),
 )
 */

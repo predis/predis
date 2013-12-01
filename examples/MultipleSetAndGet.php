@@ -26,13 +26,12 @@ $client = new Predis\Client($single_server);
 $client->mset($mkv);
 $retval = $client->mget(array_keys($mkv));
 
-print_r($retval);
+var_export($retval);
 
 /* OUTPUT:
-Array
-(
-    [0] => First user
-    [1] => Second user
-    [2] => Third user
+array (
+  0 => 'First user',
+  1 => 'Second user',
+  2 => 'Third user',
 )
 */

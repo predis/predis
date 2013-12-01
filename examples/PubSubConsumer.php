@@ -30,20 +30,20 @@ $pubsub->subscribe('control_channel', 'notifications');
 foreach ($pubsub as $message) {
     switch ($message->kind) {
         case 'subscribe':
-            echo "Subscribed to {$message->channel}\n";
+            echo "Subscribed to {$message->channel}", PHP_EOL;
             break;
 
         case 'message':
             if ($message->channel == 'control_channel') {
                 if ($message->payload == 'quit_loop') {
-                    echo "Aborting pubsub loop...\n";
+                    echo "Aborting pubsub loop...", PHP_EOL;
                     $pubsub->unsubscribe();
                 } else {
-                    echo "Received an unrecognized command: {$message->payload}.\n";
+                    echo "Received an unrecognized command: {$message->payload}.", PHP_EOL;
                 }
             } else {
-                echo "Received the following message from {$message->channel}:\n",
-                     "  {$message->payload}\n\n";
+                echo "Received the following message from {$message->channel}:",
+                     PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
             }
             break;
     }
@@ -55,5 +55,5 @@ foreach ($pubsub as $message) {
 unset($pubsub);
 
 // Say goodbye :-)
-$info = $client->info();
-print_r("Goodbye from Redis v{$info['redis_version']}!\n");
+$version = redis_version($client->info());
+echo "Goodbye from Redis $version!", PHP_EOL;

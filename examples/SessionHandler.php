@@ -32,8 +32,8 @@ session_id('example_session_id');
 session_start();
 
 if (isset($_SESSION['foo'])) {
-    echo "Session has `foo` set to {$_SESSION['foo']}\n";
+    echo "Session has `foo` set to {$_SESSION['foo']}", PHP_EOL;
 } else {
     $_SESSION['foo'] = $value = mt_rand();
-    echo "Empty session, `foo` has been set with $value\n";
+    echo "Empty session, `foo` has been set with $value", PHP_EOL;
 }

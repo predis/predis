@@ -11,6 +11,17 @@
 
 require __DIR__.'/../autoload.php';
 
+function redis_version($info)
+{
+    if (isset($info['Server']['redis_version'])) {
+        return $info['Server']['redis_version'];
+    } else if (isset($info['redis_version'])) {
+        return $info['Server']['redis_version'];
+    } else {
+        return 'unknown version';
+    }
+}
+
 $single_server = array(
     'host'     => '127.0.0.1',
     'port'     => 6379,

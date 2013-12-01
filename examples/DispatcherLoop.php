@@ -31,27 +31,22 @@ $client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 $dispatcher = new Predis\PubSub\DispatcherLoop($client);
 
 // Demonstrate how to use a callable class as a callback for Predis\DispatcherLoop.
-class EventsListener implements Countable
-{
+class EventsListener implements Countable {
     private $events;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->events = array();
     }
 
-    public function count()
-    {
+    public function count() {
         return count($this->events);
     }
 
-    public function getEvents()
-    {
+    public function getEvents() {
         return $this->events;
     }
 
-    public function __invoke($payload)
-    {
+    public function __invoke($payload) {
         $this->events[] = $payload;
     }
 }
@@ -71,8 +66,8 @@ $dispatcher->attachCallback('control', function ($payload) use ($dispatcher) {
 $dispatcher->run();
 
 // Display our achievements!
-echo "We received {$events->count()} messages!\n";
+echo "We received {$events->count()} messages!", PHP_EOL;
 
 // Say goodbye :-)
-$info = $client->info();
-print_r("Goodbye from Redis v{$info['redis_version']}!\n");
+$version = redis_version($client->info());
+echo "Goodbye from Redis $version!", PHP_EOL;

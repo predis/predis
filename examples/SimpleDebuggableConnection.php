@@ -14,20 +14,17 @@ require 'SharedConfigurations.php';
 use Predis\Command\CommandInterface;
 use Predis\Connection\StreamConnection;
 
-class SimpleDebuggableConnection extends StreamConnection
-{
+class SimpleDebuggableConnection extends StreamConnection {
     private $tstart = 0;
     private $debugBuffer = array();
 
-    public function connect()
-    {
+    public function connect() {
         $this->tstart = microtime(true);
 
         parent::connect();
     }
 
-    private function storeDebug(CommandInterface $command, $direction)
-    {
+    private function storeDebug(CommandInterface $command, $direction) {
         $firtsArg  = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->tstart, 4);
 
@@ -39,23 +36,20 @@ class SimpleDebuggableConnection extends StreamConnection
         $this->debugBuffer[] = $debug;
     }
 
-    public function writeCommand(CommandInterface $command)
-    {
+    public function writeCommand(CommandInterface $command) {
         parent::writeCommand($command);
 
         $this->storeDebug($command, '->');
     }
 
-    public function readResponse(CommandInterface $command)
-    {
-        $reply = parent::readResponse($command);
+    public function readResponse(CommandInterface $command) {
+        $response = parent::readResponse($command);
         $this->storeDebug($command, '<-');
 
-        return $reply;
+        return $response;
     }
 
-    public function getDebugBuffer()
-    {
+    public function getDebugBuffer() {
         return $this->debugBuffer;
     }
 }
@@ -71,18 +65,17 @@ $client->set('foo', 'bar');
 $client->get('foo');
 $client->info();
 
-print_r($client->getConnection()->getDebugBuffer());
+var_export($client->getConnection()->getDebugBuffer());
 
 /* OUTPUT:
-Array
-(
-    [0] => SELECT 15 -> 127.0.0.1:6379 [0.0008s]
-    [1] => SELECT 15 <- 127.0.0.1:6379 [0.0012s]
-    [2] => SET foo -> 127.0.0.1:6379 [0.0014s]
-    [3] => SET foo <- 127.0.0.1:6379 [0.0014s]
-    [4] => GET foo -> 127.0.0.1:6379 [0.0016s]
-    [5] => GET foo <- 127.0.0.1:6379 [0.0018s]
-    [6] => INFO -> 127.0.0.1:6379 [0.002s]
-    [7] => INFO <- 127.0.0.1:6379 [0.0025s]
+array (
+  0 => 'SELECT 15 -> 127.0.0.1:6379 [0.0008s]',
+  1 => 'SELECT 15 <- 127.0.0.1:6379 [0.001s]',
+  2 => 'SET foo -> 127.0.0.1:6379 [0.001s]',
+  3 => 'SET foo <- 127.0.0.1:6379 [0.0011s]',
+  4 => 'GET foo -> 127.0.0.1:6379 [0.0013s]',
+  5 => 'GET foo <- 127.0.0.1:6379 [0.0015s]',
+  6 => 'INFO -> 127.0.0.1:6379 [0.0019s]',
+  7 => 'INFO <- 127.0.0.1:6379 [0.0022s]',
 )
 */

@@ -20,18 +20,18 @@ require 'SharedConfigurations.php';
 $client = new Predis\Client($single_server, array('prefix' => 'nrk:'));
 
 $client->mset(array('foo' => 'bar', 'lol' => 'wut'));
-var_dump($client->mget('foo', 'lol'));
+var_export($client->mget('foo', 'lol'));
 /*
-array(2) {
-  [0]=> string(3) "bar"
-  [1]=> string(3) "wut"
-}
+array (
+  0 => 'bar',
+  1 => 'wut',
+)
 */
 
-var_dump($client->keys('*'));
+var_export($client->keys('*'));
 /*
-array(2) {
-  [0]=> string(7) "nrk:foo"
-  [1]=> string(7) "nrk:lol"
-}
+array (
+  0 => 'nrk:foo',
+  1 => 'nrk:lol',
+)
 */
