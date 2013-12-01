@@ -14,7 +14,7 @@ namespace Predis\Cluster\Distribution;
 /**
  * @todo To be improved.
  */
-class HashRingTest extends DistributionStrategyTestCase
+class HashRingTest extends PredisDistributorTestCase
 {
     /**
      * {@inheritdoc}

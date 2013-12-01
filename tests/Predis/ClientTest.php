@@ -11,8 +11,7 @@
 
 namespace Predis;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Connection\ConnectionFactory;
 use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\PredisCluster;
@@ -21,7 +20,7 @@ use Predis\Profile\ServerProfile;
 /**
  *
  */
-class ClientTest extends StandardTestCase
+class ClientTest extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -751,45 +750,6 @@ class ClientTest extends StandardTestCase
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
-
-    /**
-     * Returns a named array with the default connection parameters and their values.
-     *
-     * @return Array Default connection parameters.
-     */
-    protected function getDefaultParametersArray()
-    {
-        return array(
-            'scheme' => 'tcp',
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
-        );
-    }
-
-    /**
-     * Returns a named array with the default client options and their values.
-     *
-     * @return Array Default connection parameters.
-     */
-    protected function getDefaultOptionsArray()
-    {
-        return array(
-            'profile' => REDIS_SERVER_VERSION,
-        );
-    }
-
-    /**
-     * Returns a named array with the default connection parameters merged with
-     * the specified additional parameters.
-     *
-     * @param Array $additional Additional connection parameters.
-     * @return Array Connection parameters.
-     */
-    protected function getParametersArray(Array $additional)
-    {
-        return array_merge($this->getDefaultParametersArray(), $additional);
-    }
 
     /**
      * Returns an URI string representation of the specified connection parameters.

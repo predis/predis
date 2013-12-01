@@ -11,14 +11,13 @@
 
 namespace Predis;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Connection\SingleConnectionInterface;
 
 /**
  *
  */
-class CommunicationExceptionTest extends StandardTestCase
+class CommunicationExceptionTest extends PredisTestCase
 {
     /**
      * @group disconnected

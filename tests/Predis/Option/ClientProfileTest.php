@@ -11,15 +11,14 @@
 
 namespace Predis\Option;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class ClientProfileTest extends StandardTestCase
+class ClientProfileTest extends PredisTestCase
 {
     /**
      * @group disconnected

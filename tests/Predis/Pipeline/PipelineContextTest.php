@@ -11,8 +11,7 @@
 
 namespace Predis\Pipeline;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\Profile\ServerProfile;
@@ -20,7 +19,7 @@ use Predis\Profile\ServerProfile;
 /**
  *
  */
-class PipelineContextTest extends StandardTestCase
+class PipelineContextTest extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -393,25 +392,9 @@ class PipelineContextTest extends StandardTestCase
      * @return array Additional client options.
      * @return Client New client instance.
      */
-    protected function getClient(Array $parameters = array(), Array $options = array())
+    protected function getClient(array $parameters = array(), array $options = array())
     {
-        $parameters = array_merge(array(
-            'scheme' => 'tcp',
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
-        ), $parameters);
-
-        $options = array_merge(array(
-            'profile' => REDIS_SERVER_VERSION,
-        ), $options);
-
-        $client = new Client($parameters, $options);
-
-        $client->connect();
-        $client->flushdb();
-
-        return $client;
+        return $this->createClient($parameters, $options);
     }
 
     /**

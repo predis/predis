@@ -14,7 +14,7 @@ namespace Predis\Cluster\Distribution;
 /**
  * @todo To be improved.
  */
-class KetamaPureRingTest extends DistributionStrategyTestCase
+class KetamaPureRingTest extends PredisDistributorTestCase
 {
     /**
      * {@inheritdoc}

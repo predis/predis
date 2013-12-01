@@ -11,12 +11,12 @@
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class PrefixableCommandTest extends StandardTestCase
+class PrefixableCommandTest extends PredisTestCase
 {
     /**
      * @group disconnected

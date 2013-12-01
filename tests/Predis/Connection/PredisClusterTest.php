@@ -11,14 +11,13 @@
 
 namespace Predis\Connection;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class PredisClusterTest extends StandardTestCase
+class PredisClusterTest extends PredisTestCase
 {
     /**
      * @group disconnected

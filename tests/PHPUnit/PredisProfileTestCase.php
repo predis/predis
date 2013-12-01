@@ -11,19 +11,22 @@
 
 namespace Predis\Profile;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-abstract class ServerVersionTestCase extends StandardTestCase
+abstract class PredisProfileTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested profile.
      *
      * @return ServerProfileInterface
      */
-    protected abstract function getProfileInstance();
+    protected function getProfile($version = null)
+    {
+        $this->markTestIncomplete("Server profile must be defined in ".get_class($this));
+    }
 
     /**
      * Returns the expected version string for the tested profile.
@@ -58,7 +61,7 @@ abstract class ServerVersionTestCase extends StandardTestCase
      */
     public function testGetVersion()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
 
         $this->assertEquals($this->getExpectedVersion(), $profile->getVersion());
     }
@@ -68,7 +71,7 @@ abstract class ServerVersionTestCase extends StandardTestCase
      */
     public function testSupportedCommands()
     {
-        $profile = $this->getProfileInstance();
+        $profile = $this->getProfile();
         $expected = $this->getExpectedCommands();
         $commands = $this->getCommands($profile);
 

@@ -11,15 +11,14 @@
 
 namespace Predis\Cluster;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Cluster\Distribution\HashRing;
 use Predis\Profile\ServerProfile;
 
 /**
  *
  */
-class PredisClusterHashStrategyTest extends StandardTestCase
+class PredisClusterHashStrategyTest extends PredisTestCase
 {
     /**
      * @group disconnected

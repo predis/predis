@@ -171,13 +171,11 @@ class CommandTestCaseGenerator
 
 namespace Predis\Command;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
 /**
  * @group commands
  * @group realm-$realm
  */
-class $class extends CommandTestCase
+class $class extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}

@@ -11,14 +11,13 @@
 
 namespace Predis\Connection;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-connection
  */
-abstract class ConnectionTestCase extends StandardTestCase
+abstract class PredisConnectionTestCase extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -320,31 +319,6 @@ abstract class ConnectionTestCase extends StandardTestCase
             'database' => REDIS_SERVER_DBNUM,
             'read_write_timeout' => 2,
         );
-    }
-
-    /**
-     * Returns a new instance of connection parameters.
-     *
-     * @param array $additional Additional connection parameters.
-     * @return ConnectionParameters Default connection parameters.
-     */
-    protected function getParameters($additional = array())
-    {
-        $parameters = array_merge($this->getDefaultParametersArray(), $additional);
-        $parameters = new ConnectionParameters($parameters);
-
-        return $parameters;
-    }
-
-    /**
-     * Returns a new instance of server profile.
-     *
-     * @param array $additional Additional connection parameters.
-     * @return ServerProfile
-     */
-    protected function getProfile($version = null)
-    {
-        return ServerProfile::get($version ?: REDIS_SERVER_VERSION);
     }
 
     /**

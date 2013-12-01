@@ -9,9 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use \PHPUnit_Framework_Constraint;
-use \PHPUnit_Framework_ExpectationFailedException;
-
 /**
  * Constraint that accepts arrays with the same elements but different order.
  */
@@ -30,15 +27,14 @@ class ArrayHasSameValuesConstraint extends PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function evaluate($other, $description = '', $returnResult = FALSE)
+    public function matches($other)
     {
-        $description = $description ?: 'Failed asserting that two arrays have the same elements.';
-
         if (count($this->array) !== count($other)) {
-            throw new PHPUnit_Framework_ExpectationFailedException($description);
+            return false;
         }
+
         if (array_diff($this->array, $other)) {
-            throw new PHPUnit_Framework_ExpectationFailedException($description);
+            return false;
         }
 
         return true;
@@ -49,6 +45,14 @@ class ArrayHasSameValuesConstraint extends PHPUnit_Framework_Constraint
      */
     public function toString()
     {
-        return 'two arrays have the same elements.';
+        return 'two arrays contain the same elements.';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function failureDescription($other)
+    {
+        return $this->toString();
     }
 }

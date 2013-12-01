@@ -11,12 +11,12 @@
 
 namespace Predis\Protocol\Text;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
+use PredisTestCase;
 
 /**
  *
  */
-class ResponseBulkHandlerTest extends StandardTestCase
+class ResponseBulkHandlerTest extends PredisTestCase
 {
     /**
      * @group disconnected

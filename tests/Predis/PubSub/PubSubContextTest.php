@@ -11,15 +11,14 @@
 
 namespace Predis\PubSub;
 
-use \PHPUnit_Framework_TestCase as StandardTestCase;
-
+use PredisTestCase;
 use Predis\Client;
 use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-pubsub
  */
-class PubSubContextTest extends StandardTestCase
+class PubSubContextTest extends PredisTestCase
 {
     /**
      * @group disconnected
