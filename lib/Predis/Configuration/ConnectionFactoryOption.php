@@ -48,6 +48,6 @@ class ConnectionFactoryOption implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        return new ConnectionFactory($options->profile);
+        return new ConnectionFactory();
     }
 }

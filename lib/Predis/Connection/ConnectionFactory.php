@@ -11,7 +11,7 @@
 
 namespace Predis\Connection;
 
-use Predis\Profile;
+use Predis\Command;
 
 /**
  * Provides a default factory for Redis connections that maps URI schemes
@@ -21,33 +21,11 @@ use Predis\Profile;
  */
 class ConnectionFactory implements ConnectionFactoryInterface
 {
-    protected $schemes;
-    protected $profile;
-
-    /**
-     * Initializes a new instance of the default connection factory class used by Predis.
-     *
-     * @param Profile\ProfileInterface $profile Server profile used to initialize new connections.
-     */
-    public function __construct(Profile\ProfileInterface $profile = null)
-    {
-        $this->schemes = $this->getDefaultSchemes();
-        $this->profile = $profile;
-    }
-
-    /**
-     * Returns a named array that maps URI schemes to connection classes.
-     *
-     * @return array Map of URI schemes and connection classes.
-     */
-    protected function getDefaultSchemes()
-    {
-        return array(
-            'tcp'  => 'Predis\Connection\StreamConnection',
-            'unix' => 'Predis\Connection\StreamConnection',
-            'http' => 'Predis\Connection\WebdisConnection',
-        );
-    }
+    protected $schemes = array(
+        'tcp'  => 'Predis\Connection\StreamConnection',
+        'unix' => 'Predis\Connection\StreamConnection',
+        'http' => 'Predis\Connection\WebdisConnection',
+    );
 
     /**
      * Checks if the provided argument represents a valid connection class
@@ -141,38 +119,16 @@ class ConnectionFactory implements ConnectionFactoryInterface
      */
     protected function prepareConnection(SingleConnectionInterface $connection)
     {
-        if (isset($this->profile)) {
-            $parameters = $connection->getParameters();
+        $parameters = $connection->getParameters();
 
-            if (isset($parameters->password)) {
-                $command = $this->profile->createCommand('auth', array($parameters->password));
-                $connection->pushInitCommand($command);
-            }
-
-            if (isset($parameters->database)) {
-                $command = $this->profile->createCommand('select', array($parameters->database));
-                $connection->pushInitCommand($command);
-            }
+        if (isset($parameters->password)) {
+            $command = new Command\RawCommand(array('AUTH', $parameters->password));
+            $connection->pushInitCommand($command);
         }
-    }
 
-    /**
-     * Sets the server profile used to create initialization commands for connections.
-     *
-     * @param Profile\ProfileInterface $profile Server profile instance.
-     */
-    public function setProfile(Profile\ProfileInterface $profile)
-    {
-        $this->profile = $profile;
-    }
-
-    /**
-     * Returns the server profile used to create initialization commands for connections.
-     *
-     * @return Profile\ProfileInterface
-     */
-    public function getProfile()
-    {
-        return $this->profile;
+        if (isset($parameters->database)) {
+            $command = new Command\RawCommand(array('SELECT', $parameters->database));
+            $connection->pushInitCommand($command);
+        }
     }
 }

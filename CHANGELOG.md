@@ -45,6 +45,10 @@ v0.9.0 (201x-xx-xx)
   renamed to `writeRequest()` for consistency with its counterpart, the method
   `readResponse()`.
 
+- The connection factory has been simplified and does not need anymore a profile
+  to create `AUTH` and `SELECT` commands when connection parameters contain both
+  `password` and `database`. Raw commands will be used instead.
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API of external protocol processors.
 
