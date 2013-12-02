@@ -38,9 +38,11 @@ class StreamConnection extends AbstractConnection
      */
     public function __destruct()
     {
-        if (isset($this->parameters) && !$this->parameters->persistent) {
-            $this->disconnect();
+        if (isset($this->parameters->persistent) && $this->parameters->persistent) {
+            return;
         }
+
+        $this->disconnect();
     }
 
     /**
@@ -48,10 +50,10 @@ class StreamConnection extends AbstractConnection
      */
     protected function createResource()
     {
-        $parameters = $this->parameters;
-        $initializer = "{$parameters->scheme}StreamInitializer";
+        $initializer = "{$this->parameters->scheme}StreamInitializer";
+        $resource = $this->$initializer($this->parameters);
 
-        return $this->$initializer($parameters);
+        return $resource;
     }
 
     /**
