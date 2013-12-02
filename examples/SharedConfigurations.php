@@ -16,7 +16,7 @@ function redis_version($info)
     if (isset($info['Server']['redis_version'])) {
         return $info['Server']['redis_version'];
     } else if (isset($info['redis_version'])) {
-        return $info['Server']['redis_version'];
+        return $info['redis_version'];
     } else {
         return 'unknown version';
     }
