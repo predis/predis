@@ -137,6 +137,7 @@ class WebdisConnectionTest extends PredisTestCase
     }
 
     /**
+     * @medium
      * @group disconnected
      * @group slow
      * @expectedException Predis\Connection\ConnectionException
