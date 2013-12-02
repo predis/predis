@@ -29,6 +29,14 @@ class ConnectionParameters implements ConnectionParametersInterface
         'timeout' => 5.0,
     );
 
+    private static $casters = array(
+        'port' => 'self::castInteger',
+        'async_connect' => 'self::castBoolean',
+        'persistent' => 'self::castBoolean',
+        'timeout' => 'self::castFloat',
+        'read_write_timeout' => 'self::castFloat',
+    );
+
     /**
      * @param string|array Connection parameters in the form of an URI string or a named array.
      */
@@ -58,46 +66,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      */
     protected function getValueCasters()
     {
-        return array(
-            'port' => 'self::castInteger',
-            'async_connect' => 'self::castBoolean',
-            'persistent' => 'self::castBoolean',
-            'timeout' => 'self::castFloat',
-            'read_write_timeout' => 'self::castFloat',
-        );
-    }
-
-    /**
-     * Validates value as boolean.
-     *
-     * @param mixed $value Input value.
-     * @return boolean
-     */
-    private static function castBoolean($value)
-    {
-        return (bool) $value;
-    }
-
-    /**
-     * Validates value as float.
-     *
-     * @param mixed $value Input value.
-     * @return float
-     */
-    private static function castFloat($value)
-    {
-        return (float) $value;
-    }
-
-    /**
-     * Validates value as integer.
-     *
-     * @param mixed $value Input value.
-     * @return int
-     */
-    private static function castInteger($value)
-    {
-        return (int) $value;
+        return self::$casters;
     }
 
     /**
@@ -148,6 +117,39 @@ class ConnectionParameters implements ConnectionParametersInterface
         }
 
         return $parameters;
+    }
+
+    /**
+     * Validates value as boolean.
+     *
+     * @param mixed $value Input value.
+     * @return boolean
+     */
+    private static function castBoolean($value)
+    {
+        return (bool) $value;
+    }
+
+    /**
+     * Validates value as float.
+     *
+     * @param mixed $value Input value.
+     * @return float
+     */
+    private static function castFloat($value)
+    {
+        return (float) $value;
+    }
+
+    /**
+     * Validates value as integer.
+     *
+     * @param mixed $value Input value.
+     * @return int
+     */
+    private static function castInteger($value)
+    {
+        return (int) $value;
     }
 
     /**
