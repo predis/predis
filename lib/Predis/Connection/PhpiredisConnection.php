@@ -375,7 +375,7 @@ class PhpiredisConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
         $arguments = $command->getArguments();
         array_unshift($arguments, $command->getId());

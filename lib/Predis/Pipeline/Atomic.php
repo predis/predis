@@ -67,7 +67,7 @@ class Atomic extends Pipeline
         $connection->executeCommand($profile->createCommand('multi'));
 
         foreach ($commands as $command) {
-            $connection->writeCommand($command);
+            $connection->writeRequest($command);
         }
 
         foreach ($commands as $command) {

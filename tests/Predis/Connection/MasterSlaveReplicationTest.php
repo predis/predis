@@ -235,7 +235,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsesMasterOnWriteCommands()
+    public function testUsesMasterOnWriteRequests()
     {
         $profile = Profile\Factory::getDefault();
 
@@ -256,7 +256,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSwitchesFromSlaveToMasterOnWriteCommands()
+    public function testSwitchesFromSlaveToMasterOnWriteRequestss()
     {
         $profile = Profile\Factory::getDefault();
 
@@ -287,17 +287,17 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdSet = $profile->createCommand('set', array('foo', 'bar'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
-        $master->expects($this->once())->method('writeCommand')->with($cmdSet);
+        $master->expects($this->once())->method('writeRequest')->with($cmdSet);
 
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave1->expects($this->once())->method('writeCommand')->with($cmdExists);
+        $slave1->expects($this->once())->method('writeRequest')->with($cmdExists);
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
 
-        $replication->writeCommand($cmdExists);
-        $replication->writeCommand($cmdSet);
+        $replication->writeRequest($cmdExists);
+        $replication->writeRequest($cmdSet);
     }
 
     /**

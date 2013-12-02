@@ -230,9 +230,9 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
-        $this->getConnection($command)->writeCommand($command);
+        $this->getConnection($command)->writeRequest($command);
     }
 
     /**

@@ -115,7 +115,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->getConnection($profile);
         $socket = $connection->getResource();
 
-        $connection->writeCommand($profile->createCommand('ping'));
+        $connection->writeRequest($profile->createCommand('ping'));
         fread($socket, 1);
 
         $connection->read();

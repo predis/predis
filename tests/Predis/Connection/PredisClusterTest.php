@@ -276,16 +276,16 @@ class PredisClusterTest extends PredisTestCase
         $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
-        $connection1->expects($this->once())->method('writeCommand')->with($command);
+        $connection1->expects($this->once())->method('writeRequest')->with($command);
 
         $connection2 = $this->getMockConnection('tcp://host1:7002');
-        $connection2->expects($this->never())->method('writeCommand');
+        $connection2->expects($this->never())->method('writeRequest');
 
         $cluster = new PredisCluster();
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $cluster->writeCommand($command);
+        $cluster->writeRequest($command);
     }
 
     /**

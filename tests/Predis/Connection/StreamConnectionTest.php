@@ -93,7 +93,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->getConnection($profile);
         $stream = $connection->getResource();
 
-        $connection->writeCommand($profile->createCommand('ping'));
+        $connection->writeRequest($profile->createCommand('ping'));
         fread($stream, 1);
 
         $connection->read();

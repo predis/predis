@@ -102,7 +102,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
         $this->protocol->write($this, $command);
     }

@@ -89,11 +89,11 @@ class Consumer extends AbstractConsumer
     /**
      * {@inheritdoc}
      */
-    protected function writeCommand($method, $arguments)
+    protected function writeRequest($method, $arguments)
     {
         $arguments = Command::normalizeArguments($arguments);
         $command = $this->client->createCommand($method, $arguments);
-        $this->client->getConnection()->writeCommand($command);
+        $this->client->getConnection()->writeRequest($command);
     }
 
     /**

@@ -33,7 +33,7 @@ class AtomicTest extends PredisTestCase
                    ->method('executeCommand')
                    ->will($this->onConsecutiveCalls(true, array('PONG', 'PONG', 'PONG')));
         $connection->expects($this->exactly(3))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->at(3))
                    ->method('readResponse')
                    ->will($this->onConsecutiveCalls($queued, $queued, $queued));

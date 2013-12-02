@@ -41,6 +41,10 @@ v0.9.0 (201x-xx-xx)
     - `Predis\Command\AbstractCommand` is now `Predis\Command\Command`
     - `Predis\Command\ScriptedCommand` is now `Predis\Command\ScriptCommand`
 
+- The method `Predis\Connection\ConnectionInterface::writeCommand()` has been
+  renamed to `writeRequest()` for consistency with its counterpart, the method
+  `readResponse()`.
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API of external protocol processors.
 

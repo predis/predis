@@ -135,7 +135,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
-        $connection->writeCommand($cmdPing);
+        $connection->writeRequest($cmdPing);
         $connection->disconnect();
     }
 
@@ -150,7 +150,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
-        $connection->writeCommand($cmdPing);
+        $connection->writeRequest($cmdPing);
         $this->assertSame('PONG', $connection->readResponse($cmdPing));
     }
 
@@ -172,8 +172,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         $connection = $this->getConnection();
 
-        $connection->writeCommand($cmdPing);
-        $connection->writeCommand($cmdEcho);
+        $connection->writeRequest($cmdPing);
+        $connection->writeRequest($cmdEcho);
 
         $this->assertSame('PONG', $connection->readResponse($cmdPing));
         $this->assertSame('ECHOED', $connection->readResponse($cmdEcho));
@@ -209,14 +209,14 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $connection = $this->getConnection($profile, true);
 
-        $connection->writeCommand($profile->createCommand('set', array('foo', 'bar')));
+        $connection->writeRequest($profile->createCommand('set', array('foo', 'bar')));
         $this->assertTrue($connection->read());
 
-        $connection->writeCommand($profile->createCommand('ping'));
+        $connection->writeRequest($profile->createCommand('ping'));
         $this->assertSame('PONG', $connection->read());
 
-        $connection->writeCommand($profile->createCommand('multi'));
-        $connection->writeCommand($profile->createCommand('ping'));
+        $connection->writeRequest($profile->createCommand('multi'));
+        $connection->writeRequest($profile->createCommand('ping'));
         $this->assertTrue($connection->read());
         $this->assertInstanceOf('Predis\Response\StatusQueued', $connection->read());
     }
@@ -230,10 +230,10 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
 
-        $connection->writeCommand($profile->createCommand('get', array('foo')));
+        $connection->writeRequest($profile->createCommand('get', array('foo')));
         $this->assertSame('bar', $connection->read());
 
-        $connection->writeCommand($profile->createCommand('get', array('hoge')));
+        $connection->writeRequest($profile->createCommand('get', array('hoge')));
         $this->assertNull($connection->read());
     }
 
@@ -245,7 +245,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeCommand($profile->createCommand('llen', array('metavars')));
+        $connection->writeRequest($profile->createCommand('llen', array('metavars')));
 
         $this->assertSame(3, $connection->read());
     }
@@ -258,7 +258,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
-        $connection->writeCommand($profile->createCommand('rpush', array('foo', 'baz')));
+        $connection->writeRequest($profile->createCommand('rpush', array('foo', 'baz')));
 
         $this->assertInstanceOf('Predis\Response\Error', $error = $connection->read());
         $this->assertRegExp('/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage());
@@ -272,7 +272,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeCommand($profile->createCommand('lrange', array('metavars', 0, -1)));
+        $connection->writeRequest($profile->createCommand('lrange', array('metavars', 0, -1)));
 
         $this->assertSame(array('foo', 'hoge', 'lol'), $connection->read());
     }

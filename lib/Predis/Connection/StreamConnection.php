@@ -248,7 +248,7 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function writeCommand(CommandInterface $command)
+    public function writeRequest(CommandInterface $command)
     {
         $commandID = $command->getId();
         $arguments = $command->getArguments();

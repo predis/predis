@@ -116,7 +116,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        $this->writeCommand($command);
+        $this->writeRequest($command);
         return $this->readResponse($command);
     }
 

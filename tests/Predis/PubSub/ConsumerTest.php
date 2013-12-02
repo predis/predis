@@ -74,9 +74,9 @@ class ConsumerTest extends PredisTestCase
         $cmdPsubscribe = $profile->createCommand('psubscribe', array('channels:*'));
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->exactly(2))->method('writeCommand');
+        $connection->expects($this->exactly(2))->method('writeRequest');
 
-        $client = $this->getMock('Predis\Client', array('createCommand', 'writeCommand'), array($connection));
+        $client = $this->getMock('Predis\Client', array('createCommand', 'writeRequest'), array($connection));
         $client->expects($this->exactly(2))
                ->method('createCommand')
                ->with($this->logicalOr($this->equalTo('subscribe'), $this->equalTo('psubscribe')))
@@ -100,7 +100,7 @@ class ConsumerTest extends PredisTestCase
 
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
 
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
 
         $pubsub->stop(true);
     }
@@ -122,7 +122,7 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($client, $options);
 
         $connection->expects($this->exactly(2))
-                   ->method('writeCommand')
+                   ->method('writeRequest')
                    ->with($this->logicalOr(
                        $this->isInstanceOf($classUnsubscribe),
                        $this->isInstanceOf($classPunsubscribe)

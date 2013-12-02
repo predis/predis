@@ -35,12 +35,12 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeCommand() is not supported
+     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeRequest() is not supported
      */
     public function testWritingCommandsIsNotSupported()
     {
         $connection = new WebdisConnection($this->getParameters());
-        $connection->writeCommand($this->getProfile()->createCommand('ping'));
+        $connection->writeRequest($this->getProfile()->createCommand('ping'));
     }
 
     /**

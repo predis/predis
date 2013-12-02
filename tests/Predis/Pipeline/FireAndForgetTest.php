@@ -29,7 +29,7 @@ class FireAndForgetTest extends PredisTestCase
         $profile = Profile\Factory::getDefault();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->exactly(3))->method('writeCommand');
+        $connection->expects($this->exactly(3))->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new FireAndForget(new Client($connection));
@@ -53,7 +53,7 @@ class FireAndForgetTest extends PredisTestCase
                    ->method('switchTo')
                    ->with('master');
         $connection->expects($this->exactly(3))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->never())
                    ->method('readResponse');
 

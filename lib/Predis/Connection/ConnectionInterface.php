@@ -43,7 +43,7 @@ interface ConnectionInterface
      *
      * @param CommandInterface $command Instance of a Redis command.
      */
-    public function writeCommand(CommandInterface $command);
+    public function writeRequest(CommandInterface $command);
 
     /**
      * Reads the reply for a Redis command from the connection.

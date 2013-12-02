@@ -60,7 +60,7 @@ abstract class AbstractConsumer implements Iterator
      */
     public function subscribe(/* arguments */)
     {
-        $this->writeCommand(self::SUBSCRIBE, func_get_args());
+        $this->writeRequest(self::SUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_SUBSCRIBED;
     }
 
@@ -71,7 +71,7 @@ abstract class AbstractConsumer implements Iterator
      */
     public function unsubscribe(/* arguments */)
     {
-        $this->writeCommand(self::UNSUBSCRIBE, func_get_args());
+        $this->writeRequest(self::UNSUBSCRIBE, func_get_args());
     }
 
     /**
@@ -81,7 +81,7 @@ abstract class AbstractConsumer implements Iterator
      */
     public function psubscribe(/* arguments */)
     {
-        $this->writeCommand(self::PSUBSCRIBE, func_get_args());
+        $this->writeRequest(self::PSUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_PSUBSCRIBED;
     }
 
@@ -92,7 +92,7 @@ abstract class AbstractConsumer implements Iterator
      */
     public function punsubscribe(/* arguments */)
     {
-        $this->writeCommand(self::PUNSUBSCRIBE, func_get_args());
+        $this->writeRequest(self::PUNSUBSCRIBE, func_get_args());
     }
 
     /**
@@ -135,7 +135,7 @@ abstract class AbstractConsumer implements Iterator
      * @param string $method ID of the command.
      * @param array $arguments List of arguments.
      */
-    protected abstract function writeCommand($method, $arguments);
+    protected abstract function writeRequest($method, $arguments);
 
     /**
      * {@inheritdoc}

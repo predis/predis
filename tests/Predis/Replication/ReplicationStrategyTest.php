@@ -37,7 +37,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testWriteCommands()
+    public function testWriteRequests()
     {
         $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();

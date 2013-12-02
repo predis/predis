@@ -59,7 +59,7 @@ class ConnectionErrorProof extends Pipeline
 
         foreach ($commands as $command) {
             try {
-                $connection->writeCommand($command);
+                $connection->writeRequest($command);
             } catch (CommunicationException $exception) {
                 return array_fill(0, $sizeOfPipe, $exception);
             }
@@ -98,7 +98,7 @@ class ConnectionErrorProof extends Pipeline
             }
 
             try {
-                $cmdConnection->writeCommand($command);
+                $cmdConnection->writeRequest($command);
             } catch (CommunicationException $exception) {
                 $exceptions[spl_object_hash($cmdConnection)] = $exception;
             }

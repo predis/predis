@@ -74,7 +74,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
         $connection->getProtocol()->useIterableMultibulk(true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeCommand($profile->createCommand('lrange', array('metavars', 0, -1)));
+        $connection->writeRequest($profile->createCommand('lrange', array('metavars', 0, -1)));
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkIterator', $iterator = $connection->read());
         $this->assertSame(array('foo', 'hoge', 'lol'), iterator_to_array($iterator));
@@ -90,7 +90,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->getConnection($profile);
         $stream = $connection->getResource();
 
-        $connection->writeCommand($profile->createCommand('ping'));
+        $connection->writeRequest($profile->createCommand('ping'));
         fread($stream, 1);
 
         $connection->read();

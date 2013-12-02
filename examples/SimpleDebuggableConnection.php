@@ -36,8 +36,8 @@ class SimpleDebuggableConnection extends StreamConnection {
         $this->debugBuffer[] = $debug;
     }
 
-    public function writeCommand(CommandInterface $command) {
-        parent::writeCommand($command);
+    public function writeRequest(CommandInterface $command) {
+        parent::writeRequest($command);
 
         $this->storeDebug($command, '->');
     }

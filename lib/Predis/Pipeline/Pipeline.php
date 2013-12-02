@@ -122,7 +122,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         foreach ($commands as $command) {
-            $connection->writeCommand($command);
+            $connection->writeRequest($command);
         }
 
         $responses  = array();

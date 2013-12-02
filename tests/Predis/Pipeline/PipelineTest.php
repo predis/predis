@@ -41,7 +41,7 @@ class PipelineTest extends PredisTestCase
     public function testCallDoesNotSendCommandsWithoutExecute()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new Pipeline(new Client($connection));
@@ -57,7 +57,7 @@ class PipelineTest extends PredisTestCase
     public function testCallReturnsPipelineForFluentInterface()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new Pipeline(new Client($connection));
@@ -137,7 +137,7 @@ class PipelineTest extends PredisTestCase
         $profile = Profile\Factory::getDefault();
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new Pipeline(new Client($connection));
@@ -153,7 +153,7 @@ class PipelineTest extends PredisTestCase
     public function testExecuteWithEmptyBuffer()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new Pipeline(new Client($connection));
@@ -168,7 +168,7 @@ class PipelineTest extends PredisTestCase
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(3))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->exactly(3))
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
@@ -207,7 +207,7 @@ class PipelineTest extends PredisTestCase
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(4))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->exactly(4))
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
@@ -233,7 +233,7 @@ class PipelineTest extends PredisTestCase
                    ->method('switchTo')
                    ->with('master');
         $connection->expects($this->exactly(3))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->exactly(3))
                    ->method('readResponse')
                    ->will($this->returnValue('PONG'));
@@ -295,7 +295,7 @@ class PipelineTest extends PredisTestCase
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(4))
-                   ->method('writeCommand');
+                   ->method('writeRequest');
         $connection->expects($this->exactly(4))
                    ->method('readResponse')
                    ->will($this->returnCallback($this->getReadCallback()));
@@ -318,7 +318,7 @@ class PipelineTest extends PredisTestCase
     public function testExecuteWithCallableArgumentHandlesExceptions()
     {
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection->expects($this->never())->method('writeCommand');
+        $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
         $pipeline = new Pipeline(new Client($connection));
