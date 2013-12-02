@@ -129,6 +129,16 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testNormalizesCommandIdentifiersToUppercase()
+    {
+        $command = new RawCommand(array('set', 'key', 'value'));
+
+        $this->assertSame('SET', $command->getId());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testToString()
     {
         $arguments = array('SET', 'key', 'value');

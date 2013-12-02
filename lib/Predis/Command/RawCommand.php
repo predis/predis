@@ -35,7 +35,7 @@ class RawCommand implements CommandInterface
             throw new InvalidArgumentException("Arguments array is missing the command ID");
         }
 
-        $this->commandID = array_shift($arguments);
+        $this->commandID = strtoupper(array_shift($arguments));
         $this->arguments = $arguments;
     }
 
