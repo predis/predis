@@ -32,7 +32,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     private $distributor;
 
     /**
-     * @param Distributor\DistributorInterface $distributor Distribution strategy used by the cluster.
+     * @param Distributor\DistributorInterface $distributor Distribution strategy used by cluster.
      */
     public function __construct(Distributor\DistributorInterface $distributor = null)
     {
@@ -132,7 +132,9 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
         $hash = $this->strategy->getHash($command);
 
         if (!isset($hash)) {
-            throw new NotSupportedException("Cannot use {$command->getId()} with a cluster of connections");
+            throw new NotSupportedException(
+                "Cannot use {$command->getId()} with a cluster of connections"
+            );
         }
 
         $node = $this->distributor->get($hash);

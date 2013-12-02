@@ -11,6 +11,8 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
+use ReflectionClass;
 use Predis\Command;
 
 /**
@@ -41,10 +43,10 @@ class ConnectionFactory implements ConnectionFactoryInterface
             return $initializer;
         }
 
-        $initializerReflection = new \ReflectionClass($initializer);
+        $class = new ReflectionClass($initializer);
 
-        if (!$initializerReflection->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
-            throw new \InvalidArgumentException(
+        if (!$class->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
+            throw new InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object'
             );
         }
@@ -80,7 +82,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
         $scheme = $parameters->scheme;
 
         if (!isset($this->schemes[$scheme])) {
-            throw new \InvalidArgumentException("Unknown connection scheme: $scheme");
+            throw new InvalidArgumentException("Unknown connection scheme: $scheme");
         }
 
         $initializer = $this->schemes[$scheme];
@@ -93,7 +95,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
         }
 
         if (!$connection instanceof SingleConnectionInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Objects returned by connection initializers must implement ' .
                 'Predis\Connection\SingleConnectionInterface'
             );

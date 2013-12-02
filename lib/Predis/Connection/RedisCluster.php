@@ -11,6 +11,8 @@
 
 namespace Predis\Connection;
 
+use ArrayIterator;
+use OutOfBoundsException;
 use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Cluster;
@@ -178,7 +180,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
     public function setSlots($first, $last, $connection)
     {
         if ($first < 0x0000 || $first > 0x3FFF || $last < 0x0000 || $last > 0x3FFF || $last < $first) {
-            throw new \OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
+            throw new OutOfBoundsException("Invalid slot values for $connection: [$first-$last]");
         }
 
         $this->slotsMap = $this->getSlotsMap() + array_fill($first, $last - $first + 1, (string) $connection);
@@ -325,7 +327,7 @@ class RedisCluster implements ClusterConnectionInterface, \IteratorAggregate, \C
      */
     public function getIterator()
     {
-        return new \ArrayIterator(array_values($this->pool));
+        return new ArrayIterator(array_values($this->pool));
     }
 
     /**

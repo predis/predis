@@ -11,6 +11,8 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Predis\Command\CommandInterface;
 use Predis\Replication\ReplicationStrategy;
 
@@ -42,7 +44,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     protected function check()
     {
         if (!isset($this->master) || !$this->slaves) {
-            throw new \RuntimeException('Replication needs a master and at least one slave.');
+            throw new RuntimeException('Replication needs a master and at least one slave.');
         }
     }
 
@@ -142,7 +144,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
             $connection = $this->getConnectionById($connection);
         }
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('The specified connection is not valid.');
+            throw new InvalidArgumentException('The specified connection is not valid.');
         }
 
         $this->current = $connection;
