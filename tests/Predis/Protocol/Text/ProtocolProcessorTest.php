@@ -76,7 +76,7 @@ class ProtocolProcessorTest extends PredisTestCase
                    ->method('readLine')
                    ->will($this->returnValue("*-1"));
 
-        $this->assertTrue($protocol->read($connection));
+        $this->assertEquals('OK', $protocol->read($connection));
         $this->assertEquals("ERR error message", $protocol->read($connection));
         $this->assertSame(2, $protocol->read($connection));
         $this->assertNull($protocol->read($connection));

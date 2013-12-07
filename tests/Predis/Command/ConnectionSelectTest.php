@@ -52,9 +52,7 @@ class ConnectionSelectTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $command = $this->getCommand();
-
-        $this->assertTrue($command->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -66,7 +64,7 @@ class ConnectionSelectTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->select(REDIS_SERVER_DBNUM - 1));
+        $this->assertEquals('OK', $redis->select(REDIS_SERVER_DBNUM - 1));
         $this->assertFalse($redis->exists('foo'));
     }
 

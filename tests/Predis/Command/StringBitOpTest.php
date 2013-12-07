@@ -172,6 +172,6 @@ class StringBitOpTest extends PredisCommandTestCase
         $redis->lpush('key:dst', 'list');
         $redis->bitop('AND', 'key:dst', 'key:src:1', 'key:src:2');
 
-        $this->assertSame('none', $redis->type('key:dst'));
+        $this->assertEquals('none', $redis->type('key:dst'));
     }
 }

@@ -106,7 +106,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->getConnection($profile);
         $cmdPing = $profile->createCommand('ping');
 
-        $this->assertSame('PONG', $connection->executeCommand($cmdPing));
+        $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
         $this->assertTrue($connection->isConnected());
     }
 
@@ -121,7 +121,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
-        $this->assertSame('PONG', $connection->executeCommand($cmdPing));
+        $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
     }
 
     /**
@@ -131,11 +131,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $connection = $this->getConnection($profile);
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
-        $cmdPing->expects($this->never())
+        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho->setArguments(array('ECHOED'));
+        $cmdEcho->expects($this->never())
                 ->method('parseResponse');
 
-        $connection->writeRequest($cmdPing);
+        $connection->writeRequest($cmdEcho);
         $connection->disconnect();
     }
 
@@ -146,12 +147,13 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $connection = $this->getConnection($profile);
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
-        $cmdPing->expects($this->never())
+        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho->setArguments(array('ECHOED'));
+        $cmdEcho->expects($this->never())
                 ->method('parseResponse');
 
-        $connection->writeRequest($cmdPing);
-        $this->assertSame('PONG', $connection->readResponse($cmdPing));
+        $connection->writeRequest($cmdEcho);
+        $this->assertSame('ECHOED', $connection->readResponse($cmdEcho));
     }
 
     /**
@@ -175,7 +177,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection->writeRequest($cmdPing);
         $connection->writeRequest($cmdEcho);
 
-        $this->assertSame('PONG', $connection->readResponse($cmdPing));
+        $this->assertEquals('PONG', $connection->readResponse($cmdPing));
         $this->assertSame('ECHOED', $connection->readResponse($cmdEcho));
     }
 
@@ -210,15 +212,15 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->getConnection($profile, true);
 
         $connection->writeRequest($profile->createCommand('set', array('foo', 'bar')));
-        $this->assertTrue($connection->read());
+        $this->assertInstanceOf('Predis\Response\Status', $connection->read());
 
         $connection->writeRequest($profile->createCommand('ping'));
-        $this->assertSame('PONG', $connection->read());
+        $this->assertInstanceOf('Predis\Response\Status', $connection->read());
 
         $connection->writeRequest($profile->createCommand('multi'));
         $connection->writeRequest($profile->createCommand('ping'));
-        $this->assertTrue($connection->read());
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $connection->read());
+        $this->assertInstanceOf('Predis\Response\Status', $connection->read());
+        $this->assertInstanceOf('Predis\Response\Status', $connection->read());
     }
 
     /**

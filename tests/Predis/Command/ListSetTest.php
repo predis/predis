@@ -52,7 +52,7 @@ class ListSetTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -64,7 +64,7 @@ class ListSetTest extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c');
 
-        $this->assertTrue($redis->lset('letters', 1, 'B'));
+        $this->assertEquals('OK', $redis->lset('letters', 1, 'B'));
         $this->assertSame(array('a', 'B', 'c'), $redis->lrange('letters', 0, -1));
     }
 

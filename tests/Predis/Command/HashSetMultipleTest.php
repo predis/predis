@@ -66,7 +66,7 @@ class HashSetMultipleTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -76,10 +76,10 @@ class HashSetMultipleTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
+        $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo'), $redis->hgetall('metavars'));
 
-        $this->assertTrue($redis->hmset('metavars', 'foo', 'barbar', 'lol', 'wut'));
+        $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'barbar', 'lol', 'wut'));
         $this->assertSame(array('foo' => 'barbar', 'hoge' => 'piyo', 'lol' => 'wut'), $redis->hgetall('metavars'));
     }
 

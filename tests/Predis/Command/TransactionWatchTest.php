@@ -66,7 +66,7 @@ class TransactionWatchTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -79,10 +79,10 @@ class TransactionWatchTest extends PredisCommandTestCase
 
         $redis1->mset('foo', 'bar', 'hoge', 'piyo');
 
-        $this->assertTrue($redis1->watch('foo', 'hoge'));
-        $this->assertTrue($redis1->multi());
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis1->get('foo'));
-        $this->assertTrue($redis2->set('foo', 'hijacked'));
+        $this->assertEquals('OK', $redis1->watch('foo', 'hoge'));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->get('foo'));
+        $this->assertEquals('OK', $redis2->set('foo', 'hijacked'));
         $this->assertNull($redis1->exec());
         $this->assertSame('hijacked', $redis1->get('foo'));
     }
@@ -95,10 +95,10 @@ class TransactionWatchTest extends PredisCommandTestCase
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();
 
-        $this->assertTrue($redis1->watch('foo'));
-        $this->assertTrue($redis1->multi());
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis1->set('foo', 'bar'));
-        $this->assertTrue($redis2->set('foo', 'hijacked'));
+        $this->assertEquals('OK', $redis1->watch('foo'));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->set('foo', 'bar'));
+        $this->assertEquals('OK', $redis2->set('foo', 'hijacked'));
         $this->assertNull($redis1->exec());
         $this->assertSame('hijacked', $redis1->get('foo'));
     }

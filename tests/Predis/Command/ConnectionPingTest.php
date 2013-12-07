@@ -52,18 +52,18 @@ class ConnectionPingTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $command = $this->getCommand();
-
-        $this->assertTrue($command->parseResponse('PONG'));
+        $this->assertSame('PONG', $this->getCommand()->parseResponse('PONG'));
     }
 
     /**
      * @group connected
      */
-    public function testAlwaysReturnsTrue()
+    public function testAlwaysReturnsStatusResponse()
     {
         $redis = $this->getClient();
+        $response = $redis->ping();
 
-        $this->assertTrue($redis->ping());
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('PONG', $response);
     }
 }

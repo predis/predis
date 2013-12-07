@@ -52,7 +52,7 @@ class KeyRenameTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -64,7 +64,7 @@ class KeyRenameTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->rename('foo', 'foofoo'));
+        $this->assertEquals('OK', $redis->rename('foo', 'foofoo'));
         $this->assertFalse($redis->exists('foo'));
         $this->assertTrue($redis->exists('foofoo'));
     }

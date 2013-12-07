@@ -102,7 +102,7 @@ class ServerSlowlogTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->slowlog('RESET'));
+        $this->assertEquals('OK', $redis->slowlog('RESET'));
     }
 
     /**

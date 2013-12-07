@@ -66,7 +66,7 @@ class StringSetMultipleTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertSame(true, $this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -76,7 +76,7 @@ class StringSetMultipleTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->mset('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertEquals('OK', $redis->mset('foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));
         $this->assertSame('piyo', $redis->get('hoge'));
     }

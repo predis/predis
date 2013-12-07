@@ -152,7 +152,7 @@ class WebdisConnection implements SingleConnectionInterface
     protected function getStatusHandler()
     {
         return function ($payload) {
-            return $payload === 'OK' ? true : $payload;
+            return Response\Status::get($payload);
         };
     }
 

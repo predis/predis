@@ -384,7 +384,7 @@ class ClientTest extends PredisTestCase
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($ping)
-                   ->will($this->returnValue('PONG'));
+                   ->will($this->returnValue(new Response\Status('PONG')));
         $connection->expects($this->at(1))
                    ->method('executeCommand')
                    ->with($hgetall)
@@ -392,7 +392,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertTrue($client->executeCommand($ping));
+        $this->assertEquals('PONG', $client->executeCommand($ping));
         $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo'), $client->executeCommand($hgetall));
     }
 
@@ -456,7 +456,7 @@ class ClientTest extends PredisTestCase
         $options = array('profile' => $profile);
         $client = $this->getMock('Predis\Client', null, array($connection, $options));
 
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -506,7 +506,7 @@ class ClientTest extends PredisTestCase
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-                   ->will($this->returnValue(true));
+                   ->will($this->returnValue(new Response\Status('OK')));
         $connection->expects($this->at(1))
                    ->method('executeCommand')
                    ->with($this->isRedisCommand('GET', array('foo')))
@@ -535,7 +535,7 @@ class ClientTest extends PredisTestCase
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-                   ->will($this->returnValue(true));
+                   ->will($this->returnValue(new Response\Status('OK')));
         $connection->expects($this->at(1))
                    ->method('executeCommand')
                    ->with($this->isRedisCommand('GET', array('foo')))
@@ -766,7 +766,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->will($this->returnValue(new Response\StatusQueued()));
+                   ->will($this->returnValue(new Response\Status('QUEUED')));
 
         $txCallback = function ($tx) {
             $tx->ping();

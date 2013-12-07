@@ -78,7 +78,7 @@ class DispatcherLoopTest extends PredisTestCase
 
         $dispatcher->run();
 
-        $this->assertTrue($consumer->ping());
+        $this->assertEquals('PONG', $consumer->ping());
     }
 
     /**
@@ -120,6 +120,6 @@ class DispatcherLoopTest extends PredisTestCase
 
         $dispatcher->run();
 
-        $this->assertTrue($consumer->ping());
+        $this->assertEquals('PONG', $consumer->ping());
     }
 }

@@ -498,7 +498,7 @@ class MultiExecTest extends PredisTestCase
                     return $expected;
 
                 default:
-                    return new Response\StatusQueued();
+                    return new Response\Status('QUEUED');
             }
         });
 
@@ -532,7 +532,7 @@ class MultiExecTest extends PredisTestCase
                     return $expected;
 
                 default:
-                    return new Response\StatusQueued();
+                    return new Response\Status('QUEUED');
             }
         });
 
@@ -558,7 +558,7 @@ class MultiExecTest extends PredisTestCase
                     return new Response\Error('ERR simulated failure on EXEC');
 
                 default:
-                    return new Response\StatusQueued();
+                    return new Response\Status('QUEUED');
             }
         });
 
@@ -629,8 +629,8 @@ class MultiExecTest extends PredisTestCase
             $tx->echo('foobar');
         });
 
-        $this->assertTrue($replies[0]);
-        $this->assertInstanceOf('Predis\Response\ErrorInterface', $replies[1]);
+        $this->assertInstanceOf('Predis\Response\Status', $replies[0]);
+        $this->assertInstanceOf('Predis\Response\Error', $replies[1]);
         $this->assertSame('foobar', $replies[2]);
     }
 
@@ -829,13 +829,13 @@ class MultiExecTest extends PredisTestCase
                         $abort = true;
                     }
 
-                    return new Response\StatusQueued();
+                    return new Response\Status('QUEUED');
 
                 case 'UNWATCH':
                     $watch = false;
 
                 default:
-                    return $multi ? new Response\StatusQueued() : 'DUMMY_REPLY';
+                    return $multi ? new Response\Status('QUEUED') : 'DUMMY_REPLY';
             }
         };
     }

@@ -49,7 +49,7 @@ class TransactionDiscardTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -61,8 +61,8 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
         $redis->multi();
 
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->set('foo', 'bar'));
-        $this->assertTrue($redis->discard());
+        $this->assertEquals('QUEUED', $redis->set('foo', 'bar'));
+        $this->assertEquals('OK', $redis->discard());
         $this->assertFalse($redis->exists('foo'));
     }
 

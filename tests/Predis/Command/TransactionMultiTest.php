@@ -49,7 +49,7 @@ class TransactionMultiTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -59,21 +59,21 @@ class TransactionMultiTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->multi());
-        $this->assertSame('QUEUED', (string) $redis->echo('tx1'));
-        $this->assertSame('QUEUED', (string) $redis->echo('tx2'));
+        $this->assertEquals('OK', $redis->multi());
+        $this->assertEquals('QUEUED', $redis->echo('tx1'));
+        $this->assertEquals('QUEUED', $redis->echo('tx2'));
     }
 
     /**
      * @group connected
      */
-    public function testActuallyReturnsReplyObjectAbstraction()
+    public function testActuallyReturnsResponseObjectAbstraction()
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->multi());
-        $this->assertInstanceOf('Predis\Response\ObjectInterface', $redis->echo('tx1'));
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->echo('tx2'));
+        $this->assertInstanceOf('Predis\Response\Status', $redis->multi());
+        $this->assertInstanceOf('Predis\Response\Status', $redis->echo('tx1'));
+        $this->assertInstanceOf('Predis\Response\Status', $redis->echo('tx2'));
     }
 
     /**

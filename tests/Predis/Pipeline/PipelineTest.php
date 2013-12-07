@@ -228,6 +228,8 @@ class PipelineTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection()
     {
+        $pong = new Response\Status('PONG');
+
         $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
         $connection->expects($this->once())
                    ->method('switchTo')
@@ -236,7 +238,7 @@ class PipelineTest extends PredisTestCase
                    ->method('writeRequest');
         $connection->expects($this->exactly(3))
                    ->method('readResponse')
-                   ->will($this->returnValue('PONG'));
+                   ->will($this->returnValue($pong));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -244,7 +246,7 @@ class PipelineTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array(true, true, true), $pipeline->execute());
+        $this->assertSame(array($pong, $pong, $pong), $pipeline->execute());
     }
 
     /**
@@ -372,7 +374,7 @@ class PipelineTest extends PredisTestCase
             $pipe->get('foo');
         });
 
-        $this->assertSame(array(true, 'bar'), $results);
+        $this->assertEquals(array('OK', 'bar'), $results);
         $this->assertTrue($client->exists('foo'));
     }
 
@@ -390,7 +392,7 @@ class PipelineTest extends PredisTestCase
             $pipe->get('foo');
         });
 
-        $this->assertSame(array(true, 'bar'), $results);
+        $this->assertEquals(array('OK', 'bar'), $results);
         $this->assertSame('oob message', $oob);
         $this->assertTrue($client->exists('foo'));
     }
@@ -453,7 +455,7 @@ class PipelineTest extends PredisTestCase
             $pipe->get('foo');
         });
 
-        $this->assertTrue($results[0]);
+        $this->assertEquals('OK', $results[0]);
         $this->assertInstanceOf('Predis\Response\Error', $results[1]);
         $this->assertSame('bar', $results[2]);
     }

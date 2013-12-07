@@ -27,17 +27,8 @@ class StatusResponse implements ResponseHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $status)
+    public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        switch ($status) {
-            case 'OK':
-                return true;
-
-            case 'QUEUED':
-                return new Response\StatusQueued();
-
-            default:
-                return $status;
-        }
+        return new Response\Status($payload);
     }
 }

@@ -36,12 +36,4 @@ class TransactionWatch extends Command
 
         return $arguments;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }

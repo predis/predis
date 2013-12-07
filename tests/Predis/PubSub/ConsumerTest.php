@@ -303,6 +303,6 @@ class ConsumerTest extends PredisTestCase
 
         $this->assertSame(array('message1', 'message2', 'QUIT'), $messages);
         $this->assertFalse($pubsub->valid());
-        $this->assertTrue($consumer->ping());
+        $this->assertEquals('PONG', $consumer->ping());
     }
 }
