@@ -28,7 +28,7 @@ class ErrorTest extends PredisTestCase
         $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
         $this->assertInstanceOf('Predis\Response\ErrorInterface', $error);
-        $this->assertInstanceOf('Predis\Response\ObjectInterface', $error);
+        $this->assertInstanceOf('Predis\Response\ResponseInterface', $error);
     }
 
     /**

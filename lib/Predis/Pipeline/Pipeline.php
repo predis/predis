@@ -132,7 +132,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
             $command  = $commands->dequeue();
             $response = $connection->readResponse($command);
 
-            if (!$response instanceof Response\ObjectInterface) {
+            if (!$response instanceof Response\ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
             } else if ($response instanceof Response\ErrorInterface && $exceptions) {
                 $this->exception($connection, $response);

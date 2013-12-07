@@ -39,7 +39,7 @@ class ServerExceptionTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Response\ServerException', $exception);
         $this->assertInstanceOf('Predis\Response\ErrorInterface', $exception);
-        $this->assertInstanceOf('Predis\Response\ObjectInterface', $exception);
+        $this->assertInstanceOf('Predis\Response\ResponseInterface', $exception);
         $this->assertInstanceOf('Predis\PredisException', $exception);
     }
 

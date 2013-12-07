@@ -16,7 +16,7 @@ namespace Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Status implements ObjectInterface
+class Status implements ResponseInterface
 {
     private static $OK;
     private static $QUEUED;

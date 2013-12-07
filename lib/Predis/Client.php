@@ -268,7 +268,7 @@ class Client implements ClientInterface
         $command = new RawCommand($arguments);
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof Response\ObjectInterface) {
+        if ($response instanceof Response\ResponseInterface) {
             if ($response instanceof Response\ErrorInterface) {
                 $error = true;
             }
@@ -310,7 +310,7 @@ class Client implements ClientInterface
     {
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof Response\ObjectInterface) {
+        if ($response instanceof Response\ResponseInterface) {
             if ($response instanceof Response\ErrorInterface) {
                 $response = $this->onResponseError($command, $response);
             }
@@ -336,7 +336,7 @@ class Client implements ClientInterface
 
             $response = $this->executeCommand($eval);
 
-            if (!$response instanceof Response\ObjectInterface) {
+            if (!$response instanceof Response\ResponseInterface) {
                 $response = $command->parseResponse($response);
             }
 

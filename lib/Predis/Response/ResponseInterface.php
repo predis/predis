@@ -12,10 +12,10 @@
 namespace Predis\Response;
 
 /**
- * Represents a complex reply object from Redis.
+ * Represents a complex response object from Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ObjectInterface
+interface ResponseInterface
 {
 }

@@ -17,7 +17,7 @@ namespace Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ErrorInterface extends ObjectInterface
+interface ErrorInterface extends ResponseInterface
 {
     /**
      * Returns the error message

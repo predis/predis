@@ -25,7 +25,7 @@ class StatusTest extends PredisTestCase
     {
         $status = new Status('OK');
 
-        $this->assertInstanceOf('Predis\Response\ObjectInterface', $status);
+        $this->assertInstanceOf('Predis\Response\ResponseInterface', $status);
         $this->assertSame('OK', $status->getPayload());
     }
 

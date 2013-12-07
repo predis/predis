@@ -102,7 +102,7 @@ class Atomic extends Pipeline
             $command  = $commands->dequeue();
             $response = $executed[$i];
 
-            if (!$response instanceof Response\ObjectInterface) {
+            if (!$response instanceof Response\ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
             } else if ($response instanceof Response\ErrorInterface && $exceptions) {
                 $this->exception($connection, $response);

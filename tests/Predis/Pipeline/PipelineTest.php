@@ -71,7 +71,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testDoesNotParseComplexResponseObjects()
     {
-        $object = $this->getMock('Predis\Response\ObjectInterface');
+        $object = $this->getMock('Predis\Response\ResponseInterface');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->once())

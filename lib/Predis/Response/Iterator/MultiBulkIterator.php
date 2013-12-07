@@ -27,7 +27,7 @@ use Predis\Response;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class MultiBulkIterator implements Iterator, Countable, Response\ObjectInterface
+abstract class MultiBulkIterator implements Iterator, Countable, Response\ResponseInterface
 {
     protected $current;
     protected $position;
