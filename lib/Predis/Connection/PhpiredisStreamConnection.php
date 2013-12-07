@@ -18,9 +18,7 @@ use Predis\Response;
 /**
  * This class provides the implementation of a Predis connection that uses PHP's
  * streams for network communication and wraps the phpiredis C extension (PHP
- * bindings for hiredis) to parse and serialize the Redis protocol. Everything
- * is highly experimental (even the very same phpiredis since it is quite new),
- * so use it at your own risk.
+ * bindings for hiredis) to parse and serialize the Redis protocol.
  *
  * This class is mainly intended to provide an optional low-overhead alternative
  * for processing replies from Redis compared to the standard pure-PHP classes.
