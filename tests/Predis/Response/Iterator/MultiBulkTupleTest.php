@@ -75,7 +75,7 @@ class MultiBulkTupleTest extends PredisTestCase
         $this->assertSame(3, $iterator->next());
         $this->assertFalse($iterator->valid());
 
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -91,7 +91,7 @@ class MultiBulkTupleTest extends PredisTestCase
         unset($iterator);
 
         $this->assertFalse($client->isConnected());
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     // ******************************************************************** //

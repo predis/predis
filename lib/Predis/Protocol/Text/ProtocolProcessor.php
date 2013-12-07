@@ -59,16 +59,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
         switch ($prefix) {
             case '+':    // inline
-                switch ($payload) {
-                    case 'OK':
-                        return true;
-
-                    case 'QUEUED':
-                        return new Response\StatusQueued();
-
-                    default:
-                        return $payload;
-                }
+                return new Response\Status($payload);
 
             case '$':    // bulk
                 $size = (int) $payload;

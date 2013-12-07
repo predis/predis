@@ -52,7 +52,7 @@ class StringSetExpireTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -62,7 +62,7 @@ class StringSetExpireTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->setex('foo', 10, 'bar'));
+        $this->assertEquals('OK', $redis->setex('foo', 10, 'bar'));
         $this->assertTrue($redis->exists('foo'));
         $this->assertEquals(10, $redis->ttl('foo'));
     }

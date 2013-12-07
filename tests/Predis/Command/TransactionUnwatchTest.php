@@ -49,7 +49,7 @@ class TransactionUnwatchTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -62,7 +62,7 @@ class TransactionUnwatchTest extends PredisCommandTestCase
 
         $redis1->set('foo', 'bar');
         $redis1->watch('foo');
-        $this->assertTrue($redis1->unwatch());
+        $this->assertEquals('OK', $redis1->unwatch());
         $redis1->multi();
         $redis1->get('foo');
 
@@ -79,6 +79,6 @@ class TransactionUnwatchTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->multi();
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $redis->unwatch());
+        $this->assertInstanceOf('Predis\Response\Status', $redis->unwatch());
     }
 }

@@ -24,12 +24,4 @@ class ConnectionPing extends Command
     {
         return 'PING';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return $data === 'PONG' ? true : false;
-    }
 }

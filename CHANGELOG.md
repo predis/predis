@@ -6,6 +6,12 @@ v0.9.0 (201x-xx-xx)
 - Added `SENTINEL` to the profile for Redis 2.6 and `PUBSUB` to the profile for
   Redis 2.8.
 
+- Status responses are returned as instances of `Predis\Response\Status`, for
+  example +OK is not returned as boolean TRUE anymore which is a breaking change
+  for those using strict comparisons. Status responses can be casted to string
+  values carrying the original payload, so one can do `$response == 'OK'` which
+  is also more akin to how Redis replies to clients.
+
 - Added the `aggregate` client option, useful to fully customize how the client
   should aggregate multiple connections when an array of connection parameters
   is passed to `Predis\Client::__construct()`.

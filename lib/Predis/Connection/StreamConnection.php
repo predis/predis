@@ -187,16 +187,7 @@ class StreamConnection extends AbstractConnection
 
         switch ($prefix) {
             case '+':    // inline
-                switch ($payload) {
-                    case 'OK':
-                        return true;
-
-                    case 'QUEUED':
-                        return new Response\StatusQueued();
-
-                    default:
-                        return $payload;
-                }
+                return Response\Status::get($payload);
 
             case '$':    // bulk
                 $size = (int) $payload;

@@ -30,7 +30,10 @@ class StatusResponseTest extends PredisTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertTrue($handler->handle($connection, 'OK'));
+        $response = $handler->handle($connection, 'OK');
+
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('OK', $response);
     }
 
     /**
@@ -45,7 +48,10 @@ class StatusResponseTest extends PredisTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertInstanceOf('Predis\Response\StatusQueued', $handler->handle($connection, 'QUEUED'));
+        $response = $handler->handle($connection, 'QUEUED');
+
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('QUEUED', $response);
     }
 
     /**
@@ -60,6 +66,9 @@ class StatusResponseTest extends PredisTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBytes');
 
-        $this->assertSame('Background saving started', $handler->handle($connection, 'Background saving started'));
+        $response = $handler->handle($connection, 'Background saving started');
+
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('Background saving started', $response);
     }
 }

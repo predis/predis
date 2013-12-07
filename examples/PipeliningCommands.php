@@ -18,7 +18,6 @@ require 'SharedConfigurations.php';
 $client = new Predis\Client($single_server);
 
 $replies = $client->pipeline(function ($pipe) {
-    $pipe->ping();
     $pipe->flushdb();
     $pipe->incrby('counter', 10);
     $pipe->incrby('counter', 30);
@@ -31,14 +30,14 @@ var_export($replies);
 
 /* OUTPUT:
 array (
-  0 => true,
-  1 => true,
-  2 => 10,
-  3 => 40,
-  4 => true,
-  5 => '40',
-  6 =>
-  array (
+  0 => Predis\Response\Status::__set_state(array(
+    'payload' => 'OK',
+  )),
+  1 => 10,
+  2 => 40,
+  3 => true,
+  4 => '40',
+  5 => array (
     0 => NULL,
     1 => '40',
   ),

@@ -24,12 +24,4 @@ class TransactionUnwatch extends Command
     {
         return 'UNWATCH';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }

@@ -47,7 +47,7 @@ class MultiBulkTest extends PredisTestCase
         $this->assertSame(3, $iterator->next());
         $this->assertFalse($iterator->valid());
 
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -74,7 +74,7 @@ class MultiBulkTest extends PredisTestCase
         $iterator->drop(false);
 
         $this->assertTrue($client->isConnected());
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -89,7 +89,7 @@ class MultiBulkTest extends PredisTestCase
         $iterator->drop(true);
 
         $this->assertFalse($client->isConnected());
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -105,7 +105,7 @@ class MultiBulkTest extends PredisTestCase
         unset($iterator);
 
         $this->assertFalse($client->isConnected());
-        $this->assertTrue($client->ping());
+        $this->assertEquals('PONG', $client->ping());
     }
 
     // ******************************************************************** //

@@ -79,8 +79,8 @@ class ResponseReaderTest extends PredisTestCase
                    ->method('readLine')
                    ->will($this->returnValue("*-1"));
 
-        $this->assertTrue($reader->read($connection));
-        $this->assertEquals("ERR error message", $reader->read($connection));
+        $this->assertEquals('OK', $reader->read($connection));
+        $this->assertEquals('ERR error message', $reader->read($connection));
         $this->assertSame(2, $reader->read($connection));
         $this->assertNull($reader->read($connection));
         $this->assertNull($reader->read($connection));

@@ -139,7 +139,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
         $quit = $this->getProfile()->createCommand('quit');
 
         $this->assertSame(array('subscribe', 'channel1', 1), $redis->subscribe('channel1'));
-        $this->assertTrue($redis->executeCommand($quit));
+        $this->assertEquals('OK', $redis->executeCommand($quit));
     }
 
     /**

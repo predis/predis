@@ -49,7 +49,7 @@ class ServerFlushDatabaseTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -61,7 +61,7 @@ class ServerFlushDatabaseTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->flushdb());
+        $this->assertEquals('OK', $redis->flushdb());
         $this->assertFalse($redis->exists('foo'));
     }
 }

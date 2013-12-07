@@ -52,14 +52,14 @@ class ServerScriptTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
      * @group connected
      * @todo We should probably convert integers to booleans.
      */
-    public function testExistsReturnAnArrayOfValues()
+    public function testExistsReturnsAnArrayOfValues()
     {
         $redis = $this->getClient();
 
@@ -91,7 +91,7 @@ class ServerScriptTest extends PredisCommandTestCase
 
         $sha1 = $redis->script('LOAD', 'return true');
 
-        $this->assertTrue($redis->script('FLUSH'));
+        $this->assertEquals('OK', $redis->script('FLUSH'));
         $this->assertSame(array(0), $redis->script('EXISTS', $sha1));
     }
 

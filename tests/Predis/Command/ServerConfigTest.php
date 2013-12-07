@@ -69,9 +69,7 @@ class ServerConfigTest extends PredisCommandTestCase
      */
     public function testParseResponseOfConfigSet()
     {
-        $command = $this->getCommand();
-
-        $this->assertTrue($command->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -79,9 +77,7 @@ class ServerConfigTest extends PredisCommandTestCase
      */
     public function testParseResponseOfConfigResetstat()
     {
-        $command = $this->getCommand();
-
-        $this->assertTrue($command->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
@@ -129,7 +125,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
         $previous = $redis->config('GET', 'loglevel');
 
-        $this->assertTrue($redis->config('SET', 'loglevel', 'notice'));
+        $this->assertEquals('OK', $redis->config('SET', 'loglevel', 'notice'));
         $this->assertSame(array('loglevel' => 'notice'), $redis->config('GET', 'loglevel'));
 
         // We set the loglevel configuration to the previous value.
@@ -145,7 +141,7 @@ class ServerConfigTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->config('SET', 'foo', 'bar'));
+        $redis->config('SET', 'foo', 'bar');
     }
 
     /**
@@ -155,7 +151,7 @@ class ServerConfigTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->config('RESETSTAT'));
+        $this->assertEquals('OK', $redis->config('RESETSTAT'));
     }
 
     /**
@@ -166,6 +162,6 @@ class ServerConfigTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->config('FOO'));
+        $redis->config('FOO');
     }
 }

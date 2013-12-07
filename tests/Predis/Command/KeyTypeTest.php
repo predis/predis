@@ -52,7 +52,7 @@ class KeyTypeTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertSame('type', $this->getCommand()->parseResponse('type'));
+        $this->assertSame('none', $this->getCommand()->parseResponse('none'));
     }
 
     /**
@@ -62,21 +62,21 @@ class KeyTypeTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame('none', $redis->type('type:keydoesnotexist'));
+        $this->assertEquals('none', $redis->type('type:keydoesnotexist'));
 
         $redis->set('type:string', 'foobar');
-        $this->assertSame('string', $redis->type('type:string'));
+        $this->assertEquals('string', $redis->type('type:string'));
 
         $redis->lpush('type:list', 'foobar');
-        $this->assertSame('list', $redis->type('type:list'));
+        $this->assertEquals('list', $redis->type('type:list'));
 
         $redis->sadd('type:set', 'foobar');
-        $this->assertSame('set', $redis->type('type:set'));
+        $this->assertEquals('set', $redis->type('type:set'));
 
         $redis->zadd('type:zset', 0, 'foobar');
-        $this->assertSame('zset', $redis->type('type:zset'));
+        $this->assertEquals('zset', $redis->type('type:zset'));
 
         $redis->hset('type:hash', 'foo', 'bar');
-        $this->assertSame('hash', $redis->type('type:hash'));
+        $this->assertEquals('hash', $redis->type('type:hash'));
     }
 }

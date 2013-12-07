@@ -274,11 +274,9 @@ class Client implements ClientInterface
             }
 
             return (string) $response;
-        } else if ($response === true) {
-            return 'OK';
-        } else {
-            return $response;
         }
+
+        return $response;
     }
 
     /**

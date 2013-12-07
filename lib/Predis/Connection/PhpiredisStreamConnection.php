@@ -116,16 +116,7 @@ class PhpiredisStreamConnection extends StreamConnection
     protected function getStatusHandler()
     {
         return function ($payload) {
-            switch ($payload) {
-                case 'OK':
-                    return true;
-
-                case 'QUEUED':
-                    return new Response\StatusQueued();
-
-                default:
-                    return $payload;
-            }
+            return Response\Status::get($payload);
         };
     }
 

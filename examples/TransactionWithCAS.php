@@ -19,9 +19,7 @@ require 'SharedConfigurations.php';
 //
 // ./redis-cli
 // SELECT 15
-// ZADD zset 1 a
-// ZADD zset 2 b
-// ZADD zset 3 c
+// ZADD zset 1 a 2 b 3 c
 //
 // Then execute this script four times and see its output.
 //

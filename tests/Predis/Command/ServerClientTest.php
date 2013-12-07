@@ -153,7 +153,7 @@ BUFFER;
          $this->assertNull($clientName);
 
          $expectedConnectionName = 'foo-bar';
-         $this->assertTrue($redis->client('SETNAME', $expectedConnectionName));
+         $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
          $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
     }
 
@@ -167,7 +167,7 @@ BUFFER;
          $redis = $this->getClient();
 
          $expectedConnectionName = 'foo-baz';
-         $this->assertTrue($redis->client('SETNAME', $expectedConnectionName));
+         $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
          $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
     }
 
@@ -204,7 +204,7 @@ BUFFER;
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->client('FOO'));
+        $redis->client('FOO');
     }
 
     /**
@@ -216,6 +216,6 @@ BUFFER;
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->client('KILL', '127.0.0.1:65535'));
+        $redis->client('KILL', '127.0.0.1:65535');
     }
 }

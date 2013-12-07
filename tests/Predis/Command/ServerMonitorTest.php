@@ -50,18 +50,18 @@ class ServerMonitorTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(true));
+        $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
 
     /**
      * @group connected
      */
-    public function testReturnsTrueAndReadsEventsFromTheConnection()
+    public function testReturnsStatusResponseAndReadsEventsFromTheConnection()
     {
         $connection = $this->getClient()->getConnection();
         $command = $this->getCommand();
 
-        $this->assertTrue($connection->executeCommand($command));
+        $this->assertEquals('OK', $connection->executeCommand($command));
 
         // NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
         // +OK to the client that issued the MONITOR command.

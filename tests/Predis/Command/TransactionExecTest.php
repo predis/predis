@@ -95,7 +95,7 @@ class TransactionExecTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $redis->exists('foo');
 
-        $this->assertSame(array('PONG', true, 1), $redis->exec());
+        $this->assertEquals(array('PONG', 'OK', 1), $redis->exec());
     }
 
     /**

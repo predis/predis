@@ -193,7 +193,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             return $response;
         }
 
-        if (!$response instanceof Response\StatusQueued) {
+        if ($response != 'QUEUED' && !$response instanceof Response\Status) {
             $this->onProtocolError('The server did not respond with a QUEUED status response');
         }
 

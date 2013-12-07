@@ -26,12 +26,13 @@ class AtomicTest extends PredisTestCase
      */
     public function testPipelineWithSingleConnection()
     {
-        $queued = new Response\StatusQueued();
+        $pong = new Response\Status('PONG');
+        $queued = new Response\Status('QUEUED');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->exactly(2))
                    ->method('executeCommand')
-                   ->will($this->onConsecutiveCalls(true, array('PONG', 'PONG', 'PONG')));
+                   ->will($this->onConsecutiveCalls(true, array($pong, $pong, $pong)));
         $connection->expects($this->exactly(3))
                    ->method('writeRequest');
         $connection->expects($this->at(3))
@@ -44,7 +45,7 @@ class AtomicTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array(true, true, true), $pipeline->execute());
+        $this->assertSame(array($pong, $pong, $pong), $pipeline->execute());
     }
 
     /**
@@ -75,7 +76,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testPipelineWithErrorInTransaction()
     {
-        $queued = new Response\StatusQueued();
+        $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
@@ -125,7 +126,8 @@ class AtomicTest extends PredisTestCase
      */
     public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
     {
-        $queued = new Response\StatusQueued();
+        $pong = new Response\Status('PONG');
+        $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
@@ -134,7 +136,7 @@ class AtomicTest extends PredisTestCase
                    ->will($this->onConsecutiveCalls($queued, $queued, $queued));
         $connection->expects($this->at(7))
                    ->method('executeCommand')
-                   ->will($this->returnValue(array('PONG', 'PONG', $error)));
+                   ->will($this->returnValue(array($pong, $pong, $error)));
 
         $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
 
@@ -142,7 +144,7 @@ class AtomicTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array(true, true, $error), $pipeline->execute());
+        $this->assertSame(array($pong, $pong, $error), $pipeline->execute());
     }
 
     /**
