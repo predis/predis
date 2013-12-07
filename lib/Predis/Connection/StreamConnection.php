@@ -176,13 +176,13 @@ class StreamConnection extends AbstractConnection
     public function read()
     {
         $socket = $this->getResource();
-        $chunk  = fgets($socket);
+        $chunk = fgets($socket);
 
         if ($chunk === false || $chunk === '') {
             $this->onConnectionError('Error while reading line from the server');
         }
 
-        $prefix  = $chunk[0];
+        $prefix = $chunk[0];
         $payload = substr($chunk, 1, -2);
 
         switch ($prefix) {

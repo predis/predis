@@ -155,7 +155,7 @@ class PhpiredisConnection extends AbstractConnection
      */
     private function emitSocketError()
     {
-        $errno  = socket_last_error();
+        $errno = socket_last_error();
         $errstr = socket_strerror($errno);
 
         $this->disconnect();

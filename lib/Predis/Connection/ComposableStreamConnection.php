@@ -62,7 +62,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
             throw new \InvalidArgumentException('Length parameter must be greater than 0');
         }
 
-        $value  = '';
+        $value = '';
         $socket = $this->getResource();
 
         do {
@@ -83,7 +83,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
      */
     public function readLine()
     {
-        $value  = '';
+        $value = '';
         $socket = $this->getResource();
 
         do {

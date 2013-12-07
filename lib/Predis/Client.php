@@ -49,9 +49,9 @@ class Client implements ClientInterface
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options    = $this->createOptions($options ?: array());
+        $this->options = $this->createOptions($options ?: array());
         $this->connection = $this->createConnection($parameters ?: array());
-        $this->profile    = $this->options->profile;
+        $this->profile = $this->options->profile;
     }
 
     /**
@@ -289,7 +289,7 @@ class Client implements ClientInterface
      */
     public function __call($commandID, $arguments)
     {
-        $command  = $this->createCommand($commandID, $arguments);
+        $command = $this->createCommand($commandID, $arguments);
         $response = $this->executeCommand($command);
 
         return $response;

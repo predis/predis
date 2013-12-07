@@ -86,7 +86,7 @@ class ConnectionErrorProof extends Pipeline
      */
     public function executeCluster(ClusterConnectionInterface $connection, SplQueue $commands)
     {
-        $responses  = array();
+        $responses = array();
         $sizeOfPipe = count($commands);
         $exceptions = array();
 

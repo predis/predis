@@ -207,7 +207,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
 
         while ($lower <= $upper) {
             $index = ($lower + $upper) >> 1;
-            $item  = $ringKeys[$index];
+            $item = $ringKeys[$index];
 
             if ($item > $key) {
                 $upper = $index - 1;

@@ -94,7 +94,7 @@ class Atomic extends Pipeline
             );
         }
 
-        $responses  = array();
+        $responses = array();
         $sizeOfPipe = count($commands);
         $exceptions = $this->throwServerExceptions();
 

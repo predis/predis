@@ -125,11 +125,11 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
             $connection->writeRequest($command);
         }
 
-        $responses  = array();
+        $responses = array();
         $exceptions = $this->throwServerExceptions();
 
         while (!$commands->isEmpty()) {
-            $command  = $commands->dequeue();
+            $command = $commands->dequeue();
             $response = $connection->readResponse($command);
 
             if (!$response instanceof Response\ResponseInterface) {
