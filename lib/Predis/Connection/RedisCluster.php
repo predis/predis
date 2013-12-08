@@ -15,11 +15,11 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
-use Predis\ClientException;
 use Predis\NotSupportedException;
 use Predis\Cluster;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Protocol;
 use Predis\Response;
 
 /**
@@ -409,7 +409,9 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
                 return $response;
 
             default:
-                throw new ClientException("Unexpected request type for a move request: $request");
+                throw new Protocol\ProtocolException(
+                    "Unexpected request type for a move request: $request"
+                );
         }
     }
 
