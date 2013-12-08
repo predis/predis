@@ -120,7 +120,7 @@ are usually lazily initialized only when needed. Predis by defaults supports the
   - `aggregate`: custom connections aggregator (overrides both `cluster` and `replication`).
 
 Users can provide custom options with their values or lazy callable initializers that are stored in
-in the options container for later use through the library.
+the options container for later use through the library.
 
 
 ### Aggregate connections ###
@@ -170,16 +170,16 @@ $responses = $client->transaction()->set('foo', 'bar')->get('foo')->execute();
 ```
 
 This abstraction can perform check-and-set operations thanks to `WATCH` and `UNWATCH` and provides
-automatic retries of transaction aborted by Redis when WATCHed keys are touched. For an example of a
-transaction with CAS you can see [the following example](examples/TransactionWithCAS.php).
+automatic retries of transactions aborted by Redis when `WATCH`ed keys are touched. For an example
+of a transaction using CAS you can see [the following example](examples/TransactionWithCAS.php).
 
 
 ### Customizable connection backends ###
 
 Predis can use different connection backends to connect to Redis. Two of them leverage a third party
 extension such as [phpiredis](https://github.com/nrk/phpiredis) resulting in major performance gains
-especially when dealing with big multibulk responses. One is based on PHP streams and the other is
-based on socket resources provided by `ext-socket`, but both support TCP/IP or UNIX domain sockets:
+especially when dealing with big multibulk responses. While one is based on PHP streams, the other
+is based on socket resources provided by `ext-socket`. Both support TCP/IP or UNIX domain sockets:
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', [
@@ -212,10 +212,10 @@ implementation of the standard connection classes available in the `Predis\Conne
 
 ### Adding support for new commands ###
 
-While we try to update Predis to stay up to date with all the commands implemented in Redis, you may
-want to stick with an older version of the library or provide a different way to filter arguments or
-parse responses for specific commands. To achieve that, Predis provides the ability to implement new
-command classes to define or override commands available in the server profiles used by the client:
+While we try to update Predis to stay up to date with all the commands available in Redis, you might
+prefer to stick with an older version of the library or provide a different way to filter arguments
+or parse responses for specific commands. To achieve that, Predis provides the ability to implement
+new command classes to define or override commands in the server profiles used by the client:
 
 ```php
 // Define a new command by extending Predis\Command\Command:
@@ -245,13 +245,13 @@ $response = $client->raw(['SET', 'foo', 'bar']);
 
 ### Scriptable commands ###
 
-A scriptable command is just an abstraction for [Lua scripts](http://redis.io/commands/eval) aiming
-at simplifying the usage of scripting when using Redis >= 2.6. Scriptable commands can be registered
-in the server profile used by the client and are accessible as if they were plain Redis commands but
+A scriptable command is just an abstraction for [Lua scripting](http://redis.io/commands/eval) that
+aims to simplify the usage of scripting with Redis >= 2.6. Scriptable commands can be registered in
+the server profile used by the client and are accessible as if they were plain Redis commands, but
 they define a Lua script that gets transmitted to Redis for remote execution. Internally, scriptable
 commands use by default [EVALSHA](http://redis.io/commands/evalsha) and identify a Lua script by its
-SHA1 hash to save bandwidth, but [EVAL](http://redis.io/commands/eval) is automatically used as a
-fall back when needed:
+SHA1 hash to save bandwidth but [EVAL](http://redis.io/commands/eval) is automatically preferred as
+a fall back when needed:
 
 ```php
 // Define a new scriptable command by extending Predis\Command\ScriptCommand:
