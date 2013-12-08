@@ -55,6 +55,10 @@ v0.9.0 (201x-xx-xx)
   to create `AUTH` and `SELECT` commands when connection parameters contain both
   `password` and `database`. Raw commands will be used instead.
 
+- `ConnectionParameters::__construct()` only accepts named arrays, but instances
+  can be created using URIs or arrays using the `ConnectionParameters::create()`
+  static method.
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API of external protocol processors.
 

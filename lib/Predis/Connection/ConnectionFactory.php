@@ -76,7 +76,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     public function create($parameters)
     {
         if (!$parameters instanceof ConnectionParametersInterface) {
-            $parameters = new ConnectionParameters($parameters);
+            $parameters = ConnectionParameters::create($parameters);
         }
 
         $scheme = $parameters->scheme;

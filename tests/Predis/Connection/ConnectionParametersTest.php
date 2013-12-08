@@ -44,13 +44,8 @@ class ParametersTest extends PredisTestCase
         $this->assertFalse(isset($parameters->unknown));
     }
 
-    /**
-     * @group disconnected
-     */
-    public function testUserDefinedParameters()
+    public function sharedTestsWithArrayParameters(ConnectionParameters $parameters)
     {
-        $parameters = new ConnectionParameters(array('port' => 7000, 'custom' => 'foobar'));
-
         $this->assertTrue(isset($parameters->scheme));
         $this->assertSame('tcp', $parameters->scheme);
 
@@ -67,7 +62,33 @@ class ParametersTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructWithUriString()
+    public function testConstructWithArrayParameters()
+    {
+        $parameters = new ConnectionParameters(array(
+            'port' => 7000,
+            'custom' => 'foobar'
+        ));
+
+        $this->sharedTestsWithArrayParameters($parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateWithArrayParameters()
+    {
+        $parameters = new ConnectionParameters(array(
+            'port' => 7000,
+            'custom' => 'foobar'
+        ));
+
+        $this->sharedTestsWithArrayParameters($parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateWithUriString()
     {
         $defaults = $this->getDefaultParametersArray();
 
@@ -77,19 +98,11 @@ class ParametersTest extends PredisTestCase
             'custom' => 'foobar',
         );
 
-        $parameters = new ConnectionParameters($this->getParametersString($overrides));
+        $uriString = $this->getParametersString($overrides);
+        $parameters = ConnectionParameters::create($uriString);
 
-        $this->assertEquals($defaults['scheme'], $parameters->scheme);
-        $this->assertEquals($defaults['host'], $parameters->host);
-        $this->assertEquals($overrides['port'], $parameters->port);
-
+        $this->sharedTestsWithArrayParameters($parameters);
         $this->assertEquals($overrides['database'], $parameters->database);
-
-        $this->assertTrue(isset($parameters->custom));
-        $this->assertEquals($overrides['custom'], $parameters->custom);
-
-        $this->assertFalse(isset($parameters->unknown));
-        $this->assertNull($parameters->unknown);
     }
 
     /**

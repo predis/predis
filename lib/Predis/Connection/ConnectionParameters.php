@@ -38,15 +38,11 @@ class ConnectionParameters implements ConnectionParametersInterface
     );
 
     /**
-     * @param string|array Connection parameters in the form of an URI string or a named array.
+     * @param array Named array of connection parameters.
      */
-    public function __construct($parameters = null)
+    public function __construct(array $parameters = array())
     {
-        if (is_string($parameters)) {
-            $parameters = self::parse($parameters);
-        }
-
-        $this->parameters = $this->filter($parameters ?: array()) + $this->getDefaults();
+        $this->parameters = $this->filter($parameters) + $this->getDefaults();
     }
 
     /**
@@ -67,6 +63,22 @@ class ConnectionParameters implements ConnectionParametersInterface
     protected function getValueCasters()
     {
         return self::$casters;
+    }
+
+    /**
+     * Creates a new instance by supplying the initial parameters either in the
+     * form of an URI string or a named array.
+     *
+     * @param array|string $parameters Set of connection parameters.
+     * @return ConnectionParameters
+     */
+    public static function create($parameters)
+    {
+        if (is_string($parameters)) {
+            $parameters = self::parse($parameters);
+        }
+
+        return new self($parameters ?: array());
     }
 
     /**
@@ -116,7 +128,7 @@ class ConnectionParameters implements ConnectionParametersInterface
             }
         }
 
-        return $parameters;
+        return $parameters ?: array();
     }
 
     /**
