@@ -19,6 +19,16 @@ v0.8.5 (2013-xx-xx)
   responses are not parsed, which means arguments must follow the signature of
   the command as defined by Redis and complex responses are left untouched.
 
+- Various improvements and fixes to the redis-cluster connection backend:
+
+    - __FIX__: the `ASKING` command is sent upon -ASK redirections.
+    - An updated slots-map can be fetched from nodes using the `CLUSTER NODES`
+      command. By default this is a manual operation but can be enabled to get
+      automatically done upon -MOVED redirections.
+    - It is possible to specify a common set of connection parameters that are
+      applied to connections created on the fly upon redirections to nodes not
+      part of the initial pool.
+
 - List of deprecated methods:
 
     - `Predis\Client::multiExec()`: superseded by `Predis\Client::transaction()`
