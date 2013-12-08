@@ -47,6 +47,7 @@ use Predis\Response;
 class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Countable
 {
     private $askClusterNodes = false;
+    private $defaultParameters = array();
     private $pool = array();
     private $slots = array();
     private $slotsMap;
@@ -298,11 +299,12 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
         if (!$connection = $this->getConnectionById($connectionID)) {
             $host = explode(':', $connectionID, 2);
-            $connection = $this->connections->create(array(
+            $parameters = array_merge($this->defaultParameters, array(
                 'host' => $host[0],
                 'port' => $host[1],
             ));
 
+            $connection = $this->connections->create($parameters);
             $this->pool[$connectionID] = $connection;
         }
 
@@ -381,11 +383,12 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
         if (!$connection) {
             $host = explode(':', $host, 2);
-
-            $connection = $this->connections->create(array(
+            $parameters = array_merge($this->defaultParameters, array(
                 'host' => $host[0],
                 'port' => $host[1],
             ));
+
+            $connection = $this->connections->create($parameters);
         }
 
         switch ($request) {
@@ -483,5 +486,23 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     public function enableClusterNodes($value)
     {
         $this->askClusterNodes = (bool) $value;
+    }
+
+    /**
+     * Sets a default array of connection parameters to be applied when creating
+     * new connection instances on the fly when they are not part of the initial
+     * pool supplied upon cluster initialization.
+     *
+     * These parameters are not applied to connections added to the pool using
+     * the add() method.
+     *
+     * @param array $parameters Array of connection parameters.
+     */
+    public function setDefaultParameters(array $parameters)
+    {
+        $this->defaultParameters = array_merge(
+            $this->defaultParameters,
+            $parameters ?: array()
+        );
     }
 }
