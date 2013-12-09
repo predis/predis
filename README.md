@@ -10,8 +10,8 @@ Predis does not require any additional extension loaded in PHP but can be option
 and parsing the Redis protocol. An asynchronous implementation of the client, albeit experimental,
 is also available through [Predis\Async](https://github.com/nrk/predis-async).
 
-See our [FAQ](FAQ.md) for a list of frequently asked questions about Predis.
-More details are available on the [wiki pages](https://github.com/nrk/predis/wiki) of the project.
+You can refer to our [FAQ](FAQ.md) for a list of frequently asked questions about Predis, or find
+more details on the [wiki pages](https://github.com/nrk/predis/wiki) of the project.
 
 
 ## Main features ##
@@ -27,7 +27,7 @@ More details are available on the [wiki pages](https://github.com/nrk/predis/wik
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
 - Connections to Redis are established lazily by the client upon the first command.
 - Support for both TCP/IP and UNIX domain sockets and persistent connections.
-- Support for [Webdis](http://webdis.io) (both `ext-curl` and `ext-phpiredis` are needed).
+- Support for [Webdis](http://webd.is) (both `ext-curl` and `ext-phpiredis` are needed).
 - Support for custom connection classes for providing different network or protocol backends.
 - Flexible system for defining and registering custom sets of supported commands or profiles.
 
