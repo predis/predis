@@ -109,7 +109,7 @@ it is recommended to refer to their specific documentation for details.
 
 Various aspects of the client can be easily configured by passing options to the second argument of
 `Predis\Client::__construct()`. Options are managed using a mini DI-alike container and their values
-are usually lazily initialized only when needed. Predis by defaults supports the following options:
+are usually lazily initialized only when needed. Predis by default supports the following options:
 
   - `profile`: which profile to use in order to match a specific version of Redis.
   - `prefix`: a prefix string that is automatically applied to keys found in commands.
