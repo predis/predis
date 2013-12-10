@@ -55,6 +55,7 @@ class KetamaRing extends HashRing
     public function hash($value)
     {
         $hash = unpack('V', md5($value, true));
+
         return $hash[1];
     }
 
@@ -63,7 +64,7 @@ class KetamaRing extends HashRing
      */
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount)
     {
-        // Binary search for the first item in _ringkeys with a value greater
+        // Binary search for the first item in ringkeys with a value greater
         // or equal to the key. If no such item exists, return the first item.
         return $lower < $ringKeysCount ? $lower : 0;
     }

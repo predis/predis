@@ -53,7 +53,11 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     {
         // In case of collisions in the hashes of the nodes, the node added
         // last wins, thus the order in which nodes are added is significant.
-        $this->nodes[] = array('object' => $node, 'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT);
+        $this->nodes[] = array(
+            'object' => $node,
+            'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT
+        );
+
         $this->reset();
     }
 
@@ -70,6 +74,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
             if ($this->nodes[$i]['object'] === $node) {
                 array_splice($this->nodes, $i, 1);
                 $this->reset();
+
                 break;
             }
         }
@@ -166,7 +171,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
      */
     protected function getNodeHash($nodeObject)
     {
-        if ($this->nodeHashCallback === null) {
+        if (!isset($this->nodeHashCallback)) {
             return (string) $nodeObject;
         }
 
