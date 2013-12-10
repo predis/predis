@@ -51,6 +51,10 @@ v0.9.0 (201x-xx-xx)
   renamed to `writeRequest()` for consistency with its counterpart, the method
   `readResponse()`.
 
+- The connection based on ext-phpiredis and ext-socket has been renamed for the
+  sake of consistency to `Predis\Connection\PhpiredisSocketConnection`. The one
+  based on PHP's streams is still `Predis\Connection\PhpiredisStreamConnection`.
+
 - The connection factory has been simplified and does not need anymore a profile
   to create `AUTH` and `SELECT` commands when connection parameters contain both
   `password` and `database`. Raw commands will be used instead.

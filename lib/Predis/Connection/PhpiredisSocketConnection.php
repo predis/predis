@@ -40,7 +40,7 @@ use Predis\Response;
  * @link http://github.com/nrk/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PhpiredisConnection extends AbstractConnection
+class PhpiredisSocketConnection extends AbstractConnection
 {
     private $reader;
 

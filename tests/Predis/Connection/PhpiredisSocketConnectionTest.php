@@ -14,14 +14,14 @@ namespace Predis\Connection;
 /**
  * @group ext-phpiredis
  */
-class PhpiredisConnectionTest extends PredisConnectionTestCase
+class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 {
     /**
      * @group disconnected
      */
     public function testConstructorDoesNotOpenConnection()
     {
-        $connection = new PhpiredisConnection($this->getParameters());
+        $connection = new PhpiredisSocketConnection($this->getParameters());
 
         $this->assertFalse($connection->isConnected());
     }
@@ -32,7 +32,7 @@ class PhpiredisConnectionTest extends PredisConnectionTestCase
     public function testExposesParameters()
     {
         $parameters = $this->getParameters();
-        $connection = new PhpiredisConnection($parameters);
+        $connection = new PhpiredisSocketConnection($parameters);
 
         $this->assertSame($parameters, $connection->getParameters());
     }
@@ -45,7 +45,7 @@ class PhpiredisConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new PhpiredisConnection($parameters);
+        $connection = new PhpiredisSocketConnection($parameters);
     }
 
     /**
@@ -54,11 +54,11 @@ class PhpiredisConnectionTest extends PredisConnectionTestCase
     public function testCanBeSerialized()
     {
         $parameters = $this->getParameters(array('alias' => 'redis', 'read_write_timeout' => 10));
-        $connection = new PhpiredisConnection($parameters);
+        $connection = new PhpiredisSocketConnection($parameters);
 
         $unserialized = unserialize(serialize($connection));
 
-        $this->assertInstanceOf('Predis\Connection\PhpiredisConnection', $unserialized);
+        $this->assertInstanceOf('Predis\Connection\PhpiredisSocketConnection', $unserialized);
         $this->assertEquals($parameters, $unserialized->getParameters());
     }
 
@@ -114,7 +114,7 @@ class PhpiredisConnectionTest extends PredisConnectionTestCase
         $parameters = $this->getParameters($parameters);
         $profile = $this->getProfile();
 
-        $connection = new PhpiredisConnection($parameters);
+        $connection = new PhpiredisSocketConnection($parameters);
 
         if ($initialize) {
             $connection->pushInitCommand($profile->createCommand('select', array($parameters->database)));

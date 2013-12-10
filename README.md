@@ -183,8 +183,8 @@ is based on socket resources provided by `ext-socket`. Both support TCP/IP or UN
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', [
     'connections' => [
-        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection', // PHP streams
-        'unix' => 'Predis\Connection\PhpiredisConnection',       // ext-socket
+        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',  // PHP streams
+        'unix' => 'Predis\Connection\PhpiredisSocketConnection',  // ext-socket
     ],
 ]);
 ```
