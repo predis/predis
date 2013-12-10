@@ -281,8 +281,8 @@ class MultiExecTest extends PredisTestCase
         $tx = $this->getMockedTransaction($callback, $options);
 
         $tx->watch('foobar');
-        $this->assertSame('DUMMY_REPLY', $tx->get('foo'));
-        $this->assertSame('DUMMY_REPLY', $tx->get('hoge'));
+        $this->assertSame('DUMMY_RESPONSE', $tx->get('foo'));
+        $this->assertSame('DUMMY_RESPONSE', $tx->get('hoge'));
 
         $replies = $tx->multi()
                       ->get('foo')
@@ -313,8 +313,8 @@ class MultiExecTest extends PredisTestCase
             $reply1 = $tx->get('foo');
             $reply2 = $tx->get('hoge');
 
-            $test->assertSame('DUMMY_REPLY', $reply1);
-            $test->assertSame('DUMMY_REPLY', $reply2);
+            $test->assertSame('DUMMY_RESPONSE', $reply1);
+            $test->assertSame('DUMMY_RESPONSE', $reply2);
 
             $tx->multi();
 
@@ -835,7 +835,7 @@ class MultiExecTest extends PredisTestCase
                     $watch = false;
 
                 default:
-                    return $multi ? new Response\Status('QUEUED') : 'DUMMY_REPLY';
+                    return $multi ? new Response\Status('QUEUED') : 'DUMMY_RESPONSE';
             }
         };
     }

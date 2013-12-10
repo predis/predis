@@ -50,7 +50,7 @@ interface SingleConnectionInterface extends ConnectionInterface
     public function pushInitCommand(CommandInterface $command);
 
     /**
-     * Reads a reply from the server.
+     * Reads a response from the server.
      *
      * @return mixed
      */

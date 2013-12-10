@@ -172,7 +172,7 @@ class WebdisConnection implements SingleConnectionInterface
      * Feeds phpredis' reader resource with the data read from the network.
      *
      * @param resource $resource Reader resource.
-     * @param string $buffer Buffer with the reply read from the network.
+     * @param string $buffer Data read from the network.
      * @return int
      */
     protected function feedReader($resource, $buffer)

@@ -39,14 +39,14 @@ interface ConnectionInterface
     public function isConnected();
 
     /**
-     * Write a Redis command on the connection.
+     * Writes the given command over the connection.
      *
      * @param CommandInterface $command Instance of a Redis command.
      */
     public function writeRequest(CommandInterface $command);
 
     /**
-     * Reads the reply for a Redis command from the connection.
+     * Reads the response to a command from the connection.
      *
      * @param CommandInterface $command Instance of a Redis command.
      * @return mixed
@@ -54,7 +54,7 @@ interface ConnectionInterface
     public function readResponse(CommandInterface $command);
 
     /**
-     * Writes a Redis command to the connection and reads back the reply.
+     * Writes a command over the connection and reads back the response.
      *
      * @param CommandInterface $command Instance of a Redis command.
      * @return mixed

@@ -65,7 +65,7 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testDropWithFalseConsumesReplyFromUnderlyingConnection()
+    public function testDropWithFalseConsumesResponseFromUnderlyingConnection()
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');

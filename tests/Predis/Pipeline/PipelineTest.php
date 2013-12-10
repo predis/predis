@@ -478,8 +478,8 @@ class PipelineTest extends PredisTestCase
     }
 
     /**
-     * Helper method that returns a callback used to emulate a reply
-     * to an ECHO command.
+     * Helper method that returns a callback used to emulate the response to an
+     * ECHO command.
      *
      * @return \Closure
      */

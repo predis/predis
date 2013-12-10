@@ -56,7 +56,7 @@ class ServerInfo extends Command
     }
 
     /**
-     * Parses the reply buffer and extracts the statistics of each logical DB.
+     * Extracts the statistics of each logical DB from the string buffer.
      *
      * @param string $str Reply buffer.
      * @return array
@@ -74,7 +74,7 @@ class ServerInfo extends Command
     }
 
     /**
-     * Parses the reply buffer and extracts the allocation statistics.
+     * Parses the response and extracts the allocation statistics.
      *
      * @param string $str Reply buffer.
      * @return array

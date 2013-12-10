@@ -15,7 +15,7 @@ use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 
 /**
- * Defines a strategy for master/reply replication.
+ * Defines a strategy for master/slave replication.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
