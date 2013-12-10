@@ -14,9 +14,8 @@ namespace Predis\Collection\Iterator;
 use Predis\ClientInterface;
 
 /**
- * Abstracts the iteration of members stored in a set by
- * leveraging the SSCAN command (Redis >= 2.8) wrapped in
- * a fully-rewindable PHP iterator.
+ * Abstracts the iteration of members stored in a set by leveraging the SSCAN
+ * command (Redis >= 2.8) wrapped in a fully-rewindable PHP iterator.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @link http://redis.io/commands/scan

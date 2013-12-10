@@ -15,9 +15,8 @@ use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\Processor\CommandProcessorInterface;
 
 /**
- * Configures a command processor that apply the specified
- * prefix string to a series of Redis commands considered
- * prefixable.
+ * Configures a command processor that apply the specified prefix string to a
+ * series of Redis commands considered prefixable.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

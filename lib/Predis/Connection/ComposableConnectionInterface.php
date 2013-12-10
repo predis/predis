@@ -14,28 +14,27 @@ namespace Predis\Connection;
 use Predis\Protocol\ProtocolInterface;
 
 /**
- * Defines a connection object used to communicate with a single Redis server
- * that leverages an external protocol processor to handle pluggable protocol
- * handlers.
+ * Defines a connection to communicate with a single Redis server that leverages
+ * an external protocol processor to handle pluggable protocol handlers.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ComposableConnectionInterface extends SingleConnectionInterface
 {
     /**
-     * Gets the protocol processor used by the connection.
+     * Returns the protocol processor used by the connection.
      */
     public function getProtocol();
 
     /**
-     * Writes a buffer that contains a serialized Redis command.
+     * Writes the buffer containing a serialized command over the connection.
      *
      * @param string $buffer Serialized Redis command.
      */
     public function writeBytes($buffer);
 
     /**
-     * Reads a specified number of bytes from the connection.
+     * Reads the given number of bytes from the connection.
      *
      * @param string
      */

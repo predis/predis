@@ -15,8 +15,8 @@ use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
 
 /**
- * Command processor that is used to prefix the keys contained in the arguments
- * of a Redis command.
+ * Command processor used to prefix the keys contained in the arguments of a
+ * Redis command.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

@@ -16,7 +16,7 @@ use ReflectionClass;
 use Predis\ClientException;
 
 /**
- * Base class that implements common functionalities of server profiles.
+ * Factory class for creating profile instances from strings.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -72,7 +72,9 @@ final class Factory
         $reflection = new ReflectionClass($profileClass);
 
         if (!$reflection->isSubclassOf('Predis\Profile\ProfileInterface')) {
-            throw new InvalidArgumentException("Cannot register '$profileClass' as it is not a valid profile class");
+            throw new InvalidArgumentException(
+                "Cannot register '$profileClass' as it is not a valid profile class"
+            );
         }
 
         self::$profiles[$alias] = $profileClass;

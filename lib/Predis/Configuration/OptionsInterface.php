@@ -19,7 +19,7 @@ namespace Predis\Configuration;
 interface OptionsInterface
 {
     /**
-     * Returns the default value for the specified option.
+     * Returns the default value for the given option.
      *
      * @param string $option Name of the option.
      * @return mixed
@@ -27,8 +27,7 @@ interface OptionsInterface
     public function getDefault($option);
 
     /**
-     * Checks if the specified option has been passed by
-     * the user at construction time.
+     * Checks if the given option has been set by the user upon initialization.
      *
      * @param string $option Name of the option.
      * @return bool
@@ -36,8 +35,7 @@ interface OptionsInterface
     public function defined($option);
 
     /**
-     * Checks if the specified option has been set and
-     * does not evaluate to NULL.
+     * Checks if the given option has been set and does not evaluate to NULL.
      *
      * @param string $option Name of the option.
      * @return bool
@@ -45,7 +43,7 @@ interface OptionsInterface
     public function __isset($option);
 
     /**
-     * Returns the value of the specified option.
+     * Returns the value of the given option.
      *
      * @param string $option Name of the option.
      * @return mixed

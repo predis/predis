@@ -18,9 +18,9 @@ use Predis\ClientInterface;
  * Session handler class that relies on Predis\Client to store PHP's sessions
  * data into one or multiple Redis servers.
  *
- * This class is mostly intended for PHP 5.4 but it can be used under PHP 5.3 provided
- * that a polyfill for `SessionHandlerInterface` is defined by either you or an external
- * package such as `symfony/http-foundation`.
+ * This class is mostly intended for PHP 5.4 but it can be used under PHP 5.3
+ * provided that a polyfill for `SessionHandlerInterface` is defined by either
+ * you or an external package such as `symfony/http-foundation`.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -36,11 +36,16 @@ class Handler implements SessionHandlerInterface
     public function __construct(ClientInterface $client, array $options = array())
     {
         $this->client = $client;
-        $this->ttl = (int) (isset($options['gc_maxlifetime']) ? $options['gc_maxlifetime'] : ini_get('session.gc_maxlifetime'));
+
+        if (isset($options['gc_maxlifetime'])) {
+            $this->ttl = (int) $options['gc_maxlifetime'];
+        } else {
+            $this->ttl = ini_get('session.gc_maxlifetime');
+        }
     }
 
     /**
-     * Registers the handler instance as the current session handler.
+     * Registers this instance as the current session handler.
      */
     public function register()
     {

@@ -51,7 +51,9 @@ class ListKey implements Iterator
         $this->requiredCommand($client, 'LRANGE');
 
         if ((false === $count = filter_var($count, FILTER_VALIDATE_INT)) || $count < 0) {
-            throw new InvalidArgumentException('The $count argument must be a positive integer.');
+            throw new InvalidArgumentException(
+                'The $count argument must be a positive integer.'
+            );
         }
 
         $this->client = $client;
@@ -62,9 +64,8 @@ class ListKey implements Iterator
     }
 
     /**
-     * Ensures that the client instance supports the specified Redis
-     * command required to fetch elements from the server to perform
-     * the iteration.
+     * Ensures that the client instance supports the specified Redis command
+     * required to fetch elements from the server to perform the iteration.
      *
      * @param ClientInterface Client connected to Redis.
      * @param string $commandID Command ID.
@@ -72,7 +73,9 @@ class ListKey implements Iterator
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
         if (!$client->getProfile()->supportsCommand($commandID)) {
-            throw new NotSupportedException("The specified server profile does not support the `$commandID` command.");
+            throw new NotSupportedException(
+                "The specified server profile does not support the `$commandID` command."
+            );
         }
     }
 
@@ -89,8 +92,8 @@ class ListKey implements Iterator
     }
 
     /**
-     * Fetches a new set of elements from the remote collection,
-     * effectively advancing the iteration process.
+     * Fetches a new set of elements from the remote collection, effectively
+     * advancing the iteration process.
      *
      * @return array
      */
@@ -100,8 +103,8 @@ class ListKey implements Iterator
     }
 
     /**
-     * Populates the local buffer of elements fetched from the
-     * server during the iteration.
+     * Populates the local buffer of elements fetched from the server during the
+     * iteration.
      */
     protected function fetch()
     {

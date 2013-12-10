@@ -14,8 +14,8 @@ namespace Predis;
 use Predis\Command\CommandInterface;
 
 /**
- * Defines the interface of a basic client object or abstraction that
- * can send commands to Redis.
+ * Defines the interface of a basic client class or abstraction that can send
+ * commands to Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -24,7 +24,7 @@ interface BasicClientInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command A Redis command.
+     * @param CommandInterface $command Command instance.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);

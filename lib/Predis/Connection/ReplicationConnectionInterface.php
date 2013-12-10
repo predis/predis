@@ -12,35 +12,36 @@
 namespace Predis\Connection;
 
 /**
- * Defines a group of Redis servers in a master/slave replication configuration.
+ * Defines a group of Redis nodes in a master / slave replication setup.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ReplicationConnectionInterface extends AggregatedConnectionInterface
 {
     /**
-     * Switches the internal connection object being used.
+     * Switches the internal connection instance in use.
      *
      * @param string $connection Alias of a connection
      */
     public function switchTo($connection);
 
     /**
-     * Retrieves the connection object currently being used.
+     * Returns the connection instance currently in use by the aggregate
+     * connection.
      *
      * @return SingleConnectionInterface
      */
     public function getCurrent();
 
     /**
-     * Retrieves the connection object to the master Redis server.
+     * Returns the connection instance for the master Redis node.
      *
      * @return SingleConnectionInterface
      */
     public function getMaster();
 
     /**
-     * Retrieves a list of connection objects to slaves Redis servers.
+     * Returns a list of connection instances to slave nodes.
      *
      * @return SingleConnectionInterface
      */

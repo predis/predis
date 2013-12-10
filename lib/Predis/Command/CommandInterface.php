@@ -13,13 +13,14 @@ namespace Predis\Command;
 
 /**
  * Defines an abstraction representing a Redis command.
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface CommandInterface
 {
     /**
-     * Gets the ID of a Redis command.
-     * By convention, command identifiers myst be uppercase.
+     * Returns the ID of the Redis command. By convention, command identifiers
+     * must always be uppercase.
      *
      * @return string
      */

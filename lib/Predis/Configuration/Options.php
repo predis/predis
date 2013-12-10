@@ -12,8 +12,8 @@
 namespace Predis\Configuration;
 
 /**
- * Manages Predis options with filtering, conversion and lazy
- * initialization of values using a mini DI container approach.
+ * Manages Predis options with filtering, conversion and lazy initialization of
+ * values using a mini-DI container approach.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

@@ -14,7 +14,7 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 
 /**
- * Handles parsing and validation of connection parameters.
+ * Connection parameters used to initialize connections to Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

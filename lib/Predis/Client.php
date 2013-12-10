@@ -147,7 +147,9 @@ class Client implements ClientInterface
             $connection = call_user_func_array($callable, func_get_args());
 
             if (!$connection instanceof ConnectionInterface) {
-                throw new UnexpectedValueException('The callable connection initializer returned an invalid type');
+                throw new UnexpectedValueException(
+                    'The callable connection initializer returned an invalid type'
+                );
             }
 
             return $connection;
@@ -367,8 +369,9 @@ class Client implements ClientInterface
                 return $this->$initializer();
 
             case 1:
-                list($arg0) = $argv;
-                return is_array($arg0) ? $this->$initializer($arg0) : $this->$initializer(null, $arg0);
+                return is_array($argv[0])
+                    ? $this->$initializer($argv[0])
+                    : $this->$initializer(null, $argv[0]);
 
             case 2:
                 list($arg0, $arg1) = $argv;

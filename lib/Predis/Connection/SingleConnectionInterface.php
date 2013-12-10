@@ -14,7 +14,7 @@ namespace Predis\Connection;
 use Predis\Command\CommandInterface;
 
 /**
- * Defines a connection object used to communicate with a single Redis server.
+ * Defines a connection used to communicate with a single Redis node.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -28,22 +28,22 @@ interface SingleConnectionInterface extends ConnectionInterface
     public function __toString();
 
     /**
-     * Returns the underlying resource used to communicate with a Redis server.
+     * Returns the underlying resource used to communicate with Redis.
      *
      * @return mixed
      */
     public function getResource();
 
     /**
-     * Gets the parameters used to initialize the connection object.
+     * Returns the parameters used to initialize the connection.
      *
      * @return ConnectionParametersInterface
      */
     public function getParameters();
 
     /**
-     * Pushes the instance of a Redis command to the queue of commands executed
-     * when the actual connection to a server is estabilished.
+     * Pushes the given command into a queue of commands executed when
+     * establishing the actual connection to Redis.
      *
      * @param CommandInterface $command Instance of a Redis command.
      */

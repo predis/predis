@@ -14,7 +14,7 @@ namespace Predis\Transaction;
 use Predis\PredisException;
 
 /**
- * Exception class that identifies MULTI / EXEC transactions aborted by Redis.
+ * Exception class that identifies a MULTI / EXEC transaction aborted by Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

@@ -12,8 +12,8 @@
 namespace Predis\Connection;
 
 /**
- * Defines a cluster of Redis servers formed by aggregating multiple
- * connection objects.
+ * Defines a cluster of Redis servers formed by aggregating multiple connection
+ * instances to single Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

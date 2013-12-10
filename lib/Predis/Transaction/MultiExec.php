@@ -104,7 +104,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Resets the state of a transaction.
+     * Resets the state of the transaction.
      */
     protected function reset()
     {
@@ -113,7 +113,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Initializes a new transaction.
+     * Initializes the transaction context.
      */
     protected function initialize()
     {
@@ -160,7 +160,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Sends a Redis command bypassing the transaction logic.
+     * Executes a Redis command bypassing the transaction logic.
      *
      * @param string $method Command ID.
      * @param array $arguments Arguments for the command.
@@ -181,7 +181,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command A Redis command.
+     * @param CommandInterface $command Command instance.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command)
@@ -203,7 +203,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Executes WATCH on one or more keys.
+     * Executes WATCH against one or more keys.
      *
      * @param string|array $keys One or more keys.
      * @return mixed
@@ -226,7 +226,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Finalizes the transaction on the server by executing MULTI on the server.
+     * Finalizes the transaction by executing MULTI on the server.
      *
      * @return MultiExec
      */
@@ -260,8 +260,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Resets a transaction by UNWATCHing the keys that are being WATCHed and
-     * DISCARDing the pending commands that have been already sent to the server.
+     * Resets the transaction by UNWATCH-ing the keys that are being WATCHed and
+     * DISCARD-ing pending commands that have been already sent to the server.
      *
      * @return MultiExec
      */
@@ -413,15 +413,15 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Helper method that handles protocol errors encountered inside a transaction.
+     * Helper method for protocol errors encountered inside the transaction.
      *
      * @param string $message Error message.
      */
     private function onProtocolError($message)
     {
         // Since a MULTI/EXEC block cannot be initialized when using aggregated
-        // connections, we can safely assume that Predis\Client::getConnection()
-        // will always return an instance of Predis\Connection\SingleConnectionInterface.
+        // connections we can safely assume that Predis\Client::getConnection()
+        // will return a Predis\Connection\SingleConnectionInterface instance.
         CommunicationException::handle(new ProtocolException(
             $this->client->getConnection(), $message
         ));

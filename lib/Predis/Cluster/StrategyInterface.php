@@ -14,8 +14,8 @@ namespace Predis\Cluster;
 use Predis\Command\CommandInterface;
 
 /**
- * Interface for classes defining the strategy used to calculate an hash
- * out of keys extracted from supported commands.
+ * Interface for classes defining the strategy used to calculate an hash out of
+ * keys extracted from supported commands.
  *
  * This is mostly useful to support clustering via client-side sharding.
  *
@@ -24,10 +24,10 @@ use Predis\Command\CommandInterface;
 interface StrategyInterface
 {
     /**
-     * Returns the hash for the given command using the specified algorithm, or null
-     * if the command cannot be hashed.
+     * Returns the hash for the given command using the specified algorithm, or
+     * null when the command cannot be hashed.
      *
-     * @param CommandInterface $command Command to be hashed.
+     * @param CommandInterface $command Command instance.
      * @return int
      */
     public function getHash(CommandInterface $command);
@@ -35,7 +35,7 @@ interface StrategyInterface
     /**
      * Returns the hash for the given key using the specified algorithm.
      *
-     * @param string $key Key to be hashed.
+     * @param string $key Key string.
      * @return string
      */
     public function getKeyHash($key);

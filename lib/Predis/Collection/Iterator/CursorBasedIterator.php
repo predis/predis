@@ -16,13 +16,13 @@ use Predis\ClientInterface;
 use Predis\NotSupportedException;
 
 /**
- * Provides the base implementation for a fully-rewindable PHP iterator
- * that can incrementally iterate over cursor-based collections stored
- * on Redis using commands in the `SCAN` family.
+ * Provides the base implementation for a fully-rewindable PHP iterator that can
+ * incrementally iterate over cursor-based collections stored on Redis using the
+ * commands in the `SCAN` family.
  *
- * Given their incremental nature with multiple fetches, these kind of
- * iterators offer limited guarantees about the returned elements because
- * the collection can change several times during the iteration process.
+ * Given their incremental nature with multiple fetches, these kind of iterators
+ * offer limited guarantees about the returned elements because the collection
+ * can change several times during the iteration process.
  *
  * @see http://redis.io/commands/scan
  *
@@ -44,7 +44,7 @@ abstract class CursorBasedIterator implements Iterator
     /**
      * @param ClientInterface $client Client connected to Redis.
      * @param string $match Pattern to match during the server-side iteration.
-     * @param int $count Hints used by Redis to compute the number of results per iteration.
+     * @param int $count Hint used by Redis to compute the number of results per iteration.
      */
     public function __construct(ClientInterface $client, $match = null, $count = null)
     {
@@ -56,9 +56,8 @@ abstract class CursorBasedIterator implements Iterator
     }
 
     /**
-     * Ensures that the client instance supports the specified Redis
-     * command required to fetch elements from the server to perform
-     * the iteration.
+     * Ensures that the client supports the specified Redis command required to
+     * fetch elements from the server to perform the iteration.
      *
      * @param ClientInterface Client connected to Redis.
      * @param string $commandID Command ID.
@@ -66,7 +65,9 @@ abstract class CursorBasedIterator implements Iterator
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
         if (!$client->getProfile()->supportsCommand($commandID)) {
-            throw new NotSupportedException("The specified server profile does not support the `$commandID` command.");
+            throw new NotSupportedException(
+                "The specified server profile does not support the `$commandID` command."
+            );
         }
     }
 
@@ -104,16 +105,16 @@ abstract class CursorBasedIterator implements Iterator
     }
 
     /**
-     * Fetches a new set of elements from the remote collection,
-     * effectively advancing the iteration process.
+     * Fetches a new set of elements from the remote collection, effectively
+     * advancing the iteration process.
      *
      * @return array
      */
     protected abstract function executeCommand();
 
     /**
-     * Populates the local buffer of elements fetched from the
-     * server during the iteration.
+     * Populates the local buffer of elements fetched from the server during
+     * the iteration.
      */
     protected function fetch()
     {

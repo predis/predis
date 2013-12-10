@@ -16,7 +16,7 @@ use Predis\ClientInterface;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
- * Publish / Subscribe context.
+ * PUB / SUB context.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -42,7 +42,7 @@ class DispatcherLoop
      *
      * @param mixed $callable A callback.
      */
-    protected function validateCallback($callable)
+    protected function assertCallback($callable)
     {
         if (!is_callable($callable)) {
             throw new InvalidArgumentException("A valid callable object must be provided");
@@ -50,7 +50,7 @@ class DispatcherLoop
     }
 
     /**
-     * Returns the underlying Publish / Subscribe context.
+     * Returns the underlying PUB / SUB context.
      *
      * @return Consumer
      */
@@ -67,7 +67,7 @@ class DispatcherLoop
     public function subscriptionCallback($callable = null)
     {
         if (isset($callable)) {
-            $this->validateCallback($callable);
+            $this->assertCallback($callable);
         }
 
         $this->subscriptionCallback = $callable;
@@ -82,7 +82,7 @@ class DispatcherLoop
     public function defaultCallback($callable = null)
     {
         if (isset($callable)) {
-            $this->validateCallback($callable);
+            $this->assertCallback($callable);
         }
 
         $this->subscriptionCallback = $callable;
@@ -98,7 +98,7 @@ class DispatcherLoop
     {
         $callbackName = $this->getPrefixKeys() . $channel;
 
-        $this->validateCallback($callback);
+        $this->assertCallback($callback);
         $this->callbacks[$callbackName] = $callback;
         $this->pubsub->subscribe($channel);
     }
@@ -154,7 +154,7 @@ class DispatcherLoop
     }
 
     /**
-     * Return the prefix of the keys
+     * Return the prefix used for keys
      *
      * @return string
      */

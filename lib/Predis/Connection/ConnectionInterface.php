@@ -22,41 +22,42 @@ use Predis\Command\CommandInterface;
 interface ConnectionInterface
 {
     /**
-     * Opens the connection.
+     * Opens the connection to Redis.
      */
     public function connect();
 
     /**
-     * Closes the connection.
+     * Closes the connection to Redis.
      */
     public function disconnect();
 
     /**
-     * Returns if the connection is open.
+     * Checks if the connection to Redis is considered open.
      *
-     * @return Boolean
+     * @return bool
      */
     public function isConnected();
 
     /**
-     * Writes the given command over the connection.
+     * Writes the request for the given command over the connection.
      *
-     * @param CommandInterface $command Instance of a Redis command.
+     * @param CommandInterface $command Command instance.
      */
     public function writeRequest(CommandInterface $command);
 
     /**
-     * Reads the response to a command from the connection.
+     * Reads the response to the given command from the connection.
      *
-     * @param CommandInterface $command Instance of a Redis command.
+     * @param CommandInterface $command Command instance.
      * @return mixed
      */
     public function readResponse(CommandInterface $command);
 
     /**
-     * Writes a command over the connection and reads back the response.
+     * Writes a request for the given command over the connection and reads back
+     * the response returned by Redis.
      *
-     * @param CommandInterface $command Instance of a Redis command.
+     * @param CommandInterface $command Command instance.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);

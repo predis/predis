@@ -12,8 +12,8 @@
 namespace Predis;
 
 /**
- * Defines the interface of a basic client object or abstraction that
- * can send commands to Redis.
+ * Defines the interface of a basic client object or abstraction that can send
+ * commands to Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

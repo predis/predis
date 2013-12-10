@@ -19,7 +19,8 @@ use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
- * Base class with the common logic used by connection classes to communicate with Redis.
+ * Base class with the common logic used by connection classes to communicate
+ * with Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -32,7 +33,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
     protected $initCmds = array();
 
     /**
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
      */
     public function __construct(ConnectionParametersInterface $parameters)
     {
@@ -51,7 +52,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * Checks some of the parameters used to initialize the connection.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
      */
     protected function assertParameters(ConnectionParametersInterface $parameters)
     {

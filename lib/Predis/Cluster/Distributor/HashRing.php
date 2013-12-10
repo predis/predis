@@ -35,7 +35,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
 
     /**
      * @param int $replicas Number of replicas in the ring.
-     * @param mixed $nodeHashCallback Callback returning the string used to calculate the hash of a node.
+     * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
      */
     public function __construct($replicas = self::DEFAULT_REPLICAS, $nodeHashCallback = null)
     {

@@ -17,7 +17,7 @@ use Predis\ClientException;
 use Predis\Command\Processor\CommandProcessorInterface;
 
 /**
- * Base class that implements common functionalities of server profiles.
+ * Base class implementing common functionalities for Redis server profiles.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -65,8 +65,8 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
-     * Returns the FQN of the class that represent the specified command ID
-     * registered in the current server profile.
+     * Returns the fully-qualified name of a class representing the specified
+     * command ID registered in the current server profile.
      *
      * @param string $commandID Command ID.
      * @return string
@@ -101,10 +101,10 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
-     * Defines a new commands in the server profile.
+     * Defines a new command in the server profile.
      *
      * @param string $commandID Command ID.
-     * @param string $commandClass FQN of a class implementing Predis\Command\CommandInterface.
+     * @param string $commandClass Fully-qualified name of a Predis\Command\CommandInterface.
      */
     public function defineCommand($commandID, $commandClass)
     {

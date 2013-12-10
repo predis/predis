@@ -16,8 +16,8 @@ use Predis\Connection\MasterSlaveReplication;
 use Predis\Connection\ReplicationConnectionInterface;
 
 /**
- * Configures an aggregate connection used for master/slave
- * replication between multiple nodes.
+ * Configures an aggregate connection used for master/slave replication between
+ * multiple Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -26,9 +26,9 @@ class ReplicationOption implements OptionInterface
     /**
      * {@inheritdoc}
      *
-     * @todo There's more code than needed due to a bug in filter_var()
-     *       as discussed here https://bugs.php.net/bug.php?id=49510
-     *       and a different behaviour with NULL values on PHP 5.3.
+     * @todo There's more code than needed due to a bug in filter_var() as
+     *       discussed here https://bugs.php.net/bug.php?id=49510 and  different
+     *       behaviours when encountering NULL values on PHP 5.3.
      */
     public function filter(OptionsInterface $options, $value)
     {
@@ -40,11 +40,16 @@ class ReplicationOption implements OptionInterface
             return $value ? $this->getDefault($options) : null;
         }
 
-        if (!is_object($value) && null !== $asbool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+        if (
+            !is_object($value) &&
+            null !== $asbool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+        ) {
             return $asbool ? $this->getDefault($options) : null;
         }
 
-        throw new InvalidArgumentException('Instance of Predis\Connection\ReplicationConnectionInterface expected');
+        throw new InvalidArgumentException(
+            'Instance of Predis\Connection\ReplicationConnectionInterface expected'
+        );
     }
 
     /**

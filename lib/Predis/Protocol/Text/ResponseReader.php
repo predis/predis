@@ -97,10 +97,10 @@ class ResponseReader implements ResponseReaderInterface
     }
 
     /**
-     * Handles protocol errors generated while reading responses from the
+     * Handles protocol errors generated while reading responses from a
      * connection.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis that generated the error.
+     * @param ComposableConnectionInterface $connection Redis connection that generated the error.
      * @param string $message Error message.
      */
     protected function onProtocolError(ComposableConnectionInterface $connection, $message)

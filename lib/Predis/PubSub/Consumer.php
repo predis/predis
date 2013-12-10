@@ -52,8 +52,8 @@ class Consumer extends AbstractConsumer
     }
 
     /**
-     * Checks if the passed client instance satisfies the required conditions
-     * needed to initialize a PUB/SUB consumer.
+     * Checks if the client instance satisfies the required conditions needed to
+     * initialize a PUB/SUB consumer.
      *
      * @param ClientInterface $client Client instance used by the consumer.
      */

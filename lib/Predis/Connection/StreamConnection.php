@@ -32,9 +32,9 @@ use Predis\Response;
 class StreamConnection extends AbstractConnection
 {
     /**
-     * Disconnects from the server and destroys the underlying resource when
-     * PHP's garbage collector kicks in only if the connection has not been
-     * marked as persistent.
+     * Disconnects from the server and destroys the underlying resource when the
+     * garbage collector kicks in only if the connection has not been marked as
+     * persistent.
      */
     public function __destruct()
     {
@@ -59,7 +59,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a TCP stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
     private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
@@ -99,7 +99,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a UNIX stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
     private function unixStreamInitializer(ConnectionParametersInterface $parameters)
@@ -146,10 +146,10 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
-     * Performs a write operation on the stream of the buffer containing a
+     * Performs a write operation over the stream of the buffer containing a
      * command serialized with the Redis wire protocol.
      *
-     * @param string $buffer Redis wire protocol representation of a command.
+     * @param string $buffer Representation of a command in the Redis wire protocol.
      */
     protected function writeBytes($buffer)
     {

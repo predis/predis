@@ -17,8 +17,8 @@ use Predis\Command\CommandInterface;
 use Predis\Replication\ReplicationStrategy;
 
 /**
- * Aggregated connection class used by to handle replication with a
- * group of servers in a master/slave configuration.
+ * Aggregate connection handling replication of Redis nodes configured in a
+ * single master / multiple slaves setup.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -44,7 +44,9 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     protected function check()
     {
         if (!isset($this->master) || !$this->slaves) {
-            throw new RuntimeException('Replication needs a master and at least one slave.');
+            throw new RuntimeException(
+                'Replication needs a master and at least one slave.'
+            );
         }
     }
 
@@ -101,7 +103,9 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     {
         if ($this->current === null) {
             $this->check();
-            $this->current = $this->strategy->isReadOperation($command) ? $this->pickSlave() : $this->master;
+            $this->current = $this->strategy->isReadOperation($command)
+                ? $this->pickSlave()
+                : $this->master;
 
             return $this->current;
         }

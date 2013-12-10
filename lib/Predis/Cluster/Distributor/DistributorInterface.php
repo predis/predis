@@ -14,7 +14,7 @@ namespace Predis\Cluster\Distributor;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 
 /**
- * Distributors implement the logic to automatically distribute keys among
+ * A distributor implements the logic to automatically distribute keys among
  * several nodes for client-side sharding.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -37,7 +37,7 @@ interface DistributorInterface
     public function remove($node);
 
     /**
-     * Gets a node from the distributor using the computed hash of a key.
+     * Returns a node from the distributor using the computed hash of a key.
      *
      * @return mixed
      */

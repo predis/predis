@@ -12,8 +12,7 @@
 namespace Predis\Connection;
 
 /**
- * Interface that must be implemented by classes that provide their own mechanism
- * to create and initialize new instances of Predis\Connection\SingleConnectionInterface.
+ * Interface for classes providing a factory of connections to Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -22,22 +21,22 @@ interface ConnectionFactoryInterface
     /**
      * Defines or overrides the connection class identified by a scheme prefix.
      *
-     * @param string $scheme URI scheme identifying the connection class.
-     * @param mixed $initializer FQN of a connection class or a callable object for lazy initialization.
+     * @param string $scheme Target connection scheme.
+     * @param mixed $initializer Fully-qualified name of a class or a callable for lazy initialization.
      */
     public function define($scheme, $initializer);
 
     /**
      * Undefines the connection identified by a scheme prefix.
      *
-     * @param string $scheme Parameters for the connection.
+     * @param string $scheme Target connection scheme.
      */
     public function undefine($scheme);
 
     /**
      * Creates a new connection object.
      *
-     * @param mixed $parameters Parameters for the connection.
+     * @param mixed $parameters Initialization parameters for the connection.
      * @return SingleConnectionInterface
      */
     public function create($parameters);
@@ -45,8 +44,8 @@ interface ConnectionFactoryInterface
     /**
      * Aggregates single connections into an aggregate connection instance.
      *
-     * @param AggregatedConnectionInterface $cluster Instance of an aggregated connection class.
-     * @param array $parameters List of parameters for each connection object.
+     * @param AggregatedConnectionInterface $aggregate Aggregate connection instance.
+     * @param array $parameters List of parameters for each connection.
      */
-    public function aggregate(AggregatedConnectionInterface $cluster, array $parameters);
+    public function aggregate(AggregatedConnectionInterface $aggregate, array $parameters);
 }

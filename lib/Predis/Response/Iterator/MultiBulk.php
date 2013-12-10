@@ -35,9 +35,9 @@ class MultiBulk extends MultiBulkIterator
     }
 
     /**
-     * Handles the synchronization of the client with the Redis protocol
-     * then PHP's garbage collector kicks in (e.g. then the iterator goes
-     * out of the scope of a foreach).
+     * Handles the synchronization of the client with the Redis protocol when
+     * the garbage collector kicks in (e.g. when the iterator goes out of the
+     * scope of a foreach or it is unset).
      */
     public function __destruct()
     {

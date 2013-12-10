@@ -16,8 +16,8 @@ use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
 
 /**
- * Default class used by Predis for client-side sharding to calculate
- * hashes out of keys of supported commands.
+ * Default class used by Predis for client-side sharding to calculate hashes out
+ * of keys for supported commands.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -173,21 +173,21 @@ class PredisStrategy implements StrategyInterface
     /**
      * Sets an handler for the specified command ID.
      *
-     * The signature of the callback must have a single parameter
-     * of type Predis\Command\CommandInterface.
+     * The signature of the callback must have a single parameter of type
+     * Predis\Command\CommandInterface.
      *
-     * When the callback argument is omitted or NULL, the previously
-     * associated handler for the specified command ID is removed.
+     * When the callback argument is omitted or NULL, the previously associated
+     * handler for the specified command ID is removed.
      *
-     * @param string $commandId The ID of the command to be handled.
-     * @param mixed $callback A valid callable object or NULL.
+     * @param string $commandID Command ID.
+     * @param mixed $callback A valid callable object, or NULL to unset the handler.
      */
-    public function setCommandHandler($commandId, $callback = null)
+    public function setCommandHandler($commandID, $callback = null)
     {
-        $commandId = strtoupper($commandId);
+        $commandID = strtoupper($commandID);
 
         if (!isset($callback)) {
-            unset($this->commands[$commandId]);
+            unset($this->commands[$commandID]);
             return;
         }
 
@@ -195,7 +195,7 @@ class PredisStrategy implements StrategyInterface
             throw new \InvalidArgumentException("Callback must be a valid callable object or NULL");
         }
 
-        $this->commands[$commandId] = $callback;
+        $this->commands[$commandID] = $callback;
     }
 
     /**
@@ -210,8 +210,8 @@ class PredisStrategy implements StrategyInterface
     }
 
     /**
-     * Extracts the key from a command with multiple keys only when all keys
-     * in the arguments array produce the same hash.
+     * Extracts the key from a command with multiple keys only when all keys in
+     * the arguments array produce the same hash.
      *
      * @param CommandInterface $command Command instance.
      * @return string
@@ -226,8 +226,8 @@ class PredisStrategy implements StrategyInterface
     }
 
     /**
-     * Extracts the key from a command with multiple keys only when all keys
-     * in the arguments array produce the same hash.
+     * Extracts the key from a command with multiple keys only when all keys in
+     * the arguments array produce the same hash.
      *
      * @param CommandInterface $command Command instance.
      * @return string

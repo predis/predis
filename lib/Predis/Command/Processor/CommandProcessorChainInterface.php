@@ -20,16 +20,16 @@ namespace Predis\Command\Processor;
 interface CommandProcessorChainInterface extends CommandProcessorInterface, \IteratorAggregate, \Countable
 {
     /**
-     * Adds a command processor.
+     * Adds the given command processor.
      *
-     * @param CommandProcessorInterface $processor A command processor.
+     * @param CommandProcessorInterface $processor Command processor.
      */
     public function add(CommandProcessorInterface $processor);
 
     /**
-     * Removes a command processor from the chain.
+     * Removes the given command processor from the chain if previously added.
      *
-     * @param CommandProcessorInterface $processor A command processor.
+     * @param CommandProcessorInterface $processor Command processor.
      */
     public function remove(CommandProcessorInterface $processor);
 

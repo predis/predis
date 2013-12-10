@@ -14,16 +14,16 @@ namespace Predis\Command\Processor;
 use Predis\Command\CommandInterface;
 
 /**
- * A command processor processes commands before they are sent to Redis.
+ * Command processor process Redis commands before they are sent to Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface CommandProcessorInterface
 {
     /**
-     * Processes a Redis command.
+     * Processes the given Redis command.
      *
-     * @param CommandInterface $command Redis command.
+     * @param CommandInterface $command Command instance.
      */
     public function process(CommandInterface $command);
 }

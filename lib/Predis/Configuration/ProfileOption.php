@@ -15,16 +15,15 @@ use InvalidArgumentException;
 use Predis\Profile;
 
 /**
- * Configures the server profile to be used by the client
- * to create command instances depending on the specified
- * version of the Redis server.
+ * Configures the server profile to be used by the client to create command
+ * instances depending on the specified version of the Redis server.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ProfileOption implements OptionInterface
 {
     /**
-     * Sets the needed commands processors that should be applied to the profile.
+     * Sets the commands processors that need to be applied to the profile.
      *
      * @param OptionsInterface $options Client options.
      * @param Profile\ProfileInterface $profile Server profile.

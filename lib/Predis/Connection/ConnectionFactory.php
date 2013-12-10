@@ -16,8 +16,7 @@ use ReflectionClass;
 use Predis\Command;
 
 /**
- * Provides a default factory for Redis connections that maps URI schemes
- * to connection classes implementing Predis\Connection\SingleConnectionInterface.
+ * Standard connection factory for creating connections to Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -115,9 +114,9 @@ class ConnectionFactory implements ConnectionFactoryInterface
     }
 
     /**
-     * Prepares a connection object after its initialization.
+     * Prepares a connection instance after its initialization.
      *
-     * @param SingleConnectionInterface $connection Instance of a connection object.
+     * @param SingleConnectionInterface $connection Connection instance.
      */
     protected function prepareConnection(SingleConnectionInterface $connection)
     {

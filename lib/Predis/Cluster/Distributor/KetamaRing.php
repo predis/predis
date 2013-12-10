@@ -24,7 +24,7 @@ class KetamaRing extends HashRing
     const DEFAULT_REPLICAS = 160;
 
     /**
-     * @param mixed $nodeHashCallback Callback returning the string used to calculate the hash of a node.
+     * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
      */
     public function __construct($nodeHashCallback = null)
     {

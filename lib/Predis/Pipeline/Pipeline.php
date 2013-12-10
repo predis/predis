@@ -64,7 +64,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param CommandInterface $command Command to queue in the buffer.
+     * @param CommandInterface $command Command to be queued in the buffer.
      */
     protected function recordCommand(CommandInterface $command)
     {
@@ -74,7 +74,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param CommandInterface $command Command to queue in the buffer.
+     * @param CommandInterface $command Command to be queued in the buffer.
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -82,10 +82,10 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Throws and exception on -ERR responses returned by Redis.
+     * Throws an exception on -ERR responses returned by Redis.
      *
-     * @param ConnectionInterface $connection The connection that returned the error.
-     * @param Response\ErrorInterface $response The error response instance.
+     * @param ConnectionInterface $connection Redis connection that returned the error.
+     * @param Response\ErrorInterface $response Instance of the error response.
      */
     protected function exception(ConnectionInterface $connection, Response\ErrorInterface $response)
     {
@@ -145,7 +145,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     }
 
     /**
-     * Flushes the buffer that holds the queued commands.
+     * Flushes the buffer holding all of the commands queued so far.
      *
      * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
      * @return Pipeline

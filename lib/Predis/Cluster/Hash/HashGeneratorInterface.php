@@ -12,17 +12,17 @@
 namespace Predis\Cluster\Hash;
 
 /**
- * A generator of node keys implements the logic used to calculate the hash of
- * a key to distribute the respective operations among nodes.
+ * An hash generator implements the logic used to calculate the hash of a key to
+ * distribute operations among Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface HashGeneratorInterface
 {
     /**
-     * Generates an hash that is used by the distributor algorithm
+     * Generates an hash from a string to be used for distribution.
      *
-     * @param string $value Value used to generate the hash.
+     * @param string $value String value.
      * @return int
      */
     public function hash($value);

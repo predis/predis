@@ -14,7 +14,7 @@ namespace Predis\PubSub;
 use Iterator;
 
 /**
- * Base implementation of a PUB/SUB consumer abstraction.
+ * Base implementation of a PUB/SUB consumer abstraction based on PHP iterators.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -35,7 +35,7 @@ abstract class AbstractConsumer implements Iterator
     private $statusFlags = self::STATUS_VALID;
 
     /**
-     * Automatically stops the consumer when PHP's garbage collector kicks in.
+     * Automatically stops the consumer when the garbage collector kicks in.
      */
     public function __destruct()
     {
@@ -96,12 +96,11 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Closes the context by unsubscribing from all the subscribed channels.
-     * Optionally, the context can be forcefully closed by dropping the
-     * underlying connection.
+     * Closes the context by unsubscribing from all the subscribed channels. The
+     * context can be forcefully closed by dropping the underlying connection.
      *
-     * @param bool $drop Forcefully close the context by closing the connection.
-     * @return bool Returns false if there are no pending messages.
+     * @param bool $drop Indicates if the context should be closed by dropping the connection.
+     * @return bool Returns false when there are no pending messages.
      */
     public function stop($drop = false)
     {
@@ -125,15 +124,15 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Closes the underlying connection on forced disconnection.
+     * Closes the underlying connection when forcing a disconnection.
      */
     protected abstract function disconnect();
 
     /**
      * Writes a Redis command on the underlying connection.
      *
-     * @param string $method ID of the command.
-     * @param array $arguments List of arguments.
+     * @param string $method Command ID.
+     * @param array $arguments Arguments for the command.
      */
     protected abstract function writeRequest($method, $arguments);
 

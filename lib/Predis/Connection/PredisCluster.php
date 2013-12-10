@@ -32,7 +32,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     private $distributor;
 
     /**
-     * @param Distributor\DistributorInterface $distributor Distribution strategy used by cluster.
+     * @param Distributor\DistributorInterface $distributor Distributor instance.
      */
     public function __construct(Distributor\DistributorInterface $distributor = null)
     {
@@ -112,12 +112,12 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     /**
      * Removes a connection instance using its alias or index.
      *
-     * @param string $connectionId Alias or index of a connection.
-     * @return Boolean Returns true if the connection was in the pool.
+     * @param string $connectionID Alias or index of a connection.
+     * @return bool Returns true if the connection was in the pool.
      */
-    public function removeById($connectionId)
+    public function removeById($connectionID)
     {
-        if ($connection = $this->getConnectionById($connectionId)) {
+        if ($connection = $this->getConnectionById($connectionID)) {
             return $this->remove($connection);
         }
 
@@ -145,15 +145,15 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($connectionId)
+    public function getConnectionById($connectionID)
     {
-        return isset($this->pool[$connectionId]) ? $this->pool[$connectionId] : null;
+        return isset($this->pool[$connectionID]) ? $this->pool[$connectionID] : null;
     }
 
     /**
      * Retrieves a connection instance from the cluster using a key.
      *
-     * @param string $key Key of a Redis value.
+     * @param string $key Key string.
      * @return SingleConnectionInterface
      */
     public function getConnectionByKey($key)
@@ -165,8 +165,8 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     }
 
     /**
-     * Returns the underlying command hash strategy used to hash
-     * commands by their keys.
+     * Returns the underlying command hash strategy used to hash commands by
+     * using keys found in their arguments.
      *
      * @return Cluster\StrategyInterface
      */

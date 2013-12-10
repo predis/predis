@@ -16,8 +16,8 @@ use Predis\Connection\ConnectionFactory;
 use Predis\Connection\ConnectionFactoryInterface;
 
 /**
- * Configures a connection factory used by the client to
- * create new connection instances to single Redis nodes.
+ * Configures a connection factory used by the client to create new connection
+ * instances for single Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

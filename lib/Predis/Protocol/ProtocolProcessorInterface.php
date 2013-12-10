@@ -23,17 +23,17 @@ use Predis\Connection\ComposableConnectionInterface;
 interface ProtocolProcessorInterface
 {
     /**
-     * Writes a command to the specified connection.
+     * Writes a request over a connection to Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param CommandInterface $command Redis command.
+     * @param ComposableConnectionInterface $connection Redis connection.
+     * @param CommandInterface $command Command instance.
      */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command);
 
     /**
-     * Reads a response from the specified connection.
+     * Reads a response from a connection to Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
+     * @param ComposableConnectionInterface $connection Redis connection.
      * @return mixed
      */
     public function read(ComposableConnectionInterface $connection);

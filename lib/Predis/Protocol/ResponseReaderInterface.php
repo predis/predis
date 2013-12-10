@@ -22,9 +22,9 @@ use Predis\Connection\ComposableConnectionInterface;
 interface ResponseReaderInterface
 {
     /**
-     * Reads a response from the connection.
+     * Reads a response from a connection to Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
+     * @param ComposableConnectionInterface $connection Redis connection.
      * @return mixed
      */
     public function read(ComposableConnectionInterface $connection);

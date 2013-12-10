@@ -12,7 +12,7 @@
 namespace Predis\Cluster\Hash;
 
 /**
- * This class implements the CRC-CCITT-16 algorithm used by redis-cluster.
+ * Hash generator implementing the CRC-CCITT-16 algorithm used by redis-cluster.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

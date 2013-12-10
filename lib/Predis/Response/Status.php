@@ -52,10 +52,10 @@ class Status implements ResponseInterface
     }
 
     /**
-     * Returns a new instance of a status response object.
+     * Returns an instance of a status response object.
      *
-     * Common status responses such as OK or QUEUED are cached to lower the
-     * memory usage especially when using pipelines.
+     * Common status responses such as OK or QUEUED are cached in order to lower
+     * the global memory usage especially when using pipelines.
      *
      * @return string
      */
