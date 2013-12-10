@@ -29,7 +29,7 @@ class BulkResponseTest extends PredisTestCase
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
-                   ->method('readBytes')
+                   ->method('readBuffer')
                    ->with($this->equalTo(2))
                    ->will($this->returnValue("\r\n"));
 
@@ -50,7 +50,7 @@ class BulkResponseTest extends PredisTestCase
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
-                   ->method('readBytes')
+                   ->method('readBuffer')
                    ->with($this->equalTo($bulkLengh + 2))
                    ->will($this->returnValue("$bulk\r\n"));
 
@@ -67,7 +67,7 @@ class BulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertNull($handler->handle($connection, '-1'));
     }
@@ -84,7 +84,7 @@ class BulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

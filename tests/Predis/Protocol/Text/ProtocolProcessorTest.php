@@ -40,7 +40,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->once())
-                   ->method('writeBytes')
+                   ->method('writeBuffer')
                    ->with($this->equalTo($serialized));
 
         $protocol->write($connection, $command);

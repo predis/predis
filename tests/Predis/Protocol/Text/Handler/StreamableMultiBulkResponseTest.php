@@ -28,7 +28,7 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $handler->handle($connection, '1'));
     }
@@ -45,7 +45,7 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

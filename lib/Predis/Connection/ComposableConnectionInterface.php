@@ -27,18 +27,19 @@ interface ComposableConnectionInterface extends SingleConnectionInterface
     public function getProtocol();
 
     /**
-     * Writes the buffer containing a serialized command over the connection.
+     * Writes the buffer containing over the connection.
      *
-     * @param string $buffer Serialized Redis command.
+     * @param string $buffer String buffer to be sent over the connection.
      */
-    public function writeBytes($buffer);
+    public function writeBuffer($buffer);
 
     /**
      * Reads the given number of bytes from the connection.
      *
-     * @param string
+     * @param int $length Number of bytes to read from the connection.
+     * @return string
      */
-    public function readBytes($length);
+    public function readBuffer($length);
 
     /**
      * Reads a line from the connection.

@@ -151,7 +151,7 @@ class StreamConnection extends AbstractConnection
      *
      * @param string $buffer Representation of a command in the Redis wire protocol.
      */
-    protected function writeBytes($buffer)
+    protected function write($buffer)
     {
         $socket = $this->getResource();
 
@@ -257,6 +257,6 @@ class StreamConnection extends AbstractConnection
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
-        $this->writeBytes($buffer);
+        $this->write($buffer);
     }
 }

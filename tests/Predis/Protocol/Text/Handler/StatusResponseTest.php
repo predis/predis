@@ -28,7 +28,7 @@ class StatusResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $response = $handler->handle($connection, 'OK');
 
@@ -46,7 +46,7 @@ class StatusResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $response = $handler->handle($connection, 'QUEUED');
 
@@ -64,7 +64,7 @@ class StatusResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $response = $handler->handle($connection, 'Background saving started');
 

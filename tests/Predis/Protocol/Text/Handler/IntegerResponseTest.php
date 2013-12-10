@@ -28,7 +28,7 @@ class IntegerResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertSame(0, $handler->handle($connection, '0'));
         $this->assertSame(1, $handler->handle($connection, '1'));
@@ -46,7 +46,7 @@ class IntegerResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertNull($handler->handle($connection, 'nil'));
     }
@@ -63,7 +63,7 @@ class IntegerResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

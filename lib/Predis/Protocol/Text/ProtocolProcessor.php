@@ -45,7 +45,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     public function write(ComposableConnectionInterface $connection, CommandInterface $command)
     {
         $request = $this->serializer->serialize($command);
-        $connection->writeBytes($request);
+        $connection->writeBuffer($request);
     }
 
     /**
@@ -66,7 +66,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                 if ($size === -1) {
                     return null;
                 }
-                return substr($connection->readBytes($size + 2), 0, -2);
+                return substr($connection->readBuffer($size + 2), 0, -2);
 
             case '*':    // multi bulk
                 $count = (int) $payload;

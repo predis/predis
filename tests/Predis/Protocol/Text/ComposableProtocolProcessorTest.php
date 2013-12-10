@@ -87,7 +87,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
         $protocol = new ComposableProtocolProcessor($serializer);
 
         $connection->expects($this->once())
-                   ->method('writeBytes')
+                   ->method('writeBuffer')
                    ->with($this->equalTo($serialized));
 
         $serializer->expects($this->once())

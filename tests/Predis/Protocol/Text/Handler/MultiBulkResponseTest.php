@@ -36,7 +36,7 @@ class MultiBulkResponseTest extends PredisTestCase
                    ->will($this->returnValue("$3"));
 
         $connection->expects($this->at(2))
-                   ->method('readBytes')
+                   ->method('readBuffer')
                    ->will($this->returnValue("foo\r\n"));
 
         $connection->expects($this->at(3))
@@ -44,7 +44,7 @@ class MultiBulkResponseTest extends PredisTestCase
                    ->will($this->returnValue("$3"));
 
         $connection->expects($this->at(4))
-                   ->method('readBytes')
+                   ->method('readBuffer')
                    ->will($this->returnValue("bar\r\n"));
 
         $this->assertSame(array('foo', 'bar'), $handler->handle($connection, '2'));
@@ -60,7 +60,7 @@ class MultiBulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertNull($handler->handle($connection, '-1'));
     }
@@ -77,7 +77,7 @@ class MultiBulkResponseTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBytes');
+        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

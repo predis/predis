@@ -38,7 +38,7 @@ class BulkResponse implements ResponseHandlerInterface
         }
 
         if ($length >= 0) {
-            return substr($connection->readBytes($length + 2), 0, -2);
+            return substr($connection->readBuffer($length + 2), 0, -2);
         }
 
         if ($length == -1) {

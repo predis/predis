@@ -48,15 +48,15 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     /**
      * {@inheritdoc}
      */
-    public function writeBytes($buffer)
+    public function writeBuffer($buffer)
     {
-        parent::writeBytes($buffer);
+        $this->write($buffer);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function readBytes($length)
+    public function readBuffer($length)
     {
         if ($length <= 0) {
             throw new \InvalidArgumentException('Length parameter must be greater than 0');

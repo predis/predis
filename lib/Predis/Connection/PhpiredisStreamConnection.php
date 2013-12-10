@@ -165,7 +165,7 @@ class PhpiredisStreamConnection extends StreamConnection
         $arguments = $command->getArguments();
         array_unshift($arguments, $command->getId());
 
-        $this->writeBytes(phpiredis_format_command($arguments));
+        $this->write(phpiredis_format_command($arguments));
     }
 
     /**
