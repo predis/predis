@@ -373,7 +373,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandReturnsParsedReplies()
+    public function testExecuteCommandReturnsParsedResponses()
     {
         $profile = Profile\Factory::getDefault();
 

@@ -20,9 +20,8 @@ use Predis\Protocol\ProtocolException;
  * Handler for the multibulk response type in the standard Redis wire protocol.
  * It returns multibulk responses as iterators that can stream bulk elements.
  *
- * Please note that streamable multibulk replies are not globally supported
- * by the abstractions built-in into Predis such as for transactions or
- * pipelines. Use them with care!
+ * Streamable multibulk responses are not globally supported by the abstractions
+ * built-in into Predis, such as transactions or pipelines. Use them with care!
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>

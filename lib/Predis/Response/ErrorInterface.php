@@ -12,8 +12,8 @@
 namespace Predis\Response;
 
 /**
- * Represents an error returned by Redis (replies identified by "-" in the
- * Redis response protocol) during the execution of an operation on the server.
+ * Represents an error returned by Redis (responses identified by "-" in the
+ * Redis protocol) during the execution of an operation on the server.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

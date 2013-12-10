@@ -60,7 +60,7 @@ class TransactionExecTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testExecutesTransactionAndReturnsArrayOfReplies()
+    public function testExecutesTransactionAndReturnsArrayOfResponses()
     {
         $redis = $this->getClient();
 
@@ -86,7 +86,7 @@ class TransactionExecTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRepliesOfTransactionsAreNotParsed()
+    public function testResponsesOfTransactionsAreNotParsed()
     {
         $redis = $this->getClient();
 

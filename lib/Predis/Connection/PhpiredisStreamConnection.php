@@ -20,11 +20,11 @@ use Predis\Response;
  * streams for network communication and wraps the phpiredis C extension (PHP
  * bindings for hiredis) to parse and serialize the Redis protocol.
  *
- * This class is mainly intended to provide an optional low-overhead alternative
- * for processing replies from Redis compared to the standard pure-PHP classes.
- * Differences in speed when dealing with short inline replies are practically
- * nonexistent, the actual speed boost is for long multibulk replies when this
- * protocol processor can parse and return replies very fast.
+ * This class is intended to provide an optional low-overhead alternative for
+ * processing responses from Redis compared to the standard pure-PHP classes.
+ * Differences in speed when dealing with short inline responses are practically
+ * nonexistent, the actual speed boost is for big multibulk responses when this
+ * protocol processor can parse and return responses very fast.
  *
  * For instructions on how to build and install the phpiredis extension, please
  * consult the repository of the project.
@@ -107,7 +107,7 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * Returns the handler used by the protocol reader to handle status replies.
+     * Returns the handler used by the protocol reader for inline responses.
      *
      * @return \Closure
      */
@@ -119,7 +119,7 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * Returns the handler used by the protocol reader to handle Redis errors.
+     * Returns the handler used by the protocol reader for error responses.
      *
      * @return \Closure
      */

@@ -304,14 +304,14 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $replies = $pipeline->execute(function ($pipe) {
+        $responses = $pipeline->execute(function ($pipe) {
             $pipe->echo('one');
             $pipe->echo('two');
             $pipe->echo('three');
             $pipe->echo('four');
         });
 
-        $this->assertSame(array('one', 'two', 'three', 'four'), $replies);
+        $this->assertSame(array('one', 'two', 'three', 'four'), $responses);
     }
 
     /**
@@ -326,10 +326,10 @@ class PipelineTest extends PredisTestCase
         $pipeline = new Pipeline(new Client($connection));
 
         $exception = null;
-        $replies = null;
+        $responses = null;
 
         try {
-            $replies = $pipeline->execute(function ($pipe) {
+            $responses = $pipeline->execute(function ($pipe) {
                 $pipe->echo('one');
                 throw new ClientException('TEST');
                 $pipe->echo('two');
@@ -340,7 +340,7 @@ class PipelineTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
         $this->assertSame('TEST', $exception->getMessage());
-        $this->assertNull($replies);
+        $this->assertNull($responses);
     }
 
     // ******************************************************************** //

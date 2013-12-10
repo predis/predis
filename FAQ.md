@@ -121,7 +121,7 @@ thousands of concurrent clients doing requests! Also, actual performances should
 to how your application will use Redis.
 
 
-### I am convinced, but performances for multi-bulk replies (e.g. _KEYS *_) are still worse ###
+### I am convinced, but performances for multi-bulk responses (e.g. _KEYS *_) are still worse ###
 
 Fair enough, but there is actually an option for you if you need even more speed and it consists on
 installing __[phpiredis](http://github.com/nrk/phpiredis)__ (note the additional _i_ in the name)
@@ -141,8 +141,8 @@ $client = new Predis\Client('tcp://127.0.0.1', array(
 ```
 
 As simple as it is, nothing will really change in the way you use the library in your application. So,
-how fast is it now? There are not much improvements for inline or short bulk replies (e.g. _SET_ or
-_GET_), but the speed for parsing multi-bulk replies is now on par with phpredis:
+how fast is it now? There are not much improvements for inline or short bulk responses (e.g. _SET_ or
+_GET_), but the speed for parsing multi-bulk responses is now on par with phpredis:
 
     Using Predis with a phpiredis-based connection to fetch 30000 keys using _KEYS *_:
 

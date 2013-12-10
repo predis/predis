@@ -223,12 +223,12 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
      */
     public function executeCommandOnNodes(CommandInterface $command)
     {
-        $replies = array();
+        $responses = array();
 
         foreach ($this->pool as $connection) {
-            $replies[] = $connection->executeCommand($command);
+            $responses[] = $connection->executeCommand($command);
         }
 
-        return $replies;
+        return $responses;
     }
 }

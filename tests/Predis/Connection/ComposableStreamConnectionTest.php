@@ -68,7 +68,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      */
-    public function testReadsMultibulkRepliesAsIterators()
+    public function testReadsMultibulkResponsesAsIterators()
     {
         $connection = $this->getConnection($profile, true);
         $connection->getProtocol()->useIterableMultibulk(true);

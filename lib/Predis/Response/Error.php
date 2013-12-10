@@ -12,7 +12,7 @@
 namespace Predis\Response;
 
 /**
- * Represents an error returned by Redis (-ERR replies) during the execution
+ * Represents an error returned by Redis (-ERR responses) during the execution
  * of a command on the server.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>

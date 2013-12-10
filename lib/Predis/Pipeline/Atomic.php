@@ -90,7 +90,7 @@ class Atomic extends Pipeline
 
         if (count($executed) !== count($commands)) {
             throw new ClientException(
-                "Invalid number of replies [expected: ".count($commands)." - actual: ".count($executed)."]"
+                "Invalid number of responses [expected: ".count($commands)." - actual: ".count($executed)."]"
             );
         }
 

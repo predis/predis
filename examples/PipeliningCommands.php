@@ -17,7 +17,7 @@ require 'SharedConfigurations.php';
 
 $client = new Predis\Client($single_server);
 
-$replies = $client->pipeline(function ($pipe) {
+$responses = $client->pipeline(function ($pipe) {
     $pipe->flushdb();
     $pipe->incrby('counter', 10);
     $pipe->incrby('counter', 30);
@@ -26,7 +26,7 @@ $replies = $client->pipeline(function ($pipe) {
     $pipe->mget('does_not_exist', 'counter');
 });
 
-var_export($replies);
+var_export($responses);
 
 /* OUTPUT:
 array (

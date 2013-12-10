@@ -207,7 +207,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
-    public function testReadsStatusReplies()
+    public function testReadsStatusResponses()
     {
         $connection = $this->getConnection($profile, true);
 
@@ -226,7 +226,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
-    public function testReadsBulkReplies()
+    public function testReadsBulkResponses()
     {
         $connection = $this->getConnection($profile, true);
 
@@ -242,7 +242,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
-    public function testReadsIntegerReplies()
+    public function testReadsIntegerResponses()
     {
         $connection = $this->getConnection($profile, true);
 
@@ -255,7 +255,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
-    public function testReadsErrorRepliesAsResponseErrorObjects()
+    public function testReadsErrorResponsesAsResponseErrorObjects()
     {
         $connection = $this->getConnection($profile, true);
 
@@ -269,7 +269,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
-    public function testReadsMultibulkRepliesAsArrays()
+    public function testReadsMultibulkResponsesAsArrays()
     {
         $connection = $this->getConnection($profile, true);
 

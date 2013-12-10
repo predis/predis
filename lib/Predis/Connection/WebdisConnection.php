@@ -22,7 +22,7 @@ use Predis\Response;
  * This class implements a Predis connection that actually talks with Webdis
  * instead of connecting directly to Redis. It relies on the cURL extension to
  * communicate with the web server and the phpiredis extension to parse the
- * protocol of the replies returned in the http response bodies.
+ * protocol for responses returned in the http response bodies.
  *
  * Some features are not yet available or they simply cannot be implemented:
  *   - Pipelining commands.
@@ -145,7 +145,7 @@ class WebdisConnection implements SingleConnectionInterface
     }
 
     /**
-     * Gets the handler used by the protocol reader to handle status replies.
+     * Returns the handler used by the protocol reader for inline responses.
      *
      * @return \Closure
      */
@@ -157,7 +157,7 @@ class WebdisConnection implements SingleConnectionInterface
     }
 
     /**
-     * Gets the handler used by the protocol reader to handle Redis errors.
+     * Returns the handler used by the protocol reader for error responses.
      *
      * @return \Closure
      */

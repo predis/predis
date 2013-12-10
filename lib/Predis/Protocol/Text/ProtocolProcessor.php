@@ -104,9 +104,9 @@ class ProtocolProcessor implements ProtocolProcessorInterface
      * iterators used to stream bulk elements of a multibulk response instead
      * returning a plain array.
      *
-     * Please note that streamable multibulk replies are not globally supported
-     * by the abstractions built-in into Predis such as for transactions or
-     * pipelines. Use them with care!
+     * Streamable multibulk responses are not globally supported by the
+     * abstractions built-in into Predis, such as transactions or pipelines. Use
+     * them with care!
      *
      * @param bool $value Enable or disable streamable multibulk responses.
      */
