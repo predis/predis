@@ -49,8 +49,7 @@ managed using Composer, but you can also leverage its own autoloader if you are 
 project or script without any PSR-0 compliant autoloading facility:
 
 ```php
-<?php
-// prepend a base path if Predis is not available in your "include_path".
+// Prepend a base path if Predis is not available in your "include_path".
 require 'Predis/Autoloader.php';
 
 Predis\Autoloader::register();
