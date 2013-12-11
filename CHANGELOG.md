@@ -19,6 +19,13 @@ v0.8.5 (2013-xx-xx)
   responses are not parsed, which means arguments must follow the signature of
   the command as defined by Redis and complex responses are left untouched.
 
+- URI parsing for connection parameters has been improved and has slightly less
+  overhead when the number of fields in the querystring grows. New features are:
+
+    - Parsing does not break when value of a field contains one or more "=".
+    - Repeated fieldnames using [] produce an array of values.
+    - Empty or incomplete "key=value" pairs result in an empty string for "key".
+
 - Various improvements and fixes to the redis-cluster connection backend:
 
     - __FIX__: the `ASKING` command is sent upon -ASK redirections.

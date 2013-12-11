@@ -119,12 +119,10 @@ class ConnectionParameters implements ConnectionParametersInterface
         }
 
         if (isset($parsed['query'])) {
-            foreach (explode('&', $parsed['query']) as $kv) {
-                @list($k, $v) = explode('=', $kv);
-                $parsed[$k] = $v;
-            }
-
+            parse_str($parsed['query'], $queryarray);
             unset($parsed['query']);
+
+            $parsed = array_merge($parsed, $queryarray);
         }
 
         return $parsed;
