@@ -182,6 +182,7 @@ class ConnectionParametersTest extends PredisTestCase
             'host' => '10.10.10.10',
             'persistent' => '1',
             'foo' => '',
+            'bar' => '',
         );
 
         $this->assertSame($expected, ConnectionParameters::parse($uri));
@@ -199,6 +200,23 @@ class ConnectionParametersTest extends PredisTestCase
             'host' => '10.10.10.10',
             'foobar' => 'a=b=c',
             'persistent' => '1',
+        );
+
+        $this->assertSame($expected, ConnectionParameters::parse($uri));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsingURIWhenQueryStringHasBracketsInFieldnames()
+    {
+        $uri = 'tcp://10.10.10.10?persistent=1&metavars[]=foo&metavars[]=hoge';
+
+        $expected = array(
+            'scheme' => 'tcp',
+            'host' => '10.10.10.10',
+            'persistent' => '1',
+            'metavars' => array('foo', 'hoge'),
         );
 
         $this->assertSame($expected, ConnectionParameters::parse($uri));
