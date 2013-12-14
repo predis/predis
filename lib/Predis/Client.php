@@ -263,7 +263,7 @@ class Client implements ClientInterface
      * @param bool $error Set to TRUE when Redis returned an error response.
      * @return mixed
      */
-    public function raw(array $arguments, &$error = null)
+    public function executeRaw(array $arguments, &$error = null)
     {
         $error = false;
 

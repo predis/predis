@@ -79,7 +79,7 @@ v0.9.0 (201x-xx-xx)
   they can also define the needed logic in their command classes by implementing
   `Predis\Command\PrefixableCommandInterface` just like before.
 
-- The client can now send raw commands using the `Predis\Client::raw()` method.
+- The client can now send raw commands using `Predis\Client::executeRaw()`.
 
 
 v0.8.5 (2013-xx-xx)

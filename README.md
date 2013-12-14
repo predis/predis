@@ -238,7 +238,7 @@ responses. Users must provide the arguments list as an array, following the comm
 defined by the [Redis documentation for commands](http://redis.io/commands):
 
 ```php
-$response = $client->raw(['SET', 'foo', 'bar']);
+$response = $client->executeRaw(['SET', 'foo', 'bar']);
 ```
 
 

@@ -44,7 +44,9 @@ array (
 // commands to Redis the usual way and the "raw" way is that in the latter case
 // their arguments are not filtered nor responses coming from Redis are parsed.
 
-$response = $client->raw(array('MGET', 'uid:0001', 'uid:0002', 'uid:0003'));
+$response = $client->executeRaw(array(
+    'MGET', 'uid:0001', 'uid:0002', 'uid:0003'
+));
 
 var_export($response); echo PHP_EOL;
 /* OUTPUT:
