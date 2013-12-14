@@ -65,14 +65,16 @@ class StreamConnection extends AbstractConnection
      */
     private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
     {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}/";
+        $uri = "tcp://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
 
         if (isset($parameters->async_connect) && $parameters->async_connect) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
+
         if (isset($parameters->persistent) && $parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
         }
 
         $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
