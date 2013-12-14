@@ -31,7 +31,7 @@
 
     <php>
         <!-- Redis -->
-        <const name="REDIS_SERVER_VERSION" value="2.6" />
+        <const name="REDIS_SERVER_VERSION" value="2.8" />
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
         <const name="REDIS_SERVER_DBNUM" value="15" />
