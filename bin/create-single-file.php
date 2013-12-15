@@ -326,10 +326,10 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
     public function __construct(PhpNamespace $namespace)
     {
+        $this->namespace = $namespace;
         $this->use = array();
         $this->aliases = array();
         $this->reverseAliases = array();
-        $this->namespace = $namespace;
     }
 
     public function add($use, $as = null)
@@ -338,12 +338,35 @@ class PhpUseDirectives implements Countable, IteratorAggregate
             return;
         }
 
+        $rename = null;
         $this->use[] = $use;
-        $this->aliases[$as ?: PhpClass::extractName($use)] = $use;
+        $aliasedClassName = $as ?: PhpClass::extractName($use);
+
+        if (isset($this->aliases[$aliasedClassName])) {
+            $parentNs = $this->getParentNamespace();
+
+            if ($parentNs && false !== $pos = strrpos($parentNs, '\\')) {
+                $parentNs = substr($parentNs, $pos);
+            }
+
+            $newAlias = "{$parentNs}_{$aliasedClassName}";
+            $rename = (object) array(
+                'namespace' => $this->namespace,
+                'from' => $aliasedClassName,
+                'to' => $newAlias,
+            );
+
+            $this->aliases[$newAlias] = $use;
+            $as = $newAlias;
+        } else {
+            $this->aliases[$aliasedClassName] = $use;
+        }
 
         if ($as !== null) {
             $this->reverseAliases[$use] = $as;
         }
+
+        return $rename;
     }
 
     public function getList()
@@ -374,6 +397,15 @@ class PhpUseDirectives implements Countable, IteratorAggregate
     public function getNamespace()
     {
         return $this->namespace;
+    }
+
+    public function getParentNamespace()
+    {
+        if (false !== $pos = strrpos($this->namespace, '\\')) {
+            return substr($this->namespace, 0, $pos);
+        }
+
+        return '';
     }
 
     public function getFQN($className)
@@ -442,16 +474,19 @@ LICENSE;
 
     private function extractData()
     {
+        $renames = array();
         $useDirectives = $this->getNamespace()->getUseDirectives();
 
-        $useExtractor = function ($m) use ($useDirectives) {
+        $useExtractor = function ($m) use ($useDirectives, &$renames) {
             array_shift($m);
 
             if (isset($m[1])) {
                 $m[1] = str_replace(" as ", '', $m[1]);
             }
 
-            call_user_func_array(array($useDirectives, 'add'), $m);
+            if ($rename = call_user_func_array(array($useDirectives, 'add'), $m)) {
+                $renames[] = $rename;
+            }
         };
 
         $classBuffer = stream_get_contents(fopen($this->getFile()->getPathname(), 'r'));
@@ -462,6 +497,10 @@ LICENSE;
         $classBuffer = preg_replace('/\s?\?>\n?/ms', '', $classBuffer);
         $classBuffer = preg_replace('/namespace\s+[\w\d_\\\\]+;\s?/', '', $classBuffer);
         $classBuffer = preg_replace_callback('/use\s+([\w\d_\\\\]+)(\s+as\s+.*)?;\s?\n?/', $useExtractor, $classBuffer);
+
+        foreach ($renames as $rename) {
+            $classBuffer = str_replace($rename->from, $rename->to, $classBuffer);
+        }
 
         $this->body = trim($classBuffer);
 
