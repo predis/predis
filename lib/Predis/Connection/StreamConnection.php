@@ -130,8 +130,8 @@ class StreamConnection extends AbstractConnection
     {
         parent::connect();
 
-        if ($this->initCmds) {
-            foreach ($this->initCmds as $command) {
+        if ($this->initCommands) {
+            foreach ($this->initCommands as $command) {
                 $this->executeCommand($command);
             }
         }

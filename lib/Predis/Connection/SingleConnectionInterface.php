@@ -47,7 +47,7 @@ interface SingleConnectionInterface extends ConnectionInterface
      *
      * @param CommandInterface $command Instance of a Redis command.
      */
-    public function pushInitCommand(CommandInterface $command);
+    public function addConnectCommand(CommandInterface $command);
 
     /**
      * Reads a response from the server.

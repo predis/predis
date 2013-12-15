@@ -139,10 +139,10 @@ class FactoryTest extends PredisTestCase
                    ->method('getParameters')
                    ->will($this->returnValue($parameters));
         $connection->expects($this->at(1))
-                   ->method('pushInitCommand')
+                   ->method('addConnectCommand')
                    ->with($this->isRedisCommand('AUTH', array('foobar')));
         $connection->expects($this->at(2))
-                   ->method('pushInitCommand')
+                   ->method('addConnectCommand')
                    ->with($this->isRedisCommand('SELECT', array(0)));
 
         $factory = new Factory();

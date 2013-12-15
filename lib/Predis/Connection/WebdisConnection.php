@@ -296,7 +296,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(CommandInterface $command)
+    public function addConnectCommand(CommandInterface $command)
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }

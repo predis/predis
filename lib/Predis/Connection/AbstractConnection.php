@@ -30,7 +30,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
     private $cachedId;
 
     protected $parameters;
-    protected $initCmds = array();
+    protected $initCommands = array();
 
     /**
      * @param ParametersInterface $parameters Initialization parameters for the connection.
@@ -107,9 +107,9 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(CommandInterface $command)
+    public function addConnectCommand(CommandInterface $command)
     {
-        $this->initCmds[] = $command;
+        $this->initCommands[] = $command;
     }
 
     /**
@@ -211,6 +211,6 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     public function __sleep()
     {
-        return array('parameters', 'initCmds');
+        return array('parameters', 'initCommands');
     }
 }
