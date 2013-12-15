@@ -12,8 +12,7 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use Predis\Connection\ConnectionFactory;
-use Predis\Connection\ConnectionFactoryInterface;
+use Predis\Connection;
 
 /**
  * Configures a connection factory used by the client to create new connection
@@ -28,7 +27,7 @@ class ConnectionFactoryOption implements OptionInterface
      */
     public function filter(OptionsInterface $options, $value)
     {
-        if ($value instanceof ConnectionFactoryInterface) {
+        if ($value instanceof Connection\FactoryInterface) {
             return $value;
         } else if (is_array($value)) {
             $factory = $this->getDefault($options);
@@ -48,6 +47,6 @@ class ConnectionFactoryOption implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        return new ConnectionFactory();
+        return new Connection\Factory();
     }
 }

@@ -20,7 +20,7 @@ use Predis\Command;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionFactory implements ConnectionFactoryInterface
+class Factory implements FactoryInterface
 {
     protected $schemes = array(
         'tcp'  => 'Predis\Connection\StreamConnection',

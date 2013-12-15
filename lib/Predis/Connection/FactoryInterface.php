@@ -16,7 +16,7 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ConnectionFactoryInterface
+interface FactoryInterface
 {
     /**
      * Defines or overrides the connection class identified by a scheme prefix.
