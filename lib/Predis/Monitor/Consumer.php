@@ -14,7 +14,7 @@ namespace Predis\Monitor;
 use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
-use Predis\Connection\AggregatedConnectionInterface;
+use Predis\Connection\AggregateConnectionInterface;
 
 /**
  * Redis MONITOR consumer.
@@ -54,9 +54,9 @@ class Consumer implements Iterator
      */
     private function assertClient(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof AggregatedConnectionInterface) {
+        if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a monitor consumer when using aggregated connections'
+                'Cannot initialize a monitor consumer when using aggregate connections'
             );
         }
 

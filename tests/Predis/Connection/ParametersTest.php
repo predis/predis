@@ -14,10 +14,10 @@ namespace Predis\Connection;
 use PredisTestCase;
 
 /**
- * @todo ConnectionParameters::define();
- * @todo ConnectionParameters::undefine();
+ * @todo Parameters::define();
+ * @todo Parameters::undefine();
  */
-class ConnectionParametersTest extends PredisTestCase
+class ParametersTest extends PredisTestCase
 {
     /**
      * @group disconnected
@@ -25,7 +25,7 @@ class ConnectionParametersTest extends PredisTestCase
     public function testDefaultValues()
     {
         $defaults = $this->getDefaultParametersArray();
-        $parameters = new ConnectionParameters();
+        $parameters = new Parameters();
 
         $this->assertEquals($defaults['scheme'], $parameters->scheme);
         $this->assertEquals($defaults['host'], $parameters->host);
@@ -38,13 +38,13 @@ class ConnectionParametersTest extends PredisTestCase
      */
     public function testIsSet()
     {
-        $parameters = new ConnectionParameters();
+        $parameters = new Parameters();
 
         $this->assertTrue(isset($parameters->scheme));
         $this->assertFalse(isset($parameters->unknown));
     }
 
-    public function sharedTestsWithArrayParameters(ConnectionParameters $parameters)
+    public function sharedTestsWithArrayParameters(Parameters $parameters)
     {
         $this->assertTrue(isset($parameters->scheme));
         $this->assertSame('tcp', $parameters->scheme);
@@ -64,7 +64,7 @@ class ConnectionParametersTest extends PredisTestCase
      */
     public function testConstructWithArrayParameters()
     {
-        $parameters = new ConnectionParameters(array(
+        $parameters = new Parameters(array(
             'port' => 7000,
             'custom' => 'foobar'
         ));
@@ -77,7 +77,7 @@ class ConnectionParametersTest extends PredisTestCase
      */
     public function testCreateWithArrayParameters()
     {
-        $parameters = new ConnectionParameters(array(
+        $parameters = new Parameters(array(
             'port' => 7000,
             'custom' => 'foobar'
         ));
@@ -99,7 +99,7 @@ class ConnectionParametersTest extends PredisTestCase
         );
 
         $uriString = $this->getParametersString($overrides);
-        $parameters = ConnectionParameters::create($uriString);
+        $parameters = Parameters::create($uriString);
 
         $this->sharedTestsWithArrayParameters($parameters);
         $this->assertEquals($overrides['database'], $parameters->database);
@@ -111,7 +111,7 @@ class ConnectionParametersTest extends PredisTestCase
     public function testToArray()
     {
         $additional = array('port' => 7000, 'custom' => 'foobar');
-        $parameters = new ConnectionParameters($additional);
+        $parameters = new Parameters($additional);
 
         $this->assertEquals($this->getParametersArray($additional), $parameters->toArray());
     }
@@ -121,7 +121,7 @@ class ConnectionParametersTest extends PredisTestCase
      */
     public function testSerialization()
     {
-        $parameters = new ConnectionParameters(array('port' => 7000, 'custom' => 'foobar'));
+        $parameters = new Parameters(array('port' => 7000, 'custom' => 'foobar'));
         $unserialized = unserialize(serialize($parameters));
 
         $this->assertEquals($parameters->scheme, $unserialized->scheme);
@@ -149,7 +149,7 @@ class ConnectionParametersTest extends PredisTestCase
             'persistent' => '1',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parse($uri));
+        $this->assertSame($expected, Parameters::parse($uri));
     }
 
     /**
@@ -167,7 +167,7 @@ class ConnectionParametersTest extends PredisTestCase
             'persistent' => '1',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parse($uri));
+        $this->assertSame($expected, Parameters::parse($uri));
     }
 
     /**
@@ -185,7 +185,7 @@ class ConnectionParametersTest extends PredisTestCase
             'bar' => '',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parse($uri));
+        $this->assertSame($expected, Parameters::parse($uri));
     }
 
     /**
@@ -202,7 +202,7 @@ class ConnectionParametersTest extends PredisTestCase
             'persistent' => '1',
         );
 
-        $this->assertSame($expected, ConnectionParameters::parse($uri));
+        $this->assertSame($expected, Parameters::parse($uri));
     }
 
     /**
@@ -219,7 +219,7 @@ class ConnectionParametersTest extends PredisTestCase
             'metavars' => array('foo', 'hoge'),
         );
 
-        $this->assertSame($expected, ConnectionParameters::parse($uri));
+        $this->assertSame($expected, Parameters::parse($uri));
     }
 
     /**
@@ -229,7 +229,7 @@ class ConnectionParametersTest extends PredisTestCase
      */
     public function testParsingURIThrowOnInvalidURI()
     {
-        ConnectionParameters::parse('tcp://invalid:uri');
+        Parameters::parse('tcp://invalid:uri');
     }
 
     // ******************************************************************** //

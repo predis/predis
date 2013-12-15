@@ -136,8 +136,13 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $connection = new PhpiredisStreamConnection($parameters);
 
         if ($initialize) {
-            $connection->pushInitCommand($profile->createCommand('select', array($parameters->database)));
-            $connection->pushInitCommand($profile->createCommand('flushdb'));
+            $connection->addConnectCommand(
+                $profile->createCommand('select', array($parameters->database))
+            );
+
+            $connection->addConnectCommand(
+                $profile->createCommand('flushdb')
+            );
         }
 
         return $connection;

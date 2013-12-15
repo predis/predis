@@ -55,12 +55,12 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     private $connections;
 
     /**
-     * @param ConnectionFactoryInterface $connections Connection factory object.
+     * @param FactoryInterface $connections Connection factory object.
      */
-    public function __construct(ConnectionFactoryInterface $connections = null)
+    public function __construct(FactoryInterface $connections = null)
     {
         $this->strategy = new Cluster\RedisStrategy();
-        $this->connections = $connections ?: new ConnectionFactory();
+        $this->connections = $connections ?: new Factory();
     }
 
     /**

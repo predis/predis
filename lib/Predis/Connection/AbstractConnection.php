@@ -30,12 +30,12 @@ abstract class AbstractConnection implements SingleConnectionInterface
     private $cachedId;
 
     protected $parameters;
-    protected $initCmds = array();
+    protected $initCommands = array();
 
     /**
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
-    public function __construct(ConnectionParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters)
     {
         $this->parameters = $this->assertParameters($parameters);
     }
@@ -52,9 +52,9 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * Checks some of the parameters used to initialize the connection.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
-    protected function assertParameters(ConnectionParametersInterface $parameters)
+    protected function assertParameters(ParametersInterface $parameters)
     {
         $scheme = $parameters->scheme;
 
@@ -107,9 +107,9 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(CommandInterface $command)
+    public function addConnectCommand(CommandInterface $command)
     {
-        $this->initCmds[] = $command;
+        $this->initCommands[] = $command;
     }
 
     /**
@@ -211,6 +211,6 @@ abstract class AbstractConnection implements SingleConnectionInterface
      */
     public function __sleep()
     {
-        return array('parameters', 'initCmds');
+        return array('parameters', 'initCommands');
     }
 }

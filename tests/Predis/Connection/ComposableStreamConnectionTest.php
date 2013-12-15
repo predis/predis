@@ -111,8 +111,13 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
         $connection = new ComposableStreamConnection($parameters);
 
         if ($initialize) {
-            $connection->pushInitCommand($profile->createCommand('select', array($parameters->database)));
-            $connection->pushInitCommand($profile->createCommand('flushdb'));
+            $connection->addConnectCommand(
+                $profile->createCommand('select', array($parameters->database))
+            );
+
+            $connection->addConnectCommand(
+                $profile->createCommand('flushdb')
+            );
         }
 
         return $connection;

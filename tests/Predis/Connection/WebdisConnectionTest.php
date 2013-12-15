@@ -68,12 +68,13 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::pushInitCommand() is not supported
+     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported
+     *
      */
-    public function testPushingInitCommandsIsNotSupported()
+    public function testAddingConnectCommandsIsNotSupported()
     {
         $connection = new WebdisConnection($this->getParameters());
-        $connection->pushInitCommand($this->getProfile()->createCommand('ping'));
+        $connection->addConnectCommand($this->getProfile()->createCommand('ping'));
     }
 
     /**

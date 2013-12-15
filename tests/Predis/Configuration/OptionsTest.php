@@ -27,7 +27,7 @@ class OptionsTest extends PredisTestCase
     {
         $options = new Options();
 
-        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);
@@ -44,7 +44,7 @@ class OptionsTest extends PredisTestCase
             'exceptions'  => false,
             'profile'     => '2.0',
             'prefix'      => 'prefix:',
-            'connections' => $this->getMock('Predis\Connection\ConnectionFactoryInterface'),
+            'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
             'cluster'     => $this->getMock('Predis\Connection\ClusterConnectionInterface'),
             'replication' => $this->getMock('Predis\Connection\ReplicationConnectionInterface'),
         ));
@@ -52,7 +52,7 @@ class OptionsTest extends PredisTestCase
         $this->assertInternalType('bool', $options->exceptions);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $options->prefix);
-        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $options->connections);
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);
     }

@@ -50,9 +50,9 @@ class WebdisConnection implements SingleConnectionInterface
     private $reader;
 
     /**
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
-    public function __construct(ConnectionParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters)
     {
         $this->assertExtensions();
 
@@ -105,10 +105,10 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes cURL.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createCurl(ConnectionParametersInterface $parameters)
+    private function createCurl(ParametersInterface $parameters)
     {
         $options = array(
             CURLOPT_FAILONERROR => true,
@@ -131,10 +131,10 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes the phpiredis protocol reader.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createReader(ConnectionParametersInterface $parameters)
+    private function createReader(ParametersInterface $parameters)
     {
         $reader = phpiredis_reader_create();
 
@@ -296,7 +296,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function pushInitCommand(CommandInterface $command)
+    public function addConnectCommand(CommandInterface $command)
     {
         $this->throwNotSupportedException(__FUNCTION__);
     }

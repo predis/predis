@@ -472,7 +472,7 @@ class RedisClusterTest extends PredisTestCase
                     ->with($command)
                     ->will($this->returnValue('foobar'));
 
-        $factory = $this->getMock('Predis\Connection\ConnectionFactory');
+        $factory = $this->getMock('Predis\Connection\Factory');
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
@@ -512,7 +512,7 @@ class RedisClusterTest extends PredisTestCase
                     ->with($command)
                     ->will($this->returnValue('foobar'));
 
-        $factory = $this->getMock('Predis\Connection\ConnectionFactory');
+        $factory = $this->getMock('Predis\Connection\Factory');
         $factory->expects($this->once())
                 ->method('create')
                 ->with(array('host' => '127.0.0.1', 'port' => '6381'))
@@ -549,7 +549,7 @@ class RedisClusterTest extends PredisTestCase
                     ->will($this->onConsecutiveCalls('foobar', 'foobar'));
 
 
-        $factory = $this->getMock('Predis\Connection\ConnectionFactory');
+        $factory = $this->getMock('Predis\Connection\Factory');
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
@@ -586,7 +586,7 @@ class RedisClusterTest extends PredisTestCase
                     ->with($command)
                     ->will($this->onConsecutiveCalls('foobar', 'foobar'));
 
-        $factory = $this->getMock('Predis\Connection\ConnectionFactory');
+        $factory = $this->getMock('Predis\Connection\Factory');
         $factory->expects($this->once())
                 ->method('create')
                 ->with(array('host' => '127.0.0.1', 'port' => '6381'))
@@ -652,7 +652,7 @@ class RedisClusterTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         if ($parameters) {
-            $parameters = ConnectionParameters::create($parameters);
+            $parameters = Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
             $connection->expects($this->any())

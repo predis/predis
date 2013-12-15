@@ -198,8 +198,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
                 ->method('getArguments')
                 ->will($this->returnValue(array('ECHOED')));
 
-        $connection->pushInitCommand($cmdPing);
-        $connection->pushInitCommand($cmdEcho);
+        $connection->addConnectCommand($cmdPing);
+        $connection->addConnectCommand($cmdEcho);
 
         $connection->connect();
     }

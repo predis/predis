@@ -16,7 +16,7 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ReplicationConnectionInterface extends AggregatedConnectionInterface
+interface ReplicationConnectionInterface extends AggregateConnectionInterface
 {
     /**
      * Switches the internal connection instance in use.

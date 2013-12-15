@@ -12,9 +12,7 @@
 namespace Predis;
 
 use PredisTestCase;
-use Predis\Connection\ConnectionFactory;
-use Predis\Connection\MasterSlaveReplication;
-use Predis\Connection\PredisCluster;
+use Predis\Connection;
 use Predis\Profile;
 use Predis\Response;
 
@@ -152,7 +150,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithConnectionArgument()
     {
-        $factory = new ConnectionFactory();
+        $factory = new Connection\Factory();
         $connection = $factory->create('tcp://localhost:7000');
 
         $client = new Client($connection);
@@ -170,9 +168,9 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument()
     {
-        $cluster = new PredisCluster();
+        $cluster = new Connection\PredisCluster();
 
-        $factory = new ConnectionFactory();
+        $factory = new Connection\Factory();
         $factory->aggregate($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
         $client = new Client($cluster);
@@ -186,9 +184,9 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument()
     {
-        $replication = new MasterSlaveReplication();
+        $replication = new Connection\MasterSlaveReplication();
 
-        $factory = new ConnectionFactory();
+        $factory = new Connection\Factory();
         $factory->aggregate($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
 
         $client = new Client($replication);
@@ -238,7 +236,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithNullAndArrayArgument()
     {
-        $factory = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
 
         $arg2 = array('profile' => '2.0', 'prefix' => 'prefix:', 'connections' => $factory);
         $client = new Client(null, $arg2);
@@ -581,7 +579,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionFromAggregatedConnectionWithAlias()
+    public function testGetConnectionFromAggregateConnectionWithAlias()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
@@ -596,9 +594,9 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregated connections
+     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregate connections
      */
-    public function testGetConnectionByIdWorksOnlyWithAggregatedConnections()
+    public function testGetConnectionByIdWorksOnlyWithAggregateConnections()
     {
         $client = new Client();
 
@@ -608,7 +606,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateClientWithConnectionFromAggregatedConnection()
+    public function testCreateClientWithConnectionFromAggregateConnection()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
 

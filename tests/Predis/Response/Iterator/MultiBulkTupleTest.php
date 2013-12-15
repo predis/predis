@@ -14,7 +14,6 @@ namespace Predis\Response\Iterator;
 use PredisTestCase;
 use Predis\Client;
 use Predis\Connection\ComposableStreamConnection;
-use Predis\Connection\ConnectionParameters;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 
 /**

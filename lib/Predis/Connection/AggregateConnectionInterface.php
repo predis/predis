@@ -19,7 +19,7 @@ use Predis\Command\CommandInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface AggregatedConnectionInterface extends ConnectionInterface
+interface AggregateConnectionInterface extends ConnectionInterface
 {
     /**
      * Adds a connection instance to the aggregate connection.

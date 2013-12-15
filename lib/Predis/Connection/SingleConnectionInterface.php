@@ -37,7 +37,7 @@ interface SingleConnectionInterface extends ConnectionInterface
     /**
      * Returns the parameters used to initialize the connection.
      *
-     * @return ConnectionParametersInterface
+     * @return ParametersInterface
      */
     public function getParameters();
 
@@ -47,7 +47,7 @@ interface SingleConnectionInterface extends ConnectionInterface
      *
      * @param CommandInterface $command Instance of a Redis command.
      */
-    public function pushInitCommand(CommandInterface $command);
+    public function addConnectCommand(CommandInterface $command);
 
     /**
      * Reads a response from the server.

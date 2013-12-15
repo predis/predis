@@ -42,29 +42,32 @@ v0.9.0 (201x-xx-xx)
     - `fire-and-forget`: returns a pipeline that does not read back responses
       (class: `Predis\Pipeline\FireAndForget`).
 
-- The two base abstract command classes have been renamed in the following way:
+- Renamed the two base abstract command classes:
 
     - `Predis\Command\AbstractCommand` is now `Predis\Command\Command`
     - `Predis\Command\ScriptedCommand` is now `Predis\Command\ScriptCommand`
 
-- The method `Predis\Connection\ConnectionInterface::writeCommand()` has been
-  renamed to `writeRequest()` for consistency with its counterpart, the method
-  `readResponse()`.
+- Renamed `Predis\Connection\ConnectionInterface::writeCommand()` into
+  `writeRequest()` for consistency with its counterpart, `readResponse()`.
 
-- The connection based on ext-phpiredis and ext-socket has been renamed for the
-  sake of consistency to `Predis\Connection\PhpiredisSocketConnection`. The one
-  based on PHP's streams is still `Predis\Connection\PhpiredisStreamConnection`.
+- Renamed `Predis\Connection\SingleConnectionInterface::pushInitCommand()` into
+  `addConnectCommand()` which is more obvious.
 
-- The connection factory has been simplified and does not need anymore a profile
-  to create `AUTH` and `SELECT` commands when connection parameters contain both
-  `password` and `database`. Raw commands will be used instead.
+- Renamed the connection class based on both ext-phpiredis and ext-socket into
+  `Predis\Connection\PhpiredisSocketConnection`. The one based on PHP's streams
+  is still named `Predis\Connection\PhpiredisStreamConnection`.
 
-- `ConnectionParameters::__construct()` only accepts named arrays, but instances
-  can be created using URIs or arrays using the `ConnectionParameters::create()`
-  static method.
+- Renamed the connection factory class to `Predis\Connection\Factory`. Now its
+  constructor does not require anymore a profile instance to create `AUTH` and
+  `SELECT` commands when parameters contain both `password` and `database`. Raw
+  commands will be used instead.
+
+- Renamed the connection parameters class to `Predis\Connection\Parameters`. Now
+  its constructor accepts only named arrays, but instances can still be created
+  using both URIs or arrays using the static method `Parameters::create()`.
 
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
-  or renamed while rationalizing the whole API of external protocol processors.
+  or renamed while rationalizing the whole API for external protocol processors.
 
 - All of the interfaces and classes related to translated Redis response types
   have been moved in the new `Predis\Response` namespace and most of them have

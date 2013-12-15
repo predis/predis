@@ -20,7 +20,7 @@ use Predis\Command;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionFactory implements ConnectionFactoryInterface
+class Factory implements FactoryInterface
 {
     protected $schemes = array(
         'tcp'  => 'Predis\Connection\StreamConnection',
@@ -74,8 +74,8 @@ class ConnectionFactory implements ConnectionFactoryInterface
      */
     public function create($parameters)
     {
-        if (!$parameters instanceof ConnectionParametersInterface) {
-            $parameters = ConnectionParameters::create($parameters);
+        if (!$parameters instanceof ParametersInterface) {
+            $parameters = Parameters::create($parameters);
         }
 
         $scheme = $parameters->scheme;
@@ -106,7 +106,7 @@ class ConnectionFactory implements ConnectionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function aggregate(AggregatedConnectionInterface $connection, array $parameters)
+    public function aggregate(AggregateConnectionInterface $connection, array $parameters)
     {
         foreach ($parameters as $node) {
             $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node));
@@ -123,13 +123,15 @@ class ConnectionFactory implements ConnectionFactoryInterface
         $parameters = $connection->getParameters();
 
         if (isset($parameters->password)) {
-            $command = new Command\RawCommand(array('AUTH', $parameters->password));
-            $connection->pushInitCommand($command);
+            $connection->addConnectCommand(
+                new Command\RawCommand(array('AUTH', $parameters->password))
+            );
         }
 
         if (isset($parameters->database)) {
-            $command = new Command\RawCommand(array('SELECT', $parameters->database));
-            $connection->pushInitCommand($command);
+            $connection->addConnectCommand(
+                new Command\RawCommand(array('SELECT', $parameters->database))
+            );
         }
     }
 }

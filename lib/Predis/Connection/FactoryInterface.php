@@ -16,7 +16,7 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ConnectionFactoryInterface
+interface FactoryInterface
 {
     /**
      * Defines or overrides the connection class identified by a scheme prefix.
@@ -44,8 +44,8 @@ interface ConnectionFactoryInterface
     /**
      * Aggregates single connections into an aggregate connection instance.
      *
-     * @param AggregatedConnectionInterface $aggregate Aggregate connection instance.
+     * @param AggregateConnectionInterface $aggregate Aggregate connection instance.
      * @param array $parameters List of parameters for each connection.
      */
-    public function aggregate(AggregatedConnectionInterface $aggregate, array $parameters);
+    public function aggregate(AggregateConnectionInterface $aggregate, array $parameters);
 }

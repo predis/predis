@@ -14,7 +14,6 @@ namespace Predis\Configuration;
 use InvalidArgumentException;
 use stdClass;
 use PredisTestCase;
-use Predis\Connection\ConnectionFactory;
 
 /**
  *
@@ -29,7 +28,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
         $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertInstanceOf('Predis\Connection\ConnectionFactory', $option->getDefault($options));
+        $this->assertInstanceOf('Predis\Connection\Factory', $option->getDefault($options));
     }
 
     /**
@@ -43,7 +42,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
         $class = get_class($this->getMock('Predis\Connection\SingleConnectionInterface'));
         $value = array('tcp' => $class, 'redis' => $class);
 
-        $default = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
+        $default = $this->getMock('Predis\Connection\FactoryInterface');
         $default->expects($this->exactly(2))
                 ->method('define')
                 ->with($this->matchesRegularExpression('/^tcp|redis$/'), $class);
@@ -54,7 +53,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
                ->with($options)
                ->will($this->returnValue($default));
 
-        $this->assertInstanceOf('Predis\Connection\ConnectionFactoryInterface', $factory = $option->filter($options, $value));
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory = $option->filter($options, $value));
         $this->assertSame($default, $factory);
     }
 
@@ -65,7 +64,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
     {
         $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = $this->getMock('Predis\Connection\ConnectionFactoryInterface');
+        $value = $this->getMock('Predis\Connection\FactoryInterface');
 
         $option = $this->getMock('Predis\Configuration\ConnectionFactoryOption', array('getDefault'));
         $option->expects($this->never())->method('getDefault');

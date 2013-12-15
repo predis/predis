@@ -17,9 +17,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration;
-use Predis\Connection\AggregatedConnectionInterface;
-use Predis\Connection\ConnectionInterface;
-use Predis\Connection\ConnectionParametersInterface;
+use Predis\Connection;
 use Predis\Monitor;
 use Predis\Pipeline;
 use Predis\PubSub;
@@ -83,21 +81,21 @@ class Client implements ClientInterface
      * Accepted types for connection parameters are:
      *
      *  - Instance of Predis\Connection\ConnectionInterface.
-     *  - Instance of Predis\Connection\ConnectionParametersInterface.
+     *  - Instance of Predis\Connection\ParametersInterface.
      *  - Array
      *  - String
      *  - Callable
      *
      * @param mixed $parameters Connection parameters or connection instance.
-     * @return ConnectionInterface
+     * @return Connection\ConnectionInterface
      */
     protected function createConnection($parameters)
     {
-        if ($parameters instanceof ConnectionInterface) {
+        if ($parameters instanceof Connection\ConnectionInterface) {
             return $parameters;
         }
 
-        if ($parameters instanceof ConnectionParametersInterface || is_string($parameters)) {
+        if ($parameters instanceof Connection\ParametersInterface || is_string($parameters)) {
             return $this->options->connections->create($parameters);
         }
 
@@ -146,7 +144,7 @@ class Client implements ClientInterface
         return function () use ($callable) {
             $connection = call_user_func_array($callable, func_get_args());
 
-            if (!$connection instanceof ConnectionInterface) {
+            if (!$connection instanceof Connection\ConnectionInterface) {
                 throw new UnexpectedValueException(
                     'The callable connection initializer returned an invalid type'
                 );
@@ -242,9 +240,9 @@ class Client implements ClientInterface
      */
     public function getConnectionById($connectionID)
     {
-        if (!$this->connection instanceof AggregatedConnectionInterface) {
+        if (!$this->connection instanceof Connection\AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Retrieving connections by ID is supported only when using aggregated connections'
+                'Retrieving connections by ID is supported only when using aggregate connections'
             );
         }
 

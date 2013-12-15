@@ -152,7 +152,7 @@ class AtomicTest extends PredisTestCase
      * @expectedException Predis\ClientException
      * @expectedExceptionMessage Predis\Pipeline\Atomic can be used only with connections to single nodes
      */
-    public function testExecutorWithAggregatedConnection()
+    public function testExecutorWithAggregateConnection()
     {
         $connection = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $pipeline = new Atomic(new Client($connection));

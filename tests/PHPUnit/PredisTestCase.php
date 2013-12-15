@@ -106,12 +106,12 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * Returns a new instance of connection parameters.
      *
      * @param array $additional Additional connection parameters.
-     * @return Connection\ConnectionParameters Default connection parameters.
+     * @return Connection\Parameters Default connection parameters.
      */
     protected function getParameters($additional = array())
     {
         $parameters = array_merge($this->getDefaultParametersArray(), $additional);
-        $parameters = new Connection\ConnectionParameters($parameters);
+        $parameters = new Connection\Parameters($parameters);
 
         return $parameters;
     }
