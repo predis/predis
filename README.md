@@ -56,10 +56,10 @@ Predis\Autoloader::register();
 ```
 
 It is also possible to create a [phar](http://www.php.net/manual/en/intro.phar.php) archive from the
-repository just by launching `bin/create-phar.php`. The generated phar ships with a stub defining an
+repository just by launching `bin/create-phar`. The generated phar contains a stub that defines an
 autoloader function for Predis, so you just need to require the phar to start using the library.
 Alternatively it is possible to generate one single PHP file holding every class like older versions
-of Predis by launching `bin/create-single-file.php`, but this practice __is not__ encouraged.
+of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
 
 
 ### Connecting to Redis ###
