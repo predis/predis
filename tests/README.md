@@ -81,7 +81,7 @@ are considered valid). For example, to generate a test case for `SET` (represent
 `Predis\Command\StringSet` class):
 
 ```bash
-$ ./bin/generate-command-test.php --class=StringSet
+$ ./bin/create-command-test --class=StringSet
 ```
 Each command has its own realm (commands that operate on strings, lists, sets and such)
 and this realm is automatically inferred from the name of the specified class. The realm
