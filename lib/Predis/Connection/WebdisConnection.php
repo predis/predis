@@ -16,7 +16,8 @@ use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionException;
 use Predis\Protocol\ProtocolException;
-use Predis\Response;
+use Predis\Response\Error as ErrorResponse;
+use Predis\Response\Status as StatusResponse;
 
 /**
  * This class implements a Predis connection that actually talks with Webdis
@@ -152,7 +153,7 @@ class WebdisConnection implements SingleConnectionInterface
     protected function getStatusHandler()
     {
         return function ($payload) {
-            return Response\Status::get($payload);
+            return StatusResponse::get($payload);
         };
     }
 
@@ -164,7 +165,7 @@ class WebdisConnection implements SingleConnectionInterface
     protected function getErrorHandler()
     {
         return function ($payload) {
-            return new Response\Error($payload);
+            return new ErrorResponse($payload);
         };
     }
 

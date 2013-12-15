@@ -11,13 +11,17 @@
 
 namespace Predis\Command\Processor;
 
+use IteratorAggregate;
+use Countable;
+
 /**
  * A command processor chain processes a command using multiple chained command
  * processor before it is sent to Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface CommandProcessorChainInterface extends CommandProcessorInterface, \IteratorAggregate, \Countable
+interface CommandProcessorChainInterface
+    extends CommandProcessorInterface, IteratorAggregate, Countable
 {
     /**
      * Adds the given command processor.

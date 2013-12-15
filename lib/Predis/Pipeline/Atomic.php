@@ -16,8 +16,9 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\SingleConnectionInterface;
-use Predis\Profile;
-use Predis\Response;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
+use Predis\Response\ServerException;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
@@ -73,9 +74,9 @@ class Atomic extends Pipeline
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
 
-            if ($response instanceof Response\ErrorInterface) {
+            if ($response instanceof ErrorResponseInterface) {
                 $connection->executeCommand($profile->createCommand('discard'));
-                throw new Response\ServerException($response->getMessage());
+                throw new ServerException($response->getMessage());
             }
         }
 
@@ -102,9 +103,9 @@ class Atomic extends Pipeline
             $command  = $commands->dequeue();
             $response = $executed[$i];
 
-            if (!$response instanceof Response\ResponseInterface) {
+            if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
-            } else if ($response instanceof Response\ErrorInterface && $exceptions) {
+            } else if ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
             } else {
                 $responses[] = $response;

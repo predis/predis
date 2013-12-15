@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text\Handler;
 
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Response;
+use Predis\Response\Status;
 
 /**
  * Handler for the status response type in the standard Redis wire protocol. It
@@ -29,6 +29,6 @@ class StatusResponse implements ResponseHandlerInterface
      */
     public function handle(ComposableConnectionInterface $connection, $payload)
     {
-        return new Response\Status($payload);
+        return Status::get($payload);
     }
 }

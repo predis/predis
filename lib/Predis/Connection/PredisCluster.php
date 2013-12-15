@@ -14,8 +14,10 @@ namespace Predis\Connection;
 use Countable;
 use IteratorAggregate;
 use Predis\NotSupportedException;
-use Predis\Cluster;
-use Predis\Cluster\Distributor;
+use Predis\Cluster\PredisStrategy as PredisClusterStrategy;
+use Predis\Cluster\StrategyInterface as ClusterStrategyInterface;
+use Predis\Cluster\Distributor\DistributorInterface;
+use Predis\Cluster\Distributor\HashRing;
 use Predis\Command\CommandInterface;
 
 /**
@@ -32,14 +34,14 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     private $distributor;
 
     /**
-     * @param Distributor\DistributorInterface $distributor Distributor instance.
+     * @param DistributorInterface $distributor Distributor instance.
      */
-    public function __construct(Distributor\DistributorInterface $distributor = null)
+    public function __construct(DistributorInterface $distributor = null)
     {
-        $distributor = $distributor ?: new Distributor\HashRing();
+        $distributor = $distributor ?: new HashRing();
 
         $this->pool = array();
-        $this->strategy = new Cluster\PredisStrategy($distributor->getHashGenerator());
+        $this->strategy = new PredisClusterStrategy($distributor->getHashGenerator());
         $this->distributor = $distributor;
     }
 
@@ -168,7 +170,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
      * Returns the underlying command hash strategy used to hash commands by
      * using keys found in their arguments.
      *
-     * @return Cluster\StrategyInterface
+     * @return ClusterStrategyInterface
      */
     public function getClusterStrategy()
     {

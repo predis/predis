@@ -13,7 +13,7 @@ namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\ComposableConnectionInterface;
-use Predis\Response\Iterator\MultiBulk;
+use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -41,6 +41,6 @@ class StreamableMultiBulkResponse implements ResponseHandlerInterface
             ));
         }
 
-        return new MultiBulk($connection, $length);
+        return new MultiBulkIterator($connection, $length);
     }
 }

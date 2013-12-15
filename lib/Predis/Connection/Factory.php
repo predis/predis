@@ -13,7 +13,7 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use ReflectionClass;
-use Predis\Command;
+use Predis\Command\RawCommand;
 
 /**
  * Standard connection factory for creating connections to Redis nodes.
@@ -124,13 +124,13 @@ class Factory implements FactoryInterface
 
         if (isset($parameters->password)) {
             $connection->addConnectCommand(
-                new Command\RawCommand(array('AUTH', $parameters->password))
+                new RawCommand(array('AUTH', $parameters->password))
             );
         }
 
         if (isset($parameters->database)) {
             $connection->addConnectCommand(
-                new Command\RawCommand(array('SELECT', $parameters->database))
+                new RawCommand(array('SELECT', $parameters->database))
             );
         }
     }

@@ -16,11 +16,11 @@ use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Predis\NotSupportedException;
-use Predis\Cluster;
+use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
-use Predis\Protocol;
-use Predis\Response;
+use Predis\Protocol\ProtocolException;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -59,7 +59,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      */
     public function __construct(FactoryInterface $connections = null)
     {
-        $this->strategy = new Cluster\RedisStrategy();
+        $this->strategy = new RedisClusterStrategy();
         $this->connections = $connections ?: new Factory();
     }
 
@@ -350,10 +350,10 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * Handles -ERR responses from Redis.
      *
      * @param CommandInterface $command Command that generated the -ERR response.
-     * @param Response\ErrorInterface $error Redis error response object.
+     * @param ErrorResponseInterface $error Redis error response object.
      * @return mixed
      */
-    protected function onErrorResponse(CommandInterface $command, Response\ErrorInterface $error)
+    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error)
     {
         $details = explode(' ', $error->getMessage(), 2);
 
@@ -409,7 +409,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
                 return $response;
 
             default:
-                throw new Protocol\ProtocolException(
+                throw new ProtocolException(
                     "Unexpected request type for a move request: $request"
                 );
         }
@@ -439,7 +439,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
         $connection = $this->getConnection($command);
         $response = $connection->executeCommand($command);
 
-        if ($response instanceof Response\ErrorInterface) {
+        if ($response instanceof ErrorResponseInterface) {
             return $this->onErrorResponse($command, $response);
         }
 
@@ -466,7 +466,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * Returns the underlying command hash strategy used to hash commands by
      * using keys found in their arguments.
      *
-     * @return Cluster\StrategyInterface
+     * @return ClusterStrategyInterface
      */
     public function getClusterStrategy()
     {

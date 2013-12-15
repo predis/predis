@@ -21,7 +21,9 @@ use Predis\ExecutableContextInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ReplicationConnectionInterface;
-use Predis\Response;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
+use Predis\Response\ServerException;
 
 /**
  * Implementation of a command pipeline in which write and read operations of
@@ -85,14 +87,14 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
      * Throws an exception on -ERR responses returned by Redis.
      *
      * @param ConnectionInterface $connection Redis connection that returned the error.
-     * @param Response\ErrorInterface $response Instance of the error response.
+     * @param ErrorResponseInterface $response Instance of the error response.
      */
-    protected function exception(ConnectionInterface $connection, Response\ErrorInterface $response)
+    protected function exception(ConnectionInterface $connection, ErrorResponseInterface $response)
     {
         $connection->disconnect();
         $message = $response->getMessage();
 
-        throw new Response\ServerException($message);
+        throw new ServerException($message);
     }
 
     /**
@@ -132,9 +134,9 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
             $command = $commands->dequeue();
             $response = $connection->readResponse($command);
 
-            if (!$response instanceof Response\ResponseInterface) {
+            if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
-            } else if ($response instanceof Response\ErrorInterface && $exceptions) {
+            } else if ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
             } else {
                 $responses[] = $response;

@@ -13,14 +13,21 @@ namespace Predis;
 
 use InvalidArgumentException;
 use UnexpectedValueException;
-use Predis\Command;
-use Predis\Configuration;
-use Predis\Connection;
-use Predis\Monitor;
-use Predis\Pipeline;
-use Predis\PubSub;
-use Predis\Response;
-use Predis\Transaction;
+use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
+use Predis\Command\ScriptCommand;
+use Predis\Configuration\Options;
+use Predis\Configuration\OptionsInterface;
+use Predis\Connection\ConnectionInterface;
+use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\ParametersInterface;
+use Predis\Monitor\Consumer as MonitorConsumer;
+use Predis\Pipeline\Pipeline;
+use Predis\PubSub\Consumer as PubSubConsumer;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
+use Predis\Response\ServerException;
+use Predis\Transaction\MultiExec as TransactionMultiExec;
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -61,10 +68,10 @@ class Client implements ClientInterface
     protected function createOptions($options)
     {
         if (is_array($options)) {
-            return new Configuration\Options($options);
+            return new Options($options);
         }
 
-        if ($options instanceof Configuration\OptionsInterface) {
+        if ($options instanceof OptionsInterface) {
             return $options;
         }
 
@@ -85,15 +92,15 @@ class Client implements ClientInterface
      *  - Callable
      *
      * @param mixed $parameters Connection parameters or connection instance.
-     * @return Connection\ConnectionInterface
+     * @return ConnectionInterface
      */
     protected function createConnection($parameters)
     {
-        if ($parameters instanceof Connection\ConnectionInterface) {
+        if ($parameters instanceof ConnectionInterface) {
             return $parameters;
         }
 
-        if ($parameters instanceof Connection\ParametersInterface || is_string($parameters)) {
+        if ($parameters instanceof ParametersInterface || is_string($parameters)) {
             return $this->options->connections->create($parameters);
         }
 
@@ -142,7 +149,7 @@ class Client implements ClientInterface
         return function () use ($callable) {
             $connection = call_user_func_array($callable, func_get_args());
 
-            if (!$connection instanceof Connection\ConnectionInterface) {
+            if (!$connection instanceof ConnectionInterface) {
                 throw new UnexpectedValueException(
                     'The callable connection initializer returned an invalid type'
                 );
@@ -234,11 +241,11 @@ class Client implements ClientInterface
      * client is in cluster or replication mode.
      *
      * @param string $connectionID Index or alias of the single connection.
-     * @return Connection\SingleConnectionInterface
+     * @return SingleConnectionInterface
      */
     public function getConnectionById($connectionID)
     {
-        if (!$this->connection instanceof Connection\AggregateConnectionInterface) {
+        if (!$this->connection instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
                 'Retrieving connections by ID is supported only when using aggregate connections'
             );
@@ -263,11 +270,11 @@ class Client implements ClientInterface
     {
         $error = false;
 
-        $command = new Command\RawCommand($arguments);
+        $command = new RawCommand($arguments);
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof Response\ResponseInterface) {
-            if ($response instanceof Response\ErrorInterface) {
+        if ($response instanceof ResponseInterface) {
+            if ($response instanceof ErrorResponseInterface) {
                 $error = true;
             }
 
@@ -304,13 +311,13 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function executeCommand(Command\CommandInterface $command)
+    public function executeCommand(CommandInterface $command)
     {
         $response = $this->connection->executeCommand($command);
 
-        if ($response instanceof Response\ResponseInterface) {
-            if ($response instanceof Response\ErrorInterface) {
-                $response = $this->onResponseError($command, $response);
+        if ($response instanceof ResponseInterface) {
+            if ($response instanceof ErrorResponseInterface) {
+                $response = $this->onErrorResponse($command, $response);
             }
 
             return $response;
@@ -322,21 +329,21 @@ class Client implements ClientInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param Command\CommandInterface $command Redis command that generated the error.
-     * @param Response\ErrorInterface $response Instance of the error response.
+     * @param CommandInterface $command Redis command that generated the error.
+     * @param ErrorResponseInterface $response Instance of the error response.
      * @return mixed
      */
-    protected function onResponseError(
-        Command\CommandInterface $command,
-        Response\ErrorInterface $response
+    protected function onErrorResponse(
+        CommandInterface $command,
+        ErrorResponseInterface $response
     ) {
-        if ($command instanceof Command\ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
+        if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
             $eval->setRawArguments($command->getEvalArguments());
 
             $response = $this->executeCommand($eval);
 
-            if (!$response instanceof Response\ResponseInterface) {
+            if (!$response instanceof ResponseInterface) {
                 $response = $command->parseResponse($response);
             }
 
@@ -344,7 +351,7 @@ class Client implements ClientInterface
         }
 
         if ($this->options->exceptions) {
-            throw new Response\ServerException($response->getMessage());
+            throw new ServerException($response->getMessage());
         }
 
         return $response;
@@ -385,7 +392,7 @@ class Client implements ClientInterface
      * a pipeline executed inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return Pipeline\Pipeline|array
+     * @return Pipeline|array
      */
     public function pipeline(/* arguments */)
     {
@@ -397,7 +404,7 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return Pipeline\Pipeline|array
+     * @return Pipeline|array
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
@@ -423,7 +430,7 @@ class Client implements ClientInterface
      * of a transaction executed inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return Transaction\MultiExec|array
+     * @return TransactionMultiExec|array
      */
     public function transaction(/* arguments */)
     {
@@ -435,11 +442,11 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return Transaction\MultiExec|array
+     * @return TransactionMultiExec|array
      */
     protected function createTransaction(array $options = null, $callable = null)
     {
-        $transaction = new Transaction\MultiExec($this, $options);
+        $transaction = new TransactionMultiExec($this, $options);
 
         if (isset($callable)) {
             return $transaction->execute($callable);
@@ -453,7 +460,7 @@ class Client implements ClientInterface
      * inside the optionally provided callable object.
      *
      * @param mixed $arg,... Options for the context, or a callable, or both.
-     * @return PubSub\Consumer|NULL
+     * @return PubSubConsumer|NULL
      */
     public function pubSubLoop(/* arguments */)
     {
@@ -465,11 +472,11 @@ class Client implements ClientInterface
      *
      * @param array $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
-     * @return PubSub\Consumer|NULL
+     * @return PubSubConsumer|NULL
      */
     protected function createPubSub(array $options = null, $callable = null)
     {
-        $pubsub = new PubSub\Consumer($this, $options);
+        $pubsub = new PubSubConsumer($this, $options);
 
         if (!isset($callable)) {
             return $pubsub;
@@ -485,10 +492,10 @@ class Client implements ClientInterface
     /**
      * Creates a new monitor consumer and returns it.
      *
-     * @return Monitor\Consumer
+     * @return MonitorConsumer
      */
     public function monitor()
     {
-        return new Monitor\Consumer($this);
+        return new MonitorConsumer($this);
     }
 }

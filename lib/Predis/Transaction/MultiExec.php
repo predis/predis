@@ -11,6 +11,7 @@
 
 namespace Predis\Transaction;
 
+use Exception;
 use InvalidArgumentException;
 use SplQueue;
 use Predis\BasicClientInterface;
@@ -19,7 +20,10 @@ use Predis\ClientInterface;
 use Predis\CommunicationException;
 use Predis\ExecutableContextInterface;
 use Predis\NotSupportedException;
-use Predis\Response;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
+use Predis\Response\ServerException;
+use Predis\Response\Status as StatusResponse;
 use Predis\Command\CommandInterface;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\Protocol\ProtocolException;
@@ -171,8 +175,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         $command  = $this->client->createCommand($commandID, $arguments);
         $response = $this->client->executeCommand($command);
 
-        if ($response instanceof Response\Error) {
-            throw new Response\ServerException($response->getMessage());
+        if ($response instanceof ErrorResponseInterface) {
+            throw new ServerException($response->getMessage());
         }
 
         return $response;
@@ -193,7 +197,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             return $response;
         }
 
-        if ($response != 'QUEUED' && !$response instanceof Response\Status) {
+        if ($response != 'QUEUED' && !$response instanceof StatusResponse) {
             $this->onProtocolError('The server did not respond with a QUEUED status response');
         }
 
@@ -375,8 +379,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         for ($i = 0; $i < $size; $i++) {
             $cmdResponse = $execResponse[$i];
 
-            if ($cmdResponse instanceof Response\ErrorInterface && $this->exceptions) {
-                throw new Response\ServerException($cmdResponse->getMessage());
+            if ($cmdResponse instanceof ErrorResponseInterface && $this->exceptions) {
+                throw new ServerException($cmdResponse->getMessage());
             }
 
             $response[$i] = $commands->dequeue()->parseResponse($cmdResponse);
@@ -399,9 +403,9 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             call_user_func($callable, $this);
         } catch (CommunicationException $exception) {
             // NOOP
-        } catch (Response\ServerException $exception) {
+        } catch (ServerException $exception) {
             // NOOP
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->discard();
         }
 

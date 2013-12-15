@@ -16,8 +16,9 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\ComposableConnectionInterface;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ProtocolProcessorInterface;
-use Predis\Response;
-use Predis\Response\Iterator;
+use Predis\Response\Status as StatusResponse;
+use Predis\Response\Error as ErrorResponse;
+use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
 
 /**
  * Protocol processor for the standard Redis wire protocol.
@@ -59,7 +60,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
         switch ($prefix) {
             case '+':    // inline
-                return new Response\Status($payload);
+                return new StatusResponse($payload);
 
             case '$':    // bulk
                 $size = (int) $payload;
@@ -75,7 +76,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                     return null;
                 }
                 if ($this->mbiterable) {
-                    return new Iterator\MultiBulk($connection, $count);
+                    return new MultiBulkIterator($connection, $count);
                 }
 
                 $multibulk = array();
@@ -90,7 +91,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                 return (int) $payload;
 
             case '-':    // error
-                return new Response\Error($payload);
+                return new ErrorResponse($payload);
 
             default:
                 CommunicationException::handle(new ProtocolException(
