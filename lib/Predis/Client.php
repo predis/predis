@@ -13,9 +13,7 @@ namespace Predis;
 
 use InvalidArgumentException;
 use UnexpectedValueException;
-use Predis\Command\CommandInterface;
-use Predis\Command\RawCommand;
-use Predis\Command\ScriptCommand;
+use Predis\Command;
 use Predis\Configuration;
 use Predis\Connection;
 use Predis\Monitor;
@@ -265,7 +263,7 @@ class Client implements ClientInterface
     {
         $error = false;
 
-        $command = new RawCommand($arguments);
+        $command = new Command\RawCommand($arguments);
         $response = $this->connection->executeCommand($command);
 
         if ($response instanceof Response\ResponseInterface) {
@@ -306,7 +304,7 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function executeCommand(CommandInterface $command)
+    public function executeCommand(Command\CommandInterface $command)
     {
         $response = $this->connection->executeCommand($command);
 
@@ -324,13 +322,15 @@ class Client implements ClientInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param CommandInterface $command Redis command that generated the error.
+     * @param Command\CommandInterface $command Redis command that generated the error.
      * @param Response\ErrorInterface $response Instance of the error response.
      * @return mixed
      */
-    protected function onResponseError(CommandInterface $command, Response\ErrorInterface $response)
-    {
-        if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
+    protected function onResponseError(
+        Command\CommandInterface $command,
+        Response\ErrorInterface $response
+    ) {
+        if ($command instanceof Command\ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
             $eval->setRawArguments($command->getEvalArguments());
 
