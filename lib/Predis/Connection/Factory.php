@@ -106,7 +106,7 @@ class Factory implements FactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function aggregate(AggregatedConnectionInterface $connection, array $parameters)
+    public function aggregate(AggregateConnectionInterface $connection, array $parameters)
     {
         foreach ($parameters as $node) {
             $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node));

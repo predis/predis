@@ -579,7 +579,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionFromAggregatedConnectionWithAlias()
+    public function testGetConnectionFromAggregateConnectionWithAlias()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
@@ -594,9 +594,9 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregated connections
+     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregate connections
      */
-    public function testGetConnectionByIdWorksOnlyWithAggregatedConnections()
+    public function testGetConnectionByIdWorksOnlyWithAggregateConnections()
     {
         $client = new Client();
 
@@ -606,7 +606,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateClientWithConnectionFromAggregatedConnection()
+    public function testCreateClientWithConnectionFromAggregateConnection()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
 

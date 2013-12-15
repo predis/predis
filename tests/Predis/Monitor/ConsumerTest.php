@@ -41,7 +41,7 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a monitor consumer when using aggregated connections
+     * @expectedExceptionMessage Cannot initialize a monitor consumer when using aggregate connections
      */
     public function testMonitorConsumerDoesNotWorkOnClusters()
     {

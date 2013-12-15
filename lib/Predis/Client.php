@@ -18,8 +18,6 @@ use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration;
 use Predis\Connection;
-use Predis\Connection\AggregatedConnectionInterface;
-use Predis\Connection\ConnectionInterface;
 use Predis\Monitor;
 use Predis\Pipeline;
 use Predis\PubSub;
@@ -89,11 +87,11 @@ class Client implements ClientInterface
      *  - Callable
      *
      * @param mixed $parameters Connection parameters or connection instance.
-     * @return ConnectionInterface
+     * @return Connection\ConnectionInterface
      */
     protected function createConnection($parameters)
     {
-        if ($parameters instanceof ConnectionInterface) {
+        if ($parameters instanceof Connection\ConnectionInterface) {
             return $parameters;
         }
 
@@ -146,7 +144,7 @@ class Client implements ClientInterface
         return function () use ($callable) {
             $connection = call_user_func_array($callable, func_get_args());
 
-            if (!$connection instanceof ConnectionInterface) {
+            if (!$connection instanceof Connection\ConnectionInterface) {
                 throw new UnexpectedValueException(
                     'The callable connection initializer returned an invalid type'
                 );
@@ -242,9 +240,9 @@ class Client implements ClientInterface
      */
     public function getConnectionById($connectionID)
     {
-        if (!$this->connection instanceof AggregatedConnectionInterface) {
+        if (!$this->connection instanceof Connection\AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Retrieving connections by ID is supported only when using aggregated connections'
+                'Retrieving connections by ID is supported only when using aggregate connections'
             );
         }
 

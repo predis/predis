@@ -44,8 +44,8 @@ interface FactoryInterface
     /**
      * Aggregates single connections into an aggregate connection instance.
      *
-     * @param AggregatedConnectionInterface $aggregate Aggregate connection instance.
+     * @param AggregateConnectionInterface $aggregate Aggregate connection instance.
      * @param array $parameters List of parameters for each connection.
      */
-    public function aggregate(AggregatedConnectionInterface $aggregate, array $parameters);
+    public function aggregate(AggregateConnectionInterface $aggregate, array $parameters);
 }

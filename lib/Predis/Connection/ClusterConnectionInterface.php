@@ -17,6 +17,6 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ClusterConnectionInterface extends AggregatedConnectionInterface
+interface ClusterConnectionInterface extends AggregateConnectionInterface
 {
 }

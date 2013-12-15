@@ -21,7 +21,7 @@ use Predis\ExecutableContextInterface;
 use Predis\NotSupportedException;
 use Predis\Response;
 use Predis\Command\CommandInterface;
-use Predis\Connection\AggregatedConnectionInterface;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -63,9 +63,9 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     private function preconditions(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof AggregatedConnectionInterface) {
+        if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a MULTI/EXEC transaction when using aggregated connections'
+                'Cannot initialize a MULTI/EXEC transaction when using aggregate connections'
             );
         }
 
@@ -419,7 +419,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     private function onProtocolError($message)
     {
-        // Since a MULTI/EXEC block cannot be initialized when using aggregated
+        // Since a MULTI/EXEC block cannot be initialized when using aggregate
         // connections we can safely assume that Predis\Client::getConnection()
         // will return a Predis\Connection\SingleConnectionInterface instance.
         CommunicationException::handle(new ProtocolException(

@@ -265,7 +265,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAggregatedConnectionSkipCreationOnConnectionInstance()
+    public function testAggregateConnectionSkipCreationOnConnectionInstance()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -284,7 +284,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAggregatedConnectionWithMixedParameters()
+    public function testAggregateConnectionWithMixedParameters()
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
@@ -306,7 +306,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAggregatedConnectionWithEmptyListOfParameters()
+    public function testAggregateConnectionWithEmptyListOfParameters()
     {
         $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
         $cluster->expects($this->never())->method('add');

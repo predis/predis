@@ -19,7 +19,7 @@ use Predis\Cluster\Distributor;
 use Predis\Command\CommandInterface;
 
 /**
- * Abstraction for a cluster of aggregated connections to various Redis servers
+ * Abstraction for a cluster of aggregate connections to various Redis servers
  * implementing client-side sharding based on pluggable distribution strategies.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
