@@ -321,12 +321,14 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 {
     private $use;
     private $aliases;
+    private $reverseAliases;
     private $namespace;
 
     public function __construct(PhpNamespace $namespace)
     {
         $this->use = array();
         $this->aliases = array();
+        $this->reverseAliases = array();
         $this->namespace = $namespace;
     }
 
@@ -338,6 +340,10 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
         $this->use[] = $use;
         $this->aliases[$as ?: PhpClass::extractName($use)] = $use;
+
+        if ($as !== null) {
+            $this->reverseAliases[$use] = $as;
+        }
     }
 
     public function getList()
@@ -352,8 +358,14 @@ class PhpUseDirectives implements Countable, IteratorAggregate
 
     public function getPhpCode()
     {
-        $reducer = function ($str, $use) {
-            return $str .= "use $use;\n";
+        $reverseAliases = $this->reverseAliases;
+
+        $reducer = function ($str, $use) use ($reverseAliases) {
+            if (isset($reverseAliases[$use])) {
+                return $str .= "use $use as {$reverseAliases[$use]};\n";
+            } else {
+                return $str .= "use $use;\n";
+            }
         };
 
         return array_reduce($this->getList(), $reducer, '');
@@ -433,7 +445,13 @@ LICENSE;
         $useDirectives = $this->getNamespace()->getUseDirectives();
 
         $useExtractor = function ($m) use ($useDirectives) {
-            $useDirectives->add(($namespacedPath = $m[1]));
+            array_shift($m);
+
+            if (isset($m[1])) {
+                $m[1] = str_replace(" as ", '', $m[1]);
+            }
+
+            call_user_func_array(array($useDirectives, 'add'), $m);
         };
 
         $classBuffer = stream_get_contents(fopen($this->getFile()->getPathname(), 'r'));
