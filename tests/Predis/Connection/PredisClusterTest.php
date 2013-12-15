@@ -388,7 +388,7 @@ class PredisClusterTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
 
         if ($parameters) {
-            $parameters = ConnectionParameters::create($parameters);
+            $parameters = Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
             $connection->expects($this->any())

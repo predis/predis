@@ -37,7 +37,7 @@ interface SingleConnectionInterface extends ConnectionInterface
     /**
      * Returns the parameters used to initialize the connection.
      *
-     * @return ConnectionParametersInterface
+     * @return ParametersInterface
      */
     public function getParameters();
 

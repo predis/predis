@@ -33,9 +33,9 @@ abstract class AbstractConnection implements SingleConnectionInterface
     protected $initCmds = array();
 
     /**
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
-    public function __construct(ConnectionParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters)
     {
         $this->parameters = $this->assertParameters($parameters);
     }
@@ -52,9 +52,9 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * Checks some of the parameters used to initialize the connection.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
-    protected function assertParameters(ConnectionParametersInterface $parameters)
+    protected function assertParameters(ParametersInterface $parameters)
     {
         $scheme = $parameters->scheme;
 

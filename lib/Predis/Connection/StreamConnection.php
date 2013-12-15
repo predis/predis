@@ -60,10 +60,10 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a TCP stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
+    private function tcpStreamInitializer(ParametersInterface $parameters)
     {
         $uri = "tcp://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
@@ -102,10 +102,10 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a UNIX stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function unixStreamInitializer(ConnectionParametersInterface $parameters)
+    private function unixStreamInitializer(ParametersInterface $parameters)
     {
         $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;

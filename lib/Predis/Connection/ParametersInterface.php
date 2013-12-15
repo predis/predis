@@ -12,12 +12,11 @@
 namespace Predis\Connection;
 
 /**
- * Interface that must be implemented by classes that provide their own mechanism
- * to parse and handle connection parameters.
+ * Interface for classes providing their own logic for connection parameters.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ConnectionParametersInterface
+interface ParametersInterface
 {
     /**
      * Checks if the specified parameters is set.

@@ -17,9 +17,9 @@ use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration;
+use Predis\Connection;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Connection\ConnectionParametersInterface;
 use Predis\Monitor;
 use Predis\Pipeline;
 use Predis\PubSub;
@@ -83,7 +83,7 @@ class Client implements ClientInterface
      * Accepted types for connection parameters are:
      *
      *  - Instance of Predis\Connection\ConnectionInterface.
-     *  - Instance of Predis\Connection\ConnectionParametersInterface.
+     *  - Instance of Predis\Connection\ParametersInterface.
      *  - Array
      *  - String
      *  - Callable
@@ -97,7 +97,7 @@ class Client implements ClientInterface
             return $parameters;
         }
 
-        if ($parameters instanceof ConnectionParametersInterface || is_string($parameters)) {
+        if ($parameters instanceof Connection\ParametersInterface || is_string($parameters)) {
             return $this->options->connections->create($parameters);
         }
 

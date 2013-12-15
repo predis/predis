@@ -74,8 +74,8 @@ class Factory implements FactoryInterface
      */
     public function create($parameters)
     {
-        if (!$parameters instanceof ConnectionParametersInterface) {
-            $parameters = ConnectionParameters::create($parameters);
+        if (!$parameters instanceof ParametersInterface) {
+            $parameters = Parameters::create($parameters);
         }
 
         $scheme = $parameters->scheme;

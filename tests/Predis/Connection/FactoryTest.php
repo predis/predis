@@ -35,7 +35,7 @@ class FactoryTest extends PredisTestCase
     {
         $factory = new Factory();
 
-        $tcp = new ConnectionParameters(array(
+        $tcp = new Parameters(array(
             'scheme' => 'tcp',
             'host' => 'locahost',
         ));
@@ -48,7 +48,7 @@ class FactoryTest extends PredisTestCase
         $this->assertEquals($tcp->database, $parameters->database);
 
 
-        $unix = new ConnectionParameters(array(
+        $unix = new Parameters(array(
             'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
         ));
@@ -117,7 +117,7 @@ class FactoryTest extends PredisTestCase
         $profile->expects($this->never())->method('create');
 
         $factory = new Factory($profile);
-        $parameters = new ConnectionParameters();
+        $parameters = new Parameters();
         $connection = $factory->create($parameters);
 
         $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
@@ -129,7 +129,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testCreateConnectionWithInitializationCommands()
     {
-        $parameters = new ConnectionParameters(array(
+        $parameters = new Parameters(array(
             'database' => '0',
             'password' => 'foobar'
         ));
@@ -162,7 +162,7 @@ class FactoryTest extends PredisTestCase
         $this->setExpectedException('InvalidArgumentException', "Unknown connection scheme: $scheme");
 
         $factory = new Factory();
-        $factory->create(new ConnectionParameters(array('scheme' => $scheme)));
+        $factory->create(new Parameters(array('scheme' => $scheme)));
     }
 
     /**
@@ -172,7 +172,7 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $parameters = new ConnectionParameters(array('scheme' => 'foobar'));
+        $parameters = new Parameters(array('scheme' => 'foobar'));
         $factory = new Factory();
 
         $factory->define($parameters->scheme, $connectionClass);
@@ -188,7 +188,7 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $parameters = new ConnectionParameters(array('scheme' => 'foobar'));
+        $parameters = new Parameters(array('scheme' => 'foobar'));
 
         $initializer = function ($parameters) use ($connectionClass) {
             return new $connectionClass($parameters);

@@ -48,7 +48,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    public function __construct(ConnectionParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters)
     {
         $this->assertExtensions();
 
@@ -89,7 +89,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
-    protected function assertParameters(ConnectionParametersInterface $parameters)
+    protected function assertParameters(ParametersInterface $parameters)
     {
         if (isset($parameters->persistent)) {
             throw new NotSupportedException(
@@ -186,9 +186,9 @@ class PhpiredisSocketConnection extends AbstractConnection
      * Sets options on the socket resource from the connection parameters.
      *
      * @param resource $socket Socket resource.
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters Parameters used to initialize the connection.
      */
-    private function setSocketOptions($socket, ConnectionParametersInterface $parameters)
+    private function setSocketOptions($socket, ParametersInterface $parameters)
     {
         if ($parameters->scheme !== 'tcp') {
             return;
@@ -225,10 +225,10 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Gets the address from the connection parameters.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
-    private static function getAddress(ConnectionParametersInterface $parameters)
+    private static function getAddress(ParametersInterface $parameters)
     {
         if ($parameters->scheme === 'unix') {
             return $parameters->path;
@@ -250,10 +250,10 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Opens the actual connection to the server with a timeout.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
-    private function connectWithTimeout(ConnectionParametersInterface $parameters)
+    private function connectWithTimeout(ParametersInterface $parameters)
     {
         $host = self::getAddress($parameters);
         $socket = $this->getResource();

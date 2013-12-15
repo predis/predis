@@ -51,7 +51,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    public function __construct(ConnectionParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters)
     {
         $this->assertExtensions();
 

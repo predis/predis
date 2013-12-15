@@ -18,7 +18,7 @@ use InvalidArgumentException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionParameters implements ConnectionParametersInterface
+class Parameters implements ParametersInterface
 {
     private $parameters;
 
@@ -70,7 +70,7 @@ class ConnectionParameters implements ConnectionParametersInterface
      * form of an URI string or a named array.
      *
      * @param array|string $parameters Set of connection parameters.
-     * @return ConnectionParameters
+     * @return Parameters
      */
     public static function create($parameters)
     {
