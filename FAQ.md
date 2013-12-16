@@ -58,7 +58,7 @@ instead of a list of arguments. Commands such as [`RPUSH`](http://redis.io/comma
 
 ```php
 $client->rpush('my:list', 'value1', 'value2', 'value3');             // plain method arguments
-$client->rpush('my:list', ['value1', 'value2', 'value3']);        	 // single argument array
+$client->rpush('my:list', ['value1', 'value2', 'value3']);           // single argument array
 
 $client->hmset('my:hash', 'field1', 'value1', 'field2', 'value2');   // plain method arguments
 $client->hmset('my:hash', ['field1'=>'value1', 'field2'=>'value2']); // single named array
@@ -68,7 +68,7 @@ An exception to this rule is [`SORT`](http://redis.io/commands/sort) for which m
 [using a named array](tests/Predis/Command/KeySortTest.php#L54-L75).
 
 
-# Frequently asked questions about performances #
+# Speaking about performances... #
 _________________________________________________
 
 
@@ -130,16 +130,20 @@ Fair enough, but there is an option available if you need even more speed and co
 __[phpiredis](http://github.com/nrk/phpiredis)__ (note the additional _i_ in the name) and let the
 client use it. __phpiredis__ is another C extension that wraps __hiredis__ (the official C client
 library for Redis) with a thin layer exposing its features to PHP. You can then choose between two
-different connection classes: `Predis\Connection\PhpiredisStreamConnection` (native PHP streams) and
-`Predis\Connection\PhpiredisSocketConnection` (requires `ext-socket`). You will now get the benefits
-of a faster protocol serializer and parser just by adding a couple of lines of code:
+different connection classes:
+
+  - `Predis\Connection\PhpiredisStreamConnection` (using native PHP streams).
+  - `Predis\Connection\PhpiredisSocketConnection` (requires `ext-socket`).
+
+You will now get the benefits of a faster protocol serializer and parser just by adding a couple of
+lines of code:
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', array(
     'connections' => array(
-    	'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',
-    	'unix' => 'Predis\Connection\PhpiredisSocketConnection',
-	),
+        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',
+        'unix' => 'Predis\Connection\PhpiredisSocketConnection',
+    ),
 ));
 ```
 
@@ -155,7 +159,7 @@ Fatching 30000 keys with _KEYS *_ using Predis paired with phpiredis::
 0.047 seconds from a remote Redis instance
 ```
 
-### Why not using phpredis if I need to install an extension to have better performances? ###
+### If I need an extension to get better performances, why not using phpredis? ###
 
 Good question. Generically speaking if you need absolute uber-speed using Redis on the localhost and
 you do not care about abstractions built around some Redis features such as MULTI / EXEC, or if you
