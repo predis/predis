@@ -50,14 +50,12 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
     {
         if ($iterator->getPosition() !== 0) {
             throw new RuntimeException(
-                'Cannot initialize a tuple iterator with an already initiated iterator'
+                'Cannot initialize a tuple iterator using an already initiated iterator.'
             );
         }
 
         if (($size = count($iterator)) % 2 !== 0) {
-            throw new UnexpectedValueException(
-                "Invalid response size for a tuple iterator [$size]"
-            );
+            throw new UnexpectedValueException("Invalid response size for a tuple iterator.");
         }
     }
 

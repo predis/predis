@@ -24,7 +24,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support MULTI, EXEC and DISCARD
+     * @expectedExceptionMessage The current profile does not support MULTI, EXEC and DISCARD.
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
@@ -36,7 +36,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage WATCH is not supported by the current profile
+     * @expectedExceptionMessage WATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
     {
@@ -50,7 +50,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage UNWATCH is not supported by the current profile
+     * @expectedExceptionMessage UNWATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
     {
@@ -142,7 +142,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context
+     * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context.
      */
     public function testThrowsExceptionOnExecInsideTransactionBlock()
     {
@@ -369,7 +369,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Automatic retries can be used only when a callable block is provided
+     * @expectedExceptionMessage Automatic retries are supported only when a callable block is provided.
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()
     {

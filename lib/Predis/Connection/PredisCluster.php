@@ -135,7 +135,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
 
         if (!isset($hash)) {
             throw new NotSupportedException(
-                "Cannot use {$command->getId()} with a cluster of connections"
+                "Cannot use '{$command->getId()}' over clusters of connections."
             );
         }
 

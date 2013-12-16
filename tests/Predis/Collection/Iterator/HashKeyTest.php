@@ -23,7 +23,7 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The specified server profile does not support the `HSCAN` command.
+     * @expectedExceptionMessage The current profile does not support 'HSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
     {

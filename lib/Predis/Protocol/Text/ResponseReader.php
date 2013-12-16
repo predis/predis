@@ -82,13 +82,13 @@ class ResponseReader implements ResponseReaderInterface
         $header = $connection->readLine();
 
         if ($header === '') {
-            $this->onProtocolError($connection, 'Unexpected empty header');
+            $this->onProtocolError($connection, 'Unexpected empty reponse header.');
         }
 
         $prefix = $header[0];
 
         if (!isset($this->handlers[$prefix])) {
-            $this->onProtocolError($connection, "Unknown prefix: '$prefix'");
+            $this->onProtocolError($connection, "Unknown response prefix: '$prefix'.");
         }
 
         $handler = $this->handlers[$prefix];

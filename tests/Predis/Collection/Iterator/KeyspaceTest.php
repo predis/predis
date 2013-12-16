@@ -23,7 +23,7 @@ class KeyspaceTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The specified server profile does not support the `SCAN` command.
+     * @expectedExceptionMessage The current profile does not support 'SCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
     {

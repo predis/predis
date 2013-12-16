@@ -65,7 +65,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Unknown server profile: 1.0
+     * @expectedExceptionMessage Unknown server profile: '1.0'.
      */
     public function testGetUndefinedProfile()
     {
@@ -87,7 +87,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Cannot register 'stdClass' as it is not a valid profile class
+     * @expectedExceptionMessage The class 'stdClass' is not a valid profile class.
      */
     public function testDefineInvalidProfile()
     {

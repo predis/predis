@@ -75,7 +75,7 @@ class Client implements ClientInterface
             return $options;
         }
 
-        throw new InvalidArgumentException("Invalid type for client options");
+        throw new InvalidArgumentException("Invalid type for client options.");
     }
 
     /**
@@ -134,7 +134,7 @@ class Client implements ClientInterface
             return $connection;
         }
 
-        throw new InvalidArgumentException('Invalid type for connection parameters');
+        throw new InvalidArgumentException('Invalid type for connection parameters.');
     }
 
     /**
@@ -151,7 +151,7 @@ class Client implements ClientInterface
 
             if (!$connection instanceof ConnectionInterface) {
                 throw new UnexpectedValueException(
-                    'The callable connection initializer returned an invalid type'
+                    'The callable connection initializer returned an invalid type.'
                 );
             }
 
@@ -185,7 +185,7 @@ class Client implements ClientInterface
     public function getClientFor($connectionID)
     {
         if (!$connection = $this->getConnectionById($connectionID)) {
-            throw new InvalidArgumentException("Invalid connection ID: $connectionID");
+            throw new InvalidArgumentException("Invalid connection ID: $connectionID.");
         }
 
         return new static($connection, $this->options);
@@ -247,7 +247,7 @@ class Client implements ClientInterface
     {
         if (!$this->connection instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Retrieving connections by ID is supported only when using aggregate connections'
+                'Retrieving connections by ID is supported only by aggregate connections.'
             );
         }
 

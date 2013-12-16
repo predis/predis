@@ -65,19 +65,17 @@ final class Factory
      * Registers a new server profile.
      *
      * @param string $alias Profile version or alias.
-     * @param string $profileClass FQN of a class implementing Predis\Profile\ProfileInterface.
+     * @param string $class FQN of a class implementing Predis\Profile\ProfileInterface.
      */
-    public static function define($alias, $profileClass)
+    public static function define($alias, $class)
     {
-        $reflection = new ReflectionClass($profileClass);
+        $reflection = new ReflectionClass($class);
 
         if (!$reflection->isSubclassOf('Predis\Profile\ProfileInterface')) {
-            throw new InvalidArgumentException(
-                "Cannot register '$profileClass' as it is not a valid profile class"
-            );
+            throw new InvalidArgumentException("The class '$class' is not a valid profile class.");
         }
 
-        self::$profiles[$alias] = $profileClass;
+        self::$profiles[$alias] = $class;
     }
 
     /**
@@ -89,7 +87,7 @@ final class Factory
     public static function get($version)
     {
         if (!isset(self::$profiles[$version])) {
-            throw new ClientException("Unknown server profile: $version");
+            throw new ClientException("Unknown server profile: '$version'.");
         }
 
         $profile = self::$profiles[$version];

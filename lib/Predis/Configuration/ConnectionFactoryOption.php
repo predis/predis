@@ -39,7 +39,9 @@ class ConnectionFactoryOption implements OptionInterface
 
             return $factory;
         } else {
-            throw new InvalidArgumentException('Invalid value for the connections option');
+            throw new InvalidArgumentException(
+                'Invalid value provided for the connections option.'
+            );
         }
     }
 

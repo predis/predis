@@ -155,14 +155,13 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expecteExceptionMessage Unknown connection scheme: 'unknown'.
      */
     public function testCreateUndefinedConnection()
     {
-        $scheme = 'unknown';
-        $this->setExpectedException('InvalidArgumentException', "Unknown connection scheme: $scheme");
-
         $factory = new Factory();
-        $factory->create(new Parameters(array('scheme' => $scheme)));
+        $factory->create(new Parameters(array('scheme' => 'unknown')));
     }
 
     /**
@@ -212,22 +211,21 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @expectedException InvalidArgumentException
      */
     public function testDefineConnectionWithInvalidArgument()
     {
-        $this->setExpectedException('InvalidArgumentException');
-
         $factory = new Factory();
         $factory->define('foobar', new \stdClass());
     }
 
     /**
      * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expecteExceptionMessage Unknown connection scheme: 'tcp'.
      */
     public function testUndefineDefinedConnection()
     {
-        $this->setExpectedException('InvalidArgumentException', 'Unknown connection scheme: tcp');
-
         $factory = new Factory();
         $factory->undefine('tcp');
         $factory->create('tcp://127.0.0.1');
@@ -247,6 +245,8 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @expectedException InvalidArgumentException
+     * @expecteExceptionMessage Unknown connection scheme: 'redis'.
      */
     public function testDefineAndUndefineConnection()
     {
@@ -258,7 +258,6 @@ class FactoryTest extends PredisTestCase
         $this->assertInstanceOf($connectionClass, $factory->create('redis://127.0.0.1'));
 
         $factory->undefine('redis');
-        $this->setExpectedException('InvalidArgumentException', 'Unknown connection scheme: redis');
         $factory->create('redis://127.0.0.1');
     }
 

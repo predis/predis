@@ -34,7 +34,7 @@ class Atomic extends Pipeline
     {
         if (!$client->getProfile()->supportsCommands(array('multi', 'exec', 'discard'))) {
             throw new ClientException(
-                'The specified server profile must support MULTI, EXEC and DISCARD.'
+                "The current profile does not support 'MULTI', 'EXEC' and 'DISCARD'."
             );
         }
 
@@ -51,9 +51,7 @@ class Atomic extends Pipeline
         if (!$connection instanceof SingleConnectionInterface) {
             $class = __CLASS__;
 
-            throw new ClientException(
-                "$class can be used only with connections to single nodes"
-            );
+            throw new ClientException("The class '$class' does not support aggregate connections.");
         }
 
         return $connection;
@@ -85,13 +83,16 @@ class Atomic extends Pipeline
         if (!isset($executed)) {
             // TODO: should be throwing a more appropriate exception.
             throw new ClientException(
-                'The underlying transaction has been aborted by the server'
+                'The underlying transaction has been aborted by the server.'
             );
         }
 
         if (count($executed) !== count($commands)) {
+            $expected = count($commands);
+            $received = count($executed);
+
             throw new ClientException(
-                "Invalid number of responses [expected: ".count($commands)." - actual: ".count($executed)."]"
+                "Invalid number of responses [expected $expected, received $received]."
             );
         }
 

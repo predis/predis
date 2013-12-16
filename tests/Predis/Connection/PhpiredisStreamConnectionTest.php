@@ -40,7 +40,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid scheme: udp
+     * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {

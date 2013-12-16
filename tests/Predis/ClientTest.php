@@ -216,7 +216,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage The callable connection initializer returned an invalid type
+     * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
     {
@@ -296,7 +296,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage The callable connection initializer returned an invalid type
+     * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()
     {
@@ -568,7 +568,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage 'INVALIDCOMMAND' is not a registered Redis command
+     * @expectedExceptionMessage Command 'INVALIDCOMMAND' is not a registered Redis command.
      */
     public function testThrowsExceptionOnNonRegisteredRedisCommand()
     {
@@ -594,7 +594,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by ID is supported only when using aggregate connections
+     * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections.
      */
     public function testGetConnectionByIdWorksOnlyWithAggregateConnections()
     {

@@ -46,7 +46,7 @@ class ReplicationStrategy
     {
         if (isset($this->disallowed[$id = $command->getId()])) {
             throw new NotSupportedException(
-                "The command $id is not allowed in replication mode"
+                "The command '$id' is not allowed in replication mode."
             );
         }
 

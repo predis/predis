@@ -33,7 +33,7 @@ class BulkResponse implements ResponseHandlerInterface
 
         if ("$length" !== $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$payload' as the length of the bulk response"
+                $connection, "Cannot parse '$payload' as a valid length for a bulk response."
             ));
         }
 

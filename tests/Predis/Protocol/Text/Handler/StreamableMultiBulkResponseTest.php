@@ -36,7 +36,7 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as the length of the multibulk response
+     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a multi-bulk response.
      */
     public function testInvalid()
     {

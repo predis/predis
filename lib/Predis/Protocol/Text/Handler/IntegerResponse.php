@@ -35,7 +35,7 @@ class IntegerResponse implements ResponseHandlerInterface
 
         if ($payload !== 'nil') {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$payload' as a numeric response"
+                $connection, "Cannot parse '$payload' as a valid numeric response."
             ));
         }
 

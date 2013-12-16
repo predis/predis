@@ -61,7 +61,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Arguments array is missing the command ID
+     * @expectedExceptionMessage The arguments array must contain at least the command ID.
      */
     public function testExceptionOnMissingCommandID()
     {

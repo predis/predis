@@ -56,7 +56,9 @@ class ClusterOption implements OptionInterface
         }
 
         if (!$value instanceof ClusterConnectionInterface) {
-            throw new InvalidArgumentException('Instance of Predis\Connection\ClusterConnectionInterface expected');
+            throw new InvalidArgumentException(
+                "An instance of type 'Predis\Connection\ClusterConnectionInterface' was expected."
+            );
         }
 
         return $value;

@@ -149,7 +149,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Cannot register 'stdClass' as it is not a valid Redis command
+     * @expectedExceptionMessage The class 'stdClass' is not a valid command class.
      */
     public function testDefineInvalidCommand()
     {
@@ -188,7 +188,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage 'UNKNOWN' is not a registered Redis command
+     * @expectedExceptionMessage Command 'UNKNOWN' is not a registered Redis command.
      */
     public function testCreateUndefinedCommand()
     {

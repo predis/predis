@@ -45,7 +45,9 @@ class ConnectionErrorProof extends Pipeline
         } else if ($connection instanceof ClusterConnectionInterface) {
             return $this->executeCluster($connection, $commands);
         } else {
-            throw new NotSupportedException("Unsupported connection type");
+            $class = get_class($connection);
+
+            throw new NotSupportedException("The connection class '$class' is not supported.");
         }
     }
 

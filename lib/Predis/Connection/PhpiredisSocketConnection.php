@@ -76,13 +76,13 @@ class PhpiredisSocketConnection extends AbstractConnection
     {
         if (!extension_loaded('sockets')) {
             throw new NotSupportedException(
-                'The "sockets" extension is required by this connection backend'
+                'The "sockets" extension is required by this connection backend.'
             );
         }
 
         if (!extension_loaded('phpiredis')) {
             throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend'
+                'The "phpiredis" extension is required by this connection backend.'
             );
         }
     }
@@ -94,7 +94,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     {
         if (isset($parameters->persistent)) {
             throw new NotSupportedException(
-                "Persistent connections are not supported by this connection backend"
+                "Persistent connections are not supported by this connection backend."
             );
         }
 
@@ -239,7 +239,7 @@ class PhpiredisSocketConnection extends AbstractConnection
 
         if (ip2long($host) === false) {
             if (($addresses = gethostbynamel($host)) === false) {
-                $this->onConnectionError("Cannot resolve the address of $host");
+                $this->onConnectionError("Cannot resolve the address of '$host'.");
             }
 
             return $addresses[array_rand($addresses)];
@@ -281,10 +281,10 @@ class PhpiredisSocketConnection extends AbstractConnection
         $selected = socket_select($selectable, $selectable, $null, $timeoutSecs, $timeoutUSecs);
 
         if ($selected === 2) {
-            $this->onConnectionError('Connection refused', SOCKET_ECONNREFUSED);
+            $this->onConnectionError('Connection refused.', SOCKET_ECONNREFUSED);
         }
         if ($selected === 0) {
-            $this->onConnectionError('Connection timed out', SOCKET_ETIMEDOUT);
+            $this->onConnectionError('Connection timed out.', SOCKET_ETIMEDOUT);
         }
         if ($selected === false) {
             $this->emitSocketError();
@@ -333,7 +333,7 @@ class PhpiredisSocketConnection extends AbstractConnection
             }
 
             if ($written === false) {
-                $this->onConnectionError('Error while writing bytes to the server');
+                $this->onConnectionError('Error while writing bytes to the server.');
             }
 
             $buffer = substr($buffer, $written);

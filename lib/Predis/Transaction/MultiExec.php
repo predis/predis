@@ -69,13 +69,13 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a MULTI/EXEC transaction when using aggregate connections'
+                'Cannot initialize a MULTI/EXEC transaction over aggregate connections.'
             );
         }
 
         if (!$client->getProfile()->supportsCommands(array('multi', 'exec', 'discard'))) {
             throw new NotSupportedException(
-                'The current profile does not support MULTI, EXEC and DISCARD'
+                'The current profile does not support MULTI, EXEC and DISCARD.'
             );
         }
     }
@@ -198,7 +198,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         }
 
         if ($response != 'QUEUED' && !$response instanceof StatusResponse) {
-            $this->onProtocolError('The server did not respond with a QUEUED status response');
+            $this->onProtocolError('The server did not return a +QUEUED status response.');
         }
 
         $this->commands->enqueue($command);
@@ -215,11 +215,11 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     public function watch($keys)
     {
         if (!$this->client->getProfile()->supportsCommand('WATCH')) {
-            throw new NotSupportedException('WATCH is not supported by the current profile');
+            throw new NotSupportedException('WATCH is not supported by the current profile.');
         }
 
         if ($this->state->isWatchAllowed()) {
-            throw new ClientException('WATCH after MULTI is not allowed');
+            throw new ClientException('Sending WATCH after MULTI is not allowed.');
         }
 
         $response = $this->call('watch', array($keys));
@@ -254,7 +254,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     public function unwatch()
     {
         if (!$this->client->getProfile()->supportsCommand('WATCH')) {
-            throw new NotSupportedException('UNWATCH is not supported by the current profile');
+            throw new NotSupportedException('UNWATCH is not supported by the current profile.');
         }
 
         $this->state->unflag(MultiExecState::WATCH);
@@ -300,27 +300,27 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         if ($this->state->isExecuting()) {
             throw new ClientException(
-                'Cannot invoke "execute" or "exec" inside an active transaction context'
+                'Cannot invoke "execute" or "exec" inside an active transaction context.'
             );
         }
 
         if ($callable) {
             if (!is_callable($callable)) {
-                throw new InvalidArgumentException('Argument passed must be a callable object');
+                throw new InvalidArgumentException('The argument must be a callable object.');
             }
 
             if (!$this->commands->isEmpty()) {
                 $this->discard();
 
                 throw new ClientException(
-                    'Cannot execute a transaction block after using fluent interface
-                ');
+                    'Cannot execute a transaction block after using fluent interface.'
+                );
             }
         } else if ($this->attempts) {
             $this->discard();
 
             throw new InvalidArgumentException(
-                'Automatic retries can be used only when a callable block is provided'
+                'Automatic retries are supported only when a callable block is provided.'
             );
         }
     }
@@ -356,7 +356,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             if ($execResponse === null) {
                 if ($attempts === 0) {
                     throw new AbortedMultiExecException(
-                        $this, 'The current transaction has been aborted by the server'
+                        $this, 'The current transaction has been aborted by the server.'
                     );
                 }
 
@@ -373,7 +373,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         $size = count($execResponse);
 
         if ($size !== count($commands)) {
-            $this->onProtocolError('EXEC returned an unexpected number of response items');
+            $this->onProtocolError('EXEC returned an unexpected number of response items.');
         }
 
         for ($i = 0; $i < $size; $i++) {

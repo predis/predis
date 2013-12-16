@@ -35,7 +35,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeRequest() is not supported
+     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeRequest() is not supported.
      */
     public function testWritingCommandsIsNotSupported()
     {
@@ -57,7 +57,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::read() is not supported
+     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::read() is not supported.
      */
     public function testReadingFromConnectionIsNotSupported()
     {
@@ -68,7 +68,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported
+     * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported.
      *
      */
     public function testAddingConnectCommandsIsNotSupported()
@@ -80,7 +80,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Disabled command: SELECT
+     * @expectedExceptionMessage Command 'SELECT' is not allowed by Webdis.
      */
     public function testRejectCommandSelect()
     {
@@ -91,7 +91,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Disabled command: AUTH
+     * @expectedExceptionMessage Command 'AUTH' is not allowed by Webdis.
      */
     public function testRejectCommandAuth()
     {

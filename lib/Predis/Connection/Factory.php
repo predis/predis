@@ -46,7 +46,7 @@ class Factory implements FactoryInterface
 
         if (!$class->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
             throw new InvalidArgumentException(
-                'A connection initializer must be a valid connection class or a callable object'
+                'A connection initializer must be a valid connection class or a callable object.'
             );
         }
 
@@ -81,7 +81,7 @@ class Factory implements FactoryInterface
         $scheme = $parameters->scheme;
 
         if (!isset($this->schemes[$scheme])) {
-            throw new InvalidArgumentException("Unknown connection scheme: $scheme");
+            throw new InvalidArgumentException("Unknown connection scheme: '$scheme'.");
         }
 
         $initializer = $this->schemes[$scheme];
@@ -95,8 +95,8 @@ class Factory implements FactoryInterface
 
         if (!$connection instanceof SingleConnectionInterface) {
             throw new InvalidArgumentException(
-                'Objects returned by connection initializers must implement ' .
-                'Predis\Connection\SingleConnectionInterface'
+                "Objects returned by connection initializers must implement ".
+                "'Predis\Connection\SingleConnectionInterface'."
             );
         }
 

@@ -59,11 +59,11 @@ abstract class AbstractConnection implements SingleConnectionInterface
         $scheme = $parameters->scheme;
 
         if ($scheme !== 'tcp' && $scheme !== 'unix') {
-            throw new InvalidArgumentException("Invalid scheme: $scheme");
+            throw new InvalidArgumentException("Invalid scheme: '$scheme'.");
         }
 
         if ($scheme === 'unix' && !isset($parameters->path)) {
-            throw new InvalidArgumentException('Missing UNIX domain socket path');
+            throw new InvalidArgumentException('Missing UNIX domain socket path.');
         }
 
         return $parameters;
@@ -90,7 +90,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
     public function connect()
     {
         if ($this->isConnected()) {
-            throw new ClientException('Connection already estabilished');
+            throw new ClientException('Connection already estabilished.');
         }
 
         $this->resource = $this->createResource();

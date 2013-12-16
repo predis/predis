@@ -48,7 +48,7 @@ class ReplicationOption implements OptionInterface
         }
 
         throw new InvalidArgumentException(
-            'Instance of Predis\Connection\ReplicationConnectionInterface expected'
+            "An instance of type 'Predis\Connection\ReplicationConnectionInterface' was expected."
         );
     }
 

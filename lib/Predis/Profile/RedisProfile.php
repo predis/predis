@@ -86,7 +86,7 @@ abstract class RedisProfile implements ProfileInterface
         $commandID = strtoupper($commandID);
 
         if (!isset($this->commands[$commandID])) {
-            throw new ClientException("'$commandID' is not a registered Redis command");
+            throw new ClientException("Command '$commandID' is not a registered Redis command.");
         }
 
         $commandClass = $this->commands[$commandID];
@@ -106,15 +106,15 @@ abstract class RedisProfile implements ProfileInterface
      * @param string $commandID Command ID.
      * @param string $commandClass Fully-qualified name of a Predis\Command\CommandInterface.
      */
-    public function defineCommand($commandID, $commandClass)
+    public function defineCommand($commandID, $class)
     {
-        $reflection = new ReflectionClass($commandClass);
+        $reflection = new ReflectionClass($class);
 
         if (!$reflection->isSubclassOf('Predis\Command\CommandInterface')) {
-            throw new InvalidArgumentException("Cannot register '$commandClass' as it is not a valid Redis command");
+            throw new InvalidArgumentException("The class '$class' is not a valid command class.");
         }
 
-        $this->commands[strtoupper($commandID)] = $commandClass;
+        $this->commands[strtoupper($commandID)] = $class;
     }
 
     /**

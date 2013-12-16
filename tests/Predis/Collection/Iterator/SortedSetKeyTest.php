@@ -23,7 +23,7 @@ class SortedSetTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The specified server profile does not support the `ZSCAN` command.
+     * @expectedExceptionMessage The current profile does not support 'ZSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
     {

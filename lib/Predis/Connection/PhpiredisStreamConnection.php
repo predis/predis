@@ -78,7 +78,7 @@ class PhpiredisStreamConnection extends StreamConnection
     {
         if (!extension_loaded('phpiredis')) {
             throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend'
+                'The "phpiredis" extension is required by this connection backend.'
             );
         }
     }
@@ -144,7 +144,7 @@ class PhpiredisStreamConnection extends StreamConnection
             $buffer = fread($socket, 4096);
 
             if ($buffer === false || $buffer === '') {
-                $this->onConnectionError('Error while reading bytes from the server');
+                $this->onConnectionError('Error while reading bytes from the server.');
 
                 return;
             }

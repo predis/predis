@@ -128,7 +128,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
         }
 
         if (!$this->nodes) {
-            throw new EmptyRingException('Cannot initialize empty hashring');
+            throw new EmptyRingException('Cannot initialize an empty hashring.');
         }
 
         $this->ring = array();

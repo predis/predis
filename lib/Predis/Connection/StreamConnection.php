@@ -167,7 +167,7 @@ class StreamConnection extends AbstractConnection
             }
 
             if ($written === false || $written === 0) {
-                $this->onConnectionError('Error while writing bytes to the server');
+                $this->onConnectionError('Error while writing bytes to the server.');
             }
 
             $buffer = substr($buffer, $written);
@@ -183,7 +183,7 @@ class StreamConnection extends AbstractConnection
         $chunk = fgets($socket);
 
         if ($chunk === false || $chunk === '') {
-            $this->onConnectionError('Error while reading line from the server');
+            $this->onConnectionError('Error while reading line from the server.');
         }
 
         $prefix = $chunk[0];
@@ -207,7 +207,7 @@ class StreamConnection extends AbstractConnection
                     $chunk = fread($socket, min($bytesLeft, 4096));
 
                     if ($chunk === false || $chunk === '') {
-                        $this->onConnectionError('Error while reading bytes from the server');
+                        $this->onConnectionError('Error while reading bytes from the server.');
                     }
 
                     $bulkData .= $chunk;
@@ -238,7 +238,7 @@ class StreamConnection extends AbstractConnection
                 return new ErrorResponse($payload);
 
             default:
-                $this->onProtocolError("Unknown prefix: '$prefix'");
+                $this->onProtocolError("Unknown response prefix: '$prefix'.");
         }
     }
 

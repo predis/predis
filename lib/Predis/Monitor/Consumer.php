@@ -56,14 +56,12 @@ class Consumer implements Iterator
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a monitor consumer when using aggregate connections'
+                'Cannot initialize a monitor consumer over aggregate connections.'
             );
         }
 
         if ($client->getProfile()->supportsCommand('monitor') === false) {
-            throw new NotSupportedException(
-                'The current profile does not support the MONITOR command'
-            );
+            throw new NotSupportedException("The current profile does not support 'MONITOR'.");
         }
     }
 

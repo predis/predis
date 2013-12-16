@@ -40,7 +40,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid scheme: udp
+     * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {
@@ -83,7 +83,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      * @expectedException Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unknown prefix: 'P'
+     * @expectedExceptionMessage Unknown response prefix: 'P'.
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()
     {

@@ -59,7 +59,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     public function readBuffer($length)
     {
         if ($length <= 0) {
-            throw new \InvalidArgumentException('Length parameter must be greater than 0');
+            throw new \InvalidArgumentException('Length parameter must be greater than 0.');
         }
 
         $value = '';
@@ -69,7 +69,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
             $chunk = fread($socket, $length);
 
             if ($chunk === false || $chunk === '') {
-                $this->onConnectionError('Error while reading bytes from the server');
+                $this->onConnectionError('Error while reading bytes from the server.');
             }
 
             $value .= $chunk;
@@ -90,7 +90,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
             $chunk = fgets($socket);
 
             if ($chunk === false || $chunk === '') {
-                $this->onConnectionError('Error while reading line from the server');
+                $this->onConnectionError('Error while reading line from the server.');
             }
 
             $value .= $chunk;

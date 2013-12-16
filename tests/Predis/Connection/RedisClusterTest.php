@@ -604,7 +604,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot use PING with redis-cluster
+     * @expectedExceptionMessage Cannot use 'PING' with redis-cluster.
      */
     public function testThrowsExceptionOnNonSupportedCommand()
     {

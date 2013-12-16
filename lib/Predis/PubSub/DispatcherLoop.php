@@ -45,7 +45,7 @@ class DispatcherLoop
     protected function assertCallback($callable)
     {
         if (!is_callable($callable)) {
-            throw new InvalidArgumentException("A valid callable object must be provided");
+            throw new InvalidArgumentException('The given argument must be a callable object.');
         }
     }
 

@@ -32,7 +32,9 @@ class RawCommand implements CommandInterface
     public function __construct(array $arguments)
     {
         if (!$arguments) {
-            throw new InvalidArgumentException("Arguments array is missing the command ID");
+            throw new InvalidArgumentException(
+                'The arguments array must contain at least the command ID.'
+            );
         }
 
         $this->commandID = strtoupper(array_shift($arguments));

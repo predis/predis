@@ -50,7 +50,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Connection already estabilished
+     * @expectedExceptionMessage Connection already estabilished.
      */
     public function testThrowsExceptionOnConnectWhenAlreadyConnected()
     {

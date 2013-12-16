@@ -61,7 +61,7 @@ class Consumer extends AbstractConsumer
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer when using aggregate connections'
+                'Cannot initialize a PUB/SUB consumer over aggregate connections.'
             );
         }
 
@@ -69,7 +69,7 @@ class Consumer extends AbstractConsumer
 
         if ($client->getProfile()->supportsCommands($commands) === false) {
             throw new NotSupportedException(
-                'The current profile does not support PUB/SUB related commands'
+                'The current profile does not support PUB/SUB related commands.'
             );
         }
     }
@@ -137,7 +137,7 @@ class Consumer extends AbstractConsumer
 
             default:
                 throw new ClientException(
-                    "Received an unknown message type {$response[0]} inside PUB/SUB"
+                    "Unknown message type '{$response[0]}' received in the PUB/SUB context."
                 );
         }
     }

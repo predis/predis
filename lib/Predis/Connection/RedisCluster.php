@@ -266,7 +266,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
         if (!isset($hash)) {
             throw new NotSupportedException(
-                "Cannot use {$command->getId()} with redis-cluster"
+                "Cannot use '{$command->getId()}' with redis-cluster."
             );
         }
 
@@ -410,7 +410,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
             default:
                 throw new ProtocolException(
-                    "Unexpected request type for a move request: $request"
+                    "Unexpected request type for a move request: $request."
                 );
         }
     }

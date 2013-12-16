@@ -51,9 +51,7 @@ class ListKey implements Iterator
         $this->requiredCommand($client, 'LRANGE');
 
         if ((false === $count = filter_var($count, FILTER_VALIDATE_INT)) || $count < 0) {
-            throw new InvalidArgumentException(
-                'The $count argument must be a positive integer.'
-            );
+            throw new InvalidArgumentException('The $count argument must be a positive integer.');
         }
 
         $this->client = $client;
@@ -73,9 +71,7 @@ class ListKey implements Iterator
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
         if (!$client->getProfile()->supportsCommand($commandID)) {
-            throw new NotSupportedException(
-                "The specified server profile does not support the `$commandID` command."
-            );
+            throw new NotSupportedException("The current profile does not support '$commandID'.");
         }
     }
 

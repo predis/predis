@@ -24,7 +24,7 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support PUB/SUB related commands
+     * @expectedExceptionMessage The current profile does not support PUB/SUB related commands.
      */
     public function testPubSubConsumerRequirePubSubRelatedCommand()
     {
@@ -40,7 +40,7 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer when using aggregate connections
+     * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer over aggregate connections.
      */
     public function testPubSubConsumerDoesNotWorkOnClusters()
     {

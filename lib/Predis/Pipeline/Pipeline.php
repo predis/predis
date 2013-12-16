@@ -172,7 +172,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     private function setRunning($bool)
     {
         if ($bool && $this->running) {
-            throw new ClientException('This pipeline is already opened');
+            throw new ClientException('The current pipeline context is already being executed.');
         }
 
         $this->running = $bool;
@@ -187,7 +187,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     public function execute($callable = null)
     {
         if ($callable && !is_callable($callable)) {
-            throw new InvalidArgumentException('Argument passed must be a callable object');
+            throw new InvalidArgumentException('The argument must be a callable object.');
         }
 
         $exception = null;

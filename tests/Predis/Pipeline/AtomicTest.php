@@ -51,7 +51,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage The underlying transaction has been aborted by the server
+     * @expectedExceptionMessage The underlying transaction has been aborted by the server.
      */
     public function testThrowsExceptionOnAbortedTransaction()
     {
@@ -150,7 +150,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Predis\Pipeline\Atomic can be used only with connections to single nodes
+     * @expectedExceptionMessage The class 'Predis\Pipeline\Atomic' does not support aggregate connections.
      */
     public function testExecutorWithAggregateConnection()
     {

@@ -58,7 +58,7 @@ class WebdisConnection implements SingleConnectionInterface
         $this->assertExtensions();
 
         if ($parameters->scheme !== 'http') {
-            throw new InvalidArgumentException("Invalid scheme: {$parameters->scheme}");
+            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
         $this->parameters = $parameters;
@@ -82,7 +82,7 @@ class WebdisConnection implements SingleConnectionInterface
     private function throwNotSupportedException($function)
     {
         $class = __CLASS__;
-        throw new NotSupportedException("The method $class::$function() is not supported");
+        throw new NotSupportedException("The method $class::$function() is not supported.");
     }
 
     /**
@@ -92,13 +92,13 @@ class WebdisConnection implements SingleConnectionInterface
     {
         if (!extension_loaded('curl')) {
             throw new NotSupportedException(
-                'The "curl" extension is required by this connection backend'
+                'The "curl" extension is required by this connection backend.'
             );
         }
 
         if (!extension_loaded('phpiredis')) {
             throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend'
+                'The "phpiredis" extension is required by this connection backend.'
             );
         }
     }
@@ -224,7 +224,7 @@ class WebdisConnection implements SingleConnectionInterface
             case 'UNWATCH':
             case 'DISCARD':
             case 'MONITOR':
-                throw new NotSupportedException("Disabled command: $commandID");
+                throw new NotSupportedException("Command '$commandID' is not allowed by Webdis.");
 
             default:
                 return $commandID;

@@ -111,8 +111,8 @@ class ProcessorChain implements CommandProcessorChainInterface, \ArrayAccess
     {
         if (!$processor instanceof CommandProcessorInterface) {
             throw new \InvalidArgumentException(
-                'A processor chain can hold only instances of classes implementing '.
-                'the Predis\Command\Processor\CommandProcessorInterface interface'
+                "A processor chain accepts only instances of ".
+                "'Predis\Command\Processor\CommandProcessorInterface'."
             );
         }
 

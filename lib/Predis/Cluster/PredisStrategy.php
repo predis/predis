@@ -193,7 +193,7 @@ class PredisStrategy implements StrategyInterface
 
         if (!is_callable($callback)) {
             throw new \InvalidArgumentException(
-                "Callback must be a valid callable object or NULL"
+                "The argument must be a callable object or NULL."
             );
         }
 
