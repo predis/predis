@@ -55,17 +55,17 @@ require 'Predis/Autoloader.php';
 Predis\Autoloader::register();
 ```
 
-It is also possible to create a [phar](http://www.php.net/manual/en/intro.phar.php) archive from the
-repository just by launching `bin/create-phar`. The generated phar contains a stub that defines an
+It is possible to easily create a [phar](http://www.php.net/manual/en/intro.phar.php) archive from
+the repository just by launching `bin/create-phar`. The generated phar contains a stub defining an
 autoloader function for Predis, so you just need to require the phar to start using the library.
-Alternatively it is possible to generate one single PHP file holding every class like older versions
-of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
+Alternatively, it is also possible to generate one single PHP file that holds every class like older
+versions of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
 
 
 ### Connecting to Redis ###
 
-When not specifying any connection parameter to create a new client, `127.0.0.1` and `6379` are used
-as the default host and port and a connection timeout of 5 seconds is assumed:
+When not specifying any connection parameter to create a new client, Predis assumes `127.0.0.1` and
+`6379` as the default host and port and uses a connection timeout of 5 seconds:
 
 ```php
 $client = new Predis\Client();
