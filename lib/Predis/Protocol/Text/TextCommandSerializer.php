@@ -36,7 +36,7 @@ class TextCommandSerializer implements CommandSerializerInterface
 
         $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandId}\r\n";
 
-        for ($i = 0; $i < $reqlen - 1; $i++) {
+        for ($i = 0, $reqlen--; $i < $reqlen; $i++) {
             $argument = $arguments[$i];
             $arglen = strlen($argument);
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
