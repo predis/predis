@@ -37,7 +37,6 @@ class ScriptedCommandTest extends PredisTestCase
                 ->will($this->returnValue(2));
         $command->setArguments($arguments);
 
-
         $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
     }
 

@@ -24,14 +24,14 @@ abstract class PredisCommandTestCase extends PredisTestCase
      *
      * @return CommandInterface|string Instance or FQN of the expected command.
      */
-    protected abstract function getExpectedCommand();
+    abstract protected function getExpectedCommand();
 
     /**
      * Returns the expected command ID.
      *
      * @return string
      */
-    protected abstract function getExpectedId();
+    abstract protected function getExpectedId();
 
     /**
      * Returns a new command instance.
@@ -48,7 +48,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @param bool $connect Flush selected database before returning the client.
+     * @param  bool   $connect Flush selected database before returning the client.
      * @return Client
      */
     public function getClient($flushdb = true)
@@ -90,7 +90,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance with the specified arguments.
      *
-     * @param array $arguments Arguments for the command.
+     * @param  array            $arguments Arguments for the command.
      * @return CommandInterface
      */
     protected function getCommandWithArgumentsArray(Array $arguments)

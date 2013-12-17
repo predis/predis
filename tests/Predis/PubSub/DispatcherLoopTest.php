@@ -13,7 +13,6 @@ namespace Predis\PubSub;
 
 use PredisTestCase;
 use Predis\Client;
-use Predis\Profile\ServerProfile;
 
 /**
  * @group realm-pubsub

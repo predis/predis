@@ -33,20 +33,20 @@ abstract class PredisProfileTestCase extends PredisTestCase
      *
      * @return string Version string.
      */
-    protected abstract function getExpectedVersion();
+    abstract protected function getExpectedVersion();
 
     /**
      * Returns the expected list of commands supported by the tested profile.
      *
      * @return array List of supported commands.
      */
-    protected abstract function getExpectedCommands();
+    abstract protected function getExpectedCommands();
 
     /**
      * Returns the list of commands supported by the current
      * server profile.
      *
-     * @param ServerProfileInterface $profile Server profile instance.
+     * @param  ServerProfileInterface $profile Server profile instance.
      * @return array
      */
     protected function getCommands(ServerProfileInterface $profile)

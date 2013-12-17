@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
-
 /**
  * In order to support the output of SLOWLOG, the backend connection
  * must be able to parse nested multibulk replies deeper than 2 levels.

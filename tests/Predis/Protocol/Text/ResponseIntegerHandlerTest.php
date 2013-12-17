@@ -12,7 +12,6 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
-use Predis\ResponseQueued;
 
 /**
  *

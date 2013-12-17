@@ -548,7 +548,6 @@ class RedisClusterTest extends PredisTestCase
                     ->with($command)
                     ->will($this->onConsecutiveCalls('foobar', 'foobar'));
 
-
         $factory = $this->getMock('Predis\Connection\ConnectionFactory');
         $factory->expects($this->never())->method('create');
 
@@ -644,7 +643,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * Returns a base mocked connection from Predis\Connection\SingleConnectionInterface.
      *
-     * @param mixed $parameters Optional parameters.
+     * @param  mixed $parameters Optional parameters.
      * @return mixed
      */
     protected function getMockConnection($parameters = null)

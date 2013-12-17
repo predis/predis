@@ -78,7 +78,7 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a mocked connection instance.
      *
-     * @param mixed $parameters Connection parameters.
+     * @param  mixed                     $parameters Connection parameters.
      * @return SingleConnectionInterface
      */
     protected function getMockedConnectionBase($parameters = null)
@@ -87,7 +87,7 @@ class CommunicationExceptionTest extends PredisTestCase
 
         if ($parameters === null) {
             $builder->disableOriginalConstructor();
-        } else if (!$parameters instanceof ConnectionParametersInterface) {
+        } elseif (!$parameters instanceof ConnectionParametersInterface) {
             $parameters = new ConnectionParameters($parameters);
         }
 
@@ -97,10 +97,10 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param SingleConnectionInterface $message Connection instance.
-     * @param string $message Exception message.
-     * @param int $code Exception code.
-     * @param \Exception $inner Inner exception.
+     * @param  SingleConnectionInterface $message Connection instance.
+     * @param  string                    $message Exception message.
+     * @param  int                       $code    Exception code.
+     * @param  \Exception                $inner   Inner exception.
      * @return \Exception
      */
     protected function getException(SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)

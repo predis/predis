@@ -242,7 +242,7 @@ class ParametersTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param Array $parameters Array of connection parameters.
+     * @param  Array  $parameters Array of connection parameters.
      * @return String URI string.
      */
     protected function getParametersString(Array $parameters)

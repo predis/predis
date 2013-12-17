@@ -116,7 +116,7 @@ class StandardExecutorTest extends PredisTestCase
      * Executes a test for the Predis\ResponseObjectInterface type.
      *
      * @param PipelineExecutorInterface $executor
-     * @param ResponseObjectInterface $response
+     * @param ResponseObjectInterface   $response
      */
     protected function simpleResponseObjectTest(PipelineExecutorInterface $executor, ResponseObjectInterface $response)
     {

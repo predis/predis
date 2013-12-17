@@ -11,9 +11,6 @@
 
 namespace Predis\Connection;
 
-use PredisTestCase;
-use Predis\Profile\ServerProfile;
-
 /**
  * @group ext-phpiredis
  */

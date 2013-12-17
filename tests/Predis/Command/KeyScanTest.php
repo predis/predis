@@ -11,7 +11,6 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
 /**
  * @group commands
  * @group realm-key

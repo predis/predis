@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
-
 /**
  * We only perform disconnected tests for this commands because
  * it is too old (Redis v1.2) and expects a different response

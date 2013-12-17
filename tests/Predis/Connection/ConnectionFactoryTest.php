@@ -46,7 +46,6 @@ class ConnectionFactoryTest extends PredisTestCase
         $this->assertEquals($tcp->host, $parameters->host);
         $this->assertEquals($tcp->database, $parameters->database);
 
-
         $unix = new ConnectionParameters(array(
             'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
