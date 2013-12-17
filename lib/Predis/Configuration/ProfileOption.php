@@ -33,7 +33,12 @@ class ProfileOption implements OptionInterface
     protected function setProcessors(OptionsInterface $options, ProfileInterface $profile)
     {
         if (isset($options->prefix) && $profile instanceof RedisProfile) {
-            $profile->setProcessor($options->prefix);
+            // NOTE: directly using __get('prefix') is actually a workaround for
+            // HHVM 2.3.0. It's correct and respects the options interface, it's
+            // just ugly. We will remove this hack when HHVM will fix re-entrant
+            // calls to __get() once and for all.
+
+            $profile->setProcessor($options->__get('prefix'));
         }
     }
 
