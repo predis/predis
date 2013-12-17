@@ -51,7 +51,7 @@ class OptionsTest extends PredisTestCase
 
         $this->assertInternalType('bool', $options->exceptions);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
-        $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $options->prefix);
+        $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
         $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);

@@ -39,7 +39,7 @@ class PrefixOptionTest extends PredisTestCase
 
         $return = $option->filter($options, $value = 'prefix:');
 
-        $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $return);
+        $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $return);
         $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $return);
         $this->assertSame($value, $return->getPrefix());
     }
@@ -51,7 +51,7 @@ class PrefixOptionTest extends PredisTestCase
     {
         $option = new PrefixOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
 
         $return = $option->filter($options, $processor);
 

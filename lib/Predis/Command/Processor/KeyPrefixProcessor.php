@@ -11,16 +11,17 @@
 
 namespace Predis\Command\Processor;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
 
 /**
- * Command processor used to prefix the keys contained in the arguments of a
- * Redis command.
+ * Command processor capable of prefixing keys stored in the arguments of Redis
+ * commands supported.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class KeyPrefixProcessor implements CommandProcessorInterface
+class KeyPrefixProcessor implements ProcessorInterface
 {
     private $prefix;
     private $commands;

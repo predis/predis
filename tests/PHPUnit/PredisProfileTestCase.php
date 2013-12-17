@@ -211,7 +211,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testSetProcessor()
     {
-        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
 
         $profile = $this->getProfile();
         $profile->setProcessor($processor);
@@ -224,7 +224,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testSetAndUnsetProcessor()
     {
-        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
         $profile = $this->getProfile();
 
         $profile->setProcessor($processor);
@@ -243,7 +243,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
     {
         $argsRef = null;
 
-        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
         $processor->expects($this->once())
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
@@ -263,7 +263,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testChainOfProcessors()
     {
-        $processor = $this->getMock('Predis\Command\Processor\CommandProcessorInterface');
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
         $processor->expects($this->exactly(2))
                   ->method('process');
 

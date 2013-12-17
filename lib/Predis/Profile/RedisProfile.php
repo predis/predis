@@ -14,7 +14,7 @@ namespace Predis\Profile;
 use InvalidArgumentException;
 use ReflectionClass;
 use Predis\ClientException;
-use Predis\Command\Processor\CommandProcessorInterface;
+use Predis\Command\Processor\ProcessorInterface;
 
 /**
  * Base class implementing common functionalities for Redis server profiles.
@@ -120,7 +120,7 @@ abstract class RedisProfile implements ProfileInterface
     /**
      * {@inheritdoc}
      */
-    public function setProcessor(CommandProcessorInterface $processor = null)
+    public function setProcessor(ProcessorInterface $processor = null)
     {
         $this->processor = $processor;
     }

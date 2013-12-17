@@ -28,7 +28,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $prefix = 'prefix:';
         $processor = new KeyPrefixProcessor($prefix);
 
-        $this->assertInstanceOf('Predis\Command\Processor\CommandProcessorInterface', $processor);
+        $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $processor);
         $this->assertEquals($prefix, $processor->getPrefix());
     }
 

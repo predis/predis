@@ -82,6 +82,10 @@ v0.9.0 (201x-xx-xx)
   they can also define the needed logic in their command classes by implementing
   `Predis\Command\PrefixableCommandInterface` just like before.
 
+- Renamed interface `Predis\Command\Processor\CommandProcessorInterface` to a
+  shorter `Predis\Command\Processor\ProcessorInterface`. Also removed interface
+  for chain processors since it is basically useless.
+
 - The client can now send raw commands using `Predis\Client::executeRaw()`.
 
 
