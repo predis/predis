@@ -10,6 +10,10 @@ Predis does not require any additional extension loaded in PHP but can be option
 and parsing the Redis protocol. An asynchronous implementation of the client, albeit experimental,
 is also available through [Predis\Async](https://github.com/nrk/predis-async).
 
+The library can also be used with [HHVM](http://www.hhvm.com) >= 2.3.0 although we cannot guarantee
+that you will not run into unexpected issues especially in some obscure corner cases, mostly due to
+the fact that HHVM is still being actively developed and not 100% compatible with PHP.
+
 You can refer to our [FAQ](FAQ.md) for a list of frequently asked questions about Predis, or find
 more details on the [wiki pages](https://github.com/nrk/predis/wiki) of the project.
 

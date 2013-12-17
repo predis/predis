@@ -69,9 +69,12 @@ class RawCommandTest extends PredisTestCase
     }
 
     /**
+     * The signature of RawCommand::create() requires one argument which is the
+     * ID of the command (other arguments are fetched dinamically). If the first
+     * argument is missing, PHP emits an E_WARNING.
+     *
      * @group disconnected
      * @expectedException PHPUnit_Framework_Error_Warning
-     * @expectedExceptionMessage Missing argument 1 for Predis\Command\RawCommand::create()
      */
     public function testPHPWarningOnMissingCommandIDWithStaticCreate()
     {
