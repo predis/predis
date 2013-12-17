@@ -25,7 +25,7 @@ class ClientCluster extends AbstractOption
     /**
      * Checks if the specified value is a valid instance of ClusterConnectionInterface.
      *
-     * @param ClusterConnectionInterface $cluster Instance of a connection cluster.
+     * @param  ClusterConnectionInterface $cluster Instance of a connection cluster.
      * @return ClusterConnectionInterface
      */
     protected function checkInstance($cluster)
@@ -54,8 +54,8 @@ class ClientCluster extends AbstractOption
     /**
      * Returns an initializer for the specified FQN or type.
      *
-     * @param string $fqnOrType Type of cluster or FQN of a class implementing ClusterConnectionInterface.
-     * @param ClientOptionsInterface $options Instance of the client options.
+     * @param  string                 $fqnOrType Type of cluster or FQN of a class implementing ClusterConnectionInterface.
+     * @param  ClientOptionsInterface $options   Instance of the client options.
      * @return \Closure
      */
     protected function getInitializer(ClientOptionsInterface $options, $fqnOrType)
@@ -79,6 +79,7 @@ class ClientCluster extends AbstractOption
                 if (is_string($fqnOrType) && !class_exists($fqnOrType)) {
                     throw new \InvalidArgumentException("Class $fqnOrType does not exist");
                 }
+
                 return function () use ($fqnOrType) {
                     return new $fqnOrType();
                 };

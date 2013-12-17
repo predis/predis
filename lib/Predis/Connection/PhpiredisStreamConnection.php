@@ -133,7 +133,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Gets the handler used by the protocol reader to handle Redis errors.
      *
-     * @param Boolean $throw_errors Specify if Redis errors throw exceptions.
+     * @param  Boolean  $throw_errors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
     protected function getErrorHandler()
@@ -156,6 +156,7 @@ class PhpiredisStreamConnection extends StreamConnection
 
             if ($buffer === false || $buffer === '') {
                 $this->onConnectionError('Error while reading bytes from the server');
+
                 return;
             }
 

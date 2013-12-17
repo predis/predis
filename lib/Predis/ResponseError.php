@@ -43,6 +43,7 @@ class ResponseError implements ResponseErrorInterface
     public function getErrorType()
     {
         list($errorType, ) = explode(' ', $this->getMessage(), 2);
+
         return $errorType;
     }
 

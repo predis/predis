@@ -26,7 +26,7 @@ interface ProtocolInterface extends ResponseReaderInterface
      * Writes a Redis command on the specified connection.
      *
      * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param CommandInterface $command Redis command.
+     * @param CommandInterface              $command    Redis command.
      */
     public function write(ComposableConnectionInterface $connection, CommandInterface $command);
 
@@ -34,7 +34,7 @@ interface ProtocolInterface extends ResponseReaderInterface
      * Sets the options for the protocol processor.
      *
      * @param string $option Name of the option.
-     * @param mixed $value Value of the option.
+     * @param mixed  $value  Value of the option.
      */
     public function setOption($option, $value);
 }

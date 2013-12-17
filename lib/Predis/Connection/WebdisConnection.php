@@ -102,7 +102,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes cURL.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return resource
      */
     private function initializeCurl(ConnectionParametersInterface $parameters)
@@ -128,7 +128,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes phpiredis' protocol reader.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return resource
      */
     private function initializeReader(ConnectionParametersInterface $parameters)
@@ -168,8 +168,8 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Feeds phpredis' reader resource with the data read from the network.
      *
-     * @param resource $resource Reader resource.
-     * @param string $buffer Buffer with the reply read from the network.
+     * @param  resource $resource Reader resource.
+     * @param  string   $buffer   Buffer with the reply read from the network.
      * @return int
      */
     protected function feedReader($resource, $buffer)
@@ -206,7 +206,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Checks if the specified command is supported by this connection class.
      *
-     * @param CommandInterface $command The instance of a Redis command.
+     * @param  CommandInterface $command The instance of a Redis command.
      * @return string
      */
     protected function getCommandId(CommandInterface $command)

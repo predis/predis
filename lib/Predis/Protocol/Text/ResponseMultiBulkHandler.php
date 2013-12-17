@@ -28,8 +28,8 @@ class ResponseMultiBulkHandler implements ResponseHandlerInterface
     /**
      * Handles a multi-bulk reply returned by Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $lengthString Number of items in the multi-bulk reply.
+     * @param  ComposableConnectionInterface $connection   Connection to Redis.
+     * @param  string                        $lengthString Number of items in the multi-bulk reply.
      * @return array
      */
     public function handle(ComposableConnectionInterface $connection, $lengthString)

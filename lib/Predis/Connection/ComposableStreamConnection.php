@@ -27,7 +27,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
 
     /**
      * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
-     * @param ProtocolInterface $protocol A protocol processor.
+     * @param ProtocolInterface             $protocol   A protocol processor.
      */
     public function __construct(ConnectionParametersInterface $parameters, ProtocolInterface $protocol = null)
     {

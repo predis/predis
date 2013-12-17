@@ -22,7 +22,7 @@ interface ConnectionParametersInterface
     /**
      * Checks if the specified parameters is set.
      *
-     * @param string $property Name of the property.
+     * @param  string  $property Name of the property.
      * @return Boolean
      */
     public function __isset($parameter);
@@ -30,7 +30,7 @@ interface ConnectionParametersInterface
     /**
      * Returns the value of the specified parameter.
      *
-     * @param string $parameter Name of the parameter.
+     * @param  string $parameter Name of the parameter.
      * @return mixed
      */
     public function __get($parameter);

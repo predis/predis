@@ -112,7 +112,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * Removes a connection instance using its alias or index.
      *
-     * @param string $connectionId Alias or index of a connection.
+     * @param  string  $connectionId Alias or index of a connection.
      * @return Boolean Returns true if the connection was in the pool.
      */
     public function removeById($connectionId)
@@ -151,7 +151,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * Retrieves a connection instance from the cluster using a key.
      *
-     * @param string $key Key of a Redis value.
+     * @param  string                    $key Key of a Redis value.
      * @return SingleConnectionInterface
      */
     public function getConnectionByKey($key)
@@ -216,7 +216,7 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * Executes the specified Redis command on all the nodes of a cluster.
      *
-     * @param CommandInterface $command A Redis command.
+     * @param  CommandInterface $command A Redis command.
      * @return array
      */
     public function executeCommandOnNodes(CommandInterface $command)

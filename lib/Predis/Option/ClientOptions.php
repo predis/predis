@@ -51,7 +51,7 @@ class ClientOptions implements ClientOptionsInterface
     /**
      * Initializes client options handlers.
      *
-     * @param array $options List of client options values.
+     * @param  array $options List of client options values.
      * @return array
      */
     protected function initialize(Array $options)
@@ -75,7 +75,7 @@ class ClientOptions implements ClientOptionsInterface
     /**
      * Checks if the specified option is set.
      *
-     * @param string $option Name of the option.
+     * @param  string  $option Name of the option.
      * @return Boolean
      */
     public function __isset($option)
@@ -86,7 +86,7 @@ class ClientOptions implements ClientOptionsInterface
     /**
      * Returns the value of the specified option.
      *
-     * @param string $option Name of the option.
+     * @param  string $option Name of the option.
      * @return mixed
      */
     public function __get($option)
@@ -107,7 +107,7 @@ class ClientOptions implements ClientOptionsInterface
     /**
      * Returns the default value for the specified option.
      *
-     * @param string|OptionInterface $option Name or instance of the option.
+     * @param  string|OptionInterface $option Name or instance of the option.
      * @return mixed
      */
     public function getDefault($option)

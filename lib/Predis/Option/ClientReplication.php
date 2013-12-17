@@ -24,7 +24,7 @@ class ClientReplication extends AbstractOption
     /**
      * Checks if the specified value is a valid instance of ReplicationConnectionInterface.
      *
-     * @param ReplicationConnectionInterface $connection Instance of a replication connection.
+     * @param  ReplicationConnectionInterface $connection Instance of a replication connection.
      * @return ReplicationConnectionInterface
      */
     protected function checkInstance($connection)

@@ -33,8 +33,8 @@ class CustomOption implements OptionInterface
     /**
      * Checks if the specified value in the options array is a callable object.
      *
-     * @param array $options Array of options
-     * @param string $key Target option.
+     * @param array  $options Array of options
+     * @param string $key     Target option.
      */
     private function ensureCallable($options, $key)
     {

@@ -24,8 +24,8 @@ interface DistributionStrategyInterface
     /**
      * Adds a node to the distributor with an optional weight.
      *
-     * @param mixed $node Node object.
-     * @param int $weight Weight for the node.
+     * @param mixed $node   Node object.
+     * @param int   $weight Weight for the node.
      */
     public function add($node, $weight = null);
 

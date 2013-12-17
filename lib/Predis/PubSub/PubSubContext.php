@@ -28,8 +28,8 @@ class PubSubContext extends AbstractPubSubContext
     private $options;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
-     * @param array $options Options for the context initialization.
+     * @param ClientInterface $client  Client instance used by the context.
+     * @param array           $options Options for the context initialization.
      */
     public function __construct(ClientInterface $client, Array $options = null)
     {

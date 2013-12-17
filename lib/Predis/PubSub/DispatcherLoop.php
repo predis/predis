@@ -90,7 +90,7 @@ class DispatcherLoop
     /**
      * Binds a callback to a channel.
      *
-     * @param string $channel Channel name.
+     * @param string   $channel  Channel name.
      * @param Callable $callback A callback.
      */
     public function attachCallback($channel, $callback)
@@ -137,7 +137,7 @@ class DispatcherLoop
             if (isset($this->callbacks[$message->channel])) {
                 $callback = $this->callbacks[$message->channel];
                 call_user_func($callback, $message->payload);
-            } else if (isset($this->defaultCallback)) {
+            } elseif (isset($this->defaultCallback)) {
                 $callback = $this->defaultCallback;
                 call_user_func($callback, $message);
             }

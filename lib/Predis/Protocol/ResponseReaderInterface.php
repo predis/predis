@@ -24,7 +24,7 @@ interface ResponseReaderInterface
     /**
      * Reads replies from a connection to Redis and deserializes them.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
+     * @param  ComposableConnectionInterface $connection Connection to Redis.
      * @return mixed
      */
     public function read(ComposableConnectionInterface $connection);

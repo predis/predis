@@ -23,7 +23,7 @@ interface CommandSerializerInterface
     /**
      * Serializes a Redis command.
      *
-     * @param CommandInterface $command Redis command.
+     * @param  CommandInterface $command Redis command.
      * @return string
      */
     public function serialize(CommandInterface $command);

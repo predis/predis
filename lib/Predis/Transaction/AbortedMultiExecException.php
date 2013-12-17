@@ -24,8 +24,8 @@ class AbortedMultiExecException extends PredisException
 
     /**
      * @param MultiExecContext $transaction Transaction that generated the exception.
-     * @param string $message Error message.
-     * @param int $code Error code.
+     * @param string           $message     Error message.
+     * @param int              $code        Error code.
      */
     public function __construct(MultiExecContext $transaction, $message, $code = null)
     {

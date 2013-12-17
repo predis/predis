@@ -25,7 +25,7 @@ abstract class ScriptedCommand extends ServerEvalSHA
      *
      * @return string
      */
-    public abstract function getScript();
+    abstract public function getScript();
 
     /**
      * Specifies the number of arguments that should be considered as keys.

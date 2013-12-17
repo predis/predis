@@ -39,7 +39,7 @@ class ReplicationStrategy
      * Returns if the specified command performs a read-only operation
      * against a key stored on Redis.
      *
-     * @param CommandInterface $command Instance of Redis command.
+     * @param  CommandInterface $command Instance of Redis command.
      * @return Boolean
      */
     public function isReadOperation(CommandInterface $command)
@@ -75,7 +75,7 @@ class ReplicationStrategy
      * Returns if the specified command is disallowed in a master/slave
      * replication context.
      *
-     * @param CommandInterface $command Instance of Redis command.
+     * @param  CommandInterface $command Instance of Redis command.
      * @return Boolean
      */
     public function isDisallowedOperation(CommandInterface $command)
@@ -87,12 +87,13 @@ class ReplicationStrategy
      * Checks if a SORT command is a readable operation by parsing the arguments
      * array of the specified commad instance.
      *
-     * @param CommandInterface $command Instance of Redis command.
+     * @param  CommandInterface $command Instance of Redis command.
      * @return Boolean
      */
     protected function isSortReadOnly(CommandInterface $command)
     {
         $arguments = $command->getArguments();
+
         return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
     }
 
@@ -103,7 +104,7 @@ class ReplicationStrategy
      * instance of a command performs write operations or not.
      *
      * @param string $commandID ID of the command.
-     * @param mixed $readonly A boolean or a callable object.
+     * @param mixed  $readonly  A boolean or a callable object.
      */
     public function setCommandReadOnly($commandID, $readonly = true)
     {
@@ -123,8 +124,8 @@ class ReplicationStrategy
      * if the passed instance of EVAL or EVALSHA performs write operations or
      * not.
      *
-     * @param string $script Body of the Lua script.
-     * @param mixed $readonly A boolean or a callable object.
+     * @param string $script   Body of the Lua script.
+     * @param mixed  $readonly A boolean or a callable object.
      */
     public function setScriptReadOnly($script, $readonly = true)
     {

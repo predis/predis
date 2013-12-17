@@ -24,7 +24,7 @@ class MultiBulkResponseSimple extends MultiBulkResponse
 
     /**
      * @param SingleConnectionInterface $connection Connection to Redis.
-     * @param int $size Number of elements of the multibulk reply.
+     * @param int                       $size       Number of elements of the multibulk reply.
      */
     public function __construct(SingleConnectionInterface $connection, $size)
     {

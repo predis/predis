@@ -22,8 +22,8 @@ interface ConnectionFactoryInterface
     /**
      * Defines or overrides the connection class identified by a scheme prefix.
      *
-     * @param string $scheme URI scheme identifying the connection class.
-     * @param mixed $initializer FQN of a connection class or a callable object for lazy initialization.
+     * @param string $scheme      URI scheme identifying the connection class.
+     * @param mixed  $initializer FQN of a connection class or a callable object for lazy initialization.
      */
     public function define($scheme, $initializer);
 
@@ -37,7 +37,7 @@ interface ConnectionFactoryInterface
     /**
      * Creates a new connection object.
      *
-     * @param mixed $parameters Parameters for the connection.
+     * @param  mixed                     $parameters Parameters for the connection.
      * @return SingleConnectionInterface
      */
     public function create($parameters);
@@ -45,8 +45,8 @@ interface ConnectionFactoryInterface
     /**
      * Prepares an aggregation of connection objects.
      *
-     * @param AggregatedConnectionInterface $cluster Instance of an aggregated connection class.
-     * @param array $parameters List of parameters for each connection object.
+     * @param  AggregatedConnectionInterface $cluster    Instance of an aggregated connection class.
+     * @param  array                         $parameters List of parameters for each connection object.
      * @return AggregatedConnectionInterface
      */
     public function createAggregated(AggregatedConnectionInterface $cluster, Array $parameters);

@@ -32,7 +32,7 @@ interface ServerProfileInterface
     /**
      * Checks if the profile supports the specified command.
      *
-     * @param string $command Command ID.
+     * @param  string  $command Command ID.
      * @return Boolean
      */
     public function supportsCommand($command);
@@ -40,7 +40,7 @@ interface ServerProfileInterface
     /**
      * Checks if the profile supports the specified list of commands.
      *
-     * @param array $commands List of command IDs.
+     * @param  array  $commands List of command IDs.
      * @return string
      */
     public function supportsCommands(Array $commands);
@@ -48,8 +48,8 @@ interface ServerProfileInterface
     /**
      * Creates a new command instance.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string           $method    Command ID.
+     * @param  array            $arguments Arguments for the command.
      * @return CommandInterface
      */
     public function createCommand($method, $arguments = array());

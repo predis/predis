@@ -22,7 +22,7 @@ interface HashGeneratorInterface
     /**
      * Generates an hash that is used by the distributor algorithm
      *
-     * @param string $value Value used to generate the hash.
+     * @param  string $value Value used to generate the hash.
      * @return int
      */
     public function hash($value);

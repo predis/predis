@@ -127,8 +127,8 @@ class RawCommand implements CommandInterface
     /**
      * Helper function used to reduce a list of arguments to a string.
      *
-     * @param string $accumulator Temporary string.
-     * @param string $argument Current argument.
+     * @param  string $accumulator Temporary string.
+     * @param  string $argument    Current argument.
      * @return string
      */
     protected function toStringArgumentReducer($accumulator, $argument)

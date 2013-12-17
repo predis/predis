@@ -127,8 +127,8 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Removes a connection instance by using its identifier.
      *
-     * @param string $connectionID Connection identifier.
-     * @return bool True if the connection was in the pool.
+     * @param  string $connectionID Connection identifier.
+     * @return bool   True if the connection was in the pool.
      */
     public function removeById($connectionID)
     {
@@ -214,8 +214,8 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Pre-associates a connection to a slots range to avoid runtime guessing.
      *
-     * @param int $first Initial slot of the range.
-     * @param int $last Last slot of the range.
+     * @param int                              $first      Initial slot of the range.
+     * @param int                              $last       Last slot of the range.
      * @param SingleConnectionInterface|string $connection ID or connection instance.
      */
     public function setSlots($first, $last, $connection)
@@ -238,7 +238,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * slots map, falling back to the same logic used by Redis to initialize a
      * cluster (best-effort).
      *
-     * @param int $slot Slot index.
+     * @param  int    $slot Slot index.
      * @return string Connection ID.
      */
     protected function guessNode($slot)
@@ -283,7 +283,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Returns the connection currently associated to a given slot.
      *
-     * @param int $slot Slot index.
+     * @param  int                       $slot Slot index.
      * @return SingleConnectionInterface
      */
     public function getConnectionBySlot($slot)
@@ -339,7 +339,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * The connection is added to the connections pool if not yet included.
      *
      * @param SingleConnectionInterface $connection Connection instance.
-     * @param int $slot Target slot index.
+     * @param int                       $slot       Target slot index.
      */
     protected function move(SingleConnectionInterface $connection, $slot)
     {
@@ -350,8 +350,8 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Handles -ERR responses from Redis.
      *
-     * @param CommandInterface $command Command that generated the -ERR response.
-     * @param ResponseErrorInterface $error Redis error response object.
+     * @param  CommandInterface       $command Command that generated the -ERR response.
+     * @param  ResponseErrorInterface $error   Redis error response object.
      * @return mixed
      */
     protected function onErrorResponse(CommandInterface $command, ResponseErrorInterface $error)
@@ -372,9 +372,9 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * Handles -MOVED and -ASK responses by re-executing the command on the node
      * specified by the Redis response.
      *
-     * @param CommandInterface $command Command that generated the -MOVE or -ASK response.
-     * @param string $request Type of request (either 'MOVED' or 'ASK').
-     * @param string $details Parameters of the MOVED/ASK request.
+     * @param  CommandInterface $command Command that generated the -MOVE or -ASK response.
+     * @param  string           $request Type of request (either 'MOVED' or 'ASK').
+     * @param  string           $details Parameters of the MOVED/ASK request.
      * @return mixed
      */
     protected function onMoveRequest(CommandInterface $command, $request, $details)

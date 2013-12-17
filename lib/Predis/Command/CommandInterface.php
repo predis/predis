@@ -69,7 +69,7 @@ interface CommandInterface
     /**
      * Parses a reply buffer and returns a PHP object.
      *
-     * @param string $data Binary string containing the whole reply.
+     * @param  string $data Binary string containing the whole reply.
      * @return mixed
      */
     public function parseResponse($data);

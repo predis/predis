@@ -33,7 +33,7 @@ class ZSetAdd extends PrefixableCommand
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $flattened = array($arguments[0]);
 
-            foreach($arguments[1] as $member => $score) {
+            foreach ($arguments[1] as $member => $score) {
                 $flattened[] = $score;
                 $flattened[] = $member;
             }

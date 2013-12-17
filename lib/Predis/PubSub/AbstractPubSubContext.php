@@ -43,7 +43,7 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Checks if the specified flag is valid in the state of the context.
      *
-     * @param int $value Flag.
+     * @param  int     $value Flag.
      * @return Boolean
      */
     protected function isFlagSet($value)
@@ -98,7 +98,7 @@ abstract class AbstractPubSubContext implements \Iterator
      * Optionally, the context can be forcefully closed by dropping the
      * underlying connection.
      *
-     * @param Boolean $force Forcefully close the context by closing the connection.
+     * @param  Boolean $force Forcefully close the context by closing the connection.
      * @return Boolean Returns false if there are no pending messages.
      */
     public function closeContext($force = false)
@@ -125,15 +125,15 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Closes the underlying connection on forced disconnection.
      */
-    protected abstract function disconnect();
+    abstract protected function disconnect();
 
     /**
      * Writes a Redis command on the underlying connection.
      *
-     * @param string $method ID of the command.
-     * @param array $arguments List of arguments.
+     * @param string $method    ID of the command.
+     * @param array  $arguments List of arguments.
      */
-    protected abstract function writeCommand($method, $arguments);
+    abstract protected function writeCommand($method, $arguments);
 
     /**
      * {@inheritdoc}
@@ -202,5 +202,5 @@ abstract class AbstractPubSubContext implements \Iterator
      *
      * @return array
      */
-    protected abstract function getValue();
+    abstract protected function getValue();
 }

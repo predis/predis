@@ -41,7 +41,7 @@ class Client implements ClientInterface
      * Initializes a new client with optional connection parameters and client options.
      *
      * @param mixed $parameters Connection parameters for one or multiple servers.
-     * @param mixed $options Options that specify certain behaviours for the client.
+     * @param mixed $options    Options that specify certain behaviours for the client.
      */
     public function __construct($parameters = null, $options = null)
     {
@@ -55,7 +55,7 @@ class Client implements ClientInterface
      * arguments (string, array, Predis\Profile\ServerProfile) or returns the
      * passed object if it is an instance of Predis\Option\ClientOptions.
      *
-     * @param mixed $options Client options.
+     * @param  mixed         $options Client options.
      * @return ClientOptions
      */
     protected function filterOptions($options)
@@ -80,7 +80,7 @@ class Client implements ClientInterface
      * types of arguments (string, array) or returns the passed object if it
      * implements Predis\Connection\ConnectionInterface.
      *
-     * @param mixed $parameters Connection parameters or instance.
+     * @param  mixed               $parameters Connection parameters or instance.
      * @return ConnectionInterface
      */
     protected function initializeConnection($parameters)
@@ -202,7 +202,7 @@ class Client implements ClientInterface
     /**
      * Retrieves a single connection out of an aggregated connections instance.
      *
-     * @param string $connectionId Index or alias of the connection.
+     * @param  string                               $connectionId Index or alias of the connection.
      * @return Connection\SingleConnectionInterface
      */
     public function getConnectionById($connectionId)
@@ -218,8 +218,8 @@ class Client implements ClientInterface
      * Creates a Redis command with the specified arguments and sends a request
      * to the server.
      *
-     * @param string $commandID Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string $commandID Command ID.
+     * @param  array  $arguments Arguments for the command.
      * @return mixed
      */
     public function __call($commandID, $arguments)
@@ -259,8 +259,8 @@ class Client implements ClientInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param CommandInterface $command The command that generated the error.
-     * @param ResponseErrorInterface $response The error response instance.
+     * @param  CommandInterface       $command  The command that generated the error.
+     * @param  ResponseErrorInterface $response The error response instance.
      * @return mixed
      */
     protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
@@ -290,8 +290,8 @@ class Client implements ClientInterface
      *
      * TODO: Invert $argv and $initializer.
      *
-     * @param array $argv Arguments for the initializer.
-     * @param string $initializer The initializer method.
+     * @param  array  $argv        Arguments for the initializer.
+     * @param  string $initializer The initializer method.
      * @return mixed
      */
     private function sharedInitializer($argv, $initializer)
@@ -302,10 +302,12 @@ class Client implements ClientInterface
 
             case 1:
                 list($arg0) = $argv;
+
                 return is_array($arg0) ? $this->$initializer($arg0) : $this->$initializer(null, $arg0);
 
             case 2:
                 list($arg0, $arg1) = $argv;
+
                 return $this->$initializer($arg0, $arg1);
 
             default:
@@ -317,7 +319,7 @@ class Client implements ClientInterface
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                 $arg,... Options for the context, a callable object, or both.
      * @return PipelineContext|array
      */
     public function pipeline(/* arguments */)
@@ -328,8 +330,8 @@ class Client implements ClientInterface
     /**
      * Pipeline context initializer.
      *
-     * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param  array                 $options  Options for the context.
+     * @param  mixed                 $callable Optional callable object used to execute the context.
      * @return PipelineContext|array
      */
     protected function initPipeline(Array $options = null, $callable = null)
@@ -349,8 +351,8 @@ class Client implements ClientInterface
     /**
      * Executes a pipeline context when a callable object is passed.
      *
-     * @param array $options Options of the context initialization.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param  array                 $options  Options of the context initialization.
+     * @param  mixed                 $callable Optional callable object used to execute the context.
      * @return PipelineContext|array
      */
     private function pipelineExecute(PipelineContext $pipeline, $callable)
@@ -366,7 +368,7 @@ class Client implements ClientInterface
      *             as it will replace Client::multiExec() in the next major
      *             version of the library.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                  $arg,... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
     public function multiExec(/* arguments */)
@@ -378,7 +380,7 @@ class Client implements ClientInterface
      * Creates a new transaction context and returns it, or returns the results of
      * a transaction executed inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                  $arg,... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
     public function transaction(/* arguments */)
@@ -389,13 +391,14 @@ class Client implements ClientInterface
     /**
      * Transaction context initializer.
      *
-     * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param  array                  $options  Options for the context.
+     * @param  mixed                  $callable Optional callable object used to execute the context.
      * @return MultiExecContext|array
      */
     protected function initMultiExec(Array $options = null, $callable = null)
     {
         $transaction = new MultiExecContext($this, $options ?: array());
+
         return isset($callable) ? $transaction->execute($callable) : $transaction;
     }
 
@@ -408,7 +411,7 @@ class Client implements ClientInterface
      *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
      *             instances from now on.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                   $arg,... Options for the context, a callable object, or both.
      * @return PubSubExecContext|array
      */
     public function pubSub(/* arguments */)
@@ -420,7 +423,7 @@ class Client implements ClientInterface
      * Creates a new Publish / Subscribe context and returns it, or executes it
      * inside the optionally provided callable object.
      *
-     * @param mixed $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                   $arg,... Options for the context, a callable object, or both.
      * @return PubSubExecContext|array
      */
     public function pubSubLoop(/* arguments */)
@@ -431,8 +434,8 @@ class Client implements ClientInterface
     /**
      * Publish / Subscribe context initializer.
      *
-     * @param array $options Options for the context.
-     * @param mixed $callable Optional callable object used to execute the context.
+     * @param  array         $options  Options for the context.
+     * @param  mixed         $callable Optional callable object used to execute the context.
      * @return PubSubContext
      */
     protected function initPubSub(Array $options = null, $callable = null)

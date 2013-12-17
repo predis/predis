@@ -31,15 +31,15 @@ interface AggregatedConnectionInterface extends ConnectionInterface
      * Removes the specified connection instance from the aggregated
      * connection.
      *
-     * @param SingleConnectionInterface $connection Instance of a connection.
-     * @return Boolean Returns true if the connection was in the pool.
+     * @param  SingleConnectionInterface $connection Instance of a connection.
+     * @return Boolean                   Returns true if the connection was in the pool.
      */
     public function remove(SingleConnectionInterface $connection);
 
     /**
      * Gets the actual connection instance in charge of the specified command.
      *
-     * @param CommandInterface $command Instance of a Redis command.
+     * @param  CommandInterface          $command Instance of a Redis command.
      * @return SingleConnectionInterface
      */
     public function getConnection(CommandInterface $command);
@@ -48,7 +48,7 @@ interface AggregatedConnectionInterface extends ConnectionInterface
      * Retrieves a connection instance from the aggregated connection
      * using an alias.
      *
-     * @param string $connectionId Alias of a connection
+     * @param  string                    $connectionId Alias of a connection
      * @return SingleConnectionInterface
      */
     public function getConnectionById($connectionId);

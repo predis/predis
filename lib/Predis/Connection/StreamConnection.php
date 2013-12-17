@@ -73,7 +73,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a TCP stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return resource
      */
     private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
@@ -115,7 +115,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a UNIX stream resource.
      *
-     * @param ConnectionParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return resource
      */
     private function unixStreamInitializer(ConnectionParametersInterface $parameters)
@@ -212,7 +212,7 @@ class StreamConnection extends AbstractConnection
         $payload = substr($chunk, 1, -2);
 
         switch ($prefix) {
-            case '+':    // inline
+            case '+':
                 switch ($payload) {
                     case 'OK':
                         return true;
@@ -224,7 +224,7 @@ class StreamConnection extends AbstractConnection
                         return $payload;
                 }
 
-            case '$':    // bulk
+            case '$':
                 $size = (int) $payload;
                 if ($size === -1) {
                     return null;
@@ -246,7 +246,7 @@ class StreamConnection extends AbstractConnection
 
                 return substr($bulkData, 0, -2);
 
-            case '*':    // multi bulk
+            case '*':
                 $count = (int) $payload;
 
                 if ($count === -1) {
@@ -264,10 +264,10 @@ class StreamConnection extends AbstractConnection
 
                 return $multibulk;
 
-            case ':':    // integer
+            case ':':
                 return (int) $payload;
 
-            case '-':    // error
+            case '-':
                 return new ResponseError($payload);
 
             default:

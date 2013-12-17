@@ -50,7 +50,7 @@ class ServerClient extends AbstractCommand
      * Parses the reply buffer and returns the list of clients returned by
      * the CLIENT LIST command.
      *
-     * @param string $data Reply buffer
+     * @param  string $data Reply buffer
      * @return array
      */
     protected function parseClientList($data)

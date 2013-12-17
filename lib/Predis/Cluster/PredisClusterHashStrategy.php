@@ -180,7 +180,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
      * associated handler for the specified command ID is removed.
      *
      * @param string $commandId The ID of the command to be handled.
-     * @param mixed $callback A valid callable object or NULL.
+     * @param mixed  $callback  A valid callable object or NULL.
      */
     public function setCommandHandler($commandId, $callback = null)
     {
@@ -188,6 +188,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
 
         if (!isset($callback)) {
             unset($this->commands[$commandId]);
+
             return;
         }
 
@@ -201,7 +202,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Extracts the key from the first argument of a command instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromFirstArgument(CommandInterface $command)
@@ -213,7 +214,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
      * Extracts the key from a command with multiple keys only when all keys
      * in the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromAllArguments(CommandInterface $command)
@@ -229,7 +230,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
      * Extracts the key from a command with multiple keys only when all keys
      * in the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromInterleavedArguments(CommandInterface $command)
@@ -249,7 +250,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Extracts the key from BLPOP and BRPOP commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromBlockingListCommands(CommandInterface $command)
@@ -264,7 +265,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Extracts the key from BITOP command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromBitOp(CommandInterface $command)
@@ -279,7 +280,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Extracts the key from ZINTERSTORE and ZUNIONSTORE commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromZsetAggregationCommands(CommandInterface $command)
@@ -295,7 +296,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Extracts the key from EVAL and EVALSHA commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
@@ -344,7 +345,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Checks if the specified array of keys will generate the same hash.
      *
-     * @param array $keys Array of keys.
+     * @param  array   $keys Array of keys.
      * @return Boolean
      */
     protected function checkSameHashForKeys(Array $keys)
@@ -372,7 +373,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
      * Returns only the hashable part of a key (delimited by "{...}"), or the
      * whole key if a key tag is not found in the string.
      *
-     * @param string $key A key.
+     * @param  string $key A key.
      * @return string
      */
     protected function extractKeyTag($key)

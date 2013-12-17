@@ -22,7 +22,7 @@ class PrefixHelpers
      * Applies the specified prefix only the first argument.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function first(CommandInterface $command, $prefix)
     {
@@ -36,7 +36,7 @@ class PrefixHelpers
      * Applies the specified prefix to all the arguments.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function all(CommandInterface $command, $prefix)
     {
@@ -53,7 +53,7 @@ class PrefixHelpers
      * Applies the specified prefix only to even arguments in the list.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function interleaved(CommandInterface $command, $prefix)
     {
@@ -72,7 +72,7 @@ class PrefixHelpers
      * Applies the specified prefix to all the arguments but the first one.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function skipFirst(CommandInterface $command, $prefix)
     {
@@ -91,7 +91,7 @@ class PrefixHelpers
      * Applies the specified prefix to all the arguments but the last one.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function skipLast(CommandInterface $command, $prefix)
     {

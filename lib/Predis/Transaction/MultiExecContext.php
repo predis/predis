@@ -47,8 +47,8 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     protected $commands;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
-     * @param array $options Options for the context initialization.
+     * @param ClientInterface $client  Client instance used by the context.
+     * @param array           $options Options for the context initialization.
      */
     public function __construct(ClientInterface $client, Array $options = null)
     {
@@ -101,7 +101,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Checks is a flag is set.
      *
-     * @param int $flags Flag
+     * @param  int     $flags Flag
      * @return Boolean
      */
     protected function checkState($flags)
@@ -185,8 +185,8 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Dynamically invokes a Redis command with the specified arguments.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string $method    Command ID.
+     * @param  array  $arguments Arguments for the command.
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -200,7 +200,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command A Redis command.
+     * @param  CommandInterface $command A Redis command.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command)
@@ -224,7 +224,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Executes WATCH on one or more keys.
      *
-     * @param string|array $keys One or more keys.
+     * @param  string|array $keys One or more keys.
      * @return mixed
      */
     public function watch($keys)
@@ -331,7 +331,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param  mixed $callable Optional callback for execution.
      * @return array
      */
     public function execute($callable = null)

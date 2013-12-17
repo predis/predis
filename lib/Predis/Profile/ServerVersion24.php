@@ -121,7 +121,6 @@ class ServerVersion24 extends ServerProfile
             'shutdown'                  => 'Predis\Command\ServerShutdown',
             'bgrewriteaof'              => 'Predis\Command\ServerBackgroundRewriteAOF',
 
-
             /* ---------------- Redis 2.0 ---------------- */
 
             /* commands operating on string values */
@@ -170,7 +169,6 @@ class ServerVersion24 extends ServerProfile
             /* remote server control commands */
             'config'                    => 'Predis\Command\ServerConfig',
 
-
             /* ---------------- Redis 2.2 ---------------- */
 
             /* commands operating on the key space */
@@ -199,7 +197,6 @@ class ServerVersion24 extends ServerProfile
             /* remote server control commands */
             'object'                    => 'Predis\Command\ServerObject',
             'slowlog'                   => 'Predis\Command\ServerSlowlog',
-
 
             /* ---------------- Redis 2.4 ---------------- */
 

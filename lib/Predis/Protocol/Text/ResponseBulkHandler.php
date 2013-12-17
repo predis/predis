@@ -28,8 +28,8 @@ class ResponseBulkHandler implements ResponseHandlerInterface
     /**
      * Handles a bulk reply returned by Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $lengthString Bytes size of the bulk reply.
+     * @param  ComposableConnectionInterface $connection   Connection to Redis.
+     * @param  string                        $lengthString Bytes size of the bulk reply.
      * @return string
      */
     public function handle(ComposableConnectionInterface $connection, $lengthString)

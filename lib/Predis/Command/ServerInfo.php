@@ -58,7 +58,7 @@ class ServerInfo extends AbstractCommand
     /**
      * Parses the reply buffer and extracts the statistics of each logical DB.
      *
-     * @param string $str Reply buffer.
+     * @param  string $str Reply buffer.
      * @return array
      */
     protected function parseDatabaseStats($str)
@@ -76,7 +76,7 @@ class ServerInfo extends AbstractCommand
     /**
      * Parses the reply buffer and extracts the allocation statistics.
      *
-     * @param string $str Reply buffer.
+     * @param  string $str Reply buffer.
      * @return array
      */
     protected function parseAllocationStats($str)

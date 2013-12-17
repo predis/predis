@@ -28,8 +28,8 @@ class ResponseIntegerHandler implements ResponseHandlerInterface
     /**
      * Handles an integer reply returned by Redis.
      *
-     * @param ComposableConnectionInterface $connection Connection to Redis.
-     * @param string $number String representation of an integer.
+     * @param  ComposableConnectionInterface $connection Connection to Redis.
+     * @param  string                        $number     String representation of an integer.
      * @return int
      */
     public function handle(ComposableConnectionInterface $connection, $number)
