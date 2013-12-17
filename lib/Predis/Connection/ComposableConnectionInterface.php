@@ -11,8 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\Protocol\ProtocolInterface;
-
 /**
  * Defines a connection to communicate with a single Redis server that leverages
  * an external protocol processor to handle pluggable protocol handlers.

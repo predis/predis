@@ -43,8 +43,8 @@ abstract class CursorBasedIterator implements Iterator
 
     /**
      * @param ClientInterface $client Client connected to Redis.
-     * @param string $match Pattern to match during the server-side iteration.
-     * @param int $count Hint used by Redis to compute the number of results per iteration.
+     * @param string          $match  Pattern to match during the server-side iteration.
+     * @param int             $count  Hint used by Redis to compute the number of results per iteration.
      */
     public function __construct(ClientInterface $client, $match = null, $count = null)
     {
@@ -108,7 +108,7 @@ abstract class CursorBasedIterator implements Iterator
      *
      * @return array
      */
-    protected abstract function executeCommand();
+    abstract protected function executeCommand();
 
     /**
      * Populates the local buffer of elements fetched from the server during
@@ -171,7 +171,7 @@ abstract class CursorBasedIterator implements Iterator
 
         if ($this->elements) {
             $this->extractNext();
-        } else if ($this->cursor) {
+        } elseif ($this->cursor) {
             $this->next();
         } else {
             $this->valid = false;

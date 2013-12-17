@@ -49,7 +49,7 @@ class ServerClient extends Command
     /**
      * Parses the response to CLIENT LIST and returns a structured list.
      *
-     * @param string $data Response buffer.
+     * @param  string $data Response buffer.
      * @return array
      */
     protected function parseClientList($data)

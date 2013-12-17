@@ -180,7 +180,7 @@ class PredisStrategy implements StrategyInterface
      * handler for the specified command ID is removed.
      *
      * @param string $commandID Command ID.
-     * @param mixed $callback A valid callable object, or NULL to unset the handler.
+     * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -188,6 +188,7 @@ class PredisStrategy implements StrategyInterface
 
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
+
             return;
         }
 
@@ -203,7 +204,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Extracts the key from the first argument of a command instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromFirstArgument(CommandInterface $command)
@@ -215,7 +216,7 @@ class PredisStrategy implements StrategyInterface
      * Extracts the key from a command with multiple keys only when all keys in
      * the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromAllArguments(CommandInterface $command)
@@ -231,7 +232,7 @@ class PredisStrategy implements StrategyInterface
      * Extracts the key from a command with multiple keys only when all keys in
      * the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromInterleavedArguments(CommandInterface $command)
@@ -251,7 +252,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Extracts the key from BLPOP and BRPOP commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromBlockingListCommands(CommandInterface $command)
@@ -266,7 +267,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Extracts the key from BITOP command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromBitOp(CommandInterface $command)
@@ -281,7 +282,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Extracts the key from ZINTERSTORE and ZUNIONSTORE commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromZsetAggregationCommands(CommandInterface $command)
@@ -297,7 +298,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Extracts the key from EVAL and EVALSHA commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
@@ -346,7 +347,7 @@ class PredisStrategy implements StrategyInterface
     /**
      * Checks if the specified array of keys will generate the same hash.
      *
-     * @param array $keys Array of keys.
+     * @param  array   $keys Array of keys.
      * @return Boolean
      */
     protected function checkSameHashForKeys(array $keys)
@@ -374,7 +375,7 @@ class PredisStrategy implements StrategyInterface
      * Returns only the hashable part of a key (delimited by "{...}"), or the
      * whole key if a key tag is not found in the string.
      *
-     * @param string $key A key.
+     * @param  string $key A key.
      * @return string
      */
     protected function extractKeyTag($key)

@@ -14,7 +14,6 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\CommunicationException;
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
 
@@ -74,7 +73,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      *
      * @return mixed
      */
-    protected abstract function createResource();
+    abstract protected function createResource();
 
     /**
      * {@inheritdoc}
@@ -118,6 +117,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
     public function executeCommand(CommandInterface $command)
     {
         $this->writeRequest($command);
+
         return $this->readResponse($command);
     }
 
@@ -133,7 +133,7 @@ abstract class AbstractConnection implements SingleConnectionInterface
      * Helper method to handle connection errors.
      *
      * @param string $message Error message.
-     * @param int $code Error code.
+     * @param int    $code    Error code.
      */
     protected function onConnectionError($message, $code = null)
     {

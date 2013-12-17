@@ -28,8 +28,8 @@ class ClusterOption implements OptionInterface
     /**
      * Creates a new cluster connection from on a known descriptive name.
      *
-     * @param OptionsInterface $options Instance of the client options.
-     * @param string $id Descriptive identifier of the cluster type (`predis`, `redis-cluster`)
+     * @param  OptionsInterface           $options Instance of the client options.
+     * @param  string                     $id      Descriptive identifier of the cluster type (`predis`, `redis-cluster`)
      * @return ClusterConnectionInterface
      */
     protected function createByDescription(OptionsInterface $options, $id)

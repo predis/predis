@@ -51,8 +51,8 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Queues a command into the pipeline buffer.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string   $method    Command ID.
+     * @param  array    $arguments Arguments for the command.
      * @return Pipeline
      */
     public function __call($method, $arguments)
@@ -86,8 +86,8 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Throws an exception on -ERR responses returned by Redis.
      *
-     * @param ConnectionInterface $connection Redis connection that returned the error.
-     * @param ErrorResponseInterface $response Instance of the error response.
+     * @param ConnectionInterface    $connection Redis connection that returned the error.
+     * @param ErrorResponseInterface $response   Instance of the error response.
      */
     protected function exception(ConnectionInterface $connection, ErrorResponseInterface $response)
     {
@@ -117,8 +117,8 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
      * Implements the logic to flush the queued commands and read the responses
      * from the current connection.
      *
-     * @param ConnectionInterface $connection Current connection instance.
-     * @param SplQueue $commands Queued commands.
+     * @param  ConnectionInterface $connection Current connection instance.
+     * @param  SplQueue            $commands   Queued commands.
      * @return array
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
@@ -136,7 +136,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
 
             if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
-            } else if ($response instanceof ErrorResponseInterface && $exceptions) {
+            } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
             } else {
                 $responses[] = $response;
@@ -149,7 +149,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Flushes the buffer holding all of the commands queued so far.
      *
-     * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
+     * @param  bool     $send Specifies if the commands in the buffer should be sent to Redis.
      * @return Pipeline
      */
     public function flushPipeline($send = true)
@@ -181,7 +181,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Handles the actual execution of the whole pipeline.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param  mixed $callable Optional callback for execution.
      * @return array
      */
     public function execute($callable = null)

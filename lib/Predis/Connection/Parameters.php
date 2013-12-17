@@ -69,7 +69,7 @@ class Parameters implements ParametersInterface
      * Creates a new instance by supplying the initial parameters either in the
      * form of an URI string or a named array.
      *
-     * @param array|string $parameters Set of connection parameters.
+     * @param  array|string $parameters Set of connection parameters.
      * @return Parameters
      */
     public static function create($parameters)
@@ -84,7 +84,7 @@ class Parameters implements ParametersInterface
     /**
      * Parses an URI string returning an array of connection parameters.
      *
-     * @param string $uri URI string.
+     * @param  string $uri URI string.
      * @return array
      */
     public static function parse($uri)
@@ -111,7 +111,7 @@ class Parameters implements ParametersInterface
     /**
      * Validates and converts each value of the connection parameters array.
      *
-     * @param array $parameters Connection parameters.
+     * @param  array $parameters Connection parameters.
      * @return array
      */
     private function filter(array $parameters)
@@ -130,7 +130,7 @@ class Parameters implements ParametersInterface
     /**
      * Validates value as boolean.
      *
-     * @param mixed $value Input value.
+     * @param  mixed   $value Input value.
      * @return boolean
      */
     private static function castBoolean($value)
@@ -141,7 +141,7 @@ class Parameters implements ParametersInterface
     /**
      * Validates value as float.
      *
-     * @param mixed $value Input value.
+     * @param  mixed $value Input value.
      * @return float
      */
     private static function castFloat($value)
@@ -152,7 +152,7 @@ class Parameters implements ParametersInterface
     /**
      * Validates value as integer.
      *
-     * @param mixed $value Input value.
+     * @param  mixed $value Input value.
      * @return int
      */
     private static function castInteger($value)

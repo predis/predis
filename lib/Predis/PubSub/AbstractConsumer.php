@@ -45,7 +45,7 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Checks if the specified flag is valid based on the state of the consumer.
      *
-     * @param int $value Flag.
+     * @param  int     $value Flag.
      * @return Boolean
      */
     protected function isFlagSet($value)
@@ -99,7 +99,7 @@ abstract class AbstractConsumer implements Iterator
      * Closes the context by unsubscribing from all the subscribed channels. The
      * context can be forcefully closed by dropping the underlying connection.
      *
-     * @param bool $drop Indicates if the context should be closed by dropping the connection.
+     * @param  bool $drop Indicates if the context should be closed by dropping the connection.
      * @return bool Returns false when there are no pending messages.
      */
     public function stop($drop = false)
@@ -126,15 +126,15 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Closes the underlying connection when forcing a disconnection.
      */
-    protected abstract function disconnect();
+    abstract protected function disconnect();
 
     /**
      * Writes a Redis command on the underlying connection.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param string $method    Command ID.
+     * @param array  $arguments Arguments for the command.
      */
-    protected abstract function writeRequest($method, $arguments);
+    abstract protected function writeRequest($method, $arguments);
 
     /**
      * {@inheritdoc}
@@ -203,5 +203,5 @@ abstract class AbstractConsumer implements Iterator
      *
      * @return array
      */
-    protected abstract function getValue();
+    abstract protected function getValue();
 }

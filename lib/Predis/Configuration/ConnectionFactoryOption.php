@@ -30,7 +30,7 @@ class ConnectionFactoryOption implements OptionInterface
     {
         if ($value instanceof FactoryInterface) {
             return $value;
-        } else if (is_array($value)) {
+        } elseif (is_array($value)) {
             $factory = $this->getDefault($options);
 
             foreach ($value as $scheme => $initializer) {

@@ -45,7 +45,7 @@ class ProfileOption implements OptionInterface
         if (is_string($value)) {
             $value = Factory::get($value);
             $this->setProcessors($options, $value);
-        } else if (!$value instanceof ProfileInterface) {
+        } elseif (!$value instanceof ProfileInterface) {
             throw new InvalidArgumentException('Invalid value for the profile option.');
         }
 

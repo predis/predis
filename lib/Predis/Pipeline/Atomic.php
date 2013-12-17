@@ -106,7 +106,7 @@ class Atomic extends Pipeline
 
             if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
-            } else if ($response instanceof ErrorResponseInterface && $exceptions) {
+            } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
             } else {
                 $responses[] = $response;

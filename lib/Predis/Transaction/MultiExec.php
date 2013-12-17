@@ -21,7 +21,6 @@ use Predis\CommunicationException;
 use Predis\ExecutableContextInterface;
 use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
-use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
 use Predis\Command\CommandInterface;
@@ -45,8 +44,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     protected $modeCAS    = false;
 
     /**
-     * @param ClientInterface $client Client instance used by the transaction.
-     * @param array $options Initialization options.
+     * @param ClientInterface $client  Client instance used by the transaction.
+     * @param array           $options Initialization options.
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
@@ -83,8 +82,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Configures the transaction using the provided options.
      *
-     * @param ClientInterface $client Underlying client instance.
-     * @param array $options Array of options for the transaction.
+     * @param ClientInterface $client  Underlying client instance.
+     * @param array           $options Array of options for the transaction.
      **/
     protected function configure(ClientInterface $client, array $options)
     {
@@ -151,8 +150,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Dynamically invokes a Redis command with the specified arguments.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string $method    Command ID.
+     * @param  array  $arguments Arguments for the command.
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -166,8 +165,8 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Executes a Redis command bypassing the transaction logic.
      *
-     * @param string $method Command ID.
-     * @param array $arguments Arguments for the command.
+     * @param  string $method    Command ID.
+     * @param  array  $arguments Arguments for the command.
      * @return mixed
      */
     protected function call($commandID, $arguments = array())
@@ -185,7 +184,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command)
@@ -209,7 +208,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Executes WATCH against one or more keys.
      *
-     * @param string|array $keys One or more keys.
+     * @param  string|array $keys One or more keys.
      * @return mixed
      */
     public function watch($keys)
@@ -316,7 +315,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
                     'Cannot execute a transaction block after using fluent interface.'
                 );
             }
-        } else if ($this->attempts) {
+        } elseif ($this->attempts) {
             $this->discard();
 
             throw new InvalidArgumentException(
@@ -328,7 +327,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param  mixed $callable Optional callback for execution.
      * @return array
      */
     public function execute($callable = null)

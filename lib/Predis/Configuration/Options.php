@@ -58,6 +58,7 @@ class Options implements OptionsInterface
         if (isset($this->handlers[$option])) {
             $handler = $this->handlers[$option];
             $handler = new $handler();
+
             return $handler->getDefault($this);
         }
     }

@@ -34,7 +34,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     private $nodes = array();
 
     /**
-     * @param int $replicas Number of replicas in the ring.
+     * @param int   $replicas         Number of replicas in the ring.
      * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
      */
     public function __construct($replicas = self::DEFAULT_REPLICAS, $nodeHashCallback = null)
@@ -46,8 +46,8 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Adds a node to the ring with an optional weight.
      *
-     * @param mixed $node Node object.
-     * @param int $weight Weight for the node.
+     * @param mixed $node   Node object.
+     * @param int   $weight Weight for the node.
      */
     public function add($node, $weight = null)
     {
@@ -148,10 +148,10 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Implements the logic needed to add a node to the hashring.
      *
-     * @param array $ring Source hashring.
-     * @param mixed $node Node object to be added.
-     * @param int $totalNodes Total number of nodes.
-     * @param int $replicas Number of replicas in the ring.
+     * @param array $ring        Source hashring.
+     * @param mixed $node        Node object to be added.
+     * @param int   $totalNodes  Total number of nodes.
+     * @param int   $replicas    Number of replicas in the ring.
      * @param float $weightRatio Weight ratio for the node.
      */
     protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio)
@@ -181,7 +181,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Calculates the hash for the specified value.
      *
-     * @param string $value Input value.
+     * @param  string $value Input value.
      * @return int
      */
     public function hash($value)
@@ -200,7 +200,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Calculates the corrisponding key of a node distributed in the hashring.
      *
-     * @param int $key Computed hash of a key.
+     * @param  int $key Computed hash of a key.
      * @return int
      */
     private function getNodeKey($key)
@@ -216,7 +216,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
 
             if ($item > $key) {
                 $upper = $index - 1;
-            } else if ($item < $key) {
+            } elseif ($item < $key) {
                 $lower = $index + 1;
             } else {
                 return $item;
@@ -229,9 +229,9 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Implements a strategy to deal with wrap-around errors during binary searches.
      *
-     * @param int $upper
-     * @param int $lower
-     * @param int $ringKeysCount
+     * @param  int $upper
+     * @param  int $lower
+     * @param  int $ringKeysCount
      * @return int
      */
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount)

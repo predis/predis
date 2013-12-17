@@ -81,7 +81,7 @@ final class Factory
     /**
      * Returns the specified server profile.
      *
-     * @param string $version Profile version or alias.
+     * @param  string           $version Profile version or alias.
      * @return ProfileInterface
      */
     public static function get($version)

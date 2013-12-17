@@ -31,7 +31,7 @@ class ComposableProtocolProcessor implements ProtocolProcessorInterface
 
     /**
      * @param RequestSerializerInterface $serializer Request serializer.
-     * @param ResponseReaderInterface $reader Response reader.
+     * @param ResponseReaderInterface    $reader     Response reader.
      */
     public function __construct(
         RequestSerializerInterface $serializer = null,

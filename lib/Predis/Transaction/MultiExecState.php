@@ -77,7 +77,7 @@ class MultiExecState
     /**
      * Returns if the specified flag or set of flags is set.
      *
-     * @param int $flags Flag
+     * @param  int  $flags Flag
      * @return bool
      */
     public function check($flags)

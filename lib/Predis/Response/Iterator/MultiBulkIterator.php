@@ -104,5 +104,5 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     /**
      * {@inheritdoc}
      */
-    protected abstract function getValue();
+    abstract protected function getValue();
 }

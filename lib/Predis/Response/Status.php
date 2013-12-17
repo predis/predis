@@ -66,12 +66,14 @@ class Status implements ResponseInterface
                 if (!isset(self::$OK)) {
                     self::$OK = new self('OK');
                 }
+
                 return self::$OK;
 
             case 'OK':
                 if (!isset(self::$QUEUED)) {
                     self::$QUEUED = new self('QUEUED');
                 }
+
                 return self::$QUEUED;
 
             default:

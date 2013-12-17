@@ -42,7 +42,7 @@ class ConnectionErrorProof extends Pipeline
     {
         if ($connection instanceof SingleConnectionInterface) {
             return $this->executeSingleNode($connection, $commands);
-        } else if ($connection instanceof ClusterConnectionInterface) {
+        } elseif ($connection instanceof ClusterConnectionInterface) {
             return $this->executeCluster($connection, $commands);
         } else {
             $class = get_class($connection);

@@ -179,7 +179,7 @@ class KeyPrefixProcessor implements ProcessorInterface
     {
         if ($command instanceof PrefixableCommandInterface) {
             $command->prefixKeys($this->prefix);
-        } else if (isset($this->commands[$commandID = strtoupper($command->getId())])) {
+        } elseif (isset($this->commands[$commandID = strtoupper($command->getId())])) {
             call_user_func($this->commands[$commandID], $command, $this->prefix);
         }
     }
@@ -196,7 +196,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * associated handler for the specified command ID is removed.
      *
      * @param string $commandID The ID of the command to be handled.
-     * @param mixed $callback A valid callable object or NULL.
+     * @param mixed  $callback  A valid callable object or NULL.
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -204,6 +204,7 @@ class KeyPrefixProcessor implements ProcessorInterface
 
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
+
             return;
         }
 
@@ -228,7 +229,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix only the first argument.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function first(CommandInterface $command, $prefix)
     {
@@ -242,7 +243,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to all the arguments.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function all(CommandInterface $command, $prefix)
     {
@@ -259,7 +260,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix only to even arguments in the list.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function interleaved(CommandInterface $command, $prefix)
     {
@@ -278,7 +279,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to all the arguments but the first one.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function skipFirst(CommandInterface $command, $prefix)
     {
@@ -297,7 +298,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to all the arguments but the last one.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function skipLast(CommandInterface $command, $prefix)
     {
@@ -316,7 +317,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to the keys of a SORT command.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function sort(CommandInterface $command, $prefix)
     {
@@ -353,7 +354,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to the keys of an EVAL-based command.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function evalKeys(CommandInterface $command, $prefix)
     {
@@ -370,7 +371,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * Applies the specified prefix to the keys of Z[INTERSECTION|UNION]STORE.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $prefix Prefix string.
+     * @param string           $prefix  Prefix string.
      */
     public static function zsetStore(CommandInterface $command, $prefix)
     {

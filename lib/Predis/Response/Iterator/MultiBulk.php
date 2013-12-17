@@ -24,7 +24,7 @@ class MultiBulk extends MultiBulkIterator
 
     /**
      * @param SingleConnectionInterface $connection Connection to Redis.
-     * @param int $size Number of elements of the multibulk response.
+     * @param int                       $size       Number of elements of the multibulk response.
      */
     public function __construct(SingleConnectionInterface $connection, $size)
     {

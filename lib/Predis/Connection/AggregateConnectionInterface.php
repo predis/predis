@@ -31,15 +31,15 @@ interface AggregateConnectionInterface extends ConnectionInterface
     /**
      * Removes the specified connection instance from the aggregate connection.
      *
-     * @param SingleConnectionInterface $connection Connection instance.
-     * @return bool Returns true if the connection was in the pool.
+     * @param  SingleConnectionInterface $connection Connection instance.
+     * @return bool                      Returns true if the connection was in the pool.
      */
     public function remove(SingleConnectionInterface $connection);
 
     /**
      * Returns the connection instance in charge for the given command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface          $command Command instance.
      * @return SingleConnectionInterface
      */
     public function getConnection(CommandInterface $command);
@@ -47,7 +47,7 @@ interface AggregateConnectionInterface extends ConnectionInterface
     /**
      * Returns a connection instance from the aggregate connection by its alias.
      *
-     * @param string $connectionID Connection alias.
+     * @param  string                    $connectionID Connection alias.
      * @return SingleConnectionInterface
      */
     public function getConnectionById($connectionID);

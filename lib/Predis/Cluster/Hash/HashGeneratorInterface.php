@@ -22,7 +22,7 @@ interface HashGeneratorInterface
     /**
      * Generates an hash from a string to be used for distribution.
      *
-     * @param string $value String value.
+     * @param  string $value String value.
      * @return int
      */
     public function hash($value);

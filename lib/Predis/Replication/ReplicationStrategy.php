@@ -39,7 +39,7 @@ class ReplicationStrategy
      * Returns if the specified command will perform a read-only operation
      * on Redis or not.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return bool
      */
     public function isReadOperation(CommandInterface $command)
@@ -77,7 +77,7 @@ class ReplicationStrategy
      * Returns if the specified command is not allowed for execution in a master
      * / slave replication context.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return bool
      */
     public function isDisallowedOperation(CommandInterface $command)
@@ -89,12 +89,13 @@ class ReplicationStrategy
      * Checks if a SORT command is a readable operation by parsing the arguments
      * array of the specified commad instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return bool
      */
     protected function isSortReadOnly(CommandInterface $command)
     {
         $arguments = $command->getArguments();
+
         return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
     }
 
@@ -106,7 +107,7 @@ class ReplicationStrategy
      * if the specified command performs a read or a write operation.
      *
      * @param string $commandID Command ID.
-     * @param mixed $readonly A boolean value or a callable object.
+     * @param mixed  $readonly  A boolean value or a callable object.
      */
     public function setCommandReadOnly($commandID, $readonly = true)
     {
@@ -126,8 +127,8 @@ class ReplicationStrategy
      * if the passed instance of EVAL or EVALSHA performs write operations or
      * not.
      *
-     * @param string $script Body of the Lua script.
-     * @param mixed $readonly A boolean value or a callable object.
+     * @param string $script   Body of the Lua script.
+     * @param mixed  $readonly A boolean value or a callable object.
      */
     public function setScriptReadOnly($script, $readonly = true)
     {

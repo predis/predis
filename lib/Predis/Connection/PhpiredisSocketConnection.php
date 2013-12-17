@@ -186,7 +186,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Sets options on the socket resource from the connection parameters.
      *
-     * @param resource $socket Socket resource.
+     * @param resource            $socket     Socket resource.
      * @param ParametersInterface $parameters Parameters used to initialize the connection.
      */
     private function setSocketOptions($socket, ParametersInterface $parameters)
@@ -226,7 +226,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Gets the address from the connection parameters.
      *
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
     private static function getAddress(ParametersInterface $parameters)
@@ -251,7 +251,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Opens the actual connection to the server with a timeout.
      *
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
     private function connectWithTimeout(ParametersInterface $parameters)

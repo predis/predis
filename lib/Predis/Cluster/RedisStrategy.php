@@ -165,7 +165,7 @@ class RedisStrategy implements StrategyInterface
      * handler for the specified command ID is removed.
      *
      * @param string $commandID Command ID.
-     * @param mixed $callback A valid callable object, or NULL to unset the handler.
+     * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -173,6 +173,7 @@ class RedisStrategy implements StrategyInterface
 
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
+
             return;
         }
 
@@ -188,7 +189,7 @@ class RedisStrategy implements StrategyInterface
     /**
      * Extracts the key from the first argument of a command instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromFirstArgument(CommandInterface $command)
@@ -200,7 +201,7 @@ class RedisStrategy implements StrategyInterface
      * Extracts the key from a command that can accept multiple keys ensuring
      * that only one key is actually specified to comply with redis-cluster.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromAllArguments(CommandInterface $command)
@@ -216,7 +217,7 @@ class RedisStrategy implements StrategyInterface
      * Extracts the key from a command that can accept multiple keys ensuring
      * that only one key is actually specified to comply with redis-cluster.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromInterleavedArguments(CommandInterface $command)
@@ -232,7 +233,7 @@ class RedisStrategy implements StrategyInterface
      * Extracts the key from BLPOP and BRPOP commands ensuring that only one key
      * is actually specified to comply with redis-cluster.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromBlockingListCommands(CommandInterface $command)
@@ -247,7 +248,7 @@ class RedisStrategy implements StrategyInterface
     /**
      * Extracts the key from EVAL and EVALSHA commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)

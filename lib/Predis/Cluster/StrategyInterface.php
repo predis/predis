@@ -27,7 +27,7 @@ interface StrategyInterface
      * Returns the hash for the given command using the specified algorithm, or
      * null when the command cannot be hashed.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return int
      */
     public function getHash(CommandInterface $command);
@@ -35,7 +35,7 @@ interface StrategyInterface
     /**
      * Returns the hash for the given key using the specified algorithm.
      *
-     * @param string $key Key string.
+     * @param  string $key Key string.
      * @return string
      */
     public function getKeyHash($key);

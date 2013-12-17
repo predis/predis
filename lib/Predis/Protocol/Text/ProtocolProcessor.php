@@ -59,17 +59,18 @@ class ProtocolProcessor implements ProtocolProcessorInterface
         $payload = substr($chunk, 1);
 
         switch ($prefix) {
-            case '+':    // inline
+            case '+':
                 return new StatusResponse($payload);
 
-            case '$':    // bulk
+            case '$':
                 $size = (int) $payload;
                 if ($size === -1) {
                     return null;
                 }
+
                 return substr($connection->readBuffer($size + 2), 0, -2);
 
-            case '*':    // multi bulk
+            case '*':
                 $count = (int) $payload;
 
                 if ($count === -1) {
@@ -87,10 +88,10 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
                 return $multibulk;
 
-            case ':':    // integer
+            case ':':
                 return (int) $payload;
 
-            case '-':    // error
+            case '-':
                 return new ErrorResponse($payload);
 
             default:

@@ -28,8 +28,8 @@ class Consumer extends AbstractConsumer
     private $options;
 
     /**
-     * @param ClientInterface $client Client instance used by the consumer.
-     * @param array $options Options for the consumer initialization.
+     * @param ClientInterface $client  Client instance used by the consumer.
+     * @param array           $options Options for the consumer initialization.
      */
     public function __construct(ClientInterface $client, array $options = null)
     {

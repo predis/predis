@@ -24,7 +24,7 @@ interface BasicClientInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);

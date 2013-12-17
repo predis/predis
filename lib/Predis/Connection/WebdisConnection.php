@@ -106,7 +106,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes cURL.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
     private function createCurl(ParametersInterface $parameters)
@@ -132,7 +132,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Initializes the phpiredis protocol reader.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
     private function createReader(ParametersInterface $parameters)
@@ -172,8 +172,8 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Feeds the phpredis reader resource with the data read from the network.
      *
-     * @param resource $resource Reader resource.
-     * @param string $buffer Buffer of data read from a connection.
+     * @param  resource $resource Reader resource.
+     * @param  string   $buffer   Buffer of data read from a connection.
      * @return int
      */
     protected function feedReader($resource, $buffer)
@@ -210,7 +210,7 @@ class WebdisConnection implements SingleConnectionInterface
     /**
      * Checks if the specified command is supported by this connection class.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return string
      */
     protected function getCommandId(CommandInterface $command)

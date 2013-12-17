@@ -121,7 +121,6 @@ class RedisVersion200 extends RedisProfile
             'SHUTDOWN'                  => 'Predis\Command\ServerShutdown',
             'BGREWRITEAOF'              => 'Predis\Command\ServerBackgroundRewriteAOF',
 
-
             /* ---------------- Redis 2.0 ---------------- */
 
             /* commands operating on string values */

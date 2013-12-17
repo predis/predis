@@ -123,7 +123,6 @@ class RedisVersion260 extends RedisProfile
             'SHUTDOWN'                  => 'Predis\Command\ServerShutdown',
             'BGREWRITEAOF'              => 'Predis\Command\ServerBackgroundRewriteAOF',
 
-
             /* ---------------- Redis 2.0 ---------------- */
 
             /* commands operating on string values */
@@ -172,7 +171,6 @@ class RedisVersion260 extends RedisProfile
             /* remote server control commands */
             'CONFIG'                    => 'Predis\Command\ServerConfig',
 
-
             /* ---------------- Redis 2.2 ---------------- */
 
             /* commands operating on the key space */
@@ -202,12 +200,10 @@ class RedisVersion260 extends RedisProfile
             'OBJECT'                    => 'Predis\Command\ServerObject',
             'SLOWLOG'                   => 'Predis\Command\ServerSlowlog',
 
-
             /* ---------------- Redis 2.4 ---------------- */
 
             /* remote server control commands */
             'CLIENT'                    => 'Predis\Command\ServerClient',
-
 
             /* ---------------- Redis 2.6 ---------------- */
 

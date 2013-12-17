@@ -30,8 +30,8 @@ class Handler implements SessionHandlerInterface
     protected $ttl;
 
     /**
-     * @param ClientInterface $client Fully initialized client instance.
-     * @param array $options Session handler options.
+     * @param ClientInterface $client  Fully initialized client instance.
+     * @param array           $options Session handler options.
      */
     public function __construct(ClientInterface $client, array $options = array())
     {
@@ -69,7 +69,6 @@ class Handler implements SessionHandlerInterface
     public function open($save_path, $session_id)
     {
         // NOOP
-
         return true;
     }
 
@@ -79,7 +78,6 @@ class Handler implements SessionHandlerInterface
     public function close()
     {
         // NOOP
-
         return true;
     }
 
@@ -89,7 +87,6 @@ class Handler implements SessionHandlerInterface
     public function gc($maxlifetime)
     {
         // NOOP
-
         return true;
     }
 

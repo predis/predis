@@ -53,7 +53,7 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * Sets the handler for the specified prefix identifying the response type.
      *
-     * @param string $prefix Identifier of the type of response.
+     * @param string                           $prefix  Identifier of the type of response.
      * @param Handler\ResponseHandlerInterface $handler Response handler.
      */
     public function setHandler($prefix, Handler\ResponseHandlerInterface $handler)
@@ -64,7 +64,7 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * Returns the response handler associated to a certain type of response.
      *
-     * @param string $prefix Identifier of the type of response.
+     * @param  string                   $prefix Identifier of the type of response.
      * @return ResponseHandlerInterface
      */
     public function getHandler($prefix)
@@ -101,7 +101,7 @@ class ResponseReader implements ResponseReaderInterface
      * connection.
      *
      * @param ComposableConnectionInterface $connection Redis connection that generated the error.
-     * @param string $message Error message.
+     * @param string                        $message    Error message.
      */
     protected function onProtocolError(ComposableConnectionInterface $connection, $message)
     {
