@@ -730,7 +730,7 @@ class MultiExecTest extends PredisTestCase
      * Returns a mocked instance of Predis\Connection\SingleConnectionInterface
      * using the specified callback to return values from executeCommand().
      *
-     * @param \Closure $executeCallback
+     * @param  \Closure                                     $executeCallback
      * @return \Predis\Connection\SingleConnectionInterface
      */
     protected function getMockedConnection($executeCallback)
@@ -748,7 +748,7 @@ class MultiExecTest extends PredisTestCase
      * the specified callback to return values from the executeCommand method
      * of the underlying connection.
      *
-     * @param \Closure $executeCallback
+     * @param  \Closure  $executeCallback
      * @return MultiExec
      */
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null)
@@ -763,8 +763,8 @@ class MultiExecTest extends PredisTestCase
     /**
      * Returns a callback that emulates a server-side MULTI/EXEC transaction context.
      *
-     * @param array $expected Expected responses.
-     * @param array $commands Reference to an array that stores the whole flow of commands.
+     * @param  array    $expected Expected responses.
+     * @param  array    $commands Reference to an array that stores the whole flow of commands.
      * @return \Closure
      */
     protected function getExecuteCallback($expected = array(), &$commands = array(), &$cas = array())
@@ -805,6 +805,7 @@ class MultiExecTest extends PredisTestCase
                     if ($abort) {
                         $commands = $cas = array();
                         $abort = false;
+
                         return null;
                     }
 
@@ -844,11 +845,12 @@ class MultiExecTest extends PredisTestCase
      * Converts an array of instances of Predis\Command\CommandInterface and
      * returns an array containing their IDs.
      *
-     * @param array $commands List of commands instances.
+     * @param  array $commands List of commands instances.
      * @return array
      */
-    protected static function commandsToIDs($commands) {
-        return array_map(function($cmd) { return $cmd->getId(); }, $commands);
+    protected static function commandsToIDs($commands)
+    {
+        return array_map(function ($cmd) { return $cmd->getId(); }, $commands);
     }
 
     /**

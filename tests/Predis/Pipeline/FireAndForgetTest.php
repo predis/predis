@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;

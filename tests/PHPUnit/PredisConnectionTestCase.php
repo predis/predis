@@ -326,10 +326,10 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * Returns a new instance of a connection instance.
      *
-     * @param Profile\ProfileInterface $profile Reference to the server profile instance.
-     * @param Boolean $initialize Push default initialization commands (SELECT and FLUSHDB).
-     * @param array $parameters Additional connection parameters.
+     * @param  Profile\ProfileInterface $profile    Reference to the server profile instance.
+     * @param  Boolean                  $initialize Push default initialization commands (SELECT and FLUSHDB).
+     * @param  array                    $parameters Additional connection parameters.
      * @return StreamConnection
      */
-    protected abstract function getConnection(&$profile = null, $initialize = false, array $parameters = array());
+    abstract protected function getConnection(&$profile = null, $initialize = false, array $parameters = array());
 }

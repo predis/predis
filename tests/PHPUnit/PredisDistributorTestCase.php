@@ -23,14 +23,14 @@ abstract class PredisDistributorTestCase extends PredisTestCase
      *
      * @return Predis\Cluster\Distributor\DistributorInterface
      */
-    protected abstract function getDistributorInstance();
+    abstract protected function getDistributorInstance();
 
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param DistributorInterface $ring Hashring instance.
-     * @param int $iterations Number of nodes to fetch.
-     * @return array Nodes from the hashring.
+     * @param  DistributorInterface $ring       Hashring instance.
+     * @param  int                  $iterations Number of nodes to fetch.
+     * @return array                Nodes from the hashring.
      */
     protected function getNodes(DistributorInterface $ring, $iterations = 10)
     {

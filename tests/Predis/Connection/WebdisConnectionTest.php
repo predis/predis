@@ -171,7 +171,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * Returns a new instance of a connection instance.
      *
-     * @param array $parameters Additional connection parameters.
+     * @param  array            $parameters Additional connection parameters.
      * @return WebdisConnection
      */
     protected function getConnection(&$profile = null, array $parameters = array())

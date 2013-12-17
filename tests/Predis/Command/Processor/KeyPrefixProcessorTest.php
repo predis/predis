@@ -330,7 +330,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * Data provider for key prefixing test.
      *
-     * @return  array
+     * @return array
      */
     public function commandArgumentsDataProvider()
     {

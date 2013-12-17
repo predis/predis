@@ -11,7 +11,6 @@
 
 namespace Predis\Configuration;
 
-use stdClass;
 use PredisTestCase;
 
 /**

@@ -36,8 +36,8 @@ class KeySortTest extends PredisCommandTestCase
     /**
      * Utility method to to an LPUSH of some unordered values on a key.
      *
-     * @param Predis\Client $redis Redis client instance.
-     * @param string $key Target key
+     * @param  Predis\Client $redis Redis client instance.
+     * @param  string        $key   Target key
      * @return array
      */
     protected function lpushUnorderedList(Predis\Client $redis, $key)

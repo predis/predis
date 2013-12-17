@@ -36,7 +36,6 @@ class ProtocolProcessorTest extends PredisTestCase
                 ->method('getArguments')
                 ->will($this->returnValue(array()));
 
-
         $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
 
         $connection->expects($this->once())

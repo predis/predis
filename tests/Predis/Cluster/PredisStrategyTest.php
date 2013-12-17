@@ -243,7 +243,7 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * Returns the list of expected supported commands.
      *
-     * @param string $type Optional type of command (based on its keys)
+     * @param  string $type Optional type of command (based on its keys)
      * @return array
      */
     protected function getExpectedCommands($type = null)
