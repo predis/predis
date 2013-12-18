@@ -6,17 +6,17 @@
 Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3 and
 [HHVM](http://www.hhvm.com) >= 2.3.0.
 
-Predis does not require any additional extension loaded in PHP but can be optionally paired with the
-[phpiredis](https://github.com/nrk/phpiredis) C-based extension to lower the overhead of serializing
-and parsing the Redis protocol. An asynchronous implementation of the client, albeit experimental,
-is also available through [Predis\Async](https://github.com/nrk/predis-async).
+By default Predis does not require any additional C extension, but it can be optionally paired with
+[phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of serializing and parsing the
+Redis protocol. An asynchronous implementation of the client, albeit experimental, is also available
+through [Predis\Async](https://github.com/nrk/predis-async).
 
-While it can be used with HHVM, there are no guarantees that you will not run into unexpected issues
-especially in some obscure corner cases due to the fact that HHVM is still under heavy development
-and not yet 100% compatible with PHP.
+While Predis can be used with HHVM, there are no guarantees that you will not run into unexpected
+issues (especially when JIT compilation is enabled with `Eval.Jit=true`) due to the fact that HHVM
+is still under heavy development, thus unstable and not yet 100% compatible with PHP.
 
-More details about Predis can be found in our [frequently asked questions](FAQ.md) section or on the
-[wiki](https://github.com/nrk/predis/wiki) of the project.
+More details about the project can be found in our [frequently asked questions](FAQ.md) section or
+on the online [wiki](https://github.com/nrk/predis/wiki).
 
 
 ## Main features ##
