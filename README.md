@@ -12,8 +12,8 @@ Redis protocol. An asynchronous implementation of the client, albeit experimenta
 through [Predis\Async](https://github.com/nrk/predis-async).
 
 While Predis can be used with HHVM, there are no guarantees that you will not run into unexpected
-issues (especially when JIT compilation is enabled with `Eval.Jit=true`) due to the fact that HHVM
-is still under heavy development, thus unstable and not yet 100% compatible with PHP.
+issues (especially when JIT compilation is enabled with `Eval.Jit = true`) due to the fact that HHVM
+is under heavy development, thus unstable and not yet 100% compatible with PHP.
 
 More details about the project can be found in our [frequently asked questions](FAQ.md) section or
 on the online [wiki](https://github.com/nrk/predis/wiki).
