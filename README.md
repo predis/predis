@@ -3,15 +3,15 @@
 [![Latest Stable Version](https://poser.pugx.org/predis/predis/v/stable.png)](https://packagist.org/packages/predis/predis)
 [![Total Downloads](https://poser.pugx.org/predis/predis/downloads.png)](https://packagist.org/packages/predis/predis)
 
-Predis is a flexible and feature-complete PHP (>= 5.3) client library for [Redis](http://redis.io).
+Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3.
 
-Predis does not require any additional extension loaded in PHP but can be optionally paired with the
-[phpiredis](https://github.com/nrk/phpiredis) C-based extension to lower the overhead of serializing
-and parsing the Redis protocol. An asynchronous implementation of the client, albeit experimental,
-is also available through [Predis\Async](https://github.com/nrk/predis-async).
+By default Predis does not require any additional C extension, but it can be optionally paired with
+[phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of serializing and parsing the
+Redis protocol. An asynchronous implementation of the client, albeit experimental, is also available
+through [Predis\Async](https://github.com/nrk/predis-async).
 
-You can refer to our [FAQ](FAQ.md) for a list of frequently asked questions about Predis, or find
-more details on the [wiki pages](https://github.com/nrk/predis/wiki) of the project.
+More details about the project can be found in our [frequently asked questions](FAQ.md) section or
+on the online [wiki](https://github.com/nrk/predis/wiki).
 
 
 ## Main features ##
