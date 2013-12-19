@@ -40,8 +40,9 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      *
      * @param array|string|CommandInterface $expected Expected command.
      * @param mixed                         $actual   Actual command.
+     * @param string                        $message  Optional assertion message.
      */
-    public function assertRedisCommand($expected, $actual)
+    public function assertRedisCommand($expected, $actual, $message = '')
     {
         if (is_array($expected)) {
             @list($command, $arguments) = $expected;
@@ -50,18 +51,19 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
             $arguments = null;
         }
 
-        $this->assertThat($actual, new RedisCommandConstraint($command, $arguments));
+        $this->assertThat($actual, new RedisCommandConstraint($command, $arguments), $message);
     }
 
     /**
      * Asserts that two arrays have the same values, even if with different order.
      *
-     * @param array $expected Expected array.
-     * @param array $actual   Actual array.
+     * @param array  $expected Expected array.
+     * @param array  $actual   Actual array.
+     * @param string $message  Optional assertion message.
      */
-    public function assertSameValues(array $expected, array $actual)
+    public function assertSameValues(array $expected, array $actual, $message = '')
     {
-        $this->assertThat($actual, new ArrayHasSameValuesConstraint($expected));
+        $this->assertThat($actual, new ArrayHasSameValuesConstraint($expected), $message);
     }
 
     /**
