@@ -21,7 +21,6 @@ use Predis\Cluster\CommandHashStrategyInterface;
 use Predis\Cluster\RedisClusterHashStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
-use Predis\Protocol\ProtocolException;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -259,6 +258,26 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     }
 
     /**
+     * Creates a new connection instance from the given connection ID.
+     *
+     * @param  string                    $connectionID Identifier for the connection.
+     * @return SingleConnectionInterface
+     */
+    protected function createConnection($connectionID)
+    {
+        $host = explode(':', $connectionID, 2);
+
+        $parameters = array_merge($this->defaultParameters, array(
+            'host' => $host[0],
+            'port' => $host[1],
+        ));
+
+        $connection = $this->connections->create($parameters);
+
+        return $connection;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getConnection(CommandInterface $command)
@@ -299,13 +318,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
         $connectionID = $this->guessNode($slot);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $host = explode(':', $connectionID, 2);
-            $parameters = array_merge($this->defaultParameters, array(
-                'host' => $host[0],
-                'port' => $host[1],
-            ));
-
-            $connection = $this->connections->create($parameters);
+            $connection = $this->createConnection($connectionID);
             $this->pool[$connectionID] = $connection;
         }
 
@@ -348,7 +361,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     }
 
     /**
-     * Handles -ERR responses from Redis.
+     * Handles -ERR responses returned by Redis.
      *
      * @param  CommandInterface       $command Command that generated the -ERR response.
      * @param  ResponseErrorInterface $error   Redis error response object.
@@ -360,8 +373,10 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
         switch ($details[0]) {
             case 'MOVED':
+                return $this->onMovedResponse($command, $details[1]);
+
             case 'ASK':
-                return $this->onMoveRequest($command, $details[0], $details[1]);
+                return $this->onAskResponse($command, $details[1]);
 
             default:
                 return $error;
@@ -369,51 +384,51 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     }
 
     /**
-     * Handles -MOVED and -ASK responses by re-executing the command on the node
-     * specified by the Redis response.
+     * Handles -MOVED responses by executing again the command against the node
+     * indicated by the Redis response.
      *
-     * @param  CommandInterface $command Command that generated the -MOVE or -ASK response.
-     * @param  string           $request Type of request (either 'MOVED' or 'ASK').
-     * @param  string           $details Parameters of the MOVED/ASK request.
+     * @param  CommandInterface $command Command that generated the -MOVED response.
+     * @param  string           $details Parameters of the -MOVED response.
      * @return mixed
      */
-    protected function onMoveRequest(CommandInterface $command, $request, $details)
+    protected function onMovedResponse(CommandInterface $command, $details)
     {
-        list($slot, $host) = explode(' ', $details, 2);
-        $connection = $this->getConnectionById($host);
+        list($slot, $connectionID) = explode(' ', $details, 2);
 
-        if (!$connection) {
-            $host = explode(':', $host, 2);
-            $parameters = array_merge($this->defaultParameters, array(
-                'host' => $host[0],
-                'port' => $host[1],
-            ));
-
-            $connection = $this->connections->create($parameters);
+        if (!$connection = $this->getConnectionById($connectionID)) {
+            $connection = $this->createConnection($connectionID);
         }
 
-        switch ($request) {
-            case 'MOVED':
-                if ($this->askClusterNodes) {
-                    $this->askClusterNodes();
-                }
-
-                $this->move($connection, $slot);
-                $response = $this->executeCommand($command);
-
-                return $response;
-
-            case 'ASK':
-                $connection->executeCommand(RawCommand::create('ASKING'));
-                $response = $connection->executeCommand($command);
-
-                return $response;
-
-            default:
-                throw new ProtocolException(
-                    "Unexpected request type for a move request: $request"
-                );
+        if ($this->askClusterNodes) {
+            $this->askClusterNodes();
         }
+
+        $this->move($connection, $slot);
+        $response = $this->executeCommand($command);
+
+        return $response;
+    }
+
+    /**
+     * Handles -ASK responses by executing again the command against the node
+     * indicated by the Redis response.
+     *
+     * @param  CommandInterface $command Command that generated the -ASK response.
+     * @param  string           $details Parameters of the -ASK response.
+     * @return mixed
+     */
+    protected function onAskResponse(CommandInterface $command, $details)
+    {
+        list($slot, $connectionID) = explode(' ', $details, 2);
+
+        if (!$connection = $this->getConnectionById($connectionID)) {
+            $connection = $this->createConnection($connectionID);
+        }
+
+        $connection->executeCommand(RawCommand::create('ASKING'));
+        $response = $connection->executeCommand($command);
+
+        return $response;
     }
 
     /**
