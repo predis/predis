@@ -17,7 +17,7 @@
 // For example, to generate a test case for SET (which is represented by the
 // Predis\Command\StringSet class):
 //
-//   $ ./bin/generate-command-test.php --class=StringSet
+//   $ ./bin/generate-command-test --class=StringSet
 //
 // Here is a list of optional arguments:
 //
