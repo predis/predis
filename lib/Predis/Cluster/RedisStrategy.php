@@ -11,6 +11,7 @@
 
 namespace Predis\Cluster;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
 
@@ -178,7 +179,7 @@ class RedisStrategy implements StrategyInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "The argument must be a callable object or NULL."
             );
         }

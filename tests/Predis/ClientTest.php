@@ -11,6 +11,7 @@
 
 namespace Predis;
 
+use ReflectionProperty;
 use PredisTestCase;
 use Predis\Connection;
 use Predis\Profile;
@@ -690,7 +691,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
-        $reflection = new \ReflectionProperty($pubsub, 'options');
+        $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
 
         $this->assertSame($options, $reflection->getValue($pubsub));
@@ -743,11 +744,11 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
-        $property = new \ReflectionProperty($tx, 'modeCAS');
+        $property = new ReflectionProperty($tx, 'modeCAS');
         $property->setAccessible(true);
         $this->assertSame($options['cas'], $property->getValue($tx));
 
-        $property = new \ReflectionProperty($tx, 'attempts');
+        $property = new ReflectionProperty($tx, 'attempts');
         $property->setAccessible(true);
         $this->assertSame($options['retry'], $property->getValue($tx));
     }

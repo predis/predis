@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Predis\NotSupportedException;
@@ -190,7 +191,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->pool);
+        return new ArrayIterator($this->pool);
     }
 
     /**

@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
@@ -59,7 +60,7 @@ class ComposableStreamConnection extends StreamConnection implements ComposableC
     public function readBuffer($length)
     {
         if ($length <= 0) {
-            throw new \InvalidArgumentException('Length parameter must be greater than 0.');
+            throw new InvalidArgumentException('Length parameter must be greater than 0.');
         }
 
         $value = '';

@@ -162,7 +162,7 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
     /**
      * @param  string                              $expectedVersion Expected redis version
      * @param  string                              $operator        Comparison operator.
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     * @throws PHPUnit_Framework_SkippedTestError  When expected redis version is not met
      */
     protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
     {
@@ -191,7 +191,7 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
     /**
      * @param  string                              $expectedVersion Expected redis version
      * @param  string                              $operator        Comparison operator.
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     * @throws PHPUnit_Framework_SkippedTestError  When expected redis version is not met
      */
     protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
     {
@@ -209,8 +209,8 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * @param  string                              $expectedVersion Expected redis version.
      * @param  string                              $message         Optional message.
      * @param  bool                                $remote          Based on local profile or remote redis version.
-     * @throws RuntimeException                    when unable to retrieve server info or redis version
-     * @throws \PHPUnit_Framework_SkippedTestError when expected redis version is not met
+     * @throws RuntimeException                    When unable to retrieve server info or redis version
+     * @throws PHPUnit_Framework_SkippedTestError  When expected redis version is not met
      */
     public function markTestSkippedOnRedisVersionBelow($expectedVersion, $message = '', $remote = true)
     {
