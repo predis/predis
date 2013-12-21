@@ -95,7 +95,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Returns the initialization status of the distributor.
      *
-     * @return Boolean
+     * @return bool
      */
     private function isInitialized()
     {
