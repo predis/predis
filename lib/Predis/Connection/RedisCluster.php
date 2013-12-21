@@ -224,7 +224,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
             $last < $first
         ) {
             throw new OutOfBoundsException(
-                "Invalid slot range for $connection: [$first-$last]"
+                "Invalid slot range for $connection: [$first-$last]."
             );
         }
 
@@ -288,7 +288,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     public function getConnectionBySlot($slot)
     {
         if ($slot < 0x0000 || $slot > 0x3FFF) {
-            throw new OutOfBoundsException("Invalid slot [$slot]");
+            throw new OutOfBoundsException("Invalid slot [$slot].");
         }
 
         if (isset($this->slots[$slot])) {
