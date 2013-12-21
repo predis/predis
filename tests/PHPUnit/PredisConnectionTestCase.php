@@ -49,15 +49,16 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage Connection already estabilished.
      */
-    public function testThrowsExceptionOnConnectWhenAlreadyConnected()
+    public function testDoesNotThrowExceptionOnConnectWhenAlreadyConnected()
     {
         $connection = $this->getConnection();
 
         $connection->connect();
+        $this->assertTrue($connection->isConnected());
+
         $connection->connect();
+        $this->assertTrue($connection->isConnected());
     }
 
     /**

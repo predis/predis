@@ -12,6 +12,10 @@ v0.9.0 (201x-xx-xx)
   values carrying the original payload, so one can do `$response == 'OK'` which
   is also more akin to how Redis replies to clients.
 
+- Invoking `Predis\Client::connect()` when the underlying connection has been
+  already established does not throw any exception anymore, now the connection
+  simply does not attempt to perform any operation.
+
 - Added the `aggregate` client option, useful to fully customize how the client
   should aggregate multiple connections when an array of connection parameters
   is passed to `Predis\Client::__construct()`.

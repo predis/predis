@@ -296,13 +296,13 @@ class PhpiredisSocketConnection extends AbstractConnection
      */
     public function connect()
     {
-        parent::connect();
+        if (parent::connect()) {
+            $this->connectWithTimeout($this->parameters);
 
-        $this->connectWithTimeout($this->parameters);
-
-        if ($this->initCommands) {
-            foreach ($this->initCommands as $command) {
-                $this->executeCommand($command);
+            if ($this->initCommands) {
+                foreach ($this->initCommands as $command) {
+                    $this->executeCommand($command);
+                }
             }
         }
     }
