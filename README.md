@@ -175,7 +175,7 @@ $responses = $client->transaction()->set('foo', 'bar')->get('foo')->execute();
 
 This abstraction can perform check-and-set operations thanks to `WATCH` and `UNWATCH` and provides
 automatic retries of transactions aborted by Redis when `WATCH`ed keys are touched. For an example
-of a transaction using CAS you can see [the following example](examples/TransactionWithCAS.php).
+of a transaction using CAS you can see [the following example](examples/transaction_using_cas.php).
 
 
 ### Customizable connection backends ###
