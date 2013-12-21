@@ -141,8 +141,8 @@ class Client implements ClientInterface
      * Wraps a callable to make sure that its returned value represents a valid
      * connection type.
      *
-     * @param  mixed $callable
-     * @return mixed
+     * @param  mixed    $callable
+     * @return \Closure
      */
     protected function getConnectionInitializerWrapper($callable)
     {
@@ -333,10 +333,8 @@ class Client implements ClientInterface
      * @param  ErrorResponseInterface $response Instance of the error response.
      * @return mixed
      */
-    protected function onErrorResponse(
-        CommandInterface $command,
-        ErrorResponseInterface $response
-    ) {
+    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
+    {
         if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
             $eval->setRawArguments($command->getEvalArguments());
