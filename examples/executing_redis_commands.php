@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
 $client = new Predis\Client($single_server);
 

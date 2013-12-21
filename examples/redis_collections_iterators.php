@@ -9,19 +9,22 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
 use Predis\Collection\Iterator;
 
-// Redis 2.8 features new commands allowing clients to incrementally
-// iterate over collections without blocking the server like it happens
-// when a command such as KEYS is executed on a Redis instance storing
-// millions of keys. These commands are SCAN (iterates over the keyspace),
-// SSCAN (iterates over members of a set), ZSCAN (iterates over members
-// and ranks of a sorted set) and HSCAN (iterates over fields and values
-// of an hash). Predis provides a specialized abstraction for each command
-// based on SPL iterators making it possible to easily consume SCAN-based
-// iterations in your PHP code.
+// Starting from Redis 2.8, clients can iterate incrementally over collections
+// without blocking the server like it happens when a command such as KEYS is
+// executed on a Redis instance storing millions of keys. These commands are:
+//
+//   - SCAN (iterates over the keyspace)
+//   - SSCAN (iterates over members of a set)
+//   - ZSCAN (iterates over members and ranks of a sorted set)
+//   - HSCAN (iterates over fields and values of an hash).
+
+// Predis provides a specialized abstraction for each command based on standard
+// SPL iterators making it possible to easily consume SCAN-based iterations in
+// your PHP code.
 //
 // See http://redis.io/commands/scan for more details.
 //

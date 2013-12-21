@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
 // This example will not work with versions of Redis < 2.6.
 //

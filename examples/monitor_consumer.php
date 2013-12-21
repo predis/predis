@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-// This is a basic example on how to use the Predis\Monitor\Consumer class.
-// You can use redis-cli to send commands to the same Redis instance your client is
+// This is a basic example on how to use the Predis\Monitor\Consumer class. You
+// can use redis-cli to send commands to the same Redis instance your client is
 // connected to, and then type "ECHO QUIT_MONITOR" in redis-cli when you want to
 // exit the monitor loop and terminate this script in a graceful way.
 

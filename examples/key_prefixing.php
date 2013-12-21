@@ -9,13 +9,12 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-// Predis ships with a KeyPrefixProcessor class that is used to transparently
-// prefix each key before sending commands to Redis, even for complex commands
-// such as SORT, ZUNIONSTORE and ZINTERSTORE. Key prefixes are useful to create
-// user-level namespaces for you keyspace, thus eliminating the need for separate
-// logical databases.
+// Predis can prefix keys found in commands arguments before sending commands to
+// Redis, even for complex commands such as SORT, ZUNIONSTORE and ZINTERSTORE.
+// Prefixing keys can be useful to create user-level namespaces for you keyspace
+// thus reducing the need for separate logical databases in certain scenarios.
 
 $client = new Predis\Client($single_server, array('prefix' => 'nrk:'));
 

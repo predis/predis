@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-// Predis supports master / slave replication scenarios where write operations are
-// performed on the master server and read operations are executed against one of
-// the slaves. The behaviour of commands or EVAL scripts can be customized at will.
-// As soon as a write operation is performed, all the subsequent requests (reads
-// or writes) will be served by the master server.
+// Predis supports master / slave replication scenarios where write operations
+// are performed on the master server and read operations are executed against
+// one of the slaves. The behavior of commands or EVAL scripts can be customized
+// at will. As soon as a write operation is performed the client switches to the
+// master server for all the subsequent requests (either reads and writes).
 //
-// This example must be executed with the second Redis server acting as the slave
-// of the first one using the SLAVEOF command.
+// This example must be executed using the second Redis server configured as the
+// slave of the first one (see the "SLAVEOF" command).
 //
 
 $parameters = array(

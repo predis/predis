@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-// Redis 2.0 features new commands that allow clients to subscribe for
-// events published on certain channels (PUBSUB).
+// Starting from Redis 2.0 clients can subscribe and listen for events published
+// on certain channels using a Publish/Subscribe (PUB/SUB) approach.
 
 // Create a client and disable r/w timeout on the socket
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));

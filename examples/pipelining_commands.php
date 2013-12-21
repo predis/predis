@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
 // When you have a whole set of consecutive commands to send to a redis server,
 // you can use a pipeline to dramatically improve performances. Pipelines can

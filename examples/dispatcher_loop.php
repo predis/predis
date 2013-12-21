@@ -9,20 +9,18 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-/*
-This is a basic example on how to use the Predis\DispatcherLoop class.
+// This is a basic example on how to use the Predis\DispatcherLoop class.
+//
+// To see this example in action you can just use redis-cli and publish some
+// messages to the 'events' and 'control' channel, e.g.:
 
-To see this example in action you can just use redis-cli and publish some
-messages to the 'events' and 'control' channel, e.g.:
-
-./redis-cli
-PUBLISH events first
-PUBLISH events second
-PUBLISH events third
-PUBLISH control terminate_dispatcher
-*/
+// ./redis-cli
+// PUBLISH events first
+// PUBLISH events second
+// PUBLISH events third
+// PUBLISH control terminate_dispatcher
 
 // Create a client and disable r/w timeout on the socket
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));

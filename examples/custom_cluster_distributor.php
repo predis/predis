@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  */
 
-require 'SharedConfigurations.php';
+require __DIR__.'/shared.php';
 
-// Developers can customize the distribution strategy used by the client
-// to distribute keys among a cluster of servers simply by creating a class
-// that implements Predis\Distribution\DistributorInterface.
+// Developers can implement Predis\Distribution\DistributorInterface to create
+// their own distributors used by the client to distribute keys among a cluster
+// of servers.
 
 use Predis\Connection\PredisCluster;
 use Predis\Cluster\Distributor\DistributorInterface;
@@ -43,7 +43,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface {
 
     public function get($key) {
         if (0 === $count = $this->nodesCount) {
-            throw new RuntimeException('No connections');
+            throw new RuntimeException('No connections.');
         }
 
         return $this->nodes[$count > 1 ? abs($key % $count) : 0];
