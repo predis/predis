@@ -12,7 +12,7 @@
 namespace Predis\Response\Iterator;
 
 use OuterIterator;
-use RuntimeException;
+use InvalidArgumentException;
 use UnexpectedValueException;
 
 /**
@@ -49,7 +49,7 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
     protected function checkPreconditions(MultiBulk $iterator)
     {
         if ($iterator->getPosition() !== 0) {
-            throw new RuntimeException(
+            throw new InvalidArgumentException(
                 'Cannot initialize a tuple iterator using an already initiated iterator.'
             );
         }

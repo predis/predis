@@ -368,7 +368,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException Predis\ClientException
      * @expectedExceptionMessage Automatic retries are supported only when a callable block is provided.
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()

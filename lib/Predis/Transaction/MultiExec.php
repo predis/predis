@@ -318,7 +318,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
         } elseif ($this->attempts) {
             $this->discard();
 
-            throw new InvalidArgumentException(
+            throw new ClientException(
                 'Automatic retries are supported only when a callable block is provided.'
             );
         }

@@ -12,6 +12,7 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
 use ReflectionClass;
 use Predis\Command\RawCommand;
 
@@ -94,7 +95,7 @@ class Factory implements FactoryInterface
         }
 
         if (!$connection instanceof SingleConnectionInterface) {
-            throw new InvalidArgumentException(
+            throw new UnexpectedValueException(
                 "Objects returned by connection initializers must implement ".
                 "'Predis\Connection\SingleConnectionInterface'."
             );
