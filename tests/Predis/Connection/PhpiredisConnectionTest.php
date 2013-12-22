@@ -86,6 +86,18 @@ class PhpiredisConnectionTest extends PredisConnectionTestCase
         $this->assertSame(array('foo', 'hoge', 'lol'), $connection->executeCommand($cmdLrange));
     }
 
+     /**
+      * @group connected
+      * @expectedException Predis\Connection\ConnectionException
+      * @expectedExceptionMessage Cannot resolve the address of 'bogus.tld'.
+      */
+     public function testThrowsExceptionOnUnresolvableHostname()
+     {
+         $parameters = $this->getParameters(array('host' => 'bogus.tld'));
+         $connection = new PhpiredisConnection($parameters);
+         $connection->connect();
+     }
+
     /**
      * @group connected
      * @expectedException Predis\Protocol\ProtocolException
