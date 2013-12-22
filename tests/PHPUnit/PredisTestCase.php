@@ -197,7 +197,7 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
     protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
     {
         $profile = $this->getProfile();
-        $comparation = version_compare($profile->getVersion(), $expectedVersion);
+        $comparation = version_compare($version = $profile->getVersion(), $expectedVersion);
 
         if ($match = eval("return $comparation $operator 0;")) {
             call_user_func($callback, $this, $version);
