@@ -26,7 +26,7 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
     {
         if ($command instanceof CommandInterface) {
             $this->commandID = strtoupper($command->getId());
-            $this->arguments = $arguments ?: $commant->getArguments();
+            $this->arguments = $arguments ?: $command->getArguments();
         } else {
             $this->commandID = strtoupper($command);
             $this->arguments = $arguments;
