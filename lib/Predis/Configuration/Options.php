@@ -15,6 +15,14 @@ namespace Predis\Configuration;
  * Manages Predis options with filtering, conversion and lazy initialization of
  * values using a mini-DI container approach.
  *
+ * @property-read mixed aggregate   Custom connection aggregator.
+ * @property-read mixed cluster     Aggregate connection for clustering.
+ * @property-read mixed connections Connection factory.
+ * @property-read mixed exceptions  Toggles exceptions in client for -ERR responses.
+ * @property-read mixed prefix      Key prefixing strategy using the given prefix.
+ * @property-read mixed profile     Server profile.
+ * @property-read mixed replication Aggregate connection for replication.
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Options implements OptionsInterface
