@@ -54,4 +54,19 @@ class StatusTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Response\Status', $response = Status::get('PONG'));
         $this->assertEquals('PONG', $response);
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testStaticGetMethodCachesOnlyCommonStatuses()
+    {
+        $response = Status::get('OK');
+        $this->assertSame($response, Status::get('OK'));
+
+        $response = Status::get('QUEUED');
+        $this->assertSame($response, Status::get('QUEUED'));
+
+        $response = Status::get('PONG');
+        $this->assertNotSame($response, Status::get('PONG'));
+    }
 }
