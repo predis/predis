@@ -49,7 +49,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @param  bool   $connect Flush selected database before returning the client.
+     * @param  bool   $flushdb Flush selected database before returning the client.
      * @return Client
      */
     public function getClient($flushdb = true)

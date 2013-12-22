@@ -22,6 +22,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
     /**
      * Returns a new instance of the tested profile.
      *
+     * @param  string $version  Version of Redis.
      * @return ProfileInterface
      */
     protected function getProfile($version = null)

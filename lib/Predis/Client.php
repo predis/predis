@@ -180,6 +180,7 @@ class Client implements ClientInterface
      * only when working with an aggregate connection (cluster, replication).
      * The new client instances uses the same options of the original one.
      *
+     * @param  string $connectionID Identifier of a connection.
      * @return Client
      */
     public function getClientFor($connectionID)
@@ -390,7 +391,7 @@ class Client implements ClientInterface
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param  mixed          $arg,... Array of options, a callable for execution, or both.
+     * @param  mixed          ... Array of options, a callable for execution, or both.
      * @return Pipeline|array
      */
     public function pipeline(/* arguments */)
@@ -428,7 +429,7 @@ class Client implements ClientInterface
      * Creates a new transaction context and returns it, or returns the results
      * of a transaction executed inside the optionally provided callable object.
      *
-     * @param  mixed                      $arg,... Array of options, a callable for execution, or both.
+     * @param  mixed                      ... Array of options, a callable for execution, or both.
      * @return TransactionMultiExec|array
      */
     public function transaction(/* arguments */)
@@ -458,7 +459,7 @@ class Client implements ClientInterface
      * Creates a new publis/subscribe context and returns it, or starts its loop
      * inside the optionally provided callable object.
      *
-     * @param  mixed               $arg,... Array of options, a callable for execution, or both.
+     * @param  mixed               ... Array of options, a callable for execution, or both.
      * @return PubSubConsumer|NULL
      */
     public function pubSubLoop(/* arguments */)

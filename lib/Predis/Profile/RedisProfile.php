@@ -103,8 +103,8 @@ abstract class RedisProfile implements ProfileInterface
     /**
      * Defines a new command in the server profile.
      *
-     * @param string $commandID    Command ID.
-     * @param string $commandClass Fully-qualified name of a Predis\Command\CommandInterface.
+     * @param string $commandID Command ID.
+     * @param string $class     Fully-qualified name of a Predis\Command\CommandInterface.
      */
     public function defineCommand($commandID, $class)
     {

@@ -165,7 +165,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     /**
      * Executes a Redis command bypassing the transaction logic.
      *
-     * @param  string $method    Command ID.
+     * @param  string $commandID Command ID.
      * @param  array  $arguments Arguments for the command.
      * @return mixed
      */
