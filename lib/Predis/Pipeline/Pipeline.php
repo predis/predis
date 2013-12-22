@@ -51,9 +51,9 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Queues a command into the pipeline buffer.
      *
-     * @param  string   $method    Command ID.
-     * @param  array    $arguments Arguments for the command.
-     * @return Pipeline
+     * @param string $method    Command ID.
+     * @param array  $arguments Arguments for the command.
+     * @return $this
      */
     public function __call($method, $arguments)
     {
@@ -77,7 +77,7 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
      * Queues a command instance into the pipeline buffer.
      *
      * @param CommandInterface $command Command instance to be queued in the buffer.
-     * @return self
+     * @return $this
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -152,8 +152,8 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Flushes the buffer holding all of the commands queued so far.
      *
-     * @param  bool     $send Specifies if the commands in the buffer should be sent to Redis.
-     * @return Pipeline
+     * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
+     * @return $this
      */
     public function flushPipeline($send = true)
     {
