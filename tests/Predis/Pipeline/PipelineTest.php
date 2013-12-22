@@ -332,6 +332,8 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentHandlesExceptions()
     {
+        $exception = null;
+
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
@@ -347,8 +349,8 @@ class PipelineTest extends PredisTestCase
                 throw new ClientException('TEST');
                 $pipe->echo('two');
             });
-        } catch (Exception $ex) {
-            $exception = $ex;
+        } catch (Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -415,6 +417,8 @@ class PipelineTest extends PredisTestCase
      */
     public function testIntegrationWithClientExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -422,8 +426,8 @@ class PipelineTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (Exception $ex) {
-            $exception = $ex;
+        } catch (Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -436,6 +440,8 @@ class PipelineTest extends PredisTestCase
      */
     public function testIntegrationWithServerExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -446,8 +452,8 @@ class PipelineTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (Exception $ex) {
-            $exception = $ex;
+        } catch (Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\Response\ServerException', $exception);
