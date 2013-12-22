@@ -50,7 +50,8 @@ abstract class AbstractConnection implements SingleConnectionInterface
     /**
      * Checks some of the parameters used to initialize the connection.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param  ParametersInterface $parameters Initialization parameters for the connection.
+     * @return ParametersInterface
      */
     protected function assertParameters(ParametersInterface $parameters)
     {

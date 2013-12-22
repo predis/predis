@@ -46,6 +46,7 @@ class RawCommand implements CommandInterface
      *
      * @param string $commandID Redis command ID.
      * @param string ... Arguments list for the command.
+     * @return CommandInterface
      */
     public static function create($commandID /* [ $arg, ... */)
     {
@@ -89,9 +90,7 @@ class RawCommand implements CommandInterface
     }
 
     /**
-     * Gets the argument from the arguments list at the specified index.
-     *
-     * @param array $arguments Position of the argument.
+     * {@inheritdoc}
      */
     public function getArgument($index)
     {

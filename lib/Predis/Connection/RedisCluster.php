@@ -481,7 +481,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * Returns the underlying command hash strategy used to hash commands by
      * using keys found in their arguments.
      *
-     * @return ClusterStrategyInterface
+     * @return \Predis\Cluster\StrategyInterface
      */
     public function getClusterStrategy()
     {

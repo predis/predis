@@ -43,7 +43,7 @@ class ServerSentinel extends Command
     /**
      * Returns a processed response to SENTINEL MASTERS or SENTINEL SLAVES.
      *
-     * @param array List of Redis servers.
+     * @param  array $servers List of Redis servers.
      * @return array
      */
     protected static function processMastersOrSlaves(array $servers)

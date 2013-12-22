@@ -38,7 +38,7 @@ class Parameters implements ParametersInterface
     );
 
     /**
-     * @param array Named array of connection parameters.
+     * @param array $parameters Named array of connection parameters.
      */
     public function __construct(array $parameters = array())
     {

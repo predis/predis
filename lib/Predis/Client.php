@@ -240,8 +240,8 @@ class Client implements ClientInterface
      * Retrieves the specified connection from the aggregate connection when the
      * client is in cluster or replication mode.
      *
-     * @param  string                    $connectionID Index or alias of the single connection.
-     * @return SingleConnectionInterface
+     * @param  string                               $connectionID Index or alias of the single connection.
+     * @return Connection\SingleConnectionInterface
      */
     public function getConnectionById($connectionID)
     {
