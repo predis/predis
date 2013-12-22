@@ -202,7 +202,7 @@ class Client implements ClientInterface
     /**
      * Retrieves a single connection out of an aggregated connections instance.
      *
-     * @param  string                               $connectionId Index or alias of the connection.
+     * @param  string                               $connectionId Index or alias of the single connection.
      * @return Connection\SingleConnectionInterface
      */
     public function getConnectionById($connectionId)
