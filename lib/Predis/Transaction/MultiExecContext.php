@@ -352,7 +352,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
                     $this->discard();
                 }
 
-                return;
+                return null;
             }
 
             $reply = $this->client->exec();
