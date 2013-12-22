@@ -119,6 +119,8 @@ class Consumer extends AbstractConsumer
                 if ($response[2] === 0) {
                     $this->invalidate();
                 }
+                // The missing break here is intentional as we must process
+                // subscriptions and unsubscriptions as standard messages.
 
             case self::MESSAGE:
                 return (object) array(
