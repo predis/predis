@@ -65,9 +65,9 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     /**
      * Queues a command into the pipeline buffer.
      *
-     * @param  string          $method    Command ID.
-     * @param  array           $arguments Arguments for the command.
-     * @return PipelineContext
+     * @param  string $method    Command ID.
+     * @param  array  $arguments Arguments for the command.
+     * @return $this
      */
     public function __call($method, $arguments)
     {
