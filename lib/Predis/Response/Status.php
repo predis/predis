@@ -63,18 +63,12 @@ class Status implements ResponseInterface
     {
         switch ($payload) {
             case 'OK':
-                if (!isset(self::$OK)) {
-                    self::$OK = new self('OK');
-                }
-
-                return self::$OK;
-
             case 'QUEUED':
-                if (!isset(self::$QUEUED)) {
-                    self::$QUEUED = new self('QUEUED');
+                if (!isset(self::$$payload)) {
+                    self::$$payload = new self($payload);
                 }
 
-                return self::$QUEUED;
+                return self::$$payload;
 
             default:
                 return new self($payload);
