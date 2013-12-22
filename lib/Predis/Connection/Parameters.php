@@ -16,24 +16,6 @@ use InvalidArgumentException;
 /**
  * Connection parameters used to initialize connections to Redis.
  *
- * The actual list of supported connection parameters depends on the features
- * supported by each connection backend class (please refer to their specific
- * documentation), furthermore developers can pass their own custom parameters.
- *
- * These are the most common parameters used through the library:
- *
- * @property-read string scheme             Connection scheme, such as 'tcp' or 'unix'.
- * @property-read string host               IP address or hostname of Redis.
- * @property-read int    port               TCP port on which Redis is listening to.
- * @property-read string path               Path of a UNIX domain socket file.
- * @property-read float  timeout            Timeout for the connect() operation.
- * @property-read float  read_write_timeout Timeout for read() and write() operations.
- * @property-read bool   async_connect      Performs the connect() operation asynchronously.
- * @property-read bool   tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
- * @property-read bool   persistent         Leaves the connection open after a GC collection.
- * @property-read string password           Password to access Redis (see the AUTH command).
- * @property-read string database           Database index (see the SELECT command).
- *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Parameters implements ParametersInterface
