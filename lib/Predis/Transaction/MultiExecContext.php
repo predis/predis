@@ -200,7 +200,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Executes the specified Redis command.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
      * @return $this|mixed
      */
     public function executeCommand(CommandInterface $command)
