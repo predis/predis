@@ -12,7 +12,6 @@
 namespace Predis\Collection\Iterator;
 
 use PredisTestCase;
-use Predis\Client;
 use Predis\Profile;
 
 /**
