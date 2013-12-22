@@ -286,7 +286,7 @@ class ClientTest extends PredisTestCase
         $arg2 = array(
             'aggregate'   => function () use ($fnaggregate) { return $fnaggregate; },
             'cluster'     => function () use ($fncluster) { return $fncluster; },
-            'replication' => function () use ($fnreplication) { return $fncluster; },
+            'replication' => function () use ($fnreplication) { return $fnreplication; },
         );
 
         $client = new Client($arg1, $arg2);
