@@ -111,7 +111,7 @@ class RedisVersion260 extends RedisProfile
             'QUIT'                      => 'Predis\Command\ConnectionQuit',
 
             /* remote server control commands */
-            'INFO'                      => 'Predis\Command\ServerInfo',
+            'INFO'                      => 'Predis\Command\ServerInfoV26x',
             'SLAVEOF'                   => 'Predis\Command\ServerSlaveOf',
             'MONITOR'                   => 'Predis\Command\ServerMonitor',
             'DBSIZE'                    => 'Predis\Command\ServerDatabaseSize',
@@ -227,7 +227,6 @@ class RedisVersion260 extends RedisProfile
             'SCRIPT'                    => 'Predis\Command\ServerScript',
 
             /* remote server control commands */
-            'INFO'                      => 'Predis\Command\ServerInfoV26x',
             'TIME'                      => 'Predis\Command\ServerTime',
             'SENTINEL'                  => 'Predis\Command\ServerSentinel',
         );
