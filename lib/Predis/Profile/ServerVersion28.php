@@ -111,7 +111,7 @@ class ServerVersion28 extends ServerProfile
             'quit'                      => 'Predis\Command\ConnectionQuit',
 
             /* remote server control commands */
-            'info'                      => 'Predis\Command\ServerInfo',
+            'info'                      => 'Predis\Command\ServerInfoV26x',
             'slaveof'                   => 'Predis\Command\ServerSlaveOf',
             'monitor'                   => 'Predis\Command\ServerMonitor',
             'dbsize'                    => 'Predis\Command\ServerDatabaseSize',
@@ -227,7 +227,6 @@ class ServerVersion28 extends ServerProfile
             'script'                    => 'Predis\Command\ServerScript',
 
             /* remote server control commands */
-            'info'                      => 'Predis\Command\ServerInfoV26x',
             'time'                      => 'Predis\Command\ServerTime',
 
             /* ---------------- Redis 2.8 ---------------- */
