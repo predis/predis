@@ -30,7 +30,7 @@ class ConnectionParameters implements ConnectionParametersInterface
     );
 
     /**
-     * @param string|array Connection parameters in the form of an URI string or a named array.
+     * @param string|array $parameters Connection parameters in the form of an URI string or a named array.
      */
     public function __construct($parameters = array())
     {

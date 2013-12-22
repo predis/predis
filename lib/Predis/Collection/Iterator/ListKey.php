@@ -66,8 +66,8 @@ class ListKey implements Iterator
      * command required to fetch elements from the server to perform
      * the iteration.
      *
-     * @param ClientInterface Client connected to Redis.
-     * @param string $commandID Command ID.
+     * @param ClientInterface $client    Client connected to Redis.
+     * @param string          $commandID Command ID.
      */
     protected function requiredCommand(ClientInterface $client, $commandID)
     {

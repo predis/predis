@@ -22,8 +22,8 @@ interface ConnectionParametersInterface
     /**
      * Checks if the specified parameters is set.
      *
-     * @param  string  $property Name of the property.
-     * @return Boolean
+     * @param  string $parameter Name of the parameter.
+     * @return bool
      */
     public function __isset($parameter);
 

@@ -20,13 +20,14 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
     protected $arguments;
 
     /**
-     * @param array $array
+     * @param string|CommandInterface $command   Expected command ID or instance.
+     * @param array                   $arguments Expected command arguments.
      */
     public function __construct($command = null, array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
             $this->commandID = strtoupper($command->getId());
-            $this->arguments = $arguments ?: $commant->getArguments();
+            $this->arguments = $arguments ?: $command->getArguments();
         } else {
             $this->commandID = strtoupper($command);
             $this->arguments = $arguments;

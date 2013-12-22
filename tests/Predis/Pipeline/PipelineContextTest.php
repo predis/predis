@@ -77,6 +77,20 @@ class PipelineContextTest extends PredisTestCase
     /**
      * @group disconnected
      */
+     public function testExecuteReturnsPipelineForFluentInterface()
+     {
+        $profile = ServerProfile::getDefault();
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+
+        $pipeline = new PipelineContext(new Client($connection));
+        $command = $profile->createCommand('echo', array('one'));
+
+        $this->assertSame($pipeline, $pipeline->executeCommand($command));
+     }
+
+    /**
+     * @group disconnected
+     */
     public function testExecuteCommandDoesNotSendCommandsWithoutExecute()
     {
         $profile = ServerProfile::getDefault();
@@ -239,6 +253,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentHandlesExceptions()
     {
+        $exception = null;
+
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->never())->method('writeCommand');
         $connection->expects($this->never())->method('readResponse');
@@ -254,8 +270,8 @@ class PipelineContextTest extends PredisTestCase
                 throw new ClientException('TEST');
                 $pipe->echo('two');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -322,6 +338,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testIntegrationWithClientExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -329,8 +347,8 @@ class PipelineContextTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -343,6 +361,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testIntegrationWithServerExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -353,8 +373,8 @@ class PipelineContextTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ServerException', $exception);
@@ -388,9 +408,9 @@ class PipelineContextTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @return array  Additional connection parameters.
-     * @return array  Additional client options.
-     * @return Client New client instance.
+     * @param  array  $parameters Additional connection parameters.
+     * @param  array  $options    Additional client options.
+     * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())
     {

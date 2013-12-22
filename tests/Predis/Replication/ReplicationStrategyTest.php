@@ -12,7 +12,6 @@
 namespace Predis\Replication;
 
 use PredisTestCase;
-use Predis\Command\CommandInterface;
 use Predis\Profile\ServerProfile;
 
 /**
@@ -240,7 +239,6 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $commands = array(
             /* commands operating on the connection */
-            'EXISTS'                => 'read',
             'AUTH'                  => 'read',
             'SELECT'                => 'read',
             'ECHO'                  => 'read',

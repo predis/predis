@@ -227,7 +227,7 @@ class PhpiredisConnection extends AbstractConnection
      * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return string
      */
-    private function getAddress(ConnectionParametersInterface $parameters)
+    protected static function getAddress(ConnectionParametersInterface $parameters)
     {
         if ($parameters->scheme === 'unix') {
             return $parameters->path;
@@ -236,8 +236,8 @@ class PhpiredisConnection extends AbstractConnection
         $host = $parameters->host;
 
         if (ip2long($host) === false) {
-            if (($addresses = gethostbynamel($host)) === false) {
-                $this->onConnectionError("Cannot resolve the address of $host");
+            if (false === $addresses = gethostbynamel($host)) {
+                return false;
             }
 
             return $addresses[array_rand($addresses)];
@@ -254,7 +254,10 @@ class PhpiredisConnection extends AbstractConnection
      */
     private function connectWithTimeout(ConnectionParametersInterface $parameters)
     {
-        $host = self::getAddress($parameters);
+        if (false === $host = self::getAddress($parameters)) {
+            $this->onConnectionError("Cannot resolve the address of '$parameters->host'.");
+        }
+
         $socket = $this->getResource();
 
         socket_set_nonblock($socket);

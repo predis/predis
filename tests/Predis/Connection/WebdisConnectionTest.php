@@ -169,6 +169,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * Returns a new instance of a connection instance.
      *
+     * @param  mixed            $profile    Redis profile.
      * @param  array            $parameters Additional connection parameters.
      * @return WebdisConnection
      */

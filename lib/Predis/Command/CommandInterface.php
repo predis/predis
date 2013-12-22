@@ -62,7 +62,8 @@ interface CommandInterface
     /**
      * Gets the argument of the command at the specified index.
      *
-     * @return array
+     * @param  int   $index Index of the desired argument.
+     * @return mixed
      */
     public function getArgument($index);
 

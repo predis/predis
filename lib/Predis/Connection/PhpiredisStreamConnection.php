@@ -156,8 +156,6 @@ class PhpiredisStreamConnection extends StreamConnection
 
             if ($buffer === false || $buffer === '') {
                 $this->onConnectionError('Error while reading bytes from the server');
-
-                return;
             }
 
             phpiredis_reader_feed($reader, $buffer);

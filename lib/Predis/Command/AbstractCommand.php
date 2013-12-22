@@ -59,9 +59,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Gets the argument from the arguments list at the specified index.
-     *
-     * @param array $arguments Position of the argument.
+     * {@inheritdoc}
      */
     public function getArgument($index)
     {

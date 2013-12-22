@@ -54,9 +54,9 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Subscribes to the specified channels.
      *
-     * @param mixed $arg,... One or more channel names.
+     * @param mixed $channel,... One or more channel names.
      */
-    public function subscribe(/* arguments */)
+    public function subscribe($channel /*, ... */)
     {
         $this->writeCommand(self::SUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_SUBSCRIBED;
@@ -65,9 +65,9 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Unsubscribes from the specified channels.
      *
-     * @param mixed $arg,... One or more channel names.
+     * @param string ... One or more channel names.
      */
-    public function unsubscribe(/* arguments */)
+    public function unsubscribe(/* ... */)
     {
         $this->writeCommand(self::UNSUBSCRIBE, func_get_args());
     }
@@ -75,9 +75,9 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Subscribes to the specified channels using a pattern.
      *
-     * @param mixed $arg,... One or more channel name patterns.
+     * @param mixed $pattern,... One or more channel name patterns.
      */
-    public function psubscribe(/* arguments */)
+    public function psubscribe($pattern /* ... */)
     {
         $this->writeCommand(self::PSUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_PSUBSCRIBED;
@@ -86,9 +86,9 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Unsubscribes from the specified channels using a pattern.
      *
-     * @param mixed $arg,... One or more channel name patterns.
+     * @param string ... One or more channel name patterns.
      */
-    public function punsubscribe(/* arguments */)
+    public function punsubscribe(/* ... */)
     {
         $this->writeCommand(self::PUNSUBSCRIBE, func_get_args());
     }
