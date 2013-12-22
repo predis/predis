@@ -253,6 +253,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentHandlesExceptions()
     {
+        $exception = null;
+
         $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
         $connection->expects($this->never())->method('writeCommand');
         $connection->expects($this->never())->method('readResponse');
@@ -268,8 +270,8 @@ class PipelineContextTest extends PredisTestCase
                 throw new ClientException('TEST');
                 $pipe->echo('two');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -336,6 +338,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testIntegrationWithClientExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -343,8 +347,8 @@ class PipelineContextTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
@@ -357,6 +361,8 @@ class PipelineContextTest extends PredisTestCase
      */
     public function testIntegrationWithServerExceptionInCallableBlock()
     {
+        $exception = null;
+
         $client = $this->getClient();
 
         try {
@@ -367,8 +373,8 @@ class PipelineContextTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (\Exception $ex) {
-            $exception = $ex;
+        } catch (\Exception $exception) {
+            // NOOP
         }
 
         $this->assertInstanceOf('Predis\ServerException', $exception);
