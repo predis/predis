@@ -76,11 +76,14 @@ class Pipeline implements BasicClientInterface, ExecutableContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param CommandInterface $command Command to be queued in the buffer.
+     * @param CommandInterface $command Command instance to be queued in the buffer.
+     * @return self
      */
     public function executeCommand(CommandInterface $command)
     {
         $this->recordCommand($command);
+
+        return $this;
     }
 
     /**

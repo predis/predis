@@ -132,6 +132,19 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testExecuteReturnsPipelineForFluentInterface()
+    {
+        $profile = Profile\Factory::getDefault();
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $pipeline = new Pipeline(new Client($connection));
+        $command = $profile->createCommand('echo', array('one'));
+
+        $this->assertSame($pipeline, $pipeline->executeCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testExecuteCommandDoesNotSendCommandsWithoutExecute()
     {
         $profile = Profile\Factory::getDefault();
