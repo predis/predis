@@ -325,7 +325,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * Returns a new instance of a connection instance.
      *
      * @param  ServerProfile    $profile    Reference to the server profile instance.
-     * @param  Boolean          $initialize Push default initialization commands (SELECT and FLUSHDB).
+     * @param  bool             $initialize Push default initialization commands (SELECT and FLUSHDB).
      * @param  array            $parameters Additional connection parameters.
      * @return StreamConnection
      */

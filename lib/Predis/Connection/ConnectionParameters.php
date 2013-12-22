@@ -71,8 +71,8 @@ class ConnectionParameters implements ConnectionParametersInterface
     /**
      * Validates value as boolean.
      *
-     * @param  mixed   $value Input value.
-     * @return boolean
+     * @param  mixed $value Input value.
+     * @return bool
      */
     private static function castBoolean($value)
     {

@@ -34,7 +34,7 @@ interface ConnectionInterface
     /**
      * Returns if the connection is open.
      *
-     * @return Boolean
+     * @return bool
      */
     public function isConnected();
 

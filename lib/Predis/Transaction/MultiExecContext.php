@@ -101,8 +101,8 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Checks is a flag is set.
      *
-     * @param  int     $flags Flag
-     * @return Boolean
+     * @param  int  $flags Flag
+     * @return bool
      */
     protected function checkState($flags)
     {

@@ -103,7 +103,7 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     /**
      * Flushes the buffer that holds the queued commands.
      *
-     * @param  Boolean         $send Specifies if the commands in the buffer should be sent to Redis.
+     * @param  bool            $send Specifies if the commands in the buffer should be sent to Redis.
      * @return PipelineContext
      */
     public function flushPipeline($send = true)
@@ -122,8 +122,8 @@ class PipelineContext implements BasicClientInterface, ExecutableContextInterfac
     /**
      * Marks the running status of the pipeline.
      *
-     * @param Boolean $bool True if the pipeline is running.
-     *                      False if the pipeline is not running.
+     * @param bool $bool True if the pipeline is running.
+     *                   False if the pipeline is not running.
      */
     private function setRunning($bool)
     {

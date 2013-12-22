@@ -32,7 +32,7 @@ interface AggregatedConnectionInterface extends ConnectionInterface
      * connection.
      *
      * @param  SingleConnectionInterface $connection Instance of a connection.
-     * @return Boolean                   Returns true if the connection was in the pool.
+     * @return bool                      Returns true if the connection was in the pool.
      */
     public function remove(SingleConnectionInterface $connection);
 

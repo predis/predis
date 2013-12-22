@@ -117,7 +117,7 @@ class MonitorContext implements \Iterator
     /**
      * Checks if the the context is still in a valid state to continue.
      *
-     * @return Boolean
+     * @return bool
      */
     public function valid()
     {

@@ -43,8 +43,8 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Checks if the specified flag is valid in the state of the context.
      *
-     * @param  int     $value Flag.
-     * @return Boolean
+     * @param  int  $value Flag.
+     * @return bool
      */
     protected function isFlagSet($value)
     {
@@ -98,8 +98,8 @@ abstract class AbstractPubSubContext implements \Iterator
      * Optionally, the context can be forcefully closed by dropping the
      * underlying connection.
      *
-     * @param  Boolean $force Forcefully close the context by closing the connection.
-     * @return Boolean Returns false if there are no pending messages.
+     * @param  bool $force Forcefully close the context by closing the connection.
+     * @return bool Returns false if there are no pending messages.
      */
     public function closeContext($force = false)
     {
@@ -177,7 +177,7 @@ abstract class AbstractPubSubContext implements \Iterator
     /**
      * Checks if the the context is still in a valid state to continue.
      *
-     * @return Boolean
+     * @return bool
      */
     public function valid()
     {

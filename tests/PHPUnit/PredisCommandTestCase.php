@@ -69,7 +69,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns wether the command is prefixable or not.
      *
-     * @return Boolean
+     * @return bool
      */
     protected function isPrefixable()
     {

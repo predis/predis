@@ -49,8 +49,8 @@ class MultiBulkResponseSimple extends MultiBulkResponse
      * read from the connection by consuming the rest of the multibulk reply,
      * or simply by dropping the connection.
      *
-     * @param Boolean $drop True to synchronize the client by dropping the connection.
-     *                      False to synchronize the client by consuming the multibulk reply.
+     * @param bool $drop True to synchronize the client by dropping the connection.
+     *                   False to synchronize the client by consuming the multibulk reply.
      */
     public function sync($drop = false)
     {

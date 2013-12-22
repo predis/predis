@@ -40,7 +40,7 @@ class ReplicationStrategy
      * against a key stored on Redis.
      *
      * @param  CommandInterface $command Instance of Redis command.
-     * @return Boolean
+     * @return bool
      */
     public function isReadOperation(CommandInterface $command)
     {
@@ -76,7 +76,7 @@ class ReplicationStrategy
      * replication context.
      *
      * @param  CommandInterface $command Instance of Redis command.
-     * @return Boolean
+     * @return bool
      */
     public function isDisallowedOperation(CommandInterface $command)
     {
@@ -88,7 +88,7 @@ class ReplicationStrategy
      * array of the specified commad instance.
      *
      * @param  CommandInterface $command Instance of Redis command.
-     * @return Boolean
+     * @return bool
      */
     protected function isSortReadOnly(CommandInterface $command)
     {

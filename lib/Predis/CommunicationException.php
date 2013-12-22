@@ -48,7 +48,7 @@ abstract class CommunicationException extends PredisException
     /**
      * Indicates if the receiver should reset the underlying connection.
      *
-     * @return Boolean
+     * @return bool
      */
     public function shouldResetConnection()
     {

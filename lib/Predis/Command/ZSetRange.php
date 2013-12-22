@@ -70,7 +70,7 @@ class ZSetRange extends PrefixableCommand
     /**
      * Checks for the presence of the WITHSCORES modifier.
      *
-     * @return Boolean
+     * @return bool
      */
     protected function withScores()
     {

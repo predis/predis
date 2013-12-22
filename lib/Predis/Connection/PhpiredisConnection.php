@@ -137,7 +137,6 @@ class PhpiredisConnection extends AbstractConnection
     /**
      * Gets the handler used by the protocol reader to handle Redis errors.
      *
-     * @param  Boolean  $throw_errors Specify if Redis errors throw exceptions.
      * @return \Closure
      */
     private function getErrorHandler()

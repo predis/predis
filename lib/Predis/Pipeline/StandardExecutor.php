@@ -77,8 +77,9 @@ class StandardExecutor implements PipelineExecutorInterface
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param ConnectionInterface    $connection The connection that returned the error.
-     * @param ResponseErrorInterface $response   The error response instance.
+     * @param  ConnectionInterface    $connection The connection that returned the error.
+     * @param  ResponseErrorInterface $response   The error response instance.
+     * @return ResponseErrorInterface
      */
     protected function onResponseError(ConnectionInterface $connection, ResponseErrorInterface $response)
     {

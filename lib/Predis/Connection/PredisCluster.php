@@ -112,8 +112,8 @@ class PredisCluster implements ClusterConnectionInterface, \IteratorAggregate, \
     /**
      * Removes a connection instance using its alias or index.
      *
-     * @param  string  $connectionId Alias or index of a connection.
-     * @return Boolean Returns true if the connection was in the pool.
+     * @param  string $connectionId Alias or index of a connection.
+     * @return bool   Returns true if the connection was in the pool.
      */
     public function removeById($connectionId)
     {

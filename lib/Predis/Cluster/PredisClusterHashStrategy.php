@@ -345,8 +345,8 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
     /**
      * Checks if the specified array of keys will generate the same hash.
      *
-     * @param  array   $keys Array of keys.
-     * @return Boolean
+     * @param  array $keys Array of keys.
+     * @return bool
      */
     protected function checkSameHashForKeys(Array $keys)
     {

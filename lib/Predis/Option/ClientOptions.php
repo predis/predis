@@ -75,8 +75,8 @@ class ClientOptions implements ClientOptionsInterface
     /**
      * Checks if the specified option is set.
      *
-     * @param  string  $option Name of the option.
-     * @return Boolean
+     * @param  string $option Name of the option.
+     * @return bool
      */
     public function __isset($option)
     {

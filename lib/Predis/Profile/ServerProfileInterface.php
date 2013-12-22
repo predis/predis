@@ -32,8 +32,8 @@ interface ServerProfileInterface
     /**
      * Checks if the profile supports the specified command.
      *
-     * @param  string  $command Command ID.
-     * @return Boolean
+     * @param  string $command Command ID.
+     * @return bool
      */
     public function supportsCommand($command);
 
