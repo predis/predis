@@ -39,6 +39,7 @@ interface DistributionStrategyInterface
     /**
      * Gets a node from the distributor using the computed hash of a key.
      *
+     * @param  mixed $key
      * @return mixed
      */
     public function get($key);

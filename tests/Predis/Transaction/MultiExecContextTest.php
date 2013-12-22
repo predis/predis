@@ -657,6 +657,7 @@ class MultiExecContextTest extends PredisTestCase
      * of the underlying connection.
      *
      * @param  \Closure         $executeCallback
+     * @param  array            $options
      * @return MultiExecContext
      */
     protected function getMockedTransaction($executeCallback, $options = array())
@@ -671,8 +672,9 @@ class MultiExecContextTest extends PredisTestCase
     /**
      * Returns a callback that emulates a server-side MULTI/EXEC transaction context.
      *
-     * @param  array    $expected Expected replies.
-     * @param  array    $commands Reference to an array that stores the whole flow of commands.
+     * @param  array    $expected Expected responses.
+     * @param  array    $commands Reference to an array storing the whole flow of commands.
+     * @param  array    $cas      Check and set operations performed by the transaction.
      * @return \Closure
      */
     protected function getExecuteCallback($expected = array(), &$commands = array(), &$cas = array())

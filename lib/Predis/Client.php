@@ -319,7 +319,7 @@ class Client implements ClientInterface
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param  mixed                 $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                 ... Options for the context, a callable object, or both.
      * @return PipelineContext|array
      */
     public function pipeline(/* arguments */)
@@ -368,7 +368,7 @@ class Client implements ClientInterface
      *             as it will replace Client::multiExec() in the next major
      *             version of the library.
      *
-     * @param  mixed                  $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                  ... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
     public function multiExec(/* arguments */)
@@ -380,7 +380,7 @@ class Client implements ClientInterface
      * Creates a new transaction context and returns it, or returns the results of
      * a transaction executed inside the optionally provided callable object.
      *
-     * @param  mixed                  $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                  ... Options for the context, a callable object, or both.
      * @return MultiExecContext|array
      */
     public function transaction(/* arguments */)
@@ -411,7 +411,7 @@ class Client implements ClientInterface
      *             Client::pubSubLoop() to create Predis\PubSub\PubSubContext
      *             instances from now on.
      *
-     * @param  mixed                   $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                   ... Options for the context, a callable object, or both.
      * @return PubSubExecContext|array
      */
     public function pubSub(/* arguments */)
@@ -423,7 +423,7 @@ class Client implements ClientInterface
      * Creates a new Publish / Subscribe context and returns it, or executes it
      * inside the optionally provided callable object.
      *
-     * @param  mixed                   $arg,... Options for the context, a callable object, or both.
+     * @param  mixed                   ... Options for the context, a callable object, or both.
      * @return PubSubExecContext|array
      */
     public function pubSubLoop(/* arguments */)

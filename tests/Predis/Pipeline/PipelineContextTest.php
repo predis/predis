@@ -408,9 +408,9 @@ class PipelineContextTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @return array  Additional connection parameters.
-     * @return array  Additional client options.
-     * @return Client New client instance.
+     * @param  array  $parameters Additional connection parameters.
+     * @param  array  $options    Additional client options.
+     * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())
     {

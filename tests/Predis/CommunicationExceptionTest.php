@@ -97,10 +97,10 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param  SingleConnectionInterface $message Connection instance.
-     * @param  string                    $message Exception message.
-     * @param  int                       $code    Exception code.
-     * @param  \Exception                $inner   Inner exception.
+     * @param  Connection\SingleConnectionInterface $connection Connection instance.
+     * @param  string                               $message    Exception message.
+     * @param  int                                  $code       Exception code.
+     * @param  \Exception                           $inner      Inner exception.
      * @return \Exception
      */
     protected function getException(SingleConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
