@@ -42,7 +42,7 @@ class ResponseBulkHandlerTest extends PredisTestCase
     public function testBulk()
     {
         $bulk = "This is a bulk string.";
-        $bulkLengh = (string) strlen($bulk);
+        $bulkLengh = strlen($bulk);
 
         $handler = new ResponseBulkHandler();
 
@@ -54,7 +54,7 @@ class ResponseBulkHandlerTest extends PredisTestCase
                    ->with($this->equalTo($bulkLengh + 2))
                    ->will($this->returnValue("$bulk\r\n"));
 
-        $this->assertSame($bulk, $handler->handle($connection, $bulkLengh));
+        $this->assertSame($bulk, $handler->handle($connection, (string) $bulkLengh));
     }
 
     /**

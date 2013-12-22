@@ -240,7 +240,6 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $commands = array(
             /* commands operating on the connection */
-            'EXISTS'                => 'read',
             'AUTH'                  => 'read',
             'SELECT'                => 'read',
             'ECHO'                  => 'read',
