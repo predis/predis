@@ -88,6 +88,18 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @expectedException Predis\Connection\ConnectionException
+     * @expectedExceptionMessage Cannot resolve the address of 'bogus.tld'.
+     */
+    public function testThrowsExceptionOnUnresolvableHostname()
+    {
+        $parameters = $this->getParameters(array('host' => 'bogus.tld'));
+        $connection = new PhpiredisSocketConnection($parameters);
+        $connection->connect();
+    }
+
+    /**
+     * @group connected
      * @expectedException Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Protocol error, got "P" as reply type byte
      */
