@@ -1,0 +1,53 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+// -------------------------------------------------------------------------- //
+// In order to be able to execute this script to create a PEAR package of Predis
+// both `onion` and `pear` must be available and executable in your $PATH.
+// -------------------------------------------------------------------------- //
+
+function executeWithBackup($file, $callback)
+{
+    $exception = null;
+    $backup = "$file.backup";
+
+    copy($file, $backup);
+
+    try {
+        call_user_func($callback, $file);
+    } catch (Exception $exception) {
+        // NOOP
+    }
+
+    unlink($file);
+    rename($backup, $file);
+
+    if ($exception) {
+        throw $exception;
+    }
+}
+
+function buildPackage()
+{
+    passthru('onion build && pear -q package && rm package.xml');
+}
+
+executeWithBackup(__DIR__.'/../phpunit.xml.dist', function ($file) {
+    $cfg = new SimpleXMLElement($file, null, true);
+
+    $cfg[0]['bootstrap'] = str_replace('tests/', '', $cfg[0]['bootstrap']);
+    $cfg->testsuites->testsuite->directory = str_replace('tests/', '', $cfg->testsuites->testsuite->directory);
+
+    $cfg->saveXml($file);
+
+    buildPackage();
+});
