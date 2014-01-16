@@ -93,7 +93,7 @@ v0.9.0 (201x-xx-xx)
 - The client can now send raw commands using `Predis\Client::executeRaw()`.
 
 
-v0.8.5 (2013-xx-xx)
+v0.8.5 (2014-01-16)
 ================================================================================
 
 - Added `2.8` in the server profiles aliases list for Redis 2.8. `2.6` is still
