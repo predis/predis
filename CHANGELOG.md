@@ -86,6 +86,11 @@ v0.9.0 (201x-xx-xx)
   they can also define the needed logic in their command classes by implementing
   `Predis\Command\PrefixableCommandInterface` just like before.
 
+- The rules for redis-cluster are now leveraged for empty key tags when using
+  client-side sharding, which means that when one or the first occurrence of {}
+  is found in a key it will most likely produce a different hash than previous
+  versions of Predis thus leading to a different partitioning in these cases.
+
 - Renamed interface `Predis\Command\Processor\CommandProcessorInterface` to a
   shorter `Predis\Command\Processor\ProcessorInterface`. Also removed interface
   for chain processors since it is basically useless.

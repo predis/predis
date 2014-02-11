@@ -32,10 +32,14 @@ class PredisStrategyTest extends PredisTestCase
         $this->assertSame($expected, $strategy->getKeyHash('{foo}'));
         $this->assertSame($expected, $strategy->getKeyHash('{foo}:bar'));
         $this->assertSame($expected, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:bar'));
+        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:baz'));
+        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:{baz}'));
+
+        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:baz{}'));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1346986340 : 2947980956,  $strategy->getKeyHash('{}bar:{foo}:baz'));
 
         $this->assertSame(0, $strategy->getKeyHash(''));
-        $this->assertSame(0, $strategy->getKeyHash('{}'));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1549353149 : 2745614147, $strategy->getKeyHash('{}'));
     }
 
     /**
