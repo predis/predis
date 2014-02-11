@@ -104,7 +104,7 @@ class StreamConnection extends AbstractConnection
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
 
-        if (isset($parameters->tcp_nodelay) && version_compare(PHP_VERSION, '5.4.0') >= 0) {
+        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
             $socket = socket_import_stream($resource);
             socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
         }
