@@ -10,6 +10,10 @@ By default Predis does not require any additional C extension, but it can be opt
 Redis protocol. An asynchronous implementation of the client, albeit experimental, is also available
 through [Predis\Async](https://github.com/nrk/predis-async).
 
+Predis can be used with [HHVM](http://www.hhvm.com) >= 2.4.0, but there are no guarantees you will
+not run into unexpected issues (especially with the JIT compiler enabled via `Eval.Jit = true`) due
+to HHVM being still under heavy development, thus unstable and not yet 100% compatible with PHP.
+
 More details about the project can be found in our [frequently asked questions](FAQ.md) section or
 on the online [wiki](https://github.com/nrk/predis/wiki).
 
