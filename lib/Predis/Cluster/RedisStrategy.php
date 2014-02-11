@@ -305,8 +305,8 @@ class RedisStrategy implements StrategyInterface
     protected function extractKeyTag($key)
     {
         if (false !== $start = strpos($key, '{')) {
-            if (false !== $end = strpos($key, '}', $start)) {
-                $key = substr($key, ++$start, $end - $start);
+            if (false !== ($end = strpos($key, '}', $start)) && $end !== ++$start) {
+                $key = substr($key, $start, $end - $start);
             }
         }
 
