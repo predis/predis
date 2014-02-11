@@ -22,14 +22,14 @@ class RedisClusterHashStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDoesNotSupportKeyTags()
+    public function testSupportsKeyTags()
     {
         $strategy = $this->getHashStrategy();
 
-        $this->assertSame(35910, $strategy->getKeyHash('{foo}'));
-        $this->assertSame(60032, $strategy->getKeyHash('{foo}:bar'));
-        $this->assertSame(27528, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame(34064, $strategy->getKeyHash('bar:{foo}:bar'));
+        $this->assertSame(44950, $strategy->getKeyHash('{foo}'));
+        $this->assertSame(44950, $strategy->getKeyHash('{foo}:bar'));
+        $this->assertSame(44950, $strategy->getKeyHash('{foo}:baz'));
+        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:bar'));
     }
 
     /**

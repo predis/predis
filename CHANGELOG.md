@@ -3,6 +3,8 @@ v0.8.6 (2014-xx-xx)
 
 - Minor tweaks to make this version of Predis compatible with HHVM >= 2.4.0.
 
+- Add support for key hash tags when using redis-cluster (Redis 3.0.0b1).
+
 
 v0.8.5 (2014-01-16)
 ================================================================================

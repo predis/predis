@@ -287,6 +287,27 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
      */
     public function getKeyHash($key)
     {
-        return $this->hashGenerator->hash($key);
+        $key = $this->extractKeyTag($key);
+        $hash = $this->hashGenerator->hash($key);
+
+        return $hash;
+    }
+
+    /**
+     * Returns only the hashable part of a key (delimited by "{...}"), or the
+     * whole key if a key tag is not found in the string.
+     *
+     * @param  string $key A key.
+     * @return string
+     */
+    protected function extractKeyTag($key)
+    {
+        if (false !== $start = strpos($key, '{')) {
+            if (false !== $end = strpos($key, '}', $start)) {
+                $key = substr($key, ++$start, $end - $start);
+            }
+        }
+
+        return $key;
     }
 }
