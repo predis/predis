@@ -29,7 +29,14 @@ class RedisClusterHashStrategyTest extends PredisTestCase
         $this->assertSame(44950, $strategy->getKeyHash('{foo}'));
         $this->assertSame(44950, $strategy->getKeyHash('{foo}:bar'));
         $this->assertSame(44950, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:bar'));
+        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:baz'));
+        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:{baz}'));
+
+        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:baz{}'));
+        $this->assertSame(9415,  $strategy->getKeyHash('{}bar:{foo}:baz'));
+
+        $this->assertSame(0,     $strategy->getKeyHash(''));
+        $this->assertSame(31641, $strategy->getKeyHash('{}'));
     }
 
     /**
