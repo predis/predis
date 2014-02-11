@@ -3,6 +3,7 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - 5.6
   - hhvm
 branches:
   except:
@@ -14,5 +15,6 @@ services: redis-server
 script: phpunit -c phpunit.xml.travisci
 matrix:
   allow_failures:
+    - php: 5.6
     - php: hhvm
   fast_finish: true
