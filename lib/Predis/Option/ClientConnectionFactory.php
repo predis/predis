@@ -50,7 +50,7 @@ class ClientConnectionFactory extends AbstractOption
             return $factory;
         }
 
-        if (@class_exists($value)) {
+        if (is_string($value) && @class_exists($value)) {
             $factory = new $value();
 
             if (!$factory instanceof ConnectionFactoryInterface) {
