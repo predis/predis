@@ -40,7 +40,7 @@ use Predis\Transaction\MultiExec as TransactionMultiExec;
  */
 class Client implements ClientInterface
 {
-    const VERSION = '0.9.0-dev';
+    const VERSION = '1.0.0-dev';
 
     protected $connection;
     protected $options;
