@@ -41,18 +41,8 @@ class ServerInfoV26x extends ServerInfo
                 continue;
             }
 
-            list($k, $v) = explode(':', $row);
-
-            if (!preg_match('/^db\d+$/', $k)) {
-                if ($k === 'allocation_stats') {
-                    $current[$k] = $this->parseAllocationStats($v);
-                    continue;
-                }
-
-                $current[$k] = $v;
-            } else {
-                $current[$k] = $this->parseDatabaseStats($v);
-            }
+            list($k, $v) = $this->parseRow($row);
+            $current[$k] = $v;
         }
 
         return $info;
