@@ -62,7 +62,7 @@ class ServerInfo extends AbstractCommand
         } else {
             $v = $this->parseDatabaseStats($v);
         }
-        return [$k, $v];
+        return array($k, $v);
     }
 
     /**
