@@ -11,7 +11,7 @@
 
 if (file_exists(__DIR__.'/../autoload.php')) {
     require __DIR__.'/../autoload.php';
-} else if (@include('Predis/Autoloader.php')) {
+} elseif (@include('Predis/Autoloader.php')) {
     Predis\Autoloader::register();
 } else {
     die('ERROR: Unable to find a suitable mean to register Predis\Autoloader.');
