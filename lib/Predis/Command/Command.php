@@ -95,38 +95,6 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * Helper function used to reduce a list of arguments to a string.
-     *
-     * @param  string $accumulator Temporary string.
-     * @param  string $argument    Current argument.
-     * @return string
-     */
-    protected function toStringArgumentReducer($accumulator, $argument)
-    {
-        if (strlen($argument) > 32) {
-            $argument = substr($argument, 0, 32) . '[...]';
-        }
-
-        $accumulator .= " $argument";
-
-        return $accumulator;
-    }
-
-    /**
-     * Returns a partial string representation of the command with its arguments.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return array_reduce(
-            $this->getArguments(),
-            array($this, 'toStringArgumentReducer'),
-            $this->getId()
-        );
-    }
-
-    /**
      * Normalizes the arguments array passed to a Redis command.
      *
      * @param  array $arguments Arguments for a command.

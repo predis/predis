@@ -51,6 +51,8 @@ v1.0.0 (201x-xx-xx)
     - `Predis\Command\AbstractCommand` is now `Predis\Command\Command`
     - `Predis\Command\ScriptedCommand` is now `Predis\Command\ScriptCommand`
 
+- Dropped `Predis\Command\Command::__toString()` (see issue #151).
+
 - Renamed `Predis\Connection\ConnectionInterface::writeCommand()` into
   `writeRequest()` for consistency with its counterpart, `readResponse()`.
 

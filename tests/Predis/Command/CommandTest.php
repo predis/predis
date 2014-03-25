@@ -120,38 +120,6 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testToString()
-    {
-        $expected = 'SET key value';
-        $arguments = array('key', 'value');
-
-        $command = $this->getMockForAbstractClass('Predis\Command\Command');
-        $command->expects($this->once())->method('getId')->will($this->returnValue('SET'));
-
-        $command->setRawArguments($arguments);
-
-        $this->assertEquals($expected, (string) $command);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testToStringWithLongArguments()
-    {
-        $expected = 'SET key abcdefghijklmnopqrstuvwxyz012345[...]';
-        $arguments = array('key', 'abcdefghijklmnopqrstuvwxyz0123456789');
-
-        $command = $this->getMockForAbstractClass('Predis\Command\Command');
-        $command->expects($this->once())->method('getId')->will($this->returnValue('SET'));
-
-        $command->setRawArguments($arguments);
-
-        $this->assertEquals($expected, (string) $command);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testNormalizeArguments()
     {
         $arguments = array('arg1', 'arg2', 'arg3', 'arg4');
