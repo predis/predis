@@ -1,7 +1,7 @@
 v1.0.0 (201x-xx-xx)
 ================================================================================
 
-- The default server profile for Redis is now `2.8`.
+- The default server profile for Redis is `2.8`.
 
 - Added `SENTINEL` to the profile for Redis 2.6 and `PUBSUB` to the profile for
   Redis 2.8.
