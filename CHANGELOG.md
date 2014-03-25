@@ -80,8 +80,8 @@ v1.0.0 (201x-xx-xx)
   been renamed to make their fully-qualified name less redundant. Now the base
   response interface is `Predis\Response\ResponseInterface`.
 
-- The profile factory code has been extrapolated from the abstract Redis profile
-  class and it's now in `Predis\Profile\Factory`.
+- The profile factory code has been extracted from the abstract Redis profile
+  class and now lives in `Predis\Profile\Factory`.
 
 - The key prefixing logic has been moved from command classes to the key prefix
   processor. Developers can define or override handlers used to prefix keys, but
