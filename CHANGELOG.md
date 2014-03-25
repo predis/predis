@@ -5,6 +5,8 @@ v0.8.6 (2014-xx-xx)
 
 - Add support for key hash tags when using redis-cluster (Redis 3.0.0b1).
 
+- __FIX__: redis-sentinel does not break the parsing of responses to `INFO`.
+
 
 v0.8.5 (2014-01-16)
 ================================================================================
