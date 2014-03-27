@@ -20,7 +20,7 @@ use Predis\Iterator\MultiBulkResponseSimple;
  * Standard connection to Redis servers implemented on top of PHP's streams.
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - scheme: it can be either 'tcp', 'ssl, 'sslv2', 'sslv3', 'tls' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -30,6 +30,7 @@ use Predis\Iterator\MultiBulkResponseSimple;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *  - iterable_multibulk: multibulk replies treated as iterable objects.
+ *  - ssl: an optional array of SSL context options to be passed to stream_context_create
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -65,7 +66,10 @@ class StreamConnection extends AbstractConnection
     protected function createResource()
     {
         $parameters = $this->parameters;
-        $initializer = "{$parameters->scheme}StreamInitializer";
+        $scheme = $parameters->scheme;
+        if($scheme=="ssl" || $scheme=="sslv2" || $scheme=="sslv3" || $scheme=="tls")
+            $scheme = "tcp";
+        $initializer = "{$scheme}StreamInitializer";
 
         return $this->$initializer($parameters);
     }
@@ -78,7 +82,7 @@ class StreamConnection extends AbstractConnection
      */
     private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
     {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $uri = "{$parameters->scheme}://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
 
         if (isset($parameters->async_connect) && $parameters->async_connect) {
@@ -90,7 +94,14 @@ class StreamConnection extends AbstractConnection
             $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
         }
 
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+        if(isset($parameters->ssl)) {
+            $context = stream_context_create(Array('ssl'=>$parameters->ssl));
+        } else {
+            $context = stream_context_create();
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags,
+            $context);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
