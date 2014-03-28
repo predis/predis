@@ -73,6 +73,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'GETSET'                => $keyIsFirstArgument,
             'INCR'                  => $keyIsFirstArgument,
             'INCRBY'                => $keyIsFirstArgument,
+            'INCRBYFLOAT'           => $keyIsFirstArgument,
             'SETBIT'                => $keyIsFirstArgument,
             'SETEX'                 => $keyIsFirstArgument,
             'MSET'                  => array($this, 'getKeyFromInterleavedArguments'),
