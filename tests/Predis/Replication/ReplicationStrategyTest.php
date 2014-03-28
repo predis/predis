@@ -286,6 +286,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'GETSET'                => 'write',
             'INCR'                  => 'write',
             'INCRBY'                => 'write',
+            'INCRBYFLOAT'           => 'write',
             'SETBIT'                => 'write',
             'SETEX'                 => 'write',
             'MSET'                  => 'write',

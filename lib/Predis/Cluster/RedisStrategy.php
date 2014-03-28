@@ -70,6 +70,7 @@ class RedisStrategy implements StrategyInterface
             'GETSET'                => $keyIsFirstArgument,
             'INCR'                  => $keyIsFirstArgument,
             'INCRBY'                => $keyIsFirstArgument,
+            'INCRBYFLOAT'           => $keyIsFirstArgument,
             'SETBIT'                => $keyIsFirstArgument,
             'SETEX'                 => $keyIsFirstArgument,
             'MSET'                  => array($this, 'getKeyFromInterleavedArguments'),
