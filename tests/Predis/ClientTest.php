@@ -747,6 +747,35 @@ class ClientTest extends PredisTestCase
         $this->assertTrue($client->executeCommand($command));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testClientResendEvalShaCommandUsingEvalOnNoScriptErrors()
+    {
+        $command = $this->getMock('Predis\Command\ServerEvalSHA');
+        $command->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array()));
+        $command->expects($this->once())
+            ->method('parseResponse')
+            ->with('OK')
+            ->will($this->returnValue(true));
+
+        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection->expects($this->at(0))
+            ->method('executeCommand')
+            ->with($command)
+            ->will($this->returnValue(new ResponseError('NOSCRIPT')));
+        $connection->expects($this->at(1))
+            ->method('executeCommand')
+            ->with($this->isInstanceOf('Predis\Command\ServerEval'))
+            ->will($this->returnValue('OK'));
+
+        $client = new Client($connection);
+
+        $this->assertTrue($client->executeCommand($command));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

@@ -12,6 +12,7 @@
 namespace Predis;
 
 use Predis\Command\CommandInterface;
+use Predis\Command\ServerEvalSHA;
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\AggregatedConnectionInterface;
 use Predis\Connection\ConnectionInterface;
@@ -265,9 +266,18 @@ class Client implements ClientInterface
      */
     protected function onResponseError(CommandInterface $command, ResponseErrorInterface $response)
     {
-        if ($command instanceof ScriptedCommand && $response->getErrorType() === 'NOSCRIPT') {
+        if ($command instanceof ServerEvalSHA && $response->getErrorType() === 'NOSCRIPT') {
             $eval = $this->createCommand('eval');
-            $eval->setRawArguments($command->getEvalArguments());
+
+            if($command instanceof ScriptedCommand)
+            {
+                $eval->setRawArguments($command->getEvalArguments());
+            }
+            else
+            {
+                $eval->setArguments($command->getArguments());
+            }
+
 
             $response = $this->executeCommand($eval);
 
