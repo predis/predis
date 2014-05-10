@@ -99,6 +99,25 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection->read();
     }
 
+    /**
+     * @group connected
+     */
+    public function testConnectionRecoveryAfterServerDisconnectionByTimeout()
+    {
+        $connection = $this->getConnection($profile);
+        $connection->addConnectCommand(
+            $profile->createCommand('config', array('set', 'timeout', '1'))
+        );
+        
+        $connection->writeRequest($profile->createCommand('ping'));
+        $this->assertEquals('PONG', $connection->read());
+        
+        $this->sleep(2);
+
+        $connection->writeRequest($profile->createCommand('ping'));
+        $this->assertEquals('PONG', $connection->read());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
