@@ -127,6 +127,14 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    public function isConnected()
+    {
+        return isset($this->resource) && !feof($this->resource);    
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         if (parent::connect() && $this->initCommands) {
