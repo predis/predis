@@ -14,7 +14,7 @@ branches:
 services: redis-server
 before_script:
   - composer self-update
-  - composer install
+  - composer install --no-interaction --prefer-source --dev
 script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
