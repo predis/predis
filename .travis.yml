@@ -12,7 +12,11 @@ branches:
     - php5.2_backport
     - documentation
 services: redis-server
-script: phpunit -c phpunit.xml.travisci
+before_script:
+  - composer self-update
+  - composer install --no-interaction --prefer-source --dev
+script:
+  - vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   allow_failures:
     - php: hhvm
