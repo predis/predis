@@ -288,6 +288,7 @@ class RedisClusterHashStrategyTest extends PredisTestCase
             'GETSET'                => 'keys-first',
             'INCR'                  => 'keys-first',
             'INCRBY'                => 'keys-first',
+            'INCRBYFLOAT'           => 'keys-first',
             'SETBIT'                => 'keys-first',
             'SETEX'                 => 'keys-first',
             'MSET'                  => 'keys-interleaved',
