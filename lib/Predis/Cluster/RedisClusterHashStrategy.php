@@ -43,11 +43,12 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
     protected function getDefaultCommands()
     {
         $keyIsFirstArgument = array($this, 'getKeyFromFirstArgument');
+        $keysAreAllArguments = array($this, 'getKeyFromAllArguments');
 
         return array(
             /* commands operating on the key space */
             'EXISTS'                => $keyIsFirstArgument,
-            'DEL'                   => array($this, 'getKeyFromAllArguments'),
+            'DEL'                   => $keysAreAllArguments,
             'TYPE'                  => $keyIsFirstArgument,
             'EXPIRE'                => $keyIsFirstArgument,
             'EXPIREAT'              => $keyIsFirstArgument,
@@ -64,7 +65,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'DECRBY'                => $keyIsFirstArgument,
             'GET'                   => $keyIsFirstArgument,
             'GETBIT'                => $keyIsFirstArgument,
-            'MGET'                  => array($this, 'getKeyFromAllArguments'),
+            'MGET'                  => $keysAreAllArguments,
             'SET'                   => $keyIsFirstArgument,
             'GETRANGE'              => $keyIsFirstArgument,
             'GETSET'                => $keyIsFirstArgument,
@@ -142,8 +143,8 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
 
             /* commands operating on hyperLogLog */
             'PFADD'                 => $keyIsFirstArgument,
-            'PFCOUNT'               => array($this, 'getKeyFromAllArguments'),
-            'PFMERGE'               => array($this, 'getKeyFromAllArguments'),
+            'PFCOUNT'               => $keysAreAllArguments,
+            'PFMERGE'               => $keysAreAllArguments,
 
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),

@@ -156,8 +156,8 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
 
             /* commands operating on hyperLogLog */
             'PFADD'                 => $keyIsFirstArgument,
-            'PFCOUNT'               => array($this, 'getKeyFromAllArguments'),
-            'PFMERGE'               => array($this, 'getKeyFromAllArguments'),
+            'PFCOUNT'               => $keysAreAllArguments,
+            'PFMERGE'               => $keysAreAllArguments,
 
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
