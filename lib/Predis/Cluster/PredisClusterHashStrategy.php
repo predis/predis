@@ -154,6 +154,11 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'HVALS'                 => $keyIsFirstArgument,
             'HSCAN'                 => $keyIsFirstArgument,
 
+            /* commands operating on hyperLogLog */
+            'PFADD'                 => $keyIsFirstArgument,
+            'PFMERGE'               => $keyIsFirstArgument,
+            'PFCOUNT'               => $keyIsFirstArgument,
+
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
             'EVALSHA'               => array($this, 'getKeyFromScriptingCommands'),
