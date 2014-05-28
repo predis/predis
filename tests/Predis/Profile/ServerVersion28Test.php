@@ -177,6 +177,9 @@ class ServerVersion28Test extends PredisProfileTestCase
             136 => 'sscan',
             137 => 'zscan',
             138 => 'hscan',
+            139 => 'pfadd',
+            140 => 'pfcount',
+            141 => 'pfmerge',
         );
     }
 }

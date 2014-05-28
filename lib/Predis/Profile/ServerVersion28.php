@@ -242,6 +242,13 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on hashes */
             'hscan'                     => 'Predis\Command\HashScan',
+
+            /* ---------------- Redis 2.8.9 -------------- */
+
+            /* commands operating on hyperloglog */
+            'pfadd'                     => 'Predis\Command\HyperLogLogAdd',
+            'pfcount'                   => 'Predis\Command\HyperLogLogCount',
+            'pfmerge'                   => 'Predis\Command\HyperLogLogMerge',
         );
     }
 }

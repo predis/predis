@@ -359,6 +359,11 @@ class PredisClusterHashStrategyTest extends PredisTestCase
             'HVALS'                 => 'keys-first',
             'HSCAN'                 => 'keys-first',
 
+            /* commands operating on hyperLogLog */
+            'PFADD'                 => 'keys-first',
+            'PFCOUNT'               => 'keys-all',
+            'PFMERGE'               => 'keys-all',
+
             /* scripting */
             'EVAL'                  => 'keys-script',
             'EVALSHA'               => 'keys-script',
