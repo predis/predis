@@ -23,4 +23,12 @@ class HyperLogLogCount extends PrefixableCommand
     {
         return 'PFCOUNT';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        PrefixHelpers::all($this, $prefix);
+    }
 }

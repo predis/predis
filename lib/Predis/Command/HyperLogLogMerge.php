@@ -23,4 +23,12 @@ class HyperLogLogMerge extends PrefixableCommand
     {
         return 'PFMERGE';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        PrefixHelpers::all($this, $prefix);
+    }
 }
