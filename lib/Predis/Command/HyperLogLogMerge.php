@@ -14,7 +14,7 @@ namespace Predis\Command;
 /**
  * @link http://redis.io/commands/pfmerge
  */
-class HyperLogLogMerge extends PrefixableCommand
+class HyperLogLogMerge extends AbstractCommand implements PrefixableCommandInterface
 {
     /**
      * {@inheritdoc}
@@ -30,5 +30,13 @@ class HyperLogLogMerge extends PrefixableCommand
     public function prefixKeys($prefix)
     {
         PrefixHelpers::all($this, $prefix);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeVariadic($arguments);
     }
 }

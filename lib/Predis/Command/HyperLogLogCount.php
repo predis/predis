@@ -14,7 +14,7 @@ namespace Predis\Command;
 /**
  * @link http://redis.io/commands/pfadd
  */
-class HyperLogLogCount extends PrefixableCommand
+class HyperLogLogCount extends AbstractCommand implements PrefixableCommandInterface
 {
     /**
      * {@inheritdoc}
@@ -22,6 +22,14 @@ class HyperLogLogCount extends PrefixableCommand
     public function getId()
     {
         return 'PFCOUNT';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeArguments($arguments);
     }
 
     /**

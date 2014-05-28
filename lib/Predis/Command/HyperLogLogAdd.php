@@ -23,4 +23,12 @@ class HyperLogLogAdd extends PrefixableCommand
     {
         return 'PFADD';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(Array $arguments)
+    {
+        return self::normalizeVariadic($arguments);
+    }
 }
