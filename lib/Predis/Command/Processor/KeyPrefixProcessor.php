@@ -149,6 +149,9 @@ class KeyPrefixProcessor implements ProcessorInterface
             'SSCAN'                     => 'self::first',
             'ZSCAN'                     => 'self::first',
             'HSCAN'                     => 'self::first',
+            'PFADD'                     => 'self::first',
+            'PFCOUNT'                   => 'self::all',
+            'PFMERGE'                   => 'self::all',
         );
     }
 

@@ -179,6 +179,9 @@ class RedisVersion280Test extends PredisProfileTestCase
             138 => 'ZSCAN',
             139 => 'HSCAN',
             140 => 'PUBSUB',
+            141 => 'PFADD',
+            142 => 'PFCOUNT',
+            143 => 'PFMERGE',
         );
     }
 }

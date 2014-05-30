@@ -799,6 +799,18 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', '0', 'MATCH', 'field:*', 'COUNT', 10),
                 array('prefix:key', '0', 'MATCH', 'field:*', 'COUNT', 10),
             ),
+            array('PFADD',
+                array('key', 'a', 'b', 'c'),
+                array('prefix:key', 'a', 'b', 'c'),
+            ),
+            array('PFCOUNT',
+                array('key:1', 'key:2', 'key:3'),
+                array('prefix:key:1', 'prefix:key:2', 'prefix:key:3'),
+            ),
+            array('PFMERGE',
+                array('key:1', 'key:2', 'key:3'),
+                array('prefix:key:1', 'prefix:key:2', 'prefix:key:3'),
+            ),
         );
     }
 }

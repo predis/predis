@@ -220,6 +220,7 @@ class ReplicationStrategy
             'OBJECT'            => true,
             'BITCOUNT'          => true,
             'TIME'              => true,
+            'PFCOUNT'           => true,
             'SORT'              => array($this, 'isSortReadOnly'),
         );
     }

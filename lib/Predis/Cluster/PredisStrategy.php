@@ -156,6 +156,11 @@ class PredisStrategy implements StrategyInterface
             'HVALS'                 => $keyIsFirstArgument,
             'HSCAN'                 => $keyIsFirstArgument,
 
+            /* commands operating on HyperLogLog */
+            'PFADD'                 => $keyIsFirstArgument,
+            'PFCOUNT'               => $keysAreAllArguments,
+            'PFMERGE'               => $keysAreAllArguments,
+
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
             'EVALSHA'               => array($this, 'getKeyFromScriptingCommands'),

@@ -246,6 +246,11 @@ class RedisVersion280 extends RedisProfile
 
             /* publish - subscribe */
             'PUBSUB'                    => 'Predis\Command\PubSubPubsub',
+
+            /* commands operating on HyperLogLog */
+            'PFADD'                     => 'Predis\Command\HyperLogLogAdd',
+            'PFCOUNT'                   => 'Predis\Command\HyperLogLogCount',
+            'PFMERGE'                   => 'Predis\Command\HyperLogLogMerge',
         );
     }
 }
