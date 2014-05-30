@@ -77,6 +77,8 @@ class HyperLogLogMergeTest extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'HyperLogLog requires Redis >= 2.8.9.', true);
+
         $redis = $this->getClient();
 
         $redis->pfadd('metavars:1', 'foo', 'hoge');
