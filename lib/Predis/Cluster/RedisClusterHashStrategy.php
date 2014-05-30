@@ -141,6 +141,11 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'HVALS'                 => $keyIsFirstArgument,
             'HSCAN'                 => $keyIsFirstArgument,
 
+            /* commands operating on HyperLogLog */
+            'PFADD'                 => $keyIsFirstArgument,
+            'PFCOUNT'               => array($this, 'getKeyFromAllArguments'),
+            'PFMERGE'               => array($this, 'getKeyFromAllArguments'),
+
             /* scripting */
             'EVAL'                  => array($this, 'getKeyFromScriptingCommands'),
             'EVALSHA'               => array($this, 'getKeyFromScriptingCommands'),

@@ -358,6 +358,11 @@ class ReplicationStrategyTest extends PredisTestCase
             'HVALS'                 => 'read',
             'HSCAN'                 => 'read',
 
+            /* commands operating on HyperLogLog */
+            'PFADD'                 => 'write',
+            'PFMERGE'               => 'write',
+            'PFCOUNT'               => 'read',
+
             /* scripting */
             'EVAL'                  => 'write',
             'EVALSHA'               => 'write',
