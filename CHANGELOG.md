@@ -10,6 +10,11 @@ v0.8.6 (2014-xx-xx)
 
 - __FIX__: redis-sentinel does not break the parsing of responses to `INFO`.
 
+- __FIX__: `INCRBYFLOAT` is now handled as expected in cluster and replication
+  configurations (ISSUE #159).
+
+- Upgraded to PHPUnit 4.* for the test suite.
+
 
 v0.8.5 (2014-01-16)
 ================================================================================
