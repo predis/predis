@@ -44,7 +44,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testPubSubConsumerDoesNotWorkOnClusters()
     {
-        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
+        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
 
         $client = new Client($cluster);
         $pubsub = new PubSubConsumer($client);
@@ -55,7 +55,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testConstructorWithoutSubscriptionsDoesNotStartConsumer()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('executeCommand'), array($connection));
         $client->expects($this->never())->method('executeCommand');
@@ -73,7 +73,7 @@ class ConsumerTest extends PredisTestCase
         $cmdSubscribe = $profile->createCommand('subscribe', array('channel:foo'));
         $cmdPsubscribe = $profile->createCommand('psubscribe', array('channels:*'));
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(2))->method('writeRequest');
 
         $client = $this->getMock('Predis\Client', array('createCommand', 'writeRequest'), array($connection));
@@ -93,7 +93,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testStoppingConsumerWithTrueClosesConnection()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
         $client->expects($this->exactly(1))->method('disconnect');
@@ -114,7 +114,7 @@ class ConsumerTest extends PredisTestCase
         $classUnsubscribe = $profile->getCommandClass('unsubscribe');
         $classPunsubscribe = $profile->getCommandClass('punsubscribe');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
 
@@ -136,7 +136,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testIsNotValidWhenNotSubscribed()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
 
         $pubsub = new PubSubConsumer($client);
@@ -152,7 +152,7 @@ class ConsumerTest extends PredisTestCase
     {
         $rawmessage = array('message', 'channel:foo', 'message from channel');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
@@ -171,7 +171,7 @@ class ConsumerTest extends PredisTestCase
     {
         $rawmessage = array('pmessage', 'channel:*', 'channel:foo', 'message from channel');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
@@ -191,7 +191,7 @@ class ConsumerTest extends PredisTestCase
     {
         $rawmessage = array('subscribe', 'channel:foo', 1);
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
@@ -210,7 +210,7 @@ class ConsumerTest extends PredisTestCase
     {
         $rawmessage = array('unsubscribe', 'channel:foo', 1);
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
@@ -229,7 +229,7 @@ class ConsumerTest extends PredisTestCase
     {
         $rawmessage = array('unsubscribe', 'channel:foo', 0);
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
 
         $client = new Client($connection);
@@ -250,7 +250,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testGetUnderlyingClientInstance()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client);

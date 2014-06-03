@@ -12,7 +12,7 @@
 namespace Predis;
 
 use Exception;
-use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Base exception class for network-related errors.
@@ -24,13 +24,13 @@ abstract class CommunicationException extends PredisException
     private $connection;
 
     /**
-     * @param SingleConnectionInterface $connection     Connection that generated the exception.
-     * @param string                    $message        Error message.
-     * @param int                       $code           Error code.
-     * @param Exception                 $innerException Inner exception for wrapping the original error.
+     * @param NodeConnectionInterface $connection     Connection that generated the exception.
+     * @param string                  $message        Error message.
+     * @param int                     $code           Error code.
+     * @param Exception               $innerException Inner exception for wrapping the original error.
      */
     public function __construct(
-        SingleConnectionInterface $connection,
+        NodeConnectionInterface $connection,
         $message = null,
         $code = null,
         Exception $innerException = null
@@ -42,7 +42,7 @@ abstract class CommunicationException extends PredisException
     /**
      * Gets the connection that generated the exception.
      *
-     * @return SingleConnectionInterface
+     * @return NodeConnectionInterface
      */
     public function getConnection()
     {

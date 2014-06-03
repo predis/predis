@@ -44,7 +44,7 @@ use Predis\Response\Status as StatusResponse;
  * @link http://github.com/seppo0010/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class WebdisConnection implements SingleConnectionInterface
+class WebdisConnection implements NodeConnectionInterface
 {
     private $parameters;
     private $resource;

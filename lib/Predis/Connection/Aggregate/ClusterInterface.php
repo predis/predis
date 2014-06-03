@@ -9,7 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
+
+use Predis\Connection\AggregateConnectionInterface;
 
 /**
  * Defines a cluster of Redis servers formed by aggregating multiple connection
@@ -17,6 +19,6 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ClusterConnectionInterface extends AggregateConnectionInterface
+interface ClusterInterface extends AggregateConnectionInterface
 {
 }

@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
 
 use PredisTestCase;
+use Predis\Connection;
 use Predis\Profile;
 use Predis\Replication\ReplicationStrategy;
 
@@ -567,17 +568,17 @@ class MasterSlaveReplicationTest extends PredisTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a base mocked connection from Predis\Connection\SingleConnectionInterface.
+     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
      *
      * @param  mixed $parameters Optional parameters.
      * @return mixed
      */
     protected function getMockConnection($parameters = null)
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         if ($parameters) {
-            $parameters = Parameters::create($parameters);
+            $parameters = Connection\Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
             $connection->expects($this->any())

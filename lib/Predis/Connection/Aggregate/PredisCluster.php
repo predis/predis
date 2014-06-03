@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
 
 use ArrayIterator;
 use Countable;
@@ -20,6 +20,7 @@ use Predis\Cluster\StrategyInterface as ClusterStrategyInterface;
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Distributor\HashRing;
 use Predis\Command\CommandInterface;
+use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers
@@ -28,7 +29,7 @@ use Predis\Command\CommandInterface;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @todo Add the ability to remove connections from pool.
  */
-class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Countable
+class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $pool;
     private $strategy;
@@ -83,7 +84,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     /**
      * {@inheritdoc}
      */
-    public function add(SingleConnectionInterface $connection)
+    public function add(NodeConnectionInterface $connection)
     {
         $parameters = $connection->getParameters();
 
@@ -100,7 +101,7 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     /**
      * {@inheritdoc}
      */
-    public function remove(SingleConnectionInterface $connection)
+    public function remove(NodeConnectionInterface $connection)
     {
         if (($id = array_search($connection, $this->pool, true)) !== false) {
             unset($this->pool[$id]);
@@ -156,8 +157,8 @@ class PredisCluster implements ClusterConnectionInterface, IteratorAggregate, Co
     /**
      * Retrieves a connection instance from the cluster using a key.
      *
-     * @param  string                    $key Key string.
-     * @return SingleConnectionInterface
+     * @param  string                  $key Key string.
+     * @return NodeConnectionInterface
      */
     public function getConnectionByKey($key)
     {

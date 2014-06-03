@@ -22,7 +22,7 @@ use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ComposableStreamConnection extends StreamConnection implements ComposableConnectionInterface
+class CompositeStreamConnection extends StreamConnection implements CompositeConnectionInterface
 {
     protected $protocol;
 

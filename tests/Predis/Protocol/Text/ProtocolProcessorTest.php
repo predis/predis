@@ -36,7 +36,7 @@ class ProtocolProcessorTest extends PredisTestCase
                 ->method('getArguments')
                 ->will($this->returnValue(array()));
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('writeBuffer')
@@ -53,7 +53,7 @@ class ProtocolProcessorTest extends PredisTestCase
     {
         $protocol = new ProtocolProcessor();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -90,7 +90,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $protocol = new ProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once(4))
                    ->method('readLine')
@@ -108,7 +108,7 @@ class ProtocolProcessorTest extends PredisTestCase
     {
         $protocol = new ProtocolProcessor();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')

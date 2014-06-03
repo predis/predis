@@ -31,7 +31,7 @@ class Factory implements FactoryInterface
 
     /**
      * Checks if the provided argument represents a valid connection class
-     * implementing Predis\Connection\SingleConnectionInterface. Optionally,
+     * implementing Predis\Connection\NodeConnectionInterface. Optionally,
      * callable objects are used for lazy initialization of connection objects.
      *
      * @param  mixed $initializer FQN of a connection class or a callable for lazy initialization.
@@ -45,7 +45,7 @@ class Factory implements FactoryInterface
 
         $class = new ReflectionClass($initializer);
 
-        if (!$class->isSubclassOf('Predis\Connection\SingleConnectionInterface')) {
+        if (!$class->isSubclassOf('Predis\Connection\NodeConnectionInterface')) {
             throw new InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object.'
             );
@@ -94,10 +94,10 @@ class Factory implements FactoryInterface
             $this->prepareConnection($connection);
         }
 
-        if (!$connection instanceof SingleConnectionInterface) {
+        if (!$connection instanceof NodeConnectionInterface) {
             throw new UnexpectedValueException(
                 "Objects returned by connection initializers must implement ".
-                "'Predis\Connection\SingleConnectionInterface'."
+                "'Predis\Connection\NodeConnectionInterface'."
             );
         }
 
@@ -110,16 +110,16 @@ class Factory implements FactoryInterface
     public function aggregate(AggregateConnectionInterface $connection, array $parameters)
     {
         foreach ($parameters as $node) {
-            $connection->add($node instanceof SingleConnectionInterface ? $node : $this->create($node));
+            $connection->add($node instanceof NodeConnectionInterface ? $node : $this->create($node));
         }
     }
 
     /**
      * Prepares a connection instance after its initialization.
      *
-     * @param SingleConnectionInterface $connection Connection instance.
+     * @param NodeConnectionInterface $connection Connection instance.
      */
-    protected function prepareConnection(SingleConnectionInterface $connection)
+    protected function prepareConnection(NodeConnectionInterface $connection)
     {
         $parameters = $connection->getParameters();
 

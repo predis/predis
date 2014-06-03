@@ -12,7 +12,7 @@
 namespace Predis\Protocol;
 
 use Predis\Command\CommandInterface;
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 
 /**
  * Defines a pluggable protocol processor capable of serializing commands and
@@ -25,16 +25,16 @@ interface ProtocolProcessorInterface
     /**
      * Writes a request over a connection to Redis.
      *
-     * @param ComposableConnectionInterface $connection Redis connection.
-     * @param CommandInterface              $command    Command instance.
+     * @param CompositeConnectionInterface $connection Redis connection.
+     * @param CommandInterface             $command    Command instance.
      */
-    public function write(ComposableConnectionInterface $connection, CommandInterface $command);
+    public function write(CompositeConnectionInterface $connection, CommandInterface $command);
 
     /**
      * Reads a response from a connection to Redis.
      *
-     * @param  ComposableConnectionInterface $connection Redis connection.
+     * @param  CompositeConnectionInterface $connection Redis connection.
      * @return mixed
      */
-    public function read(ComposableConnectionInterface $connection);
+    public function read(CompositeConnectionInterface $connection);
 }

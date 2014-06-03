@@ -19,7 +19,7 @@ require __DIR__.'/shared.php';
 // operation for replication so that it will be executed on slaves.
 
 use Predis\Command\ScriptCommand;
-use Predis\Connection\MasterSlaveReplication;
+use Predis\Connection\Aggregate\MasterSlaveReplication;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //

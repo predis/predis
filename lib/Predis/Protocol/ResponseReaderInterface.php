@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol;
 
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 
 /**
  * Defines a pluggable reader capable of parsing responses returned by Redis and
@@ -24,8 +24,8 @@ interface ResponseReaderInterface
     /**
      * Reads a response from a connection to Redis.
      *
-     * @param  ComposableConnectionInterface $connection Redis connection.
+     * @param  CompositeConnectionInterface $connection Redis connection.
      * @return mixed
      */
-    public function read(ComposableConnectionInterface $connection);
+    public function read(CompositeConnectionInterface $connection);
 }

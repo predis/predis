@@ -12,9 +12,9 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use Predis\Connection\ClusterConnectionInterface;
-use Predis\Connection\PredisCluster;
-use Predis\Connection\RedisCluster;
+use Predis\Connection\Aggregate\ClusterInterface;
+use Predis\Connection\Aggregate\PredisCluster;
+use Predis\Connection\Aggregate\RedisCluster;
 
 /**
  * Configures an aggregate connection used for clustering
@@ -28,9 +28,9 @@ class ClusterOption implements OptionInterface
     /**
      * Creates a new cluster connection from on a known descriptive name.
      *
-     * @param  OptionsInterface           $options Instance of the client options.
-     * @param  string                     $id      Descriptive identifier of the cluster type (`predis`, `redis-cluster`)
-     * @return ClusterConnectionInterface
+     * @param  OptionsInterface $options Instance of the client options.
+     * @param  string           $id      Descriptive identifier of the cluster type (`predis`, `redis-cluster`)
+     * @return ClusterInterface
      */
     protected function createByDescription(OptionsInterface $options, $id)
     {
@@ -55,9 +55,9 @@ class ClusterOption implements OptionInterface
             $value = $this->createByDescription($options, $value);
         }
 
-        if (!$value instanceof ClusterConnectionInterface) {
+        if (!$value instanceof ClusterInterface) {
             throw new InvalidArgumentException(
-                "An instance of type 'Predis\Connection\ClusterConnectionInterface' was expected."
+                "An instance of type 'Predis\Connection\Aggregate\ClusterInterface' was expected."
             );
         }
 

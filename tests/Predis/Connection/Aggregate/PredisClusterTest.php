@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
 
 use PredisTestCase;
+use Predis\Connection;
 use Predis\Profile;
 
 /**
@@ -335,13 +336,13 @@ class PredisClusterTest extends PredisTestCase
     {
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
-        $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
                     ->will($this->returnValue(true));
 
-        $connection2 = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection2->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
@@ -378,17 +379,17 @@ class PredisClusterTest extends PredisTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a base mocked connection from Predis\Connection\SingleConnectionInterface.
+     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
      *
      * @param  mixed $parameters Optional parameters.
      * @return mixed
      */
     protected function getMockConnection($parameters = null)
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         if ($parameters) {
-            $parameters = Parameters::create($parameters);
+            $parameters = Connection\Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
             $connection->expects($this->any())

@@ -29,8 +29,8 @@ class OptionsTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $options->cluster);
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $options->replication);
         $this->assertTrue($options->exceptions);
         $this->assertNull($options->prefix);
     }
@@ -45,16 +45,16 @@ class OptionsTest extends PredisTestCase
             'profile'     => '2.0',
             'prefix'      => 'prefix:',
             'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster'     => $this->getMock('Predis\Connection\ClusterConnectionInterface'),
-            'replication' => $this->getMock('Predis\Connection\ReplicationConnectionInterface'),
+            'cluster'     => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
+            'replication' => $this->getMock('Predis\Connection\Aggregate\ReplicationInterface'),
         ));
 
         $this->assertInternalType('bool', $options->exceptions);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $options->replication);
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $options->cluster);
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $options->replication);
     }
 
     /**

@@ -62,7 +62,7 @@ class CommunicationExceptionTest extends PredisTestCase
      */
     public function testCommunicationExceptionHandling()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())->method('isConnected')->will($this->returnValue(true));
         $connection->expects($this->once())->method('disconnect');
 
@@ -78,8 +78,8 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a mocked connection instance.
      *
-     * @param  mixed                                $parameters Connection parameters.
-     * @return Connection\SingleConnectionInterface
+     * @param  mixed                              $parameters Connection parameters.
+     * @return Connection\NodeConnectionInterface
      */
     protected function getMockedConnectionBase($parameters = null)
     {
@@ -97,14 +97,14 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param  Connection\SingleConnectionInterface $connection Connection instance.
-     * @param  string                               $message    Exception message.
-     * @param  int                                  $code       Exception code.
-     * @param  \Exception                           $inner      Inner exception.
+     * @param  Connection\NodeConnectionInterface $connection Connection instance.
+     * @param  string                             $message    Exception message.
+     * @param  int                                $code       Exception code.
+     * @param  \Exception                         $inner      Inner exception.
      * @return \Exception
      */
     protected function getException(
-        Connection\SingleConnectionInterface $connection,
+        Connection\NodeConnectionInterface $connection,
         $message,
         $code = 0,
         \Exception $inner = null

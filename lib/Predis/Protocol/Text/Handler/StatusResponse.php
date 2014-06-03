@@ -11,7 +11,7 @@
 
 namespace Predis\Protocol\Text\Handler;
 
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 use Predis\Response\Status;
 
 /**
@@ -27,7 +27,7 @@ class StatusResponse implements ResponseHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $payload)
+    public function handle(CompositeConnectionInterface $connection, $payload)
     {
         return Status::get($payload);
     }

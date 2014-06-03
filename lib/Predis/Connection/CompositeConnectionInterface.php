@@ -17,7 +17,7 @@ namespace Predis\Connection;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ComposableConnectionInterface extends SingleConnectionInterface
+interface CompositeConnectionInterface extends NodeConnectionInterface
 {
     /**
      * Returns the protocol processor used by the connection.

@@ -15,7 +15,7 @@ require __DIR__.'/shared.php';
 // their own distributors used by the client to distribute keys among a cluster
 // of servers.
 
-use Predis\Connection\PredisCluster;
+use Predis\Connection\Aggregate\PredisCluster;
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 

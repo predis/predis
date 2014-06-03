@@ -57,7 +57,7 @@ class ResponseReaderTest extends PredisTestCase
         $protocol = new ComposableProtocolProcessor();
         $protocol->setResponseReader($reader);
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -95,7 +95,7 @@ class ResponseReaderTest extends PredisTestCase
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')
@@ -112,7 +112,7 @@ class ResponseReaderTest extends PredisTestCase
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')

@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -27,7 +27,7 @@ class MultiBulkResponse implements ResponseHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(ComposableConnectionInterface $connection, $payload)
+    public function handle(CompositeConnectionInterface $connection, $payload)
     {
         $length = (int) $payload;
 

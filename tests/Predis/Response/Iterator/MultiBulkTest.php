@@ -13,7 +13,7 @@ namespace Predis\Response\Iterator;
 
 use PredisTestCase;
 use Predis\Client;
-use Predis\Connection\ComposableStreamConnection;
+use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 
 /**
@@ -123,7 +123,7 @@ class MultiBulkTest extends PredisTestCase
         $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
-        $connection = new ComposableStreamConnection($parameters, $protocol);
+        $connection = new CompositeStreamConnection($parameters, $protocol);
 
         $client = new Client($connection);
         $client->connect();
