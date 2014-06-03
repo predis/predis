@@ -16,6 +16,9 @@ v0.8.6 (2014-xx-xx)
 - __FIX__: `INCRBYFLOAT` is now handled as expected in cluster and replication
   configurations (ISSUE #159).
 
+- __FIX__: fix parsing of the output of `CLUSTER NODES` to fetch the slots map
+  from a node when redis-cluster has slaves in its configuration (ISSUE #165).
+
 - Upgraded to PHPUnit 4.* for the test suite.
 
 
