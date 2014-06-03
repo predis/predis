@@ -48,7 +48,7 @@ class ServerInfo extends Command
     /**
      * Parses a single row of the response and returns the key-value pair.
      *
-     * @param string $row Single row of the response.
+     * @param  string $row Single row of the response.
      * @return array
      */
     protected function parseRow($row)
@@ -62,6 +62,7 @@ class ServerInfo extends Command
         } else {
             $v = $this->parseDatabaseStats($v);
         }
+
         return array($k, $v);
     }
 

@@ -22,7 +22,7 @@ use Predis\Protocol\ProtocolException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class AbstractConnection implements SingleConnectionInterface
+abstract class AbstractConnection implements NodeConnectionInterface
 {
     private $resource;
     private $cachedId;

@@ -26,17 +26,17 @@ class ClusterOptionTest extends PredisTestCase
         $option = new ClusterOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertInstanceOf('Predis\Connection\PredisCluster', $option->getDefault($options));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->getDefault($options));
     }
 
     /**
      * @group disconnected
      */
-    public function testAcceptsInstanceOfClusterConnectionInterface()
+    public function testAcceptsInstanceOfClusterInterface()
     {
         $option = new ClusterOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $cluster = $this->getMock('Predis\Connection\ClusterConnectionInterface');
+        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
 
         $this->assertSame($cluster, $option->filter($options, $cluster));
     }
@@ -49,11 +49,11 @@ class ClusterOptionTest extends PredisTestCase
         $option = new ClusterOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertInstanceOf('Predis\Connection\PredisCluster', $option->filter($options, 'predis'));
-        $this->assertInstanceOf('Predis\Connection\PredisCluster', $option->filter($options, 'predis-cluster'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis-cluster'));
 
-        $this->assertInstanceOf('Predis\Connection\RedisCluster', $option->filter($options, 'redis'));
-        $this->assertInstanceOf('Predis\Connection\RedisCluster', $option->filter($options, 'redis-cluster'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\RedisCluster', $option->filter($options, 'redis'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\RedisCluster', $option->filter($options, 'redis-cluster'));
     }
 
     /**
@@ -64,7 +64,7 @@ class ClusterOptionTest extends PredisTestCase
     {
         $option = new ClusterOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $class = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $class = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $option->filter($options, $class);
     }

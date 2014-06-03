@@ -28,7 +28,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => '1.2'));
         $tx = new MultiExec($client);
     }
@@ -40,7 +40,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => '2.0'));
         $tx = new MultiExec($client, array('options' => 'cas'));
 
@@ -54,7 +54,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => '2.0'));
         $tx = new MultiExec($client, array('options' => 'cas'));
 
@@ -727,15 +727,15 @@ class MultiExecTest extends PredisTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a mocked instance of Predis\Connection\SingleConnectionInterface
+     * Returns a mocked instance of Predis\Connection\NodeConnectionInterface
      * using the specified callback to return values from executeCommand().
      *
-     * @param  \Closure                                     $executeCallback
-     * @return \Predis\Connection\SingleConnectionInterface
+     * @param  \Closure                                   $executeCallback
+     * @return \Predis\Connection\NodeConnectionInterface
      */
     protected function getMockedConnection($executeCallback)
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->any())
                    ->method('executeCommand')
                    ->will($this->returnCallback($executeCallback));

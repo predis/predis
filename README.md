@@ -195,10 +195,10 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 
 Developers can create their own connection classes to add support for new network backends, extend
 existing ones or provide completely different implementations. Connection classes must implement
-`Predis\Connection\SingleConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
+`Predis\Connection\NodeConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
 
 ```php
-class MyConnectionClass implements Predis\Connection\SingleConnectionInterface
+class MyConnectionClass implements Predis\Connection\NodeConnectionInterface
 {
     // Implementation goes here...
 }

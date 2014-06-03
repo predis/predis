@@ -39,7 +39,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
         $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $class = get_class($this->getMock('Predis\Connection\SingleConnectionInterface'));
+        $class = get_class($this->getMock('Predis\Connection\NodeConnectionInterface'));
         $value = array('tcp' => $class, 'redis' => $class);
 
         $default = $this->getMock('Predis\Connection\FactoryInterface');

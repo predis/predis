@@ -15,7 +15,7 @@ use SplQueue;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -48,7 +48,7 @@ class Atomic extends Pipeline
     {
         $connection = $this->getClient()->getConnection();
 
-        if (!$connection instanceof SingleConnectionInterface) {
+        if (!$connection instanceof NodeConnectionInterface) {
             $class = __CLASS__;
 
             throw new ClientException("The class '$class' does not support aggregate connections.");

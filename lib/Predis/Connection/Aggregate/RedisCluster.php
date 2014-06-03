@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
 
 use ArrayIterator;
 use Countable;
@@ -19,6 +19,9 @@ use Predis\NotSupportedException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Factory;
+use Predis\Connection\FactoryInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 
 /**
@@ -43,7 +46,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Countable
+class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $askClusterNodes = false;
     private $defaultParameters = array();
@@ -99,7 +102,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * {@inheritdoc}
      */
-    public function add(SingleConnectionInterface $connection)
+    public function add(NodeConnectionInterface $connection)
     {
         $this->pool[(string) $connection] = $connection;
         unset($this->slotsMap);
@@ -108,7 +111,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * {@inheritdoc}
      */
-    public function remove(SingleConnectionInterface $connection)
+    public function remove(NodeConnectionInterface $connection)
     {
         if (false !== $id = array_search($connection, $this->pool, true)) {
             unset(
@@ -212,9 +215,9 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Pre-associates a connection to a slots range to avoid runtime guessing.
      *
-     * @param int                              $first      Initial slot of the range.
-     * @param int                              $last       Last slot of the range.
-     * @param SingleConnectionInterface|string $connection ID or connection instance.
+     * @param int                            $first      Initial slot of the range.
+     * @param int                            $last       Last slot of the range.
+     * @param NodeConnectionInterface|string $connection ID or connection instance.
      */
     public function setSlots($first, $last, $connection)
     {
@@ -259,8 +262,8 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Creates a new connection instance from the given connection ID.
      *
-     * @param  string                    $connectionID Identifier for the connection.
-     * @return SingleConnectionInterface
+     * @param  string                  $connectionID Identifier for the connection.
+     * @return NodeConnectionInterface
      */
     protected function createConnection($connectionID)
     {
@@ -301,8 +304,8 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Returns the connection currently associated to a given slot.
      *
-     * @param  int                       $slot Slot index.
-     * @return SingleConnectionInterface
+     * @param  int                     $slot Slot index.
+     * @return NodeConnectionInterface
      */
     public function getConnectionBySlot($slot)
     {
@@ -337,7 +340,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     /**
      * Returns a random connection from the pool.
      *
-     * @return SingleConnectionInterface
+     * @return NodeConnectionInterface
      */
     protected function getRandomConnection()
     {
@@ -350,10 +353,10 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
      * Permanently associates the connection instance to a new slot.
      * The connection is added to the connections pool if not yet included.
      *
-     * @param SingleConnectionInterface $connection Connection instance.
-     * @param int                       $slot       Target slot index.
+     * @param NodeConnectionInterface $connection Connection instance.
+     * @param int                     $slot       Target slot index.
      */
-    protected function move(SingleConnectionInterface $connection, $slot)
+    protected function move(NodeConnectionInterface $connection, $slot)
     {
         $this->pool[(string) $connection] = $connection;
         $this->slots[(int) $slot] = $connection;

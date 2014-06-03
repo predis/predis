@@ -9,11 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection;
+namespace Predis\Connection\Aggregate;
 
 use InvalidArgumentException;
 use RuntimeException;
 use Predis\Command\CommandInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\ReplicationStrategy;
 
 /**
@@ -22,7 +23,7 @@ use Predis\Replication\ReplicationStrategy;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MasterSlaveReplication implements ReplicationConnectionInterface
+class MasterSlaveReplication implements ReplicationInterface
 {
     protected $strategy;
     protected $master;
@@ -59,7 +60,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function add(SingleConnectionInterface $connection)
+    public function add(NodeConnectionInterface $connection)
     {
         $alias = $connection->getParameters()->alias;
 
@@ -75,7 +76,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function remove(SingleConnectionInterface $connection)
+    public function remove(NodeConnectionInterface $connection)
     {
         if ($connection->getParameters()->alias === 'master') {
             $this->master = null;
@@ -142,7 +143,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     {
         $this->check();
 
-        if (!$connection instanceof SingleConnectionInterface) {
+        if (!$connection instanceof NodeConnectionInterface) {
             $connection = $this->getConnectionById($connection);
         }
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
@@ -189,7 +190,7 @@ class MasterSlaveReplication implements ReplicationConnectionInterface
     /**
      * Returns a random slave.
      *
-     * @return SingleConnectionInterface
+     * @return NodeConnectionInterface
      */
     protected function pickSlave()
     {

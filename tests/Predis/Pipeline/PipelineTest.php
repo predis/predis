@@ -40,7 +40,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testCallDoesNotSendCommandsWithoutExecute()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -56,7 +56,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testCallReturnsPipelineForFluentInterface()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -73,7 +73,7 @@ class PipelineTest extends PredisTestCase
     {
         $object = $this->getMock('Predis\Response\ResponseInterface');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('readResponse')
                    ->will($this->returnValue($object));
@@ -94,7 +94,7 @@ class PipelineTest extends PredisTestCase
     {
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('readResponse')
                    ->will($this->returnValue($error));
@@ -114,7 +114,7 @@ class PipelineTest extends PredisTestCase
     {
         $error = $this->getMock('Predis\Response\ErrorInterface');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(2))
                    ->method('readResponse')
                    ->will($this->returnValue($error));
@@ -135,7 +135,7 @@ class PipelineTest extends PredisTestCase
     public function testExecuteReturnsPipelineForFluentInterface()
     {
         $profile = Profile\Factory::getDefault();
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $pipeline = new Pipeline(new Client($connection));
         $command = $profile->createCommand('echo', array('one'));
 
@@ -149,7 +149,7 @@ class PipelineTest extends PredisTestCase
     {
         $profile = Profile\Factory::getDefault();
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -165,7 +165,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithEmptyBuffer()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -179,7 +179,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithFilledBuffer()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(3))
                    ->method('writeRequest');
         $connection->expects($this->exactly(3))
@@ -218,7 +218,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testFlushHandlesPartialBuffers()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(4))
                    ->method('writeRequest');
         $connection->expects($this->exactly(4))
@@ -243,7 +243,7 @@ class PipelineTest extends PredisTestCase
     {
         $pong = new Response\Status('PONG');
 
-        $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\Aggregate\ReplicationInterface');
         $connection->expects($this->once())
                    ->method('switchTo')
                    ->with('master');
@@ -308,7 +308,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentRunsPipelineInCallable()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(4))
                    ->method('writeRequest');
         $connection->expects($this->exactly(4))
@@ -334,7 +334,7 @@ class PipelineTest extends PredisTestCase
     {
         $exception = null;
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 

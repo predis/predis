@@ -424,7 +424,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
     {
         // Since a MULTI/EXEC block cannot be initialized when using aggregate
         // connections we can safely assume that Predis\Client::getConnection()
-        // will return a Predis\Connection\SingleConnectionInterface instance.
+        // will return a Predis\Connection\NodeConnectionInterface instance.
         CommunicationException::handle(new ProtocolException(
             $this->client->getConnection(), $message
         ));

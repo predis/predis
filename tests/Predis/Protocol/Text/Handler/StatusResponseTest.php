@@ -25,7 +25,7 @@ class StatusResponseTest extends PredisTestCase
     {
         $handler = new Handler\StatusResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -43,7 +43,7 @@ class StatusResponseTest extends PredisTestCase
     {
         $handler = new Handler\StatusResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -61,7 +61,7 @@ class StatusResponseTest extends PredisTestCase
     {
         $handler = new Handler\StatusResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

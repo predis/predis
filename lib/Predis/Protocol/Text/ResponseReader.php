@@ -12,7 +12,7 @@
 namespace Predis\Protocol\Text;
 
 use Predis\CommunicationException;
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ResponseReaderInterface;
 
@@ -77,7 +77,7 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * {@inheritdoc}
      */
-    public function read(ComposableConnectionInterface $connection)
+    public function read(CompositeConnectionInterface $connection)
     {
         $header = $connection->readLine();
 
@@ -100,10 +100,10 @@ class ResponseReader implements ResponseReaderInterface
      * Handles protocol errors generated while reading responses from a
      * connection.
      *
-     * @param ComposableConnectionInterface $connection Redis connection that generated the error.
-     * @param string                        $message    Error message.
+     * @param CompositeConnectionInterface $connection Redis connection that generated the error.
+     * @param string                       $message    Error message.
      */
-    protected function onProtocolError(ComposableConnectionInterface $connection, $message)
+    protected function onProtocolError(CompositeConnectionInterface $connection, $message)
     {
         CommunicationException::handle(
             new ProtocolException($connection, $message)

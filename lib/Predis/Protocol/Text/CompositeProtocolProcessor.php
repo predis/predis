@@ -12,19 +12,19 @@
 namespace Predis\Protocol\Text;
 
 use Predis\Command\CommandInterface;
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\RequestSerializerInterface;
 use Predis\Protocol\ResponseReaderInterface;
 
 /**
- * Composable protocol processor for the standard Redis wire protocol using
+ * Composite protocol processor for the standard Redis wire protocol using
  * pluggable handlers to serialize requests and deserialize responses.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ComposableProtocolProcessor implements ProtocolProcessorInterface
+class CompositeProtocolProcessor implements ProtocolProcessorInterface
 {
     protected $serializer;
     protected $reader;
@@ -44,7 +44,7 @@ class ComposableProtocolProcessor implements ProtocolProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function write(ComposableConnectionInterface $connection, CommandInterface $command)
+    public function write(CompositeConnectionInterface $connection, CommandInterface $command)
     {
         $connection->writeBuffer($this->serializer->serialize($command));
     }
@@ -52,7 +52,7 @@ class ComposableProtocolProcessor implements ProtocolProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function read(ComposableConnectionInterface $connection)
+    public function read(CompositeConnectionInterface $connection)
     {
         return $this->reader->read($connection);
     }

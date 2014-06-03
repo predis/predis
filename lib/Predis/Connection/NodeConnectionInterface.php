@@ -18,7 +18,7 @@ use Predis\Command\CommandInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface SingleConnectionInterface extends ConnectionInterface
+interface NodeConnectionInterface extends ConnectionInterface
 {
     /**
      * Returns a string representation of the connection.

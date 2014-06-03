@@ -25,11 +25,11 @@ class MultiBulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\MultiBulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('getProtocol')
-                   ->will($this->returnValue(new ComposableProtocolProcessor()));
+                   ->will($this->returnValue(new CompositeProtocolProcessor()));
 
         $connection->expects($this->at(1))
                    ->method('readLine')
@@ -57,7 +57,7 @@ class MultiBulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\MultiBulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -74,7 +74,7 @@ class MultiBulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\MultiBulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\ComposableConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

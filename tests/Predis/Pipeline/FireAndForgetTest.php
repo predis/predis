@@ -27,7 +27,7 @@ class FireAndForgetTest extends PredisTestCase
     {
         $profile = Profile\Factory::getDefault();
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(3))->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -47,7 +47,7 @@ class FireAndForgetTest extends PredisTestCase
     {
         $profile = Profile\Factory::getDefault();
 
-        $connection = $this->getMock('Predis\Connection\ReplicationConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\Aggregate\ReplicationInterface');
         $connection->expects($this->once())
                    ->method('switchTo')
                    ->with('master');

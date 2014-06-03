@@ -30,7 +30,7 @@ class ClientTest extends PredisTestCase
         $client = new Client();
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -50,7 +50,7 @@ class ClientTest extends PredisTestCase
         $client = new Client(null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -70,7 +70,7 @@ class ClientTest extends PredisTestCase
         $client = new Client(null, null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -106,7 +106,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($arg1);
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
     }
 
     /**
@@ -128,7 +128,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client($arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
     }
 
     /**
@@ -136,12 +136,12 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithArrayOfConnectionsArgument()
     {
-        $connection1 = $this->getMock('Predis\Connection\SingleConnectionInterface');
-        $connection2 = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $client = new Client(array($connection1, $connection2));
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
         $this->assertSame($connection1, $cluster->getConnectionById(0));
         $this->assertSame($connection2, $cluster->getConnectionById(1));
     }
@@ -156,7 +156,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $client->getConnection());
         $this->assertSame($connection, $client->getConnection());
 
         $parameters = $client->getConnection()->getParameters();
@@ -169,14 +169,14 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument()
     {
-        $cluster = new Connection\PredisCluster();
+        $cluster = new Connection\Aggregate\PredisCluster();
 
         $factory = new Connection\Factory();
         $factory->aggregate($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
         $client = new Client($cluster);
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
         $this->assertSame($cluster, $client->getConnection());
     }
 
@@ -185,14 +185,14 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument()
     {
-        $replication = new Connection\MasterSlaveReplication();
+        $replication = new Connection\Aggregate\MasterSlaveReplication();
 
         $factory = new Connection\Factory();
         $factory->aggregate($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
 
         $client = new Client($replication);
 
-        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $client->getConnection());
         $this->assertSame($replication, $client->getConnection());
     }
 
@@ -257,7 +257,7 @@ class ClientTest extends PredisTestCase
         $arg2 = array('replication' => true);
         $client = new Client($arg1, $arg2);
 
-        $this->assertInstanceOf('Predis\Connection\ReplicationConnectionInterface', $connection = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $connection = $client->getConnection());
         $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
         $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
     }
@@ -584,9 +584,9 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnectionById('node01'));
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnectionById('node02'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
         $this->assertSame('host1', $node01->getParameters()->host);
         $this->assertSame('host2', $node02->getParameters()->host);
@@ -611,9 +611,9 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
 
-        $this->assertInstanceOf('Predis\Connection\ClusterConnectionInterface', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node01 = $client->getConnectionById('node01'));
-        $this->assertInstanceOf('Predis\Connection\SingleConnectionInterface', $node02 = $client->getConnectionById('node02'));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
         $clientNode02 = $client->getClientFor('node02');
 
@@ -684,7 +684,7 @@ class ClientTest extends PredisTestCase
      */
     public function testPubSubLoopWithArrayReturnsPubSubConsumerWithOptions()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $options = array('subscribe' => 'channel');
 
         $client = new Client($connection);
@@ -709,7 +709,7 @@ class ClientTest extends PredisTestCase
         $message = array('subscribe', 'channel', 0);
         $options = array('subscribe' => 'channel');
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));
@@ -762,7 +762,7 @@ class ClientTest extends PredisTestCase
         //       here is not the point.
         $options = array('cas' => true, 'retry' => 3);
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue(new Response\Status('QUEUED')));
@@ -785,7 +785,7 @@ class ClientTest extends PredisTestCase
      */
     public function testMonitorReturnsMonitorConsumer()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection);
 
         $this->assertInstanceOf('Predis\Monitor\Consumer', $monitor = $client->monitor());
@@ -805,7 +805,7 @@ class ClientTest extends PredisTestCase
                 ->with('OK')
                 ->will($this->returnValue(true));
 
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($command)

@@ -72,6 +72,9 @@ v1.0.0 (201x-xx-xx)
   its constructor accepts only named arrays, but instances can still be created
   using both URIs or arrays using the static method `Parameters::create()`.
 
+- The `Predis\Connection` namespace has been completely reorganized by renaming
+  a few classes and interfaces and adding some sub-namespaces.
+
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API for external protocol processors.
 

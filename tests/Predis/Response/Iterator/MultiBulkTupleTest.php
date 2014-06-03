@@ -13,7 +13,7 @@ namespace Predis\Response\Iterator;
 
 use PredisTestCase;
 use Predis\Client;
-use Predis\Connection\ComposableStreamConnection;
+use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 
 /**
@@ -28,7 +28,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testInitiatedMultiBulkIteratorsAreNotValid()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $iterator = new MultiBulk($connection, 2);
         $iterator->next();
 
@@ -42,7 +42,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testMultiBulkWithOddSizesAreInvalid()
     {
-        $connection = $this->getMock('Predis\Connection\SingleConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $iterator = new MultiBulk($connection, 3);
 
         new MultiBulkTuple($iterator);
@@ -109,7 +109,7 @@ class MultiBulkTupleTest extends PredisTestCase
         $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
-        $connection = new ComposableStreamConnection($parameters, $protocol);
+        $connection = new CompositeStreamConnection($parameters, $protocol);
 
         $client = new Client($connection);
         $client->connect();

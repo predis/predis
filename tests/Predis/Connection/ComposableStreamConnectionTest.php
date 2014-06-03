@@ -14,14 +14,14 @@ namespace Predis\Connection;
 /**
  *
  */
-class ComposableStreamConnectionTest extends PredisConnectionTestCase
+class CompositeStreamConnectionTest extends PredisConnectionTestCase
 {
     /**
      * @group disconnected
      */
     public function testConstructorDoesNotOpenConnection()
     {
-        $connection = new ComposableStreamConnection($this->getParameters());
+        $connection = new CompositeStreamConnection($this->getParameters());
 
         $this->assertFalse($connection->isConnected());
     }
@@ -32,7 +32,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     public function testExposesParameters()
     {
         $parameters = $this->getParameters();
-        $connection = new ComposableStreamConnection($parameters);
+        $connection = new CompositeStreamConnection($parameters);
 
         $this->assertSame($parameters, $connection->getParameters());
     }
@@ -45,7 +45,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new ComposableStreamConnection($parameters);
+        $connection = new CompositeStreamConnection($parameters);
     }
 
     /**
@@ -54,7 +54,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
     public function testCanBeSerialized()
     {
         $parameters = $this->getParameters(array('alias' => 'redis', 'read_write_timeout' => 10));
-        $connection = new ComposableStreamConnection($parameters);
+        $connection = new CompositeStreamConnection($parameters);
 
         $unserialized = unserialize(serialize($connection));
 
@@ -108,7 +108,7 @@ class ComposableStreamConnectionTest extends PredisConnectionTestCase
         $parameters = $this->getParameters($parameters);
         $profile = $this->getProfile();
 
-        $connection = new ComposableStreamConnection($parameters);
+        $connection = new CompositeStreamConnection($parameters);
 
         if ($initialize) {
             $connection->addConnectCommand(

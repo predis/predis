@@ -12,11 +12,11 @@
 namespace Predis\Configuration;
 
 use InvalidArgumentException;
-use Predis\Connection\MasterSlaveReplication;
-use Predis\Connection\ReplicationConnectionInterface;
+use Predis\Connection\Aggregate\MasterSlaveReplication;
+use Predis\Connection\Aggregate\ReplicationInterface;
 
 /**
- * Configures an aggregate connection used for master/slave replication between
+ * Configures an aggregate connection used for master/slave replication among
  * multiple Redis nodes.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -32,7 +32,7 @@ class ReplicationOption implements OptionInterface
      */
     public function filter(OptionsInterface $options, $value)
     {
-        if ($value instanceof ReplicationConnectionInterface) {
+        if ($value instanceof ReplicationInterface) {
             return $value;
         }
 
@@ -48,7 +48,7 @@ class ReplicationOption implements OptionInterface
         }
 
         throw new InvalidArgumentException(
-            "An instance of type 'Predis\Connection\ReplicationConnectionInterface' was expected."
+            "An instance of type 'Predis\Connection\Aggregate\ReplicationInterface' was expected."
         );
     }
 

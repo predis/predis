@@ -13,7 +13,7 @@ namespace Predis\Protocol\Text;
 
 use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
-use Predis\Connection\ComposableConnectionInterface;
+use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Response\Status as StatusResponse;
@@ -43,7 +43,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function write(ComposableConnectionInterface $connection, CommandInterface $command)
+    public function write(CompositeConnectionInterface $connection, CommandInterface $command)
     {
         $request = $this->serializer->serialize($command);
         $connection->writeBuffer($request);
@@ -52,7 +52,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     /**
      * {@inheritdoc}
      */
-    public function read(ComposableConnectionInterface $connection)
+    public function read(CompositeConnectionInterface $connection)
     {
         $chunk = $connection->readLine();
         $prefix = $chunk[0];

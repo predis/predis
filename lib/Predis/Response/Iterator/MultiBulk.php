@@ -11,7 +11,7 @@
 
 namespace Predis\Response\Iterator;
 
-use Predis\Connection\SingleConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Streamable multibulk response.
@@ -23,10 +23,10 @@ class MultiBulk extends MultiBulkIterator
     private $connection;
 
     /**
-     * @param SingleConnectionInterface $connection Connection to Redis.
-     * @param int                       $size       Number of elements of the multibulk response.
+     * @param NodeConnectionInterface $connection Connection to Redis.
+     * @param int                     $size       Number of elements of the multibulk response.
      */
-    public function __construct(SingleConnectionInterface $connection, $size)
+    public function __construct(NodeConnectionInterface $connection, $size)
     {
         $this->connection = $connection;
         $this->size = $size;
