@@ -188,6 +188,11 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
         for ($i = 0; $i < $count; $i++) {
             $node = explode(' ', $nodes[$i], 9);
+
+            if (false === strpos($node[2], 'master')) {
+                continue;
+            }
+
             $slots = explode('-', $node[8], 2);
 
             if ($node[1] === ':0') {
