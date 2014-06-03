@@ -16,14 +16,14 @@ use PredisTestCase;
 /**
  *
  */
-class ComposableProtocolProcessorTest extends PredisTestCase
+class CompositeProtocolProcessorTest extends PredisTestCase
 {
     /**
      * @group disconnected
      */
     public function testConstructor()
     {
-        $protocol = new ComposableProtocolProcessor();
+        $protocol = new CompositeProtocolProcessor();
 
         $this->assertInstanceOf(
             'Predis\Protocol\Text\RequestSerializer', $protocol->getRequestSerializer()
@@ -41,7 +41,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableProtocolProcessor($serializer, $reader);
+        $protocol = new CompositeProtocolProcessor($serializer, $reader);
 
         $this->assertSame($serializer, $protocol->getRequestSerializer());
         $this->assertSame($reader, $protocol->getResponseReader());
@@ -54,7 +54,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
     {
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
 
-        $protocol = new ComposableProtocolProcessor();
+        $protocol = new CompositeProtocolProcessor();
         $protocol->setRequestSerializer($serializer);
 
         $this->assertSame($serializer, $protocol->getRequestSerializer());
@@ -67,7 +67,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
     {
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableProtocolProcessor();
+        $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
 
         $this->assertSame($reader, $protocol->getResponseReader());
@@ -84,7 +84,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
         $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
 
-        $protocol = new ComposableProtocolProcessor($serializer);
+        $protocol = new CompositeProtocolProcessor($serializer);
 
         $connection->expects($this->once())
                    ->method('writeBuffer')
@@ -108,7 +108,7 @@ class ComposableProtocolProcessorTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 
-        $protocol = new ComposableProtocolProcessor(null, $reader);
+        $protocol = new CompositeProtocolProcessor(null, $reader);
 
         $reader->expects($this->once())
                    ->method('read')

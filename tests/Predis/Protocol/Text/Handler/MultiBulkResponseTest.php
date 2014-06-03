@@ -29,7 +29,7 @@ class MultiBulkResponseTest extends PredisTestCase
 
         $connection->expects($this->once())
                    ->method('getProtocol')
-                   ->will($this->returnValue(new ComposableProtocolProcessor()));
+                   ->will($this->returnValue(new CompositeProtocolProcessor()));
 
         $connection->expects($this->at(1))
                    ->method('readLine')

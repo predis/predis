@@ -54,7 +54,7 @@ class ResponseReaderTest extends PredisTestCase
     {
         $reader = new ResponseReader();
 
-        $protocol = new ComposableProtocolProcessor();
+        $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
 
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');

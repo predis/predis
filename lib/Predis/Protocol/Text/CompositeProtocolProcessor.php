@@ -18,13 +18,13 @@ use Predis\Protocol\RequestSerializerInterface;
 use Predis\Protocol\ResponseReaderInterface;
 
 /**
- * Composable protocol processor for the standard Redis wire protocol using
+ * Composite protocol processor for the standard Redis wire protocol using
  * pluggable handlers to serialize requests and deserialize responses.
  *
  * @link http://redis.io/topics/protocol
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ComposableProtocolProcessor implements ProtocolProcessorInterface
+class CompositeProtocolProcessor implements ProtocolProcessorInterface
 {
     protected $serializer;
     protected $reader;
