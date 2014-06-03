@@ -736,7 +736,7 @@ class ClientTest extends PredisTestCase
      * @group disconnected
      * @todo I hate this test but reflection is the easiest way in this case.
      */
-    public function testTransactionWithArrayReturnsTransactionMultiExecWithOptions()
+    public function testTransactionWithArrayReturnsMultiExecTransactionWithOptions()
     {
         $options = array('cas' => true, 'retry' => 3);
 

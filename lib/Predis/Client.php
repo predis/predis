@@ -27,7 +27,7 @@ use Predis\PubSub\Consumer as PubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
-use Predis\Transaction\MultiExec as TransactionMultiExec;
+use Predis\Transaction\MultiExec as MultiExecTransaction;
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -430,7 +430,7 @@ class Client implements ClientInterface
      * of a transaction executed inside the optionally provided callable object.
      *
      * @param  mixed                      ... Array of options, a callable for execution, or both.
-     * @return TransactionMultiExec|array
+     * @return MultiExecTransaction|array
      */
     public function transaction(/* arguments */)
     {
@@ -442,11 +442,11 @@ class Client implements ClientInterface
      *
      * @param  array                      $options  Options for the context.
      * @param  mixed                      $callable Optional callable used to execute the context.
-     * @return TransactionMultiExec|array
+     * @return MultiExecTransaction|array
      */
     protected function createTransaction(array $options = null, $callable = null)
     {
-        $transaction = new TransactionMultiExec($this, $options);
+        $transaction = new MultiExecTransaction($this, $options);
 
         if (isset($callable)) {
             return $transaction->execute($callable);
