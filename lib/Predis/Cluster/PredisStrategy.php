@@ -141,6 +141,7 @@ class PredisStrategy implements StrategyInterface
             'ZSCAN'                 => $keyIsFirstArgument,
             'ZLEXCOUNT'             => $keyIsFirstArgument,
             'ZRANGEBYLEX'           => $keyIsFirstArgument,
+            'ZREMRANGEBYLEX'        => $keyIsFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,
