@@ -75,13 +75,12 @@ class HyperLogLogAddTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      * @expectedException Predis\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'HyperLogLog requires Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo', 'hoge');

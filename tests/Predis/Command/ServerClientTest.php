@@ -143,11 +143,10 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.9
      */
     public function testGetsNameOfConnection()
     {
-         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
-
          $redis = $this->getClient();
          $clientName = $redis->client('GETNAME');
          $this->assertNull($clientName);
@@ -159,11 +158,10 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.9
      */
     public function testSetsNameOfConnection()
     {
-         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
-
          $redis = $this->getClient();
 
          $expectedConnectionName = 'foo-baz';
@@ -185,13 +183,12 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\ServerException
+     * @requiresRedisVersion >= 2.6.9
      * @dataProvider invalidConnectionNameProvider
+     * @expectedException Predis\ServerException
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
     {
-         $this->markTestSkippedOnRedisVersionBelow('2.6.9');
-
          $redis = $this->getClient();
          $redis->client('SETNAME', $invalidConnectionName);
     }

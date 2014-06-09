@@ -109,11 +109,10 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInWholeRange()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -126,11 +125,10 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInInclusiveRange()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -145,11 +143,10 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInExclusiveRange()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -164,11 +161,10 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInMixedRange()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -182,11 +178,10 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      */
     public function testRangeWithLimitModifier()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -200,13 +195,12 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      * @expectedException Predis\ServerException
      * @expectedExceptionMessage min or max not valid string range item
      */
     public function testThrowsExceptionOnInvalidRangeFormat()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -215,13 +209,12 @@ class ZSetRangeByLexTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.9
      * @expectedException Predis\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
-        $this->markTestSkippedOnRedisVersionBelow('2.8.9', 'Lexicographical operations on sorted sets require Redis >= 2.8.9.', true);
-
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
