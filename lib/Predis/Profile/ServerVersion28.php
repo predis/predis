@@ -239,6 +239,7 @@ class ServerVersion28 extends ServerProfile
 
             /* commands operating on sorted sets */
             'zscan'                     => 'Predis\Command\ZSetScan',
+            'zlexcount'                 => 'Predis\Command\ZSetLexCount',
 
             /* commands operating on hashes */
             'hscan'                     => 'Predis\Command\HashScan',
