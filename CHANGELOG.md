@@ -7,6 +7,9 @@ v0.8.6 (2014-xx-xx)
 - Added `PFADD`, `PFCOUNT`, `PFMERGE` to the server profile for Redis 2.8 for
   handling the HyperLogLog data structure introduced in Redis 2.8.9.
 
+- Added `ZLEXCOUNT`, `ZRANGEBYLEX`, `ZREMRANGEBYLEX` to the server profile for
+  Redis 2.8 for handling lexicographic operations on members of sorted sets.
+
 - Minor tweaks to make this version of Predis compatible with HHVM >= 2.4.0.
 
 - Add support for key hash tags when using redis-cluster (Redis 3.0.0b1).
