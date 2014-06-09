@@ -811,6 +811,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key:1', 'key:2', 'key:3'),
                 array('prefix:key:1', 'prefix:key:2', 'prefix:key:3'),
             ),
+            array('ZLEXCOUNT',
+                array('key', '-', '+'),
+                array('prefix:key', '-', '+'),
+            ),
         );
     }
 }

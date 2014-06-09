@@ -177,11 +177,12 @@ class RedisUnstableTest extends PredisProfileTestCase
             136 => 'SCAN',
             137 => 'SSCAN',
             138 => 'ZSCAN',
-            139 => 'HSCAN',
-            140 => 'PUBSUB',
-            141 => 'PFADD',
-            142 => 'PFCOUNT',
-            143 => 'PFMERGE',
+            139 => 'ZLEXCOUNT',
+            140 => 'HSCAN',
+            141 => 'PUBSUB',
+            142 => 'PFADD',
+            143 => 'PFCOUNT',
+            144 => 'PFMERGE',
         );
     }
 }

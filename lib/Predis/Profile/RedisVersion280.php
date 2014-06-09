@@ -240,6 +240,7 @@ class RedisVersion280 extends RedisProfile
 
             /* commands operating on sorted sets */
             'ZSCAN'                     => 'Predis\Command\ZSetScan',
+            'ZLEXCOUNT'                 => 'Predis\Command\ZSetLexCount',
 
             /* commands operating on hashes */
             'HSCAN'                     => 'Predis\Command\HashScan',

@@ -124,6 +124,7 @@ class RedisStrategy implements StrategyInterface
             'ZREVRANK'              => $keyIsFirstArgument,
             'ZSCORE'                => $keyIsFirstArgument,
             'ZSCAN'                 => $keyIsFirstArgument,
+            'ZLEXCOUNT'             => $keyIsFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,

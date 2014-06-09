@@ -152,6 +152,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'PFADD'                     => 'self::first',
             'PFCOUNT'                   => 'self::all',
             'PFMERGE'                   => 'self::all',
+            'ZLEXCOUNT'                 => 'self::first',
         );
     }
 

@@ -342,6 +342,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'ZREVRANK'              => 'read',
             'ZSCORE'                => 'read',
             'ZSCAN'                 => 'read',
+            'ZLEXCOUNT'             => 'read',
 
             /* commands operating on hashes */
             'HDEL'                  => 'write',
