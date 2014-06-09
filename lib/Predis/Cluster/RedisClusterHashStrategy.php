@@ -125,6 +125,7 @@ class RedisClusterHashStrategy implements CommandHashStrategyInterface
             'ZSCORE'                => $keyIsFirstArgument,
             'ZSCAN'                 => $keyIsFirstArgument,
             'ZLEXCOUNT'             => $keyIsFirstArgument,
+            'ZRANGEBYLEX'           => $keyIsFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,

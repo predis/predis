@@ -139,6 +139,7 @@ class PredisClusterHashStrategy implements CommandHashStrategyInterface
             'ZUNIONSTORE'           => array($this, 'getKeyFromZsetAggregationCommands'),
             'ZSCAN'                 => $keyIsFirstArgument,
             'ZLEXCOUNT'             => $keyIsFirstArgument,
+            'ZRANGEBYLEX'           => $keyIsFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $keyIsFirstArgument,
