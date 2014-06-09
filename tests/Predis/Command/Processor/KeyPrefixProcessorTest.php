@@ -815,6 +815,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', '-', '+'),
                 array('prefix:key', '-', '+'),
             ),
+            array('ZRANGEBYLEX',
+                array('key', '-', '+', 'LIMIT', '0', '10'),
+                array('prefix:key', '-', '+', 'LIMIT', '0', '10'),
+            ),
         );
     }
 }
