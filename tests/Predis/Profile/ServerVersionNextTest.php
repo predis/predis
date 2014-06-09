@@ -178,10 +178,11 @@ class ServerVersionNextTest extends PredisProfileTestCase
             137 => 'zscan',
             138 => 'zlexcount',
             139 => 'zrangebylex',
-            140 => 'hscan',
-            141 => 'pfadd',
-            142 => 'pfcount',
-            143 => 'pfmerge',
+            140 => 'zremrangebylex',
+            141 => 'hscan',
+            142 => 'pfadd',
+            143 => 'pfcount',
+            144 => 'pfmerge',
         );
     }
 }

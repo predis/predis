@@ -344,6 +344,7 @@ class PredisClusterHashStrategyTest extends PredisTestCase
             'ZSCAN'                 => 'keys-first',
             'ZLEXCOUNT'             => 'keys-first',
             'ZRANGEBYLEX'           => 'keys-first',
+            'ZREMRANGEBYLEX'        => 'keys-first',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',
