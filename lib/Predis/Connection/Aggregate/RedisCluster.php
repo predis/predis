@@ -48,7 +48,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  */
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
-    private $askClusterNodes = false;
+    private $askSlotsMap = false;
     private $defaultParameters = array();
     private $pool = array();
     private $slots = array();
@@ -173,8 +173,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * Generates the current slots map by fetching the cluster configuration to
      * one of the nodes by leveraging the CLUSTER NODES command.
+     *
+     * @return array
      */
-    public function askClusterNodes()
+    public function askSlotsMap()
     {
         if (!$connection = $this->getRandomConnection()) {
             return array();
@@ -201,6 +203,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 $this->setSlots($slots[0], $slots[1], $node[1]);
             }
         }
+
+        return $this->slotsMap;
     }
 
     /**
@@ -406,8 +410,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $connection = $this->createConnection($connectionID);
         }
 
-        if ($this->askClusterNodes) {
-            $this->askClusterNodes();
+        if ($this->askSlotsMap) {
+            $this->askSlotsMap();
         }
 
         $this->move($connection, $slot);
@@ -504,14 +508,14 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * procedure, mostly when targeting many keys that would end up in a lot of
      * redirections.
      *
-     * The slots map can still be manually fetched using the askClusterNodes()
+     * The slots map can still be manually fetched using the askSlotsMap()
      * method whether or not this option is enabled.
      *
      * @param bool $value Enable or disable the use of CLUSTER NODES.
      */
-    public function enableClusterNodes($value)
+    public function enableAutoSlotsMap($value)
     {
-        $this->askClusterNodes = (bool) $value;
+        $this->askSlotsMap = (bool) $value;
     }
 
     /**

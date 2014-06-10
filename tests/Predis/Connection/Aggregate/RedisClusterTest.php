@@ -655,7 +655,7 @@ EOS;
         $cluster = new RedisCluster($factory);
         $cluster->add($connection1);
 
-        $cluster->askClusterNodes();
+        $cluster->askSlotsMap();
 
         $this->assertSame($cluster->getConnectionBySlot('6144'), $connection1);
     }
