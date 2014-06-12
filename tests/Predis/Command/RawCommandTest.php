@@ -138,17 +138,4 @@ class RawCommandTest extends PredisTestCase
 
         $this->assertSame('SET', $command->getId());
     }
-
-    /**
-     * @group disconnected
-     */
-    public function testToString()
-    {
-        $arguments = array('SET', 'key', 'value');
-        $expected = implode(' ', $arguments);
-
-        $command = new RawCommand($arguments);
-
-        $this->assertEquals($expected, (string) $command);
-    }
 }
