@@ -104,6 +104,18 @@ $client = new Predis\Client([
 ]);
 ```
 
+When useing ssl or tls schemes you can optionally provide certificate and other SSL options like so:
+
+```php
+// SSL connection with key, cert and cafile in the local_cert file:
+$client = new Predis\Client([
+    'scheme' => 'ssl',
+    'host'   => '10.0.0.1',
+    'port'   => 6378,
+    'ssl'    => ['local_cert' => '/absolute/path/keys.pem',]
+]);
+```
+
 The actual list of supported connection parameters can vary depending on each connection backend so
 it is recommended to refer to their specific documentation for details.
 

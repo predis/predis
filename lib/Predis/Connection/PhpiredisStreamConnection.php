@@ -34,7 +34,7 @@ use Predis\Command\CommandInterface;
  *
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - scheme: it can be either 'tcp', 'ssl, 'sslv2', 'sslv3', 'tls' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -43,6 +43,7 @@ use Predis\Command\CommandInterface;
  *  - async_connect: performs the connection asynchronously.
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
+ *  - ssl: an optional array of SSL context options to be passed to stream_context_create
  *
  * @link https://github.com/nrk/phpiredis
  * @author Daniele Alessandri <suppakilla@gmail.com>

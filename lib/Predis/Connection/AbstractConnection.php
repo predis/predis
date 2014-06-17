@@ -62,6 +62,10 @@ abstract class AbstractConnection implements SingleConnectionInterface
                 }
 
             case 'tcp':
+            case 'ssl':
+            case 'sslv2':
+            case 'sslv3':
+            case 'tls':
                 return $parameters;
 
             default:

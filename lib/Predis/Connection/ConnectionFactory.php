@@ -44,6 +44,10 @@ class ConnectionFactory implements ConnectionFactoryInterface
     {
         return array(
             'tcp'  => 'Predis\Connection\StreamConnection',
+            'ssl'  => 'Predis\Connection\StreamConnection',
+            'sslv2'  => 'Predis\Connection\StreamConnection',
+            'sslv3'  => 'Predis\Connection\StreamConnection',
+            'tls'  => 'Predis\Connection\StreamConnection',
             'unix' => 'Predis\Connection\StreamConnection',
             'http' => 'Predis\Connection\WebdisConnection',
         );
