@@ -19,7 +19,7 @@
 
 $options = array(
     'name'           => 'predis',
-    'project_path'   => __DIR__ . '/../lib/',
+    'project_path'   => __DIR__ . '/../src',
     'compression'    => Phar::NONE,
     'append_version' => true,
 );

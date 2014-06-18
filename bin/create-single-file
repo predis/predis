@@ -36,7 +36,7 @@ class CommandLine
         $getops = getopt(implode(array_keys($parameters)), $parameters);
 
         $options = array(
-            'source'  => __DIR__ . "/../lib",
+            'source'  => __DIR__ . "/../src",
             'output'  => PredisFile::NS_ROOT . '.php',
             'exclude' => array(),
         );
