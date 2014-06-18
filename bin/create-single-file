@@ -36,7 +36,7 @@ class CommandLine
         $getops = getopt(implode(array_keys($parameters)), $parameters);
 
         $options = array(
-            'source'  => __DIR__ . "/../lib/",
+            'source'  => __DIR__ . "/../lib",
             'output'  => PredisFile::NS_ROOT . '.php',
             'exclude' => array(),
         );
@@ -82,9 +82,8 @@ class PredisFile
 
     public static function from($libraryPath, array $exclude = array())
     {
-        $nsroot = self::NS_ROOT;
         $predisFile = new PredisFile();
-        $libIterator = new RecursiveDirectoryIterator("$libraryPath$nsroot");
+        $libIterator = new RecursiveDirectoryIterator($libraryPath);
 
         foreach (new RecursiveIteratorIterator($libIterator) as $classFile)
         {
@@ -92,7 +91,7 @@ class PredisFile
                 continue;
             }
 
-            $namespace = strtr(str_replace($libraryPath, '', $classFile->getPath()), '/', '\\');
+            $namespace = self::NS_ROOT.strtr(str_replace($libraryPath, '', $classFile->getPath()), '/', '\\');
 
             if (in_array(sprintf('%s\\%s', $namespace, $classFile->getBasename('.php')), $exclude)) {
                 continue;
