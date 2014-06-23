@@ -151,7 +151,7 @@ class PhpiredisStreamConnection extends StreamConnection
         $reader = $this->reader;
 
         while (PHPIREDIS_READER_STATE_INCOMPLETE === $state = phpiredis_reader_get_state($reader)) {
-            $buffer = fread($socket, 4096);
+            $buffer = stream_socket_recvfrom($socket, 4096);
 
             if ($buffer === false || $buffer === '') {
                 $this->onConnectionError('Error while reading bytes from the server');
