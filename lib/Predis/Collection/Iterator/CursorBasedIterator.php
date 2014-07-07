@@ -165,9 +165,7 @@ abstract class CursorBasedIterator implements Iterator
      */
     public function next()
     {
-        do {
-            $more = false;
-
+        tryFetch: {
             if (!$this->elements && $this->fetchmore) {
                 $this->fetch();
             }
@@ -175,11 +173,11 @@ abstract class CursorBasedIterator implements Iterator
             if ($this->elements) {
                 $this->extractNext();
             } elseif ($this->cursor) {
-                $more = true;
+                goto tryFetch;
             } else {
                 $this->valid = false;
             }
-        } while ($more);
+        }
     }
 
     /**
