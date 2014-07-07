@@ -22,6 +22,9 @@ v0.8.6 (2014-xx-xx)
 - __FIX__: fix parsing of the output of `CLUSTER NODES` to fetch the slots map
   from a node when redis-cluster has slaves in its configuration (ISSUE #165).
 
+- __FIX__: prevent stack overflows when using the abstraction for cursor-based
+  iterators over large collections (ISSUE #182).
+
 - Upgraded to PHPUnit 4.* for the test suite.
 
 
