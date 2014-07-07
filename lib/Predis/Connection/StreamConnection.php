@@ -183,7 +183,7 @@ class StreamConnection extends AbstractConnection
         $socket = $this->getResource();
 
         while (($length = strlen($buffer)) > 0) {
-            $written = fwrite($socket, $buffer);
+            $written = @fwrite($socket, $buffer);
 
             if ($length === $written) {
                 return;
