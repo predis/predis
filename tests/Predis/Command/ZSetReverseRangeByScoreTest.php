@@ -99,7 +99,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
     public function testParseResponseWithScores()
     {
         $raw = array('element1', '1', 'element2', '2', 'element3', '3');
-        $expected = array(array('element1', '1'), array('element2', '2'), array('element3', '3'));
+        $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
 
         $command = $this->getCommandWithArgumentsArray(array('zset', 0, 1, 'withscores'));
 
@@ -177,7 +177,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
-        $expected = array(array('e', '20'), array('d', '20'), array('c', '10'));
+        $expected = array('e' => '20', 'd' => '20', 'c' => '10');
 
         $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, 'withscores'));
         $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, array('withscores' => true)));
@@ -207,7 +207,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
         $options = array('limit' => array(1, 2), 'withscores' => true);
-        $expected = array(array('d', '20'), array('c', '10'));
+        $expected = array('d' => '20', 'c' => '10');
 
         $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, $options));
     }

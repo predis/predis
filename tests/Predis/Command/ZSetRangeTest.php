@@ -80,7 +80,7 @@ class ZSetRangeTest extends PredisCommandTestCase
     public function testParseResponseWithScores()
     {
         $raw = array('element1', '1', 'element2', '2', 'element3', '3');
-        $expected = array(array('element1', '1'), array('element2', '2'), array('element3', '3'));
+        $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
 
         $command = $this->getCommandWithArgumentsArray(array('zset', 0, 1, 'withscores'));
 
@@ -134,7 +134,7 @@ class ZSetRangeTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
-        $expected = array(array('c', '10'), array('d', '20'), array('e', '20'));
+        $expected = array('c' => '10', 'd' => '20', 'e' => '20');
 
         $this->assertSame($expected, $redis->zrange('letters', 2, 4, 'withscores'));
         $this->assertSame($expected, $redis->zrange('letters', 2, 4, array('withscores' => true)));
