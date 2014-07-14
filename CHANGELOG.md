@@ -25,6 +25,10 @@ v0.8.6 (2014-xx-xx)
 - __FIX__: prevent stack overflows when using the abstraction for cursor-based
   iterators over large collections (ISSUE #182).
 
+- __FIX__: properly discards a transaction when the server immediatly returns an
+  error response (e.g. -OOM or -ERR on invalid arguments for a command) instead
+  of a +QUEUED response (ISSUE #187).
+
 - Upgraded to PHPUnit 4.* for the test suite.
 
 
