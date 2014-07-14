@@ -485,6 +485,50 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testProperlyDiscardsTransactionAfterServerExceptionInBlock()
+    {
+        $connection = $this->getMockedConnection(function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return true;
+
+                case 'ECHO':
+                    return new Response\Error('ERR simulated failure on ECHO');
+
+                case 'EXEC':
+                    return new Response\Error('EXECABORT Transaction discarded because of previous errors.');
+
+                default:
+                    return new Response\Status('QUEUED');
+            }
+        });
+
+        $client = new Client($connection);
+
+        // First attempt
+        $tx = new MultiExec($client);
+
+        try {
+            $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
+        } catch (\Exception $exception) {
+            $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
+            $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
+        }
+
+        // Second attempt
+        $tx = new MultiExec($client);
+
+        try {
+            $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
+        } catch (\Exception $exception) {
+            $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
+            $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenFalse()
     {
         $expected = array('before', new Response\Error('ERR simulated error'), 'after');
