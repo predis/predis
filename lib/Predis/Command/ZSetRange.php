@@ -92,7 +92,7 @@ class ZSetRange extends Command
             $result = array();
 
             for ($i = 0; $i < count($data); $i++) {
-                $result[] = array($data[$i], $data[++$i]);
+                $result[$data[$i]] = $data[++$i];
             }
 
             return $result;

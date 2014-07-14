@@ -94,7 +94,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
         $redis->zadd('letters:2nd', 1, 'b', 2, 'c', 3, 'd');
 
         $this->assertSame(2, $redis->zinterstore('letters:out', 2, 'letters:1st', 'letters:2nd'));
-        $this->assertSame(array(array('b', '3'), array('c', '5')), $redis->zrange('letters:out', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '3', 'c' => '5'), $redis->zrange('letters:out', 0, -1, 'withscores'));
 
         $this->assertSame(0, $redis->zinterstore('letters:out', 2, 'letters:1st', 'letters:void'));
         $this->assertSame(0, $redis->zinterstore('letters:out', 2, 'letters:void', 'letters:2nd'));
@@ -113,15 +113,15 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
         $options = array('aggregate' => 'min');
         $this->assertSame(2, $redis->zinterstore('letters:min', 2, 'letters:1st', 'letters:2nd', $options));
-        $this->assertSame(array(array('b', '1'), array('c', '2')), $redis->zrange('letters:min', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '1', 'c' => '2'), $redis->zrange('letters:min', 0, -1, 'withscores'));
 
         $options = array('aggregate' => 'max');
         $this->assertSame(2, $redis->zinterstore('letters:max', 2, 'letters:1st', 'letters:2nd', $options));
-        $this->assertSame(array(array('b', '2'), array('c', '3')), $redis->zrange('letters:max', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '2', 'c' => '3'), $redis->zrange('letters:max', 0, -1, 'withscores'));
 
         $options = array('aggregate' => 'sum');
         $this->assertSame(2, $redis->zinterstore('letters:sum', 2, 'letters:1st', 'letters:2nd', $options));
-        $this->assertSame(array(array('b', '3'), array('c', '5')), $redis->zrange('letters:sum', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '3', 'c' => '5'), $redis->zrange('letters:sum', 0, -1, 'withscores'));
     }
 
     /**
@@ -136,7 +136,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
         $options = array('weights' => array(2, 3));
         $this->assertSame(2, $redis->zinterstore('letters:out', 2, 'letters:1st', 'letters:2nd', $options));
-        $this->assertSame(array(array('b', '7'), array('c', '12')), $redis->zrange('letters:out', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '7', 'c' => '12'), $redis->zrange('letters:out', 0, -1, 'withscores'));
     }
 
     /**
@@ -151,7 +151,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
         $options = array('aggregate' => 'max', 'weights' => array(10, 15));
         $this->assertSame(2, $redis->zinterstore('letters:out', 2, 'letters:1st', 'letters:2nd', $options));
-        $this->assertSame(array(array('b', '20'), array('c', '30')), $redis->zrange('letters:out', 0, -1, 'withscores'));
+        $this->assertSame(array('b' => '20', 'c' => '30'), $redis->zrange('letters:out', 0, -1, 'withscores'));
     }
 
     /**

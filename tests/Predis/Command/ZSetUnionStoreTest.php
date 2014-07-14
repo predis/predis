@@ -95,7 +95,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
         $this->assertSame(4, $redis->zunionstore('letters:out', 2, 'letters:1st', 'letters:2nd'));
         $this->assertSame(
-            array(array('a', '1'), array('b', '3'), array('d', '3'), array('c', '5')),
+            array('a' => '1', 'b' => '3', 'd' => '3', 'c' => '5'),
             $redis->zrange('letters:out', 0, -1, 'withscores')
         );
 
@@ -117,21 +117,21 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $options = array('aggregate' => 'min');
         $this->assertSame(4, $redis->zunionstore('letters:min', 2, 'letters:1st', 'letters:2nd', $options));
         $this->assertSame(
-            array(array('a', '1'), array('b', '1'), array('c', '2'), array('d', '3')),
+            array('a' => '1', 'b' => '1', 'c' => '2', 'd' => '3'),
             $redis->zrange('letters:min', 0, -1, 'withscores')
         );
 
         $options = array('aggregate' => 'max');
         $this->assertSame(4, $redis->zunionstore('letters:max', 2, 'letters:1st', 'letters:2nd', $options));
         $this->assertSame(
-            array(array('a', '1'), array('b', '2'), array('c', '3'), array('d', '3')),
+            array('a' => '1', 'b' => '2', 'c' => '3', 'd' => '3'),
             $redis->zrange('letters:max', 0, -1, 'withscores')
         );
 
         $options = array('aggregate' => 'sum');
         $this->assertSame(4, $redis->zunionstore('letters:sum', 2, 'letters:1st', 'letters:2nd', $options));
         $this->assertSame(
-            array(array('a', '1'), array('b', '3'), array('d', '3'), array('c', '5')),
+            array('a' => '1', 'b' => '3', 'd' => '3', 'c' => '5'),
             $redis->zrange('letters:sum', 0, -1, 'withscores')
         );
     }
@@ -149,7 +149,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $options = array('weights' => array(2, 3));
         $this->assertSame(4, $redis->zunionstore('letters:out', 2, 'letters:1st', 'letters:2nd', $options));
         $this->assertSame(
-            array(array('a', '2'), array('b', '7'), array('d', '9'), array('c', '12')),
+            array('a' => '2', 'b' => '7', 'd' => '9', 'c' => '12'),
             $redis->zrange('letters:out', 0, -1, 'withscores')
         );
     }
@@ -167,7 +167,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $options = array('aggregate' => 'max', 'weights' => array(10, 15));
         $this->assertSame(4, $redis->zunionstore('letters:out', 2, 'letters:1st', 'letters:2nd', $options));
         $this->assertSame(
-            array(array('a', '10'), array('b', '20'), array('c', '30'), array('d', '45')),
+            array('a' => '10', 'b' => '20', 'c' => '30', 'd' => '45'),
             $redis->zrange('letters:out', 0, -1, 'withscores')
         );
     }
