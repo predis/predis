@@ -12,6 +12,11 @@ v1.0.0 (201x-xx-xx)
   values carrying the original payload, so one can do `$response == 'OK'` which
   is also more akin to how Redis replies to clients.
 
+- Commands `ZRANGE`, `ZRANGEBYSCORE`, `ZREVRANGE` and `ZREVRANGEBYSCORE` using
+  `WITHSCORE` return a named array of member => score instead of an array of
+  [member, score] elements. Insertion order is preserved anyway due to how PHP
+  works internally.
+
 - Invoking `Predis\Client::connect()` when the underlying connection has been
   already established does not throw any exception anymore, now the connection
   simply does not attempt to perform any operation.
