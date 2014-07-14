@@ -14,6 +14,7 @@ namespace Predis\Transaction;
 use PredisTestCase;
 use Predis\Client;
 use Predis\ResponseQueued;
+use Predis\ResponseError;
 use Predis\ServerException;
 use Predis\Command\CommandInterface;
 
@@ -471,6 +472,50 @@ class MultiExecContextTest extends PredisTestCase
 
         $this->assertNull($replies);
         $this->assertSame(array('MULTI', 'SET', 'ECHO', 'DISCARD'), self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testProperlyDiscardsTransactionAfterServerExceptionInBlock()
+    {
+        $connection = $this->getMockedConnection(function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return true;
+
+                case 'ECHO':
+                    return new ResponseError('ERR simulated failure on ECHO');
+
+                case 'EXEC':
+                    return new ResponseError('EXECABORT Transaction discarded because of previous errors.');
+
+                default:
+                    return new ResponseQueued();
+            }
+        });
+
+        $client = new Client($connection);
+
+        // First attempt
+        $tx = new MultiExecContext($client);
+
+        try {
+            $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
+        } catch (\Exception $exception) {
+            $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
+            $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
+        }
+
+        // Second attempt
+        $tx = new MultiExecContext($client);
+
+        try {
+            $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
+        } catch (\Exception $exception) {
+            $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
+            $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
+        }
     }
 
     // ******************************************************************** //

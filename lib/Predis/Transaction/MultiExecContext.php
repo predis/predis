@@ -206,17 +206,20 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     public function executeCommand(CommandInterface $command)
     {
         $this->initialize();
-        $response = $this->client->executeCommand($command);
 
         if ($this->checkState(self::STATE_CAS)) {
-            return $response;
+            return $this->client->executeCommand($command);
         }
 
-        if (!$response instanceof ResponseQueued) {
-            $this->onProtocolError('The server did not respond with a QUEUED status reply');
-        }
+        $response = $this->client->getConnection()->executeCommand($command);
 
-        $this->commands->enqueue($command);
+        if ($response instanceof ResponseQueued) {
+            $this->commands->enqueue($command);
+        } else if ($response instanceof ResponseErrorInterface) {
+            throw new AbortedMultiExecException($this, $response->getMessage());
+        } else {
+            $this->onProtocolError('The server did not return a +QUEUED status response.');
+        }
 
         return $this;
     }
