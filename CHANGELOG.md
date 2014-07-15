@@ -1,4 +1,4 @@
-v0.8.6 (2014-xx-xx)
+v0.8.6 (2014-07-15)
 ================================================================================
 
 - Redis 2.8 is not the default server profile as there are no changes that would
