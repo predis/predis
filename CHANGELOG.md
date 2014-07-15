@@ -108,6 +108,41 @@ v1.0.0 (201x-xx-xx)
 - The client can now send raw commands using `Predis\Client::executeRaw()`.
 
 
+v0.8.6 (2014-07-15)
+================================================================================
+
+- Redis 2.8 is not the default server profile as there are no changes that would
+  break compatibility with previous releases.
+
+- Added `PFADD`, `PFCOUNT`, `PFMERGE` to the server profile for Redis 2.8 for
+  handling the HyperLogLog data structure introduced in Redis 2.8.9.
+
+- Added `ZLEXCOUNT`, `ZRANGEBYLEX`, `ZREMRANGEBYLEX` to the server profile for
+  Redis 2.8 for handling lexicographic operations on members of sorted sets.
+
+- Added support for key hash tags when using redis-cluster (Redis 3.0.0b1).
+
+- __FIX__: minor tweaks to make Predis compatible with HHVM >= 2.4.0.
+
+- __FIX__: responses to `INFO` are now properly parsed and will not break when
+  redis sentinel is being used (ISSUE #154).
+
+- __FIX__: added missing support for `INCRBYFLOAT` in cluster and replication
+  configurations (ISSUE #159).
+
+- __FIX__: fix parsing of the output of `CLUSTER NODES` to fetch the slots map
+  from a node when redis-cluster has slaves in its configuration (ISSUE #165).
+
+- __FIX__: prevent a stack overflow when iterating over large Redis collections
+  using our abstraction for cursor-based iterators (ISSUE #182).
+
+- __FIX__: properly discards transactions when the server immediately returns an
+  error response (e.g. -OOM or -ERR on invalid arguments for a command) instead
+  of a +QUEUED response (ISSUE #187).
+
+- Upgraded to PHPUnit 4.* for the test suite.
+
+
 v0.8.5 (2014-01-16)
 ================================================================================
 
