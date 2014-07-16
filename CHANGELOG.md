@@ -1,6 +1,8 @@
 v1.0.0 (201x-xx-xx)
 ================================================================================
 
+- Switched to PSR-4 for autoloading.
+
 - The default server profile for Redis is `2.8`.
 
 - Removed server profile for Redis 1.2.
