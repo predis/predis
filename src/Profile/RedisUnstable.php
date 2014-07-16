@@ -16,7 +16,7 @@ namespace Predis\Profile;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisUnstable extends RedisVersion280
+class RedisUnstable extends RedisVersion300
 {
     /**
      * {@inheritdoc}
