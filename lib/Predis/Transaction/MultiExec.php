@@ -255,7 +255,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
      */
     public function unwatch()
     {
-        if (!$this->client->getProfile()->supportsCommand('WATCH')) {
+        if (!$this->client->getProfile()->supportsCommand('UNWATCH')) {
             throw new NotSupportedException('UNWATCH is not supported by the current profile.');
         }
 
