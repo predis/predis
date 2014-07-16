@@ -272,6 +272,31 @@ class PredisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testSupportsKeyHashTags()
+    {
+        $profile = Profile\Factory::getDefault();
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+
+        $cluster = new RedisCluster();
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $set = $profile->createCommand('set', array('{node:1001}:foo', 'foobar'));
+        $get = $profile->createCommand('get', array('{node:1001}:foo'));
+        $this->assertSame($connection1, $cluster->getConnection($set));
+        $this->assertSame($connection1, $cluster->getConnection($get));
+
+        $set = $profile->createCommand('set', array('{node:1001}:bar', 'foobar'));
+        $get = $profile->createCommand('get', array('{node:1001}:bar'));
+        $this->assertSame($connection1, $cluster->getConnection($set));
+        $this->assertSame($connection1, $cluster->getConnection($get));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testWritesCommandToCorrectConnection()
     {
         $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));

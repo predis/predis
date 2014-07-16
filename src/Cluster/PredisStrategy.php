@@ -24,8 +24,8 @@ use Predis\Command\ScriptCommand;
  */
 class PredisStrategy implements StrategyInterface
 {
-    private $commands;
-    private $hashGenerator;
+    protected $commands;
+    protected $hashGenerator;
 
     /**
      * @param HashGeneratorInterface $hashGenerator Hash generator instance.
