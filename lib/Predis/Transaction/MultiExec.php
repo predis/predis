@@ -72,7 +72,7 @@ class MultiExec implements BasicClientInterface, ExecutableContextInterface
             );
         }
 
-        if (!$client->getProfile()->supportsCommands(array('multi', 'exec', 'discard'))) {
+        if (!$client->getProfile()->supportsCommands(array('MULTI', 'EXEC', 'DISCARD'))) {
             throw new NotSupportedException(
                 'The current profile does not support MULTI, EXEC and DISCARD.'
             );

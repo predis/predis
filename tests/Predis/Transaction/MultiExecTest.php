@@ -28,8 +28,15 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile->expects($this->once())
+                ->method('supportsCommands')
+                ->with(array('MULTI', 'EXEC', 'DISCARD'))
+                ->will($this->returnValue(false));
+
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $client = new Client($connection, array('profile' => '1.2'));
+        $client = new Client($connection, array('profile' => $profile));
+
         $tx = new MultiExec($client);
     }
 
@@ -40,10 +47,20 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $client = new Client($connection, array('profile' => '2.0'));
-        $tx = new MultiExec($client, array('options' => 'cas'));
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile->expects($this->once())
+                ->method('supportsCommands')
+                ->with(array('MULTI', 'EXEC', 'DISCARD'))
+                ->will($this->returnValue(true));
+        $profile->expects($this->once())
+                ->method('supportsCommand')
+                ->with('WATCH')
+                ->will($this->returnValue(false));
 
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $client = new Client($connection, array('profile' => $profile));
+
+        $tx = new MultiExec($client, array('options' => 'cas'));
         $tx->watch('foo');
     }
 
@@ -54,8 +71,19 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
     {
+        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile->expects($this->once())
+                ->method('supportsCommands')
+                ->with(array('MULTI', 'EXEC', 'DISCARD'))
+                ->will($this->returnValue(true));
+        $profile->expects($this->once())
+                ->method('supportsCommand')
+                ->with('UNWATCH')
+                ->will($this->returnValue(false));
+
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $client = new Client($connection, array('profile' => '2.0'));
+        $client = new Client($connection, array('profile' => $profile));
+
         $tx = new MultiExec($client, array('options' => 'cas'));
 
         $tx->unwatch('foo');
