@@ -123,11 +123,11 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
 
         $profile = $client->getProfile();
 
-        if ($profile->supportsCommands(array('multi', 'exec', 'discard')) === false) {
+        if ($profile->supportsCommands(array('MULTI', 'EXEC', 'DISCARD')) === false) {
             throw new NotSupportedException('The current profile does not support MULTI, EXEC and DISCARD');
         }
 
-        $this->canWatch = $profile->supportsCommands(array('watch', 'unwatch'));
+        $this->canWatch = $profile->supportsCommands(array('WATCH', 'UNWATCH'));
     }
 
     /**
