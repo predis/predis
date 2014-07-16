@@ -19,7 +19,7 @@
 
 $options = array(
     'name'           => 'predis',
-    'project_path'   => __DIR__ . '/../lib/',
+    'project_path'   => __DIR__ . '/../src',
     'compression'    => Phar::NONE,
     'append_version' => true,
 );
@@ -52,7 +52,7 @@ function getPharStub($options)
 Phar::mapPhar('predis.phar');
 spl_autoload_register(function (\$class) {
     if (strpos(\$class, 'Predis\\\\') === 0) {
-        \$file = 'phar://predis.phar/'.strtr(\$class, '\\\', '/').'.php';
+        \$file = 'phar://predis.phar/'.strtr(substr(\$class, 7), '\\\', '/').'.php';
         if (file_exists(\$file)) {
             require \$file;
             return true;

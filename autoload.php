@@ -9,6 +9,6 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/lib/Predis/Autoloader.php';
+require __DIR__.'/src/Autoloader.php';
 
 Predis\Autoloader::register();

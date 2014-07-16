@@ -61,7 +61,7 @@ class CommandTestCaseGenerator
 
         $options = array(
             'overwrite' => false,
-            'tests' => __DIR__.'/../tests',
+            'tests' => __DIR__.'/../tests/Predis',
         );
 
         foreach ($getops as $option => $value) {
@@ -93,9 +93,9 @@ class CommandTestCaseGenerator
         }
 
         $options['fqn'] = "Predis\\Command\\{$options['class']}";
-        $options['path'] = "Predis/Command/{$options['class']}.php";
+        $options['path'] = "Command/{$options['class']}.php";
 
-        $source = __DIR__.'/../lib/'.$options['path'];
+        $source = __DIR__.'/../src/'.$options['path'];
         if (!file_exists($source)) {
             throw new RuntimeException("Cannot find class file for {$options['fqn']} in $source.");
         }
