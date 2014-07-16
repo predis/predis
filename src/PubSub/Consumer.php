@@ -137,6 +137,12 @@ class Consumer extends AbstractConsumer
                     'payload' => $response[3],
                 );
 
+            case self::PONG:
+                return (object) array(
+                    'kind'    => $response[0],
+                    'payload' => $response[1],
+                );
+
             default:
                 throw new ClientException(
                     "Unknown message type '{$response[0]}' received in the PUB/SUB context."

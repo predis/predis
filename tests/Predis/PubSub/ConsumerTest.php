@@ -148,6 +148,42 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testHandlesPongMessages()
+    {
+        $rawmessage = array('pong', '');
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
+
+        $message = $pubsub->current();
+        $this->assertSame('pong', $message->kind);
+        $this->assertSame('', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testHandlesPongMessagesWithPayload()
+    {
+        $rawmessage = array('pong', 'foobar');
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())->method('read')->will($this->returnValue($rawmessage));
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
+
+        $message = $pubsub->current();
+        $this->assertSame('pong', $message->kind);
+        $this->assertSame('foobar', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReadsMessageFromConnection()
     {
         $rawmessage = array('message', 'channel:foo', 'message from channel');
@@ -303,6 +339,6 @@ class ConsumerTest extends PredisTestCase
 
         $this->assertSame(array('message1', 'message2', 'QUIT'), $messages);
         $this->assertFalse($pubsub->valid());
-        $this->assertEquals('PONG', $consumer->ping());
+        $this->assertEquals('ECHO', $consumer->echo('ECHO'));
     }
 }
