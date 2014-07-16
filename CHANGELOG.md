@@ -115,7 +115,7 @@ v1.0.0 (201x-xx-xx)
 v0.8.6 (2014-07-15)
 ================================================================================
 
-- Redis 2.8 is not the default server profile as there are no changes that would
+- Redis 2.8 is now the default server profile as there are no changes that would
   break compatibility with previous releases.
 
 - Added `PFADD`, `PFCOUNT`, `PFMERGE` to the server profile for Redis 2.8 for
