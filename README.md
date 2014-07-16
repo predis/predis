@@ -47,10 +47,9 @@ Ultimately, archives of each release are [available on GitHub](https://github.co
 ### Loading the library ###
 
 Predis relies on the autoloading features of PHP to load its files when needed and complies with the
-[PSR-0 standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) which makes
-it compatible with most PHP frameworks. Autoloading is handled automatically when dependencies are
-managed using Composer, but you can also leverage its own autoloader if you are going to use it in a
-project or script without any PSR-0 compliant autoloading facility:
+[PSR-4 standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md).
+Autoloading is handled automatically when dependencies are managed using Composer, but you can also
+leverage its own autoloader when using it in a project or script without any autoloading facility:
 
 ```php
 // Prepend a base path if Predis is not available in your "include_path".
