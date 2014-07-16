@@ -55,11 +55,7 @@ class ServerInfo extends Command
     {
         list($k, $v) = explode(':', $row, 2);
 
-        if (!preg_match('/^db\d+$/', $k)) {
-            if ($k === 'allocation_stats') {
-                $v = $this->parseAllocationStats($v);
-            }
-        } else {
+        if (preg_match('/^db\d+$/', $k)) {
             $v = $this->parseDatabaseStats($v);
         }
 
