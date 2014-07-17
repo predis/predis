@@ -48,7 +48,7 @@ class ServerInfo extends AbstractCommand
     /**
      * Parses single row of the reply buffer and returns the key-value pair.
      *
-     * @param string $row Single row of the reply buffer.
+     * @param  string $row Single row of the reply buffer.
      * @return array
      */
     public function parseRow($row)
@@ -62,6 +62,7 @@ class ServerInfo extends AbstractCommand
         } else {
             $v = $this->parseDatabaseStats($v);
         }
+
         return array($k, $v);
     }
 

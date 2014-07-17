@@ -14,7 +14,6 @@ namespace Predis\Connection;
 use Predis\NotSupportedException;
 use Predis\ResponseError;
 use Predis\Command\CommandInterface;
-use Predis\Connection\ConnectionException;
 use Predis\Protocol\ProtocolException;
 
 /**

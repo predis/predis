@@ -20,7 +20,6 @@ require 'SharedConfigurations.php';
 
 use Predis\Command\ScriptedCommand;
 use Predis\Connection\MasterSlaveReplication;
-use Predis\Profile\ServerProfile;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
@@ -28,7 +27,8 @@ use Predis\Replication\ReplicationStrategy;
 // Define a new scripted command that returns all the fields
 // of a variable number of hashes with a single roundtrip.
 
-class HashMultipleGetAll extends ScriptedCommand {
+class HashMultipleGetAll extends ScriptedCommand
+{
     const BODY = <<<EOS
 local hashes = {}
 for _, key in pairs(KEYS) do
@@ -38,7 +38,8 @@ end
 return hashes
 EOS;
 
-    public function getScript() {
+    public function getScript()
+    {
         return self::BODY;
     }
 }

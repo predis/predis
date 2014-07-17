@@ -18,7 +18,7 @@ use Predis\Profile\ServerProfile;
 /**
  * @group realm-iterators
  */
-class SortedSetTest extends PredisTestCase
+class SortedSetKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected

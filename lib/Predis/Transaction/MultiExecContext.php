@@ -200,7 +200,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param  CommandInterface $command Command instance.
      * @return $this|mixed
      */
     public function executeCommand(CommandInterface $command)
@@ -215,7 +215,7 @@ class MultiExecContext implements BasicClientInterface, ExecutableContextInterfa
 
         if ($response instanceof ResponseQueued) {
             $this->commands->enqueue($command);
-        } else if ($response instanceof ResponseErrorInterface) {
+        } elseif ($response instanceof ResponseErrorInterface) {
             throw new AbortedMultiExecException($this, $response->getMessage());
         } else {
             $this->onProtocolError('The server did not return a +QUEUED status response.');

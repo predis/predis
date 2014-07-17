@@ -14,7 +14,6 @@ namespace Predis\Connection;
 require_once __DIR__.'/../CommunicationExceptionTest.php';
 
 use Predis\CommunicationExceptionTest;
-use Predis\Connection\SingleConnectionInterface;
 
 /**
  *

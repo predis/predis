@@ -13,8 +13,6 @@ namespace Predis\Cluster;
 
 use Predis\Cluster\Hash\CRC16HashGenerator;
 use Predis\Cluster\Hash\HashGeneratorInterface;
-use Predis\Command\CommandInterface;
-use Predis\Command\ScriptedCommand;
 
 /**
  * Default class used by Predis to calculate hashes out of keys of

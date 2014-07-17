@@ -42,7 +42,7 @@ class RawCommand implements CommandInterface
     /**
      * Creates a new raw command using a variadic method.
      *
-     * @param string $commandID Redis command ID.
+     * @param  string           $commandID Redis command ID.
      * @param string ... Arguments list for the command.
      * @return CommandInterface
      */
