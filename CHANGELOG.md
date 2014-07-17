@@ -1,6 +1,11 @@
 v0.8.7 (2014-xx-xx)
 ================================================================================
 
+- The default client-side sharding strategy and the one for redis-cluster now
+  share the same implementations as they follow the same rules. One difference,
+  aside from the different hashing function used to calculate distribution, is
+  in how empty hash tags like {} are treated by redis-cluster.
+
 - Implemented `PING` support in PUB/SUB loop abstraction for Redis 3.0.0.
 
 
