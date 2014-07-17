@@ -133,6 +133,12 @@ class PubSubContext extends AbstractPubSubContext
                     'payload' => $response[3],
                 );
 
+            case self::PONG:
+                return (object) array(
+                    'kind'    => $response[0],
+                    'payload' => $response[1],
+                );
+
             default:
                 $message = "Received an unknown message type {$response[0]} inside of a pubsub context";
                 throw new ClientException($message);

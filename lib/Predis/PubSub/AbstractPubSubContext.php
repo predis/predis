@@ -24,6 +24,7 @@ abstract class AbstractPubSubContext implements \Iterator
     const PUNSUBSCRIBE = 'punsubscribe';
     const MESSAGE      = 'message';
     const PMESSAGE     = 'pmessage';
+    const PONG         = 'pong';
 
     const STATUS_VALID       = 1;	// 0b0001
     const STATUS_SUBSCRIBED  = 2;	// 0b0010
@@ -49,6 +50,17 @@ abstract class AbstractPubSubContext implements \Iterator
     protected function isFlagSet($value)
     {
         return ($this->statusFlags & $value) === $value;
+    }
+
+    /**
+     * PING the server with an optional payload that will be echoed as a
+     * PONG message in the pub/sub loop.
+     *
+     * @param string $payload Optional PING payload.
+     */
+    public function ping($payload = null)
+    {
+        $this->writeCommand('PING', array($payload));
     }
 
     /**
