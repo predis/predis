@@ -12,7 +12,6 @@
 namespace Predis;
 
 use PredisTestCase;
-use Predis\Connection;
 
 /**
  *

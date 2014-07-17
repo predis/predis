@@ -13,9 +13,6 @@ namespace Predis;
 
 use ReflectionProperty;
 use PredisTestCase;
-use Predis\Connection;
-use Predis\Profile;
-use Predis\Response;
 
 /**
  *

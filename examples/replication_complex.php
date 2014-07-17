@@ -27,7 +27,8 @@ use Predis\Replication\ReplicationStrategy;
 // Define a new script command that returns all the fields of a variable number
 // of hashes with a single roundtrip.
 
-class HashMultipleGetAll extends ScriptCommand {
+class HashMultipleGetAll extends ScriptCommand
+{
     const BODY = <<<LUA
 local hashes = {}
 for _, key in pairs(KEYS) do
@@ -37,7 +38,8 @@ end
 return hashes
 LUA;
 
-    public function getScript() {
+    public function getScript()
+    {
         return self::BODY;
     }
 }

@@ -19,21 +19,25 @@ use Predis\Connection\Aggregate\PredisCluster;
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 
-class NaiveDistributor implements DistributorInterface, HashGeneratorInterface {
+class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
+{
     private $nodes;
     private $nodesCount;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->nodes = array();
         $this->nodesCount = 0;
     }
 
-    public function add($node, $weight = null) {
+    public function add($node, $weight = null)
+    {
         $this->nodes[] = $node;
         $this->nodesCount++;
     }
 
-    public function remove($node) {
+    public function remove($node)
+    {
         $this->nodes = array_filter($this->nodes, function ($n) use ($node) {
             return $n !== $node;
         });
@@ -41,7 +45,8 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface {
         $this->nodesCount = count($this->nodes);
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         if (0 === $count = $this->nodesCount) {
             throw new RuntimeException('No connections.');
         }
@@ -49,11 +54,13 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface {
         return $this->nodes[$count > 1 ? abs($key % $count) : 0];
     }
 
-    public function hash($value) {
+    public function hash($value)
+    {
         return crc32($value);
     }
 
-    public function getHashGenerator() {
+    public function getHashGenerator()
+    {
         return $this;
     }
 }

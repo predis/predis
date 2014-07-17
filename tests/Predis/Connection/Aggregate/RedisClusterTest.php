@@ -626,7 +626,6 @@ class RedisClusterTest extends PredisTestCase
             array( 7168,  8191, array('10.1.0.52', 6394), array('10.1.0.51', 6394)),
         );
 
-
         $command = Command\RawCommand::create('CLUSTER', 'SLOTS');
 
         $connection1 = $this->getMockConnection('tcp://10.1.0.51:6384');

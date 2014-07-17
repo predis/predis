@@ -19,17 +19,20 @@ require __DIR__.'/shared.php';
 use Predis\Command\CommandInterface;
 use Predis\Connection\StreamConnection;
 
-class SimpleDebuggableConnection extends StreamConnection {
+class SimpleDebuggableConnection extends StreamConnection
+{
     private $tstart = 0;
     private $debugBuffer = array();
 
-    public function connect() {
+    public function connect()
+    {
         $this->tstart = microtime(true);
 
         parent::connect();
     }
 
-    private function storeDebug(CommandInterface $command, $direction) {
+    private function storeDebug(CommandInterface $command, $direction)
+    {
         $firtsArg = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->tstart, 4);
 
@@ -41,20 +44,23 @@ class SimpleDebuggableConnection extends StreamConnection {
         $this->debugBuffer[] = $debug;
     }
 
-    public function writeRequest(CommandInterface $command) {
+    public function writeRequest(CommandInterface $command)
+    {
         parent::writeRequest($command);
 
         $this->storeDebug($command, '->');
     }
 
-    public function readResponse(CommandInterface $command) {
+    public function readResponse(CommandInterface $command)
+    {
         $response = parent::readResponse($command);
         $this->storeDebug($command, '<-');
 
         return $response;
     }
 
-    public function getDebugBuffer() {
+    public function getDebugBuffer()
+    {
         return $this->debugBuffer;
     }
 }

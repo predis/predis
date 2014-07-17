@@ -11,10 +11,6 @@
 
 namespace Predis\Cluster;
 
-use InvalidArgumentException;
-use Predis\Command\CommandInterface;
-use Predis\Command\ScriptCommand;
-
 /**
  * Default class used by Predis to calculate hashes out of keys of
  * commands supported by redis-cluster.
