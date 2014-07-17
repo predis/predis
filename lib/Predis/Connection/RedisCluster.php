@@ -170,7 +170,9 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
 
     /**
      * Generates the current slots map by fetching the cluster configuration to
-     * one of the nodes by leveraging the CLUSTER NODES command.
+     * one of the nodes by leveraging the CLUSTER SLOTS command.
+     *
+     * @return array
      */
     public function askClusterNodes()
     {
@@ -178,27 +180,22 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
             return array();
         }
 
-        $cmdCluster = RawCommand::create('CLUSTER', 'NODES');
-        $response = $connection->executeCommand($cmdCluster);
+        $command = RawCommand::create('CLUSTER', 'SLOTS');
+        $response = $connection->executeCommand($command);
 
-        $nodes = explode("\n", $response, -1);
-        $count = count($nodes);
+        foreach ($response as $slots) {
+            // We only support master servers for now, so we ignore subsequent
+            // elements in the $slots array identifying slaves.
+            list($start, $end, $master) = $slots;
 
-        for ($i = 0; $i < $count; $i++) {
-            $node = explode(' ', $nodes[$i], 9);
-
-            if (false === strpos($node[2], 'master')) {
-                continue;
-            }
-
-            $slots = explode('-', $node[8], 2);
-
-            if ($node[1] === ':0') {
-                $this->setSlots($slots[0], $slots[1], (string) $connection);
+            if ($master[0] === '') {
+                $this->setSlots($start, $end, (string) $connection);
             } else {
-                $this->setSlots($slots[0], $slots[1], $node[1]);
+                $this->setSlots($start, $end, "{$master[0]}:{$master[1]}");
             }
         }
+
+        return $this->slotsMap;
     }
 
     /**
