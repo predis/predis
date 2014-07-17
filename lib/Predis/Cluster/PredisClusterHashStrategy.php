@@ -23,8 +23,8 @@ use Predis\Command\ScriptedCommand;
  */
 class PredisClusterHashStrategy implements CommandHashStrategyInterface
 {
-    private $commands;
-    private $hashGenerator;
+    protected $commands;
+    protected $hashGenerator;
 
     /**
      * @param HashGeneratorInterface $hashGenerator Hash generator instance.

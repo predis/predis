@@ -427,7 +427,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDoesNotSupportKeyTags()
+    public function testSupportsKeyTags()
     {
         $profile = ServerProfile::getDefault();
 
@@ -445,8 +445,8 @@ class RedisClusterTest extends PredisTestCase
 
         $set = $profile->createCommand('set', array('{node:1001}:bar', 'foobar'));
         $get = $profile->createCommand('get', array('{node:1001}:bar'));
-        $this->assertSame($connection2, $cluster->getConnection($set));
-        $this->assertSame($connection2, $cluster->getConnection($get));
+        $this->assertSame($connection1, $cluster->getConnection($set));
+        $this->assertSame($connection1, $cluster->getConnection($get));
     }
 
     /**
