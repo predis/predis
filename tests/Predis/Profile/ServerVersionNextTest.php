@@ -183,6 +183,7 @@ class ServerVersionNextTest extends PredisProfileTestCase
             142 => 'pfadd',
             143 => 'pfcount',
             144 => 'pfmerge',
+            145 => 'command',
         );
     }
 }

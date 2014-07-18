@@ -4,6 +4,8 @@ v0.8.7 (2014-xx-xx)
 - Added `3.0` in the server profiles aliases list for Redis 3.0. `2.8` is still
   the default server profile and `dev` still targets Redis 3.0.
 
+- Added `COMMAND` to the server profile for Redis 3.0.
+
 - Switched internally to the `CLUSTER SLOTS` command instead of `CLUSTER NODES`
   to fetch the updated slots map from redis-cluster. This change requires users
   to upgrade Redis nodes to >= 3.0.0b7.
