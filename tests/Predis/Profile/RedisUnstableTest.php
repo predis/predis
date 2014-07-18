@@ -185,6 +185,7 @@ class RedisUnstableTest extends PredisProfileTestCase
             144 => 'PFADD',
             145 => 'PFCOUNT',
             146 => 'PFMERGE',
+            147 => 'COMMAND',
         );
     }
 }
