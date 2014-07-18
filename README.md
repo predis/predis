@@ -20,7 +20,7 @@ on the online [wiki](https://github.com/nrk/predis/wiki).
 
 ## Main features ##
 
-- Wide range of Redis versions supported (from __1.2__ to __2.8__ and unstable) using profiles.
+- Wide range of Redis versions supported (from __1.2__ to __3.0__ and __unstable__) using profiles.
 - Clustering via client-side sharding using consistent hashing or custom distributors.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
 - Support for master-slave replication configurations (write on master, read from slaves).
