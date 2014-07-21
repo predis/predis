@@ -26,17 +26,17 @@ class RedisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
 
-        $this->assertSame(44950, $strategy->getKeyHash('{foo}'));
-        $this->assertSame(44950, $strategy->getKeyHash('{foo}:bar'));
-        $this->assertSame(44950, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:baz'));
-        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:{baz}'));
+        $this->assertSame(12182, $strategy->getSlotByKey('{foo}'));
+        $this->assertSame(12182, $strategy->getSlotByKey('{foo}:bar'));
+        $this->assertSame(12182, $strategy->getSlotByKey('{foo}:baz'));
+        $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:baz'));
+        $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
-        $this->assertSame(44950, $strategy->getKeyHash('bar:{foo}:baz{}'));
-        $this->assertSame(9415,  $strategy->getKeyHash('{}bar:{foo}:baz'));
+        $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:baz{}'));
+        $this->assertSame(9415,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(0,     $strategy->getKeyHash(''));
-        $this->assertSame(31641, $strategy->getKeyHash('{}'));
+        $this->assertSame(0,     $strategy->getSlotByKey(''));
+        $this->assertSame(15257, $strategy->getSlotByKey('{}'));
     }
 
     /**
@@ -57,7 +57,7 @@ class RedisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $command = Profile\Factory::getDevelopment()->createCommand('ping');
 
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
     }
 
     /**
@@ -71,7 +71,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -86,7 +86,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -101,7 +101,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
+            $this->assertNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -116,7 +116,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -131,7 +131,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
+            $this->assertNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -146,7 +146,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -161,7 +161,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNull($strategy->getHash($command), $commandID);
+            $this->assertNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -176,7 +176,7 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -197,7 +197,7 @@ class RedisStrategyTest extends PredisTestCase
                 ->will($this->returnValue(1));
         $command->setArguments($arguments);
 
-        $this->assertNotNull($strategy->getHash($command), "Script Command [{$command->getId()}]");
+        $this->assertNotNull($strategy->getSlot($command), "Script Command [{$command->getId()}]");
     }
 
     /**
@@ -212,10 +212,10 @@ class RedisStrategyTest extends PredisTestCase
         $strategy->setCommandHandler('get', null);
 
         $command = $profile->createCommand('set', array('key', 'value'));
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
     }
 
     /**
@@ -235,7 +235,7 @@ class RedisStrategyTest extends PredisTestCase
         $strategy->setCommandHandler('get', $callable);
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNotNull($strategy->getHash($command));
+        $this->assertNotNull($strategy->getSlot($command));
     }
 
     // ******************************************************************** //

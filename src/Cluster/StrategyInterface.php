@@ -11,6 +11,7 @@
 
 namespace Predis\Cluster;
 
+use Predis\Cluster\Distribution\DistributorInterface;
 use Predis\Command\CommandInterface;
 
 /**
@@ -24,19 +25,27 @@ use Predis\Command\CommandInterface;
 interface StrategyInterface
 {
     /**
-     * Returns the hash for the given command using the specified algorithm, or
-     * null when the command cannot be hashed.
+     * Returns a slot for the given command used for clustering distribution or
+     * NULL when this is not possible.
      *
      * @param  CommandInterface $command Command instance.
      * @return int
      */
-    public function getHash(CommandInterface $command);
+    public function getSlot(CommandInterface $command);
 
     /**
-     * Returns the hash for the given key using the specified algorithm.
+     * Returns a slot for the given key used for clustering distribution or NULL
+     * when this is not possible.
      *
      * @param  string $key Key string.
-     * @return string
+     * @return int
      */
-    public function getKeyHash($key);
+    public function getSlotByKey($key);
+
+    /**
+     * Returns a distributor instance to be used by the cluster.
+     *
+     * @return DistributorInterface
+     */
+    public function getDistributor();
 }

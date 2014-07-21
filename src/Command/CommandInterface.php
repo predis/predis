@@ -27,18 +27,18 @@ interface CommandInterface
     public function getId();
 
     /**
-     * Set the hash for the command.
+     * Assign the specified slot to the command for clustering distribution.
      *
-     * @param int $hash Calculated hash.
+     * @param int $slot Slot ID.
      */
-    public function setHash($hash);
+    public function setSlot($slot);
 
     /**
-     * Returns the hash of the command.
+     * Returns the assigned slot of the command for clustering distribution.
      *
      * @return int
      */
-    public function getHash();
+    public function getSlot();
 
     /**
      * Sets the arguments for the command.

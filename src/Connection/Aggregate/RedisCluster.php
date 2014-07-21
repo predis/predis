@@ -58,8 +58,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
 
     /**
-     * @param FactoryInterface  $connections Connection factory instance.
-     * @param StrategyInterface $strategy    Cluster strategy instance.
+     * @param FactoryInterface  $connections Optional connection factory.
+     * @param StrategyInterface $strategy    Optional cluster strategy.
      */
     public function __construct(
         FactoryInterface $connections = null,
@@ -292,15 +292,13 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $this->strategy->getHash($command);
+        $slot = $this->strategy->getSlot($command);
 
-        if (!isset($hash)) {
+        if (!isset($slot)) {
             throw new NotSupportedException(
                 "Cannot use '{$command->getId()}' with redis-cluster."
             );
         }
-
-        $slot = $hash & 0x3FFF;
 
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];

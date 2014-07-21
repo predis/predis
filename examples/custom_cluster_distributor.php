@@ -15,9 +15,10 @@ require __DIR__.'/shared.php';
 // their own distributors used by the client to distribute keys among a cluster
 // of servers.
 
-use Predis\Connection\Aggregate\PredisCluster;
+use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
+use Predis\Connection\Aggregate\PredisCluster;
 
 class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 {
@@ -45,13 +46,36 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
         $this->nodesCount = count($this->nodes);
     }
 
-    public function get($key)
+    public function getSlot($hash)
     {
-        if (0 === $count = $this->nodesCount) {
+        return $this->nodesCount > 1 ? abs($hash % $this->nodesCount) : 0;
+    }
+
+    public function getBySlot($slot)
+    {
+        if (isset($this->nodes[$slot])) {
+            return $this->nodes[$slot];
+        }
+    }
+
+    public function getByHash($hash)
+    {
+        if (!$this->nodesCount) {
             throw new RuntimeException('No connections.');
         }
 
-        return $this->nodes[$count > 1 ? abs($key % $count) : 0];
+        $slot = $this->getSlot($hash);
+        $node = $this->getBySlot($slot);
+
+        return $node;
+    }
+
+    public function get($value)
+    {
+        $hash = $this->hash($value);
+        $node = $this->getByHash($hash);
+
+        return $node;
     }
 
     public function hash($value)
@@ -68,7 +92,8 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 $options = array(
     'cluster' => function () {
         $distributor = new NaiveDistributor();
-        $cluster = new PredisCluster($distributor);
+        $strategy = new PredisStrategy($distributor);
+        $cluster = new PredisCluster($strategy);
 
         return $cluster;
     },
@@ -83,6 +108,11 @@ for ($i = 0; $i < 100; $i++) {
 
 $server1 = $client->getClientFor('first')->info();
 $server2 = $client->getClientFor('second')->info();
+
+if (isset($server1['Keyspace'], $server2['Keyspace'])) {
+    $server1 = $server1['Keyspace'];
+    $server2 = $server2['Keyspace'];
+}
 
 printf("Server '%s' has %d keys while server '%s' has %d keys.\n",
     'first', $server1['db15']['keys'], 'second', $server2['db15']['keys']

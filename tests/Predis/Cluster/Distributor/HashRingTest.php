@@ -55,16 +55,11 @@ class HashRingTest extends PredisDistributorTestCase
      */
     public function testMultipleNodesInRing()
     {
-        $nodes = array(
+        $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        );
-
-        $ring = $this->getDistributorInstance();
-        foreach ($nodes as $node) {
-            $ring->add($node);
-        }
+        ));
 
         $expected = array(
             '127.0.0.1:7001',
@@ -131,13 +126,82 @@ class HashRingTest extends PredisDistributorTestCase
     }
 
     /**
-     * @todo This tests should be moved in Predis\Cluster\Distributor\DistributorTestCase
+     * @group disconnected
+     */
+    public function testGetByValue()
+    {
+        $ring = $this->getSampleDistribution(array(
+            '127.0.0.1:7000',
+            '127.0.0.1:7001',
+            '127.0.0.1:7002',
+        ));
+
+        $this->assertSame('127.0.0.1:7001', $ring->get('uid:256'));
+        $this->assertSame('127.0.0.1:7001', $ring->get('uid:281'));
+        $this->assertSame('127.0.0.1:7000', $ring->get('uid:312'));
+        $this->assertSame('127.0.0.1:7001', $ring->get('uid:432'));
+        $this->assertSame('127.0.0.1:7002', $ring->get('uid:500'));
+        $this->assertSame('127.0.0.1:7000', $ring->get('uid:641'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetByHash()
+    {
+        $ring = $this->getSampleDistribution(array(
+            '127.0.0.1:7000',
+            '127.0.0.1:7001',
+            '127.0.0.1:7002',
+        ));
+
+        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ? -1249390087 : 3045577209)); // uid:256
+        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ? -1639106025 : 2655861271)); // uid:281
+        $this->assertSame('127.0.0.1:7000', $ring->getByHash(PHP_INT_SIZE == 4 ?  -683361581 : 3611605715)); // uid:312
+        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ?  -532820268 : 3762147028)); // uid:432
+        $this->assertSame('127.0.0.1:7002', $ring->getByHash(PHP_INT_SIZE == 4 ?   618436108 :  618436108)); // uid:500
+        $this->assertSame('127.0.0.1:7000', $ring->getByHash(PHP_INT_SIZE == 4 ?   905043399 :  905043399)); // uid:641
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetBySlot()
+    {
+        $ring = $this->getSampleDistribution(array(
+            '127.0.0.1:7000',
+            '127.0.0.1:7001',
+            '127.0.0.1:7002',
+        ));
+
+/*
+$hash = $ring->hash('uid:641');
+$slot32 = $ring->getSlot($hash);
+$slot64 = sprintf("%u", $slot32 & 0xffffffff);
+echo "32: $slot32 - 64: $slot64\n";
+exit();
+*/
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1255075679 : 3039891617)); // uid:256
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1642314910 : 2652652386)); // uid:281
+        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -687739295 : 3607228001)); // uid:312
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -544842345 : 3750124951)); // uid:432
+        $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ?   609245004 :  609245004)); // uid:500
+        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ?   902549909 :  902549909)); // uid:641
+
+        // Test first and last slots
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -2096102881 : 2198864415));
+        $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ?  2146453549 : 2146453549));
+
+        // Test non-existing slot
+        $this->assertNull($ring->getBySlot(0));
+    }
+
+    /**
      * @group disconnected
      */
     public function testCallbackToGetNodeHash()
     {
         $node = '127.0.0.1:7000';
-        $replicas = HashRing::DEFAULT_REPLICAS;
         $callable = $this->getMock('stdClass', array('__invoke'));
 
         $callable->expects($this->once())
@@ -145,9 +209,9 @@ class HashRingTest extends PredisDistributorTestCase
                  ->with($node)
                  ->will($this->returnValue($node));
 
-        $ring = new HashRing($replicas, $callable);
-        $ring->add($node);
+        $distributor = new HashRing(HashRing::DEFAULT_REPLICAS, $callable);
+        $distributor->add($node);
 
-        $this->getNodes($ring);
+        $this->getNodes($distributor);
     }
 }

@@ -11,19 +11,48 @@
 
 namespace Predis\Cluster;
 
+use Predis\NotSupportedException;
+use Predis\Cluster\Hash\HashGeneratorInterface;
+use Predis\Cluster\Hash\CRC16;
+
 /**
  * Default class used by Predis to calculate hashes out of keys of
  * commands supported by redis-cluster.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisStrategy extends PredisStrategy
+class RedisStrategy extends ClusterStrategy
 {
+    protected $hashGenerator;
+
     /**
-     *
+     * @param HashGeneratorInterface $hashGenerator Hash generator instance.
      */
     public function __construct(HashGeneratorInterface $hashGenerator = null)
     {
-        parent::__construct($hashGenerator ?: new Hash\CRC16());
+        parent::__construct();
+
+        $this->hashGenerator = $hashGenerator ?: new CRC16();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSlotByKey($key)
+    {
+        $key  = $this->extractKeyTag($key);
+        $slot = $this->hashGenerator->hash($key) & 0x3FFF;
+
+        return $slot;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDistributor()
+    {
+        throw new NotSupportedException(
+            'This cluster strategy does not provide an external distributor'
+        );
     }
 }

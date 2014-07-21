@@ -37,12 +37,37 @@ interface DistributorInterface
     public function remove($node);
 
     /**
-     * Returns a node from the distributor using the computed hash of a key.
+     * Returns the corresponding slot of a node from the distributor using the
+     * computed hash of a key.
      *
      * @param  mixed $key
      * @return mixed
      */
-    public function get($key);
+    public function getSlot($hash);
+
+    /**
+     * Returns a node from the distributor using its assigned slot ID.
+     *
+     * @param  mixed $key
+     * @return mixed
+     */
+    public function getBySlot($slot);
+
+    /**
+     * Returns a node from the distributor using the computed hash of a key.
+     *
+     * @param  mixed $hash
+     * @return mixed
+     */
+    public function getByHash($hash);
+
+    /**
+     * Returns a node from the distributor mapping to the specified value.
+     *
+     * @param  string $value
+     * @return mixed
+     */
+    public function get($value);
 
     /**
      * Returns the underlying hash generator instance.
