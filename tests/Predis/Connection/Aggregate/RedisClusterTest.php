@@ -680,25 +680,23 @@ class RedisClusterTest extends PredisTestCase
     {
         $cmdGET = Command\RawCommand::create('GET', 'node:1001');
         $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
-
-        $cmdCLUSTER = Command\RawCommand::create('CLUSTER', 'SLOTS');
         $rspSlotsArray = array(
             array(0   ,  8191, array('127.0.0.1', 6379)),
             array(8192, 16383, array('127.0.0.1', 6380)),
         );
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
-        $connection1->expects($this->at(2))
+        $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($cmdGET)
                     ->will($this->returnValue($rspMOVED));
-        $connection1->expects($this->at(3))
-                    ->method('executeCommand')
-                    ->with($cmdCLUSTER)
-                    ->will($this->returnValue($rspSlotsArray));
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
-        $connection2->expects($this->once())
+        $connection2->expects($this->at(0))
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand('CLUSTER', array('SLOTS')))
+                    ->will($this->returnValue($rspSlotsArray));
+        $connection2->expects($this->at(2))
                     ->method('executeCommand')
                     ->with($cmdGET)
                     ->will($this->returnValue('foobar'));
