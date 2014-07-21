@@ -74,14 +74,4 @@ class MultiBulk extends MultiBulkIterator
     {
         return $this->connection->read();
     }
-
-    /**
-     * Returns an iterator that reads a multi-bulk response as a list of tuples.
-     *
-     * @return MultiBulkTuple
-     */
-    public function asTuple()
-    {
-        return new MultiBulkTuple($this);
-    }
 }

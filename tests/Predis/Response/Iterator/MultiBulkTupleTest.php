@@ -56,7 +56,9 @@ class MultiBulkTupleTest extends PredisTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $this->assertInstanceOf('OuterIterator', $iterator = $client->zrange('metavars', 0, -1, 'withscores')->asTuple());
+        $iterator = new MultiBulkTuple($client->zrange('metavars', 0, -1, 'withscores'));
+
+        $this->assertInstanceOf('OuterIterator', $iterator);
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator);
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator->getInnerIterator());
         $this->assertTrue($iterator->valid());
@@ -85,7 +87,7 @@ class MultiBulkTupleTest extends PredisTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = $client->zrange('metavars', 0, -1, 'withscores')->asTuple();
+        $iterator = new MultiBulkTuple($client->zrange('metavars', 0, -1, 'withscores'));
 
         unset($iterator);
 

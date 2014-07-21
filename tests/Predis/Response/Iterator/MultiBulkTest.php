@@ -52,18 +52,6 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIterableMultibulkCanBeWrappedAsTupleIterator()
-    {
-        $client = $this->getClient();
-        $client->mset('foo', 'bar', 'hoge', 'piyo');
-
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator = $client->mget('foo', 'bar'));
-        $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator->asTuple());
-    }
-
-    /**
-     * @group connected
-     */
     public function testDropWithFalseConsumesResponseFromUnderlyingConnection()
     {
         $client = $this->getClient();
