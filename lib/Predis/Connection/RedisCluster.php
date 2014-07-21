@@ -46,7 +46,7 @@ use Predis\Command\RawCommand;
  */
 class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Countable
 {
-    private $askClusterNodes = false;
+    private $askClusterNodes = true;
     private $defaultParameters = array();
     private $pool = array();
     private $slots = array();
