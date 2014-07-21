@@ -22,9 +22,9 @@ on the online [wiki](https://github.com/nrk/predis/wiki).
 
 - Wide range of Redis versions supported (from __1.2__ to __3.0__ and __unstable__) using profiles.
 - Clustering via client-side sharding using consistent hashing or custom distributors.
-- Smart support for [redis-cluster](http://redis.io/topics/cluster-spec) (Redis >= 3.0).
+- Smart support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication configurations (write on master, read from slaves).
-- Transparent key prefixing for all Redis commands.
+- Transparent key prefixing for all known Redis commands.
 - Command pipelining (works on both single and aggregate connections).
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
 - Abstraction for Lua scripting (Redis >= 2.6) with automatic switching between `EVALSHA` or `EVAL`.
@@ -179,6 +179,70 @@ __NOTE__: the method `transaction()` is available since `v0.8.5`, older versions
 for the same purpose but it has been deprecated and will be removed in the next major release.
 
 
+### Adding new Redis commands ###
+
+While we try to update Predis to stay up to date with all the commands available in Redis, you might
+prefer to stick with an older version of the library or provide a different way to filter arguments
+or parse responses for specific commands. To achieve that, Predis provides the ability to implement
+new command classes to define or override commands in the server profiles used by the client:
+
+```php
+// Define a new command by extending Predis\Command\AbstractCommand:
+class BrandNewRedisCommand extends Predis\Command\AbstractCommand
+{
+    public function getId()
+    {
+        return 'NEWCMD';
+    }
+}
+
+// Inject your command in the current profile:
+$client = new Predis\Client();
+$client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
+
+$response = $client->newcmd();
+```
+
+
+### Script commands ###
+
+While it is possible to leverage [Lua scripting](http://redis.io/commands/eval) on Redis 2.6+ using
+[EVAL](http://redis.io/commands/eval) and [EVALSHA](http://redis.io/commands/evalsha), Predis offers
+script commands as an higher level abstraction aiming to make things simple. Script commands can be
+registered in the server profile used by the client and are accessible as if they were plain Redis
+commands, but they define a Lua script that gets transmitted to the server for remote execution.
+Internally they use [EVALSHA](http://redis.io/commands/evalsha) by default and identify a Lua script
+by its SHA1 hash to save bandwidth, but [EVAL](http://redis.io/commands/eval) is automatically used
+as a fall back when needed:
+
+```php
+// Define a new scriptable command by extending Predis\Command\ScriptedCommand:
+class ListPushRandomValue extends Predis\Command\ScriptedCommand
+{
+    public function getKeysCount()
+    {
+        return 1;
+    }
+
+    public function getScript()
+    {
+        return <<<LUA
+math.randomseed(ARGV[1])
+local rnd = tostring(math.random())
+redis.call('lpush', KEYS[1], rnd)
+return rnd
+LUA;
+    }
+}
+
+// Inject your scriptable command in the current profile:
+$client = new Predis\Client();
+$client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
+
+$response = $client->lpushrand('random_values', $seed = mt_rand());
+```
+
+
 ### Customizable connection backends ###
 
 Predis can use different connection backends to connect to Redis. Two of them leverage a third party
@@ -213,69 +277,6 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 
 For a more in-depth insight on how to create new connection backends you can refer to the actual
 implementation of the standard connection classes available in the `Predis\Connection` namespace.
-
-
-### Adding support for new commands ###
-
-While we try to update Predis to stay up to date with all the commands available in Redis, you might
-prefer to stick with an older version of the library or provide a different way to filter arguments
-or parse responses for specific commands. To achieve that, Predis provides the ability to implement
-new command classes to define or override commands in the server profiles used by the client:
-
-```php
-// Define a new command by extending Predis\Command\AbstractCommand:
-class BrandNewRedisCommand extends Predis\Command\AbstractCommand
-{
-    public function getId()
-    {
-        return 'NEWCMD';
-    }
-}
-
-// Inject your command in the current profile:
-$client = new Predis\Client();
-$client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
-
-$response = $client->newcmd();
-```
-
-
-### Scriptable commands ###
-
-A scriptable command is just an abstraction for [Lua scripting](http://redis.io/commands/eval) that
-aims to simplify the usage of scripting with Redis >= 2.6. Scriptable commands can be registered in
-the server profile used by the client and are accessible as if they were plain Redis commands, but
-they define a Lua script that gets transmitted to Redis for remote execution. Internally, scriptable
-commands use by default [EVALSHA](http://redis.io/commands/evalsha) and identify a Lua script by its
-SHA1 hash to save bandwidth but [EVAL](http://redis.io/commands/eval) is automatically preferred as
-a fall back when needed:
-
-```php
-// Define a new scriptable command by extending Predis\Command\ScriptedCommand:
-class ListPushRandomValue extends Predis\Command\ScriptedCommand
-{
-    public function getKeysCount()
-    {
-        return 1;
-    }
-
-    public function getScript()
-    {
-        return <<<LUA
-math.randomseed(ARGV[1])
-local rnd = tostring(math.random())
-redis.call('lpush', KEYS[1], rnd)
-return rnd
-LUA;
-    }
-}
-
-// Inject your scriptable command in the current profile:
-$client = new Predis\Client();
-$client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
-
-$response = $client->lpushrand('random_values', $seed = mt_rand());
-```
 
 
 ## Development ##
