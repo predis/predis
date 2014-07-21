@@ -49,7 +49,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  */
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
-    private $askSlotsMap = true;
+    private $useClusterSlots = true;
     private $defaultParameters = array();
     private $pool = array();
     private $slots = array();
@@ -409,7 +409,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $connection = $this->createConnection($connectionID);
         }
 
-        if ($this->askSlotsMap) {
+        if ($this->useClusterSlots) {
             $this->askSlotsMap($connection);
         }
 
@@ -523,9 +523,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @param bool $value Enable or disable the use of CLUSTER SLOTS.
      */
-    public function enableAutoSlotsMap($value)
+    public function useClusterSlots($value)
     {
-        $this->askSlotsMap = (bool) $value;
+        $this->useClusterSlots = (bool) $value;
     }
 
     /**

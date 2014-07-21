@@ -422,7 +422,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2->expects($this->never())->method('writeRequest');
 
         $cluster = new RedisCluster();
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -443,7 +443,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2->expects($this->once())->method('readResponse')->with($command);
 
         $cluster = new RedisCluster();
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -503,7 +503,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -547,7 +547,7 @@ class RedisClusterTest extends PredisTestCase
                 ->will($this->returnValue($connection3));
 
         $cluster = new RedisCluster($factory);
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -581,7 +581,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -622,7 +622,7 @@ class RedisClusterTest extends PredisTestCase
                 ->will($this->returnValue($connection3));
 
         $cluster = new RedisCluster($factory);
-        $cluster->enableAutoSlotsMap(false);
+        $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
