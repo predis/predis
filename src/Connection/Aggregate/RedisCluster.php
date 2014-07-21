@@ -49,7 +49,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  */
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
-    private $askSlotsMap = false;
+    private $askSlotsMap = true;
     private $defaultParameters = array();
     private $pool = array();
     private $slots = array();

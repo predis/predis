@@ -422,6 +422,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2->expects($this->never())->method('writeRequest');
 
         $cluster = new RedisCluster();
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -442,6 +443,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2->expects($this->once())->method('readResponse')->with($command);
 
         $cluster = new RedisCluster();
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -501,6 +503,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -544,6 +547,7 @@ class RedisClusterTest extends PredisTestCase
                 ->will($this->returnValue($connection3));
 
         $cluster = new RedisCluster($factory);
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -577,6 +581,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory);
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -617,6 +622,7 @@ class RedisClusterTest extends PredisTestCase
                 ->will($this->returnValue($connection3));
 
         $cluster = new RedisCluster($factory);
+        $cluster->enableAutoSlotsMap(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -665,6 +671,49 @@ class RedisClusterTest extends PredisTestCase
         $cluster->askSlotsMap();
 
         $this->assertSame($cluster->getConnectionBySlot('6144'), $connection1);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAskSlotsMapToRedisClusterOnMovedResponseByDefault()
+    {
+        $cmdGET = Command\RawCommand::create('GET', 'node:1001');
+        $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
+
+        $cmdCLUSTER = Command\RawCommand::create('CLUSTER', 'SLOTS');
+        $rspSlotsArray = array(
+            array(0   ,  8191, array('127.0.0.1', 6379)),
+            array(8192, 16383, array('127.0.0.1', 6380)),
+        );
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1->expects($this->at(2))
+                    ->method('executeCommand')
+                    ->with($cmdGET)
+                    ->will($this->returnValue($rspMOVED));
+        $connection1->expects($this->at(3))
+                    ->method('executeCommand')
+                    ->with($cmdCLUSTER)
+                    ->will($this->returnValue($rspSlotsArray));
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($cmdGET)
+                    ->will($this->returnValue('foobar'));
+
+        $factory = $this->getMock('Predis\Connection\Factory');
+        $factory->expects($this->once())
+                ->method('create')
+                ->with(array('host' => '127.0.0.1', 'port' => '6380'))
+                ->will($this->returnValue($connection2));
+
+        $cluster = new RedisCluster($factory);
+        $cluster->add($connection1);
+
+        $this->assertSame('foobar', $cluster->executeCommand($cmdGET));
+        $this->assertSame(2, count($cluster));
     }
 
     /**
