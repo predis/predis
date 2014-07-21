@@ -10,6 +10,11 @@ v0.8.7 (2014-xx-xx)
   to fetch the updated slots map from redis-cluster. This change requires users
   to upgrade Redis nodes to >= 3.0.0b7.
 
+- The updated slots map is now fetched automatically from redis-cluster upon the
+  first `-MOVED` response by default. This change makes it possible to feed the
+  client constructor with only a few nodes of the actual cluster composition,
+  without needing a more complex configuration.
+
 - Implemented support for `PING` in PUB/SUB loop for Redis >= 3.0.0b8.
 
 - The default client-side sharding strategy and the one for redis-cluster now

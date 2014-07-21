@@ -169,14 +169,16 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
     }
 
     /**
-     * Generates the current slots map by fetching the cluster configuration to
-     * one of the nodes by leveraging the CLUSTER SLOTS command.
+     * Generates an updated slots map fetching the cluster configuration using
+     * the CLUSTER NODES command against the specified node or a random one from
+     * the pool.
      *
+     * @param  SingleConnectionInterface $connection Optional connection instance.
      * @return array
      */
-    public function askClusterNodes()
+    public function askClusterNodes(SingleConnectionInterface $connection = null)
     {
-        if (!$connection = $this->getRandomConnection()) {
+        if (!$connection && !$connection = $this->getRandomConnection()) {
             return array();
         }
 
@@ -402,7 +404,7 @@ class RedisCluster implements ClusterConnectionInterface, IteratorAggregate, Cou
         }
 
         if ($this->askClusterNodes) {
-            $this->askClusterNodes();
+            $this->askClusterNodes($connection);
         }
 
         $this->move($connection, $slot);
