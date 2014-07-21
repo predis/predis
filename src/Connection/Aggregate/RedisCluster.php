@@ -29,7 +29,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
  *
  * This connection backend offers smart support for redis-cluster by handling
- * automatic slots map (re)generation upon -MOVE or -ASK responses returned by
+ * automatic slots map (re)generation upon -MOVED or -ASK responses returned by
  * Redis when redirecting a client to a different node.
  *
  * The cluster can be pre-initialized using only a subset of the actual nodes in
@@ -511,7 +511,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * Enables automatic fetching of the current slots map from one of the nodes
      * using the CLUSTER NODES command. This option is disabled by default but
-     * asking the current slots map to Redis upon -MOVE responses may reduce
+     * asking the current slots map to Redis upon -MOVED responses may reduce
      * overhead by eliminating the trial-and-error nature of the node guessing
      * procedure, mostly when targeting many keys that would end up in a lot of
      * redirections.
