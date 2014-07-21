@@ -25,6 +25,17 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAcceptsCustomConnectionFactory()
+    {
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $cluster = new RedisCluster($factory);
+
+        $this->assertSame($factory, $cluster->getConnectionFactory());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testUsesRedisClusterStrategyByDefault()
     {
         $cluster = new RedisCluster();

@@ -498,6 +498,17 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
+     * Returns the underlying connection factory used to create new connection
+     * instances to Redis nodes indicated by redis-cluster.
+     *
+     * @return FactoryInterface
+     */
+    public function getConnectionFactory()
+    {
+        return $this->connections;
+    }
+
+    /**
      * Enables automatic fetching of the current slots map from one of the nodes
      * using the CLUSTER NODES command. This option is disabled by default but
      * asking the current slots map to Redis upon -MOVE responses may reduce
