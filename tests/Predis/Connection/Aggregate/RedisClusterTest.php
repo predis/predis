@@ -25,10 +25,22 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExposesCommandHashStrategy()
+    public function testUsesRedisClusterStrategyByDefault()
     {
         $cluster = new RedisCluster();
+
         $this->assertInstanceOf('Predis\Cluster\RedisStrategy', $cluster->getClusterStrategy());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAcceptsCustomClusterStrategy()
+    {
+        $strategy = $this->getMock('Predis\Cluster\StrategyInterface');
+        $cluster = new RedisCluster(null, $strategy);
+
+        $this->assertSame($strategy, $cluster->getClusterStrategy());
     }
 
     /**

@@ -16,6 +16,7 @@ use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Predis\NotSupportedException;
+use Predis\Cluster\StrategyInterface;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
@@ -57,12 +58,15 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
 
     /**
-     * @param FactoryInterface $connections Connection factory object.
+     * @param FactoryInterface  $connections Connection factory instance.
+     * @param StrategyInterface $strategy    Cluster strategy instance.
      */
-    public function __construct(FactoryInterface $connections = null)
-    {
-        $this->strategy = new RedisClusterStrategy();
+    public function __construct(
+        FactoryInterface $connections = null,
+        StrategyInterface $strategy = null
+    ) {
         $this->connections = $connections ?: new Factory();
+        $this->strategy = $strategy ?: new RedisClusterStrategy();
     }
 
     /**
@@ -486,7 +490,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * Returns the underlying command hash strategy used to hash commands by
      * using keys found in their arguments.
      *
-     * @return \Predis\Cluster\StrategyInterface
+     * @return StrategyInterface
      */
     public function getClusterStrategy()
     {
