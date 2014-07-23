@@ -22,6 +22,11 @@ v0.8.7 (2014-xx-xx)
   aside from the different hashing function used to calculate distribution, is
   in how empty hash tags like {} are treated by redis-cluster.
 
+- __FIX__: the patch applied to fix #180 introduced a regression affecting read/
+  write timeouts in `Predis\Connection\PhpiredisStreamConnection`. Unfortunately
+  the only possible solution requires PHP 5.4+. On PHP 5.3, read/write timeouts
+  will be ignored from now on.
+
 
 v0.8.6 (2014-07-15)
 ================================================================================

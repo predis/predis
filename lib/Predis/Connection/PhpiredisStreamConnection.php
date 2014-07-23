@@ -97,6 +97,52 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
+    {
+        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $flags = STREAM_CLIENT_CONNECT;
+        $socket = null;
+
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+
+        if (isset($parameters->persistent) && $parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+
+        if (!$resource) {
+            $this->onConnectionError(trim($errstr), $errno);
+        }
+
+        if (isset($parameters->read_write_timeout) && function_exists('socket_import_stream')) {
+            $rwtimeout = (float) $parameters->read_write_timeout;
+            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+
+            $timeout = array(
+                'sec'  => $timeoutSeconds = floor($rwtimeout),
+                'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
+            );
+
+            $socket = $socket ?: socket_import_stream($resource);
+            @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
+            @socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+        }
+
+        if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
+            $socket = $socket ?: socket_import_stream($resource);
+            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
+        }
+
+        return $resource;
+    }
+
+    /**
      * Initializes the protocol reader resource.
      */
     protected function initializeReader()

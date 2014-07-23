@@ -76,7 +76,7 @@ class StreamConnection extends AbstractConnection
      * @param  ConnectionParametersInterface $parameters Parameters used to initialize the connection.
      * @return resource
      */
-    private function tcpStreamInitializer(ConnectionParametersInterface $parameters)
+    protected function tcpStreamInitializer(ConnectionParametersInterface $parameters)
     {
         $uri = "tcp://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
