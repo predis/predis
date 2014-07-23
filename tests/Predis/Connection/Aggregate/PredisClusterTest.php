@@ -279,7 +279,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new PredisCluster();
         $cluster->add($connection1);
         $cluster->add($connection2);
 
