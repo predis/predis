@@ -286,12 +286,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates a Redis command with the specified arguments and sends a request
-     * to the server.
-     *
-     * @param  string $commandID Command ID.
-     * @param  array  $arguments Arguments for the command.
-     * @return mixed
+     * {@inheritdoc}
      */
     public function __call($commandID, $arguments)
     {
