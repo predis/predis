@@ -10,6 +10,8 @@ v1.0.0 (201x-xx-xx)
 - Added `SENTINEL` to the profile for Redis 2.6 and `PUBSUB` to the profile for
   Redis 2.8.
 
+- The client can now send raw commands using `Predis\Client::executeRaw()`.
+
 - Status responses are returned as instances of `Predis\Response\Status`, for
   example +OK is not returned as boolean TRUE anymore which is a breaking change
   for those using strict comparisons. Status responses can be casted to string
@@ -20,6 +22,11 @@ v1.0.0 (201x-xx-xx)
   `WITHSCORE` return a named array of member => score instead of an array of
   [member, score] elements. Insertion order is preserved anyway due to how PHP
   works internally.
+
+- The rules for redis-cluster are now leveraged for empty key tags when using
+  client-side sharding, which means that when one or the first occurrence of {}
+  is found in a key it will most likely produce a different hash than previous
+  versions of Predis thus leading to a different partitioning in these cases.
 
 - Invoking `Predis\Client::connect()` when the underlying connection has been
   already established does not throw any exception anymore, now the connection
@@ -33,11 +40,6 @@ v1.0.0 (201x-xx-xx)
   iterator response classes just in case anyone would want to build custom stuff
   at a level lower than the client abstraction (our standard and composable text
   protocol processors still handle them and can be used as an example).
-
-- The `Predis\Option` namespace is now known as `Predis\Configuration` and have
-  a fully-reworked `Options` class with the ability to lazily initialize values
-  using objects that responds to `__invoke()` (not all the kinds of callables)
-  even for custom options defined by the user.
 
 - Changed a couple of options for our transaction abstraction:
 
@@ -62,6 +64,25 @@ v1.0.0 (201x-xx-xx)
 
 - Dropped `Predis\Command\Command::__toString()` (see issue #151).
 
+- The key prefixing logic has been moved from command classes to the key prefix
+  processor. Developers can define or override handlers used to prefix keys, but
+  they can also define the needed logic in their command classes by implementing
+  `Predis\Command\PrefixableCommandInterface` just like before.
+
+- All of the interfaces and classes related to translated Redis response types
+  have been moved in the new `Predis\Response` namespace and most of them have
+  been renamed to make their fully-qualified name less redundant. Now the base
+  response interface is `Predis\Response\ResponseInterface`.
+
+- Renamed interface `Predis\Command\Processor\CommandProcessorInterface` to a
+  shorter `Predis\Command\Processor\ProcessorInterface`. Also removed interface
+  for chain processors since it is basically useless.
+
+- The `Predis\Option` namespace is now known as `Predis\Configuration` and have
+  a fully-reworked `Options` class with the ability to lazily initialize values
+  using objects that responds to `__invoke()` (not all the kinds of callables)
+  even for custom options defined by the user.
+
 - Renamed `Predis\Connection\ConnectionInterface::writeCommand()` into
   `writeRequest()` for consistency with its counterpart, `readResponse()`.
 
@@ -81,35 +102,14 @@ v1.0.0 (201x-xx-xx)
   its constructor accepts only named arrays, but instances can still be created
   using both URIs or arrays using the static method `Parameters::create()`.
 
+- The profile factory code has been extracted from the abstract Redis profile
+  class and now lives in `Predis\Profile\Factory`.
+
 - The `Predis\Connection` namespace has been completely reorganized by renaming
   a few classes and interfaces and adding some sub-namespaces.
 
 - Most classes and interfaces in the `Predis\Protocol` namespace have been moved
   or renamed while rationalizing the whole API for external protocol processors.
-
-- All of the interfaces and classes related to translated Redis response types
-  have been moved in the new `Predis\Response` namespace and most of them have
-  been renamed to make their fully-qualified name less redundant. Now the base
-  response interface is `Predis\Response\ResponseInterface`.
-
-- The profile factory code has been extracted from the abstract Redis profile
-  class and now lives in `Predis\Profile\Factory`.
-
-- The key prefixing logic has been moved from command classes to the key prefix
-  processor. Developers can define or override handlers used to prefix keys, but
-  they can also define the needed logic in their command classes by implementing
-  `Predis\Command\PrefixableCommandInterface` just like before.
-
-- The rules for redis-cluster are now leveraged for empty key tags when using
-  client-side sharding, which means that when one or the first occurrence of {}
-  is found in a key it will most likely produce a different hash than previous
-  versions of Predis thus leading to a different partitioning in these cases.
-
-- Renamed interface `Predis\Command\Processor\CommandProcessorInterface` to a
-  shorter `Predis\Command\Processor\ProcessorInterface`. Also removed interface
-  for chain processors since it is basically useless.
-
-- The client can now send raw commands using `Predis\Client::executeRaw()`.
 
 
 v0.8.6 (2014-07-15)
