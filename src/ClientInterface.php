@@ -17,12 +17,12 @@ use Predis\Connection\ConnectionInterface;
 use Predis\Profile\ProfileInterface;
 
 /**
- * Interface defining the most important methods needed to create an high-level
- * Redis client that can interact with other building blocks of Predis.
+ * Interface defining an high-level Redis client that can interact with other
+ * building blocks of Predis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ClientInterface extends BasicClientInterface
+interface ClientInterface
 {
     /**
      * Returns the server profile used by the client.
@@ -63,6 +63,14 @@ interface ClientInterface extends BasicClientInterface
      * @return CommandInterface
      */
     public function createCommand($method, $arguments = array());
+
+    /**
+     * Executes the specified Redis command.
+     *
+     * @param  CommandInterface $command Command instance.
+     * @return mixed
+     */
+    public function executeCommand(CommandInterface $command);
 
     /**
      * Creates a Redis command with the specified arguments and sends a request

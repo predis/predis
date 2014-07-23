@@ -14,7 +14,6 @@ namespace Predis\Transaction;
 use Exception;
 use InvalidArgumentException;
 use SplQueue;
-use Predis\BasicClientInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\CommunicationException;
@@ -32,7 +31,7 @@ use Predis\Protocol\ProtocolException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiExec implements BasicClientInterface, ExecutableContextInterface
+class MultiExec implements ExecutableContextInterface
 {
     private $state;
 

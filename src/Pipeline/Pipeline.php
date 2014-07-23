@@ -14,7 +14,6 @@ namespace Predis\Pipeline;
 use Exception;
 use InvalidArgumentException;
 use SplQueue;
-use Predis\BasicClientInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\ExecutableContextInterface;
@@ -31,7 +30,7 @@ use Predis\Response\ServerException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Pipeline implements BasicClientInterface, ExecutableContextInterface
+class Pipeline implements ExecutableContextInterface
 {
     private $client;
     private $pipeline;
