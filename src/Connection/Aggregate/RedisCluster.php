@@ -62,10 +62,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * @param StrategyInterface $strategy    Cluster strategy instance.
      */
     public function __construct(
-        FactoryInterface $connections = null,
+        FactoryInterface $connections,
         StrategyInterface $strategy = null
     ) {
-        $this->connections = $connections ?: new Factory();
+        $this->connections = $connections;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
     }
 

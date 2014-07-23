@@ -38,7 +38,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testUsesRedisClusterStrategyByDefault()
     {
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
 
         $this->assertInstanceOf('Predis\Cluster\RedisStrategy', $cluster->getClusterStrategy());
     }
@@ -49,7 +49,8 @@ class RedisClusterTest extends PredisTestCase
     public function testAcceptsCustomClusterStrategy()
     {
         $strategy = $this->getMock('Predis\Cluster\StrategyInterface');
-        $cluster = new RedisCluster(null, $strategy);
+
+        $cluster = new RedisCluster(new Connection\Factory(), $strategy);
 
         $this->assertSame($strategy, $cluster->getClusterStrategy());
     }
@@ -62,7 +63,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -80,7 +81,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6371');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -97,7 +98,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -115,7 +116,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);
@@ -159,7 +160,7 @@ class RedisClusterTest extends PredisTestCase
                         return $connect2;
                     }));
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -187,7 +188,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection2->expects($this->once())->method('disconnect');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -209,7 +210,7 @@ class RedisClusterTest extends PredisTestCase
                     ->method('isConnected')
                     ->will($this->returnValue(true));
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -231,7 +232,7 @@ class RedisClusterTest extends PredisTestCase
                     ->method('isConnected')
                     ->will($this->returnValue(false));
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -246,7 +247,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -266,7 +267,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);
@@ -292,7 +293,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
 
         $cluster->setSlots(0, 4095, '127.0.0.1:6379');
@@ -311,7 +312,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -338,7 +339,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-10921');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10922-16383');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);
@@ -363,7 +364,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);
@@ -387,7 +388,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);
@@ -421,7 +422,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection2->expects($this->never())->method('writeRequest');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -442,7 +443,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection2->expects($this->once())->method('readResponse')->with($command);
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->useClusterSlots(false);
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -460,7 +461,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
 
@@ -723,7 +724,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $ping = Profile\Factory::getDefault()->createCommand('ping');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($this->getMockConnection('tcp://127.0.0.1:6379'));
 
         $cluster->getConnection($ping);
@@ -738,7 +739,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=1365-2729');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=2730-4095');
 
-        $cluster = new RedisCluster();
+        $cluster = new RedisCluster(new Connection\Factory());
         $cluster->add($connection1);
         $cluster->add($connection2);
         $cluster->add($connection3);

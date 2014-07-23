@@ -47,7 +47,14 @@ class ClusterOptionTest extends PredisTestCase
     public function testAcceptsPredefinedShortNameString()
     {
         $option = new ClusterOption();
+
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options->expects($this->any())
+                ->method('__get')
+                ->with('connections')
+                ->will($this->returnValue(
+                    $this->getMock('Predis\Connection\FactoryInterface')
+                ));
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis'));
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis-cluster'));
