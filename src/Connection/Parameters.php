@@ -29,14 +29,6 @@ class Parameters implements ParametersInterface
         'timeout' => 5.0,
     );
 
-    private static $casters = array(
-        'port' => 'self::castInteger',
-        'async_connect' => 'self::castBoolean',
-        'persistent' => 'self::castBoolean',
-        'timeout' => 'self::castFloat',
-        'read_write_timeout' => 'self::castFloat',
-    );
-
     /**
      * @param array $parameters Named array of connection parameters.
      */
@@ -53,16 +45,6 @@ class Parameters implements ParametersInterface
     protected function getDefaults()
     {
         return self::$defaults;
-    }
-
-    /**
-     * Returns cast functions for user-supplied parameter values.
-     *
-     * @return array
-     */
-    protected function getValueCasters()
-    {
-        return self::$casters;
     }
 
     /**
@@ -114,50 +96,9 @@ class Parameters implements ParametersInterface
      * @param  array $parameters Connection parameters.
      * @return array
      */
-    private function filter(array $parameters)
+    protected function filter(array $parameters)
     {
-        if ($parameters) {
-            $casters = array_intersect_key($this->getValueCasters(), $parameters);
-
-            foreach ($casters as $parameter => $caster) {
-                $parameters[$parameter] = call_user_func($caster, $parameters[$parameter]);
-            }
-        }
-
         return $parameters ?: array();
-    }
-
-    /**
-     * Validates value as boolean.
-     *
-     * @param  mixed   $value Input value.
-     * @return boolean
-     */
-    private static function castBoolean($value)
-    {
-        return (bool) $value;
-    }
-
-    /**
-     * Validates value as float.
-     *
-     * @param  mixed $value Input value.
-     * @return float
-     */
-    private static function castFloat($value)
-    {
-        return (float) $value;
-    }
-
-    /**
-     * Validates value as integer.
-     *
-     * @param  mixed $value Input value.
-     * @return int
-     */
-    private static function castInteger($value)
-    {
-        return (int) $value;
     }
 
     /**

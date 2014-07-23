@@ -41,6 +41,11 @@ v1.0.0 (201x-xx-xx)
   at a level lower than the client abstraction (our standard and composable text
   protocol processors still handle them and can be used as an example).
 
+- Simplified the implementation of connection parameters by removing method used
+  to cast to int / bool / float certain parameters supplied by users. Casting
+  values, if deemed necessary, should be done by the consumer or you can just
+  subclass `Predis\Connection\Parameters` and override the `filter()` method.
+
 - Changed a couple of options for our transaction abstraction:
 
     - `exceptions`: overrides the value of the client option with the same name.

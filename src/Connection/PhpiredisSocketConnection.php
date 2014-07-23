@@ -204,7 +204,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         }
 
         if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = (float) $parameters->read_write_timeout;
             $timeoutSec = floor($rwtimeout);
             $timeoutUsec = ($rwtimeout - $timeoutSec) * 1000000;
 
@@ -264,7 +264,7 @@ class PhpiredisSocketConnection extends AbstractConnection
 
         socket_set_nonblock($socket);
 
-        if (@socket_connect($socket, $host, $parameters->port) === false) {
+        if (@socket_connect($socket, $host, (int) $parameters->port) === false) {
             $error = socket_last_error();
 
             if ($error != SOCKET_EINPROGRESS && $error != SOCKET_EALREADY) {
@@ -277,7 +277,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         $null = null;
         $selectable = array($socket);
 
-        $timeout = $parameters->timeout;
+        $timeout = (float) $parameters->timeout;
         $timeoutSecs = floor($timeout);
         $timeoutUSecs = ($timeout - $timeoutSecs) * 1000000;
 

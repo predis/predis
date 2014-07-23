@@ -69,23 +69,23 @@ class StreamConnection extends AbstractConnection
         $uri = "tcp://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if (isset($parameters->async_connect) && $parameters->async_connect) {
+        if (isset($parameters->async_connect) && (bool) $parameters->async_connect) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
 
-        if (isset($parameters->persistent) && $parameters->persistent) {
+        if (isset($parameters->persistent) && (bool) $parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
             $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
         }
 
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
         }
 
         if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = $parameters->read_write_timeout;
+            $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
             $timeoutSeconds  = floor($rwtimeout);
             $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
@@ -111,11 +111,11 @@ class StreamConnection extends AbstractConnection
         $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if ($parameters->persistent) {
+        if ((bool) $parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
-        $resource = @stream_socket_client($uri, $errno, $errstr, $parameters->timeout, $flags);
+        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
