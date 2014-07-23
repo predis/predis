@@ -84,10 +84,7 @@ class PhpiredisStreamConnection extends StreamConnection
     }
 
     /**
-     * Initializes a TCP stream resource.
-     *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
-     * @return resource
+     * {@inheritdoc}
      */
     protected function tcpStreamInitializer(ParametersInterface $parameters)
     {
