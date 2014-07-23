@@ -14,7 +14,9 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 
 /**
- * Connection parameters used to initialize connections to Redis.
+ * Container for connection parameters used to initialize connections to Redis.
+ *
+ * {@inheritdoc}
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

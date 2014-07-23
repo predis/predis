@@ -36,6 +36,8 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  * abstractions are built. Internally it aggregates various other classes each
  * one with its own responsibility and scope.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Client implements ClientInterface

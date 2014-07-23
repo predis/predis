@@ -15,6 +15,8 @@ namespace Predis\Configuration;
  * Manages Predis options with filtering, conversion and lazy initialization of
  * values using a mini-DI container approach.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Options implements OptionsInterface

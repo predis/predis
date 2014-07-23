@@ -12,7 +12,7 @@
 namespace Predis\Connection;
 
 /**
- * Interface for classes providing their own logic for connection parameters.
+ * Interface defining a container for connection parameters.
  *
  * The actual list of connection parameters depends on the features supported by
  * each connection backend class (please refer to their specific documentation),
