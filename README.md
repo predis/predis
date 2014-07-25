@@ -158,7 +158,7 @@ $parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
 $options    = ['replication' => function () {
     $strategy = new Predis\Replication\ReplicationStrategy();
 
-    // This exact script won't trigger a switch from slave to the master node.
+    // This exact script won't trigger a switch from a slave to the master node.
     $strategy->setScriptReadOnly($READONLY_LUA_SCRIPT);
 
     return new Predis\Connection\Aggregate\MasterSlaveReplication($strategy);
@@ -260,7 +260,7 @@ $client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
 $response = $client->newcmd();
 ```
 
-hTere is also a method to allow sending raw commands without filtering their arguments or parsing
+There is also a method to allow sending raw commands without filtering their arguments or parsing
 responses. Users must provide the arguments list as an array, following the command signatures as
 defined by the [Redis documentation for commands](http://redis.io/commands):
 
