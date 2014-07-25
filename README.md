@@ -133,7 +133,7 @@ backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial). 
 Predis can handle single-master and multiple-slaves setups by executing read operations on slaves
 and switching to the master for write operations. The replication behavior is fully configurable.
 
-## Replication ##
+#### Replication ####
 
 The client can be configured to work in a master / slave replication setup by executing read-only
 commands on slave nodes and automatically switch to the master node as soon as a command performing
@@ -172,7 +172,7 @@ The `examples` directory contains two complete scripts showing how replication c
 a [simple](examples/replication_simple.php) and a [more complex](examples/replication_complex.php)
 scenario.
 
-## Clustering ##
+#### Clustering ####
 
 Simply passing an array of connection parameters to the client constructor configures Predis to work
 in clustering mode using client-side sharding. If you, on the other hand, want to leverage Redis >=
