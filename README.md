@@ -169,9 +169,9 @@ $client->eval($READONLY_LUA_SCRIPT, 0);             // Sticks to slave using `ev
 $client->evalsha(sha1($READONLY_LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 ```
 
-The `examples` directory contains two complete scripts showing how replication can be configured in
-a [simple](examples/replication_simple.php) and a [more complex](examples/replication_complex.php)
-scenario.
+The `examples` directory contains two complete scripts showing how replication can be configured for
+[simple](examples/replication_simple.php) or [complex](examples/replication_complex.php) scenarios.
+
 
 #### Clustering ####
 
