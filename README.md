@@ -118,7 +118,7 @@ are usually lazily initialized only when needed. Predis by default supports the 
   - `prefix`: a prefix string that is automatically applied to keys found in commands.
   - `exceptions`: whether the client should throw or return responses upon Redis errors.
   - `connections`: connection backends or a connection factory to be used by the client.
-  - `cluster`: which backend to use for clustering (predis, redis or custom configuration).
+  - `cluster`: which backend to use for clustering (`predis`, `redis` or custom configuration).
   - `replication`: which backend to use for replication (predis or custom configuration).
 
 Users can provide custom option values, they are stored in the options container and can be accessed
@@ -131,7 +131,67 @@ Predis is able to aggregate multiple connections which is the base for clusterin
 By default the client implements clustering using either client-side sharding (default) or a Redis
 backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial). As for replication,
 Predis can handle single-master and multiple-slaves setups by executing read operations on slaves
-and switching to the master for write operations. The replication behaviour is fully configurable.
+and switching to the master for write operations. The replication behavior is fully configurable.
+
+#### Replication ####
+
+The client can be configured to work in a master / slave replication setup by executing read-only
+commands on slave nodes and automatically switch to the master node as soon as a command performing
+a write operation is executed. This is the basic configuration needed work with replication:
+
+```php
+// Parameters require one master node specifically marked with `alias=master`.
+$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
+$options    = ['replication' => true];
+
+$client = new Predis\Client($parameters, $options);
+```
+
+While Predis is able to distinguish commands performing write and read-only operations, `EVAL` and
+`EVALSHA` represent a corner case in which the client switches to the master node because it is not
+able to tell when a Lua script is safe to be executed on slaves. While this is the default behavior,
+when certain Lua scripts do not perform write operations it is possible to provide an hint to tell
+the client to stick with slaves for their execution.
+
+```php
+$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
+$options    = ['replication' => function () {
+    $strategy = new Predis\Replication\ReplicationStrategy();
+
+    // This exact script won't trigger a switch from slave to the master node.
+    $strategy->setScriptReadOnly($READONLY_LUA_SCRIPT);
+
+    return new Predis\Connection\Aggregate\MasterSlaveReplication($strategy);
+}];
+
+$client = new Predis\Client($parameters, $options);
+$client->eval($READONLY_LUA_SCRIPT, 0);             // Sticks to slave using `eval`...
+$client->evalsha(sha1($READONLY_LUA_SCRIPT), 0);    // ... and `evalsha`, too.
+```
+
+The `examples` directory contains two complete scripts showing how replication can be configured for
+[simple](examples/MasterSlaveReplication.php) or [complex](examples/MasterSlaveReplicationComplex.php)
+scenarios.
+
+#### Clustering ####
+
+Simply passing an array of connection parameters to the client constructor configures Predis to work
+in clustering mode using client-side sharding. If you, on the other hand, want to leverage Redis >=
+3.0 nodes coordinated by redis-cluster, then the client must be initialized like this:
+
+```php
+$parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2'];
+$options    = ['cluster' => redis];
+
+$client = new Predis\Client($parameters, $options);
+```
+
+When using redis-cluster, it is not necessary to pass all of the nodes forming your cluster but you
+can simply specify only a few nodes and Predis will automatically fetch the full and updated slots
+map directly from Redis by contacting one of the nodes.
+
+NOTE: our support for redis-cluster does not currently consider master/slave replication but this
+feature will be added in a future release of this library.
 
 
 ### Command pipelines ###
@@ -297,7 +357,7 @@ in production environments or containing data you are interested in!
 
 Predis has a comprehensive test suite covering every aspect of the library. This test suite performs
 integration tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct
-behaviour of the implementation of each command and automatically skips commands not defined in the
+behavior of the implementation of each command and automatically skips commands not defined in the
 specified Redis profile. If you do not have Redis up and running, integration tests can be disabled.
 By default the test suite is configured to execute integration tests using the profile for Redis 2.8
 (which is the current stable version of Redis) but can optionally target a Redis instance built from
