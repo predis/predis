@@ -15,10 +15,8 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Predis\NotSupportedException;
-use Predis\Cluster\PredisStrategy as PredisClusterStrategy;
-use Predis\Cluster\StrategyInterface as ClusterStrategyInterface;
-use Predis\Cluster\Distributor\DistributorInterface;
-use Predis\Cluster\Distributor\HashRing;
+use Predis\Cluster\PredisStrategy;
+use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 
@@ -36,15 +34,13 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $distributor;
 
     /**
-     * @param DistributorInterface $distributor Distributor instance.
+     * @param StrategyInterface $strategy Optional cluster strategy.
      */
-    public function __construct(DistributorInterface $distributor = null)
+    public function __construct(StrategyInterface $strategy = null)
     {
-        $distributor = $distributor ?: new HashRing();
-
         $this->pool = array();
-        $this->strategy = new PredisClusterStrategy($distributor->getHashGenerator());
-        $this->distributor = $distributor;
+        $this->strategy = $strategy ?: new PredisStrategy();
+        $this->distributor = $this->strategy->getDistributor();
     }
 
     /**
@@ -133,15 +129,15 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getConnection(CommandInterface $command)
     {
-        $hash = $this->strategy->getHash($command);
+        $slot = $this->strategy->getSlot($command);
 
-        if (!isset($hash)) {
+        if (!isset($slot)) {
             throw new NotSupportedException(
                 "Cannot use '{$command->getId()}' over clusters of connections."
             );
         }
 
-        $node = $this->distributor->get($hash);
+        $node = $this->distributor->getBySlot($slot);
 
         return $node;
     }
@@ -162,8 +158,8 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getConnectionByKey($key)
     {
-        $hash = $this->strategy->getKeyHash($key);
-        $node = $this->distributor->get($hash);
+        $hash = $this->strategy->getSlotByKey($key);
+        $node = $this->distributor->getBySlot($hash);
 
         return $node;
     }

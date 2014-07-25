@@ -18,7 +18,7 @@ namespace Predis\Command;
  */
 abstract class Command implements CommandInterface
 {
-    private $hash;
+    private $slot;
     private $arguments = array();
 
     /**
@@ -38,7 +38,7 @@ abstract class Command implements CommandInterface
     public function setArguments(array $arguments)
     {
         $this->arguments = $this->filterArguments($arguments);
-        unset($this->hash);
+        unset($this->slot);
     }
 
     /**
@@ -47,7 +47,7 @@ abstract class Command implements CommandInterface
     public function setRawArguments(array $arguments)
     {
         $this->arguments = $arguments;
-        unset($this->hash);
+        unset($this->slot);
     }
 
     /**
@@ -71,18 +71,18 @@ abstract class Command implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function setHash($hash)
+    public function setSlot($slot)
     {
-        $this->hash = $hash;
+        $this->slot = $slot;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getHash()
+    public function getSlot()
     {
-        if (isset($this->hash)) {
-            return $this->hash;
+        if (isset($this->slot)) {
+            return $this->slot;
         }
     }
 

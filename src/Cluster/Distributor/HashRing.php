@@ -179,10 +179,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     }
 
     /**
-     * Calculates the hash for the specified value.
-     *
-     * @param  string $value Input value.
-     * @return int
+     * {@inheritdoc}
      */
     public function hash($value)
     {
@@ -192,20 +189,30 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function get($key)
+    public function getByHash($hash)
     {
-        return $this->ring[$this->getNodeKey($key)];
+        return $this->ring[$this->getSlot($hash)];
     }
 
     /**
-     * Calculates the corrisponding key of a node distributed in the hashring.
-     *
-     * @param  int $key Computed hash of a key.
-     * @return int
+     * {@inheritdoc}
      */
-    private function getNodeKey($key)
+    public function getBySlot($slot)
     {
         $this->initialize();
+
+        if (isset($this->ring[$slot])) {
+            return $this->ring[$slot];
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSlot($hash)
+    {
+        $this->initialize();
+
         $ringKeys = $this->ringKeys;
         $upper = $this->ringKeysCount - 1;
         $lower = 0;
@@ -214,9 +221,9 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
             $index = ($lower + $upper) >> 1;
             $item = $ringKeys[$index];
 
-            if ($item > $key) {
+            if ($item > $hash) {
                 $upper = $index - 1;
-            } elseif ($item < $key) {
+            } elseif ($item < $hash) {
                 $lower = $index + 1;
             } else {
                 return $item;
@@ -224,6 +231,17 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
         }
 
         return $ringKeys[$this->wrapAroundStrategy($upper, $lower, $this->ringKeysCount)];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get($value)
+    {
+        $hash = $this->hash($value);
+        $node = $this->getByHash($hash);
+
+        return $node;
     }
 
     /**

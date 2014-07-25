@@ -28,20 +28,37 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param  DistributorInterface $ring       Hashring instance.
-     * @param  int                  $iterations Number of nodes to fetch.
+     * @param  DistributorInterface $distributor Distributor instance.
+     * @param  int                  $iterations  Number of nodes to fetch.
      * @return array                Nodes from the hashring.
      */
-    protected function getNodes(DistributorInterface $ring, $iterations = 10)
+    protected function getNodes(DistributorInterface $distributor, $iterations = 10)
     {
         $nodes = array();
 
         for ($i = 0; $i < $iterations; $i++) {
-            $key = $ring->hash($i * $i);
-            $nodes[] = $ring->get($key);
+            $hash = $distributor->hash($i * $i);
+            $nodes[] = $distributor->getByHash($hash);
         }
 
         return $nodes;
+    }
+
+    /**
+     * Returns a distributor instance with the specified nodes added.
+     *
+     * @param  array                $nodes Nodes to add to the distributor.
+     * @return DistributorInterface
+     */
+    protected function getSampleDistribution(array $nodes)
+    {
+        $distributor = $this->getDistributorInstance();
+
+        foreach ($nodes as $node) {
+            $distributor->add($node);
+        }
+
+        return $distributor;
     }
 
     /**
@@ -51,8 +68,8 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     {
         $this->setExpectedException('Predis\Cluster\Distributor\EmptyRingException');
 
-        $ring = $this->getDistributorInstance();
-        $ring->get('nodekey');
+        $distributor = $this->getDistributorInstance();
+        $distributor->getByHash('nodehash');
     }
 
     /**
@@ -60,8 +77,8 @@ abstract class PredisDistributorTestCase extends PredisTestCase
      */
     public function testRemoveOnEmptyRingDoesNotThrowException()
     {
-        $ring = $this->getDistributorInstance();
+        $distributor = $this->getDistributorInstance();
 
-        $this->assertNull($ring->remove('node'));
+        $this->assertNull($distributor->remove('node'));
     }
 }

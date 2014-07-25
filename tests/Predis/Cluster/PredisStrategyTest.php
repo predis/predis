@@ -25,21 +25,20 @@ class PredisStrategyTest extends PredisTestCase
     public function testSupportsKeyTags()
     {
         // NOTE: 32 and 64 bits PHP runtimes can produce different hash values.
-        $expected = PHP_INT_SIZE == 4 ? -1938594527 : 2356372769;
-
+        $expected = PHP_INT_SIZE == 4 ? -1954026732 : 2340940564;
         $strategy = $this->getClusterStrategy();
 
-        $this->assertSame($expected, $strategy->getKeyHash('{foo}'));
-        $this->assertSame($expected, $strategy->getKeyHash('{foo}:bar'));
-        $this->assertSame($expected, $strategy->getKeyHash('{foo}:baz'));
-        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:baz'));
-        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:{baz}'));
+        $this->assertSame($expected, $strategy->getSlotByKey('{foo}'));
+        $this->assertSame($expected, $strategy->getSlotByKey('{foo}:bar'));
+        $this->assertSame($expected, $strategy->getSlotByKey('{foo}:baz'));
+        $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:baz'));
+        $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
-        $this->assertSame($expected, $strategy->getKeyHash('bar:{foo}:baz{}'));
-        $this->assertSame(PHP_INT_SIZE == 4 ? -1346986340 : 2947980956,  $strategy->getKeyHash('{}bar:{foo}:baz'));
+        $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:baz{}'));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1355751440 : 2939215856,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(0, $strategy->getKeyHash(''));
-        $this->assertSame(PHP_INT_SIZE == 4 ? -1549353149 : 2745614147, $strategy->getKeyHash('{}'));
+        $this->assertSame(PHP_INT_SIZE == 4 ?   -18873278 : 4276094018, $strategy->getSlotByKey(''));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1574052038 : 2720915258, $strategy->getSlotByKey('{}'));
     }
 
     /**
@@ -60,7 +59,7 @@ class PredisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $command = Profile\Factory::getDevelopment()->createCommand('ping');
 
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
     }
 
     /**
@@ -74,7 +73,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -89,7 +88,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -104,7 +103,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -119,7 +118,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -134,7 +133,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -149,7 +148,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -164,7 +163,7 @@ class PredisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
             $command = $profile->createCommand($commandID, $arguments);
-            $this->assertNotNull($strategy->getHash($command), $commandID);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
 
@@ -185,7 +184,7 @@ class PredisStrategyTest extends PredisTestCase
                 ->will($this->returnValue(2));
         $command->setArguments($arguments);
 
-        $this->assertNotNull($strategy->getHash($command), "Script Command [{$command->getId()}]");
+        $this->assertNotNull($strategy->getSlot($command), "Script Command [{$command->getId()}]");
     }
 
     /**
@@ -200,10 +199,10 @@ class PredisStrategyTest extends PredisTestCase
         $strategy->setCommandHandler('get', null);
 
         $command = $profile->createCommand('set', array('key', 'value'));
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNull($strategy->getHash($command));
+        $this->assertNull($strategy->getSlot($command));
     }
 
     /**
@@ -223,7 +222,7 @@ class PredisStrategyTest extends PredisTestCase
         $strategy->setCommandHandler('get', $callable);
 
         $command = $profile->createCommand('get', array('key'));
-        $this->assertNotNull($strategy->getHash($command));
+        $this->assertNotNull($strategy->getSlot($command));
     }
 
     // ******************************************************************** //
@@ -237,9 +236,10 @@ class PredisStrategyTest extends PredisTestCase
      */
     protected function getClusterStrategy()
     {
-        $distributor = new Distributor\HashRing();
-        $hashGenerator = $distributor->getHashGenerator();
-        $strategy = new PredisStrategy($hashGenerator);
+        $strategy = new PredisStrategy();
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $strategy->getDistributor()->add($connection);
 
         return $strategy;
     }

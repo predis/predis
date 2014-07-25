@@ -97,24 +97,24 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetAndGetHash()
+    public function testSetAndGetSlot()
     {
-        $hash = "key-hash";
+        $slot = 1024;
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments(array('key'));
 
-        $this->assertNull($command->getHash());
+        $this->assertNull($command->getSlot());
 
-        $command->setHash($hash);
-        $this->assertSame($hash, $command->getHash());
+        $command->setSlot($slot);
+        $this->assertSame($slot, $command->getSlot());
 
         $command->setArguments(array('key'));
-        $this->assertNull($command->getHash());
+        $this->assertNull($command->getSlot());
 
-        $command->setHash($hash);
+        $command->setSlot($slot);
         $command->setRawArguments(array('key'));
-        $this->assertNull($command->getHash());
+        $this->assertNull($command->getSlot());
     }
 
     /**

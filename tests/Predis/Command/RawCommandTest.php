@@ -116,17 +116,17 @@ class RawCommandTest extends PredisTestCase
      */
     public function testSetAndGetHash()
     {
-        $hash = "key-hash";
+        $slot = 1024;
         $arguments = array('SET', 'key', 'value');
         $command = new RawCommand($arguments);
 
-        $this->assertNull($command->getHash());
+        $this->assertNull($command->getSlot());
 
-        $command->setHash($hash);
-        $this->assertSame($hash, $command->getHash());
+        $command->setSlot($slot);
+        $this->assertSame($slot, $command->getSlot());
 
         $command->setArguments(array('hoge', 'piyo'));
-        $this->assertNull($command->getHash());
+        $this->assertNull($command->getSlot());
     }
 
     /**
