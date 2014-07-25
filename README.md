@@ -181,7 +181,7 @@ in clustering mode using client-side sharding. If you, on the other hand, want t
 
 ```php
 $parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2'];
-$options    = ['cluster' => redis];
+$options    = ['cluster' => 'redis'];
 
 $client = new Predis\Client($parameters, $options);
 ```
