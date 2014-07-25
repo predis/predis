@@ -140,6 +140,7 @@ commands on slave nodes and automatically switch to the master node as soon as a
 a write operation is executed. This is the basic configuration needed work with replication:
 
 ```php
+// Parameters require one master node specifically marked with `alias=master`.
 $parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
 $options    = ['replication' => true];
 
