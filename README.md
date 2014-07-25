@@ -190,8 +190,8 @@ When using redis-cluster, it is not necessary to pass all of the nodes forming y
 can simply specify only a few nodes and Predis will automatically fetch the full and updated slots
 map directly from Redis by contacting one of the nodes.
 
-NOTE: our support for redis-cluster does not currently consider master/slave replication but this
-feature will be added in a future release of this library.
+__NOTE__: our support for redis-cluster does not currently consider master / slave replication but
+this feature will be added in a future release of this library.
 
 
 ### Command pipelines ###
