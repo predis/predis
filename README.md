@@ -131,7 +131,7 @@ Predis is able to aggregate multiple connections which is the base for clusterin
 By default the client implements clustering using either client-side sharding (default) or a Redis
 backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial). As for replication,
 Predis can handle single-master and multiple-slaves setups by executing read operations on slaves
-and switching to the master for write operations. The replication behaviour is fully configurable.
+and switching to the master for write operations. The replication behavior is fully configurable.
 
 ## Replication ##
 
@@ -361,7 +361,7 @@ in production environments or containing data you are interested in!
 
 Predis has a comprehensive test suite covering every aspect of the library. This test suite performs
 integration tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct
-behaviour of the implementation of each command and automatically skips commands not defined in the
+behavior of the implementation of each command and automatically skips commands not defined in the
 specified Redis profile. If you do not have Redis up and running, integration tests can be disabled.
 By default the test suite is configured to execute integration tests using the profile for Redis 2.8
 (which is the current stable version of Redis) but can optionally target a Redis instance built from
