@@ -11,8 +11,8 @@ Redis protocol. An asynchronous implementation of the client, albeit experimenta
 through [Predis\Async](https://github.com/nrk/predis-async).
 
 Predis can be used with [HHVM](http://www.hhvm.com) >= 2.3.0, but there are no guarantees you will
-not run into unexpected issues (especially with the JIT compiler enabled via `Eval.Jit = true`) due
-to HHVM being still under heavy development, thus unstable and not yet 100% compatible with PHP.
+not run into unexpected issues (especially when the JIT compiler is enabled via `Eval.Jit = true`)
+due to HHVM being still under heavy development, thus unstable and not yet 100% compatible with PHP.
 
 More details about the project can be found in our [frequently asked questions](FAQ.md) section or
 on the online [wiki](https://github.com/nrk/predis/wiki).
@@ -21,11 +21,11 @@ on the online [wiki](https://github.com/nrk/predis/wiki).
 ## Main features ##
 
 - Wide range of Redis versions supported (from __2.0__ to __3.0__ and __unstable__) using profiles.
-- Clustering via client-side sharding using consistent hashing or custom distributors.
+- Cluster of nodes via client-side sharding using consistent hashing or custom distributors.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication configurations (write on master, read from slaves).
 - Transparent key prefixing for all known Redis commands using a customizable prefixing strategy.
-- Command pipelining (works on both single and aggregate connections).
+- Command pipelining (works on both single nodes and aggregate connections).
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
 - Abstraction for Lua scripting (Redis >= 2.6) with automatic switching between `EVALSHA` or `EVAL`.
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
@@ -48,8 +48,8 @@ Ultimately, archives of each release are [available on GitHub](https://github.co
 
 Predis relies on the autoloading features of PHP to load its files when needed and complies with the
 [PSR-4 standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md).
-Autoloading is handled automatically when dependencies are managed using Composer, but you can also
-leverage its own autoloader when using it in a project or script without any autoloading facility:
+Autoloading is handled automatically when dependencies are managed through Composer, but it is also
+possible to leverage its own autoloader in projects or scripts not having any autoload facility:
 
 ```php
 // Prepend a base path if Predis is not available in your "include_path".
@@ -61,14 +61,14 @@ Predis\Autoloader::register();
 It is possible to easily create a [phar](http://www.php.net/manual/en/intro.phar.php) archive from
 the repository just by launching `bin/create-phar`. The generated phar contains a stub defining an
 autoloader function for Predis, so you just need to require the phar to start using the library.
-Alternatively, it is also possible to generate one single PHP file that holds every class like older
-versions of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
+Alternatively it is possible to generate one single PHP file holding every class like older versions
+of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
 
 
 ### Connecting to Redis ###
 
 When not specifying any connection parameter to create a new client, Predis assumes `127.0.0.1` and
-`6379` as the default host and port and uses a connection timeout of 5 seconds:
+`6379` as the default host and port with a connection timeout of 5 seconds:
 
 ```php
 $client = new Predis\Client();
@@ -92,9 +92,9 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
-When an array of connections parameters is provided, Predis automatically works in clustering mode
-using client-side sharding. Both named arrays and URI strings can be mixed for providing each node
-configuration:
+When an array of connection parameters is provided, Predis automatically works in cluster mode using
+client-side sharding. Both named arrays and URI strings can be mixed when providing configurations
+for each node:
 
 ```php
 $client = new Predis\Client([
@@ -104,12 +104,12 @@ $client = new Predis\Client([
 ```
 
 The actual list of supported connection parameters can vary depending on each connection backend so
-it is recommended to refer to their specific documentation for details.
+it is recommended to refer to their specific documentation or implementation for details.
 
 
 ### Client configuration ###
 
-Various aspects of the client can be easily configured by passing options to the second argument of
+Various aspects of the client can be configured simply by passing options to the second argument of
 `Predis\Client::__construct()`. Options are managed using a mini DI-alike container and their values
 are usually lazily initialized only when needed. Predis by default supports the following options:
 
@@ -127,11 +127,12 @@ the options container for later use through the library.
 
 ### Aggregate connections ###
 
-Predis is able to aggregate multiple connections which is the base for clustering and replication.
-By default the client implements clustering using either client-side sharding (default) or a Redis
-backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial). As for replication,
-Predis can handle single-master and multiple-slaves setups by executing read operations on slaves
-and switching to the master for write operations. The replication behavior is fully configurable.
+Predis is able to aggregate multiple connections which is the base for cluster and replication. By
+default the client implements a cluster of nodes using either client-side sharding (default) or a
+Redis-backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial).
+As for replication, Predis can handle a single-master and multiple-slaves setup by executing read
+operations on slaves and switching to the master for write operations. The replication behavior is
+fully configurable.
 
 #### Replication ####
 
@@ -156,28 +157,27 @@ the client to stick with slaves for their execution.
 ```php
 $parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
 $options    = ['replication' => function () {
+    // Set scripts that won't trigger a switch from a slave to the master node.
     $strategy = new Predis\Replication\ReplicationStrategy();
-
-    // This exact script won't trigger a switch from a slave to the master node.
-    $strategy->setScriptReadOnly($READONLY_LUA_SCRIPT);
+    $strategy->setScriptReadOnly($LUA_SCRIPT);
 
     return new Predis\Connection\Aggregate\MasterSlaveReplication($strategy);
 }];
 
 $client = new Predis\Client($parameters, $options);
-$client->eval($READONLY_LUA_SCRIPT, 0);             // Sticks to slave using `eval`...
-$client->evalsha(sha1($READONLY_LUA_SCRIPT), 0);    // ... and `evalsha`, too.
+$client->eval($LUA_SCRIPT, 0);             // Sticks to slave using `eval`...
+$client->evalsha(sha1($LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 ```
 
 The `examples` directory contains two complete scripts showing how replication can be configured for
 [simple](examples/replication_simple.php) or [complex](examples/replication_complex.php) scenarios.
 
 
-#### Clustering ####
+#### Cluster ####
 
 Simply passing an array of connection parameters to the client constructor configures Predis to work
-in clustering mode using client-side sharding. If you, on the other hand, want to leverage Redis >=
-3.0 nodes coordinated by redis-cluster, then the client must be initialized like this:
+in cluster mode using client-side sharding. If you, on the other hand, want to leverage Redis >= 3.0
+nodes coordinated by redis-cluster, then the client must be initialized like this:
 
 ```php
 $parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2'];
@@ -186,9 +186,9 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
-When using redis-cluster, it is not necessary to pass all of the nodes forming your cluster but you
-can simply specify only a few nodes and Predis will automatically fetch the full and updated slots
-map directly from Redis by contacting one of the nodes.
+When using redis-cluster, it is not necessary to pass all of the nodes that compose your cluster but
+you can simply specify only a few nodes: Predis will automatically fetch the full and updated slots
+map directly from Redis by contacting one of the servers.
 
 __NOTE__: our support for redis-cluster does not currently consider master / slave replication but
 this feature will be added in a future release of this library.
@@ -260,9 +260,9 @@ $client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
 $response = $client->newcmd();
 ```
 
-There is also a method to allow sending raw commands without filtering their arguments or parsing
-responses. Users must provide the arguments list as an array, following the command signatures as
-defined by the [Redis documentation for commands](http://redis.io/commands):
+There is also a method to send raw commands without filtering their arguments or parsing responses.
+Users must provide the arguments list as an array, following the command signatures as defined by
+the [Redis documentation for commands](http://redis.io/commands):
 
 ```php
 $response = $client->executeRaw(['SET', 'foo', 'bar']);
@@ -300,7 +300,7 @@ LUA;
     }
 }
 
-// Inject your scriptable command in the current profile:
+// Inject your script command in the current profile:
 $client = new Predis\Client();
 $client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
 
@@ -324,7 +324,7 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 ]);
 ```
 
-Developers can create their own connection classes to add support for new network backends, extend
+Developers can create their own connection classes to support whole new network backends, extend
 existing ones or provide completely different implementations. Connection classes must implement
 `Predis\Connection\NodeConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
 
