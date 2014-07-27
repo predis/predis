@@ -933,9 +933,9 @@ class MultiExecTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @param array Additional connection parameters.
-     * @param array Additional client options.
-     * @return Client client instance.
+     * @param  array  $parameters Additional connection parameters.
+     * @param  array  $options    Additional client options.
+     * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())
     {

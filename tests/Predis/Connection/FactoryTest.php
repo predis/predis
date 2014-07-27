@@ -154,7 +154,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'unknown'.
      */
     public function testCreateUndefinedConnection()
@@ -210,7 +210,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testDefineConnectionWithInvalidArgument()
     {
@@ -220,7 +220,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'tcp'.
      */
     public function testUndefineDefinedConnection()
@@ -244,7 +244,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'redis'.
      */
     public function testDefineAndUndefineConnection()

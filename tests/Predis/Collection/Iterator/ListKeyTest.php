@@ -110,7 +110,7 @@ class ListKeyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNonIntegerCountParameter()
@@ -125,7 +125,7 @@ class ListKeyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNegativeCountParameter()

@@ -149,7 +149,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The class 'stdClass' is not a valid command class.
      */
     public function testDefineInvalidCommand()

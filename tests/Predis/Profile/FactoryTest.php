@@ -85,7 +85,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The class 'stdClass' is not a valid profile class.
      */
     public function testDefineInvalidProfile()

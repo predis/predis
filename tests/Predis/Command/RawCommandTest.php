@@ -60,7 +60,7 @@ class RawCommandTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The arguments array must contain at least the command ID.
      */
     public function testExceptionOnMissingCommandID()
@@ -74,7 +74,7 @@ class RawCommandTest extends PredisTestCase
      * argument is missing, PHP emits an E_WARNING.
      *
      * @group disconnected
-     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedException \PHPUnit_Framework_Error_Warning
      */
     public function testPHPWarningOnMissingCommandIDWithStaticCreate()
     {

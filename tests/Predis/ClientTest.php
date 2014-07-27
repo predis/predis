@@ -213,7 +213,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
@@ -293,7 +293,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()

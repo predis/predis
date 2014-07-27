@@ -17,7 +17,7 @@ use Predis\Profile;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends PHPUnit_Framework_TestCase
+abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
 {
     protected $redisServerVersion = null;
 
@@ -25,8 +25,8 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * Verifies that a Redis command is a valid Predis\Command\CommandInterface
      * instance with the specified ID and command arguments.
      *
-     * @param  string|CommandInterface $command   Expected command or command ID.
-     * @param  array                   $arguments Expected command arguments.
+     * @param  string|Command\CommandInterface $command   Expected command or command ID.
+     * @param  array                           $arguments Expected command arguments.
      * @return RedisCommandConstraint
      */
     public function isRedisCommand($command = null, array $arguments = null)
@@ -40,9 +40,9 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * not check for identity when passing a Predis\Command\CommandInterface
      * instance for $expected.
      *
-     * @param array|string|CommandInterface $expected Expected command.
-     * @param mixed                         $actual   Actual command.
-     * @param string                        $message  Optional assertion message.
+     * @param array|string|Command\CommandInterface $expected Expected command.
+     * @param mixed                                 $actual   Actual command.
+     * @param string                                $message  Optional assertion message.
      */
     public function assertRedisCommand($expected, $actual, $message = '')
     {
@@ -195,11 +195,11 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string                             $expectedVersion Expected redis version.
-     * @param  string                             $operator        Comparison operator.
-     * @param  callable                           $callback        Callback for matching version.
+     * @param  string                              $expectedVersion Expected redis version.
+     * @param  string                              $operator        Comparison operator.
+     * @param  callable                            $callback        Callback for matching version.
      * @return string
-     * @throws PHPUnit_Framework_SkippedTestError When expected redis version is not met
+     * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
     {
@@ -214,11 +214,11 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string                             $expectedVersion Expected redis version.
-     * @param  string                             $operator        Comparison operator.
-     * @param  callable                           $callback        Callback for matching version.
+     * @param  string                              $expectedVersion Expected redis version.
+     * @param  string                              $operator        Comparison operator.
+     * @param  callable                            $callback        Callback for matching version.
      * @return string
-     * @throws PHPUnit_Framework_SkippedTestError When expected redis version is not met
+     * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
     {

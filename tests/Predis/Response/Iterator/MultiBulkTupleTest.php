@@ -23,7 +23,7 @@ class MultiBulkTupleTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Cannot initialize a tuple iterator using an already initiated iterator.
      */
     public function testInitiatedMultiBulkIteratorsAreNotValid()
@@ -37,7 +37,7 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage Invalid response size for a tuple iterator.
      */
     public function testMultiBulkWithOddSizesAreInvalid()

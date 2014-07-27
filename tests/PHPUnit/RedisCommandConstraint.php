@@ -14,7 +14,7 @@ use Predis\Command\CommandInterface;
 /**
  * Constraint that verifies a redis command.
  */
-class RedisCommandConstraint extends PHPUnit_Framework_Constraint
+class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
 {
     protected $commandID;
     protected $arguments;
@@ -80,7 +80,7 @@ class RedisCommandConstraint extends PHPUnit_Framework_Constraint
 
         if ($this->arguments) {
             $string .= " and the following arguments:\n\n";
-            $string .= PHPUnit_Util_Type::export($this->arguments);
+            $string .= \PHPUnit_Util_Type::export($this->arguments);
         }
 
         return $string;

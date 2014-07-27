@@ -65,7 +65,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnEmptyReplication()
@@ -76,7 +76,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnMissingMaster()
@@ -89,7 +89,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnMissingSlave()
@@ -200,7 +200,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorWhenSwitchingToUnknownConnection()
