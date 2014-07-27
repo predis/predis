@@ -14,9 +14,9 @@ namespace Predis\Pipeline;
 use Exception;
 use InvalidArgumentException;
 use SplQueue;
+use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
-use Predis\ExecutableContextInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Aggregate\ReplicationInterface;
@@ -28,9 +28,11 @@ use Predis\Response\ServerException;
  * Implementation of a command pipeline in which write and read operations of
  * Redis commands are pipelined to alleviate the effects of network round-trips.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Pipeline implements ExecutableContextInterface
+class Pipeline implements ClientContextInterface
 {
     private $client;
     private $pipeline;

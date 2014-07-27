@@ -14,10 +14,10 @@ namespace Predis\Transaction;
 use Exception;
 use InvalidArgumentException;
 use SplQueue;
+use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\CommunicationException;
-use Predis\ExecutableContextInterface;
 use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
@@ -29,9 +29,11 @@ use Predis\Protocol\ProtocolException;
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiExec implements ExecutableContextInterface
+class MultiExec implements ClientContextInterface
 {
     private $state;
 

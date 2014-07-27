@@ -12,7 +12,7 @@
 namespace Predis\Configuration;
 
 /**
- * Defines an options container class.
+ * Interface defining a container for client options.
  *
  * @property-read mixed aggregate   Custom connection aggregator.
  * @property-read mixed cluster     Aggregate connection for clustering.
