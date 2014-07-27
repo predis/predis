@@ -87,7 +87,7 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testThrowsServerExceptionOnResponseErrorByDefault()
@@ -292,7 +292,7 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      */
     public function testExecuteInsideCallableArgumentThrowsException()
     {
@@ -346,8 +346,8 @@ class PipelineTest extends PredisTestCase
         try {
             $responses = $pipeline->execute(function ($pipe) {
                 $pipe->echo('one');
-                throw new ClientException('TEST');
                 $pipe->echo('two');
+                throw new ClientException('TEST');
             });
         } catch (Exception $exception) {
             // NOOP
@@ -487,8 +487,9 @@ class PipelineTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @param  array  $parameters Additional connection parameters.
-     * @param  array  $options    Additional client options.
+     * @param array $parameters Additional connection parameters.
+     * @param array $options    Additional client options.
+     *
      * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())

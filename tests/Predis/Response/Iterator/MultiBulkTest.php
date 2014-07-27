@@ -31,19 +31,19 @@ class MultiBulkTest extends PredisTestCase
 
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator);
-        $this->assertTrue($iterator->valid());
+        $iterator->valid();
         $this->assertSame(3, $iterator->count());
 
         $this->assertSame('foo', $iterator->current());
-        $this->assertSame(1, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame('hoge', $iterator->current());
-        $this->assertSame(2, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame('lol', $iterator->current());
-        $this->assertSame(3, $iterator->next());
+        $iterator->next();
         $this->assertFalse($iterator->valid());
 
         $this->assertEquals('PONG', $client->ping());

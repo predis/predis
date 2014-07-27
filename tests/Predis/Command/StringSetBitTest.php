@@ -86,37 +86,37 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit is not an integer or out of range
      */
     public function testThrowsExceptionOnInvalidBitValue()
     {
-        $redis = $this->getClient()->setbit('key:binary', 10, 255);
+        $this->getClient()->setbit('key:binary', 10, 255);
     }
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnNegativeOffset()
     {
-        $redis = $this->getClient()->setbit('key:binary', -1, 1);
+        $this->getClient()->setbit('key:binary', -1, 1);
     }
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnInvalidOffset()
     {
-        $redis = $this->getClient()->setbit('key:binary', 'invalid', 1);
+        $this->getClient()->setbit('key:binary', 'invalid', 1);
     }
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()

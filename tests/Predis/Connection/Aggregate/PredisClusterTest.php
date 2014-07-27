@@ -89,7 +89,6 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection();
         $connection2 = $this->getMockConnection('tcp://host1:7001?alias=node2');
         $connection3 = $this->getMockConnection('tcp://host1:7002?alias=node3');
-        $connection4 = $this->getMockConnection('tcp://host1:7003?alias=node4');
 
         $cluster = new PredisCluster();
         $cluster->add($connection1);
@@ -256,7 +255,7 @@ class PredisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Cannot use 'PING' over clusters of connections.
      */
     public function testThrowsExceptionOnNonShardableCommand()
@@ -406,7 +405,8 @@ class PredisClusterTest extends PredisTestCase
     /**
      * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
      *
-     * @param  mixed $parameters Optional parameters.
+     * @param mixed $parameters Optional parameters.
+     *
      * @return mixed
      */
     protected function getMockConnection($parameters = null)

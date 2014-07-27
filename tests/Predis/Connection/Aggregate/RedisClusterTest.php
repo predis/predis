@@ -717,7 +717,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Cannot use 'PING' with redis-cluster.
      */
     public function testThrowsExceptionOnNonSupportedCommand()
@@ -758,7 +758,8 @@ class RedisClusterTest extends PredisTestCase
     /**
      * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
      *
-     * @param  mixed $parameters Optional parameters.
+     * @param mixed $parameters Optional parameters.
+     *
      * @return mixed
      */
     protected function getMockConnection($parameters = null)

@@ -63,6 +63,8 @@ class Options implements OptionsInterface
 
             return $handler->getDefault($this);
         }
+
+        return null;
     }
 
     /**
@@ -116,5 +118,7 @@ class Options implements OptionsInterface
         if (isset($this->handlers[$option])) {
             return $this->options[$option] = $this->getDefault($option);
         }
+
+        return null;
     }
 }

@@ -51,6 +51,8 @@ class Consumer implements Iterator
      * needed to initialize a monitor consumer.
      *
      * @param ClientInterface $client Client instance used by the consumer.
+     *
+     * @throws NotSupportedException
      */
     private function assertClient(ClientInterface $client)
     {
@@ -122,7 +124,7 @@ class Consumer implements Iterator
     /**
      * Checks if the the consumer is still in a valid state to continue.
      *
-     * @return Boolean
+     * @return bool
      */
     public function valid()
     {

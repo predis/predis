@@ -174,13 +174,6 @@ class HashRingTest extends PredisDistributorTestCase
             '127.0.0.1:7002',
         ));
 
-/*
-$hash = $ring->hash('uid:641');
-$slot32 = $ring->getSlot($hash);
-$slot64 = sprintf("%u", $slot32 & 0xffffffff);
-echo "32: $slot32 - 64: $slot64\n";
-exit();
-*/
         $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1255075679 : 3039891617)); // uid:256
         $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1642314910 : 2652652386)); // uid:281
         $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -687739295 : 3607228001)); // uid:312

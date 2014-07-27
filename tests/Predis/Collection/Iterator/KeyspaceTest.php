@@ -21,7 +21,7 @@ class KeyspaceTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'SCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
@@ -32,7 +32,7 @@ class KeyspaceTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::get('2.0')));
 
-        $iterator = new Keyspace($client);
+        new Keyspace($client);
     }
 
     /**

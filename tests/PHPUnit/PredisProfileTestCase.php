@@ -12,6 +12,7 @@
 namespace Predis\Profile;
 
 use PredisTestCase;
+use Predis\Command\CommandInterface;
 use Predis\Command\Processor\ProcessorChain;
 
 /**
@@ -22,7 +23,8 @@ abstract class PredisProfileTestCase extends PredisTestCase
     /**
      * Returns a new instance of the tested profile.
      *
-     * @param  string           $version Version of Redis.
+     * @param string $version Version of Redis.
+     *
      * @return ProfileInterface
      */
     protected function getProfile($version = null)
@@ -48,7 +50,8 @@ abstract class PredisProfileTestCase extends PredisTestCase
      * Returns the list of commands supported by the current
      * server profile.
      *
-     * @param  ProfileInterface $profile Server profile instance.
+     * @param ProfileInterface $profile Server profile instance.
+     *
      * @return array
      */
     protected function getCommands(ProfileInterface $profile)
@@ -149,7 +152,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The class 'stdClass' is not a valid command class.
      */
     public function testDefineInvalidCommand()
@@ -188,7 +191,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Command 'UNKNOWN' is not a registered Redis command.
      */
     public function testCreateUndefinedCommand()
@@ -248,13 +251,13 @@ abstract class PredisProfileTestCase extends PredisTestCase
         $processor->expects($this->once())
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-                  ->will($this->returnCallback(function ($cmd) use (&$argsRef) {
+                  ->will($this->returnCallback(function (CommandInterface $cmd) use (&$argsRef) {
                         $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                     }));
 
         $profile = $this->getProfile();
         $profile->setProcessor($processor);
-        $command = $profile->createCommand('set', array('foo', 'bar'));
+        $profile->createCommand('set', array('foo', 'bar'));
 
         $this->assertSame(array('FOO', 'BAR'), $argsRef);
     }

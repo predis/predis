@@ -11,7 +11,7 @@
 
 namespace Predis\Cluster;
 
-use Predis\Cluster\Distribution\DistributorInterface;
+use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Command\CommandInterface;
 
 /**
@@ -28,7 +28,8 @@ interface StrategyInterface
      * Returns a slot for the given command used for clustering distribution or
      * NULL when this is not possible.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return int
      */
     public function getSlot(CommandInterface $command);
@@ -37,7 +38,8 @@ interface StrategyInterface
      * Returns a slot for the given key used for clustering distribution or NULL
      * when this is not possible.
      *
-     * @param  string $key Key string.
+     * @param string $key Key string.
+     *
      * @return int
      */
     public function getSlotByKey($key);

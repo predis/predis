@@ -65,7 +65,7 @@ class ClusterOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidInstanceType()
     {
@@ -78,7 +78,7 @@ class ClusterOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidShortNameString()
     {

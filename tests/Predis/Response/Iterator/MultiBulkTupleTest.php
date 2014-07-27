@@ -23,7 +23,7 @@ class MultiBulkTupleTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Cannot initialize a tuple iterator using an already initiated iterator.
      */
     public function testInitiatedMultiBulkIteratorsAreNotValid()
@@ -37,7 +37,7 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage Invalid response size for a tuple iterator.
      */
     public function testMultiBulkWithOddSizesAreInvalid()
@@ -56,7 +56,7 @@ class MultiBulkTupleTest extends PredisTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = new MultiBulkTuple($client->zrange('metavars', 0, -1, 'withscores'));
+        $iterator = new MultiBulkTuple($client->zrange('metavars', '0', '-1', 'withscores'));
 
         $this->assertInstanceOf('OuterIterator', $iterator);
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator);
@@ -65,15 +65,15 @@ class MultiBulkTupleTest extends PredisTestCase
         $this->assertSame(3, $iterator->count());
 
         $this->assertSame(array('foo', '1'), $iterator->current());
-        $this->assertSame(1, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame(array('hoge', '2'), $iterator->current());
-        $this->assertSame(2, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame(array('lol', '3'), $iterator->current());
-        $this->assertSame(3, $iterator->next());
+        $iterator->next();
         $this->assertFalse($iterator->valid());
 
         $this->assertEquals('PONG', $client->ping());
@@ -87,7 +87,7 @@ class MultiBulkTupleTest extends PredisTestCase
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = new MultiBulkTuple($client->zrange('metavars', 0, -1, 'withscores'));
+        $iterator = new MultiBulkTuple($client->zrange('metavars', '0', '-1', 'withscores'));
 
         unset($iterator);
 

@@ -35,6 +35,7 @@ interface CompositeConnectionInterface extends NodeConnectionInterface
      * Reads the given number of bytes from the connection.
      *
      * @param int $length Number of bytes to read from the connection.
+     *
      * @return string
      */
     public function readBuffer($length);

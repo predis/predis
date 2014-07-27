@@ -156,7 +156,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
@@ -164,6 +164,6 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $redis->zinterstore('zset:destination', 1, 'foo');
+        $redis->zinterstore('zset:destination', '1', 'foo');
     }
 }

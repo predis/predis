@@ -61,7 +61,8 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a TCP stream resource.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
      * @return resource
      */
     protected function tcpStreamInitializer(ParametersInterface $parameters)
@@ -103,7 +104,8 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a UNIX stream resource.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
      * @return resource
      */
     protected function unixStreamInitializer(ParametersInterface $parameters)
@@ -238,6 +240,8 @@ class StreamConnection extends AbstractConnection
             default:
                 $this->onProtocolError("Unknown response prefix: '$prefix'.");
         }
+
+        return null;
     }
 
     /**

@@ -23,7 +23,7 @@ class MultiExecTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support MULTI, EXEC and DISCARD.
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
@@ -37,12 +37,12 @@ class MultiExecTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => $profile));
 
-        $tx = new MultiExec($client);
+        new MultiExec($client);
     }
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage WATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
@@ -66,7 +66,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage UNWATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
@@ -169,7 +169,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context.
      */
     public function testThrowsExceptionOnExecInsideTransactionBlock()
@@ -247,7 +247,7 @@ class MultiExecTest extends PredisTestCase
     }
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      */
     public function testThrowsExceptionOnWatchInsideMulti()
     {
@@ -386,7 +386,7 @@ class MultiExecTest extends PredisTestCase
         $tx = $this->getMockedTransaction($callback, $options);
 
         $tx->execute(function ($tx) {
-            $bar = $tx->get('foo');
+            $tx->get('foo');
             $tx->set('hoge', 'piyo');
         });
 
@@ -396,7 +396,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Automatic retries are supported only when a callable block is provided.
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()
@@ -443,14 +443,14 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Transaction\AbortedMultiExecException
+     * @expectedException \Predis\Transaction\AbortedMultiExecException
      */
     public function testThrowsExceptionOnServerSideTransactionAbort()
     {
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback);
 
-        $responses = $tx->execute(function ($tx) {
+        $tx->execute(function ($tx) {
             $tx->echo('!!ABORT!!');
         });
     }
@@ -588,7 +588,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR simulated error
      */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenTrue()
@@ -616,7 +616,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR simulated failure on EXEC
      */
     public function testExceptionsOptionDoesNotAffectTransactionControlCommands()
@@ -802,7 +802,8 @@ class MultiExecTest extends PredisTestCase
      * Returns a mocked instance of Predis\Connection\NodeConnectionInterface
      * using the specified callback to return values from executeCommand().
      *
-     * @param  \Closure                                   $executeCallback
+     * @param \Closure $executeCallback
+     *
      * @return \Predis\Connection\NodeConnectionInterface
      */
     protected function getMockedConnection($executeCallback)
@@ -820,9 +821,10 @@ class MultiExecTest extends PredisTestCase
      * the specified callback to return values from the executeCommand method
      * of the underlying connection.
      *
-     * @param  \Closure  $executeCallback
-     * @param  array     $txOpts
-     * @param  array     $clientOpts
+     * @param \Closure $executeCallback
+     * @param array    $txOpts
+     * @param array    $clientOpts
+     *
      * @return MultiExec
      */
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null)
@@ -837,9 +839,10 @@ class MultiExecTest extends PredisTestCase
     /**
      * Returns a callback that emulates a server-side MULTI/EXEC transaction context.
      *
-     * @param  array    $expected Expected responses.
-     * @param  array    $commands Reference to an array storing the whole flow of commands.
-     * @param  array    $cas      Check and set operations performed by the transaction.
+     * @param array $expected Expected responses.
+     * @param array $commands Reference to an array storing the whole flow of commands.
+     * @param array $cas      Check and set operations performed by the transaction.
+     *
      * @return \Closure
      */
     protected function getExecuteCallback($expected = array(), &$commands = array(), &$cas = array())
@@ -909,6 +912,7 @@ class MultiExecTest extends PredisTestCase
 
                 case 'UNWATCH':
                     $watch = false;
+                    // no break
 
                 default:
                     return $multi ? new Response\Status('QUEUED') : 'DUMMY_RESPONSE';
@@ -920,7 +924,8 @@ class MultiExecTest extends PredisTestCase
      * Converts an array of instances of Predis\Command\CommandInterface and
      * returns an array containing their IDs.
      *
-     * @param  array $commands List of commands instances.
+     * @param array $commands List of commands instances.
+     *
      * @return array
      */
     protected static function commandsToIDs($commands)
@@ -932,9 +937,10 @@ class MultiExecTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @param array Additional connection parameters.
-     * @param array Additional client options.
-     * @return Client client instance.
+     * @param array $parameters Additional connection parameters.
+     * @param array $options    Additional client options.
+     *
+     * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())
     {

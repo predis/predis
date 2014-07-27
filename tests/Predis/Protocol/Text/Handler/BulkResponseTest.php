@@ -74,7 +74,7 @@ class BulkResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a bulk response.
      */
     public function testInvalidLength()

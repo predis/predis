@@ -64,7 +64,8 @@ interface CommandInterface
     /**
      * Gets the argument of the command at the specified index.
      *
-     * @param  int   $index Index of the desired argument.
+     * @param int $index Index of the desired argument.
+     *
      * @return mixed
      */
     public function getArgument($index);
@@ -72,7 +73,8 @@ interface CommandInterface
     /**
      * Parses a raw response and returns a PHP object.
      *
-     * @param  string $data Binary string containing the whole response.
+     * @param string $data Binary string containing the whole response.
+     *
      * @return mixed
      */
     public function parseResponse($data);

@@ -57,7 +57,8 @@ class Status implements ResponseInterface
      * Common status responses such as OK or QUEUED are cached in order to lower
      * the global memory usage especially when using pipelines.
      *
-     * @param  string $payload Status response payload.
+     * @param string $payload Status response payload.
+     *
      * @return string
      */
     public static function get($payload)

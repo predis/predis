@@ -78,7 +78,7 @@ class TransactionMultiTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR MULTI calls can not be nested
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction()

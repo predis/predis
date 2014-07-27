@@ -31,7 +31,7 @@ class MasterSlaveReplication implements ReplicationInterface
     protected $current;
 
     /**
-     *
+     * {@inheritdoc}
      */
     public function __construct(ReplicationStrategy $strategy = null)
     {

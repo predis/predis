@@ -65,7 +65,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnEmptyReplication()
@@ -76,7 +76,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnMissingMaster()
@@ -89,7 +89,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
     public function testThrowsExceptionOnMissingSlave()
@@ -200,7 +200,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorWhenSwitchingToUnknownConnection()
@@ -435,7 +435,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
     public function testThrowsExceptionOnNonSupportedCommand()
@@ -570,7 +570,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
      *
-     * @param  mixed $parameters Optional parameters.
+     * @param mixed $parameters Optional parameters.
+     *
      * @return mixed
      */
     protected function getMockConnection($parameters = null)

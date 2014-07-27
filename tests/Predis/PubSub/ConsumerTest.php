@@ -23,7 +23,7 @@ class ConsumerTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support PUB/SUB related commands.
      */
     public function testPubSubConsumerRequirePubSubRelatedCommand()
@@ -34,20 +34,21 @@ class ConsumerTest extends PredisTestCase
                 ->will($this->returnValue(false));
 
         $client = new Client(null, array('profile' => $profile));
-        $pubsub = new PubSubConsumer($client);
+
+        new PubSubConsumer($client);
     }
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer over aggregate connections.
      */
     public function testPubSubConsumerDoesNotWorkOnClusters()
     {
         $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
-
         $client = new Client($cluster);
-        $pubsub = new PubSubConsumer($client);
+
+        new PubSubConsumer($client);
     }
 
     /**
@@ -60,7 +61,7 @@ class ConsumerTest extends PredisTestCase
         $client = $this->getMock('Predis\Client', array('executeCommand'), array($connection));
         $client->expects($this->never())->method('executeCommand');
 
-        $pubsub = new PubSubConsumer($client);
+        new PubSubConsumer($client);
     }
 
     /**
@@ -69,9 +70,6 @@ class ConsumerTest extends PredisTestCase
     public function testConstructorWithSubscriptionsStartsConsumer()
     {
         $profile = Profile\Factory::get(REDIS_SERVER_VERSION);
-
-        $cmdSubscribe = $profile->createCommand('subscribe', array('channel:foo'));
-        $cmdPsubscribe = $profile->createCommand('psubscribe', array('channels:*'));
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(2))->method('writeRequest');
@@ -85,7 +83,8 @@ class ConsumerTest extends PredisTestCase
                }));
 
         $options = array('subscribe' => 'channel:foo', 'psubscribe' => 'channels:*');
-        $pubsub = new PubSubConsumer($client, $options);
+
+        new PubSubConsumer($client, $options);
     }
 
     /**

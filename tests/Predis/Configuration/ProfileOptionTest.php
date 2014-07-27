@@ -152,7 +152,7 @@ class ProfileOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      */
     public function testThrowsExceptionOnUnrecognizedVersionString()
     {

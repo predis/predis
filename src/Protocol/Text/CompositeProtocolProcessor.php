@@ -26,7 +26,14 @@ use Predis\Protocol\ResponseReaderInterface;
  */
 class CompositeProtocolProcessor implements ProtocolProcessorInterface
 {
+    /*
+     * @var RequestSerializerInterface
+     */
     protected $serializer;
+
+    /*
+     * @var ResponseReaderInterface
+     */
     protected $reader;
 
     /**

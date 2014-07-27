@@ -52,8 +52,6 @@ class ServerEvalSHATest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $command = $this->getCommand();
-
         $this->assertSame('bar', $this->getCommand()->parseResponse('bar'));
     }
 
@@ -83,7 +81,7 @@ class ServerEvalSHATest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnWrongNumberOfKeys()
     {
@@ -98,7 +96,7 @@ class ServerEvalSHATest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidScript()
     {

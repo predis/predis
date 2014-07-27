@@ -68,7 +68,7 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR DISCARD without MULTI
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction()

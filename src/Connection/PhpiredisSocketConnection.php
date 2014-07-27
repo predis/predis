@@ -226,7 +226,8 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Gets the address from the connection parameters.
      *
-     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     *
      * @return string
      */
     protected static function getAddress(ParametersInterface $parameters)
@@ -251,7 +252,8 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Opens the actual connection to the server with a timeout.
      *
-     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     *
      * @return string
      */
     private function connectWithTimeout(ParametersInterface $parameters)
@@ -364,6 +366,8 @@ class PhpiredisSocketConnection extends AbstractConnection
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));
         }
+
+        return null;
     }
 
     /**

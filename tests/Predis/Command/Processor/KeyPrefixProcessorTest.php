@@ -67,16 +67,14 @@ class KeyPrefixProcessorTest extends PredisTestCase
      */
     public function testSkipNotPrefixableCommands()
     {
-        $prefix = 'prefix:';
-        $unprefixed = 'key';
-        $expected = "$prefix$unprefixed";
-
         $command = $this->getMock('Predis\Command\CommandInterface');
         $command->expects($this->once())
                 ->method('getId')
                 ->will($this->returnValue('unknown'));
+        $command->expects($this->never())
+                ->method('getArguments');
 
-        $processor = new KeyPrefixProcessor($prefix);
+        $processor = new KeyPrefixProcessor('prefix');
 
         $processor->process($command);
     }
@@ -245,6 +243,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      * @dataProvider commandArgumentsDataProvider
+     *
+     * @param string $commandID
+     * @param array  $arguments
+     * @param array  $expected
      */
     public function testApplyPrefixToCommand($commandID, array $arguments, array $expected)
     {

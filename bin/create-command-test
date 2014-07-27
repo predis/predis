@@ -134,7 +134,11 @@ class CommandTestCaseGenerator
             throw new RuntimeException("Class $class must implement Predis\Command\CommandInterface.");
         }
 
+        /*
+         * @var CommandInterface
+         */
         $instance = $reflection->newInstance();
+
         $buffer = $this->getTestCaseBuffer($instance);
 
         return $buffer;

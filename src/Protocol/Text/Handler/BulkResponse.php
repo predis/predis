@@ -44,5 +44,8 @@ class BulkResponse implements ResponseHandlerInterface
         if ($length == -1) {
             return null;
         }
+
+        // TODO: we should probably check if < -1, just to make sure.
+        return null;
     }
 }

@@ -39,8 +39,11 @@ class ReplicationStrategy
      * Returns if the specified command will perform a read-only operation
      * on Redis or not.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return bool
+     *
+     * @throws NotSupportedException
      */
     public function isReadOperation(CommandInterface $command)
     {
@@ -77,7 +80,8 @@ class ReplicationStrategy
      * Returns if the specified command is not allowed for execution in a master
      * / slave replication context.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return bool
      */
     public function isDisallowedOperation(CommandInterface $command)
@@ -89,7 +93,8 @@ class ReplicationStrategy
      * Checks if a SORT command is a readable operation by parsing the arguments
      * array of the specified commad instance.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return bool
      */
     protected function isSortReadOnly(CommandInterface $command)

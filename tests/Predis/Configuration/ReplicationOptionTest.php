@@ -55,7 +55,7 @@ class ReplicationOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidInstanceType()
     {

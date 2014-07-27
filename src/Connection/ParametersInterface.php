@@ -38,7 +38,8 @@ interface ParametersInterface
     /**
      * Checks if the specified parameters is set.
      *
-     * @param  string $parameter Name of the parameter.
+     * @param string $parameter Name of the parameter.
+     *
      * @return bool
      */
     public function __isset($parameter);
@@ -46,7 +47,8 @@ interface ParametersInterface
     /**
      * Returns the value of the specified parameter.
      *
-     * @param  string $parameter Name of the parameter.
+     * @param string $parameter Name of the parameter.
+     *
      * @return mixed
      */
     public function __get($parameter);

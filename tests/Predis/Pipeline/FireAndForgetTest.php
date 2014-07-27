@@ -13,7 +13,6 @@ namespace Predis\Pipeline;
 
 use PredisTestCase;
 use Predis\Client;
-use Predis\Profile;
 
 /**
  *
@@ -25,8 +24,6 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testPipelineWithSingleConnection()
     {
-        $profile = Profile\Factory::getDefault();
-
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(3))->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
@@ -45,8 +42,6 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection()
     {
-        $profile = Profile\Factory::getDefault();
-
         $connection = $this->getMock('Predis\Connection\Aggregate\ReplicationInterface');
         $connection->expects($this->once())
                    ->method('switchTo')

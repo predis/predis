@@ -56,7 +56,7 @@ class CommunicationExceptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\CommunicationException
+     * @expectedException \Predis\CommunicationException
      * @expectedExceptionMessage Communication error
      */
     public function testCommunicationExceptionHandling()
@@ -77,7 +77,8 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a mocked connection instance.
      *
-     * @param  mixed                              $parameters Connection parameters.
+     * @param mixed $parameters Connection parameters.
+     *
      * @return Connection\NodeConnectionInterface
      */
     protected function getMockedConnectionBase($parameters = null)
@@ -96,11 +97,12 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param  Connection\NodeConnectionInterface $connection Connection instance.
-     * @param  string                             $message    Exception message.
-     * @param  int                                $code       Exception code.
-     * @param  \Exception                         $inner      Inner exception.
-     * @return \Exception
+     * @param Connection\NodeConnectionInterface $connection Connection instance.
+     * @param string                             $message    Exception message.
+     * @param int                                $code       Exception code.
+     * @param \Exception                         $inner      Inner exception.
+     *
+     * @return \Predis\CommunicationException
      */
     protected function getException(
         Connection\NodeConnectionInterface $connection,

@@ -134,7 +134,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Unsupported CONFIG parameter: foo
      */
     public function testThrowsExceptionWhenSettingUnknownConfiguration()
@@ -156,7 +156,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnUnknownSubcommand()
     {

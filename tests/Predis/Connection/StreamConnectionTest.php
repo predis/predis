@@ -39,13 +39,13 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new StreamConnection($parameters);
+        new StreamConnection($parameters);
     }
 
     /**
@@ -85,7 +85,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unknown response prefix: 'P'.
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()

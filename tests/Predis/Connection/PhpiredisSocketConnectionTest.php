@@ -39,13 +39,13 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new PhpiredisSocketConnection($parameters);
+        new PhpiredisSocketConnection($parameters);
     }
 
     /**
@@ -88,7 +88,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      * @expectedExceptionMessage Cannot resolve the address of 'bogus.tld'.
      */
     public function testThrowsExceptionOnUnresolvableHostname()
@@ -100,7 +100,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Protocol error, got "P" as reply type byte
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()

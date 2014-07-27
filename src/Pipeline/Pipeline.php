@@ -52,8 +52,9 @@ class Pipeline implements ClientContextInterface
     /**
      * Queues a command into the pipeline buffer.
      *
-     * @param  string $method    Command ID.
-     * @param  array  $arguments Arguments for the command.
+     * @param string $method    Command ID.
+     * @param array  $arguments Arguments for the command.
+     *
      * @return $this
      */
     public function __call($method, $arguments)
@@ -77,7 +78,8 @@ class Pipeline implements ClientContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param  CommandInterface $command Command instance to be queued in the buffer.
+     * @param CommandInterface $command Command instance to be queued in the buffer.
+     *
      * @return $this
      */
     public function executeCommand(CommandInterface $command)
@@ -92,6 +94,8 @@ class Pipeline implements ClientContextInterface
      *
      * @param ConnectionInterface    $connection Redis connection that returned the error.
      * @param ErrorResponseInterface $response   Instance of the error response.
+     *
+     * @throws ServerException
      */
     protected function exception(ConnectionInterface $connection, ErrorResponseInterface $response)
     {
@@ -121,8 +125,9 @@ class Pipeline implements ClientContextInterface
      * Implements the logic to flush the queued commands and read the responses
      * from the current connection.
      *
-     * @param  ConnectionInterface $connection Current connection instance.
-     * @param  SplQueue            $commands   Queued commands.
+     * @param ConnectionInterface $connection Current connection instance.
+     * @param SplQueue            $commands   Queued commands.
+     *
      * @return array
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
@@ -153,7 +158,8 @@ class Pipeline implements ClientContextInterface
     /**
      * Flushes the buffer holding all of the commands queued so far.
      *
-     * @param  bool  $send Specifies if the commands in the buffer should be sent to Redis.
+     * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
+     *
      * @return $this
      */
     public function flushPipeline($send = true)
@@ -172,6 +178,8 @@ class Pipeline implements ClientContextInterface
      * Marks the running status of the pipeline.
      *
      * @param bool $bool Sets the running status of the pipeline.
+     *
+     * @throws ClientException
      */
     private function setRunning($bool)
     {
@@ -185,8 +193,12 @@ class Pipeline implements ClientContextInterface
     /**
      * Handles the actual execution of the whole pipeline.
      *
-     * @param  mixed $callable Optional callback for execution.
+     * @param mixed $callable Optional callback for execution.
+     *
      * @return array
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function execute($callable = null)
     {
@@ -219,7 +231,6 @@ class Pipeline implements ClientContextInterface
     /**
      * Returns if the pipeline should throw exceptions on server errors.
      *
-     * @todo Awful naming...
      * @return bool
      */
     protected function throwServerExceptions()

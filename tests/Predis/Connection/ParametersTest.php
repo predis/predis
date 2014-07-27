@@ -90,8 +90,6 @@ class ParametersTest extends PredisTestCase
      */
     public function testCreateWithUriString()
     {
-        $defaults = $this->getDefaultParametersArray();
-
         $overrides = array(
             'port' => 7000,
             'database' => 5,
@@ -224,7 +222,7 @@ class ParametersTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */
     public function testParsingURIThrowOnInvalidURI()
@@ -254,8 +252,9 @@ class ParametersTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param  array  $parameters array of connection parameters.
-     * @return String URI string.
+     * @param array $parameters array of connection parameters.
+     *
+     * @return string URI string.
      */
     protected function getParametersString(array $parameters)
     {

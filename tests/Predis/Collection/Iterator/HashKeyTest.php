@@ -21,7 +21,7 @@ class HashKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'HSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
@@ -32,7 +32,7 @@ class HashKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::get('2.0')));
 
-        $iterator = new HashKey($client, 'key:hash');
+        new HashKey($client, 'key:hash');
     }
 
     /**

@@ -24,8 +24,9 @@ interface ResponseHandlerInterface
      * Deserializes a response returned by Redis and reads more data from the
      * connection if needed.
      *
-     * @param  CompositeConnectionInterface $connection Redis connection.
-     * @param  string                       $payload    String payload.
+     * @param CompositeConnectionInterface $connection Redis connection.
+     * @param string                       $payload    String payload.
+     *
      * @return mixed
      */
     public function handle(CompositeConnectionInterface $connection, $payload);

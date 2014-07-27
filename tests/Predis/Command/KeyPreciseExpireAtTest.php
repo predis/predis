@@ -85,7 +85,6 @@ class KeyPreciseExpireAtTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $now = time();
         $redis->set('foo', 'bar');
 
         $this->assertTrue($redis->expireat('foo', time() - 100000));

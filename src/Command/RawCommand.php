@@ -29,6 +29,9 @@ class RawCommand implements CommandInterface
     private $commandID;
     private $arguments;
 
+    /**
+     * @param array $arguments Command ID and its arguments.
+     */
     public function __construct(array $arguments)
     {
         if (!$arguments) {
@@ -44,8 +47,9 @@ class RawCommand implements CommandInterface
     /**
      * Creates a new raw command using a variadic method.
      *
-     * @param  string           $commandID Redis command ID.
-     * @param string ... Arguments list for the command.
+     * @param string $commandID Redis command ID.
+     * @param string ...        Arguments list for the command.
+     *
      * @return CommandInterface
      */
     public static function create($commandID /* [ $arg, ... */)
@@ -97,6 +101,8 @@ class RawCommand implements CommandInterface
         if (isset($this->arguments[$index])) {
             return $this->arguments[$index];
         }
+
+        return null;
     }
 
     /**
@@ -115,6 +121,8 @@ class RawCommand implements CommandInterface
         if (isset($this->slot)) {
             return $this->slot;
         }
+
+        return null;
     }
 
     /**

@@ -110,7 +110,7 @@ class ListKeyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNonIntegerCountParameter()
@@ -120,12 +120,12 @@ class ListKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::getDefault()));
 
-        $iterator = new ListKey($client, 'key:list', 'wrong');
+        new ListKey($client, 'key:list', 'wrong');
     }
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNegativeCountParameter()
@@ -135,7 +135,7 @@ class ListKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::getDefault()));
 
-        $iterator = new ListKey($client, 'key:list', 'wrong');
+        new ListKey($client, 'key:list', 'wrong');
     }
 
     /**

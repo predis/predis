@@ -34,7 +34,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeRequest() is not supported.
      */
     public function testWritingCommandsIsNotSupported()
@@ -45,7 +45,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::readResponse() is not supported
      */
     public function testReadingResponsesIsNotSupported()
@@ -56,7 +56,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::read() is not supported.
      */
     public function testReadingFromConnectionIsNotSupported()
@@ -67,7 +67,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported.
      *
      */
@@ -79,7 +79,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Command 'SELECT' is not allowed by Webdis.
      */
     public function testRejectCommandSelect()
@@ -90,7 +90,7 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Command 'AUTH' is not allowed by Webdis.
      */
     public function testRejectCommandAuth()
@@ -141,7 +141,7 @@ class WebdisConnectionTest extends PredisTestCase
      * @medium
      * @group disconnected
      * @group slow
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowExceptionWhenUnableToConnect()
     {
@@ -171,8 +171,9 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * Returns a new instance of a connection instance.
      *
-     * @param  mixed            $profile    Redis profile.
-     * @param  array            $parameters Additional connection parameters.
+     * @param mixed $profile    Redis profile.
+     * @param array $parameters Additional connection parameters.
+     *
      * @return WebdisConnection
      */
     protected function getConnection(&$profile = null, array $parameters = array())

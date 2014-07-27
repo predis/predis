@@ -61,8 +61,9 @@ class WebdisConnection implements NodeConnectionInterface
         }
 
         $this->parameters = $parameters;
-        $this->resource = $this->createCurl($parameters);
-        $this->reader = $this->createReader($parameters);
+
+        $this->resource = $this->createCurl();
+        $this->reader = $this->createReader();
     }
 
     /**
@@ -77,11 +78,15 @@ class WebdisConnection implements NodeConnectionInterface
 
     /**
      * Helper method used to throw on unsupported methods.
+     *
+     * @param string $method Name of the unsupported method.
+     *
+     * @throws NotSupportedException
      */
-    private function throwNotSupportedException($function)
+    private function throwNotSupportedException($method)
     {
         $class = __CLASS__;
-        throw new NotSupportedException("The method $class::$function() is not supported.");
+        throw new NotSupportedException("The method $class::$method() is not supported.");
     }
 
     /**
@@ -105,11 +110,12 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Initializes cURL.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createCurl(ParametersInterface $parameters)
+    private function createCurl()
     {
+        $parameters = $this->getParameters();
+
         $options = array(
             CURLOPT_FAILONERROR => true,
             CURLOPT_CONNECTTIMEOUT_MS => $parameters->timeout * 1000,
@@ -131,10 +137,9 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Initializes the phpiredis protocol reader.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createReader(ParametersInterface $parameters)
+    private function createReader()
     {
         $reader = phpiredis_reader_create();
 
@@ -171,8 +176,9 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Feeds the phpredis reader resource with the data read from the network.
      *
-     * @param  resource $resource Reader resource.
-     * @param  string   $buffer   Buffer of data read from a connection.
+     * @param resource $resource Reader resource.
+     * @param string   $buffer   Buffer of data read from a connection.
+     *
      * @return int
      */
     protected function feedReader($resource, $buffer)
@@ -209,8 +215,11 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Checks if the specified command is supported by this connection class.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return string
+     *
+     * @throws NotSupportedException
      */
     protected function getCommandId(CommandInterface $command)
     {
@@ -331,9 +340,8 @@ class WebdisConnection implements NodeConnectionInterface
     public function __wakeup()
     {
         $this->assertExtensions();
-        $parameters = $this->getParameters();
 
-        $this->resource = $this->createCurl($parameters);
-        $this->reader = $this->createReader($parameters);
+        $this->resource = $this->createCurl();
+        $this->reader = $this->createReader();
     }
 }

@@ -24,7 +24,8 @@ abstract class Command implements CommandInterface
     /**
      * Returns a filtered array of the arguments.
      *
-     * @param  array $arguments List of arguments.
+     * @param array $arguments List of arguments.
+     *
      * @return array
      */
     protected function filterArguments(array $arguments)
@@ -66,6 +67,8 @@ abstract class Command implements CommandInterface
         if (isset($this->arguments[$index])) {
             return $this->arguments[$index];
         }
+
+        return null;
     }
 
     /**
@@ -84,6 +87,8 @@ abstract class Command implements CommandInterface
         if (isset($this->slot)) {
             return $this->slot;
         }
+
+        return null;
     }
 
     /**
@@ -97,7 +102,8 @@ abstract class Command implements CommandInterface
     /**
      * Normalizes the arguments array passed to a Redis command.
      *
-     * @param  array $arguments Arguments for a command.
+     * @param array $arguments Arguments for a command.
+     *
      * @return array
      */
     public static function normalizeArguments(array $arguments)
@@ -112,7 +118,8 @@ abstract class Command implements CommandInterface
     /**
      * Normalizes the arguments array passed to a variadic Redis command.
      *
-     * @param  array $arguments Arguments for a command.
+     * @param array $arguments Arguments for a command.
+     *
      * @return array
      */
     public static function normalizeVariadic(array $arguments)

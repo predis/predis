@@ -56,6 +56,8 @@ class Consumer extends AbstractConsumer
      * initialize a PUB/SUB consumer.
      *
      * @param ClientInterface $client Client instance used by the consumer.
+     *
+     * @throws NotSupportedException
      */
     private function checkCapabilities(ClientInterface $client)
     {
@@ -121,6 +123,7 @@ class Consumer extends AbstractConsumer
                 }
                 // The missing break here is intentional as we must process
                 // subscriptions and unsubscriptions as standard messages.
+                // no break
 
             case self::MESSAGE:
                 return (object) array(

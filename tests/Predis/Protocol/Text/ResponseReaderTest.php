@@ -88,7 +88,7 @@ class ResponseReaderTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unexpected empty reponse header.
      */
     public function testEmptyResponseHeader()
@@ -105,7 +105,7 @@ class ResponseReaderTest extends PredisTestCase
     }
     /**
      * @group disconnected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unknown response prefix: '!'.
      */
     public function testUnknownResponsePrefix()

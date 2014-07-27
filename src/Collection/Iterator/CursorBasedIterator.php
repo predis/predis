@@ -61,6 +61,8 @@ abstract class CursorBasedIterator implements Iterator
      *
      * @param ClientInterface $client    Client connected to Redis.
      * @param string          $commandID Command ID.
+     *
+     * @throws NotSupportedException
      */
     protected function requiredCommand(ClientInterface $client, $commandID)
     {

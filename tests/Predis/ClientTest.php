@@ -213,7 +213,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
@@ -226,7 +226,7 @@ class ClientTest extends PredisTestCase
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($wrongType));
 
-        $client = new Client($callable);
+        new Client($callable);
     }
 
     /**
@@ -293,7 +293,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
     public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()
@@ -308,7 +308,7 @@ class ClientTest extends PredisTestCase
 
         $arg2 = array('aggregate' => function () use ($fnaggregate) { return $fnaggregate; });
 
-        $client = new Client($arg1, $arg2);
+        new Client($arg1, $arg2);
     }
 
     /**
@@ -394,7 +394,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testExecuteCommandThrowsExceptionOnRedisError()
@@ -457,7 +457,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testCallingRedisCommandThrowsExceptionOnServerError()
@@ -565,7 +565,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Command 'INVALIDCOMMAND' is not a registered Redis command.
      */
     public function testThrowsExceptionOnNonRegisteredRedisCommand()
@@ -591,7 +591,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections.
      */
     public function testGetConnectionByIdWorksOnlyWithAggregateConnections()
@@ -824,8 +824,9 @@ class ClientTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param  array  $parameters Array of connection parameters.
-     * @return String URI string.
+     * @param array $parameters Array of connection parameters.
+     *
+     * @return string URI string.
      */
     protected function getParametersString(array $parameters)
     {

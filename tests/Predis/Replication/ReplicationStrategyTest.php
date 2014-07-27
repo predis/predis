@@ -78,7 +78,7 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
     public function testUsingDisallowedCommandThrowsException()
@@ -232,7 +232,8 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * Returns the list of expected supported commands.
      *
-     * @param  string $type Optional type of command (based on its keys)
+     * @param string $type Optional type of command (based on its keys)
+     *
      * @return array
      */
     protected function getExpectedCommands($type = null)

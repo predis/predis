@@ -52,11 +52,12 @@ class FactoryTest extends PredisTestCase
             'path' => '/tmp/redis.sock',
         ));
 
-        $connection = $factory->create($tcp);
+        $connection = $factory->create($unix);
         $parameters = $connection->getParameters();
         $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
-        $this->assertEquals($tcp->scheme, $parameters->scheme);
-        $this->assertEquals($tcp->database, $parameters->database);
+        $this->assertEquals($unix->scheme, $parameters->scheme);
+        $this->assertEquals($unix->path, $parameters->path);
+        $this->assertEquals($unix->database, $parameters->database);
     }
 
     /**
@@ -154,7 +155,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'unknown'.
      */
     public function testCreateUndefinedConnection()
@@ -210,7 +211,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testDefineConnectionWithInvalidArgument()
     {
@@ -220,7 +221,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'tcp'.
      */
     public function testUndefineDefinedConnection()
@@ -244,7 +245,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expecteExceptionMessage Unknown connection scheme: 'redis'.
      */
     public function testDefineAndUndefineConnection()
