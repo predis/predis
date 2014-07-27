@@ -909,6 +909,7 @@ class MultiExecTest extends PredisTestCase
 
                 case 'UNWATCH':
                     $watch = false;
+                    // no break
 
                 default:
                     return $multi ? new Response\Status('QUEUED') : 'DUMMY_RESPONSE';

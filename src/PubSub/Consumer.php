@@ -123,6 +123,7 @@ class Consumer extends AbstractConsumer
                 }
                 // The missing break here is intentional as we must process
                 // subscriptions and unsubscriptions as standard messages.
+                // no break
 
             case self::MESSAGE:
                 return (object) array(
