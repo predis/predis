@@ -83,6 +83,10 @@ v1.0.0 (201x-xx-xx)
   shorter `Predis\Command\Processor\ProcessorInterface`. Also removed interface
   for chain processors since it is basically useless.
 
+- Renamed `Predis\ExecutableContextInterface` to `Predis\ClientContextInterface`
+  and augmented it with a couple of required methods since this interface is no
+  more comparable to a basic client as it could be misleading.
+
 - The `Predis\Option` namespace is now known as `Predis\Configuration` and have
   a fully-reworked `Options` class with the ability to lazily initialize values
   using objects that responds to `__invoke()` (not all the kinds of callables)
