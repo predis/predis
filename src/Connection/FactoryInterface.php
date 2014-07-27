@@ -36,7 +36,8 @@ interface FactoryInterface
     /**
      * Creates a new connection object.
      *
-     * @param  mixed                   $parameters Initialization parameters for the connection.
+     * @param mixed $parameters Initialization parameters for the connection.
+     *
      * @return NodeConnectionInterface
      */
     public function create($parameters);

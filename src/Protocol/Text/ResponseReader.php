@@ -64,7 +64,8 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * Returns the response handler associated to a certain type of response.
      *
-     * @param  string                           $prefix Identifier of the type of response.
+     * @param string $prefix Identifier of the type of response.
+     *
      * @return Handler\ResponseHandlerInterface
      */
     public function getHandler($prefix)

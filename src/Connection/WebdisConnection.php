@@ -176,8 +176,9 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Feeds the phpredis reader resource with the data read from the network.
      *
-     * @param  resource $resource Reader resource.
-     * @param  string   $buffer   Buffer of data read from a connection.
+     * @param resource $resource Reader resource.
+     * @param string   $buffer   Buffer of data read from a connection.
+     *
      * @return int
      */
     protected function feedReader($resource, $buffer)
@@ -214,7 +215,8 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Checks if the specified command is supported by this connection class.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return string
      *
      * @throws NotSupportedException

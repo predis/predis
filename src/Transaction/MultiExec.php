@@ -153,8 +153,9 @@ class MultiExec implements ClientContextInterface
     /**
      * Dynamically invokes a Redis command with the specified arguments.
      *
-     * @param  string $method    Command ID.
-     * @param  array  $arguments Arguments for the command.
+     * @param string $method    Command ID.
+     * @param array  $arguments Arguments for the command.
+     *
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -168,8 +169,9 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes a Redis command bypassing the transaction logic.
      *
-     * @param  string $commandID Command ID.
-     * @param  array  $arguments Arguments for the command.
+     * @param string $commandID Command ID.
+     * @param array  $arguments Arguments for the command.
+     *
      * @return mixed
      *
      * @throws ServerException
@@ -189,7 +191,8 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return $this|mixed
      *
      * @throws AbortedMultiExecException
@@ -219,7 +222,8 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes WATCH against one or more keys.
      *
-     * @param  string|array $keys One or more keys.
+     * @param string|array $keys One or more keys.
+     *
      * @return mixed
      *
      * @throws NotSupportedException
@@ -346,7 +350,8 @@ class MultiExec implements ClientContextInterface
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param  mixed $callable Optional callback for execution.
+     * @param mixed $callable Optional callback for execution.
+     *
      * @return array
      *
      * @throws CommunicationException

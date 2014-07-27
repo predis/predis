@@ -23,7 +23,8 @@ abstract class PredisProfileTestCase extends PredisTestCase
     /**
      * Returns a new instance of the tested profile.
      *
-     * @param  string           $version Version of Redis.
+     * @param string $version Version of Redis.
+     *
      * @return ProfileInterface
      */
     protected function getProfile($version = null)
@@ -49,7 +50,8 @@ abstract class PredisProfileTestCase extends PredisTestCase
      * Returns the list of commands supported by the current
      * server profile.
      *
-     * @param  ProfileInterface $profile Server profile instance.
+     * @param ProfileInterface $profile Server profile instance.
+     *
      * @return array
      */
     protected function getCommands(ProfileInterface $profile)

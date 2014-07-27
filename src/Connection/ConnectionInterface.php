@@ -48,7 +48,8 @@ interface ConnectionInterface
     /**
      * Reads the response to the given command from the connection.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return mixed
      */
     public function readResponse(CommandInterface $command);
@@ -57,7 +58,8 @@ interface ConnectionInterface
      * Writes a request for the given command over the connection and reads back
      * the response returned by Redis.
      *
-     * @param  CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance.
+     *
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);

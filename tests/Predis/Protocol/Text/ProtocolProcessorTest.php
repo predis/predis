@@ -46,8 +46,9 @@ class ProtocolProcessorTest extends PredisTestCase
     }
 
     /**
-     * @todo Improve test coverage
      * @group disconnected
+     *
+     * @todo Improve test coverage
      */
     public function testConnectionRead()
     {

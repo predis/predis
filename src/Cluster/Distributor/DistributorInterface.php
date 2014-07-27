@@ -40,7 +40,8 @@ interface DistributorInterface
      * Returns the corresponding slot of a node from the distributor using the
      * computed hash of a key.
      *
-     * @param  mixed $hash
+     * @param mixed $hash
+     *
      * @return mixed
      */
     public function getSlot($hash);
@@ -48,7 +49,8 @@ interface DistributorInterface
     /**
      * Returns a node from the distributor using its assigned slot ID.
      *
-     * @param  mixed $slot
+     * @param mixed $slot
+     *
      * @return mixed
      */
     public function getBySlot($slot);
@@ -56,7 +58,8 @@ interface DistributorInterface
     /**
      * Returns a node from the distributor using the computed hash of a key.
      *
-     * @param  mixed $hash
+     * @param mixed $hash
+     *
      * @return mixed
      */
     public function getByHash($hash);
@@ -64,7 +67,8 @@ interface DistributorInterface
     /**
      * Returns a node from the distributor mapping to the specified value.
      *
-     * @param  string $value
+     * @param string $value
+     *
      * @return mixed
      */
     public function get($value);

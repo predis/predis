@@ -34,7 +34,8 @@ class Factory implements FactoryInterface
      * implementing Predis\Connection\NodeConnectionInterface. Optionally,
      * callable objects are used for lazy initialization of connection objects.
      *
-     * @param  mixed $initializer FQN of a connection class or a callable for lazy initialization.
+     * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
+     *
      * @return mixed
      */
     protected function checkInitializer($initializer)
@@ -117,7 +118,8 @@ class Factory implements FactoryInterface
     /**
      * Creates a connection parameters instance from the supplied argument.
      *
-     * @param  mixed               $parameters Original connection parameters.
+     * @param mixed $parameters Original connection parameters.
+     *
      * @return ParametersInterface
      */
     protected function createParameters($parameters)

@@ -22,8 +22,9 @@ interface OptionInterface
     /**
      * Filters and validates the passed value.
      *
-     * @param  OptionsInterface $options Options container.
-     * @param  mixed            $value   Input value.
+     * @param OptionsInterface $options Options container.
+     * @param mixed            $value   Input value.
+     *
      * @return mixed
      */
     public function filter(OptionsInterface $options, $value);
@@ -31,7 +32,8 @@ interface OptionInterface
     /**
      * Returns the default value for the option.
      *
-     * @param  OptionsInterface $options Options container.
+     * @param OptionsInterface $options Options container.
+     *
      * @return mixed
      */
     public function getDefault(OptionsInterface $options);

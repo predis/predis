@@ -28,9 +28,10 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param  DistributorInterface $distributor Distributor instance.
-     * @param  int                  $iterations  Number of nodes to fetch.
-     * @return array                Nodes from the hashring.
+     * @param DistributorInterface $distributor Distributor instance.
+     * @param int                  $iterations  Number of nodes to fetch.
+     *
+     * @return array Nodes from the hashring.
      */
     protected function getNodes(DistributorInterface $distributor, $iterations = 10)
     {
@@ -47,7 +48,8 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a distributor instance with the specified nodes added.
      *
-     * @param  array                $nodes Nodes to add to the distributor.
+     * @param array $nodes Nodes to add to the distributor.
+     *
      * @return DistributorInterface
      */
     protected function getSampleDistribution(array $nodes)

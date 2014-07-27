@@ -249,9 +249,10 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Implements a strategy to deal with wrap-around errors during binary searches.
      *
-     * @param  int $upper
-     * @param  int $lower
-     * @param  int $ringKeysCount
+     * @param int $upper
+     * @param int $lower
+     * @param int $ringKeysCount
+     *
      * @return int
      */
     protected function wrapAroundStrategy($upper, $lower, $ringKeysCount)

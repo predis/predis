@@ -824,8 +824,9 @@ class ClientTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param  array  $parameters Array of connection parameters.
-     * @return String URI string.
+     * @param array $parameters Array of connection parameters.
+     *
+     * @return string URI string.
      */
     protected function getParametersString(array $parameters)
     {

@@ -25,8 +25,9 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      * Verifies that a Redis command is a valid Predis\Command\CommandInterface
      * instance with the specified ID and command arguments.
      *
-     * @param  string|Command\CommandInterface $command   Expected command or command ID.
-     * @param  array                           $arguments Expected command arguments.
+     * @param string|Command\CommandInterface $command   Expected command or command ID.
+     * @param array                           $arguments Expected command arguments.
+     *
      * @return RedisCommandConstraint
      */
     public function isRedisCommand($command = null, array $arguments = null)
@@ -99,7 +100,8 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      * Returns a named array with the default connection parameters merged with
      * the specified additional parameters.
      *
-     * @param  array $additional Additional connection parameters.
+     * @param array $additional Additional connection parameters.
+     *
      * @return array Connection parameters.
      */
     protected function getParametersArray(array $additional)
@@ -110,8 +112,9 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Returns a new instance of connection parameters.
      *
-     * @param  array                 $additional Additional connection parameters.
-     * @return Connection\Parameters Default connection parameters.
+     * @param array $additional Additional connection parameters.
+     *
+     * @return Connection\Parameters
      */
     protected function getParameters($additional = array())
     {
@@ -124,7 +127,8 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Returns a new instance of server profile.
      *
-     * @param  string                   $version Redis profile.
+     * @param string $version Redis profile.
+     *
      * @return Profile\ProfileInterface
      */
     protected function getProfile($version = null)
@@ -135,9 +139,10 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Returns a new client instance.
      *
-     * @param  array  $parameters Additional connection parameters.
-     * @param  array  $options    Additional client options.
-     * @param  bool   $flushdb    Flush selected database before returning the client.
+     * @param array $parameters Additional connection parameters.
+     * @param array $options    Additional client options.
+     * @param bool  $flushdb    Flush selected database before returning the client.
+     *
      * @return Client
      */
     protected function createClient(array $parameters = null, array $options = null, $flushdb = true)
@@ -168,6 +173,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      * Returns the server version of the Redis instance used by the test suite.
      *
      * @return string
+     *
      * @throws RuntimeException When the client cannot retrieve the current server version
      */
     protected function getRedisServerVersion()
@@ -195,10 +201,12 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string                              $expectedVersion Expected redis version.
-     * @param  string                              $operator        Comparison operator.
-     * @param  callable                            $callback        Callback for matching version.
+     * @param string   $expectedVersion Expected redis version.
+     * @param string   $operator        Comparison operator.
+     * @param callable $callback        Callback for matching version.
+     *
      * @return string
+     *
      * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
@@ -214,10 +222,12 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string                              $expectedVersion Expected redis version.
-     * @param  string                              $operator        Comparison operator.
-     * @param  callable                            $callback        Callback for matching version.
+     * @param string   $expectedVersion Expected redis version.
+     * @param string   $operator        Comparison operator.
+     * @param callable $callback        Callback for matching version.
+     *
      * @return string
+     *
      * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnProfileVersion($expectedVersion, $operator, $callback)

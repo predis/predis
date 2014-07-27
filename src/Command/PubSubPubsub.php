@@ -42,7 +42,8 @@ class PubSubPubsub extends Command
     /**
      * Returns the processed response to PUBSUB NUMSUB.
      *
-     * @param  array $channels List of channels
+     * @param array $channels List of channels
+     *
      * @return array
      */
     protected static function processNumsub(array $channels)

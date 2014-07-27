@@ -46,8 +46,9 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Checks if the specified flag is valid based on the state of the consumer.
      *
-     * @param  int     $value Flag.
-     * @return Boolean
+     * @param int $value Flag.
+     *
+     * @return bool
      */
     protected function isFlagSet($value)
     {
@@ -111,7 +112,8 @@ abstract class AbstractConsumer implements Iterator
      * Closes the context by unsubscribing from all the subscribed channels. The
      * context can be forcefully closed by dropping the underlying connection.
      *
-     * @param  bool $drop Indicates if the context should be closed by dropping the connection.
+     * @param bool $drop Indicates if the context should be closed by dropping the connection.
+     *
      * @return bool Returns false when there are no pending messages.
      */
     public function stop($drop = false)
@@ -190,7 +192,7 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Checks if the the consumer is still in a valid state to continue.
      *
-     * @return Boolean
+     * @return bool
      */
     public function valid()
     {

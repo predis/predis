@@ -68,7 +68,8 @@ abstract class RedisProfile implements ProfileInterface
      * Returns the fully-qualified name of a class representing the specified
      * command ID registered in the current server profile.
      *
-     * @param  string $commandID Command ID.
+     * @param string $commandID Command ID.
+     *
      * @return string
      */
     public function getCommandClass($commandID)

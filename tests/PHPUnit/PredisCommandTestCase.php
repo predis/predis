@@ -49,7 +49,8 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @param  bool   $flushdb Flush selected database before returning the client.
+     * @param bool $flushdb Flush selected database before returning the client.
+     *
      * @return Client
      */
     public function getClient($flushdb = true)
@@ -70,7 +71,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns wether the command is prefixable or not.
      *
-     * @return Boolean
+     * @return bool
      */
     protected function isPrefixable()
     {
@@ -81,6 +82,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new command instance with the specified arguments.
      *
      * @param ... List of arguments for the command.
+     *
      * @return CommandInterface
      */
     protected function getCommandWithArguments(/* arguments */)
@@ -91,7 +93,8 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance with the specified arguments.
      *
-     * @param  array            $arguments Arguments for the command.
+     * @param array $arguments Arguments for the command.
+     *
      * @return CommandInterface
      */
     protected function getCommandWithArgumentsArray(array $arguments)

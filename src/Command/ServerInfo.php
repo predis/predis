@@ -48,7 +48,8 @@ class ServerInfo extends Command
     /**
      * Parses a single row of the response and returns the key-value pair.
      *
-     * @param  string $row Single row of the response.
+     * @param string $row Single row of the response.
+     *
      * @return array
      */
     protected function parseRow($row)
@@ -65,7 +66,8 @@ class ServerInfo extends Command
     /**
      * Extracts the statistics of each logical DB from the string buffer.
      *
-     * @param  string $str Response buffer.
+     * @param string $str Response buffer.
+     *
      * @return array
      */
     protected function parseDatabaseStats($str)
@@ -83,7 +85,8 @@ class ServerInfo extends Command
     /**
      * Parses the response and extracts the allocation statistics.
      *
-     * @param  string $str Response buffer.
+     * @param string $str Response buffer.
+     *
      * @return array
      */
     protected function parseAllocationStats($str)

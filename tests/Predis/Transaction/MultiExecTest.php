@@ -802,7 +802,8 @@ class MultiExecTest extends PredisTestCase
      * Returns a mocked instance of Predis\Connection\NodeConnectionInterface
      * using the specified callback to return values from executeCommand().
      *
-     * @param  \Closure                                   $executeCallback
+     * @param \Closure $executeCallback
+     *
      * @return \Predis\Connection\NodeConnectionInterface
      */
     protected function getMockedConnection($executeCallback)
@@ -820,9 +821,10 @@ class MultiExecTest extends PredisTestCase
      * the specified callback to return values from the executeCommand method
      * of the underlying connection.
      *
-     * @param  \Closure  $executeCallback
-     * @param  array     $txOpts
-     * @param  array     $clientOpts
+     * @param \Closure $executeCallback
+     * @param array    $txOpts
+     * @param array    $clientOpts
+     *
      * @return MultiExec
      */
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null)
@@ -837,9 +839,10 @@ class MultiExecTest extends PredisTestCase
     /**
      * Returns a callback that emulates a server-side MULTI/EXEC transaction context.
      *
-     * @param  array    $expected Expected responses.
-     * @param  array    $commands Reference to an array storing the whole flow of commands.
-     * @param  array    $cas      Check and set operations performed by the transaction.
+     * @param array $expected Expected responses.
+     * @param array $commands Reference to an array storing the whole flow of commands.
+     * @param array $cas      Check and set operations performed by the transaction.
+     *
      * @return \Closure
      */
     protected function getExecuteCallback($expected = array(), &$commands = array(), &$cas = array())
@@ -921,7 +924,8 @@ class MultiExecTest extends PredisTestCase
      * Converts an array of instances of Predis\Command\CommandInterface and
      * returns an array containing their IDs.
      *
-     * @param  array $commands List of commands instances.
+     * @param array $commands List of commands instances.
+     *
      * @return array
      */
     protected static function commandsToIDs($commands)
@@ -933,8 +937,9 @@ class MultiExecTest extends PredisTestCase
      * Returns a client instance connected to the specified Redis
      * server instance to perform integration tests.
      *
-     * @param  array  $parameters Additional connection parameters.
-     * @param  array  $options    Additional client options.
+     * @param array $parameters Additional connection parameters.
+     * @param array $options    Additional client options.
+     *
      * @return Client
      */
     protected function getClient(array $parameters = array(), array $options = array())

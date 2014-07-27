@@ -53,7 +53,8 @@ class Parameters implements ParametersInterface
      * Creates a new instance by supplying the initial parameters either in the
      * form of an URI string or a named array.
      *
-     * @param  array|string $parameters Set of connection parameters.
+     * @param array|string $parameters Set of connection parameters.
+     *
      * @return Parameters
      */
     public static function create($parameters)
@@ -68,7 +69,8 @@ class Parameters implements ParametersInterface
     /**
      * Parses an URI string returning an array of connection parameters.
      *
-     * @param  string $uri URI string.
+     * @param string $uri URI string.
+     *
      * @return array
      */
     public static function parse($uri)
@@ -95,7 +97,8 @@ class Parameters implements ParametersInterface
     /**
      * Validates and converts each value of the connection parameters array.
      *
-     * @param  array $parameters Connection parameters.
+     * @param array $parameters Connection parameters.
+     *
      * @return array
      */
     protected function filter(array $parameters)
