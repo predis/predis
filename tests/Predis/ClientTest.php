@@ -394,7 +394,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testExecuteCommandThrowsExceptionOnRedisError()
@@ -457,7 +457,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testCallingRedisCommandThrowsExceptionOnServerError()
@@ -565,7 +565,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Command 'INVALIDCOMMAND' is not a registered Redis command.
      */
     public function testThrowsExceptionOnNonRegisteredRedisCommand()
@@ -591,7 +591,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections.
      */
     public function testGetConnectionByIdWorksOnlyWithAggregateConnections()

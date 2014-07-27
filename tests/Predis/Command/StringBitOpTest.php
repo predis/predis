@@ -131,7 +131,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR BITOP NOT must be called with a single source key.
      */
     public function testBitwiseNOTAcceptsOnlyOneSourceKey()
@@ -141,7 +141,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR syntax error
      */
     public function testThrowsExceptionOnInvalidOperation()
@@ -151,7 +151,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnInvalidSourceKey()

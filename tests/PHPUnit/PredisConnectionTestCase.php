@@ -22,7 +22,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group disconnected
      * @group slow
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowExceptionWhenUnableToConnect()
     {
@@ -283,7 +283,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
@@ -295,7 +295,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {

@@ -87,7 +87,7 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testThrowsServerExceptionOnResponseErrorByDefault()
@@ -292,7 +292,7 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      */
     public function testExecuteInsideCallableArgumentThrowsException()
     {

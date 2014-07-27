@@ -56,7 +56,7 @@ class CommunicationExceptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\CommunicationException
+     * @expectedException \Predis\CommunicationException
      * @expectedExceptionMessage Communication error
      */
     public function testCommunicationExceptionHandling()

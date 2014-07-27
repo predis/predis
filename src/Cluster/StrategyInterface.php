@@ -11,7 +11,7 @@
 
 namespace Predis\Cluster;
 
-use Predis\Cluster\Distribution\DistributorInterface;
+use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Command\CommandInterface;
 
 /**

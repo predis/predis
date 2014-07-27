@@ -21,7 +21,7 @@ class KeyspaceTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'SCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()

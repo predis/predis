@@ -105,7 +105,7 @@ class TransactionWatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR WATCH inside MULTI is not allowed
      */
     public function testThrowsExceptionWhenCallingInsideTransaction()

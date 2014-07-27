@@ -23,7 +23,7 @@ class ConsumerTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'MONITOR'.
      */
     public function testMonitorConsumerRequireMonitorCommand()
@@ -40,7 +40,7 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Cannot initialize a monitor consumer over aggregate connections.
      */
     public function testMonitorConsumerDoesNotWorkOnClusters()

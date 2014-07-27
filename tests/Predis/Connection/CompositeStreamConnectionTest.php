@@ -82,7 +82,7 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unknown response prefix: 'P'.
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()

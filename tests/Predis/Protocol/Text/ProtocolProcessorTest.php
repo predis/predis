@@ -101,7 +101,7 @@ class ProtocolProcessorTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unknown response prefix: '!'.
      */
     public function testUnknownResponsePrefix()

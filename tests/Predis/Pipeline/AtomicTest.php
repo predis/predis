@@ -49,7 +49,7 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage The underlying transaction has been aborted by the server.
      */
     public function testThrowsExceptionOnAbortedTransaction()
@@ -70,7 +70,7 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testPipelineWithErrorInTransaction()
@@ -100,7 +100,7 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Test error
      */
     public function testThrowsServerExceptionOnResponseErrorByDefault()
@@ -148,7 +148,7 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage The class 'Predis\Pipeline\Atomic' does not support aggregate connections.
      */
     public function testExecutorWithAggregateConnection()

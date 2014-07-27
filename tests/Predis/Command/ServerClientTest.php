@@ -186,7 +186,7 @@ BUFFER;
      * @requiresRedisVersion >= 2.6.9
      * @dataProvider invalidConnectionNameProvider
      *
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @param string $invalidConnectionName
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
@@ -197,7 +197,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptioOnWrongModifier()
     {
@@ -208,7 +208,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR No such client
      */
     public function testThrowsExceptionWhenKillingUnknownClient()

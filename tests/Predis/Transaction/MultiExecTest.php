@@ -23,7 +23,7 @@ class MultiExecTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support MULTI, EXEC and DISCARD.
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
@@ -42,7 +42,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage WATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
@@ -66,7 +66,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage UNWATCH is not supported by the current profile.
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
@@ -169,7 +169,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context.
      */
     public function testThrowsExceptionOnExecInsideTransactionBlock()
@@ -247,7 +247,7 @@ class MultiExecTest extends PredisTestCase
     }
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      */
     public function testThrowsExceptionOnWatchInsideMulti()
     {
@@ -396,7 +396,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Automatic retries are supported only when a callable block is provided.
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()
@@ -443,7 +443,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Transaction\AbortedMultiExecException
+     * @expectedException \Predis\Transaction\AbortedMultiExecException
      */
     public function testThrowsExceptionOnServerSideTransactionAbort()
     {
@@ -588,7 +588,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR simulated error
      */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenTrue()
@@ -616,7 +616,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR simulated failure on EXEC
      */
     public function testExceptionsOptionDoesNotAffectTransactionControlCommands()

@@ -256,7 +256,7 @@ class PredisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage Cannot use 'PING' over clusters of connections.
      */
     public function testThrowsExceptionOnNonShardableCommand()

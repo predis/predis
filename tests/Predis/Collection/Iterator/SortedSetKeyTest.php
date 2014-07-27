@@ -21,7 +21,7 @@ class SortedSetKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'ZSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()

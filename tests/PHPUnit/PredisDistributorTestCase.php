@@ -21,7 +21,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a new instance of the tested distributor.
      *
-     * @return Predis\Cluster\Distributor\DistributorInterface
+     * @return \Predis\Cluster\Distributor\DistributorInterface
      */
     abstract protected function getDistributorInstance();
 

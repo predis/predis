@@ -63,7 +63,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage Unknown server profile: '1.0'.
      */
     public function testGetUndefinedProfile()

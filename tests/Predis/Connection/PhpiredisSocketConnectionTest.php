@@ -88,7 +88,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Connection\ConnectionException
+     * @expectedException \Predis\Connection\ConnectionException
      * @expectedExceptionMessage Cannot resolve the address of 'bogus.tld'.
      */
     public function testThrowsExceptionOnUnresolvableHostname()
@@ -100,7 +100,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Protocol error, got "P" as reply type byte
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()

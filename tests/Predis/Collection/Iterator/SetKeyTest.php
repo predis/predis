@@ -21,7 +21,7 @@ class SetKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\NotSupportedException
+     * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The current profile does not support 'SSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()

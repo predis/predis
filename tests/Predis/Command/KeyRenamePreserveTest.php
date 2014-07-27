@@ -72,7 +72,7 @@ class KeyRenamePreserveTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR no such key
      */
     public function testReturnsFalseOnNonExistingKeys()

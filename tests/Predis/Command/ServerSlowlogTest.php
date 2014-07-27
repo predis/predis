@@ -107,7 +107,7 @@ class ServerSlowlogTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException Predis\Response\ServerException
+     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()
     {

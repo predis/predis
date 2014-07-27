@@ -20,7 +20,7 @@ class EmptyRingExceptionTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\Cluster\Distributor\EmptyRingException
+     * @expectedException \Predis\Cluster\Distributor\EmptyRingException
      */
     public function testExceptionMessage()
     {

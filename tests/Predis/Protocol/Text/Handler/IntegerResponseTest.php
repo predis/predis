@@ -53,7 +53,7 @@ class IntegerResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Protocol\ProtocolException
+     * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Cannot parse 'invalid' as a valid numeric response.
      */
     public function testInvalid()
