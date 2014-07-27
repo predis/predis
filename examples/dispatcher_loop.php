@@ -25,10 +25,13 @@ require __DIR__.'/shared.php';
 // Create a client and disable r/w timeout on the socket
 $client = new Predis\Client($single_server + array('read_write_timeout' => 0));
 
-// Create a Predis\DispatcherLoop instance and attach a bunch of callbacks.
-$dispatcher = new Predis\PubSub\DispatcherLoop($client);
+// Return an initialized PubSub consumer instance from the client.
+$pubsub = $client->pubSubLoop();
 
-// Demonstrate how to use a callable class as a callback for Predis\DispatcherLoop.
+// Create a dispatcher loop instance and attach a bunch of callbacks.
+$dispatcher = new Predis\PubSub\DispatcherLoop($pubsub);
+
+// Demonstrate how to use a callable class as a callback for the dispatcher loop.
 class EventsListener implements Countable
 {
     private $events;

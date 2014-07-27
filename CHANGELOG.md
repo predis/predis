@@ -74,6 +74,9 @@ v1.0.0 (201x-xx-xx)
   they can also define the needed logic in their command classes by implementing
   `Predis\Command\PrefixableCommandInterface` just like before.
 
+- `Predis\PubSub\DispatcherLoop` now takes a `Predis\PubSub\Consumer` instance
+  as the sole argument of its constructor instead of `Predis\ClientInterface`.
+
 - All of the interfaces and classes related to translated Redis response types
   have been moved in the new `Predis\Response` namespace and most of them have
   been renamed to make their fully-qualified name less redundant. Now the base

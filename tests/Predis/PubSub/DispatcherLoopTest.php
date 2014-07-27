@@ -44,7 +44,8 @@ class DispatcherLoopTest extends PredisTestCase
         $consumer = new Client($parameters, $options);
         $consumer->connect();
 
-        $dispatcher = new DispatcherLoop($consumer);
+        $pubsub = new Consumer($consumer);
+        $dispatcher = new DispatcherLoop($pubsub);
 
         $function01 = $this->getMock('stdClass', array('__invoke'));
         $function01->expects($this->exactly(2))
@@ -103,7 +104,9 @@ class DispatcherLoopTest extends PredisTestCase
         $producerPfx->connect();
 
         $consumer = new Client($parameters, $options + array('prefix' => 'foobar'));
-        $dispatcher = new DispatcherLoop($consumer);
+
+        $pubsub = new Consumer($consumer);
+        $dispatcher = new DispatcherLoop($pubsub);
 
         $callback = $this->getMock('stdClass', array('__invoke'));
         $callback->expects($this->exactly(1))

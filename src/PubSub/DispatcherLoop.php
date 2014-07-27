@@ -12,7 +12,6 @@
 namespace Predis\PubSub;
 
 use InvalidArgumentException;
-use Predis\ClientInterface;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
@@ -29,12 +28,12 @@ class DispatcherLoop
     protected $subscriptionCallback;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
+     * @param Consumer $pubsub PubSub consumer instance used by the loop.
      */
-    public function __construct(ClientInterface $client)
+    public function __construct(Consumer $pubsub)
     {
         $this->callbacks = array();
-        $this->pubsub = $client->pubSubLoop();
+        $this->pubsub = $pubsub;
     }
 
     /**
