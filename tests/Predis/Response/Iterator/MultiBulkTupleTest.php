@@ -65,15 +65,15 @@ class MultiBulkTupleTest extends PredisTestCase
         $this->assertSame(3, $iterator->count());
 
         $this->assertSame(array('foo', '1'), $iterator->current());
-        $this->assertSame(1, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame(array('hoge', '2'), $iterator->current());
-        $this->assertSame(2, $iterator->next());
+        $iterator->next();
         $this->assertTrue($iterator->valid());
 
         $this->assertSame(array('lol', '3'), $iterator->current());
-        $this->assertSame(3, $iterator->next());
+        $iterator->next();
         $this->assertFalse($iterator->valid());
 
         $this->assertEquals('PONG', $client->ping());

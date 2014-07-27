@@ -65,8 +65,6 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
         if (++$this->position < $this->size) {
             $this->current = $this->getValue();
         }
-
-        return $this->position;
     }
 
     /**
