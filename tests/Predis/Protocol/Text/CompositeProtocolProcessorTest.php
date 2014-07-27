@@ -103,8 +103,6 @@ class CompositeProtocolProcessorTest extends PredisTestCase
      */
     public function testConnectionRead()
     {
-        $serialized = "*1\r\n$4\r\nPING\r\n";
-
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
         $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
 

@@ -35,7 +35,8 @@ class ConsumerTest extends PredisTestCase
                 ->will($this->returnValue(false));
 
         $client = new Client(null, array('profile' => $profile));
-        $monitor = new MonitorConsumer($client);
+
+        new MonitorConsumer($client);
     }
 
     /**
@@ -46,9 +47,9 @@ class ConsumerTest extends PredisTestCase
     public function testMonitorConsumerDoesNotWorkOnClusters()
     {
         $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
-
         $client = new Client($cluster);
-        $monitor = new MonitorConsumer($client);
+
+        new MonitorConsumer($client);
     }
 
     /**
@@ -69,7 +70,7 @@ class ConsumerTest extends PredisTestCase
                ->method('executeCommand')
                ->with($cmdMonitor);
 
-        $monitor = new MonitorConsumer($client);
+        new MonitorConsumer($client);
     }
 
     /**

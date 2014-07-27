@@ -116,6 +116,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testExecutesCommandOnServer()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile);
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
@@ -130,6 +131,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testWritesCommandToServer()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile);
 
         $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
@@ -146,6 +148,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsCommandFromServer()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile);
 
         $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
@@ -162,7 +165,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testIsAbleToWriteMultipleCommandsAndReadThemBackForPipelining()
     {
-        $connection = $this->getConnection($profile);
+        $profile = $this->getProfile();
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
         $cmdPing->expects($this->never())
@@ -187,6 +190,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testSendsInitializationCommandsOnConnection()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('getArguments'));
@@ -210,6 +214,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsStatusResponses()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $connection->writeRequest($profile->createCommand('set', array('foo', 'bar')));
@@ -229,6 +234,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsBulkResponses()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
@@ -245,6 +251,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsIntegerResponses()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
@@ -258,6 +265,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsErrorResponsesAsResponseErrorObjects()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('set', array('foo', 'bar')));
@@ -272,6 +280,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testReadsMultibulkResponsesAsArrays()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true);
 
         $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
@@ -299,6 +308,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {
+        $profile = $this->getProfile();
         $connection = $this->getConnection($profile, true, array('read_write_timeout' => 0.5));
 
         $connection->executeCommand($profile->createCommand('brpop', array('foo', 3)));

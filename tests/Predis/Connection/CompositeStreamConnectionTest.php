@@ -39,13 +39,13 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new CompositeStreamConnection($parameters);
+        new CompositeStreamConnection($parameters);
     }
 
     /**

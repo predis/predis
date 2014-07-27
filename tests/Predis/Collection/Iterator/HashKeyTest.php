@@ -32,7 +32,7 @@ class HashKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::get('2.0')));
 
-        $iterator = new HashKey($client, 'key:hash');
+        new HashKey($client, 'key:hash');
     }
 
     /**

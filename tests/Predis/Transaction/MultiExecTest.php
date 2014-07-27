@@ -37,7 +37,7 @@ class MultiExecTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => $profile));
 
-        $tx = new MultiExec($client);
+        new MultiExec($client);
     }
 
     /**
@@ -386,7 +386,7 @@ class MultiExecTest extends PredisTestCase
         $tx = $this->getMockedTransaction($callback, $options);
 
         $tx->execute(function ($tx) {
-            $bar = $tx->get('foo');
+            $tx->get('foo');
             $tx->set('hoge', 'piyo');
         });
 
@@ -450,7 +450,7 @@ class MultiExecTest extends PredisTestCase
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback);
 
-        $responses = $tx->execute(function ($tx) {
+        $tx->execute(function ($tx) {
             $tx->echo('!!ABORT!!');
         });
     }

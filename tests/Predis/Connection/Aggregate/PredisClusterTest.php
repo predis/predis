@@ -89,7 +89,6 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection();
         $connection2 = $this->getMockConnection('tcp://host1:7001?alias=node2');
         $connection3 = $this->getMockConnection('tcp://host1:7002?alias=node3');
-        $connection4 = $this->getMockConnection('tcp://host1:7003?alias=node4');
 
         $cluster = new PredisCluster();
         $cluster->add($connection1);

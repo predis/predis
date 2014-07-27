@@ -12,6 +12,7 @@
 namespace Predis\Profile;
 
 use PredisTestCase;
+use Predis\Command\CommandInterface;
 use Predis\Command\Processor\ProcessorChain;
 
 /**
@@ -248,13 +249,13 @@ abstract class PredisProfileTestCase extends PredisTestCase
         $processor->expects($this->once())
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-                  ->will($this->returnCallback(function ($cmd) use (&$argsRef) {
+                  ->will($this->returnCallback(function (CommandInterface $cmd) use (&$argsRef) {
                         $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                     }));
 
         $profile = $this->getProfile();
         $profile->setProcessor($processor);
-        $command = $profile->createCommand('set', array('foo', 'bar'));
+        $profile->createCommand('set', array('foo', 'bar'));
 
         $this->assertSame(array('FOO', 'BAR'), $argsRef);
     }

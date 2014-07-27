@@ -45,7 +45,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new PhpiredisSocketConnection($parameters);
+        new PhpiredisSocketConnection($parameters);
     }
 
     /**

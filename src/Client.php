@@ -417,6 +417,9 @@ class Client implements ClientInterface
             $class = 'Predis\Pipeline\Pipeline';
         }
 
+        /*
+         * @var ClientContextInterface
+         */
         $pipeline = new $class($this);
 
         if (isset($callable)) {

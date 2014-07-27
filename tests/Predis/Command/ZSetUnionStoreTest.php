@@ -182,6 +182,6 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $redis->zunionstore('zset:destination', 1, 'foo');
+        $redis->zunionstore('zset:destination', '1', 'foo');
     }
 }

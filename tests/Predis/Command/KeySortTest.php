@@ -11,6 +11,8 @@
 
 namespace Predis\Command;
 
+use Predis\Client;
+
 /**
  * @group commands
  * @group realm-key
@@ -36,11 +38,11 @@ class KeySortTest extends PredisCommandTestCase
     /**
      * Utility method to to an LPUSH of some unordered values on a key.
      *
-     * @param  \Predis\Client $redis Redis client instance.
-     * @param  string        $key   Target key
+     * @param  Client $redis Redis client instance.
+     * @param  string $key   Target key
      * @return array
      */
-    protected function lpushUnorderedList(\Predis\Client $redis, $key)
+    protected function lpushUnorderedList(Client $redis, $key)
     {
         $list = array(2, 100, 3, 1, 30, 10);
         $redis->lpush($key, $list);

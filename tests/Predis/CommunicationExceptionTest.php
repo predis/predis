@@ -100,7 +100,7 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param  string                             $message    Exception message.
      * @param  int                                $code       Exception code.
      * @param  \Exception                         $inner      Inner exception.
-     * @return \Exception
+     * @return \Predis\CommunicationException
      */
     protected function getException(
         Connection\NodeConnectionInterface $connection,

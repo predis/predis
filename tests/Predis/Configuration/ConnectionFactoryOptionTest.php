@@ -36,7 +36,6 @@ class ConnectionFactoryOptionTest extends PredisTestCase
      */
     public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings()
     {
-        $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $class = get_class($this->getMock('Predis\Connection\NodeConnectionInterface'));
@@ -62,7 +61,6 @@ class ConnectionFactoryOptionTest extends PredisTestCase
      */
     public function testAcceptsConnectionFactoryInstance()
     {
-        $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
         $value = $this->getMock('Predis\Connection\FactoryInterface');
 

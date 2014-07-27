@@ -52,8 +52,6 @@ class ServerEvalTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $command = $this->getCommand();
-
         $this->assertSame('bar', $this->getCommand()->parseResponse('bar'));
     }
 

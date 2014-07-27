@@ -65,7 +65,7 @@ class RawCommandTest extends PredisTestCase
      */
     public function testExceptionOnMissingCommandID()
     {
-        $command = new RawCommand(array());
+        new RawCommand(array());
     }
 
     /**

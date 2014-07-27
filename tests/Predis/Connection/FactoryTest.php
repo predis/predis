@@ -52,11 +52,12 @@ class FactoryTest extends PredisTestCase
             'path' => '/tmp/redis.sock',
         ));
 
-        $connection = $factory->create($tcp);
+        $connection = $factory->create($unix);
         $parameters = $connection->getParameters();
         $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
-        $this->assertEquals($tcp->scheme, $parameters->scheme);
-        $this->assertEquals($tcp->database, $parameters->database);
+        $this->assertEquals($unix->scheme, $parameters->scheme);
+        $this->assertEquals($unix->path, $parameters->path);
+        $this->assertEquals($unix->database, $parameters->database);
     }
 
     /**

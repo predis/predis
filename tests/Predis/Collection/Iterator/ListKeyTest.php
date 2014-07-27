@@ -120,7 +120,7 @@ class ListKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::getDefault()));
 
-        $iterator = new ListKey($client, 'key:list', 'wrong');
+        new ListKey($client, 'key:list', 'wrong');
     }
 
     /**
@@ -135,7 +135,7 @@ class ListKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::getDefault()));
 
-        $iterator = new ListKey($client, 'key:list', 'wrong');
+        new ListKey($client, 'key:list', 'wrong');
     }
 
     /**

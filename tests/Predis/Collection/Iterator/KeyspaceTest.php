@@ -32,7 +32,7 @@ class KeyspaceTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::get('2.0')));
 
-        $iterator = new Keyspace($client);
+        new Keyspace($client);
     }
 
     /**

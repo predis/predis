@@ -226,7 +226,7 @@ class ClientTest extends PredisTestCase
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($wrongType));
 
-        $client = new Client($callable);
+        new Client($callable);
     }
 
     /**
@@ -308,7 +308,7 @@ class ClientTest extends PredisTestCase
 
         $arg2 = array('aggregate' => function () use ($fnaggregate) { return $fnaggregate; });
 
-        $client = new Client($arg1, $arg2);
+        new Client($arg1, $arg2);
     }
 
     /**

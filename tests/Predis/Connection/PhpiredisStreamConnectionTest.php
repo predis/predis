@@ -45,7 +45,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInvalidScheme()
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
-        $connection = new PhpiredisStreamConnection($parameters);
+        new PhpiredisStreamConnection($parameters);
     }
 
     /**

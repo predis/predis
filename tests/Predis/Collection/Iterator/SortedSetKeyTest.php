@@ -32,7 +32,7 @@ class SortedSetKeyTest extends PredisTestCase
                ->method('getProfile')
                ->will($this->returnValue(Profile\Factory::get('2.0')));
 
-        $iterator = new SortedSetKey($client, 'key:zset');
+        new SortedSetKey($client, 'key:zset');
     }
 
     /**

@@ -90,8 +90,6 @@ class ParametersTest extends PredisTestCase
      */
     public function testCreateWithUriString()
     {
-        $defaults = $this->getDefaultParametersArray();
-
         $overrides = array(
             'port' => 7000,
             'database' => 5,

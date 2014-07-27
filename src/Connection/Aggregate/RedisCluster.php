@@ -21,7 +21,6 @@ use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\NodeConnectionInterface;
-use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 

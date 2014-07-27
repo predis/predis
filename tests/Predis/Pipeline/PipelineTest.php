@@ -346,8 +346,8 @@ class PipelineTest extends PredisTestCase
         try {
             $responses = $pipeline->execute(function ($pipe) {
                 $pipe->echo('one');
-                throw new ClientException('TEST');
                 $pipe->echo('two');
+                throw new ClientException('TEST');
             });
         } catch (Exception $exception) {
             // NOOP

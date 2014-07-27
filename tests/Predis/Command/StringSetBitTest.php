@@ -91,7 +91,7 @@ class StringSetBitTest extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnInvalidBitValue()
     {
-        $redis = $this->getClient()->setbit('key:binary', 10, 255);
+        $this->getClient()->setbit('key:binary', 10, 255);
     }
 
     /**
@@ -101,7 +101,7 @@ class StringSetBitTest extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnNegativeOffset()
     {
-        $redis = $this->getClient()->setbit('key:binary', -1, 1);
+        $this->getClient()->setbit('key:binary', -1, 1);
     }
 
     /**
@@ -111,7 +111,7 @@ class StringSetBitTest extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnInvalidOffset()
     {
-        $redis = $this->getClient()->setbit('key:binary', 'invalid', 1);
+        $this->getClient()->setbit('key:binary', 'invalid', 1);
     }
 
     /**

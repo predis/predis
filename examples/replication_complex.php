@@ -58,7 +58,7 @@ $options = array(
 
         return $profile;
     },
-    'replication' => function ($options) {
+    'replication' => function () {
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
 

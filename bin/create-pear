@@ -46,12 +46,12 @@ function parseAuthor($string)
 
     if (preg_match('/^\s*(.+?)\s*(?:"(\S+)"\s*)?<(\S+)>\s*$/x', $string , $regs)) {
         if (count($regs) == 4) {
-            list($orig,$name,$user,$email) = $regs;
+            list($_,$name,$user,$email) = $regs;
             $author['name'] = $name;
             $author['user'] = $user;
             $author['email'] = $email;
         } elseif (count($regs) == 3) {
-            list($orig,$name,$email) = $regs;
+            list($_,$name,$email) = $regs;
             $author['name'] = $name;
             $author['email'] = $email;
         }

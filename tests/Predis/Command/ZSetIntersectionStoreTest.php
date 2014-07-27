@@ -164,6 +164,6 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $redis->zinterstore('zset:destination', 1, 'foo');
+        $redis->zinterstore('zset:destination', '1', 'foo');
     }
 }
