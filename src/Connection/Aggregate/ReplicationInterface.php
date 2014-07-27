@@ -12,6 +12,7 @@
 namespace Predis\Connection\Aggregate;
 
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Defines a group of Redis nodes in a master / slave replication setup.
@@ -31,21 +32,21 @@ interface ReplicationInterface extends AggregateConnectionInterface
      * Returns the connection instance currently in use by the aggregate
      * connection.
      *
-     * @return Predis\Connection\NodeConnectionInterface
+     * @return NodeConnectionInterface
      */
     public function getCurrent();
 
     /**
      * Returns the connection instance for the master Redis node.
      *
-     * @return Predis\Connection\NodeConnectionInterface
+     * @return NodeConnectionInterface
      */
     public function getMaster();
 
     /**
      * Returns a list of connection instances to slave nodes.
      *
-     * @return Predis\Connection\NodeConnectionInterface
+     * @return NodeConnectionInterface
      */
     public function getSlaves();
 }

@@ -14,9 +14,9 @@ namespace Predis\Pipeline;
 use SplQueue;
 use Predis\NotSupportedException;
 use Predis\CommunicationException;
-use Predis\Connection\ClusterInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Aggregate\ClusterInterface;
 
 /**
  * Command pipeline that does not throw exceptions on connection errors, but
