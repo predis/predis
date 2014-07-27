@@ -57,10 +57,10 @@ class Parameters implements ParametersInterface
     public static function create($parameters)
     {
         if (is_string($parameters)) {
-            $parameters = self::parse($parameters);
+            $parameters = static::parse($parameters);
         }
 
-        return new self($parameters ?: array());
+        return new static($parameters ?: array());
     }
 
     /**
