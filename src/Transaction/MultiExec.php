@@ -29,6 +29,8 @@ use Predis\Protocol\ProtocolException;
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiExec implements ClientContextInterface

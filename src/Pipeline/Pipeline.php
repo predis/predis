@@ -28,6 +28,8 @@ use Predis\Response\ServerException;
  * Implementation of a command pipeline in which write and read operations of
  * Redis commands are pipelined to alleviate the effects of network round-trips.
  *
+ * {@inheritdoc}
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Pipeline implements ClientContextInterface
