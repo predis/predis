@@ -61,8 +61,9 @@ class WebdisConnection implements NodeConnectionInterface
         }
 
         $this->parameters = $parameters;
-        $this->resource = $this->createCurl($parameters);
-        $this->reader = $this->createReader($parameters);
+
+        $this->resource = $this->createCurl();
+        $this->reader = $this->createReader();
     }
 
     /**
@@ -109,11 +110,12 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Initializes cURL.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createCurl(ParametersInterface $parameters)
+    private function createCurl()
     {
+        $parameters = $this->getParameters();
+
         $options = array(
             CURLOPT_FAILONERROR => true,
             CURLOPT_CONNECTTIMEOUT_MS => $parameters->timeout * 1000,
@@ -135,10 +137,9 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Initializes the phpiredis protocol reader.
      *
-     * @param  ParametersInterface $parameters Initialization parameters for the connection.
      * @return resource
      */
-    private function createReader(ParametersInterface $parameters)
+    private function createReader()
     {
         $reader = phpiredis_reader_create();
 
@@ -337,9 +338,8 @@ class WebdisConnection implements NodeConnectionInterface
     public function __wakeup()
     {
         $this->assertExtensions();
-        $parameters = $this->getParameters();
 
-        $this->resource = $this->createCurl($parameters);
-        $this->reader = $this->createReader($parameters);
+        $this->resource = $this->createCurl();
+        $this->reader = $this->createReader();
     }
 }
