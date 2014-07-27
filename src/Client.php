@@ -484,6 +484,8 @@ class Client implements ClientInterface
                 $pubsub->stop();
             }
         }
+
+        return null;
     }
 
     /**

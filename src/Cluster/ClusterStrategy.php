@@ -232,6 +232,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys($arguments)) {
             return $arguments[0];
         }
+
+        return null;
     }
 
     /**
@@ -253,6 +255,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys($keys)) {
             return $arguments[0];
         }
+
+        return null;
     }
 
     /**
@@ -268,6 +272,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
             return $arguments[0];
         }
+
+        return null;
     }
 
     /**
@@ -283,6 +289,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
             return $arguments[1];
         }
+
+        return null;
     }
 
     /**
@@ -299,6 +307,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys($keys)) {
             return $arguments[0];
         }
+
+        return null;
     }
 
     /**
@@ -318,6 +328,8 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($keys && $this->checkSameSlotForKeys($keys)) {
             return $keys[0];
         }
+
+        return null;
     }
 
     /**

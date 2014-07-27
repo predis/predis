@@ -238,6 +238,8 @@ class StreamConnection extends AbstractConnection
             default:
                 $this->onProtocolError("Unknown response prefix: '$prefix'.");
         }
+
+        return null;
     }
 
     /**

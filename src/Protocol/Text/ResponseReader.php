@@ -72,6 +72,8 @@ class ResponseReader implements ResponseReaderInterface
         if (isset($this->handlers[$prefix])) {
             return $this->handlers[$prefix];
         }
+
+        return null;
     }
 
     /**

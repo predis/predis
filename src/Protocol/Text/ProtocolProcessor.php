@@ -98,6 +98,8 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                 CommunicationException::handle(new ProtocolException(
                     $connection, "Unknown response prefix: '$prefix'."
                 ));
+
+                return null;
         }
     }
 

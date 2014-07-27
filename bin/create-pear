@@ -78,6 +78,8 @@ function parseVersion($string)
             'max' => $regs[2],
         );
     }
+
+    return null;
 }
 
 function addRolePath($pkg, $path, $role)

@@ -341,6 +341,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         if (isset($this->pool[$connectionID])) {
             return $this->pool[$connectionID];
         }
+
+        return null;
     }
 
     /**
@@ -353,6 +355,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         if ($this->pool) {
             return $this->pool[array_rand($this->pool)];
         }
+
+        return null;
     }
 
     /**

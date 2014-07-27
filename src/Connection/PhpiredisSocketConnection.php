@@ -364,6 +364,8 @@ class PhpiredisSocketConnection extends AbstractConnection
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));
         }
+
+        return null;
     }
 
     /**
