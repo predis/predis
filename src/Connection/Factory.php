@@ -76,7 +76,7 @@ class Factory implements FactoryInterface
     public function create($parameters)
     {
         if (!$parameters instanceof ParametersInterface) {
-            $parameters = Parameters::create($parameters);
+            $parameters = $this->createParameters($parameters);
         }
 
         $scheme = $parameters->scheme;
@@ -112,6 +112,17 @@ class Factory implements FactoryInterface
         foreach ($parameters as $node) {
             $connection->add($node instanceof NodeConnectionInterface ? $node : $this->create($node));
         }
+    }
+
+    /**
+     * Creates a connection parameters instance from the supplied argument.
+     *
+     * @param  mixed               $parameters Original connection parameters.
+     * @return ParametersInterface
+     */
+    protected function createParameters($parameters)
+    {
+        return Parameters::create($parameters);
     }
 
     /**
