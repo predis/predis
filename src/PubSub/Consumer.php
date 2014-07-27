@@ -56,6 +56,8 @@ class Consumer extends AbstractConsumer
      * initialize a PUB/SUB consumer.
      *
      * @param ClientInterface $client Client instance used by the consumer.
+     *
+     * @throws NotSupportedException
      */
     private function checkCapabilities(ClientInterface $client)
     {

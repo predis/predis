@@ -51,6 +51,8 @@ class Consumer implements Iterator
      * needed to initialize a monitor consumer.
      *
      * @param ClientInterface $client Client instance used by the consumer.
+     *
+     * @throws NotSupportedException
      */
     private function assertClient(ClientInterface $client)
     {

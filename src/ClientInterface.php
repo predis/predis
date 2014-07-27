@@ -218,7 +218,7 @@ interface ClientInterface
      * Creates a Redis command with the specified arguments and sends a request
      * to the server.
      *
-     * @param  string $commandID Command ID.
+     * @param  string $method    Command ID.
      * @param  array  $arguments Arguments for the command.
      * @return mixed
      */

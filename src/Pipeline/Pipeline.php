@@ -92,6 +92,8 @@ class Pipeline implements ClientContextInterface
      *
      * @param ConnectionInterface    $connection Redis connection that returned the error.
      * @param ErrorResponseInterface $response   Instance of the error response.
+     *
+     * @throws ServerException
      */
     protected function exception(ConnectionInterface $connection, ErrorResponseInterface $response)
     {
@@ -172,6 +174,8 @@ class Pipeline implements ClientContextInterface
      * Marks the running status of the pipeline.
      *
      * @param bool $bool Sets the running status of the pipeline.
+     *
+     * @throws ClientException
      */
     private function setRunning($bool)
     {
@@ -186,7 +190,11 @@ class Pipeline implements ClientContextInterface
      * Handles the actual execution of the whole pipeline.
      *
      * @param  mixed $callable Optional callback for execution.
+     * @throws null
      * @return array
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function execute($callable = null)
     {

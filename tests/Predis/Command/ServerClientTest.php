@@ -185,7 +185,9 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.6.9
      * @dataProvider invalidConnectionNameProvider
+     *
      * @expectedException Predis\Response\ServerException
+     * @param string $invalidConnectionName
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
     {

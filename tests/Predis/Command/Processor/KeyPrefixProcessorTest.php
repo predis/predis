@@ -245,6 +245,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      * @dataProvider commandArgumentsDataProvider
+     *
+     * @param string $commandID
+     * @param array  $arguments
+     * @param array  $expected
      */
     public function testApplyPrefixToCommand($commandID, array $arguments, array $expected)
     {

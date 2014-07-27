@@ -83,6 +83,8 @@ final class Factory
      *
      * @param  string           $version Profile version or alias.
      * @return ProfileInterface
+     *
+     * @throws ClientException
      */
     public static function get($version)
     {

@@ -77,11 +77,15 @@ class WebdisConnection implements NodeConnectionInterface
 
     /**
      * Helper method used to throw on unsupported methods.
+     *
+     * @param string $method Name of the unsupported method.
+     *
+     * @throws NotSupportedException
      */
-    private function throwNotSupportedException($function)
+    private function throwNotSupportedException($method)
     {
         $class = __CLASS__;
-        throw new NotSupportedException("The method $class::$function() is not supported.");
+        throw new NotSupportedException("The method $class::$method() is not supported.");
     }
 
     /**
@@ -211,6 +215,8 @@ class WebdisConnection implements NodeConnectionInterface
      *
      * @param  CommandInterface $command Command instance.
      * @return string
+     *
+     * @throws NotSupportedException
      */
     protected function getCommandId(CommandInterface $command)
     {

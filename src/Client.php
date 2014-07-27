@@ -245,6 +245,8 @@ class Client implements ClientInterface
      *
      * @param  string                             $connectionID Index or alias of the single connection.
      * @return Connection\NodeConnectionInterface
+     *
+     * @throws NotSupportedException
      */
     public function getConnectionById($connectionID)
     {
@@ -330,6 +332,8 @@ class Client implements ClientInterface
      * @param  CommandInterface       $command  Redis command that generated the error.
      * @param  ErrorResponseInterface $response Instance of the error response.
      * @return mixed
+     *
+     * @throws ServerException
      */
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {

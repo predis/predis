@@ -170,7 +170,7 @@ interface ClientContextInterface
     /**
      * Sends the specified command with its arguments to Redis.
      *
-     * @param  string $commandID Command ID.
+     * @param  string $method    Command ID.
      * @param  array  $arguments Arguments for the command.
      * @return mixed
      */

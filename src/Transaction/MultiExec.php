@@ -64,6 +64,8 @@ class MultiExec implements ClientContextInterface
      * needed to initialize the transaction object.
      *
      * @param ClientInterface $client Client instance used by the transaction object.
+     *
+     * @throws NotSupportedException
      */
     private function preconditions(ClientInterface $client)
     {
@@ -169,6 +171,8 @@ class MultiExec implements ClientContextInterface
      * @param  string $commandID Command ID.
      * @param  array  $arguments Arguments for the command.
      * @return mixed
+     *
+     * @throws ServerException
      */
     protected function call($commandID, $arguments = array())
     {
@@ -187,6 +191,9 @@ class MultiExec implements ClientContextInterface
      *
      * @param  CommandInterface $command Command instance.
      * @return $this|mixed
+     *
+     * @throws AbortedMultiExecException
+     * @throws CommunicationException
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -214,6 +221,9 @@ class MultiExec implements ClientContextInterface
      *
      * @param  string|array $keys One or more keys.
      * @return mixed
+     *
+     * @throws NotSupportedException
+     * @throws ClientException
      */
     public function watch($keys)
     {
@@ -253,6 +263,8 @@ class MultiExec implements ClientContextInterface
      * Executes UNWATCH.
      *
      * @return MultiExec
+     *
+     * @throws NotSupportedException
      */
     public function unwatch()
     {
@@ -298,6 +310,9 @@ class MultiExec implements ClientContextInterface
      * Checks the state of the transaction before execution.
      *
      * @param mixed $callable Callback for execution.
+     *
+     * @throws InvalidArgumentException
+     * @throws ClientException
      */
     private function checkBeforeExecution($callable)
     {
@@ -333,6 +348,10 @@ class MultiExec implements ClientContextInterface
      *
      * @param  mixed $callable Optional callback for execution.
      * @return array
+     *
+     * @throws CommunicationException
+     * @throws AbortedMultiExecException
+     * @throws ServerException
      */
     public function execute($callable = null)
     {
@@ -396,6 +415,9 @@ class MultiExec implements ClientContextInterface
      * Passes the current transaction object to a callable block for execution.
      *
      * @param mixed $callable Callback.
+     *
+     * @throws CommunicationException
+     * @throws ServerException
      */
     protected function executeTransactionBlock($callable)
     {

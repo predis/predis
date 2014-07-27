@@ -198,6 +198,7 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * @param  string                             $expectedVersion Expected redis version.
      * @param  string                             $operator        Comparison operator.
      * @param  callable                           $callback        Callback for matching version.
+     * @return string
      * @throws PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
@@ -216,6 +217,7 @@ abstract class PredisTestCase extends PHPUnit_Framework_TestCase
      * @param  string                             $expectedVersion Expected redis version.
      * @param  string                             $operator        Comparison operator.
      * @param  callable                           $callback        Callback for matching version.
+     * @return string
      * @throws PHPUnit_Framework_SkippedTestError When expected redis version is not met
      */
     protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
