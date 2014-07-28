@@ -254,6 +254,9 @@ class RedisVersion280 extends RedisProfile
             'PFADD'                     => 'Predis\Command\HyperLogLogAdd',
             'PFCOUNT'                   => 'Predis\Command\HyperLogLogCount',
             'PFMERGE'                   => 'Predis\Command\HyperLogLogMerge',
+
+            /* remote server control commands */
+            'COMMAND'                   => 'Predis\Command\ServerCommand',
         );
     }
 }

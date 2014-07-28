@@ -255,10 +255,11 @@ class RedisVersion300 extends RedisProfile
             'PFCOUNT'                   => 'Predis\Command\HyperLogLogCount',
             'PFMERGE'                   => 'Predis\Command\HyperLogLogMerge',
 
-            /* ---------------- Redis 3.0 ---------------- */
-
             /* remote server control commands */
             'COMMAND'                   => 'Predis\Command\ServerCommand',
+
+            /* ---------------- Redis 3.0 ---------------- */
+
         );
     }
 }
