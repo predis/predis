@@ -138,7 +138,7 @@ fully configurable.
 
 The client can be configured to work in a master / slave replication setup by executing read-only
 commands on slave nodes and automatically switch to the master node as soon as a command performing
-a write operation is executed. This is the basic configuration needed work with replication:
+a write operation is executed. This is the basic configuration needed to work with replication:
 
 ```php
 // Parameters require one master node specifically marked with `alias=master`.
@@ -267,13 +267,13 @@ $response = $client->newcmd();
 ### Script commands ###
 
 While it is possible to leverage [Lua scripting](http://redis.io/commands/eval) on Redis 2.6+ using
-[EVAL](http://redis.io/commands/eval) and [EVALSHA](http://redis.io/commands/evalsha), Predis offers
-script commands as an higher level abstraction aiming to make things simple. Script commands can be
-registered in the server profile used by the client and are accessible as if they were plain Redis
-commands, but they define a Lua script that gets transmitted to the server for remote execution.
-Internally they use [EVALSHA](http://redis.io/commands/evalsha) by default and identify a Lua script
-by its SHA1 hash to save bandwidth, but [EVAL](http://redis.io/commands/eval) is automatically used
-as a fall back when needed:
+[`EVAL`](http://redis.io/commands/eval) and [`EVALSHA`](http://redis.io/commands/evalsha), Predis
+offers script commands as an higher level abstraction aiming to make things simple. Script commands
+can be registered in the server profile used by the client and are accessible as if they were plain
+Redis commands, but they define Lua scripts that get transmitted to the server for remote execution.
+Internally they use [`EVALSHA`](http://redis.io/commands/evalsha) by default and identify a script
+by its SHA1 hash to save bandwidth, but [`EVAL`](http://redis.io/commands/eval) is used as a fall
+back when needed:
 
 ```php
 // Define a new scriptable command by extending Predis\Command\ScriptedCommand:
