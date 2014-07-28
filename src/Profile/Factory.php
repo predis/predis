@@ -29,7 +29,7 @@ final class Factory
         '2.6'     => 'Predis\Profile\RedisVersion260',
         '2.8'     => 'Predis\Profile\RedisVersion280',
         '3.0'     => 'Predis\Profile\RedisVersion300',
-        'default' => 'Predis\Profile\RedisVersion280',
+        'default' => 'Predis\Profile\RedisVersion300',
         'dev'     => 'Predis\Profile\RedisUnstable',
     );
 

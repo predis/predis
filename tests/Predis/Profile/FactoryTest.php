@@ -18,7 +18,7 @@ use PredisTestCase;
  */
 class FactoryTest extends PredisTestCase
 {
-    const DEFAULT_PROFILE_VERSION = '2.8';
+    const DEFAULT_PROFILE_VERSION = '3.0';
     const DEVELOPMENT_PROFILE_VERSION = '3.0';
 
     /**
