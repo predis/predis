@@ -63,8 +63,6 @@ class Options implements OptionsInterface
 
             return $handler->getDefault($this);
         }
-
-        return null;
     }
 
     /**

@@ -31,7 +31,7 @@ interface OptionsInterface
      *
      * @param string $option Name of the option.
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function getDefault($option);
 
@@ -58,7 +58,7 @@ interface OptionsInterface
      *
      * @param string $option Name of the option.
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function __get($option);
 }

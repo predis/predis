@@ -200,9 +200,9 @@ class PhpiredisStreamConnection extends StreamConnection
             return phpiredis_reader_get_reply($reader);
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));
-        }
 
-        return null;
+            return;
+        }
     }
 
     /**

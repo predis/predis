@@ -477,7 +477,7 @@ class Client implements ClientInterface
      *
      * @param mixed ... Array of options, a callable for execution, or both.
      *
-     * @return PubSubConsumer|NULL
+     * @return PubSubConsumer|null
      */
     public function pubSubLoop(/* arguments */)
     {
@@ -490,7 +490,7 @@ class Client implements ClientInterface
      * @param array $options  Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
      *
-     * @return PubSubConsumer|NULL
+     * @return PubSubConsumer|null
      */
     protected function createPubSub(array $options = null, $callable = null)
     {
@@ -505,8 +505,6 @@ class Client implements ClientInterface
                 $pubsub->stop();
             }
         }
-
-        return null;
     }
 
     /**

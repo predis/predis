@@ -101,8 +101,6 @@ class RawCommand implements CommandInterface
         if (isset($this->arguments[$index])) {
             return $this->arguments[$index];
         }
-
-        return null;
     }
 
     /**
@@ -121,8 +119,6 @@ class RawCommand implements CommandInterface
         if (isset($this->slot)) {
             return $this->slot;
         }
-
-        return null;
     }
 
     /**

@@ -70,15 +70,13 @@ abstract class RedisProfile implements ProfileInterface
      *
      * @param string $commandID Command ID.
      *
-     * @return string
+     * @return string|null
      */
     public function getCommandClass($commandID)
     {
         if (isset($this->commands[$commandID = strtoupper($commandID)])) {
             return $this->commands[$commandID];
         }
-
-        return null;
     }
 
     /**

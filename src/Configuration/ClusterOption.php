@@ -31,7 +31,7 @@ class ClusterOption implements OptionInterface
      * @param OptionsInterface $options Instance of the client options.
      * @param string           $id      Descriptive identifier of the cluster type (`predis`, `redis-cluster`)
      *
-     * @return ClusterInterface
+     * @return ClusterInterface|null
      */
     protected function createByDescription(OptionsInterface $options, $id)
     {
@@ -44,9 +44,9 @@ class ClusterOption implements OptionInterface
             case 'redis-cluster':
                 return new RedisCluster($options->connections);
 
+            default:
+                return;
         }
-
-        return null;
     }
 
     /**

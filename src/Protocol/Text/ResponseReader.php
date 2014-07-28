@@ -94,9 +94,9 @@ class ResponseReader implements ResponseReaderInterface
             $this->onProtocolError($connection, "Unknown response prefix: '$prefix'.");
         }
 
-        $handler = $this->handlers[$prefix];
+        $payload = $this->handlers[$prefix]->handle($connection, substr($header, 1));
 
-        return $handler->handle($connection, substr($header, 1));
+        return $payload;
     }
 
     /**

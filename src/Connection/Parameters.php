@@ -114,8 +114,6 @@ class Parameters implements ParametersInterface
         if (isset($this->parameters[$parameter])) {
             return $this->parameters[$parameter];
         }
-
-        return null;
     }
 
     /**

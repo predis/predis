@@ -36,7 +36,7 @@ interface CommandInterface
     /**
      * Returns the assigned slot of the command for clustering distribution.
      *
-     * @return int
+     * @return int|null
      */
     public function getSlot();
 
@@ -66,7 +66,7 @@ interface CommandInterface
      *
      * @param int $index Index of the desired argument.
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function getArgument($index);
 

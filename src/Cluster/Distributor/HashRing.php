@@ -204,8 +204,6 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
         if (isset($this->ring[$slot])) {
             return $this->ring[$slot];
         }
-
-        return null;
     }
 
     /**

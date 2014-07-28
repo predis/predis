@@ -45,7 +45,10 @@ class BulkResponse implements ResponseHandlerInterface
             return null;
         }
 
-        // TODO: we should probably check if < -1, just to make sure.
-        return null;
+        CommunicationException::handle(new ProtocolException(
+            $connection, "Value '$payload' is not a valid length for a bulk response."
+        ));
+
+        return;
     }
 }

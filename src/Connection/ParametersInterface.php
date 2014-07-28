@@ -49,7 +49,7 @@ interface ParametersInterface
      *
      * @param string $parameter Name of the parameter.
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function __get($parameter);
 

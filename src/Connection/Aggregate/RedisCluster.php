@@ -345,22 +345,18 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         if (isset($this->pool[$connectionID])) {
             return $this->pool[$connectionID];
         }
-
-        return null;
     }
 
     /**
      * Returns a random connection from the pool.
      *
-     * @return NodeConnectionInterface
+     * @return NodeConnectionInterface|null
      */
     protected function getRandomConnection()
     {
         if ($this->pool) {
             return $this->pool[array_rand($this->pool)];
         }
-
-        return null;
     }
 
     /**

@@ -99,7 +99,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                     $connection, "Unknown response prefix: '$prefix'."
                 ));
 
-                return null;
+                return;
         }
     }
 

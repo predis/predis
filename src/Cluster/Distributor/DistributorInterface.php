@@ -51,7 +51,7 @@ interface DistributorInterface
      *
      * @param mixed $slot
      *
-     * @return mixed
+     * @return mixed|null
      */
     public function getBySlot($slot);
 

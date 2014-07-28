@@ -51,7 +51,7 @@ interface AggregateConnectionInterface extends ConnectionInterface
      *
      * @param string $connectionID Connection alias.
      *
-     * @return NodeConnectionInterface
+     * @return NodeConnectionInterface|null
      */
     public function getConnectionById($connectionID);
 }
