@@ -82,6 +82,7 @@ class ServerCommandTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsEmptyCommandInfoOnNonExistingCommand()
     {
@@ -93,6 +94,7 @@ class ServerCommandTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsCommandInfoOnExistingCommand()
     {
@@ -105,6 +107,7 @@ class ServerCommandTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsListOfCommandInfoWithNoArguments()
     {
