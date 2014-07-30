@@ -176,7 +176,7 @@ class MultiExec implements ClientContextInterface
      *
      * @throws ServerException
      */
-    protected function call($commandID, $arguments = array())
+    protected function call($commandID, array $arguments = array())
     {
         $command  = $this->client->createCommand($commandID, $arguments);
         $response = $this->client->executeCommand($command);
@@ -239,7 +239,7 @@ class MultiExec implements ClientContextInterface
             throw new ClientException('Sending WATCH after MULTI is not allowed.');
         }
 
-        $response = $this->call('watch', array($keys));
+        $response = $this->call('watch', is_array($keys) ? $keys : array($keys));
 
         $this->state->flag(MultiExecState::WATCH);
 
