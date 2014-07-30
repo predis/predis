@@ -50,12 +50,12 @@ class MultiExec implements ClientContextInterface
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
-        $this->preconditions($client);
-        $this->configure($client, $options ?: array());
+        $this->assertClient($client);
 
         $this->client = $client;
         $this->state = new MultiExecState();
 
+        $this->configure($client, $options ?: array());
         $this->reset();
     }
 
@@ -67,7 +67,7 @@ class MultiExec implements ClientContextInterface
      *
      * @throws NotSupportedException
      */
-    private function preconditions(ClientInterface $client)
+    private function assertClient(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
             throw new NotSupportedException(
@@ -139,7 +139,7 @@ class MultiExec implements ClientContextInterface
         $discarded = $this->state->isDiscarded();
 
         if (!$cas || ($cas && $discarded)) {
-            $this->call('multi');
+            $this->call('MULTI');
 
             if ($discarded) {
                 $this->state->unflag(MultiExecState::CAS);
@@ -160,10 +160,9 @@ class MultiExec implements ClientContextInterface
      */
     public function __call($method, $arguments)
     {
-        $command = $this->client->createCommand($method, $arguments);
-        $response = $this->executeCommand($command);
-
-        return $response;
+        return $this->executeCommand(
+            $this->client->createCommand($method, $arguments)
+        );
     }
 
     /**
@@ -178,8 +177,9 @@ class MultiExec implements ClientContextInterface
      */
     protected function call($commandID, array $arguments = array())
     {
-        $command  = $this->client->createCommand($commandID, $arguments);
-        $response = $this->client->executeCommand($command);
+        $response = $this->client->executeCommand(
+            $this->client->createCommand($commandID, $arguments)
+        );
 
         if ($response instanceof ErrorResponseInterface) {
             throw new ServerException($response->getMessage());
@@ -239,8 +239,7 @@ class MultiExec implements ClientContextInterface
             throw new ClientException('Sending WATCH after MULTI is not allowed.');
         }
 
-        $response = $this->call('watch', is_array($keys) ? $keys : array($keys));
-
+        $response = $this->call('WATCH', is_array($keys) ? $keys : array($keys));
         $this->state->flag(MultiExecState::WATCH);
 
         return $response;
@@ -255,7 +254,7 @@ class MultiExec implements ClientContextInterface
     {
         if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
             $this->state->unflag(MultiExecState::CAS);
-            $this->call('multi');
+            $this->call('MULTI');
         } else {
             $this->initialize();
         }
@@ -273,11 +272,13 @@ class MultiExec implements ClientContextInterface
     public function unwatch()
     {
         if (!$this->client->getProfile()->supportsCommand('UNWATCH')) {
-            throw new NotSupportedException('UNWATCH is not supported by the current profile.');
+            throw new NotSupportedException(
+                'UNWATCH is not supported by the current profile.'
+            );
         }
 
         $this->state->unflag(MultiExecState::WATCH);
-        $this->__call('unwatch', array());
+        $this->__call('UNWATCH', array());
 
         return $this;
     }
@@ -291,7 +292,7 @@ class MultiExec implements ClientContextInterface
     public function discard()
     {
         if ($this->state->isInitialized()) {
-            $this->call($this->state->isCAS() ? 'unwatch' : 'discard');
+            $this->call($this->state->isCAS() ? 'UNWATCH' : 'DISCARD');
 
             $this->reset();
             $this->state->flag(MultiExecState::DISCARDED);
@@ -378,7 +379,7 @@ class MultiExec implements ClientContextInterface
                 return null;
             }
 
-            $execResponse = $this->call('exec');
+            $execResponse = $this->call('EXEC');
 
             if ($execResponse === null) {
                 if ($attempts === 0) {

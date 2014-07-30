@@ -281,8 +281,9 @@ class Client implements ClientInterface
     {
         $error = false;
 
-        $command = new RawCommand($arguments);
-        $response = $this->connection->executeCommand($command);
+        $response = $this->connection->executeCommand(
+            new RawCommand($arguments)
+        );
 
         if ($response instanceof ResponseInterface) {
             if ($response instanceof ErrorResponseInterface) {
@@ -300,10 +301,9 @@ class Client implements ClientInterface
      */
     public function __call($commandID, $arguments)
     {
-        $command = $this->createCommand($commandID, $arguments);
-        $response = $this->executeCommand($command);
-
-        return $response;
+        return $this->executeCommand(
+            $this->createCommand($commandID, $arguments)
+        );
     }
 
     /**
@@ -345,7 +345,7 @@ class Client implements ClientInterface
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
         if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
-            $eval = $this->createCommand('eval');
+            $eval = $this->createCommand('EVAL');
             $eval->setRawArguments($command->getEvalArguments());
 
             $response = $this->executeCommand($eval);

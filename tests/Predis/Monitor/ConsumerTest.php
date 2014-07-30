@@ -31,7 +31,7 @@ class ConsumerTest extends PredisTestCase
         $profile = $this->getMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommand')
-                ->with('monitor')
+                ->with('MONITOR')
                 ->will($this->returnValue(false));
 
         $client = new Client(null, array('profile' => $profile));
@@ -64,7 +64,7 @@ class ConsumerTest extends PredisTestCase
         $client = $this->getMock('Predis\Client', array('createCommand', 'executeCommand'), array($connection));
         $client->expects($this->once())
                ->method('createCommand')
-               ->with('monitor', array())
+               ->with('MONITOR', array())
                ->will($this->returnValue($cmdMonitor));
         $client->expects($this->once())
                ->method('executeCommand')

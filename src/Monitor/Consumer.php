@@ -33,6 +33,7 @@ class Consumer implements Iterator
     public function __construct(ClientInterface $client)
     {
         $this->assertClient($client);
+
         $this->client = $client;
 
         $this->start();
@@ -62,7 +63,7 @@ class Consumer implements Iterator
             );
         }
 
-        if ($client->getProfile()->supportsCommand('monitor') === false) {
+        if ($client->getProfile()->supportsCommand('MONITOR') === false) {
             throw new NotSupportedException("The current profile does not support 'MONITOR'.");
         }
     }
@@ -72,9 +73,10 @@ class Consumer implements Iterator
      */
     protected function start()
     {
+        $this->client->executeCommand(
+            $this->client->createCommand('MONITOR')
+        );
         $this->valid = true;
-        $monitor = $this->client->createCommand('monitor');
-        $this->client->executeCommand($monitor);
     }
 
     /**

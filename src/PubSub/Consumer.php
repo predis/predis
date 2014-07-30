@@ -34,6 +34,7 @@ class Consumer extends AbstractConsumer
     public function __construct(ClientInterface $client, array $options = null)
     {
         $this->checkCapabilities($client);
+
         $this->options = $options ?: array();
         $this->client = $client;
 
@@ -93,9 +94,11 @@ class Consumer extends AbstractConsumer
      */
     protected function writeRequest($method, $arguments)
     {
-        $arguments = Command::normalizeArguments($arguments);
-        $command = $this->client->createCommand($method, $arguments);
-        $this->client->getConnection()->writeRequest($command);
+        $this->client->getConnection()->writeRequest(
+            $this->client->createCommand($method,
+                Command::normalizeArguments($arguments)
+            )
+        );
     }
 
     /**
