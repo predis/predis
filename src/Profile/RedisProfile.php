@@ -82,7 +82,7 @@ abstract class RedisProfile implements ProfileInterface
     /**
      * {@inheritdoc}
      */
-    public function createCommand($commandID, $arguments = array())
+    public function createCommand($commandID, array $arguments = array())
     {
         $commandID = strtoupper($commandID);
 

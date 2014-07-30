@@ -55,5 +55,5 @@ interface ProfileInterface
      *
      * @return CommandInterface
      */
-    public function createCommand($commandID, $arguments = array());
+    public function createCommand($commandID, array $arguments = array());
 }
