@@ -81,7 +81,7 @@ class SetScanTest extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array('3', array('member:1', 'member:2', 'member:3'));
-        $expected = array(3, array('member:1', 'member:2', 'member:3'));
+        $expected = array('3', array('member:1', 'member:2', 'member:3'));
 
         $command = $this->getCommand();
 
@@ -98,7 +98,7 @@ class SetScanTest extends PredisCommandTestCase
 
         $response = $redis->sscan('key', 0);
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertSameValues($members, $response[1]);
     }
 
@@ -125,7 +125,7 @@ class SetScanTest extends PredisCommandTestCase
 
         $response = $redis->sscan('key', 0, 'MATCH', 'nomember:*');
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertEmpty($response[1]);
     }
 }

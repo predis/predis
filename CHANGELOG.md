@@ -19,9 +19,13 @@ v1.0.0 (2014-08-xx)
   is also more akin to how Redis replies to clients.
 
 - Commands `ZRANGE`, `ZRANGEBYSCORE`, `ZREVRANGE` and `ZREVRANGEBYSCORE` using
-  `WITHSCORE` return a named array of member => score instead of an array of
-  [member, score] elements. Insertion order is preserved anyway due to how PHP
-  works internally.
+  `WITHSCORE` return a named array of member => score instead of using an array
+  of [member, score] elements. Insertion order is preserved anyway due to how
+  PHP works internally.
+
+- The command `ZSCAN` returns a named array of member => score instead of using
+  an array of [member, score] elements. Insertion order is preserved anyway due
+  to how PHP works internally.
 
 - The rules for redis-cluster are now leveraged for empty key tags when using
   client-side sharding, which means that when one or the first occurrence of {}

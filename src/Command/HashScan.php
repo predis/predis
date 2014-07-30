@@ -69,7 +69,6 @@ class HashScan extends Command
     public function parseResponse($data)
     {
         if (is_array($data)) {
-            $data[0] = (int) $data[0];
             $fields = $data[1];
             $result = array();
 

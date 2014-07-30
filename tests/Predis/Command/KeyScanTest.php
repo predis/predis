@@ -81,7 +81,7 @@ class KeyScanTest extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array('3', array('key:1', 'key:2', 'key:3'));
-        $expected = array(3, array('key:1', 'key:2', 'key:3'));
+        $expected = array('3', array('key:1', 'key:2', 'key:3'));
 
         $command = $this->getCommand();
 
@@ -113,7 +113,7 @@ class KeyScanTest extends PredisCommandTestCase
         $redis = $this->getClient();
         $redis->mset($kvs);
 
-        $response = $redis->scan(0, 'MATCH', 'key:t*');
+        $response = $redis->scan('0', 'MATCH', 'key:t*');
 
         $this->assertSameValues(array('key:two', 'key:three'), $response[1]);
     }
@@ -130,7 +130,7 @@ class KeyScanTest extends PredisCommandTestCase
 
         $response = $redis->scan(0, 'MATCH', 'nokey:*');
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertEmpty($response[1]);
     }
 }

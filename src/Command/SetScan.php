@@ -62,16 +62,4 @@ class SetScan extends Command
 
         return $normalized;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if (is_array($data)) {
-            $data[0] = (int) $data[0];
-        }
-
-        return $data;
-    }
 }

@@ -81,7 +81,7 @@ class HashScanTest extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array('3', array('field:1', '1', 'field:2', '2', 'field:3', '3'));
-        $expected = array(3, array('field:1' => '1', 'field:2' => '2', 'field:3' => '3'));
+        $expected = array('3', array('field:1' => '1', 'field:2' => '2', 'field:3' => '3'));
 
         $command = $this->getCommand();
 
@@ -101,7 +101,7 @@ class HashScanTest extends PredisCommandTestCase
 
         $response = $redis->hscan('key', 0);
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertSame($expectedFields, array_keys($response[1]));
         $this->assertSame($expectedValues, array_values($response[1]));
     }
@@ -130,7 +130,7 @@ class HashScanTest extends PredisCommandTestCase
 
         $response = $redis->hscan('key', 0, 'MATCH', 'nofield:*');
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertEmpty($response[1]);
     }
 }

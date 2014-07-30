@@ -81,7 +81,7 @@ class ZSetScanTest extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array('3', array('member:1', '1', 'member:2', '2', 'member:3', '3'));
-        $expected = array(3, array(array('member:1' , 1.0), array('member:2', 2.0), array('member:3' , 3.0)));
+        $expected = array('3', array('member:1' => 1.0, 'member:2' => 2.0, 'member:3' => 3.0));
 
         $command = $this->getCommand();
 
@@ -101,9 +101,9 @@ class ZSetScanTest extends PredisCommandTestCase
 
         $response = $redis->zscan('key', 0);
 
-        $this->assertSame(0, $response[0]);
-        $this->assertSame($expectedMembers, array_map(function ($e) { return $e[0]; }, $response[1]));
-        $this->assertSame($expectedScores, array_map(function ($e) { return $e[1]; }, $response[1]));
+        $this->assertSame('0', $response[0]);
+        $this->assertSame($expectedMembers, array_keys($response[1]));
+        $this->assertSame($expectedScores, array_values($response[1]));
     }
 
     /**
@@ -116,8 +116,8 @@ class ZSetScanTest extends PredisCommandTestCase
 
         $response = $redis->zscan('key', 0, 'MATCH', 'member:t*');
 
-        $this->assertSame(array('member:two', 'member:three'), array_map(function ($e) { return $e[0]; }, $response[1]));
-        $this->assertSame(array(2.0, 3.0), array_map(function ($e) { return $e[1]; }, $response[1]));
+        $this->assertSame(array('member:two', 'member:three'), array_keys($response[1]));
+        $this->assertSame(array(2.0, 3.0), array_values($response[1]));
     }
 
     /**
@@ -130,7 +130,7 @@ class ZSetScanTest extends PredisCommandTestCase
 
         $response = $redis->zscan('key', 0, 'MATCH', 'nomember:*');
 
-        $this->assertSame(0, $response[0]);
+        $this->assertSame('0', $response[0]);
         $this->assertEmpty($response[1]);
     }
 }
