@@ -128,6 +128,36 @@ v1.0.0 (2014-08-xx)
   or renamed while rationalizing the whole API for external protocol processors.
 
 
+v0.8.7 (2014-08-01)
+================================================================================
+
+- Added `3.0` in the server profiles aliases list for Redis 3.0. `2.8` is still
+  the default server profile and `dev` still targets Redis 3.0.
+
+- Added `COMMAND` to the server profile for Redis 2.8.
+
+- Switched internally to the `CLUSTER SLOTS` command instead of `CLUSTER NODES`
+  to fetch the updated slots map from redis-cluster. This change requires users
+  to upgrade Redis nodes to >= 3.0.0b7.
+
+- The updated slots map is now fetched automatically from redis-cluster upon the
+  first `-MOVED` response by default. This change makes it possible to feed the
+  client constructor with only a few nodes of the actual cluster composition,
+  without needing a more complex configuration.
+
+- Implemented support for `PING` in PUB/SUB loop for Redis >= 3.0.0b8.
+
+- The default client-side sharding strategy and the one for redis-cluster now
+  share the same implementations as they follow the same rules. One difference,
+  aside from the different hashing function used to calculate distribution, is
+  in how empty hash tags like {} are treated by redis-cluster.
+
+- __FIX__: the patch applied to fix #180 introduced a regression affecting read/
+  write timeouts in `Predis\Connection\PhpiredisStreamConnection`. Unfortunately
+  the only possible solution requires PHP 5.4+. On PHP 5.3, read/write timeouts
+  will be ignored from now on.
+
+
 v0.8.6 (2014-07-15)
 ================================================================================
 
