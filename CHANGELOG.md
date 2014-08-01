@@ -10,7 +10,7 @@ v1.0.0 (2014-08-xx)
 - Added `SENTINEL` to the profile for Redis 2.6 and `PUBSUB` to the profile for
   Redis 2.8.
 
-- The client can now send raw commands using `Predis\Client::executeRaw()`.
+- `Predis\Client` can now send raw commands using `Predis\Client::executeRaw()`.
 
 - Status responses are returned as instances of `Predis\Response\Status`, for
   example +OK is not returned as boolean TRUE anymore which is a breaking change
