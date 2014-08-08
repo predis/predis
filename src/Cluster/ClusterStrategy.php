@@ -347,11 +347,6 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    abstract public function getSlotByKey($key);
-
-    /**
      * Checks if the specified array of keys will generate the same hash.
      *
      * @param array $keys Array of keys.
@@ -397,9 +392,4 @@ abstract class ClusterStrategy implements StrategyInterface
 
         return $key;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract public function getDistributor();
 }
