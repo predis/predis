@@ -28,9 +28,9 @@ abstract class AbstractConsumer implements Iterator
     const PMESSAGE     = 'pmessage';
     const PONG         = 'pong';
 
-    const STATUS_VALID       = 1;	// 0b0001
-    const STATUS_SUBSCRIBED  = 2;	// 0b0010
-    const STATUS_PSUBSCRIBED = 4;	// 0b0100
+    const STATUS_VALID       = 1;    // 0b0001
+    const STATUS_SUBSCRIBED  = 2;    // 0b0010
+    const STATUS_PSUBSCRIBED = 4;    // 0b0100
 
     private $position = null;
     private $statusFlags = self::STATUS_VALID;
@@ -208,7 +208,7 @@ abstract class AbstractConsumer implements Iterator
      */
     protected function invalidate()
     {
-        $this->statusFlags = 0;	// 0b0000;
+        $this->statusFlags = 0;    // 0b0000;
     }
 
     /**

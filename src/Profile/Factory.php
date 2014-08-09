@@ -64,8 +64,9 @@ final class Factory
     /**
      * Registers a new server profile.
      *
-     * @param string $alias Profile version or alias.
-     * @param string $class FQN of a class implementing Predis\Profile\ProfileInterface.
+     * @param  string                    $alias Profile version or alias.
+     * @param  string                    $class FQN of a class implementing Predis\Profile\ProfileInterface.
+     * @throws \InvalidArgumentException
      */
     public static function define($alias, $class)
     {

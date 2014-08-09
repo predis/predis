@@ -201,8 +201,10 @@ class KeyPrefixProcessor implements ProcessorInterface
      * When the callback argument is omitted or NULL, the previously
      * associated handler for the specified command ID is removed.
      *
-     * @param string $commandID The ID of the command to be handled.
-     * @param mixed  $callback  A valid callable object or NULL.
+     * @param  string                    $commandID The ID of the command to be handled.
+     * @param  mixed                     $callback  A valid callable object or NULL.
+     * @throws \InvalidArgumentException
+     * @return null
      */
     public function setCommandHandler($commandID, $callback = null)
     {

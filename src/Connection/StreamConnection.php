@@ -153,7 +153,8 @@ class StreamConnection extends AbstractConnection
      * Performs a write operation over the stream of the buffer containing a
      * command serialized with the Redis wire protocol.
      *
-     * @param string $buffer Representation of a command in the Redis wire protocol.
+     * @param  string $buffer Representation of a command in the Redis wire protocol.
+     * @return null
      */
     protected function write($buffer)
     {

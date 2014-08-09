@@ -69,8 +69,8 @@ class Parameters implements ParametersInterface
     /**
      * Parses an URI string returning an array of connection parameters.
      *
-     * @param string $uri URI string.
-     *
+     * @param  string                    $uri URI string.
+     * @throws \InvalidArgumentException
      * @return array
      */
     public static function parse($uri)

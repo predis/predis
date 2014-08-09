@@ -64,8 +64,8 @@ class Client implements ClientInterface
      * types of arguments or simply returns the passed argument if it is an
      * instance of Predis\Configuration\OptionsInterface.
      *
-     * @param mixed $options Client options.
-     *
+     * @param  mixed                     $options Client options.
+     * @throws \InvalidArgumentException
      * @return OptionsInterface
      */
     protected function createOptions($options)
@@ -94,8 +94,8 @@ class Client implements ClientInterface
      *  - String
      *  - Callable
      *
-     * @param mixed $parameters Connection parameters or connection instance.
-     *
+     * @param  mixed                     $parameters Connection parameters or connection instance.
+     * @throws \InvalidArgumentException
      * @return ConnectionInterface
      */
     protected function createConnection($parameters)
@@ -185,8 +185,8 @@ class Client implements ClientInterface
      * only when working with an aggregate connection (cluster, replication).
      * The new client instances uses the same options of the original one.
      *
-     * @param string $connectionID Identifier of a connection.
-     *
+     * @param  string                    $connectionID Identifier of a connection.
+     * @throws \InvalidArgumentException
      * @return Client
      */
     public function getClientFor($connectionID)

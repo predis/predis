@@ -185,8 +185,10 @@ abstract class ClusterStrategy implements StrategyInterface
      * When the callback argument is omitted or NULL, the previously associated
      * handler for the specified command ID is removed.
      *
-     * @param string $commandID Command ID.
-     * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
+     * @param  string                    $commandID Command ID.
+     * @param  mixed                     $callback  A valid callable object, or NULL to unset the handler.
+     * @throws \InvalidArgumentException
+     * @return null
      */
     public function setCommandHandler($commandID, $callback = null)
     {

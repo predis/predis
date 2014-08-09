@@ -186,8 +186,9 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Sets options on the socket resource from the connection parameters.
      *
-     * @param resource            $socket     Socket resource.
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  resource            $socket     Socket resource.
+     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
+     * @return null
      */
     private function setSocketOptions($socket, ParametersInterface $parameters)
     {
