@@ -203,6 +203,8 @@ class KeyPrefixProcessor implements ProcessorInterface
      *
      * @param string $commandID The ID of the command to be handled.
      * @param mixed  $callback  A valid callable object or NULL.
+     *
+     * @throws \InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {

@@ -40,6 +40,8 @@ class DispatcherLoop
      * Checks if the passed argument is a valid callback.
      *
      * @param mixed $callable A callback.
+     *
+     * @throws \InvalidArgumentException
      */
     protected function assertCallback($callable)
     {

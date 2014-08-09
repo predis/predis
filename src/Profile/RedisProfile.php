@@ -106,6 +106,8 @@ abstract class RedisProfile implements ProfileInterface
      *
      * @param string $commandID Command ID.
      * @param string $class     Fully-qualified name of a Predis\Command\CommandInterface.
+     *
+     * @throws \InvalidArgumentException
      */
     public function defineCommand($commandID, $class)
     {

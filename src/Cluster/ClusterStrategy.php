@@ -187,6 +187,8 @@ abstract class ClusterStrategy implements StrategyInterface
      *
      * @param string $commandID Command ID.
      * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
+     *
+     * @throws \InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {

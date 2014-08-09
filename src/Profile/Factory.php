@@ -66,6 +66,8 @@ final class Factory
      *
      * @param string $alias Profile version or alias.
      * @param string $class FQN of a class implementing Predis\Profile\ProfileInterface.
+     *
+     * @throws \InvalidArgumentException
      */
     public static function define($alias, $class)
     {
