@@ -30,7 +30,8 @@ class RawCommand implements CommandInterface
     private $arguments;
 
     /**
-     * @param array $arguments Command ID and its arguments.
+     * @param  array                     $arguments Command ID and its arguments.
+     * @throws \InvalidArgumentException
      */
     public function __construct(array $arguments)
     {

@@ -40,7 +40,7 @@ class Autoloader
      */
     public static function register($prepend = false)
     {
-        spl_autoload_register(array(new self, 'autoload'), true, $prepend);
+        spl_autoload_register(array(new self(), 'autoload'), true, $prepend);
     }
 
     /**
@@ -55,7 +55,7 @@ class Autoloader
             $filepath = $this->directory.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, $parts).'.php';
 
             if (is_file($filepath)) {
-                require($filepath);
+                require $filepath;
             }
         }
     }

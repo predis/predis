@@ -42,9 +42,10 @@ class ListKey implements Iterator
     protected $current;
 
     /**
-     * @param ClientInterface $client Client connected to Redis.
-     * @param string          $key    Redis list key.
-     * @param int             $count  Number of items retrieved on each fetch operation.
+     * @param  ClientInterface           $client Client connected to Redis.
+     * @param  string                    $key    Redis list key.
+     * @param  int                       $count  Number of items retrieved on each fetch operation.
+     * @throws \InvalidArgumentException
      */
     public function __construct(ClientInterface $client, $key, $count = 10)
     {

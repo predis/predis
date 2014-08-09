@@ -162,7 +162,7 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $custom = new stdClass;
+        $custom = new stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));

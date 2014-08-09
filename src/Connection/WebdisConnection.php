@@ -50,7 +50,8 @@ class WebdisConnection implements NodeConnectionInterface
     private $reader;
 
     /**
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param  ParametersInterface       $parameters Initialization parameters for the connection.
+     * @throws \InvalidArgumentException
      */
     public function __construct(ParametersInterface $parameters)
     {

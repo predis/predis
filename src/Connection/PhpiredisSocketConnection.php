@@ -186,13 +186,14 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Sets options on the socket resource from the connection parameters.
      *
-     * @param resource            $socket     Socket resource.
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param  resource            $socket     Socket resource.
+     * @param  ParametersInterface $parameters Parameters used to initialize the connection.
+     * @return null
      */
     private function setSocketOptions($socket, ParametersInterface $parameters)
     {
         if ($parameters->scheme !== 'tcp') {
-            return;
+            return null;
         }
 
         if (!socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1)) {
@@ -334,7 +335,7 @@ class PhpiredisSocketConnection extends AbstractConnection
             $written = socket_write($socket, $buffer, $length);
 
             if ($length === $written) {
-                return;
+                return null;
             }
 
             if ($written === false) {
@@ -366,7 +367,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));
 
-            return;
+            return null;
         }
     }
 

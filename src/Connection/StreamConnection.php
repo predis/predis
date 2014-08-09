@@ -41,7 +41,7 @@ class StreamConnection extends AbstractConnection
     public function __destruct()
     {
         if (isset($this->parameters->persistent) && $this->parameters->persistent) {
-            return;
+            return null;
         }
 
         $this->disconnect();
@@ -153,7 +153,8 @@ class StreamConnection extends AbstractConnection
      * Performs a write operation over the stream of the buffer containing a
      * command serialized with the Redis wire protocol.
      *
-     * @param string $buffer Representation of a command in the Redis wire protocol.
+     * @param  string $buffer Representation of a command in the Redis wire protocol.
+     * @return null
      */
     protected function write($buffer)
     {
@@ -163,7 +164,7 @@ class StreamConnection extends AbstractConnection
             $written = @fwrite($socket, $buffer);
 
             if ($length === $written) {
-                return;
+                return null;
             }
 
             if ($written === false || $written === 0) {
@@ -240,7 +241,7 @@ class StreamConnection extends AbstractConnection
             default:
                 $this->onProtocolError("Unknown response prefix: '$prefix'.");
 
-                return;
+                return null;
         }
     }
 

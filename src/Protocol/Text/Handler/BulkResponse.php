@@ -49,6 +49,6 @@ class BulkResponse implements ResponseHandlerInterface
             $connection, "Value '$payload' is not a valid length for a bulk response."
         ));
 
-        return;
+        return null;
     }
 }

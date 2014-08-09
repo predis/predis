@@ -296,7 +296,7 @@ class FactoryTest extends PredisTestCase
         $factory->expects($this->exactly(3))
                 ->method('create')
                 ->will($this->returnCallback(function ($_) use ($connectionClass) {
-                    return new $connectionClass;
+                    return new $connectionClass();
                 }));
 
         $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
@@ -315,7 +315,6 @@ class FactoryTest extends PredisTestCase
 
         $factory->aggregate($cluster, array());
     }
-
 
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
