@@ -5,3 +5,5 @@ package.xml
 composer.lock
 experiments/
 vendor/
+# IDE
+.idea/
