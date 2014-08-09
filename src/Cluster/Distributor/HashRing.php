@@ -124,7 +124,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     private function initialize()
     {
         if ($this->isInitialized()) {
-            return;
+            return null;
         }
 
         if (!$this->nodes) {

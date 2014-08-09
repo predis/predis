@@ -211,7 +211,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
 
-            return;
+            return null;
         }
 
         if (!is_callable($callback)) {

@@ -273,7 +273,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     protected function checkRequiredRedisVersion()
     {
         if (!isset($this->required['requiresRedisVersion'])) {
-            return;
+            return null;
         }
 
         $srvVersion = $this->getRedisServerVersion();

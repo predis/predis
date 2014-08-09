@@ -45,7 +45,7 @@ class ClusterOption implements OptionInterface
                 return new RedisCluster($options->connections);
 
             default:
-                return;
+                return null;
         }
     }
 

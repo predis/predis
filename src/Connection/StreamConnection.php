@@ -41,7 +41,7 @@ class StreamConnection extends AbstractConnection
     public function __destruct()
     {
         if (isset($this->parameters->persistent) && $this->parameters->persistent) {
-            return;
+            return null;
         }
 
         $this->disconnect();
@@ -163,7 +163,7 @@ class StreamConnection extends AbstractConnection
             $written = @fwrite($socket, $buffer);
 
             if ($length === $written) {
-                return;
+                return null;
             }
 
             if ($written === false || $written === 0) {
@@ -240,7 +240,7 @@ class StreamConnection extends AbstractConnection
             default:
                 $this->onProtocolError("Unknown response prefix: '$prefix'.");
 
-                return;
+                return null;
         }
     }
 

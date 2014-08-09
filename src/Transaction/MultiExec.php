@@ -124,7 +124,7 @@ class MultiExec implements ClientContextInterface
     protected function initialize()
     {
         if ($this->state->isInitialized()) {
-            return;
+            return null;
         }
 
         if ($this->modeCAS) {
