@@ -5,6 +5,7 @@ php:
   - 5.5
   - 5.6
   - hhvm
+  - hhvm-nightly
 branches:
   except:
     - v0.5
@@ -17,3 +18,7 @@ before_script:
   - composer install --no-interaction --prefer-source --dev
 script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
+-matrix:
+-  allow_failures:
+-    - php: hhvm-nightly
+-  fast_finish: true
