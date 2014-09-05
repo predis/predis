@@ -67,6 +67,8 @@ class Client implements ClientInterface
      * @param mixed $options Client options.
      *
      * @return OptionsInterface
+     *
+     * @throws \InvalidArgumentException
      */
     protected function createOptions($options)
     {
@@ -97,6 +99,8 @@ class Client implements ClientInterface
      * @param mixed $parameters Connection parameters or connection instance.
      *
      * @return ConnectionInterface
+     *
+     * @throws \InvalidArgumentException
      */
     protected function createConnection($parameters)
     {
@@ -188,6 +192,8 @@ class Client implements ClientInterface
      * @param string $connectionID Identifier of a connection.
      *
      * @return Client
+     *
+     * @throws \InvalidArgumentException
      */
     public function getClientFor($connectionID)
     {
