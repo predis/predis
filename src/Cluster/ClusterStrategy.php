@@ -187,6 +187,8 @@ abstract class ClusterStrategy implements StrategyInterface
      *
      * @param string $commandID Command ID.
      * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
+     *
+     * @throws \InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -347,11 +349,6 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    abstract public function getSlotByKey($key);
-
-    /**
      * Checks if the specified array of keys will generate the same hash.
      *
      * @param array $keys Array of keys.
@@ -397,9 +394,4 @@ abstract class ClusterStrategy implements StrategyInterface
 
         return $key;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    abstract public function getDistributor();
 }

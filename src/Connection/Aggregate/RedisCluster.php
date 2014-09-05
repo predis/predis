@@ -227,6 +227,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * @param int                            $first      Initial slot of the range.
      * @param int                            $last       Last slot of the range.
      * @param NodeConnectionInterface|string $connection ID or connection instance.
+     *
+     * @throws \OutOfBoundsException
      */
     public function setSlots($first, $last, $connection)
     {
@@ -316,6 +318,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * @param int $slot Slot index.
      *
      * @return NodeConnectionInterface
+     *
+     * @throws \OutOfBoundsException
      */
     public function getConnectionBySlot($slot)
     {

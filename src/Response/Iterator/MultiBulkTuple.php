@@ -45,6 +45,9 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
      * Checks for valid preconditions.
      *
      * @param MultiBulk $iterator Inner multibulk response iterator.
+     *
+     * @throws \InvalidArgumentException
+     * @throws \UnexpectedValueException
      */
     protected function checkPreconditions(MultiBulk $iterator)
     {
