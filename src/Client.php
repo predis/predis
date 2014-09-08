@@ -38,6 +38,12 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  *
  * {@inheritdoc}
  *
+ * @method get($key)
+ * @method hget($hash, $key)
+ * @method hgetall($hash)
+ * @method set($key, $value)
+ * @method hset($hash, $key, $value)
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Client implements ClientInterface
