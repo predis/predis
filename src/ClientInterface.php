@@ -114,6 +114,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    zadd($key, array $membersAndScoresDictionary)
  * @method int    zcard($key)
  * @method string zcount($key, $min, $max)
+ * @method string zincrby($key, $increment, $member)
  * @method int    zinterstore($destination, array $keys, array $options = null)
  * @method array  zrange($key, $start, $stop, array $options = null)
  * @method array  zrangebyscore($key, $min, $max, array $options = null)
