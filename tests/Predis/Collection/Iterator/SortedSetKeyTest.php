@@ -57,6 +57,45 @@ class SortedSetKeyTest extends PredisTestCase
     }
 
     /**
+     * @link https://github.com/nrk/predis/issues/216
+     * @group disconnected
+     */
+    public function testIterationWithIntegerMembers()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
+        $client->expects($this->once())
+               ->method('zscan')
+               ->with('key:zset', 0, array())
+               ->will($this->returnValue(array(0, array(
+                    0 => 0, 101 => 1, 102 => 2,
+               ))));
+
+        $iterator = new SortedSetKey($client, 'key:zset');
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(0, $iterator->current());
+        $this->assertSame(0, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(1, $iterator->current());
+        $this->assertSame(101, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(2, $iterator->current());
+        $this->assertSame(102, $iterator->key());
+
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
      * @group disconnected
      */
     public function testIterationOnSingleFetch()

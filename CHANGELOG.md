@@ -1,6 +1,9 @@
 v1.0.1 (2014-xx-xx)
 ================================================================================
 
+- __FIX__: broken values returned by `Predis\Collection\Iterator\SortedSetKey`
+  when iterating sorted set containing integer members (ISSUE #216).
+
 - __FIX__: applied a minor workaround for a bug in old versions of PHP < 5.3.9
   affecting inheritance.
 
