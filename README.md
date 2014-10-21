@@ -113,11 +113,11 @@ it is recommended to refer to their specific documentation or implementation for
 ### Client configuration ###
 
 Various aspects of the client can be configured simply by passing options to the second argument of
-`Predis\Client::__construct()`.
+`Predis\Client::__construct()`:
 
 ```php
 $client = new \Predis\Client(
-    ['database' => 2],
+    $connection_parameters,
     ['profile' => '2.8', 'prefix' => 'sample:']
 );
 ```
