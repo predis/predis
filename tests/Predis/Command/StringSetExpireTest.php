@@ -119,7 +119,7 @@ class StringSetExpireTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException Predis\ServerException
-     * @expectedExceptionMessage ERR invalid expire time in SETEX
+     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnZeroTTL()
     {
@@ -129,7 +129,7 @@ class StringSetExpireTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException Predis\ServerException
-     * @expectedExceptionMessage ERR invalid expire time in SETEX
+     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnNegativeTTL()
     {

@@ -118,8 +118,7 @@ class StringPreciseSetExpireTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException Predis\ServerException
-     * @expectedExceptionMessage ERR invalid expire time in SETEX
-     * @todo Should not Redis return PSETEX instead of SETEX here?
+     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnZeroTTL()
     {
@@ -129,8 +128,7 @@ class StringPreciseSetExpireTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException Predis\ServerException
-     * @expectedExceptionMessage ERR invalid expire time in SETEX
-     * @todo Should not Redis return PSETEX instead of SETEX here?
+     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnNegativeTTL()
     {
