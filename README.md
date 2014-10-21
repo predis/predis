@@ -113,7 +113,16 @@ it is recommended to refer to their specific documentation or implementation for
 ### Client configuration ###
 
 Various aspects of the client can be configured simply by passing options to the second argument of
-`Predis\Client::__construct()`. Options are managed using a mini DI-alike container and their values
+`Predis\Client::__construct()`:
+
+```php
+$client = new \Predis\Client(
+    $connection_parameters,
+    ['profile' => '2.8', 'prefix' => 'sample:']
+);
+```
+
+Options are managed using a mini DI-alike container and their values
 are usually lazily initialized only when needed. Predis by default supports the following options:
 
   - `profile`: which profile to use in order to match a specific version of Redis.
