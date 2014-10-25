@@ -292,6 +292,14 @@ BUFFER;
     }
 
     /**
+     * @group disconnected
+     */
+    public function testDoesNotEmitPhpNoticeOnEmptyResponse()
+    {
+        $this->assertSame(array(), $this->getCommand()->parseResponse(''));
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsAnArrayOfInfo()

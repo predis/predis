@@ -22,7 +22,12 @@ class ServerInfoV26x extends ServerInfo
      */
     public function parseResponse($data)
     {
+        if ($data === '') {
+            return array();
+        }
+
         $info = array();
+
         $current = null;
         $infoLines = preg_split('/\r?\n/', $data);
 
