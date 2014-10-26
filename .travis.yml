@@ -18,7 +18,7 @@ before_script:
   - composer install --no-interaction --prefer-source --dev
 script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
--matrix:
--  allow_failures:
--    - php: hhvm-nightly
--  fast_finish: true
+matrix:
+  allow_failures:
+    - php: hhvm-nightly
+  fast_finish: true
