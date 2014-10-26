@@ -106,6 +106,7 @@ use Predis\Command\CommandInterface;
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
+ * @method $this zincrby($key, $increment, $member)
  * @method $this zinterstore($destination, array $keys, array $options = null)
  * @method $this zrange($key, $start, $stop, array $options = null)
  * @method $this zrangebyscore($key, $min, $max, array $options = null)
