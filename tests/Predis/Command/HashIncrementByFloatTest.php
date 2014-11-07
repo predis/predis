@@ -63,8 +63,10 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame('10.5', $redis->hincrbyfloat('metavars', 'foo', 10.5));
-        $this->assertSame('10.001', $redis->hincrbyfloat('metavars', 'hoge', 10.001));
+
+        $redis->hincrbyfloat('metavars', 'hoge', 10.001);
         $this->assertSame('11', $redis->hincrbyfloat('metavars', 'hoge', 0.999));
+
         $this->assertSame(array('foo' => '10.5', 'hoge' => '11'), $redis->hgetall('metavars'));
     }
 
@@ -76,8 +78,10 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame('-10.5', $redis->hincrbyfloat('metavars', 'foo', -10.5));
-        $this->assertSame('-10.001', $redis->hincrbyfloat('metavars', 'hoge', -10.001));
+
+        $redis->hincrbyfloat('metavars', 'hoge', -10.001);
         $this->assertSame('-11', $redis->hincrbyfloat('metavars', 'hoge', -0.999));
+
         $this->assertSame(array('foo' => '-10.5', 'hoge' => '-11'), $redis->hgetall('metavars'));
     }
 

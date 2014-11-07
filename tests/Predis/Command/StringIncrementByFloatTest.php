@@ -75,9 +75,11 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
         $redis->set('foo', 2);
 
+        // We use round() to avoid errors on some platforms, see the following
+        // issue https://github.com/nrk/predis/issues/220 for reference.
         $this->assertEquals(22.123, $redis->incrbyfloat('foo', 20.123));
-        $this->assertEquals(10, $redis->incrbyfloat('foo', -12.123));
-        $this->assertEquals(-100.01, $redis->incrbyfloat('foo', -110.01));
+        $this->assertEquals(10, round($redis->incrbyfloat('foo', -12.123), 5));
+        $this->assertEquals(-100.01, round($redis->incrbyfloat('foo', -110.01), 5));
     }
 
     /**
