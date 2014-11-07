@@ -731,6 +731,7 @@ class RedisClusterTest extends PredisTestCase
     }
 
     /**
+     * @medium
      * @group disconnected
      */
     public function testCanBeSerialized()
