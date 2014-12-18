@@ -15,7 +15,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/bitpos
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class StringBitCount extends Command
+class StringBitPos extends Command
 {
     /**
      * {@inheritdoc}
