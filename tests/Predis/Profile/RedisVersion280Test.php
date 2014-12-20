@@ -186,6 +186,7 @@ class RedisVersion280Test extends PredisProfileTestCase
             145 => 'PFCOUNT',
             146 => 'PFMERGE',
             147 => 'COMMAND',
+            148 => 'BITPOS',
         );
     }
 }
