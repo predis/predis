@@ -73,6 +73,6 @@ class StringBitPosTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
         $redis->lpush('key', 'list');
-        $redis->bitpos('key');
+        $redis->bitpos('key', 0);
     }
 }
