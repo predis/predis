@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 namespace Predis\Command;
+
 /**
  * @group commands
  * @group realm-string
@@ -21,6 +22,7 @@ class StringBitPosTest extends PredisCommandTestCase
     {
         return 'Predis\Command\StringBitPos';
     }
+
     /**
      * {@inheritdoc}
      */
@@ -28,6 +30,7 @@ class StringBitPosTest extends PredisCommandTestCase
     {
         return 'BITPOS';
     }
+
     /**
      * @group disconnected
      */
@@ -35,10 +38,13 @@ class StringBitPosTest extends PredisCommandTestCase
     {
         $arguments = array('key', 0, 1, 10);
         $expected = array('key', 0, 1, 10);
+
         $command = $this->getCommand();
         $command->setArguments($arguments);
+
         $this->assertSame($expected, $command->getArguments());
     }
+
     /**
      * @group disconnected
      */
@@ -47,23 +53,29 @@ class StringBitPosTest extends PredisCommandTestCase
         $raw = 10;
         $expected = 10;
         $command = $this->getCommand();
+
         $this->assertSame($expected, $command->parseResponse($raw));
     }
+
     /**
      * @group connected
      */
     public function testReturnsBitPosition()
     {
         $redis = $this->getClient();
+
         $redis->setbit('key', 10, 0);
         $this->assertSame(0, $redis->bitpos('key', 0), 'Get position of first bit set to 0 - full range');
         $this->assertSame(-1, $redis->bitpos('key', 1), 'Get position of first bit set to 1 - full range');
         $this->assertSame(-1, $redis->bitpos('key', 1, 5, 10), 'Get position of first bit set to 1 - specific range');
+
         $redis->setbit('key', 5, 1);
         $this->assertSame(0, $redis->bitpos('key', 0), 'Get position of first bit set to 0 - full range');
         $this->assertSame(5, $redis->bitpos('key', 1), 'Get position of first bit set to 1 - full range');
-        $this->assertSame(-1, $redis->bitpos('key', 1, 5, 10), 'Get position of first bit set to 1 - specific range');          
+        $this->assertSame(-1, $redis->bitpos('key', 1, 5, 10), 'Get position of first bit set to 1 - specific range');
+
     }
+
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
