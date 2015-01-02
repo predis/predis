@@ -19,6 +19,7 @@ use Predis\Profile;
  */
 abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $predisRequirements = array();
     protected $redisServerVersion = null;
 
     /**
@@ -263,7 +264,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             !empty($annotations['method']['requiresRedisVersion']) &&
             in_array('connected', $annotations['method']['group'])
         ) {
-            $this->required['requiresRedisVersion'] = $annotations['method']['requiresRedisVersion'][0];
+            $this->predisRequirements['requiresRedisVersion'] = $annotations['method']['requiresRedisVersion'][0];
         }
     }
 
@@ -272,12 +273,12 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function checkRequiredRedisVersion()
     {
-        if (!isset($this->required['requiresRedisVersion'])) {
+        if (!isset($this->predisRequirements['requiresRedisVersion'])) {
             return;
         }
 
         $srvVersion = $this->getRedisServerVersion();
-        $expectation = explode(' ', $this->required['requiresRedisVersion'], 2);
+        $expectation = explode(' ', $this->predisRequirements['requiresRedisVersion'], 2);
 
         if (count($expectation) === 1) {
             $expOperator = '>=';
