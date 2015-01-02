@@ -234,7 +234,7 @@ class RedisVersion300 extends RedisProfile
 
             /* commands operating on the key space */
             'SCAN'                      => 'Predis\Command\KeyScan',
-            
+
             /* commands operating on string values */
             'BITPOS'                    => 'Predis\Command\StringBitPos',
 
