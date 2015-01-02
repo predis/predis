@@ -1,5 +1,10 @@
-v1.0.1 (2014-xx-xx)
+v1.0.1 (2015-01-xx)
 ================================================================================
+
+- Added `BITPOS` to the server profile for Redis 2.8.
+
+- Connection timeout for read/write operations can now be set for UNIX sockets
+  where the underlying connection uses PHP's stream.
 
 - __FIX__: broken values returned by `Predis\Collection\Iterator\SortedSetKey`
   when iterating sorted set containing integer members (ISSUE #216).
