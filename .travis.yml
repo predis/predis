@@ -20,5 +20,6 @@ script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   allow_failures:
+    - php: hhvm
     - php: hhvm-nightly
   fast_finish: true
