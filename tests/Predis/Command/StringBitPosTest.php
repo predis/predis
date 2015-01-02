@@ -59,6 +59,7 @@ class StringBitPosTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.7
      */
     public function testReturnsBitPosition()
     {
@@ -78,6 +79,7 @@ class StringBitPosTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.7
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
