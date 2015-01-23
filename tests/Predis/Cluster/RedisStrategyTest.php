@@ -359,6 +359,7 @@ class RedisStrategyTest extends PredisTestCase
             'ZLEXCOUNT'             => 'keys-first',
             'ZRANGEBYLEX'           => 'keys-first',
             'ZREMRANGEBYLEX'        => 'keys-first',
+            'ZREVRANGEBYLEX'        => 'keys-first',
 
             /* commands operating on hashes */
             'HDEL'                  => 'keys-first',

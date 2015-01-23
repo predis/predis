@@ -155,6 +155,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZLEXCOUNT'                 => 'self::first',
             'ZRANGEBYLEX'               => 'self::first',
             'ZREMRANGEBYLEX'            => 'self::first',
+            'ZREVRANGEBYLEX'            => 'self::first',
         );
     }
 
