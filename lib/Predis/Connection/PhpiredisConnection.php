@@ -358,7 +358,7 @@ class PhpiredisConnection extends AbstractConnection
         $reader = $this->reader;
 
         while (($state = phpiredis_reader_get_state($reader)) === PHPIREDIS_READER_STATE_INCOMPLETE) {
-            if (@socket_recv($socket, $buffer, 4096, 0) === false || $buffer === '') {
+            if (@socket_recv($socket, $buffer, 4096, 0) === false || $buffer === '' || $buffer === null) {
                 $this->emitSocketError();
             }
 
