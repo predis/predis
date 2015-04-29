@@ -130,7 +130,7 @@ class FactoryTest extends PredisTestCase
     public function testCreateConnectionWithInitializationCommands()
     {
         $parameters = new Parameters(array(
-            'database' => '0',
+            'database' => '1',
             'password' => 'foobar'
         ));
 
@@ -143,7 +143,31 @@ class FactoryTest extends PredisTestCase
                    ->with($this->isRedisCommand('AUTH', array('foobar')));
         $connection->expects($this->at(2))
                    ->method('addConnectCommand')
-                   ->with($this->isRedisCommand('SELECT', array(0)));
+                   ->with($this->isRedisCommand('SELECT', array(1)));
+
+        $factory = new Factory();
+
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithDefaultDatabase()
+    {
+        $parameters = new Parameters(array(
+            'database' => '0',
+        ));
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())
+                   ->method('getParameters')
+                   ->will($this->returnValue($parameters));
+        $connection->expects($this->never())
+                   ->method('addConnectCommand');
 
         $factory = new Factory();
 

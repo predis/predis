@@ -144,7 +144,7 @@ class Factory implements FactoryInterface
             );
         }
 
-        if (isset($parameters->database)) {
+        if (isset($parameters->database) && $parameters->database) {
             $connection->addConnectCommand(
                 new RawCommand(array('SELECT', $parameters->database))
             );
