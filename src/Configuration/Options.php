@@ -100,7 +100,7 @@ class Options implements OptionsInterface
             $value = $this->input[$option];
             unset($this->input[$option]);
 
-            if (method_exists($value, '__invoke')) {
+            if (is_object($value) && method_exists($value, '__invoke')) {
                 $value = $value($this, $option);
             }
 
