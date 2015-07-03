@@ -178,4 +178,24 @@ class OptionsTest extends PredisTestCase
         $this->assertSame($custom, $options->custom);
         $this->assertSame($custom, $options->custom);
     }
+
+   /**
+    * @group disconnected
+    */
+    public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
+    {
+        $trigger = $this->getMock('stdClass', array('autoload'));
+        $trigger->expects($this->never())->method('autoload');
+
+        spl_autoload_register($autoload = function ($class) use ($trigger) {
+            $trigger->autoload($class);
+        }, true, false);
+
+        try {
+            $options = new Options(array('prefix' => 'pfx'));
+            $pfx = $options->prefix;
+        } catch (\Exception $_) {
+            spl_autoload_unregister($autoload);
+        }
+    }
 }
