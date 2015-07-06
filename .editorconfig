@@ -15,6 +15,3 @@ max_line_length = 120
 
 [*.{md,yml}]
 indent_size = 2
-
-[{phpunit.xml,phpunit.xml.dist,phpunit.xml.travisci}]
-indent_size = 2
