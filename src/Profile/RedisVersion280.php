@@ -246,6 +246,7 @@ class RedisVersion280 extends RedisProfile
             'ZLEXCOUNT'                 => 'Predis\Command\ZSetLexCount',
             'ZRANGEBYLEX'               => 'Predis\Command\ZSetRangeByLex',
             'ZREMRANGEBYLEX'            => 'Predis\Command\ZSetRemoveRangeByLex',
+            'ZREVRANGEBYLEX'            => 'Predis\Command\ZSetReverseRangeByLex',
 
             /* commands operating on hashes */
             'HSCAN'                     => 'Predis\Command\HashScan',

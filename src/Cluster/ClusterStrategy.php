@@ -138,6 +138,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'ZLEXCOUNT'             => $getKeyFromFirstArgument,
             'ZRANGEBYLEX'           => $getKeyFromFirstArgument,
             'ZREMRANGEBYLEX'        => $getKeyFromFirstArgument,
+            'ZREVRANGEBYLEX'        => $getKeyFromFirstArgument,
 
             /* commands operating on hashes */
             'HDEL'                  => $getKeyFromFirstArgument,
