@@ -3,6 +3,10 @@ v1.0.2 (2015-xx-xx)
 
 - Added missing command: `ZREVRANGEBYLEX` (>= 2.8).
 
+- Implemented support for `NX|XX`, `CH`, `INCR` modifiers using the simplified
+  signature of `ZADD` where scores and members are passed as a PHP named array.
+  These modifiers are available since Redis 3.0.2.
+
 - __FIX__: `Predis\Configuration\Options` must not trigger the autoloader when
   option values are strings (ISSUE #257).
 
