@@ -85,7 +85,7 @@ class ServerObjectTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->lpush('list:metavars', 'foo', 'bar');
-        $this->assertSame('ziplist', $redis->object('ENCODING', 'list:metavars'));
+        $this->assertRegExp('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
     }
 
     /**
