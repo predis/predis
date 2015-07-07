@@ -256,7 +256,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    protected function setRequiredRedisVersionFromAnnotation()
+    protected function getRequiredRedisServerVersion()
     {
         $annotations = $this->getAnnotations();
 
@@ -264,47 +264,39 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             !empty($annotations['method']['requiresRedisVersion']) &&
             in_array('connected', $annotations['method']['group'])
         ) {
-            $this->predisRequirements['requiresRedisVersion'] = $annotations['method']['requiresRedisVersion'][0];
+            return $annotations['method']['requiresRedisVersion'][0];
         }
+
+        return null;
     }
 
     /**
      *
      */
-    protected function checkRequiredRedisVersion()
+    protected function checkRequiredRedisServerVersion()
     {
-        if (!isset($this->predisRequirements['requiresRedisVersion'])) {
+        if (!$requiredVersion = $this->getRequiredRedisServerVersion()) {
             return;
         }
 
-        $srvVersion = $this->getRedisServerVersion();
-        $expectation = explode(' ', $this->predisRequirements['requiresRedisVersion'], 2);
+        $serverVersion = $this->getRedisServerVersion();
+        $requiredVersion = explode(' ', $requiredVersion, 2);
 
-        if (count($expectation) === 1) {
-            $expOperator = '>=';
-            $expVersion = $expectation[0];
+        if (count($requiredVersion) === 1) {
+            $reqOperator = '>=';
+            $reqVersion = $requiredVersion[0];
         } else {
-            $expOperator = $expectation[0];
-            $expVersion = $expectation[1];
+            $reqOperator = $requiredVersion[0];
+            $reqVersion = $requiredVersion[1];
         }
 
-        $comparation = version_compare($srvVersion, $expVersion);
+        $comparation = version_compare($serverVersion, $reqVersion);
 
-        if (!$match = eval("return $comparation $expOperator 0;")) {
+        if (!$match = eval("return $comparation $reqOperator 0;")) {
             $this->markTestSkipped(
-                "This test requires Redis $expOperator $expVersion but the current version is $srvVersion."
+                "This test requires Redis $reqOperator $reqVersion but the current version is $serverVersion."
             );
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setRequirementsFromAnnotation()
-    {
-        parent::setRequirementsFromAnnotation();
-
-        $this->setRequiredRedisVersionFromAnnotation();
     }
 
     /**
@@ -314,6 +306,6 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     {
         parent::checkRequirements();
 
-        $this->checkRequiredRedisVersion();
+        $this->checkRequiredRedisServerVersion();
     }
 }
