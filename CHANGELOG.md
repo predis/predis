@@ -1,6 +1,8 @@
 v1.0.2 (2015-xx-xx)
 ================================================================================
 
+- Added missing command: `ZREVRANGEBYLEX` (>= 2.8).
+
 - __FIX__: `Predis\Configuration\Options` must not trigger the autoloader when
   option values are strings (ISSUE #257).
 
