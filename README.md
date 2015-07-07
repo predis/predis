@@ -3,7 +3,7 @@
 [![Latest Stable Version](https://poser.pugx.org/predis/predis/v/stable.png)](https://packagist.org/packages/predis/predis)
 [![Total Downloads](https://poser.pugx.org/predis/predis/downloads.png)](https://packagist.org/packages/predis/predis)
 [![License](https://poser.pugx.org/predis/predis/license.svg)](https://packagist.org/packages/predis/predis)
-[![Build Status](https://travis-ci.org/nrk/predis.svg?branch=v1.0)](https://travis-ci.org/nrk/predis)
+[![Build Status](https://travis-ci.org/nrk/predis.svg?branch=master)](https://travis-ci.org/nrk/predis)
 [![HHVM Status](http://hhvm.h4cc.de/badge/predis/predis.png)](http://hhvm.h4cc.de/package/predis/predis)
 
 Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3.
