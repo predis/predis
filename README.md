@@ -95,6 +95,9 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
+Starting with Predis v1.0.2 the client also understands the `redis` scheme in URI strings as defined
+by the [provisional IANA registration](http://www.iana.org/assignments/uri-schemes/prov/redis).
+
 When an array of connection parameters is provided, Predis automatically works in cluster mode using
 client-side sharding. Both named arrays and URI strings can be mixed when providing configurations
 for each node:

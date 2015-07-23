@@ -32,7 +32,7 @@ use Predis\Response\Status as StatusResponse;
  *
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -92,13 +92,15 @@ class PhpiredisSocketConnection extends AbstractConnection
      */
     protected function assertParameters(ParametersInterface $parameters)
     {
+        parent::assertParameters($parameters);
+
         if (isset($parameters->persistent)) {
             throw new NotSupportedException(
                 "Persistent connections are not supported by this connection backend."
             );
         }
 
-        return parent::assertParameters($parameters);
+        return $parameters;
     }
 
     /**

@@ -34,6 +34,28 @@ class WebdisConnectionTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testSupportsSchemeUnix()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'http'));
+        $connection = new WebdisConnection($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid scheme: 'tcp'.
+     */
+    public function testThrowsExceptionOnInvalidScheme()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'tcp'));
+        new WebdisConnection($parameters);
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::writeRequest() is not supported.
      */

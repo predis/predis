@@ -29,12 +29,34 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      */
-    public function testExposesParameters()
+    public function testSupportsSchemeTCP()
     {
-        $parameters = $this->getParameters();
+        $parameters = $this->getParameters(array('scheme' => 'tcp'));
         $connection = new PhpiredisSocketConnection($parameters);
 
-        $this->assertSame($parameters, $connection->getParameters());
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeRedis()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'redis'));
+        $connection = new PhpiredisSocketConnection($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeUnix()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'unix'));
+        $connection = new PhpiredisSocketConnection($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
     }
 
     /**
@@ -46,6 +68,17 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
         new PhpiredisSocketConnection($parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExposesParameters()
+    {
+        $parameters = $this->getParameters();
+        $connection = new PhpiredisSocketConnection($parameters);
+
+        $this->assertSame($parameters, $connection->getParameters());
     }
 
     /**
