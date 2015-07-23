@@ -156,6 +156,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZRANGEBYLEX'               => 'self::first',
             'ZREMRANGEBYLEX'            => 'self::first',
             'ZREVRANGEBYLEX'            => 'self::first',
+            'BITPOS'                    => 'self::first',
         );
     }
 
