@@ -10,6 +10,9 @@ v1.0.2 (2015-xx-xx)
 - __FIX__: `Predis\Configuration\Options` must not trigger the autoloader when
   option values are strings (ISSUE #257).
 
+- __FIX__: `BITPOS` was not defined in the key-prefix processor (ISSUE #265) and
+  in the replication strategy.
+
 
 v1.0.1 (2015-01-02)
 ================================================================================
