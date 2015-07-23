@@ -211,6 +211,7 @@ class RedisVersion260 extends RedisProfile
             'PTTL'                      => 'Predis\Command\KeyPreciseTimeToLive',
             'PEXPIRE'                   => 'Predis\Command\KeyPreciseExpire',
             'PEXPIREAT'                 => 'Predis\Command\KeyPreciseExpireAt',
+            'MIGRATE'                   => 'Predis\Command\KeyMigrate',
 
             /* commands operating on string values */
             'PSETEX'                    => 'Predis\Command\StringPreciseSetExpire',

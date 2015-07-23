@@ -217,6 +217,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
         KeyPrefixProcessor::zsetStore($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
     }
+
     /**
      * @group disconnected
      */
@@ -237,6 +238,27 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
         KeyPrefixProcessor::evalKeys($command, 'prefix:');
+        $this->assertEmpty($command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixMigrate()
+    {
+        $arguments = array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE');
+        $expected = array('127.0.0.1', '6379', 'prefix:key', '0', '10', 'COPY', 'REPLACE');
+
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+        $command->setRawArguments($arguments);
+
+        KeyPrefixProcessor::migrate($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+
+        // Empty arguments
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+
+        KeyPrefixProcessor::sort($command, 'prefix:');
         $this->assertEmpty($command->getArguments());
     }
 
@@ -792,6 +814,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', 0),
                 array('prefix:key', 0),
             ),
+            array('MIGRATE',
+                array('127.0.0.1', '6379', 'key', '0', '10'),
+                array('127.0.0.1', '6379', 'prefix:key', '0', '10'),
+            ),
             /* ---------------- Redis 2.8 ---------------- */
             array('SSCAN',
                 array('key', '0', 'MATCH', 'member:*', 'COUNT', 10),
@@ -832,6 +858,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
             array('ZREVRANGEBYLEX',
                 array('key', '+', '-', 'LIMIT', '0', '10'),
                 array('prefix:key', '+', '-', 'LIMIT', '0', '10'),
+            ),
+            /* ---------------- Redis 3.0 ---------------- */
+            array('MIGRATE',
+                array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE'),
+                array('127.0.0.1', '6379', 'prefix:key', '0', '10', 'COPY', 'REPLACE'),
             ),
         );
     }
