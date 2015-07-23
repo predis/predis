@@ -227,6 +227,7 @@ class ReplicationStrategy
             'QUIT'              => true,
             'OBJECT'            => true,
             'BITCOUNT'          => true,
+            'BITPOS'            => true,
             'TIME'              => true,
             'PFCOUNT'           => true,
             'SORT'              => array($this, 'isSortReadOnly'),
