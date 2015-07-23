@@ -58,14 +58,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     protected function assertParameters(ParametersInterface $parameters)
     {
-        $scheme = $parameters->scheme;
+        switch ($parameters->scheme) {
+            case 'tcp':
+            case 'redis':
+            case 'unix':
+                break;
 
-        if ($scheme !== 'tcp' && $scheme !== 'unix') {
-            throw new InvalidArgumentException("Invalid scheme: '$scheme'.");
-        }
-
-        if ($scheme === 'unix' && !isset($parameters->path)) {
-            throw new InvalidArgumentException('Missing UNIX domain socket path.');
+            default:
+                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;

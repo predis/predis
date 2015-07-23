@@ -29,12 +29,34 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      */
-    public function testExposesParameters()
+    public function testSupportsSchemeTCP()
     {
-        $parameters = $this->getParameters();
-        $connection = new CompositeStreamConnection($parameters);
+        $parameters = $this->getParameters(array('scheme' => 'tcp'));
+        $connection = new StreamConnection($parameters);
 
-        $this->assertSame($parameters, $connection->getParameters());
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeRedis()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'redis'));
+        $connection = new StreamConnection($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeUnix()
+    {
+        $parameters = $this->getParameters(array('scheme' => 'unix'));
+        $connection = new StreamConnection($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
     }
 
     /**
@@ -46,6 +68,17 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     {
         $parameters = $this->getParameters(array('scheme' => 'udp'));
         new CompositeStreamConnection($parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExposesParameters()
+    {
+        $parameters = $this->getParameters();
+        $connection = new CompositeStreamConnection($parameters);
+
+        $this->assertSame($parameters, $connection->getParameters());
     }
 
     /**

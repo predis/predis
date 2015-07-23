@@ -24,9 +24,10 @@ use Predis\Command\RawCommand;
 class Factory implements FactoryInterface
 {
     protected $schemes = array(
-        'tcp'  => 'Predis\Connection\StreamConnection',
-        'unix' => 'Predis\Connection\StreamConnection',
-        'http' => 'Predis\Connection\WebdisConnection',
+        'tcp'   => 'Predis\Connection\StreamConnection',
+        'unix'  => 'Predis\Connection\StreamConnection',
+        'redis' => 'Predis\Connection\StreamConnection',
+        'http'  => 'Predis\Connection\WebdisConnection',
     );
 
     /**

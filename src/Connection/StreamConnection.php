@@ -19,7 +19,7 @@ use Predis\Response\Status as StatusResponse;
  * Standard connection to Redis servers implemented on top of PHP's streams.
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -52,10 +52,17 @@ class StreamConnection extends AbstractConnection
      */
     protected function createResource()
     {
-        $initializer = "{$this->parameters->scheme}StreamInitializer";
-        $resource = $this->$initializer($this->parameters);
+        switch ($this->parameters->scheme) {
+            case 'tcp':
+            case 'redis':
+                return $this->tcpStreamInitializer($this->parameters);
 
-        return $resource;
+            case 'unix':
+                return $this->unixStreamInitializer($this->parameters);
+
+            default:
+                throw new \InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
+        }
     }
 
     /**
@@ -110,6 +117,10 @@ class StreamConnection extends AbstractConnection
      */
     protected function unixStreamInitializer(ParametersInterface $parameters)
     {
+        if ($scheme === 'unix' && !isset($parameters->path)) {
+            throw new InvalidArgumentException('Missing UNIX domain socket path.');
+        }
+
         $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
 

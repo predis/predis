@@ -137,7 +137,7 @@ class ParametersTest extends PredisTestCase
      */
     public function testParsingURI()
     {
-        $uri = 'tcp://10.10.10.10:6400?timeout=0.5&persistent=1';
+        $uri = 'tcp://10.10.10.10:6400?timeout=0.5&persistent=1&database=5&password=secret';
 
         $expected = array(
             'scheme' => 'tcp',
@@ -145,6 +145,8 @@ class ParametersTest extends PredisTestCase
             'port' => 6400,
             'timeout' => '0.5',
             'persistent' => '1',
+            'database' => '5',
+            'password' => 'secret',
         );
 
         $this->assertSame($expected, Parameters::parse($uri));
@@ -153,7 +155,45 @@ class ParametersTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParsingUnixDomainURI()
+    public function testParsingURIWithRedisScheme()
+    {
+        $uri = 'redis://:secret@10.10.10.10:6400/5?timeout=0.5&persistent=1';
+
+        $expected = array(
+            'scheme' => 'redis',
+            'host' => '10.10.10.10',
+            'port' => 6400,
+            'timeout' => '0.5',
+            'persistent' => '1',
+            'password' => 'secret',
+            'database' => '5',
+        );
+
+        $parameters = Parameters::parse($uri);
+
+        // TODO: parse_url() in PHP >= 5.6 returns an empty "user" entry in the
+        // dictionary when no username has been provided in the URI string. This
+        // actually makes sense, but let's keep the test ugly & simple for now.
+        unset($parameters['user']);
+
+        $this->assertSame($expected, $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRedisSchemeOverridesPasswordAndDatabaseInQueryString()
+    {
+        $parameters = Parameters::parse('redis://:secret@10.10.10.10/5?password=ignored&database=4');
+
+        $this->assertSame('secret', $parameters['password']);
+        $this->assertSame('5', $parameters['database']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsingURIWithUnixDomain()
     {
         $uri = 'unix:///tmp/redis.sock?timeout=0.5&persistent=1';
 
