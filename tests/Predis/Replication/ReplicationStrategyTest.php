@@ -29,7 +29,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('read') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertTrue($strategy->isReadOperation($command));
+
+            $this->assertTrue(
+                $strategy->isReadOperation($command),
+                "$commandId is expected to be a read operation."
+            );
         }
     }
 
@@ -43,7 +47,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('write') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertFalse($strategy->isReadOperation($command), $commandId);
+
+            $this->assertFalse(
+                $strategy->isReadOperation($command),
+                "$commandId is expected to be a write operation."
+            );
         }
     }
 
@@ -57,7 +65,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('disallowed') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertTrue($strategy->isDisallowedOperation($command), $commandId);
+
+            $this->assertTrue(
+                $strategy->isDisallowedOperation($command),
+                "$commandId is expected to be a disallowed operation."
+            );
         }
     }
 
@@ -70,10 +82,16 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $cmdReadSort = $profile->createCommand('SORT', array('key:list'));
-        $this->assertTrue($strategy->isReadOperation($cmdReadSort), 'SORT [read-only]');
+        $this->assertTrue(
+            $strategy->isReadOperation($cmdReadSort),
+            'SORT is expected to be a read operation.'
+        );
 
         $cmdWriteSort = $profile->createCommand('SORT', array('key:list', array('store' => 'key:stored')));
-        $this->assertFalse($strategy->isReadOperation($cmdWriteSort), 'SORT [write with STORE]');
+        $this->assertFalse(
+            $strategy->isReadOperation($cmdWriteSort),
+            'SORT with STORE is expected to be a write operation.'
+        );
     }
 
     /**
