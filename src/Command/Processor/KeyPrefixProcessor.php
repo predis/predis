@@ -145,6 +145,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'HINCRBYFLOAT'              => 'self::first',
             'EVAL'                      => 'self::evalKeys',
             'EVALSHA'                   => 'self::evalKeys',
+            'MIGRATE'                   => 'self::migrate',
             /* ---------------- Redis 2.8 ---------------- */
             'SSCAN'                     => 'self::first',
             'ZSCAN'                     => 'self::first',
@@ -393,6 +394,20 @@ class KeyPrefixProcessor implements ProcessorInterface
                 $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
+            $command->setRawArguments($arguments);
+        }
+    }
+
+    /**
+     * Applies the specified prefix to the key of a MIGRATE command.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function migrate(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $arguments[2] = "$prefix{$arguments[2]}";
             $command->setRawArguments($arguments);
         }
     }
