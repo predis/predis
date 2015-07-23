@@ -829,6 +829,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', '+', '-', 'LIMIT', '0', '10'),
                 array('prefix:key', '+', '-', 'LIMIT', '0', '10'),
             ),
+            array('BITPOS',
+                array('key', 0),
+                array('prefix:key', 0),
+            ),
         );
     }
 }
