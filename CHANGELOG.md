@@ -1,7 +1,11 @@
 v1.0.2 (2015-xx-xx)
 ================================================================================
 
-- Added missing command: `ZREVRANGEBYLEX` (>= 2.8).
+- Allow the use of `redis` as a scheme in URI strings for connection parameters,
+  as described in the provisional IANA registration document published on IANA's
+  [website](http://www.iana.org/assignments/uri-schemes/prov/redis).
+
+- Added missing commands: `ZREVRANGEBYLEX` (>= 2.8), `MIGRATE` (>= 2.6).
 
 - Implemented support for `NX|XX`, `CH`, `INCR` modifiers using the simplified
   signature of `ZADD` where scores and members are passed as a PHP named array.
