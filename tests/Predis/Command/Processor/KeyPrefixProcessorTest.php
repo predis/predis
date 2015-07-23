@@ -788,6 +788,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('a42059b356c875f0717db19a51f6aaca9ae659ea', 2, 'foo', 'hoge', 'bar', 'piyo'),
                 array('a42059b356c875f0717db19a51f6aaca9ae659ea', 2, 'prefix:foo', 'prefix:hoge', 'bar', 'piyo'),
             ),
+            array('BITPOS',
+                array('key', 0),
+                array('prefix:key', 0),
+            ),
             /* ---------------- Redis 2.8 ---------------- */
             array('SSCAN',
                 array('key', '0', 'MATCH', 'member:*', 'COUNT', 10),
@@ -828,10 +832,6 @@ class KeyPrefixProcessorTest extends PredisTestCase
             array('ZREVRANGEBYLEX',
                 array('key', '+', '-', 'LIMIT', '0', '10'),
                 array('prefix:key', '+', '-', 'LIMIT', '0', '10'),
-            ),
-            array('BITPOS',
-                array('key', 0),
-                array('prefix:key', 0),
             ),
         );
     }
