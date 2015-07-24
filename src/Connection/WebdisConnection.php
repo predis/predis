@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
 use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;
@@ -60,7 +59,7 @@ class WebdisConnection implements NodeConnectionInterface
         $this->assertExtensions();
 
         if ($parameters->scheme !== 'http') {
-            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
+            throw new \InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
         $this->parameters = $parameters;

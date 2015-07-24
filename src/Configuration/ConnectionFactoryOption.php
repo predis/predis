@@ -11,7 +11,6 @@
 
 namespace Predis\Configuration;
 
-use InvalidArgumentException;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 
@@ -39,7 +38,7 @@ class ConnectionFactoryOption implements OptionInterface
 
             return $factory;
         } else {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'Invalid value provided for the connections option.'
             );
         }

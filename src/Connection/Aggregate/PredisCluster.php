@@ -11,9 +11,6 @@
 
 namespace Predis\Connection\Aggregate;
 
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
 use Predis\NotSupportedException;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
@@ -28,7 +25,7 @@ use Predis\Connection\NodeConnectionInterface;
  *
  * @todo Add the ability to remove connections from pool.
  */
-class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
+class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
     private $pool;
     private $strategy;
@@ -191,7 +188,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->pool);
+        return new \ArrayIterator($this->pool);
     }
 
     /**

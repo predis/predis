@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Connection\ConnectionInterface;
@@ -60,7 +59,7 @@ class Atomic extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
         $profile = $this->getClient()->getProfile();
         $connection->executeCommand($profile->createCommand('multi'));

@@ -11,14 +11,12 @@
 
 namespace Predis\PubSub;
 
-use Iterator;
-
 /**
  * Base implementation of a PUB/SUB consumer abstraction based on PHP iterators.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class AbstractConsumer implements Iterator
+abstract class AbstractConsumer implements \Iterator
 {
     const SUBSCRIBE = 'subscribe';
     const UNSUBSCRIBE = 'unsubscribe';

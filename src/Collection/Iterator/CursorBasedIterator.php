@@ -11,7 +11,6 @@
 
 namespace Predis\Collection\Iterator;
 
-use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
 
@@ -28,7 +27,7 @@ use Predis\NotSupportedException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class CursorBasedIterator implements Iterator
+abstract class CursorBasedIterator implements \Iterator
 {
     protected $client;
     protected $match;

@@ -11,8 +11,6 @@
 
 namespace Predis\Profile;
 
-use InvalidArgumentException;
-use ReflectionClass;
 use Predis\ClientException;
 
 /**
@@ -71,10 +69,10 @@ final class Factory
      */
     public static function define($alias, $class)
     {
-        $reflection = new ReflectionClass($class);
+        $reflection = new \ReflectionClass($class);
 
         if (!$reflection->isSubclassOf('Predis\Profile\ProfileInterface')) {
-            throw new InvalidArgumentException("The class '$class' is not a valid profile class.");
+            throw new \InvalidArgumentException("The class '$class' is not a valid profile class.");
         }
 
         self::$profiles[$alias] = $class;

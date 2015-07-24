@@ -11,8 +11,6 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
-
 /**
  * Container for connection parameters used to initialize connections to Redis.
  *
@@ -87,7 +85,7 @@ class Parameters implements ParametersInterface
         }
 
         if (!$parsed = parse_url($uri)) {
-            throw new InvalidArgumentException("Invalid parameters URI: $uri");
+            throw new \InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
         if (isset($parsed['query'])) {
@@ -120,7 +118,7 @@ class Parameters implements ParametersInterface
     public static function parseIANA($uri)
     {
         if (!$parsed = parse_url($uri)) {
-            throw new InvalidArgumentException("Invalid parameters URI: $uri");
+            throw new \InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
         if (isset($parsed['query'])) {

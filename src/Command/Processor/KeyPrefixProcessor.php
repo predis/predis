@@ -11,7 +11,6 @@
 
 namespace Predis\Command\Processor;
 
-use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
 
@@ -220,7 +219,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         }
 
         if (!is_callable($callback)) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'Callback must be a valid callable object or NULL'
             );
         }

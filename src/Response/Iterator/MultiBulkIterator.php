@@ -11,8 +11,6 @@
 
 namespace Predis\Response\Iterator;
 
-use Iterator;
-use Countable;
 use Predis\Response\ResponseInterface;
 
 /**
@@ -27,7 +25,7 @@ use Predis\Response\ResponseInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterface
+abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInterface
 {
     protected $current;
     protected $position;
