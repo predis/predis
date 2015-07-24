@@ -54,8 +54,8 @@ class SetMoveTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -67,8 +67,8 @@ class SetMoveTest extends PredisCommandTestCase
 
         $redis->sadd('letters:source', 'a', 'b', 'c');
 
-        $this->assertTrue($redis->smove('letters:source', 'letters:destination', 'b'));
-        $this->assertFalse($redis->smove('letters:source', 'letters:destination', 'z'));
+        $this->assertSame(1, $redis->smove('letters:source', 'letters:destination', 'b'));
+        $this->assertSame(0, $redis->smove('letters:source', 'letters:destination', 'z'));
 
         $this->assertSameValues(array('a', 'c'), $redis->smembers('letters:source'));
         $this->assertSameValues(array('b'), $redis->smembers('letters:destination'));
