@@ -96,7 +96,7 @@ class KeyExistsTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedRedisVersion >= 3.0.3
+     * @requiresRedisVersion >= 3.0.3
      */
     public function testReturnValueWhenKeysExist()
     {
@@ -108,7 +108,7 @@ class KeyExistsTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedRedisVersion >= 3.0.3
+     * @requiresRedisVersion >= 3.0.3
      */
     public function testReturnValueWhenKeyDoNotExist()
     {
