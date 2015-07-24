@@ -19,7 +19,7 @@
 // files, but namespaces and classes definitions must follow a precise order
 // when dealing with subclassing and inheritance.
 //
-// The current implementation is pretty naïve, but it should do for now.
+// The current implementation is pretty naÃ¯ve, but it should do for now.
 // -------------------------------------------------------------------------- //
 
 class CommandLine
@@ -27,10 +27,10 @@ class CommandLine
     public static function getOptions()
     {
         $parameters = array(
-            's:'  => 'source:',
-            'o:'  => 'output:',
-            'e:'  => 'exclude:',
-            'E:'  => 'exclude-classes:',
+            's:' => 'source:',
+            'o:' => 'output:',
+            'e:' => 'exclude:',
+            'E:' => 'exclude-classes:',
         );
 
         $getops = getopt(implode(array_keys($parameters)), $parameters);
