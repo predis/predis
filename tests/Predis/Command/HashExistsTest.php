@@ -54,8 +54,8 @@ class HashExistsTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertFalse($command->parseResponse(0));
-        $this->assertTrue($command->parseResponse(1));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -67,9 +67,9 @@ class HashExistsTest extends PredisCommandTestCase
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo');
 
-        $this->assertTrue($redis->hexists('metavars', 'foo'));
-        $this->assertFalse($redis->hexists('metavars', 'lol'));
-        $this->assertFalse($redis->hexists('unknown', 'foo'));
+        $this->assertSame(1, $redis->hexists('metavars', 'foo'));
+        $this->assertSame(0, $redis->hexists('metavars', 'lol'));
+        $this->assertSame(0, $redis->hexists('unknown', 'foo'));
     }
 
     /**

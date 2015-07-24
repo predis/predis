@@ -24,12 +24,4 @@ class HashExists extends Command
     {
         return 'HEXISTS';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }
