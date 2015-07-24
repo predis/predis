@@ -24,12 +24,4 @@ class HashSet extends Command
     {
         return 'HSET';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }
