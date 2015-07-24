@@ -265,7 +265,7 @@ class RedisStrategyTest extends PredisTestCase
     {
         $commands = array(
             /* commands operating on the key space */
-            'EXISTS' => 'keys-first',
+            'EXISTS' => 'keys-all',
             'DEL' => 'keys-all',
             'TYPE' => 'keys-first',
             'EXPIRE' => 'keys-first',
