@@ -24,12 +24,4 @@ class KeyExpire extends Command
     {
         return 'EXPIRE';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }
