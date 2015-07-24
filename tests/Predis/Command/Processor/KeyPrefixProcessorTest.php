@@ -864,6 +864,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE'),
                 array('127.0.0.1', '6379', 'prefix:key', '0', '10', 'COPY', 'REPLACE'),
             ),
+            array('EXISTS',
+                array('key1', 'key2', 'key3'),
+                array('prefix:key1', 'prefix:key2', 'prefix:key3'),
+            ),
         );
     }
 }

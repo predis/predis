@@ -33,7 +33,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         $this->prefix = $prefix;
         $this->commands = array(
             /* ---------------- Redis 1.2 ---------------- */
-            'EXISTS' => 'static::first',
+            'EXISTS' => 'static::all',
             'DEL' => 'static::all',
             'TYPE' => 'static::first',
             'KEYS' => 'static::first',
