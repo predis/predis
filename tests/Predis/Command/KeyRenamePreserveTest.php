@@ -52,8 +52,8 @@ class KeyRenamePreserveTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(1));
-        $this->assertFalse($this->getCommand()->parseResponse(0));
+        $this->assertSame(0, $this->getCommand()->parseResponse(0));
+        $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
 
     /**
@@ -65,7 +65,7 @@ class KeyRenamePreserveTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->renamenx('foo', 'foofoo'));
+        $this->assertSame(1, $redis->renamenx('foo', 'foofoo'));
         $this->assertSame(0, $redis->exists('foo'));
         $this->assertSame(1, $redis->exists('foofoo'));
     }
@@ -79,6 +79,6 @@ class KeyRenamePreserveTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->renamenx('foo', 'foobar'));
+        $this->assertSame(0, $redis->renamenx('foo', 'foobar'));
     }
 }

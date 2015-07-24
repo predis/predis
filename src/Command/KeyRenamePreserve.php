@@ -24,12 +24,4 @@ class KeyRenamePreserve extends KeyRename
     {
         return 'RENAMENX';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }
