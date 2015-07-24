@@ -11,8 +11,6 @@
 
 namespace Predis\Profile;
 
-use InvalidArgumentException;
-use ReflectionClass;
 use Predis\ClientException;
 use Predis\Command\Processor\ProcessorInterface;
 
@@ -111,10 +109,10 @@ abstract class RedisProfile implements ProfileInterface
      */
     public function defineCommand($commandID, $class)
     {
-        $reflection = new ReflectionClass($class);
+        $reflection = new \ReflectionClass($class);
 
         if (!$reflection->isSubclassOf('Predis\Command\CommandInterface')) {
-            throw new InvalidArgumentException("The class '$class' is not a valid command class.");
+            throw new \InvalidArgumentException("The class '$class' is not a valid command class.");
         }
 
         $this->commands[strtoupper($commandID)] = $class;

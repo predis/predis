@@ -11,10 +11,6 @@
 
 namespace Predis\Connection\Aggregate;
 
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-use OutOfBoundsException;
 use Predis\NotSupportedException;
 use Predis\Cluster\StrategyInterface;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
@@ -46,7 +42,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
+class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
     private $useClusterSlots = true;
     private $defaultParameters = array();
@@ -236,7 +232,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $last < 0x0000 || $last > 0x3FFF ||
             $last < $first
         ) {
-            throw new OutOfBoundsException(
+            throw new \OutOfBoundsException(
                 "Invalid slot range for $connection: [$first-$last]."
             );
         }
@@ -324,7 +320,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getConnectionBySlot($slot)
     {
         if ($slot < 0x0000 || $slot > 0x3FFF) {
-            throw new OutOfBoundsException("Invalid slot [$slot].");
+            throw new \OutOfBoundsException("Invalid slot [$slot].");
         }
 
         if (isset($this->slots[$slot])) {
@@ -494,7 +490,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getIterator()
     {
-        return new ArrayIterator(array_values($this->pool));
+        return new \ArrayIterator(array_values($this->pool));
     }
 
     /**

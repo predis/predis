@@ -11,8 +11,6 @@
 
 namespace Predis\PubSub;
 
-use InvalidArgumentException;
-
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
  * PUB / SUB context.
@@ -46,7 +44,7 @@ class DispatcherLoop
     protected function assertCallback($callable)
     {
         if (!is_callable($callable)) {
-            throw new InvalidArgumentException('The given argument must be a callable object.');
+            throw new \InvalidArgumentException('The given argument must be a callable object.');
         }
     }
 

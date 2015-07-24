@@ -11,7 +11,6 @@
 
 namespace Predis\Monitor;
 
-use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
 use Predis\Connection\AggregateConnectionInterface;
@@ -21,7 +20,7 @@ use Predis\Connection\AggregateConnectionInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Consumer implements Iterator
+class Consumer implements \Iterator
 {
     private $client;
     private $valid;

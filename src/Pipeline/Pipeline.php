@@ -11,9 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use Exception;
-use InvalidArgumentException;
-use SplQueue;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
@@ -46,7 +43,7 @@ class Pipeline implements ClientContextInterface
     public function __construct(ClientInterface $client)
     {
         $this->client = $client;
-        $this->pipeline = new SplQueue();
+        $this->pipeline = new \SplQueue();
     }
 
     /**
@@ -126,11 +123,11 @@ class Pipeline implements ClientContextInterface
      * from the current connection.
      *
      * @param ConnectionInterface $connection Current connection instance.
-     * @param SplQueue            $commands   Queued commands.
+     * @param \SplQueue           $commands   Queued commands.
      *
      * @return array
      */
-    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
         foreach ($commands as $command) {
             $connection->writeRequest($command);
@@ -168,7 +165,7 @@ class Pipeline implements ClientContextInterface
             $responses = $this->executePipeline($this->getConnection(), $this->pipeline);
             $this->responses = array_merge($this->responses, $responses);
         } else {
-            $this->pipeline = new SplQueue();
+            $this->pipeline = new \SplQueue();
         }
 
         return $this;
@@ -197,13 +194,13 @@ class Pipeline implements ClientContextInterface
      *
      * @return array
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
+     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function execute($callable = null)
     {
         if ($callable && !is_callable($callable)) {
-            throw new InvalidArgumentException('The argument must be a callable object.');
+            throw new \InvalidArgumentException('The argument must be a callable object.');
         }
 
         $exception = null;
@@ -215,7 +212,7 @@ class Pipeline implements ClientContextInterface
             }
 
             $this->flushPipeline();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             // NOOP
         }
 

@@ -11,8 +11,6 @@
 
 namespace Predis;
 
-use InvalidArgumentException;
-use UnexpectedValueException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
@@ -80,7 +78,7 @@ class Client implements ClientInterface
             return $options;
         }
 
-        throw new InvalidArgumentException('Invalid type for client options.');
+        throw new \InvalidArgumentException('Invalid type for client options.');
     }
 
     /**
@@ -142,7 +140,7 @@ class Client implements ClientInterface
             return $connection;
         }
 
-        throw new InvalidArgumentException('Invalid type for connection parameters.');
+        throw new \InvalidArgumentException('Invalid type for connection parameters.');
     }
 
     /**
@@ -159,7 +157,7 @@ class Client implements ClientInterface
             $connection = call_user_func_array($callable, func_get_args());
 
             if (!$connection instanceof ConnectionInterface) {
-                throw new UnexpectedValueException(
+                throw new \UnexpectedValueException(
                     'The callable connection initializer returned an invalid type.'
                 );
             }
@@ -198,7 +196,7 @@ class Client implements ClientInterface
     public function getClientFor($connectionID)
     {
         if (!$connection = $this->getConnectionById($connectionID)) {
-            throw new InvalidArgumentException("Invalid connection ID: $connectionID.");
+            throw new \InvalidArgumentException("Invalid connection ID: $connectionID.");
         }
 
         return new static($connection, $this->options);
