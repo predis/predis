@@ -54,8 +54,8 @@ class HashSetPreserveTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -65,9 +65,9 @@ class HashSetPreserveTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->hsetnx('metavars', 'foo', 'bar'));
-        $this->assertTrue($redis->hsetnx('metavars', 'hoge', 'piyo'));
-        $this->assertFalse($redis->hsetnx('metavars', 'foo', 'barbar'));
+        $this->assertSame(1, $redis->hsetnx('metavars', 'foo', 'bar'));
+        $this->assertSame(1, $redis->hsetnx('metavars', 'hoge', 'piyo'));
+        $this->assertSame(0, $redis->hsetnx('metavars', 'foo', 'barbar'));
 
         $this->assertSame(array('bar', 'piyo'), $redis->hmget('metavars', 'foo', 'hoge'));
     }
