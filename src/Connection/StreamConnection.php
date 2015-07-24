@@ -117,7 +117,7 @@ class StreamConnection extends AbstractConnection
      */
     protected function unixStreamInitializer(ParametersInterface $parameters)
     {
-        if ($scheme === 'unix' && !isset($parameters->path)) {
+        if (!isset($parameters->path)) {
             throw new InvalidArgumentException('Missing UNIX domain socket path.');
         }
 
