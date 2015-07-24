@@ -40,9 +40,9 @@ class MultiExec implements ClientContextInterface
     protected $client;
     protected $commands;
     protected $exceptions = true;
-    protected $attempts   = 0;
-    protected $watchKeys  = array();
-    protected $modeCAS    = false;
+    protected $attempts = 0;
+    protected $watchKeys = array();
+    protected $modeCAS = false;
 
     /**
      * @param ClientInterface $client  Client instance used by the transaction.
@@ -376,7 +376,7 @@ class MultiExec implements ClientContextInterface
                     $this->discard();
                 }
 
-                return null;
+                return;
             }
 
             $execResponse = $this->call('EXEC');
@@ -404,7 +404,7 @@ class MultiExec implements ClientContextInterface
             $this->onProtocolError('EXEC returned an unexpected number of response items.');
         }
 
-        for ($i = 0; $i < $size; $i++) {
+        for ($i = 0; $i < $size; ++$i) {
             $cmdResponse = $execResponse[$i];
 
             if ($cmdResponse instanceof ErrorResponseInterface && $this->exceptions) {

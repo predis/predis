@@ -24,6 +24,7 @@ use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
  * Protocol processor for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ProtocolProcessor implements ProtocolProcessorInterface
@@ -65,7 +66,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
             case '$':
                 $size = (int) $payload;
                 if ($size === -1) {
-                    return null;
+                    return;
                 }
 
                 return substr($connection->readBuffer($size + 2), 0, -2);
@@ -74,7 +75,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                 $count = (int) $payload;
 
                 if ($count === -1) {
-                    return null;
+                    return;
                 }
                 if ($this->mbiterable) {
                     return new MultiBulkIterator($connection, $count);
@@ -82,7 +83,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
                 $multibulk = array();
 
-                for ($i = 0; $i < $count; $i++) {
+                for ($i = 0; $i < $count; ++$i) {
                     $multibulk[$i] = $this->read($connection);
                 }
 

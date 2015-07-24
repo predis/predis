@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/script
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ServerScript extends Command

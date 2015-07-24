@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/bitop
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StringBitOp extends Command
@@ -31,7 +32,7 @@ class StringBitOp extends Command
     protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
-            list($operation, $destination, ) = $arguments;
+            list($operation, $destination) = $arguments;
             $arguments = $arguments[2];
             array_unshift($arguments, $operation, $destination);
         }

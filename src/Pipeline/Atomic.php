@@ -100,8 +100,8 @@ class Atomic extends Pipeline
         $sizeOfPipe = count($commands);
         $exceptions = $this->throwServerExceptions();
 
-        for ($i = 0; $i < $sizeOfPipe; $i++) {
-            $command  = $commands->dequeue();
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
+            $command = $commands->dequeue();
             $response = $executed[$i];
 
             if (!$response instanceof ResponseInterface) {

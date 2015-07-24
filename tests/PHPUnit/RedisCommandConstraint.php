@@ -54,7 +54,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
                 return false;
             }
 
-            for ($i = 0; $i < count($this->arguments); $i++) {
+            for ($i = 0; $i < count($this->arguments); ++$i) {
                 if (((string) $this->arguments[$i]) !== ((string) $otherArguments[$i])) {
                     return false;
                 }

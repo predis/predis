@@ -33,7 +33,7 @@ class MultiBulkResponseTest extends PredisTestCase
 
         $connection->expects($this->at(1))
                    ->method('readLine')
-                   ->will($this->returnValue("$3"));
+                   ->will($this->returnValue('$3'));
 
         $connection->expects($this->at(2))
                    ->method('readBuffer')
@@ -41,7 +41,7 @@ class MultiBulkResponseTest extends PredisTestCase
 
         $connection->expects($this->at(3))
                    ->method('readLine')
-                   ->will($this->returnValue("$3"));
+                   ->will($this->returnValue('$3'));
 
         $connection->expects($this->at(4))
                    ->method('readBuffer')

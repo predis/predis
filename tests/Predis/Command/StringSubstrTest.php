@@ -56,6 +56,6 @@ class StringSubstrTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertSame('substring',$this->getCommand()->parseResponse('substring'));
+        $this->assertSame('substring', $this->getCommand()->parseResponse('substring'));
     }
 }

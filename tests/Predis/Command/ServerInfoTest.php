@@ -49,7 +49,7 @@ class ServerInfoTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $raw =<<<BUFFER
+        $raw = <<<BUFFER
 redis_version:2.4.4
 redis_git_sha1:bc62bc5e
 redis_git_dirty:0
@@ -152,7 +152,7 @@ BUFFER;
      */
     public function testCanParseResponsesFromRedis30()
     {
-        $raw =<<<BUFFER
+        $raw = <<<BUFFER
 # Server
 redis_version:2.9.0
 redis_git_sha1:237194b7

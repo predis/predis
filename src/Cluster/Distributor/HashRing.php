@@ -24,7 +24,7 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
 class HashRing implements DistributorInterface, HashGeneratorInterface
 {
     const DEFAULT_REPLICAS = 128;
-    const DEFAULT_WEIGHT   = 100;
+    const DEFAULT_WEIGHT = 100;
 
     private $ring;
     private $ringKeys;
@@ -55,7 +55,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
         // last wins, thus the order in which nodes are added is significant.
         $this->nodes[] = array(
             'object' => $node,
-            'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT
+            'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT,
         );
 
         $this->reset();
@@ -160,7 +160,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
         $nodeHash = $this->getNodeHash($nodeObject);
         $replicas = (int) round($weightRatio * $totalNodes * $replicas);
 
-        for ($i = 0; $i < $replicas; $i++) {
+        for ($i = 0; $i < $replicas; ++$i) {
             $key = crc32("$nodeHash:$i");
             $ring[$key] = $nodeObject;
         }

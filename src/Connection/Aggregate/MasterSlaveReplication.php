@@ -133,7 +133,7 @@ class MasterSlaveReplication implements ReplicationInterface
             return $this->slaves[$connectionId];
         }
 
-        return null;
+        return;
     }
 
     /**

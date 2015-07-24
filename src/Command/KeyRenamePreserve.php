@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/renamenx
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyRenamePreserve extends KeyRename

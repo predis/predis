@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/hincrbyfloat
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HashIncrementByFloat extends Command

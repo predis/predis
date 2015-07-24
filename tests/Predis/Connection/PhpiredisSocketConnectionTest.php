@@ -106,10 +106,10 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
     {
         $connection = $this->getConnection($profile, true);
 
-        $cmdPing   = $profile->createCommand('ping');
-        $cmdEcho   = $profile->createCommand('echo', array('echoed'));
-        $cmdGet    = $profile->createCommand('get', array('foobar'));
-        $cmdRpush  = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdPing = $profile->createCommand('ping');
+        $cmdEcho = $profile->createCommand('echo', array('echoed'));
+        $cmdGet = $profile->createCommand('get', array('foobar'));
+        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
         $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
 
         $this->assertEquals('PONG', $connection->executeCommand($cmdPing));

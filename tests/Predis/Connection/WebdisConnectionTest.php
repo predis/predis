@@ -91,7 +91,6 @@ class WebdisConnectionTest extends PredisTestCase
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported.
-     *
      */
     public function testAddingConnectCommandsIsNotSupported()
     {
@@ -146,10 +145,10 @@ class WebdisConnectionTest extends PredisTestCase
     {
         $connection = $this->getConnection($profile);
 
-        $cmdPing   = $profile->createCommand('ping');
-        $cmdEcho   = $profile->createCommand('echo', array('echoed'));
-        $cmdGet    = $profile->createCommand('get', array('foobar'));
-        $cmdRpush  = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdPing = $profile->createCommand('ping');
+        $cmdEcho = $profile->createCommand('echo', array('echoed'));
+        $cmdGet = $profile->createCommand('get', array('foobar'));
+        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
         $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
 
         $this->assertEquals('PONG', $connection->executeCommand($cmdPing));

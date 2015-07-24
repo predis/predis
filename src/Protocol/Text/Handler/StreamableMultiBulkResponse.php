@@ -24,6 +24,7 @@ use Predis\Protocol\ProtocolException;
  * built-in into Predis, such as transactions or pipelines. Use them with care!
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StreamableMultiBulkResponse implements ResponseHandlerInterface

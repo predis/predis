@@ -58,7 +58,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
      */
     public function process(CommandInterface $command)
     {
-        for ($i = 0; $i < $count = count($this->processors); $i++) {
+        for ($i = 0; $i < $count = count($this->processors); ++$i) {
             $this->processors[$i]->process($command);
         }
     }
@@ -114,7 +114,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     {
         if (!$processor instanceof ProcessorInterface) {
             throw new InvalidArgumentException(
-                "A processor chain accepts only instances of ".
+                'A processor chain accepts only instances of '.
                 "'Predis\Command\Processor\ProcessorInterface'."
             );
         }

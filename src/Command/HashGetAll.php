@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/hgetall
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HashGetAll extends Command
@@ -32,7 +33,7 @@ class HashGetAll extends Command
     {
         $result = array();
 
-        for ($i = 0; $i < count($data); $i++) {
+        for ($i = 0; $i < count($data); ++$i) {
             $result[$data[$i]] = $data[++$i];
         }
 

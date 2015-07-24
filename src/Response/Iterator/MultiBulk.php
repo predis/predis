@@ -31,7 +31,7 @@ class MultiBulk extends MultiBulkIterator
         $this->connection = $connection;
         $this->size = $size;
         $this->position = 0;
-        $this->current  = $size > 0 ? $this->getValue() : null;
+        $this->current = $size > 0 ? $this->getValue() : null;
     }
 
     /**

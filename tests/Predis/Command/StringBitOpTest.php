@@ -82,7 +82,7 @@ class StringBitOpTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('key:src:1', "h\x80");
-        $redis->set('key:src:2', "R");
+        $redis->set('key:src:2', 'R');
 
         $this->assertSame(2, $redis->bitop('AND', 'key:dst', 'key:src:1', 'key:src:2'));
         $this->assertSame("@\x00", $redis->get('key:dst'));
@@ -96,7 +96,7 @@ class StringBitOpTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('key:src:1', "h\x80");
-        $redis->set('key:src:2', "R");
+        $redis->set('key:src:2', 'R');
 
         $this->assertSame(2, $redis->bitop('OR', 'key:dst', 'key:src:1', 'key:src:2'));
         $this->assertSame("z\x80", $redis->get('key:dst'));
@@ -110,7 +110,7 @@ class StringBitOpTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('key:src:1', "h\x80");
-        $redis->set('key:src:2', "R");
+        $redis->set('key:src:2', 'R');
 
         $this->assertSame(2, $redis->bitop('XOR', 'key:dst', 'key:src:1', 'key:src:2'));
         $this->assertSame(":\x80", $redis->get('key:dst'));

@@ -40,11 +40,11 @@ class OptionsTest extends PredisTestCase
     public function testConstructorWithArrayArgument()
     {
         $options = new Options(array(
-            'exceptions'  => false,
-            'profile'     => '2.0',
-            'prefix'      => 'prefix:',
+            'exceptions' => false,
+            'profile' => '2.0',
+            'prefix' => 'prefix:',
             'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster'     => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
+            'cluster' => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
             'replication' => $this->getMock('Predis\Connection\Aggregate\ReplicationInterface'),
         ));
 
@@ -88,7 +88,7 @@ class OptionsTest extends PredisTestCase
         $options = new Options(array(
             'prefix' => 'prefix:',
             'custom' => 'foobar',
-            'void'   => null,
+            'void' => null,
         ));
 
         $this->assertTrue($options->defined('prefix'));
@@ -105,7 +105,7 @@ class OptionsTest extends PredisTestCase
         $options = new Options(array(
             'prefix' => 'prefix:',
             'custom' => 'foobar',
-            'void'   => null,
+            'void' => null,
         ));
 
         $this->assertTrue(isset($options->prefix));
@@ -161,7 +161,7 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $custom = new stdClass;
+        $custom = new stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -178,9 +178,9 @@ class OptionsTest extends PredisTestCase
         $this->assertSame($custom, $options->custom);
     }
 
-   /**
-    * @group disconnected
-    */
+    /**
+     * @group disconnected
+     */
     public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
     {
         $trigger = $this->getMock('stdClass', array('autoload'));

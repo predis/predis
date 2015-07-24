@@ -27,7 +27,7 @@ class ServerException extends PredisException implements ErrorInterface
      */
     public function getErrorType()
     {
-        list($errorType, ) = explode(' ', $this->getMessage(), 2);
+        list($errorType) = explode(' ', $this->getMessage(), 2);
 
         return $errorType;
     }

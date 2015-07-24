@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/publish
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PubSubPublish extends Command

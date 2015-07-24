@@ -97,7 +97,7 @@ class DispatcherLoop
      */
     public function attachCallback($channel, $callback)
     {
-        $callbackName = $this->getPrefixKeys() . $channel;
+        $callbackName = $this->getPrefixKeys().$channel;
 
         $this->assertCallback($callback);
         $this->callbacks[$callbackName] = $callback;
@@ -111,7 +111,7 @@ class DispatcherLoop
      */
     public function detachCallback($channel)
     {
-        $callbackName = $this->getPrefixKeys() . $channel;
+        $callbackName = $this->getPrefixKeys().$channel;
 
         if (isset($this->callbacks[$callbackName])) {
             unset($this->callbacks[$callbackName]);
@@ -155,7 +155,7 @@ class DispatcherLoop
     }
 
     /**
-     * Return the prefix used for keys
+     * Return the prefix used for keys.
      *
      * @return string
      */

@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/hset
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HashSet extends Command

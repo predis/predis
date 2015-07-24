@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/migrate
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyMigrate extends Command

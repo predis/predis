@@ -16,6 +16,7 @@ namespace Predis\Command;
  * @link http://redis.io/commands/config-get
  * @link http://redis.io/commands/config-resetstat
  * @link http://redis.io/commands/config-rewrite
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ServerConfig extends Command
@@ -36,7 +37,7 @@ class ServerConfig extends Command
         if (is_array($data)) {
             $result = array();
 
-            for ($i = 0; $i < count($data); $i++) {
+            for ($i = 0; $i < count($data); ++$i) {
                 $result[$data[$i]] = $data[++$i];
             }
 

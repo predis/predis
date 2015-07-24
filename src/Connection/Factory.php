@@ -24,10 +24,10 @@ use Predis\Command\RawCommand;
 class Factory implements FactoryInterface
 {
     protected $schemes = array(
-        'tcp'   => 'Predis\Connection\StreamConnection',
-        'unix'  => 'Predis\Connection\StreamConnection',
+        'tcp' => 'Predis\Connection\StreamConnection',
+        'unix' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
-        'http'  => 'Predis\Connection\WebdisConnection',
+        'http' => 'Predis\Connection\WebdisConnection',
     );
 
     /**
@@ -100,7 +100,7 @@ class Factory implements FactoryInterface
 
         if (!$connection instanceof NodeConnectionInterface) {
             throw new UnexpectedValueException(
-                "Objects returned by connection initializers must implement ".
+                'Objects returned by connection initializers must implement '.
                 "'Predis\Connection\NodeConnectionInterface'."
             );
         }

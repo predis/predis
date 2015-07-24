@@ -38,7 +38,7 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
         $this->size = count($iterator) / 2;
         $this->iterator = $iterator;
         $this->position = $iterator->getPosition();
-        $this->current  = $this->size > 0 ? $this->getValue() : null;
+        $this->current = $this->size > 0 ? $this->getValue() : null;
     }
 
     /**
@@ -58,7 +58,7 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
         }
 
         if (($size = count($iterator)) % 2 !== 0) {
-            throw new UnexpectedValueException("Invalid response size for a tuple iterator.");
+            throw new UnexpectedValueException('Invalid response size for a tuple iterator.');
         }
     }
 

@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
 use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolException;

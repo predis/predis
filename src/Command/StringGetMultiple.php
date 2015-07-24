@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/mget
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StringGetMultiple extends Command

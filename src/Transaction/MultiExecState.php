@@ -20,9 +20,9 @@ class MultiExecState
 {
     const INITIALIZED = 1;    // 0b00001
     const INSIDEBLOCK = 2;    // 0b00010
-    const DISCARDED   = 4;    // 0b00100
-    const CAS         = 8;    // 0b01000
-    const WATCH       = 16;   // 0b10000
+    const DISCARDED = 4;    // 0b00100
+    const CAS = 8;    // 0b01000
+    const WATCH = 16;   // 0b10000
 
     private $flags;
 

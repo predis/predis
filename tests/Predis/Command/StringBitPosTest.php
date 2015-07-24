@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the Predis package.
  *
@@ -7,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Predis\Command;
 
 /**
@@ -74,7 +76,6 @@ class StringBitPosTest extends PredisCommandTestCase
         $this->assertSame(0, $redis->bitpos('key', 0), 'Get position of first bit set to 0 - full range');
         $this->assertSame(5, $redis->bitpos('key', 1), 'Get position of first bit set to 1 - full range');
         $this->assertSame(-1, $redis->bitpos('key', 1, 5, 10), 'Get position of first bit set to 1 - specific range');
-
     }
 
     /**

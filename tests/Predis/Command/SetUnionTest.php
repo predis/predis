@@ -83,8 +83,8 @@ class SetUnionTest extends PredisCommandTestCase
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st', 'letters:2nd'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st', 'letters:2nd'));
     }
 
     /**
@@ -99,7 +99,7 @@ class SetUnionTest extends PredisCommandTestCase
         $redis->sadd('letters:3rd', 'a', 'e', 'f');
 
         $this->assertSameValues(array('a', 'c', 'e', 'f', 'g'), $redis->sunion('letters:2nd', 'letters:3rd'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st', 'letters:2nd', 'letters:3rd'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sunion('letters:1st', 'letters:2nd', 'letters:3rd'));
     }
 
     /**

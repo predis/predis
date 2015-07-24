@@ -227,7 +227,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             return $annotations['method']['requiresRedisVersion'][0];
         }
 
-        return null;
+        return;
     }
 
     /**

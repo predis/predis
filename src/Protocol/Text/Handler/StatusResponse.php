@@ -20,6 +20,7 @@ use Predis\Response\Status;
  * the payload as a string.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StatusResponse implements ResponseHandlerInterface

@@ -23,6 +23,7 @@ use Predis\Connection\Aggregate\ClusterInterface;
  * returns the exception instances as the rest of the response elements.
  *
  * @todo Awful naming!
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ConnectionErrorProof extends Pipeline
@@ -56,7 +57,7 @@ class ConnectionErrorProof extends Pipeline
      */
     protected function executeSingleNode(NodeConnectionInterface $connection, SplQueue $commands)
     {
-        $responses  = array();
+        $responses = array();
         $sizeOfPipe = count($commands);
 
         foreach ($commands as $command) {
@@ -67,7 +68,7 @@ class ConnectionErrorProof extends Pipeline
             }
         }
 
-        for ($i = 0; $i < $sizeOfPipe; $i++) {
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
             $command = $commands->dequeue();
 
             try {
@@ -106,7 +107,7 @@ class ConnectionErrorProof extends Pipeline
             }
         }
 
-        for ($i = 0; $i < $sizeOfPipe; $i++) {
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
             $command = $commands->dequeue();
 
             $cmdConnection = $connection->getConnection($command);

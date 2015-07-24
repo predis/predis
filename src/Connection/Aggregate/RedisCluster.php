@@ -431,8 +431,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * Handles -ASK responses by executing again the command against the node
      * indicated by the Redis response.
      *
-     * @param  CommandInterface $command Command that generated the -ASK response.
-     * @param  string           $details Parameters of the -ASK response.
+     * @param CommandInterface $command Command that generated the -ASK response.
+     * @param string           $details Parameters of the -ASK response.
+     *
      * @return mixed
      */
     protected function onAskResponse(CommandInterface $command, $details)

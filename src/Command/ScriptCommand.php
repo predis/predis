@@ -16,6 +16,7 @@ namespace Predis\Command;
  * on Lua scripting with EVAL and EVALSHA.
  *
  * @link http://redis.io/commands/eval
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class ScriptCommand extends ServerEvalSHA

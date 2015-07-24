@@ -20,6 +20,7 @@ use Predis\Protocol\ProtocolException;
  * It returns multibulk responses as PHP arrays.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiBulkResponse implements ResponseHandlerInterface
@@ -38,7 +39,7 @@ class MultiBulkResponse implements ResponseHandlerInterface
         }
 
         if ($length === -1) {
-            return null;
+            return;
         }
 
         $list = array();
@@ -47,7 +48,7 @@ class MultiBulkResponse implements ResponseHandlerInterface
             $handlersCache = array();
             $reader = $connection->getProtocol()->getResponseReader();
 
-            for ($i = 0; $i < $length; $i++) {
+            for ($i = 0; $i < $length; ++$i) {
                 $header = $connection->readLine();
                 $prefix = $header[0];
 
