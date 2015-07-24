@@ -44,7 +44,7 @@ abstract class ClusterStrategy implements StrategyInterface
 
         return array(
             /* commands operating on the key space */
-            'EXISTS' => $getKeyFromFirstArgument,
+            'EXISTS' => $getKeyFromAllArguments,
             'DEL' => $getKeyFromAllArguments,
             'TYPE' => $getKeyFromFirstArgument,
             'EXPIRE' => $getKeyFromFirstArgument,
