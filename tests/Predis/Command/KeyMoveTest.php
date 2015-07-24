@@ -54,8 +54,8 @@ class KeyMoveTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -69,7 +69,7 @@ class KeyMoveTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->move('foo', $db));
+        $this->assertSame(1, $redis->move('foo', $db));
         $this->assertSame(0, $redis->exists('foo'));
 
         $redis->select($db);
