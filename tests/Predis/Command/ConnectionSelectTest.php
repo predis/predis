@@ -65,7 +65,7 @@ class ConnectionSelectTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertEquals('OK', $redis->select(REDIS_SERVER_DBNUM - 1));
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 
     /**

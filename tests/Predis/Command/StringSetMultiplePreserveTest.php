@@ -92,6 +92,6 @@ class StringSetMultiplePreserveTest extends PredisCommandTestCase
 
         $this->assertFalse($redis->msetnx('foo', 'barbar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));
-        $this->assertFalse($redis->exists('hoge'));
+        $this->assertSame(0, $redis->exists('hoge'));
     }
 }

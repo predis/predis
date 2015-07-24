@@ -63,7 +63,7 @@ class StringSetExpireTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->setex('foo', 10, 'bar'));
-        $this->assertTrue($redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foo'));
         $this->assertEquals(10, $redis->ttl('foo'));
     }
 
@@ -78,7 +78,7 @@ class StringSetExpireTest extends PredisCommandTestCase
 
         $redis->setex('foo', 1, 'bar');
         $this->sleep(2.0);
-        $this->assertFalse($redis->exists('foo'));;
+        $this->assertSame(0, $redis->exists('foo'));;
     }
 
     /**

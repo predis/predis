@@ -63,7 +63,7 @@ class StringSetTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->set('foo', 'bar'));
-        $this->assertTrue($redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foo'));
         $this->assertSame('bar', $redis->get('foo'));
     }
 }

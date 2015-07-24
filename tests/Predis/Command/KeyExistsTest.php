@@ -50,32 +50,70 @@ class KeyExistsTest extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsMultipleKeys()
+    {
+        $arguments = array('key:1', 'key:2', 'key:3');
+        $expected = array('key:1', 'key:2', 'key:3');
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponse()
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
+        $this->assertSame(2, $command->parseResponse(2));
     }
 
     /**
      * @group connected
      */
-    public function testReturnsTrueIfKeyExists()
+    public function testReturnValueWhenKeyExists()
     {
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $this->assertTrue($redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foo'));
     }
 
     /**
      * @group connected
      */
-    public function testReturnsFalseIfKeyDoesNotExist()
+    public function testReturnValueWhenKeyDoesNotExist()
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
+    }
+
+    /**
+     * @group connected
+     * @expectedRedisVersion >= 3.0.3
+     */
+    public function testReturnValueWhenKeysExist()
+    {
+        $redis = $this->getClient();
+
+        $redis->mset('foo', 'bar', 'hoge', 'piyo');
+        $this->assertSame(2, $redis->exists('foo', 'hoge'));
+    }
+
+    /**
+     * @group connected
+     * @expectedRedisVersion >= 3.0.3
+     */
+    public function testReturnValueWhenKeyDoNotExist()
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->exists('foo', 'bar'));
     }
 }

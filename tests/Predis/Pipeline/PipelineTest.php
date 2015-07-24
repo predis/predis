@@ -390,7 +390,7 @@ class PipelineTest extends PredisTestCase
         });
 
         $this->assertEquals(array('OK', 'bar'), $results);
-        $this->assertTrue($client->exists('foo'));
+        $this->assertSame(1, $client->exists('foo'));
     }
 
     /**
@@ -409,7 +409,7 @@ class PipelineTest extends PredisTestCase
 
         $this->assertEquals(array('OK', 'bar'), $results);
         $this->assertSame('oob message', $oob);
-        $this->assertTrue($client->exists('foo'));
+        $this->assertSame(1, $client->exists('foo'));
     }
 
     /**
@@ -432,7 +432,7 @@ class PipelineTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
         $this->assertSame('TEST', $exception->getMessage());
-        $this->assertFalse($client->exists('foo'));
+        $this->assertSame(0, $client->exists('foo'));
     }
 
     /**
@@ -457,8 +457,8 @@ class PipelineTest extends PredisTestCase
         }
 
         $this->assertInstanceOf('Predis\Response\ServerException', $exception);
-        $this->assertTrue($client->exists('foo'));
-        $this->assertTrue($client->exists('hoge'));
+        $this->assertSame(1, $client->exists('foo'));
+        $this->assertSame(1, $client->exists('hoge'));
     }
 
     /**

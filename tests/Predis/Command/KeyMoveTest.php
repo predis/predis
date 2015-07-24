@@ -70,10 +70,10 @@ class KeyMoveTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertTrue($redis->move('foo', $db));
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
 
         $redis->select($db);
-        $this->assertTrue($redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foo'));
 
         $redis->del('foo');
     }

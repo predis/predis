@@ -83,7 +83,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
         $this->assertTrue($redis->pexpire('foo', $ttl));
 
         $this->sleep(1.2);
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 
     /**
@@ -114,6 +114,6 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertTrue($redis->pexpire('foo', -10000));
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 }

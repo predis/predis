@@ -77,7 +77,7 @@ class ListPushHeadXTest extends PredisCommandTestCase
 
         $this->assertSame(0, $redis->lpushx('metavars', 'foo'));
         $this->assertSame(0, $redis->lpushx('metavars', 'hoge'));
-        $this->assertFalse($redis->exists('metavars'));
+        $this->assertSame(0, $redis->exists('metavars'));
     }
 
     /**

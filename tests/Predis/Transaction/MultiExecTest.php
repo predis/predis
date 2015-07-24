@@ -662,7 +662,7 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertInstanceOf('RuntimeException', $exception);
-        $this->assertFalse($client->exists('foo'));
+        $this->assertSame(0, $client->exists('foo'));
     }
 
     /**
@@ -720,8 +720,8 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame(1, count($responses));
-        $this->assertFalse($client->exists('foo'));
-        $this->assertTrue($client->exists('hoge'));
+        $this->assertSame(0, $client->exists('foo'));
+        $this->assertSame(1, $client->exists('hoge'));
     }
 
     /**

@@ -85,7 +85,7 @@ class KeyExpireAtTest extends PredisCommandTestCase
 
         $this->sleep(2);
 
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 
     /**
@@ -99,6 +99,6 @@ class KeyExpireAtTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertTrue($redis->expireat('foo', $now - 100));
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 }

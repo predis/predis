@@ -62,6 +62,6 @@ class ServerFlushDatabaseTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertEquals('OK', $redis->flushdb());
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 }

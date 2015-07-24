@@ -63,7 +63,7 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
         $this->assertEquals('QUEUED', $redis->set('foo', 'bar'));
         $this->assertEquals('OK', $redis->discard());
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
     }
 
     /**

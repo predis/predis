@@ -92,7 +92,7 @@ class SetIntersectionStoreTest extends PredisCommandTestCase
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
         $this->assertSame(0, $redis->sinterstore('letters:destination', 'letters:1st', 'letters:2nd'));
-        $this->assertFalse($redis->exists('letters:destination'));
+        $this->assertSame(0, $redis->exists('letters:destination'));
     }
 
     /**

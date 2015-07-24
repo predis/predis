@@ -75,7 +75,7 @@ class StringGetTest extends PredisCommandTestCase
 
         $redis->set('foo', '');
 
-        $this->assertTrue($redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foo'));
         $this->assertSame('', $redis->get('foo'));
     }
 
@@ -86,7 +86,7 @@ class StringGetTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->exists('foo'));
+        $this->assertSame(0, $redis->exists('foo'));
         $this->assertNull($redis->get('foo'));
     }
 

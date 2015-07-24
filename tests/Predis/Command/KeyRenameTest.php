@@ -65,8 +65,8 @@ class KeyRenameTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
 
         $this->assertEquals('OK', $redis->rename('foo', 'foofoo'));
-        $this->assertFalse($redis->exists('foo'));
-        $this->assertTrue($redis->exists('foofoo'));
+        $this->assertSame(0, $redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foofoo'));
     }
 
     /**
