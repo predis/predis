@@ -15,8 +15,7 @@ use stdClass;
 use PredisTestCase;
 
 /**
- * @todo We should test the inner work performed by this class
- *       using mock objects, but it is quite hard to to that.
+ * @todo Use mock objects to test the inner workings of the Options class.
  */
 class OptionsTest extends PredisTestCase
 {

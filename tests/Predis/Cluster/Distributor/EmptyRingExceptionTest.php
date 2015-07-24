@@ -14,7 +14,7 @@ namespace Predis\Cluster\Distributor;
 use PredisTestCase;
 
 /**
- * @todo Not really useful right now.
+ *
  */
 class EmptyRingExceptionTest extends PredisTestCase
 {

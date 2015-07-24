@@ -240,11 +240,11 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @todo Could it be that objects passed to the return callback of a mocked
-     *       method are cloned instead of being passed by reference?
      */
     public function testSingleProcessor()
     {
+        // Could it be that objects passed to the return callback of a mocked
+        // method are cloned instead of being passed by reference?
         $argsRef = null;
 
         $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');

@@ -137,6 +137,7 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     *
      * @todo This test smells but there's no other way around it right now.
      */
     public function testCreateConnectionWithInitializationCommands()

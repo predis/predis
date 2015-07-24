@@ -731,7 +731,6 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @todo I hate this test but reflection is the easiest way in this case.
      */
     public function testTransactionWithArrayReturnsMultiExecTransactionWithOptions()
     {
@@ -741,6 +740,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
+        // I hate this part but reflection is the easiest way in this case.
         $property = new ReflectionProperty($tx, 'modeCAS');
         $property->setAccessible(true);
         $this->assertSame($options['cas'], $property->getValue($tx));
@@ -755,8 +755,7 @@ class ClientTest extends PredisTestCase
      */
     public function testTransactionWithArrayAndCallableExecutesMultiExec()
     {
-        // NOTE: we use CAS since testing the actual MULTI/EXEC context
-        //       here is not the point.
+        // We use CAS here as we don't care about the actual MULTI/EXEC context.
         $options = array('cas' => true, 'retry' => 3);
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');

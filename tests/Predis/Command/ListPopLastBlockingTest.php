@@ -14,8 +14,6 @@ namespace Predis\Command;
 /**
  * @group commands
  * @group realm-list
- * @todo Testing blocking pop operations against Redis using PHP is
- *       tricky, so we will skip these kind of tests for now.
  */
 class ListPopLastBlockingTest extends PredisCommandTestCase
 {
