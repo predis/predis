@@ -1,6 +1,7 @@
 *.tgz
 *.phar
 .php-version
+.php_cs.cache
 phpunit.xml
 package.xml
 composer.lock
