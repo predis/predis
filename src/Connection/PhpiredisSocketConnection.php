@@ -193,10 +193,6 @@ class PhpiredisSocketConnection extends AbstractConnection
      */
     private function setSocketOptions($socket, ParametersInterface $parameters)
     {
-        if ($parameters->scheme !== 'tcp') {
-            return;
-        }
-
         if (!socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1)) {
             $this->emitSocketError();
         }
