@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  * @group ext-curl

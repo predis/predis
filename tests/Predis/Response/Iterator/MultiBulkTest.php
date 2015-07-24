@@ -11,10 +11,10 @@
 
 namespace Predis\Response\Iterator;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
+use PredisTestCase;
 
 /**
  * @group realm-iterators

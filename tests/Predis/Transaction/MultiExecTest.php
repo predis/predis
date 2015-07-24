@@ -11,10 +11,10 @@
 
 namespace Predis\Transaction;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Command\CommandInterface;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  * @group realm-transaction

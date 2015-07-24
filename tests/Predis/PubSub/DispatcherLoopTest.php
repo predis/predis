@@ -11,8 +11,8 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub

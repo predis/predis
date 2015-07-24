@@ -11,8 +11,8 @@
 
 namespace Predis\Collection\Iterator;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  * @group realm-iterators

@@ -11,11 +11,11 @@
 
 namespace Predis\Connection\Aggregate;
 
-use PredisTestCase;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Profile;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *

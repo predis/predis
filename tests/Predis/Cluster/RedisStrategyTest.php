@@ -11,8 +11,8 @@
 
 namespace Predis\Cluster;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *

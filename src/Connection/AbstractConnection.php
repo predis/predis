@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -51,9 +51,9 @@ abstract class AbstractConnection implements NodeConnectionInterface
      *
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      *
+     * @throws \InvalidArgumentException
      * @return ParametersInterface
      *
-     * @throws \InvalidArgumentException
      */
     protected function assertParameters(ParametersInterface $parameters)
     {

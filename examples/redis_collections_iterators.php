@@ -34,7 +34,7 @@ $client = new Predis\Client($single_server, array('profile' => '2.8'));
 
 // Prepare some keys for our example
 $client->del('predis:set', 'predis:zset', 'predis:hash');
-for ($i = 0; $i < 5; $i++) {
+for ($i = 0; $i < 5; ++$i) {
     $client->sadd('predis:set', "member:$i");
     $client->zadd('predis:zset', -$i, "member:$i");
     $client->hset('predis:hash', "field:$i", "value:$i");

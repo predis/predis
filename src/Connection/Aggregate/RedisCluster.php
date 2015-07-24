@@ -11,13 +11,13 @@
 
 namespace Predis\Connection\Aggregate;
 
-use Predis\NotSupportedException;
-use Predis\Cluster\StrategyInterface;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
+use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
-use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\FactoryInterface;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 
 /**
@@ -313,9 +313,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *
      * @param int $slot Slot index.
      *
+     * @throws \OutOfBoundsException
      * @return NodeConnectionInterface
      *
-     * @throws \OutOfBoundsException
      */
     public function getConnectionBySlot($slot)
     {

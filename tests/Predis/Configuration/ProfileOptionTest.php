@@ -11,9 +11,9 @@
 
 namespace Predis\Configuration;
 
-use PredisTestCase;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *

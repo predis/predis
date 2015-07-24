@@ -11,8 +11,8 @@
 
 namespace Predis\Command\Processor;
 
-use PredisTestCase;
 use Predis\Command\RawCommand;
+use PredisTestCase;
 
 /**
  *

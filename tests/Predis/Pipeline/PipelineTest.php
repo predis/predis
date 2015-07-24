@@ -11,11 +11,11 @@
 
 namespace Predis\Pipeline;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\Profile;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *

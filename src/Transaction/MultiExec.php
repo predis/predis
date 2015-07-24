@@ -14,14 +14,14 @@ namespace Predis\Transaction;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
+use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\NotSupportedException;
+use Predis\Protocol\ProtocolException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
-use Predis\Command\CommandInterface;
-use Predis\Connection\AggregateConnectionInterface;
-use Predis\Protocol\ProtocolException;
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
@@ -168,9 +168,9 @@ class MultiExec implements ClientContextInterface
      * @param string $commandID Command ID.
      * @param array  $arguments Arguments for the command.
      *
+     * @throws ServerException
      * @return mixed
      *
-     * @throws ServerException
      */
     protected function call($commandID, array $arguments = array())
     {
@@ -190,10 +190,10 @@ class MultiExec implements ClientContextInterface
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return $this|mixed
-     *
      * @throws AbortedMultiExecException
      * @throws CommunicationException
+     * @return $this|mixed
+     *
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -221,10 +221,10 @@ class MultiExec implements ClientContextInterface
      *
      * @param string|array $keys One or more keys.
      *
-     * @return mixed
-     *
      * @throws NotSupportedException
      * @throws ClientException
+     * @return mixed
+     *
      */
     public function watch($keys)
     {
@@ -262,9 +262,9 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes UNWATCH.
      *
+     * @throws NotSupportedException
      * @return MultiExec
      *
-     * @throws NotSupportedException
      */
     public function unwatch()
     {
@@ -350,11 +350,11 @@ class MultiExec implements ClientContextInterface
      *
      * @param mixed $callable Optional callback for execution.
      *
-     * @return array
-     *
      * @throws CommunicationException
      * @throws AbortedMultiExecException
      * @throws ServerException
+     * @return array
+     *
      */
     public function execute($callable = null)
     {

@@ -36,7 +36,7 @@ foreach ($pubsub as $message) {
         case 'message':
             if ($message->channel == 'control_channel') {
                 if ($message->payload == 'quit_loop') {
-                    echo "Aborting pubsub loop...", PHP_EOL;
+                    echo 'Aborting pubsub loop...', PHP_EOL;
                     $pubsub->unsubscribe();
                 } else {
                     echo "Received an unrecognized command: {$message->payload}.", PHP_EOL;

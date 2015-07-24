@@ -11,9 +11,9 @@
 
 namespace Predis\Cluster;
 
-use Predis\NotSupportedException;
-use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Cluster\Hash\CRC16;
+use Predis\Cluster\Hash\HashGeneratorInterface;
+use Predis\NotSupportedException;
 
 /**
  * Default class used by Predis to calculate hashes out of keys of
