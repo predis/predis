@@ -270,6 +270,8 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
         }
 
         if (!$this->isRedisServerVersion($reqOperator, $reqVersion)) {
+            $serverVersion = $this->getRedisServerVersion();
+
             $this->markTestSkipped(
                 "This test requires Redis $reqOperator $reqVersion but the current version is $serverVersion."
             );
