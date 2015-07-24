@@ -27,6 +27,7 @@ use Predis\NotSupportedException;
  * times (trimmed, deleted, overwritten) during the iteration process.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
+ *
  * @link http://redis.io/commands/lrange
  */
 class ListKey implements Iterator
@@ -122,7 +123,7 @@ class ListKey implements Iterator
      */
     protected function extractNext()
     {
-        $this->position++;
+        ++$this->position;
         $this->current = array_shift($this->elements);
     }
 

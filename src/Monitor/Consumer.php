@@ -120,7 +120,7 @@ class Consumer implements Iterator
      */
     public function next()
     {
-        $this->position++;
+        ++$this->position;
     }
 
     /**
@@ -165,9 +165,9 @@ class Consumer implements Iterator
 
         return (object) array(
             'timestamp' => (float) $timestamp,
-            'database'  => $database,
-            'client'    => $client,
-            'command'   => substr($command, 1, -1),
+            'database' => $database,
+            'client' => $client,
+            'command' => substr($command, 1, -1),
             'arguments' => $arguments,
         );
     }

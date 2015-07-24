@@ -20,6 +20,7 @@ use Predis\Protocol\ResponseReaderInterface;
  * Response reader for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ResponseReader implements ResponseReaderInterface
@@ -74,7 +75,7 @@ class ResponseReader implements ResponseReaderInterface
             return $this->handlers[$prefix];
         }
 
-        return null;
+        return;
     }
 
     /**

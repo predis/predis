@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/randomkey
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyRandom extends Command

@@ -20,14 +20,14 @@ namespace Predis\Response;
 interface ErrorInterface extends ResponseInterface
 {
     /**
-     * Returns the error message
+     * Returns the error message.
      *
      * @return string
      */
     public function getMessage();
 
     /**
-     * Returns the error type (e.g. ERR, ASK, MOVED)
+     * Returns the error type (e.g. ERR, ASK, MOVED).
      *
      * @return string
      */

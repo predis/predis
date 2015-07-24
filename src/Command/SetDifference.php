@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/sdiff
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SetDifference extends SetIntersection

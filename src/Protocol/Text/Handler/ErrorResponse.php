@@ -19,6 +19,7 @@ use Predis\Response\Error;
  * It translates the payload to a complex response object for Predis.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ErrorResponse implements ResponseHandlerInterface

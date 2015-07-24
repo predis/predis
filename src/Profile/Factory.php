@@ -23,14 +23,14 @@ use Predis\ClientException;
 final class Factory
 {
     private static $profiles = array(
-        '2.0'     => 'Predis\Profile\RedisVersion200',
-        '2.2'     => 'Predis\Profile\RedisVersion220',
-        '2.4'     => 'Predis\Profile\RedisVersion240',
-        '2.6'     => 'Predis\Profile\RedisVersion260',
-        '2.8'     => 'Predis\Profile\RedisVersion280',
-        '3.0'     => 'Predis\Profile\RedisVersion300',
+        '2.0' => 'Predis\Profile\RedisVersion200',
+        '2.2' => 'Predis\Profile\RedisVersion220',
+        '2.4' => 'Predis\Profile\RedisVersion240',
+        '2.6' => 'Predis\Profile\RedisVersion260',
+        '2.8' => 'Predis\Profile\RedisVersion280',
+        '3.0' => 'Predis\Profile\RedisVersion300',
         'default' => 'Predis\Profile\RedisVersion300',
-        'dev'     => 'Predis\Profile\RedisUnstable',
+        'dev' => 'Predis\Profile\RedisUnstable',
     );
 
     /**

@@ -281,8 +281,8 @@ class ClientTest extends PredisTestCase
         $fnreplication->expects($this->never())->method('__invoke');
 
         $arg2 = array(
-            'aggregate'   => function () use ($fnaggregate) { return $fnaggregate; },
-            'cluster'     => function () use ($fncluster) { return $fncluster; },
+            'aggregate' => function () use ($fnaggregate) { return $fnaggregate; },
+            'cluster' => function () use ($fncluster) { return $fncluster; },
             'replication' => function () use ($fnreplication) { return $fnreplication; },
         );
 
@@ -376,7 +376,7 @@ class ClientTest extends PredisTestCase
         $ping = $profile->createCommand('ping', array());
         $hgetall = $profile->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($ping)
@@ -402,7 +402,7 @@ class ClientTest extends PredisTestCase
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue($expectedResponse));
@@ -419,7 +419,7 @@ class ClientTest extends PredisTestCase
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue($expectedResponse));

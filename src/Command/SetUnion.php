@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/sunion
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SetUnion extends SetIntersection

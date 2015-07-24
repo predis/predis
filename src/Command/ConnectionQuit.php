@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/quit
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ConnectionQuit extends Command

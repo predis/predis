@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/lpush
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ListPushHead extends ListPushTail

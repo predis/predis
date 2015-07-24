@@ -66,7 +66,7 @@ class ParametersTest extends PredisTestCase
     {
         $parameters = new Parameters(array(
             'port' => 7000,
-            'custom' => 'foobar'
+            'custom' => 'foobar',
         ));
 
         $this->sharedTestsWithArrayParameters($parameters);
@@ -79,7 +79,7 @@ class ParametersTest extends PredisTestCase
     {
         $parameters = new Parameters(array(
             'port' => 7000,
-            'custom' => 'foobar'
+            'custom' => 'foobar',
         ));
 
         $this->sharedTestsWithArrayParameters($parameters);

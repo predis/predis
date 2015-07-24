@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/pubsub
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PubSubPubsub extends Command
@@ -51,7 +52,7 @@ class PubSubPubsub extends Command
         $processed = array();
         $count = count($channels);
 
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             $processed[$channels[$i]] = $channels[++$i];
         }
 

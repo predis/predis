@@ -49,7 +49,7 @@ class ServerInfoV26xTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $raw =<<<BUFFER
+        $raw = <<<BUFFER
 # Server
 redis_version:2.9.0
 redis_git_sha1:237194b7
@@ -117,7 +117,7 @@ db5:keys=1,expires=0
 
 BUFFER;
 
-        $expected = array (
+        $expected = array(
             'Server' => array(
                 'redis_version' => '2.9.0',
                 'redis_git_sha1' => '237194b7',
@@ -181,7 +181,7 @@ BUFFER;
             ),
             'Keyspace' => array(
                 'db0' => array('keys' => '2', 'expires' => '0'),
-                'db5' => array('keys' => '1', 'expires' => '0')
+                'db5' => array('keys' => '1', 'expires' => '0'),
             ),
         );
 
@@ -193,7 +193,7 @@ BUFFER;
      */
     public function testCanParseResponsesFromOlderRedisVersions()
     {
-        $raw =<<<BUFFER
+        $raw = <<<BUFFER
 redis_version:2.4.4
 redis_git_sha1:bc62bc5e
 redis_git_dirty:0

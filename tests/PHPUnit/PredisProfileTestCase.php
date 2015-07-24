@@ -29,7 +29,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     protected function getProfile($version = null)
     {
-        $this->markTestIncomplete("Server profile must be defined in ".get_class($this));
+        $this->markTestIncomplete('Server profile must be defined in '.get_class($this));
     }
 
     /**

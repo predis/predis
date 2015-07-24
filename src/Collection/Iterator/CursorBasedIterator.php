@@ -133,7 +133,7 @@ abstract class CursorBasedIterator implements Iterator
      */
     protected function extractNext()
     {
-        $this->position++;
+        ++$this->position;
         $this->current = array_shift($this->elements);
     }
 

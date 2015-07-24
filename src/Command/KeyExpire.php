@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/expire
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyExpire extends Command

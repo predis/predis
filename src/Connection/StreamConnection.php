@@ -17,7 +17,7 @@ use Predis\Response\Status as StatusResponse;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
- * The connection parameters supported by this class are:
+ * The connection parameters supported by this class are:.
  *
  *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
  *  - host: hostname or IP address of the server.
@@ -95,7 +95,7 @@ class StreamConnection extends AbstractConnection
         if (isset($parameters->read_write_timeout)) {
             $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutSeconds = floor($rwtimeout);
             $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
@@ -137,7 +137,7 @@ class StreamConnection extends AbstractConnection
         if (isset($parameters->read_write_timeout)) {
             $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutSeconds = floor($rwtimeout);
             $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
@@ -216,7 +216,7 @@ class StreamConnection extends AbstractConnection
                 $size = (int) $payload;
 
                 if ($size === -1) {
-                    return null;
+                    return;
                 }
 
                 $bulkData = '';
@@ -239,12 +239,12 @@ class StreamConnection extends AbstractConnection
                 $count = (int) $payload;
 
                 if ($count === -1) {
-                    return null;
+                    return;
                 }
 
                 $multibulk = array();
 
-                for ($i = 0; $i < $count; $i++) {
+                for ($i = 0; $i < $count; ++$i) {
                     $multibulk[$i] = $this->read();
                 }
 
@@ -276,7 +276,7 @@ class StreamConnection extends AbstractConnection
 
         $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
-        for ($i = 0, $reqlen--; $i < $reqlen; $i++) {
+        for ($i = 0, $reqlen--; $i < $reqlen; ++$i) {
             $argument = $arguments[$i];
             $arglen = strlen($argument);
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";

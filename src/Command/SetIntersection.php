@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/sinter
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SetIntersection extends Command

@@ -159,7 +159,6 @@ use Predis\Command\CommandInterface;
  */
 interface ClientContextInterface
 {
-
     /**
      * Sends the specified command instance to Redis.
      *

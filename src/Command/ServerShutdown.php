@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/shutdown
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ServerShutdown extends Command

@@ -43,6 +43,7 @@ use Predis\Response\Status as StatusResponse;
  *  - persistent: the connection is left intact after a GC collection.
  *
  * @link https://github.com/nrk/phpiredis
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PhpiredisStreamConnection extends StreamConnection
@@ -112,7 +113,7 @@ class PhpiredisStreamConnection extends StreamConnection
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
 
             $timeout = array(
-                'sec'  => $timeoutSeconds = floor($rwtimeout),
+                'sec' => $timeoutSeconds = floor($rwtimeout),
                 'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
             );
 

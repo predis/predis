@@ -655,7 +655,7 @@ class MultiExecTest extends PredisTestCase
         try {
             $client->transaction(function ($tx) {
                 $tx->set('foo', 'bar');
-                throw new \RuntimeException("TEST");
+                throw new \RuntimeException('TEST');
             });
         } catch (\Exception $ex) {
             $exception = $ex;
@@ -868,7 +868,7 @@ class MultiExecTest extends PredisTestCase
 
                 case 'MULTI':
                     if ($multi) {
-                        return new Response\Error("ERR MULTI calls can not be nested");
+                        return new Response\Error('ERR MULTI calls can not be nested');
                     }
 
                     return $multi = true;
@@ -884,7 +884,7 @@ class MultiExecTest extends PredisTestCase
                         $commands = $cas = array();
                         $abort = false;
 
-                        return null;
+                        return;
                     }
 
                     return $expected;

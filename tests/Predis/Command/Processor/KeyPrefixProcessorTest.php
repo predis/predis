@@ -202,7 +202,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $arguments = array('key:destination', 2, 'key1', 'key2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum');
         $expected = array(
-            'prefix:key:destination', 2, 'prefix:key1', 'prefix:key2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum'
+            'prefix:key:destination', 2, 'prefix:key1', 'prefix:key2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum',
         );
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
@@ -225,7 +225,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $arguments = array('return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'foo', 'hoge', 'bar', 'piyo');
         $expected = array(
-            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'prefix:foo', 'prefix:hoge', 'bar', 'piyo'
+            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'prefix:foo', 'prefix:hoge', 'bar', 'piyo',
         );
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');

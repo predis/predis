@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/append
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StringAppend extends Command

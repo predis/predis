@@ -38,8 +38,9 @@ class KeySortTest extends PredisCommandTestCase
     /**
      * Utility method to to an LPUSH of some unordered values on a key.
      *
-     * @param  Client $redis Redis client instance.
-     * @param  string $key   Target key
+     * @param Client $redis Redis client instance.
+     * @param string $key   Target key
+     *
      * @return array
      */
     protected function lpushUnorderedList(Client $redis, $key)
@@ -59,7 +60,7 @@ class KeySortTest extends PredisCommandTestCase
             'by' => 'by_key_*',
             'limit' => array(1, 4),
             'get' => array('object_*', '#'),
-            'sort'  => 'asc',
+            'sort' => 'asc',
             'alpha' => true,
             'store' => 'destination_key',
         );
@@ -67,7 +68,7 @@ class KeySortTest extends PredisCommandTestCase
 
         $expected = array(
             'key', 'BY', 'by_key_*', 'GET', 'object_*', 'GET', '#',
-            'LIMIT', 1, 4, 'ASC', 'ALPHA', 'STORE', 'destination_key'
+            'LIMIT', 1, 4, 'ASC', 'ALPHA', 'STORE', 'destination_key',
         );
 
         $command = $this->getCommand();
@@ -155,7 +156,7 @@ class KeySortTest extends PredisCommandTestCase
         $this->assertEquals(
             array(10, 30),
             $redis->sort('list:unordered', array(
-                'limit' => array(3, 2)
+                'limit' => array(3, 2),
             ))
         );
     }
@@ -171,7 +172,7 @@ class KeySortTest extends PredisCommandTestCase
         $this->assertEquals(
             array(1, 10, 100, 2, 3, 30),
             $redis->sort('list:unordered', array(
-                'alpha' => true
+                'alpha' => true,
             ))
         );
     }
@@ -187,7 +188,7 @@ class KeySortTest extends PredisCommandTestCase
         $this->assertEquals(
             count($unordered),
             $redis->sort('list:unordered', array(
-                'store' => 'list:ordered'
+                'store' => 'list:ordered',
             ))
         );
 
@@ -206,8 +207,8 @@ class KeySortTest extends PredisCommandTestCase
             array(30, 10, 3, 2),
             $redis->sort('list:unordered', array(
                 'alpha' => false,
-                'sort'  => 'desc',
-                'limit' => array(1, 4)
+                'sort' => 'desc',
+                'limit' => array(1, 4),
             ))
         );
     }

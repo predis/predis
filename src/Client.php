@@ -80,7 +80,7 @@ class Client implements ClientInterface
             return $options;
         }
 
-        throw new InvalidArgumentException("Invalid type for client options.");
+        throw new InvalidArgumentException('Invalid type for client options.');
     }
 
     /**
@@ -433,7 +433,7 @@ class Client implements ClientInterface
             $class = 'Predis\Pipeline\Pipeline';
         }
 
-        /**
+        /*
          * @var ClientContextInterface
          */
         $pipeline = new $class($this);

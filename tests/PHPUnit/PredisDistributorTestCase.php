@@ -37,7 +37,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     {
         $nodes = array();
 
-        for ($i = 0; $i < $iterations; $i++) {
+        for ($i = 0; $i < $iterations; ++$i) {
             $hash = $distributor->hash($i * $i);
             $nodes[] = $distributor->getByHash($hash);
         }

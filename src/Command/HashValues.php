@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/hvals
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HashValues extends Command

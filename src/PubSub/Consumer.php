@@ -130,14 +130,14 @@ class Consumer extends AbstractConsumer
 
             case self::MESSAGE:
                 return (object) array(
-                    'kind'    => $response[0],
+                    'kind' => $response[0],
                     'channel' => $response[1],
                     'payload' => $response[2],
                 );
 
             case self::PMESSAGE:
                 return (object) array(
-                    'kind'    => $response[0],
+                    'kind' => $response[0],
                     'pattern' => $response[1],
                     'channel' => $response[2],
                     'payload' => $response[3],
@@ -145,7 +145,7 @@ class Consumer extends AbstractConsumer
 
             case self::PONG:
                 return (object) array(
-                    'kind'    => $response[0],
+                    'kind' => $response[0],
                     'payload' => $response[1],
                 );
 

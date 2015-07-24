@@ -79,7 +79,7 @@ class SetUnionStoreTest extends PredisCommandTestCase
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
         $this->assertSame(7, $redis->sunionstore('letters:destination', 'letters:1st'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
     }
 
     /**
@@ -97,7 +97,7 @@ class SetUnionStoreTest extends PredisCommandTestCase
         $this->assertSameValues(array('a', 'c', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
 
         $this->assertSame(7, $redis->sunionstore('letters:destination', 'letters:1st', 'letters:2nd', 'letters:3rd'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
     }
 
     /**

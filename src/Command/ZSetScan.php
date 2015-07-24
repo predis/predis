@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/zscan
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZSetScan extends Command
@@ -72,7 +73,7 @@ class ZSetScan extends Command
             $members = $data[1];
             $result = array();
 
-            for ($i = 0; $i < count($members); $i++) {
+            for ($i = 0; $i < count($members); ++$i) {
                 $result[$members[$i]] = (float) $members[++$i];
             }
 

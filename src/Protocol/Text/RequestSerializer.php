@@ -18,6 +18,7 @@ use Predis\Protocol\RequestSerializerInterface;
  * Request serializer for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RequestSerializer implements RequestSerializerInterface
@@ -35,7 +36,7 @@ class RequestSerializer implements RequestSerializerInterface
 
         $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
-        for ($i = 0, $reqlen--; $i < $reqlen; $i++) {
+        for ($i = 0, $reqlen--; $i < $reqlen; ++$i) {
             $argument = $arguments[$i];
             $arglen = strlen($argument);
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
