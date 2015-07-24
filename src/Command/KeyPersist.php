@@ -24,12 +24,4 @@ class KeyPersist extends Command
     {
         return 'PERSIST';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        return (bool) $data;
-    }
 }

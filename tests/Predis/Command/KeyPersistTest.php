@@ -54,8 +54,8 @@ class KeyPersistTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -68,7 +68,7 @@ class KeyPersistTest extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $redis->expire('foo', 10);
 
-        $this->assertTrue($redis->persist('foo'));
+        $this->assertSame(1, $redis->persist('foo'));
         $this->assertSame(-1, $redis->ttl('foo'));
     }
 
@@ -81,7 +81,7 @@ class KeyPersistTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertFalse($redis->persist('foo'));
+        $this->assertSame(0, $redis->persist('foo'));
     }
 
     /**
@@ -91,6 +91,6 @@ class KeyPersistTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->persist('foo'));
+        $this->assertSame(0, $redis->persist('foo'));
     }
 }
