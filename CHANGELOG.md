@@ -1,3 +1,12 @@
+v1.1.0 (2015-xx-xx)
+================================================================================
+
+- Responses to the following commands are no more casted into boolean values:
+  `SETNX`, `MSETNX`, `PFADD`, `EXISTS`, `MOVE`, `PERSIST`, `EXPIRE`, `EXPIREAT`,
+  `RENAMENX`, `HSET`, `HSETNX`, `HEXISTS`, `SISMEMBER`, `SMOVE`. The original
+  integer value is returned instead.
+
+
 v1.0.1 (2015-01-02)
 ================================================================================
 
