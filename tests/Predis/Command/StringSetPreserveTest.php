@@ -52,7 +52,8 @@ class StringSetPreserveTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertTrue($this->getCommand()->parseResponse(1));
+        $this->assertSame(0, $this->getCommand()->parseResponse(0));
+        $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
 
     /**
@@ -62,8 +63,8 @@ class StringSetPreserveTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->setnx('foo', 'bar'));
-        $this->assertFalse($redis->setnx('foo', 'barbar'));
+        $this->assertSame(1, $redis->setnx('foo', 'bar'));
+        $this->assertSame(0, $redis->setnx('foo', 'barbar'));
         $this->assertEquals('bar', $redis->get('foo'));
     }
 }
