@@ -19,8 +19,17 @@ use Predis\Profile;
  */
 abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $predisRequirements = array();
     protected $redisServerVersion = null;
+
+    /**
+     * Sleep the test case with microseconds resolution.
+     *
+     * @param float $seconds Seconds to sleep.
+     */
+    protected function sleep($seconds)
+    {
+        usleep($seconds * 1000000);
+    }
 
     /**
      * Verifies that a Redis command is a valid Predis\Command\CommandInterface
@@ -202,59 +211,10 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string   $expectedVersion Expected redis version.
-     * @param string   $operator        Comparison operator.
-     * @param callable $callback        Callback for matching version.
+     * Returns the Redis server version required to run a @connected test from
+     * the @requiresRedisVersion annotation decorating a test method.
      *
      * @return string
-     *
-     * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
-     */
-    protected function executeOnRedisVersion($expectedVersion, $operator, $callback)
-    {
-        $version = $this->getRedisServerVersion();
-        $comparation = version_compare($version, $expectedVersion);
-
-        if ($match = eval("return $comparation $operator 0;")) {
-            call_user_func($callback, $this, $version);
-        }
-
-        return $match;
-    }
-
-    /**
-     * @param string   $expectedVersion Expected redis version.
-     * @param string   $operator        Comparison operator.
-     * @param callable $callback        Callback for matching version.
-     *
-     * @return string
-     *
-     * @throws \PHPUnit_Framework_SkippedTestError When expected redis version is not met
-     */
-    protected function executeOnProfileVersion($expectedVersion, $operator, $callback)
-    {
-        $profile = $this->getProfile();
-        $comparation = version_compare($version = $profile->getVersion(), $expectedVersion);
-
-        if ($match = eval("return $comparation $operator 0;")) {
-            call_user_func($callback, $this, $version);
-        }
-
-        return $match;
-    }
-
-    /**
-     * Sleep the test case with microseconds resolution.
-     *
-     * @param float $seconds Seconds to sleep.
-     */
-    protected function sleep($seconds)
-    {
-        usleep($seconds * 1000000);
-    }
-
-    /**
-     *
      */
     protected function getRequiredRedisServerVersion()
     {
@@ -271,7 +231,27 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Compares the specified version string against the Redis server version in
+     * use for integration tests.
      *
+     * @param string $operator Comparison operator.
+     * @param string $version  Version to compare.
+     *
+     * @return bool
+     */
+    public function isRedisServerVersion($operator, $version)
+    {
+        $serverVersion = $this->getRedisServerVersion();
+        $comparation = version_compare($serverVersion, $version);
+
+        return (bool) eval("return $comparation $operator 0;");
+    }
+
+    /**
+     * Checks that the Redis server version used to run integration tests mets
+     * the requirements specified with the @requiresRedisVersion annotation.
+     *
+     * @throws \PHPUnit_Framework_SkippedTestError When expected Redis server version is not met.
      */
     protected function checkRequiredRedisServerVersion()
     {
@@ -279,7 +259,6 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        $serverVersion = $this->getRedisServerVersion();
         $requiredVersion = explode(' ', $requiredVersion, 2);
 
         if (count($requiredVersion) === 1) {
@@ -290,9 +269,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             $reqVersion = $requiredVersion[1];
         }
 
-        $comparation = version_compare($serverVersion, $reqVersion);
-
-        if (!$match = eval("return $comparation $reqOperator 0;")) {
+        if (!$this->isRedisServerVersion($reqOperator, $reqVersion)) {
             $this->markTestSkipped(
                 "This test requires Redis $reqOperator $reqVersion but the current version is $serverVersion."
             );

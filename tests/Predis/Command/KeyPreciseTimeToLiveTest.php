@@ -83,13 +83,13 @@ class KeyPreciseTimeToLiveTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @todo PTTL changed in Redis >= 2.8 to return -2 on non existing keys, we
-     *       should handle this case with a better solution than the current one.
      */
     public function testReturnsLessThanZeroOnNonExistingKeys()
     {
-        $redis = $this->getClient();
-
-        $this->assertLessThanOrEqual(-1, $redis->pttl('foo'));
+        if ($this->isRedisServerVersion('<', '2.8.0')) {
+            $this->assertSame(-1, $this->getClient()->pttl('foo'));
+        } else {
+            $this->assertSame(-2, $this->getClient()->pttl('foo'));
+        }
     }
 }

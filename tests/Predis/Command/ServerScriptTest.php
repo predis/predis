@@ -57,7 +57,6 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @todo We should probably convert integers to booleans.
      */
     public function testExistsReturnsAnArrayOfValues()
     {

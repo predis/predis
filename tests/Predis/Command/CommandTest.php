@@ -54,9 +54,8 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      *
-     * @todo We cannot set an expectation for Command::filterArguments when we
-     *       invoke Command::setArguments() because it is protected. I wonder
-     *       how we can do that.
+     * @todo We cannot set an expectation for Command::filterArguments() when we
+     *       invoke Command::setArguments() because it is protected.
      */
     public function testSetArguments()
     {

@@ -12,7 +12,7 @@
 namespace Predis\Cluster\Distributor;
 
 /**
- * @todo To be improved.
+ *
  */
 class KetamaRingTest extends PredisDistributorTestCase
 {
