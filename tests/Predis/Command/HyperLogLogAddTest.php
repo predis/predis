@@ -69,8 +69,8 @@ class HyperLogLogAddTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertSame(false, $command->parseResponse(0));
-        $this->assertSame(true, $command->parseResponse(1));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
