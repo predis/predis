@@ -11,9 +11,9 @@
 
 namespace Predis\Profile;
 
-use PredisTestCase;
 use Predis\Command\CommandInterface;
 use Predis\Command\Processor\ProcessorChain;
+use PredisTestCase;
 
 /**
  *

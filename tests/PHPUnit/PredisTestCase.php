@@ -182,9 +182,9 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Returns the server version of the Redis instance used by the test suite.
      *
+     * @throws RuntimeException When the client cannot retrieve the current server version
      * @return string
      *
-     * @throws RuntimeException When the client cannot retrieve the current server version
      */
     protected function getRedisServerVersion()
     {

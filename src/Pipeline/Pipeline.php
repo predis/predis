@@ -15,8 +15,8 @@ use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
-use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Aggregate\ReplicationInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -192,10 +192,10 @@ class Pipeline implements ClientContextInterface
      *
      * @param mixed $callable Optional callback for execution.
      *
-     * @return array
-     *
      * @throws \Exception
      * @throws \InvalidArgumentException
+     * @return array
+     *
      */
     public function execute($callable = null)
     {

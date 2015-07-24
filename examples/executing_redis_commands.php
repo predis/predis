@@ -26,7 +26,7 @@ var_export($response); echo PHP_EOL;
 $mkv = array(
     'uid:0001' => '1st user',
     'uid:0002' => '2nd user',
-    'uid:0003' => '3rd user'
+    'uid:0003' => '3rd user',
 );
 
 $client->mset($mkv);
@@ -45,7 +45,7 @@ array (
 // their arguments are not filtered nor responses coming from Redis are parsed.
 
 $response = $client->executeRaw(array(
-    'MGET', 'uid:0001', 'uid:0002', 'uid:0003'
+    'MGET', 'uid:0001', 'uid:0002', 'uid:0003',
 ));
 
 var_export($response); echo PHP_EOL;

@@ -69,9 +69,9 @@ class Parameters implements ParametersInterface
      *
      * @param string $uri URI string.
      *
+     * @throws \InvalidArgumentException
      * @return array
      *
-     * @throws \InvalidArgumentException
      */
     public static function parse($uri)
     {
@@ -111,9 +111,9 @@ class Parameters implements ParametersInterface
      *
      * @param string $uri URI string.
      *
+     * @throws \InvalidArgumentException
      * @return array
      *
-     * @throws \InvalidArgumentException
      */
     public static function parseIANA($uri)
     {

@@ -25,7 +25,7 @@ require __DIR__.'/shared.php';
 //
 
 if (!interface_exists('SessionHandlerInterface')) {
-    die("ATTENTION: the session handler implemented by Predis requires PHP >= 5.4.0 ".
+    die('ATTENTION: the session handler implemented by Predis requires PHP >= 5.4.0 '.
         "or a polyfill for SessionHandlerInterface provided by an external package.\n");
 }
 

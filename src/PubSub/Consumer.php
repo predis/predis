@@ -14,8 +14,8 @@ namespace Predis\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
-use Predis\NotSupportedException;
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\NotSupportedException;
 
 /**
  * PUB/SUB consumer abstraction.

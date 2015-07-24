@@ -11,8 +11,8 @@
 
 namespace Predis\Replication;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 /**
  * Defines a strategy for master/slave replication.
@@ -41,9 +41,9 @@ class ReplicationStrategy
      *
      * @param CommandInterface $command Command instance.
      *
+     * @throws NotSupportedException
      * @return bool
      *
-     * @throws NotSupportedException
      */
     public function isReadOperation(CommandInterface $command)
     {

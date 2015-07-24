@@ -13,8 +13,8 @@ namespace Predis\Protocol\Text\Handler;
 
 use Predis\CommunicationException;
 use Predis\Connection\CompositeConnectionInterface;
-use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
 use Predis\Protocol\ProtocolException;
+use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
 
 /**
  * Handler for the multibulk response type in the standard Redis wire protocol.

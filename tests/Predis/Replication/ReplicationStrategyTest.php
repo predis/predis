@@ -11,8 +11,8 @@
 
 namespace Predis\Replication;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *

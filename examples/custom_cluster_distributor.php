@@ -15,9 +15,9 @@ require __DIR__.'/shared.php';
 // their own distributors used by the client to distribute keys among a cluster
 // of servers.
 
-use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
+use Predis\Cluster\PredisStrategy;
 use Predis\Connection\Aggregate\PredisCluster;
 
 class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
@@ -34,7 +34,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
     public function add($node, $weight = null)
     {
         $this->nodes[] = $node;
-        $this->nodesCount++;
+        ++$this->nodesCount;
     }
 
     public function remove($node)
@@ -99,7 +99,7 @@ $options = array(
 
 $client = new Predis\Client($multiple_servers, $options);
 
-for ($i = 0; $i < 100; $i++) {
+for ($i = 0; $i < 100; ++$i) {
     $client->set("key:$i", str_pad($i, 4, '0', 0));
     $client->get("key:$i");
 }

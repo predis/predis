@@ -11,14 +11,14 @@
 
 namespace Predis\Protocol\Text;
 
-use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\ProtocolException;
 use Predis\Protocol\ProtocolProcessorInterface;
-use Predis\Response\Status as StatusResponse;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
+use Predis\Response\Status as StatusResponse;
 
 /**
  * Protocol processor for the standard Redis wire protocol.

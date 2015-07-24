@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
@@ -219,9 +219,9 @@ class WebdisConnection implements NodeConnectionInterface
      *
      * @param CommandInterface $command Command instance.
      *
+     * @throws NotSupportedException
      * @return string
      *
-     * @throws NotSupportedException
      */
     protected function getCommandId(CommandInterface $command)
     {

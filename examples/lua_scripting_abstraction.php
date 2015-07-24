@@ -55,7 +55,7 @@ $client = new Predis\Client($single_server, array(
         $profile->defineCommand('increxby', 'IncrementExistingKeysBy');
 
         return $profile;
-    }
+    },
 ));
 
 $client->mset('foo', 10, 'foobar', 100);

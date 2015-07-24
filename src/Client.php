@@ -16,8 +16,8 @@ use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
-use Predis\Connection\ConnectionInterface;
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
@@ -64,9 +64,9 @@ class Client implements ClientInterface
      *
      * @param mixed $options Client options.
      *
+     * @throws \InvalidArgumentException
      * @return OptionsInterface
      *
-     * @throws \InvalidArgumentException
      */
     protected function createOptions($options)
     {
@@ -96,9 +96,9 @@ class Client implements ClientInterface
      *
      * @param mixed $parameters Connection parameters or connection instance.
      *
+     * @throws \InvalidArgumentException
      * @return ConnectionInterface
      *
-     * @throws \InvalidArgumentException
      */
     protected function createConnection($parameters)
     {
@@ -189,9 +189,9 @@ class Client implements ClientInterface
      *
      * @param string $connectionID Identifier of a connection.
      *
+     * @throws \InvalidArgumentException
      * @return Client
      *
-     * @throws \InvalidArgumentException
      */
     public function getClientFor($connectionID)
     {
@@ -253,9 +253,9 @@ class Client implements ClientInterface
      *
      * @param string $connectionID Index or alias of the single connection.
      *
+     * @throws NotSupportedException
      * @return Connection\NodeConnectionInterface
      *
-     * @throws NotSupportedException
      */
     public function getConnectionById($connectionID)
     {
@@ -342,9 +342,9 @@ class Client implements ClientInterface
      * @param CommandInterface       $command  Redis command that generated the error.
      * @param ErrorResponseInterface $response Instance of the error response.
      *
+     * @throws ServerException
      * @return mixed
      *
-     * @throws ServerException
      */
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
