@@ -66,7 +66,8 @@ class StringSetMultiplePreserveTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertSame(true, $this->getCommand()->parseResponse(true));
+        $this->assertSame(0, $this->getCommand()->parseResponse(0));
+        $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
 
     /**
@@ -76,7 +77,7 @@ class StringSetMultiplePreserveTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertTrue($redis->msetnx('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame(1, $redis->msetnx('foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));
         $this->assertSame('piyo', $redis->get('hoge'));
     }
@@ -90,7 +91,7 @@ class StringSetMultiplePreserveTest extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertFalse($redis->msetnx('foo', 'barbar', 'hoge', 'piyo'));
+        $this->assertSame(0, $redis->msetnx('foo', 'barbar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));
         $this->assertSame(0, $redis->exists('hoge'));
     }
