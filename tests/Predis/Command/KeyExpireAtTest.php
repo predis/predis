@@ -54,8 +54,8 @@ class KeyExpireAtTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -65,7 +65,7 @@ class KeyExpireAtTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->expireat('foo', 2));
+        $this->assertSame(0, $redis->expireat('foo', 2));
     }
 
     /**
@@ -80,7 +80,7 @@ class KeyExpireAtTest extends PredisCommandTestCase
         $now = time();
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->expireat('foo', $now + 1));
+        $this->assertSame(1, $redis->expireat('foo', $now + 1));
         $this->assertLessThanOrEqual(1, $redis->ttl('foo'));
 
         $this->sleep(2);
@@ -98,7 +98,7 @@ class KeyExpireAtTest extends PredisCommandTestCase
         $now = time();
         $redis->set('foo', 'bar');
 
-        $this->assertTrue($redis->expireat('foo', $now - 100));
+        $this->assertSame(1, $redis->expireat('foo', $now - 100));
         $this->assertSame(0, $redis->exists('foo'));
     }
 }
