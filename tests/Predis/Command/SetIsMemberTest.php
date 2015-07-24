@@ -54,8 +54,8 @@ class SetIsMemberTest extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertTrue($command->parseResponse(1));
-        $this->assertFalse($command->parseResponse(0));
+        $this->assertSame(0, $command->parseResponse(0));
+        $this->assertSame(1, $command->parseResponse(1));
     }
 
     /**
@@ -67,8 +67,8 @@ class SetIsMemberTest extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b', 'c');
 
-        $this->assertTrue($redis->sismember('letters', 'a'));
-        $this->assertFalse($redis->sismember('letters', 'z'));
+        $this->assertSame(1, $redis->sismember('letters', 'a'));
+        $this->assertSame(0, $redis->sismember('letters', 'z'));
     }
 
     /**
@@ -78,7 +78,7 @@ class SetIsMemberTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertFalse($redis->sismember('letters', 'a'));
+        $this->assertSame(0, $redis->sismember('letters', 'a'));
     }
 
     /**
