@@ -115,6 +115,90 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     */
+    public function testPersistentParameterWithFalseLikeValues()
+    {
+        if ($this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
+        $connection1 = new CompositeStreamConnection($this->getParameters(array('persistent' => 0)));
+        $this->assertNonPersistentConnection($connection1);
+
+        $connection2 = new CompositeStreamConnection($this->getParameters(array('persistent' => false)));
+        $this->assertNonPersistentConnection($connection2);
+
+        $connection3 = new CompositeStreamConnection($this->getParameters(array('persistent' => '0')));
+        $this->assertNonPersistentConnection($connection3);
+
+        $connection4 = new CompositeStreamConnection($this->getParameters(array('persistent' => 'false')));
+        $this->assertNonPersistentConnection($connection4);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testPersistentParameterWithTrueLikeValues()
+    {
+        if ($this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
+        $connection1 = new CompositeStreamConnection($this->getParameters(array('persistent' => 1)));
+        $this->assertPersistentConnection($connection1);
+
+        $connection2 = new CompositeStreamConnection($this->getParameters(array('persistent' => true)));
+        $this->assertPersistentConnection($connection2);
+
+        $connection3 = new CompositeStreamConnection($this->getParameters(array('persistent' => '1')));
+        $this->assertPersistentConnection($connection3);
+
+        $connection4 = new CompositeStreamConnection($this->getParameters(array('persistent' => 'true')));
+        $this->assertPersistentConnection($connection4);
+
+        $connection1->disconnect();
+    }
+
+    /**
+     * @group connected
+     */
+    public function testPersistentConnectionsToSameNodeShareResource()
+    {
+        if ($this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
+        $connection1 = new CompositeStreamConnection($this->getParameters(array('persistent' => true)));
+        $connection2 = new CompositeStreamConnection($this->getParameters(array('persistent' => true)));
+
+        $this->assertPersistentConnection($connection1);
+        $this->assertPersistentConnection($connection2);
+
+        $this->assertSame($connection1->getResource(), $connection2->getResource());
+
+        $connection1->disconnect();
+    }
+
+    /**
+     * @group connected
+     */
+    public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID()
+    {
+        if ($this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
+        $connection1 = new CompositeStreamConnection($this->getParameters(array('persistent' => 'conn1')));
+        $connection2 = new CompositeStreamConnection($this->getParameters(array('persistent' => 'conn2')));
+
+        $this->assertPersistentConnection($connection1);
+        $this->assertPersistentConnection($connection2);
+
+        $this->assertNotSame($connection1->getResource(), $connection2->getResource());
+    }
+
+    /**
+     * @group connected
      * @expectedException \Predis\Protocol\ProtocolException
      * @expectedExceptionMessage Unknown response prefix: 'P'.
      */

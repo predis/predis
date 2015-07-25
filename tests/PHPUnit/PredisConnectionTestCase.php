@@ -335,6 +335,32 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     }
 
     /**
+     * Asserts that the connection is using a persistent resource stream.
+     *
+     * This assertion will trigger a connect() operation if the connection has
+     * not been open yet.
+     *
+     * @param NodeConnectionInterface $connection Connection instance.
+     */
+    protected function assertPersistentConnection(NodeConnectionInterface $connection)
+    {
+        $this->assertSame('persistent stream', get_resource_type($connection->getResource()));
+    }
+
+    /**
+     * Asserts that the connection is not using a persistent resource stream.
+     *
+     * This assertion will trigger a connect() operation if the connection has
+     * not been open yet.
+     *
+     * @param NodeConnectionInterface $connection Connection instance.
+     */
+    protected function assertNonPersistentConnection(NodeConnectionInterface $connection)
+    {
+        $this->assertSame('stream', get_resource_type($connection->getResource()));
+    }
+
+    /**
      * Returns a new instance of a connection instance.
      *
      * @param Profile\ProfileInterface $profile    Reference to the server profile instance.

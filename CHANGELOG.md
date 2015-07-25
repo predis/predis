@@ -6,6 +6,13 @@ v1.1.0 (2015-xx-xx)
   `RENAMENX`, `HSET`, `HSETNX`, `HEXISTS`, `SISMEMBER`, `SMOVE`. The original
   integer value is returned instead.
 
+- Non-boolean string values passed to the `persistent` connection parameter can
+  be used to create different persistent connections. Note that this feature was
+  already present in Predis, but required both `persistent` and `path` to be set
+  as illustrated by [#139](https://github.com/nrk/predis/pull/139). This change
+  is needed to prevent confusion with how `path` is used to select a database
+  with the `redis` scheme.
+
 
 v1.0.1 (2015-01-02)
 ================================================================================

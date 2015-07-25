@@ -132,9 +132,14 @@ class StreamConnection extends AbstractConnection
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
 
-        if (isset($parameters->persistent) && $parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
-            $address .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        if (isset($parameters->persistent)) {
+            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                $flags |= STREAM_CLIENT_PERSISTENT;
+
+                if ($persistent === null) {
+                    $address = "{$address}/{$parameters->persistent}";
+                }
+            }
         }
 
         $resource = $this->createStreamSocket($parameters, $address, $flags);
@@ -155,14 +160,21 @@ class StreamConnection extends AbstractConnection
             throw new \InvalidArgumentException('Missing UNIX domain socket path.');
         }
 
-        $address = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if (isset($parameters->persistent) && $parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
+        if (isset($parameters->persistent)) {
+            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                $flags |= STREAM_CLIENT_PERSISTENT;
+
+                if ($persistent === null) {
+                    throw new \InvalidArgumentException(
+                        'Persistent connection IDs are not supported when using UNIX domain sockets.'
+                    );
+                }
+            }
         }
 
-        $resource = $this->createStreamSocket($parameters, $address, $flags);
+        $resource = $this->createStreamSocket($parameters, "unix://{$parameters->path}", $flags);
 
         return $resource;
     }
