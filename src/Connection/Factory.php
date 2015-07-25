@@ -35,8 +35,8 @@ class Factory implements FactoryInterface
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
      *
      * @throws \InvalidArgumentException
-     * @return mixed
      *
+     * @return mixed
      */
     protected function checkInitializer($initializer)
     {

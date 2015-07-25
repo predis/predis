@@ -52,8 +52,8 @@ abstract class AbstractConnection implements NodeConnectionInterface
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      *
      * @throws \InvalidArgumentException
-     * @return ParametersInterface
      *
+     * @return ParametersInterface
      */
     protected function assertParameters(ParametersInterface $parameters)
     {

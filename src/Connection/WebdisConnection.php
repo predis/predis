@@ -220,8 +220,8 @@ class WebdisConnection implements NodeConnectionInterface
      * @param CommandInterface $command Command instance.
      *
      * @throws NotSupportedException
-     * @return string
      *
+     * @return string
      */
     protected function getCommandId(CommandInterface $command)
     {

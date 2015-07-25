@@ -194,8 +194,8 @@ class Pipeline implements ClientContextInterface
      *
      * @throws \Exception
      * @throws \InvalidArgumentException
-     * @return array
      *
+     * @return array
      */
     public function execute($callable = null)
     {

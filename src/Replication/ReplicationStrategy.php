@@ -42,8 +42,8 @@ class ReplicationStrategy
      * @param CommandInterface $command Command instance.
      *
      * @throws NotSupportedException
-     * @return bool
      *
+     * @return bool
      */
     public function isReadOperation(CommandInterface $command)
     {

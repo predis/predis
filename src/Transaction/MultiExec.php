@@ -169,8 +169,8 @@ class MultiExec implements ClientContextInterface
      * @param array  $arguments Arguments for the command.
      *
      * @throws ServerException
-     * @return mixed
      *
+     * @return mixed
      */
     protected function call($commandID, array $arguments = array())
     {
@@ -192,8 +192,8 @@ class MultiExec implements ClientContextInterface
      *
      * @throws AbortedMultiExecException
      * @throws CommunicationException
-     * @return $this|mixed
      *
+     * @return $this|mixed
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -223,8 +223,8 @@ class MultiExec implements ClientContextInterface
      *
      * @throws NotSupportedException
      * @throws ClientException
-     * @return mixed
      *
+     * @return mixed
      */
     public function watch($keys)
     {
@@ -263,8 +263,8 @@ class MultiExec implements ClientContextInterface
      * Executes UNWATCH.
      *
      * @throws NotSupportedException
-     * @return MultiExec
      *
+     * @return MultiExec
      */
     public function unwatch()
     {
@@ -353,8 +353,8 @@ class MultiExec implements ClientContextInterface
      * @throws CommunicationException
      * @throws AbortedMultiExecException
      * @throws ServerException
-     * @return array
      *
+     * @return array
      */
     public function execute($callable = null)
     {
