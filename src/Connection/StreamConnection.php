@@ -23,7 +23,7 @@ use Predis\Response\Status as StatusResponse;
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
- *  - timeout: timeout to perform the connection.
+ *  - timeout: timeout to perform the connection (default is 5 seconds).
  *  - read_write_timeout: timeout of read / write operations.
  *  - async_connect: performs the connection asynchronously.
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
@@ -94,7 +94,7 @@ class StreamConnection extends AbstractConnection
      */
     protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
     {
-        $timeout = (float) $parameters->timeout;
+        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
 
         if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags)) {
             $this->onConnectionError(trim($errstr), $errno);

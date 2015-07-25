@@ -36,7 +36,7 @@ use Predis\Response\Status as StatusResponse;
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
- *  - timeout: timeout to perform the connection.
+ *  - timeout: timeout to perform the connection (default is 5 seconds).
  *  - read_write_timeout: timeout of read / write operations.
  *
  * @link http://github.com/nrk/phpiredis
@@ -286,7 +286,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         $null = null;
         $selectable = array($socket);
 
-        $timeout = (float) $parameters->timeout;
+        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
         $timeoutSecs = floor($timeout);
         $timeoutUSecs = ($timeout - $timeoutSecs) * 1000000;
 

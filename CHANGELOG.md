@@ -17,6 +17,10 @@ v1.1.0 (2015-xx-xx)
   These parameters augment the user-supplied parameters when creating a new
   connection but they do not override specific parameters when already defined.
 
+- Predis\Connection\Parameters does not have a default for "timeout" anymore,
+  falling back to a default value is a responsibility of each connection class.
+  Internally the default timeout for connect() operations is still 5 seconds.
+
 
 v1.0.1 (2015-01-02)
 ================================================================================

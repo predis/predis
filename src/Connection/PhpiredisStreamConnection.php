@@ -108,7 +108,9 @@ class PhpiredisStreamConnection extends StreamConnection
     protected function createStreamSocket(ParametersInterface $parameters, $address, $flags, $context = null)
     {
         $socket = null;
-        $resource = @stream_socket_client($address, $errno, $errstr, (float) $parameters->timeout, $flags);
+        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
+
+        $resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
