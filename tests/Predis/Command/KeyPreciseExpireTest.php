@@ -85,24 +85,24 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
         $this->assertSame(0, $redis->exists('foo'));
     }
 
-    /**
-     * @medium
-     * @group connected
-     * @group slow
-     */
+     /**
+      * @medium
+      * @group connected
+      * @group slow
+      */
      public function testConsistencyWithTTL()
      {
-        $ttl = 1000;
-        $redis = $this->getClient();
+         $ttl = 1000;
+         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar'));
-        $this->assertSame(1, $redis->pexpire('foo', $ttl));
+         $this->assertEquals('OK', $redis->set('foo', 'bar'));
+         $this->assertSame(1, $redis->pexpire('foo', $ttl));
 
-        $this->sleep(0.5);
-        $this->assertThat($redis->pttl('foo'), $this->logicalAnd(
+         $this->sleep(0.5);
+         $this->assertThat($redis->pttl('foo'), $this->logicalAnd(
             $this->lessThanOrEqual($ttl), $this->greaterThan($ttl - 800)
         ));
-    }
+     }
 
     /**
      * @group connected

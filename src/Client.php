@@ -65,8 +65,8 @@ class Client implements ClientInterface
      * @param mixed $options Client options.
      *
      * @throws \InvalidArgumentException
-     * @return OptionsInterface
      *
+     * @return OptionsInterface
      */
     protected function createOptions($options)
     {
@@ -97,8 +97,8 @@ class Client implements ClientInterface
      * @param mixed $parameters Connection parameters or connection instance.
      *
      * @throws \InvalidArgumentException
-     * @return ConnectionInterface
      *
+     * @return ConnectionInterface
      */
     protected function createConnection($parameters)
     {
@@ -190,8 +190,8 @@ class Client implements ClientInterface
      * @param string $connectionID Identifier of a connection.
      *
      * @throws \InvalidArgumentException
-     * @return Client
      *
+     * @return Client
      */
     public function getClientFor($connectionID)
     {
@@ -254,8 +254,8 @@ class Client implements ClientInterface
      * @param string $connectionID Index or alias of the single connection.
      *
      * @throws NotSupportedException
-     * @return Connection\NodeConnectionInterface
      *
+     * @return Connection\NodeConnectionInterface
      */
     public function getConnectionById($connectionID)
     {
@@ -343,8 +343,8 @@ class Client implements ClientInterface
      * @param ErrorResponseInterface $response Instance of the error response.
      *
      * @throws ServerException
-     * @return mixed
      *
+     * @return mixed
      */
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
