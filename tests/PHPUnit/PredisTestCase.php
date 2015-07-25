@@ -157,6 +157,20 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Returns the current server profile in use by the test suite.
+     *
+     * @return Profile\ProfileInterface
+     */
+    protected function getCurrentProfile()
+    {
+        static $profile;
+
+        $profile = $this->getProfile();
+
+        return $profile;
+    }
+
+    /**
      * Returns a new client instance.
      *
      * @param array $parameters Additional connection parameters.
