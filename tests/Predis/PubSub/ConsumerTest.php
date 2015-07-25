@@ -343,6 +343,7 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requires extension pcntl
      */
     public function testPubSubAgainstRedisServerBlocking()
     {
