@@ -63,7 +63,7 @@ class KeyRandomTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExpiringKeys()
+    public function testReturnsZeroOnNonExpiringKeys()
     {
         $keys = array('key:1' => 1, 'key:2' => 2, 'key:3' => 3);
 

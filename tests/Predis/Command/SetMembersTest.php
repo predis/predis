@@ -63,7 +63,7 @@ class SetMembersTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExistingSet()
+    public function testReturnsEmptyArrayOnNonExistingSet()
     {
         $redis = $this->getClient();
 

@@ -75,7 +75,7 @@ class KeyPersistTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExpiringKeys()
+    public function testReturnsZeroOnNonExpiringKeys()
     {
         $redis = $this->getClient();
 
@@ -87,7 +87,7 @@ class KeyPersistTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExistentKeys()
+    public function testReturnsZeroOnNonExistentKeys()
     {
         $redis = $this->getClient();
 

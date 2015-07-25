@@ -61,7 +61,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExistingKeys()
+    public function testReturnsZeroOnNonExistingKeys()
     {
         $redis = $this->getClient();
 

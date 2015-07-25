@@ -74,7 +74,7 @@ class SetIsMemberTest extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsFalseOnNonExistingSet()
+    public function testReturnsZeroOnNonExistingSet()
     {
         $redis = $this->getClient();
 
