@@ -13,6 +13,7 @@ namespace Predis\Connection;
 
 /**
  * @group ext-phpiredis
+ * @requires extension phpiredis
  */
 class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 {

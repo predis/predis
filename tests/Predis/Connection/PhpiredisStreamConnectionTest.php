@@ -13,6 +13,7 @@ namespace Predis\Connection;
 
 /**
  * @group ext-phpiredis
+ * @requires extension phpiredis
  */
 class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 {
@@ -101,13 +102,10 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testAcceptsTcpNodelayParameter()
     {
-        if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $this->markTestSkipped('Setting TCP_NODELAY on PHP socket streams works on PHP >= 5.4.0');
-        }
-
         $connection = new PhpiredisStreamConnection($this->getParameters(array('tcp_nodelay' => false)));
         $connection->connect();
         $this->assertTrue($connection->isConnected());

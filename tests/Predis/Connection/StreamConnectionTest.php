@@ -100,13 +100,10 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testAcceptsTcpNodelayParameter()
     {
-        if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $this->markTestSkipped('Setting TCP_NODELAY on PHP socket streams works on PHP >= 5.4.0');
-        }
-
         $connection = new StreamConnection($this->getParameters(array('tcp_nodelay' => false)));
         $connection->connect();
         $this->assertTrue($connection->isConnected());

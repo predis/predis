@@ -19,6 +19,8 @@ use PredisTestCase;
  * @group ext-phpiredis
  * @group realm-connection
  * @group realm-webdis
+ * @requires extension phpiredis
+ * @requires extension curl
  */
 class WebdisConnectionTest extends PredisTestCase
 {
