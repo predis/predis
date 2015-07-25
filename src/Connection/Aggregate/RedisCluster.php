@@ -309,8 +309,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * @param int $slot Slot index.
      *
      * @throws \OutOfBoundsException
-     * @return NodeConnectionInterface
      *
+     * @return NodeConnectionInterface
      */
     public function getConnectionBySlot($slot)
     {
