@@ -105,22 +105,10 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    protected function tcpStreamInitializer(ParametersInterface $parameters)
+    protected function createStreamSocket(ParametersInterface $parameters, $address, $flags, $context = null)
     {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}";
-        $flags = STREAM_CLIENT_CONNECT;
         $socket = null;
-
-        if (isset($parameters->async_connect) && (bool) $parameters->async_connect) {
-            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
-        }
-
-        if (isset($parameters->persistent) && (bool) $parameters->persistent) {
-            $flags |= STREAM_CLIENT_PERSISTENT;
-            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
-        }
-
-        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
+        $resource = @stream_socket_client($address, $errno, $errstr, (float) $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
