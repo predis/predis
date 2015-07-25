@@ -41,13 +41,10 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testPersistentParameterWithFalseLikeValues()
     {
-        if ($this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $connection1 = $this->createConnectionWithParams(array('persistent' => 0));
         $this->assertNonPersistentConnection($connection1);
 
@@ -63,13 +60,10 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testPersistentParameterWithTrueLikeValues()
     {
-        if ($this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $connection1 = $this->createConnectionWithParams(array('persistent' => 1));
         $this->assertPersistentConnection($connection1);
 
@@ -87,13 +81,10 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeShareResource()
     {
-        if ($this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $connection1 = $this->createConnectionWithParams(array('persistent' => true));
         $connection2 = $this->createConnectionWithParams(array('persistent' => true));
 
@@ -107,13 +98,10 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID()
     {
-        if ($this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $connection1 = $this->createConnectionWithParams(array('persistent' => 'conn1'));
         $connection2 = $this->createConnectionWithParams(array('persistent' => 'conn2'));
 

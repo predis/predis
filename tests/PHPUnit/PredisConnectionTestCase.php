@@ -484,6 +484,10 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     protected function assertPersistentConnection(NodeConnectionInterface $connection)
     {
+        if (version_compare(PHP_VERSION, '5.4.0') < 0 || $this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
         $this->assertSame('persistent stream', get_resource_type($connection->getResource()));
     }
 
@@ -497,6 +501,10 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     protected function assertNonPersistentConnection(NodeConnectionInterface $connection)
     {
+        if (version_compare(PHP_VERSION, '5.4.0') < 0 || $this->isHHVM()) {
+            $this->markTestSkipped('This test does not currently work on HHVM.');
+        }
+
         $this->assertSame('stream', get_resource_type($connection->getResource()));
     }
 
