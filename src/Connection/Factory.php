@@ -20,6 +20,8 @@ use Predis\Command\RawCommand;
  */
 class Factory implements FactoryInterface
 {
+    private $defaults = array();
+
     protected $schemes = array(
         'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
@@ -35,8 +37,8 @@ class Factory implements FactoryInterface
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
      *
      * @throws \InvalidArgumentException
-     * @return mixed
      *
+     * @return mixed
      */
     protected function checkInitializer($initializer)
     {
@@ -116,6 +118,29 @@ class Factory implements FactoryInterface
     }
 
     /**
+     * Assigns a default set of parameters applied to new connections.
+     *
+     * The set of parameters passed to create a new connection have precedence
+     * over the default values set for the connection factory.
+     *
+     * @param array $parameters Set of connection parameters.
+     */
+    public function setDefaultParameters(array $parameters)
+    {
+        $this->defaults = $parameters;
+    }
+
+    /**
+     * Returns the default set of parameters applied to new connections.
+     *
+     * @return array
+     */
+    public function getDefaultParameters()
+    {
+        return $this->defaults;
+    }
+
+    /**
      * Creates a connection parameters instance from the supplied argument.
      *
      * @param mixed $parameters Original connection parameters.
@@ -124,7 +149,17 @@ class Factory implements FactoryInterface
      */
     protected function createParameters($parameters)
     {
-        return Parameters::create($parameters);
+        if (is_string($parameters)) {
+            $parameters = Parameters::parse($parameters);
+        } else {
+            $parameters = $parameters ?: array();
+        }
+
+        if ($this->defaults) {
+            $parameters += $this->defaults;
+        }
+
+        return new Parameters($parameters);
     }
 
     /**

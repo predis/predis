@@ -13,6 +13,10 @@ v1.1.0 (2015-xx-xx)
   is needed to prevent confusion with how `path` is used to select a database
   with the `redis` scheme.
 
+- Add support for default connection parameters in Predis\Connection\Factory.
+  These parameters augment the user-supplied parameters when creating a new
+  connection but they do not override specific parameters when already defined.
+
 
 v1.0.1 (2015-01-02)
 ================================================================================

@@ -31,6 +31,24 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testSettingDefaultParameters()
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaults = array(
+            'password' => 'secret',
+            'database' => 10,
+            'custom' => 'foobar',
+        ));
+
+        $this->assertSame($defaults, $factory->getDefaultParameters());
+
+        $parameters = array('database' => 10, 'persistent' => true);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateConnection()
     {
         $factory = new Factory();
@@ -75,6 +93,39 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testCreateConnectionWithParametersInstanceAndDefaultsDoesNotAlterOriginalParameters()
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'port' => 7000,
+            'password' => 'secret',
+            'database' => 10,
+            'custom' => 'foobar',
+        ));
+
+        $inputParams = new Parameters(array(
+            'host' => 'localhost',
+            'database' => 5,
+        ));
+
+        $connection = $factory->create($inputParams);
+        $parameters = $connection->getParameters();
+
+        $this->assertEquals('localhost', $parameters->host);
+        $this->assertEquals(6379, $parameters->port);
+        $this->assertEquals(5, $parameters->database);
+
+        $this->assertFalse(isset($parameters->password));
+        $this->assertNull($parameters->password);
+
+        $this->assertFalse(isset($parameters->custom));
+        $this->assertNull($parameters->custom);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateConnectionWithNullParameters()
     {
         $factory = new Factory();
@@ -86,6 +137,31 @@ class FactoryTest extends PredisTestCase
 
         $this->assertFalse(isset($parameters->custom));
         $this->assertNull($parameters->custom);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithNullParametersAndDefaults()
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'port' => 7000,
+            'password' => 'secret',
+            'custom' => 'foobar',
+        ));
+
+        $connection = $factory->create(null);
+        $parameters = $connection->getParameters();
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+
+        $this->assertEquals('127.0.0.1', $parameters->host);
+        $this->assertEquals($defaultParams['port'], $parameters->port);
+        $this->assertEquals($defaultParams['password'], $parameters->password);
+        $this->assertEquals($defaultParams['custom'], $parameters->custom);
+        $this->assertNull($parameters->path);
     }
 
     /**
@@ -107,6 +183,37 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testCreateConnectionWithArrayParametersAndDefaults()
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'port' => 7000,
+            'password' => 'secret',
+            'custom' => 'foobar',
+        ));
+
+        $connection = $factory->create($inputParams = array(
+            'host' => 'localhost',
+            'port' => 8000,
+            'persistent' => true,
+        ));
+
+        $parameters = $connection->getParameters();
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+
+        $this->assertEquals($inputParams['host'], $parameters->host);
+        $this->assertEquals($inputParams['port'], $parameters->port);
+        $this->assertEquals($defaultParams['password'], $parameters->password);
+        $this->assertEquals($defaultParams['custom'], $parameters->custom);
+        $this->assertEquals($inputParams['persistent'], $parameters->persistent);
+        $this->assertNull($parameters->path);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateConnectionWithStringURI()
     {
         $factory = new Factory();
@@ -118,6 +225,32 @@ class FactoryTest extends PredisTestCase
 
         $this->assertTrue(isset($parameters->custom));
         $this->assertSame('foobar', $parameters->custom);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithStrinURIAndDefaults()
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'port' => 7000,
+            'password' => 'secret',
+            'custom' => 'foobar',
+        ));
+
+        $connection = $factory->create('tcp://localhost:8000?persistent=1');
+        $parameters = $connection->getParameters();
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+
+        $this->assertEquals('localhost', $parameters->host);
+        $this->assertEquals('8000', $parameters->port);
+        $this->assertEquals($defaultParams['password'], $parameters->password);
+        $this->assertEquals($defaultParams['custom'], $parameters->custom);
+        $this->assertEquals(true, $parameters->persistent);
+        $this->assertNull($parameters->path);
     }
 
     /**
