@@ -11,7 +11,6 @@
 
 namespace Predis\Connection;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -24,6 +23,8 @@ use PredisTestCase;
  */
 class WebdisConnectionTest extends PredisTestCase
 {
+    const CONNECTION_CLASS = 'Predis\Connection\WebdisConnection';
+
     /**
      * @group disconnected
      */
@@ -141,26 +142,6 @@ class WebdisConnectionTest extends PredisTestCase
     // ******************************************************************** //
 
     /**
-     * @group connected
-     */
-    public function testExecutesCommandsOnServer()
-    {
-        $connection = $this->getConnection($profile);
-
-        $cmdPing = $profile->createCommand('ping');
-        $cmdEcho = $profile->createCommand('echo', array('echoed'));
-        $cmdGet = $profile->createCommand('get', array('foobar'));
-        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
-        $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
-
-        $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
-        $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
-        $this->assertNull($connection->executeCommand($cmdGet));
-        $this->assertSame(3, $connection->executeCommand($cmdRpush));
-        $this->assertSame(array('foo', 'hoge', 'lol'), $connection->executeCommand($cmdLrange));
-    }
-
-    /**
      * @medium
      * @group disconnected
      * @group slow
@@ -192,19 +173,16 @@ class WebdisConnectionTest extends PredisTestCase
     }
 
     /**
-     * Returns a new instance of a connection instance.
-     *
-     * @param mixed $profile    Redis profile.
-     * @param array $parameters Additional connection parameters.
-     *
-     * @return WebdisConnection
+     * {@inheritdoc}
      */
     protected function getConnection(&$profile = null, array $parameters = array())
     {
+        $class = static::CONNECTION_CLASS;
+
         $parameters = $this->getParameters($parameters);
         $profile = $this->getProfile();
 
-        $connection = new WebdisConnection($parameters);
+        $connection = new $class($parameters);
         $connection->executeCommand($profile->createCommand('flushdb'));
 
         return $connection;

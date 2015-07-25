@@ -129,6 +129,26 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
+    public function testExecutesMultipleCommandsOnServer()
+    {
+        $connection = $this->getConnection($profile, true);
+
+        $cmdPing = $profile->createCommand('ping');
+        $cmdEcho = $profile->createCommand('echo', array('echoed'));
+        $cmdGet = $profile->createCommand('get', array('foobar'));
+        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
+
+        $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
+        $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
+        $this->assertNull($connection->executeCommand($cmdGet));
+        $this->assertSame(3, $connection->executeCommand($cmdRpush));
+        $this->assertSame(array('foo', 'hoge', 'lol'), $connection->executeCommand($cmdLrange));
+    }
+
+    /**
+     * @group connected
+     */
     public function testWritesCommandToServer()
     {
         $profile = $this->getProfile();
@@ -369,5 +389,25 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return StreamConnection
      */
-    abstract protected function getConnection(&$profile = null, $initialize = false, array $parameters = array());
+    protected function getConnection(&$profile = null, $initialize = false, array $parameters = array())
+    {
+        $class = static::CONNECTION_CLASS;
+
+        $parameters = $this->getParameters($parameters);
+        $profile = $this->getProfile();
+
+        $connection = new $class($parameters);
+
+        if ($initialize) {
+            $connection->addConnectCommand(
+                $profile->createCommand('select', array($parameters->database))
+            );
+
+            $connection->addConnectCommand(
+                $profile->createCommand('flushdb')
+            );
+        }
+
+        return $connection;
+    }
 }
