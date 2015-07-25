@@ -50,6 +50,24 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    protected function assertParameters(ParametersInterface $parameters)
+    {
+        switch ($parameters->scheme) {
+            case 'tcp':
+            case 'redis':
+            case 'unix':
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function createResource()
     {
         switch ($this->parameters->scheme) {

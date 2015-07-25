@@ -87,6 +87,24 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
+    protected function assertParameters(ParametersInterface $parameters)
+    {
+        switch ($parameters->scheme) {
+            case 'tcp':
+            case 'redis':
+            case 'unix':
+                break;
+
+            default:
+                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function tcpStreamInitializer(ParametersInterface $parameters)
     {
         $uri = "tcp://{$parameters->host}:{$parameters->port}";
