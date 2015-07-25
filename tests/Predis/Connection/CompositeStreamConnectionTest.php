@@ -16,6 +16,8 @@ namespace Predis\Connection;
  */
 class CompositeStreamConnectionTest extends PredisConnectionTestCase
 {
+    const CONNECTION_CLASS = 'Predis\Connection\CompositeStreamConnection';
+
     /**
      * @group disconnected
      */
@@ -127,32 +129,5 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
         fread($stream, 1);
 
         $connection->read();
-    }
-
-    // ******************************************************************** //
-    // ---- HELPER METHODS ------------------------------------------------ //
-    // ******************************************************************** //
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getConnection(&$profile = null, $initialize = false, array $parameters = array())
-    {
-        $parameters = $this->getParameters($parameters);
-        $profile = $this->getProfile();
-
-        $connection = new CompositeStreamConnection($parameters);
-
-        if ($initialize) {
-            $connection->addConnectCommand(
-                $profile->createCommand('select', array($parameters->database))
-            );
-
-            $connection->addConnectCommand(
-                $profile->createCommand('flushdb')
-            );
-        }
-
-        return $connection;
     }
 }

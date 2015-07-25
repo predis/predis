@@ -17,6 +17,8 @@ namespace Predis\Connection;
  */
 class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 {
+    const CONNECTION_CLASS = 'Predis\Connection\PhpiredisStreamConnection';
+
     /**
      * @group disconnected
      */
@@ -116,26 +118,6 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     }
 
     /**
-     * @group connected
-     */
-    public function testExecutesCommandsOnServer()
-    {
-        $connection = $this->getConnection($profile, true);
-
-        $cmdPing = $profile->createCommand('ping');
-        $cmdEcho = $profile->createCommand('echo', array('echoed'));
-        $cmdGet = $profile->createCommand('get', array('foobar'));
-        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
-        $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
-
-        $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
-        $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
-        $this->assertNull($connection->executeCommand($cmdGet));
-        $this->assertSame(3, $connection->executeCommand($cmdRpush));
-        $this->assertSame(array('foo', 'hoge', 'lol'), $connection->executeCommand($cmdLrange));
-    }
-
-    /**
      * @medium
      * @group connected
      * @expectedException \Predis\Protocol\ProtocolException
@@ -150,32 +132,5 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         fread($socket, 1);
 
         $connection->read();
-    }
-
-    // ******************************************************************** //
-    // ---- HELPER METHODS ------------------------------------------------ //
-    // ******************************************************************** //
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getConnection(&$profile = null, $initialize = false, array $parameters = array())
-    {
-        $parameters = $this->getParameters($parameters);
-        $profile = $this->getProfile();
-
-        $connection = new PhpiredisStreamConnection($parameters);
-
-        if ($initialize) {
-            $connection->addConnectCommand(
-                $profile->createCommand('select', array($parameters->database))
-            );
-
-            $connection->addConnectCommand(
-                $profile->createCommand('flushdb')
-            );
-        }
-
-        return $connection;
     }
 }
