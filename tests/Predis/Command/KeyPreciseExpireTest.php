@@ -75,11 +75,10 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
      */
     public function testCanExpireKeys()
     {
-        $ttl = 1 * 1000;
+        $ttl = 1000;
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
-
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
         $this->assertSame(1, $redis->pexpire('foo', $ttl));
 
         $this->sleep(1.2);
@@ -87,21 +86,22 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
     }
 
     /**
+     * @medium
      * @group connected
      * @group slow
      */
-    public function testConsistencyWithTTL()
-    {
-        $ttl = 1 * 1000;
+     public function testConsistencyWithTTL()
+     {
+        $ttl = 1000;
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
-
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
         $this->assertSame(1, $redis->pexpire('foo', $ttl));
 
         $this->sleep(0.5);
-        $this->assertLessThanOrEqual($ttl, $redis->pttl('foo'));
-        $this->assertGreaterThan($ttl - 800, $redis->pttl('foo'));
+        $this->assertThat($redis->pttl('foo'), $this->logicalAnd(
+            $this->lessThanOrEqual($ttl), $this->greaterThan($ttl - 800)
+        ));
     }
 
     /**
@@ -111,7 +111,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertSame(1, $redis->pexpire('foo', -10000));
         $this->assertSame(0, $redis->exists('foo'));
