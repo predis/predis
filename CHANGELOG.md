@@ -21,6 +21,9 @@ v1.1.0 (2015-xx-xx)
   The fallback to a default value is a responsibility of connection classes, but
   internally the default timeout for connect() operations is still 5 seconds.
 
+- Implemented support for SSL-encrypted connections, the connection parameters
+  must use either the `tls` or `rediss` scheme.
+
 
 v1.0.1 (2015-01-02)
 ================================================================================

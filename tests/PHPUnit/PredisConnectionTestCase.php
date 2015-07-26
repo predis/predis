@@ -51,6 +51,26 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testSupportsSchemeTls()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeRediss()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSupportsSchemeUnix()
     {
         $connection = $this->createConnectionWithParams(array('scheme' => 'unix'));

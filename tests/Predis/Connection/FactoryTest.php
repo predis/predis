@@ -49,45 +49,55 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateConnection()
+    public function testCreateTcpConnection()
     {
         $factory = new Factory();
 
-        $tcp = new Parameters(array(
-            'scheme' => 'tcp',
-            'host' => 'locahost',
-        ));
+        $parameters = new Parameters(array('scheme' => 'tcp'));
+        $connection = $factory->create($parameters);
 
-        $connection = $factory->create($tcp);
-        $parameters = $connection->getParameters();
         $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
-        $this->assertEquals($tcp->scheme, $parameters->scheme);
-        $this->assertEquals($tcp->host, $parameters->host);
-        $this->assertEquals($tcp->database, $parameters->database);
+        $this->assertSame($parameters, $connection->getParameters());
 
-        $tcp = new Parameters(array(
-            'scheme' => 'redis',
-            'host' => 'locahost',
-        ));
+        $parameters = new Parameters(array('scheme' => 'redis'));
+        $connection = $factory->create($parameters);
 
-        $connection = $factory->create($tcp);
-        $parameters = $connection->getParameters();
         $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
-        $this->assertEquals($tcp->scheme, $parameters->scheme);
-        $this->assertEquals($tcp->host, $parameters->host);
-        $this->assertEquals($tcp->database, $parameters->database);
+        $this->assertSame($parameters, $connection->getParameters());
+    }
 
-        $unix = new Parameters(array(
-            'scheme' => 'unix',
-            'path' => '/tmp/redis.sock',
-        ));
+    /**
+     * @group disconnected
+     */
+    public function testCreateSslConnection()
+    {
+        $factory = new Factory();
 
-        $connection = $factory->create($unix);
-        $parameters = $connection->getParameters();
+        $parameters = new Parameters(array('scheme' => 'tls'));
+        $connection = $factory->create($parameters);
+
         $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
-        $this->assertEquals($unix->scheme, $parameters->scheme);
-        $this->assertEquals($unix->path, $parameters->path);
-        $this->assertEquals($unix->database, $parameters->database);
+        $this->assertSame($parameters, $connection->getParameters());
+
+        $parameters = new Parameters(array('scheme' => 'rediss'));
+        $connection = $factory->create($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
+        $this->assertSame($parameters, $connection->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateUnixConnection()
+    {
+        $factory = new Factory();
+
+        $parameters = new Parameters(array('scheme' => 'unix', 'path' => '/tmp/redis.sock'));
+        $connection = $factory->create($parameters);
+
+        $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
+        $this->assertSame($parameters, $connection->getParameters());
     }
 
     /**

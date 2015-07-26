@@ -87,19 +87,9 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    protected function assertParameters(ParametersInterface $parameters)
+    protected function assertSslSupport(ParametersInterface $parameters)
     {
-        switch ($parameters->scheme) {
-            case 'tcp':
-            case 'redis':
-            case 'unix':
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
-        }
-
-        return $parameters;
+        throw new \InvalidArgumentException('SSL encryption is not supported by this connection backend.');
     }
 
     /**

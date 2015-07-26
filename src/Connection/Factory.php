@@ -25,7 +25,9 @@ class Factory implements FactoryInterface
     protected $schemes = array(
         'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
+        'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
+        'rediss' => 'Predis\Connection\StreamConnection',
         'http' => 'Predis\Connection\WebdisConnection',
     );
 

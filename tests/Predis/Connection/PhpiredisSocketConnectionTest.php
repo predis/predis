@@ -19,6 +19,30 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 {
     const CONNECTION_CLASS = 'Predis\Connection\PhpiredisSocketConnection';
 
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid scheme: 'tls'.
+     */
+    public function testSupportsSchemeTls()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid scheme: 'rediss'.
+     */
+    public function testSupportsSchemeRediss()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //

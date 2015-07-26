@@ -32,8 +32,8 @@ More details about this project can be found on the [frequently asked questions]
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
 - Abstraction for Lua scripting (Redis >= 2.6) with automatic switching between `EVALSHA` or `EVAL`.
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
-- Connections to Redis are established lazily by the client upon the first command.
-- Support for both TCP/IP and UNIX domain sockets and persistent connections.
+- Connections are established lazily by the client upon the first command and can be persisted.
+- Connections can be established via TCP/IP (optionally TLS/SSL-encrypted) or UNIX domain sockets.
 - Support for [Webdis](http://webd.is) (requires both `ext-curl` and `ext-phpiredis`).
 - Support for custom connection classes for providing different network or protocol backends.
 - Flexible system for defining custom commands and server profiles.
@@ -95,8 +95,26 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
-Starting with Predis v1.0.2 the client also understands the `redis` scheme in URI strings as defined
-by the [provisional IANA registration](http://www.iana.org/assignments/uri-schemes/prov/redis).
+The client can leverage TLS/SSL encryption to connect to secured remote Redis instances without the
+the need to configure an SSL proxy like stunnel. This can be useful when connecting to nodes run by
+various cloud hosting providers. Encryption can be enabled with the use the `tls` scheme along with
+an array of suitable [options](http://php.net/manual/context.ssl.php) passed in the `ssl` parameter:
+
+```php
+// Named array of connection parameters:
+$client = new Predis\Client([
+  'scheme' => 'tls',
+  'ssl'    => ['cafile' => 'provate.pem', 'verify_peer' => true],
+]
+
+// Same set of parameters, but using an URI string:
+$client = new Predis\Client('tls://127.0.0.1?ssl[cafile]=private.pem&ssl[verify_peer]=1');
+```
+
+The connection schemes [`redis`](http://www.iana.org/assignments/uri-schemes/prov/redis) (alias of
+`tcp`) and [`rediss`](http://www.iana.org/assignments/uri-schemes/prov/rediss) (alias of `tls`) are
+also supported, with the difference that URI strings containing these schemes are parsed following
+the rules described on their respective IANA provisional registration documents.
 
 The actual list of supported connection parameters can vary depending on each connection backend so
 it is recommended to refer to their specific documentation or implementation for details.

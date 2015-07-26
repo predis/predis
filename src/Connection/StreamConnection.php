@@ -19,7 +19,7 @@ use Predis\Response\Status as StatusResponse;
  * Standard connection to Redis servers implemented on top of PHP's streams.
  * The connection parameters supported by this class are:.
  *
- *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
+ *  - scheme: it can be either 'redis', 'tcp', 'rediss', 'tls' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -28,6 +28,7 @@ use Predis\Response\Status as StatusResponse;
  *  - async_connect: performs the connection asynchronously.
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
+ *  - ssl: context options array (see http://php.net/manual/en/context.ssl.php)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -58,11 +59,33 @@ class StreamConnection extends AbstractConnection
             case 'unix':
                 break;
 
+            case 'tls':
+            case 'rediss':
+                $this->assertSslSupport($parameters);
+                break;
+
             default:
                 throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;
+    }
+
+    /**
+     * Checks needed conditions for SSL-encrypted connections.
+     *
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
+     * @throws \InvalidArgumentException
+     */
+    protected function assertSslSupport(ParametersInterface $parameters)
+    {
+        if (
+            filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN) &&
+            version_compare(PHP_VERSION, '7.0.0beta') < 0
+        ) {
+            throw new \InvalidArgumentException('Persistent SSL connections require PHP >= 7.0.0.');
+        }
     }
 
     /**
@@ -77,6 +100,10 @@ class StreamConnection extends AbstractConnection
 
             case 'unix':
                 return $this->unixStreamInitializer($this->parameters);
+
+            case 'tls':
+            case 'rediss':
+                return $this->tlsStreamInitializer($this->parameters);
 
             default:
                 throw new \InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
@@ -175,6 +202,44 @@ class StreamConnection extends AbstractConnection
         }
 
         $resource = $this->createStreamSocket($parameters, "unix://{$parameters->path}", $flags);
+
+        return $resource;
+    }
+
+    /**
+     * Initializes a SSL-encrypted TCP stream resource.
+     *
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
+     * @return resource
+     */
+    protected function tlsStreamInitializer(ParametersInterface $parameters)
+    {
+        $resource = $this->tcpStreamInitializer($parameters);
+        $metadata = stream_get_meta_data($resource);
+
+        // Detect if crypto mode is already enabled for this stream (PHP >= 7.0.0).
+        if (isset($metadata['crypto'])) {
+            return $resource;
+        }
+
+        if (is_array($parameters->ssl)) {
+            $options = $parameters->ssl;
+        } else {
+            $options = array();
+        }
+
+        if (!isset($options['crypto_type'])) {
+            $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+        }
+
+        if (!stream_context_set_option($resource, array('ssl' => $options))) {
+            $this->onConnectionError('Error while setting SSL context options');
+        }
+
+        if (!stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
+            $this->onConnectionError('Error while switching to encrypted communication');
+        }
 
         return $resource;
     }

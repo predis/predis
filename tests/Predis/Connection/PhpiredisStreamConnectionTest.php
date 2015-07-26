@@ -19,6 +19,30 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 {
     const CONNECTION_CLASS = 'Predis\Connection\PhpiredisStreamConnection';
 
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage SSL encryption is not supported by this connection backend.
+     */
+    public function testSupportsSchemeTls()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage SSL encryption is not supported by this connection backend.
+     */
+    public function testSupportsSchemeRediss()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
