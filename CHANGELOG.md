@@ -8,18 +8,18 @@ v1.1.0 (2015-xx-xx)
 
 - Non-boolean string values passed to the `persistent` connection parameter can
   be used to create different persistent connections. Note that this feature was
-  already present in Predis, but required both `persistent` and `path` to be set
+  already present in Predis but required both `persistent` and `path` to be set
   as illustrated by [#139](https://github.com/nrk/predis/pull/139). This change
   is needed to prevent confusion with how `path` is used to select a database
-  with the `redis` scheme.
+  when using the `redis` scheme.
 
-- Add support for default connection parameters in Predis\Connection\Factory.
-  These parameters augment the user-supplied parameters when creating a new
-  connection but they do not override specific parameters when already defined.
+- Added support for default connection parameters in `Predis\Connection\Factory`
+  augmenting the user-supplied parameters used to create new connections.
+   but they do not override specific parameters when already defined.
 
-- Predis\Connection\Parameters does not have a default for "timeout" anymore,
-  falling back to a default value is a responsibility of each connection class.
-  Internally the default timeout for connect() operations is still 5 seconds.
+- Removed the default value for `timeout` from `Predis\Connection\Parameters`.
+  The fallback to a default value is a responsibility of connection classes, but
+  internally the default timeout for connect() operations is still 5 seconds.
 
 
 v1.0.1 (2015-01-02)
