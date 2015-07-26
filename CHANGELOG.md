@@ -1,15 +1,15 @@
 v1.0.2 (2015-xx-xx)
 ================================================================================
 
-- Allow the use of `redis` as a scheme in URI strings for connection parameters,
-  as described in the provisional IANA registration document published on IANA's
-  [website](http://www.iana.org/assignments/uri-schemes/prov/redis).
+- Added `redis` as an accepted scheme for connection parameters. When using this
+  scheme, the rules used to parse URI strings match the provisional registration
+  [published by IANA](http://www.iana.org/assignments/uri-schemes/prov/redis).
 
 - Added missing commands: `ZREVRANGEBYLEX` (>= 2.8), `MIGRATE` (>= 2.6).
 
-- Implemented support for `NX|XX`, `CH`, `INCR` modifiers using the simplified
-  signature of `ZADD` where scores and members are passed as a PHP named array.
-  These modifiers are available since Redis 3.0.2.
+- Implemented support for the `ZADD` modifiers `NX|XX`, `CH`, `INCR` (Redis >=
+  3.0.2) using the simplified signature where scores and members are passed as
+  a named array.
 
 - __FIX__: `Predis\Configuration\Options` must not trigger the autoloader when
   option values are strings (ISSUE #257).
