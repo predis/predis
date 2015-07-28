@@ -192,13 +192,29 @@ class ParametersTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParsingURIWithUnixDomain()
+    public function testParsingURIWithUnixDomainSocket()
     {
         $uri = 'unix:///tmp/redis.sock?timeout=0.5&persistent=1';
 
         $expected = array(
             'scheme' => 'unix',
-            'host' => 'localhost',
+            'path' => '/tmp/redis.sock',
+            'timeout' => '0.5',
+            'persistent' => '1',
+        );
+
+        $this->assertSame($expected, Parameters::parse($uri));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsingURIWithUnixDomainSocketOldWay()
+    {
+        $uri = 'unix:/tmp/redis.sock?timeout=0.5&persistent=1';
+
+        $expected = array(
+            'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
             'timeout' => '0.5',
             'persistent' => '1',

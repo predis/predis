@@ -95,6 +95,14 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
+It is also possible to use UNIX domain sockets when connecting to local Redis instances, parameters
+must use the `unix` scheme and specify a path for the socket file:
+
+```php
+$client = new Predis\Client(['scheme' => 'unix', 'path' => '/path/to/redis.sock']);
+$client = new Predis\Client('unix:/path/to/redis.sock');
+```
+
 The client can leverage TLS/SSL encryption to connect to secured remote Redis instances without the
 the need to configure an SSL proxy like stunnel. This can be useful when connecting to nodes run by
 various cloud hosting providers. Encryption can be enabled with the use the `tls` scheme along with

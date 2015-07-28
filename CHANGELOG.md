@@ -13,6 +13,11 @@ v1.1.0 (2015-xx-xx)
   is needed to prevent confusion with how `path` is used to select a database
   when using the `redis` scheme.
 
+- Changed how Predis handles URI strings in the context of UNIX domain sockets:
+  `unix:///path/to/socket` should be used now instead of `unix:/path/to/socket`
+  (note the lack of a double slash after the scheme). The old format should be
+  considered obsolete and will not be supported from the next major release.
+
 - Added support for default connection parameters in `Predis\Connection\Factory`
   augmenting the user-supplied parameters used to create new connections.
    but they do not override specific parameters when already defined.

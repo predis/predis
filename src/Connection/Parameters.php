@@ -78,9 +78,10 @@ class Parameters implements ParametersInterface
             return static::parseIANA($uri);
         }
 
-        if (stripos($uri, 'unix') === 0) {
-            // Hack to support URIs for UNIX sockets with minimal effort.
-            $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
+        if (stripos($uri, 'unix://') === 0) {
+            // parse_url() can parse unix:/path/to/sock so we do not need the
+            // unix:///path/to/sock hack, we will support it anyway until 2.0.
+            $uri = str_ireplace('unix://', 'unix:', $uri);
         }
 
         if (!$parsed = parse_url($uri)) {
