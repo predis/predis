@@ -29,7 +29,7 @@ class RedisUnstableTest extends PredisProfileTestCase
      */
     public function getExpectedVersion()
     {
-        return '3.0';
+        return '3.2';
     }
 
     /**
@@ -189,6 +189,7 @@ class RedisUnstableTest extends PredisProfileTestCase
             148 => 'PFCOUNT',
             149 => 'PFMERGE',
             150 => 'COMMAND',
+            151 => 'HSTRLEN',
         );
     }
 }

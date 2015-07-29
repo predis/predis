@@ -23,7 +23,7 @@ class RedisUnstable extends RedisVersion300
      */
     public function getVersion()
     {
-        return '3.0';
+        return '3.2';
     }
 
     /**
@@ -31,6 +31,11 @@ class RedisUnstable extends RedisVersion300
      */
     public function getSupportedCommands()
     {
-        return array_merge(parent::getSupportedCommands(), array());
+        return array_merge(parent::getSupportedCommands(), array(
+            /* ---------------- Redis 3.2 ---------------- */
+
+            /* commands operating on hashes */
+            'HSTRLEN' => 'Predis\Command\HashStringLength',
+        ));
     }
 }

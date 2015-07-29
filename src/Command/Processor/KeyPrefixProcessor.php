@@ -157,6 +157,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZREMRANGEBYLEX' => 'self::first',
             'ZREVRANGEBYLEX' => 'self::first',
             'BITPOS' => 'self::first',
+            /* ---------------- Redis 3.2 ---------------- */
+            'HSTRLEN' => 'self::first',
         );
     }
 
