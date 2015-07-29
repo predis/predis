@@ -635,6 +635,40 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testParseIPv6AddresseAndPortPairInRedirectionPayload()
+    {
+        $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
+
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
+
+        $connection1 = $this->getMockConnection('tcp://[2001:db8:0:f101::1]:6379');
+        $connection1->expects($this->once())
+                   ->method('executeCommand')
+                   ->with($command)
+                   ->will($this->returnValue($movedResponse));
+
+        $connection2 = $this->getMockConnection('tcp://[2001:db8:0:f101::2]:6379');
+        $connection2->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($command)
+                    ->will($this->returnValue('foobar'));
+
+        $factory = $this->getMock('Predis\Connection\Factory');
+        $factory->expects($this->once())
+                ->method('create')
+                ->with(array('host' => '2001:db8:0:f101::2', 'port' => '6379'))
+                ->will($this->returnValue($connection2));
+
+        $cluster = new RedisCluster($factory);
+        $cluster->useClusterSlots(false);
+        $cluster->add($connection1);
+
+        $cluster->executeCommand($command);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testFetchSlotsMapFromClusterWithClusterSlotsCommand()
     {
         $response = array(

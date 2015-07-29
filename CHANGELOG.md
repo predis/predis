@@ -1,6 +1,8 @@
 v1.0.2 (2015-xx-xx)
 ================================================================================
 
+- IPv6 is now fully supported.
+
 - Added `redis` as an accepted scheme for connection parameters. When using this
   scheme, the rules used to parse URI strings match the provisional registration
   [published by IANA](http://www.iana.org/assignments/uri-schemes/prov/redis).
