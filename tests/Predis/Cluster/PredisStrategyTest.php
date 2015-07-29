@@ -366,6 +366,7 @@ class PredisStrategyTest extends PredisTestCase
             'HSETNX' => 'keys-first',
             'HVALS' => 'keys-first',
             'HSCAN' => 'keys-first',
+            'HSTRLEN' => 'keys-first',
 
             /* commands operating on HyperLogLog */
             'PFADD' => 'keys-first',
