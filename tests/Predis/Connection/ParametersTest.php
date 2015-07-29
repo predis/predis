@@ -262,6 +262,22 @@ class ParametersTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testParsingURIWithEmbeddedIPV6AddressShouldStripBracketsFromHost()
+    {
+        $uri = 'tcp://[::1]:7000';
+
+        $expected = array(
+            'scheme' => 'tcp',
+            'host' => '::1',
+            'port' => 7000,
+        );
+
+        $this->assertSame($expected, Parameters::parse($uri));
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */

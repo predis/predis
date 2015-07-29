@@ -88,6 +88,14 @@ class Parameters implements ParametersInterface
             throw new \InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
+        if (
+            isset($parsed['host'])
+            && false !== strpos($parsed['host'], '[')
+            && false !== strpos($parsed['host'], ']')
+        ) {
+            $parsed['host'] = substr($parsed['host'], 1, -1);
+        }
+
         if (isset($parsed['query'])) {
             parse_str($parsed['query'], $queryarray);
             unset($parsed['query']);
@@ -119,6 +127,14 @@ class Parameters implements ParametersInterface
     {
         if (!$parsed = parse_url($uri)) {
             throw new \InvalidArgumentException("Invalid parameters URI: $uri");
+        }
+
+        if (
+            isset($parsed['host'])
+            && false !== strpos($parsed['host'], '[')
+            && false !== strpos($parsed['host'], ']')
+        ) {
+            $parsed['host'] = substr($parsed['host'], 1, -1);
         }
 
         if (isset($parsed['query'])) {
