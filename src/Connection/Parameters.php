@@ -67,6 +67,15 @@ class Parameters implements ParametersInterface
     /**
      * Parses an URI string returning an array of connection parameters.
      *
+     * When using the "redis" and "rediss" schemes the URI is parsed according
+     * to the rules defined by the provisional registration documents approved
+     * by IANA. If the URI has a password in its "user-information" part or a
+     * database number in the "path" part these values override the values of
+     * "password" and "database" if they are present in the "query" part.
+     *
+     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
+     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
+     *
      * @param string $uri URI string.
      *
      * @throws \InvalidArgumentException
@@ -75,10 +84,6 @@ class Parameters implements ParametersInterface
      */
     public static function parse($uri)
     {
-        if (stripos($uri, 'redis') === 0) {
-            return static::parseIANA($uri);
-        }
-
         if (stripos($uri, 'unix') === 0) {
             // Hack to support URIs for UNIX sockets with minimal effort.
             $uri = str_ireplace('unix:///', 'unix://localhost/', $uri);
@@ -103,55 +108,16 @@ class Parameters implements ParametersInterface
             $parsed = array_merge($parsed, $queryarray);
         }
 
-        return $parsed;
-    }
+        if (stripos($uri, 'redis') === 0) {
+            if (isset($parsed['pass'])) {
+                $parsed['password'] = $parsed['pass'];
+                unset($parsed['pass']);
+            }
 
-    /**
-     * Parses an URI string as defined by the "redis" and "rediss" URL schemes
-     * registered with the IANA.
-     *
-     * When the URI has a password in the "user-information" part or a database
-     * number the "path" part, their values override the values of "password"
-     * and "database" in the "query" part of the same URI.
-     *
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     *
-     * @param string $uri URI string.
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return array
-     */
-    public static function parseIANA($uri)
-    {
-        if (!$parsed = parse_url($uri)) {
-            throw new \InvalidArgumentException("Invalid parameters URI: $uri");
-        }
-
-        if (
-            isset($parsed['host'])
-            && false !== strpos($parsed['host'], '[')
-            && false !== strpos($parsed['host'], ']')
-        ) {
-            $parsed['host'] = substr($parsed['host'], 1, -1);
-        }
-
-        if (isset($parsed['query'])) {
-            parse_str($parsed['query'], $queryarray);
-            unset($parsed['query']);
-
-            $parsed = array_merge($parsed, $queryarray);
-        }
-
-        if (isset($parsed['pass'])) {
-            $parsed['password'] = $parsed['pass'];
-            unset($parsed['pass']);
-        }
-
-        if (isset($parsed['path']) && preg_match('/^\/(\d+)\/?/', $parsed['path'], $path)) {
-            $parsed['database'] = $path[1];
-            unset($parsed['path']);
+            if (isset($parsed['path']) && preg_match('/^\/(\d+)\/?/', $parsed['path'], $path)) {
+                $parsed['database'] = $path[1];
+                unset($parsed['path']);
+            }
         }
 
         return $parsed;
