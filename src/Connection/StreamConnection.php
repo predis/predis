@@ -152,7 +152,7 @@ class StreamConnection extends AbstractConnection
      */
     protected function tcpStreamInitializer(ParametersInterface $parameters)
     {
-        $address = "tcp://{$parameters->host}:{$parameters->port}";
+        $address = "tcp://[$parameters->host]:$parameters->port";
         $flags = STREAM_CLIENT_CONNECT;
 
         if (isset($parameters->async_connect) && $parameters->async_connect) {

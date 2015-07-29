@@ -280,15 +280,11 @@ class ParametersTest extends PredisTestCase
      */
     public function testParsingURIWithEmbeddedIPV6AddressShouldStripBracketsFromHost()
     {
-        $uri = 'tcp://[::1]:7000';
+        $expected = array('scheme' => 'tcp', 'host' => '::1', 'port' => 7000);
+        $this->assertSame($expected, Parameters::parse('tcp://[::1]:7000'));
 
-        $expected = array(
-            'scheme' => 'tcp',
-            'host' => '::1',
-            'port' => 7000,
-        );
-
-        $this->assertSame($expected, Parameters::parse($uri));
+        $expected = array('scheme' => 'tcp', 'host' => '2001:db8:0:f101::1', 'port' => 7000);
+        $this->assertSame($expected, Parameters::parse('tcp://[2001:db8:0:f101::1]:7000'));
     }
 
     /**

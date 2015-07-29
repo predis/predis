@@ -431,12 +431,45 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * @group connected
      * @group slow
      * @expectedException \Predis\Connection\ConnectionException
+     * @expectedExceptionMessageRegExp /.* \[tcp:\/\/169.254.10.10:6379\]/
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
         $connection = $this->createConnectionWithParams(array(
             'host' => '169.254.10.10',
-            'timeout' => 0.5,
+            'timeout' => 0.1,
+        ), false);
+
+        $connection->connect();
+    }
+
+    /**
+     * @group connected
+     * @group slow
+     * @expectedException \Predis\Connection\ConnectionException
+     * @expectedExceptionMessageRegExp /.* \[tcp:\/\/\[0:0:0:0:0:ffff:a9fe:a0a\]:6379\]/
+     */
+    public function testThrowsExceptionOnConnectionTimeoutIPv6()
+    {
+        $connection = $this->createConnectionWithParams(array(
+            'host' => '0:0:0:0:0:ffff:a9fe:a0a',
+            'timeout' => 0.1,
+        ), false);
+
+        $connection->connect();
+    }
+
+    /**
+     * @group connected
+     * @group slow
+     * @expectedException \Predis\Connection\ConnectionException
+     * @expectedExceptionMessageRegExp /.* \[unix:\/tmp\/nonexistent\/redis\.sock]/
+     */
+    public function testThrowsExceptionOnUnixDomainSocketNotFound()
+    {
+        $connection = $this->createConnectionWithParams(array(
+            'scheme' => 'unix',
+            'path' => '/tmp/nonexistent/redis.sock',
         ), false);
 
         $connection->connect();

@@ -275,11 +275,11 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     protected function createConnection($connectionID)
     {
-        $host = explode(':', $connectionID, 2);
+        $separator = strrpos($connectionID, ':');
 
         return $this->connections->create(array(
-            'host' => $host[0],
-            'port' => $host[1],
+            'host' => substr($connectionID, 0, $separator),
+            'port' => substr($connectionID, $separator + 1),
         ));
     }
 
