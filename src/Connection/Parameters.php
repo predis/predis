@@ -73,7 +73,7 @@ class Parameters implements ParametersInterface
      * "password" and "database" if they are present in the "query" part.
      *
      * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
+     * @link http://www.iana.org/assignments/uri-schemes/prov/rediss
      *
      * @param string $uri URI string.
      *
