@@ -181,6 +181,25 @@ class ParametersTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testParsingURIWithRedisSchemeMustPreserveRemainderOfPath()
+    {
+        $uri = 'redis://10.10.10.10/5/rest/of/path';
+
+        $expected = array(
+            'scheme' => 'redis',
+            'host' => '10.10.10.10',
+            'path' => '/rest/of/path',
+            'database' => '5',
+        );
+
+        $parameters = Parameters::parse($uri);
+
+        $this->assertSame($expected, $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testRedisSchemeOverridesPasswordAndDatabaseInQueryString()
     {
         $parameters = Parameters::parse('redis://:secret@10.10.10.10/5?password=ignored&database=4');
