@@ -30,6 +30,14 @@ v1.1.0 (2015-xx-xx)
   must use either the `tls` or `rediss` scheme.
 
 
+v1.0.3 (2015-07-30)
+================================================================================
+
+- __FIX__: the previous release introduced a severe regression on HHVM that made
+  the library unable to connect to Redis when using IPv4 addresses. Code running
+  on the standard PHP interpreter is not affected.
+
+
 v1.0.2 (2015-07-30)
 ================================================================================
 
