@@ -114,9 +114,14 @@ class Parameters implements ParametersInterface
                 unset($parsed['pass']);
             }
 
-            if (isset($parsed['path']) && preg_match('/^\/(\d+)\/?/', $parsed['path'], $path)) {
+            if (isset($parsed['path']) && preg_match('/^\/(\d+)(\/.*)?/', $parsed['path'], $path)) {
                 $parsed['database'] = $path[1];
-                unset($parsed['path']);
+
+                if (isset($path[2])) {
+                    $parsed['path'] = $path[2];
+                } else {
+                    unset($parsed['path']);
+                }
             }
         }
 
