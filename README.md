@@ -27,6 +27,7 @@ More details about this project can be found on the [frequently asked questions]
 - Clustering via client-side sharding using consistent hashing or custom distributors.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication (write operations on master, read operations on slaves).
+- Support for redis-sentinel to provide high-availability in replication scenarios.
 - Transparent key prefixing for all known Redis commands using a customizable prefixing strategy.
 - Command pipelining (works on both single nodes and aggregate connections).
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
