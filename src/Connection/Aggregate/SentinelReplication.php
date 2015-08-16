@@ -11,6 +11,7 @@
 
 namespace Predis\Connection\Aggregate;
 
+use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\Factory as ConnectionFactory;
@@ -55,6 +56,11 @@ class SentinelReplication extends MasterSlaveReplication
     protected $sentinelTimeout = 0.100;
 
     /**
+     * Flag for automatic retries of commands upon server failure.
+     */
+    protected $autoRetry = true;
+
+    /**
      * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param string                     $service           Name of the service for autodiscovery.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
@@ -84,6 +90,16 @@ class SentinelReplication extends MasterSlaveReplication
     public function setDefaultSentinelTimeout($timeout)
     {
         $this->sentinelTimeout = (float) $timeout;
+    }
+
+    /**
+     * Set automatic retries of commands upon server failure.
+     *
+     * @param bool $retry Retry value.
+     */
+    public function setAutomaticRetry($retry)
+    {
+        $this->autoRetry = (bool) $retry;
     }
 
     /**
@@ -244,5 +260,58 @@ class SentinelReplication extends MasterSlaveReplication
                 goto SENTINEL_QUERY;
             }
         }
+    }
+
+    /**
+     * Retries the execution of a command upon server failure after asking a new
+     * configuration to one of the sentinels.
+     *
+     * @param string           $method  Actual method.
+     * @param CommandInterface $command Command instance.
+     *
+     * @return mixed
+     */
+    private function retryCommandOnFailure($method, $command)
+    {
+        SENTINEL_RETRY: {
+            try {
+                $response = parent::$method($command);
+            } catch (ConnectionException $exception) {
+                if (!$this->autoRetry) {
+                    throw $exception;
+                }
+
+                $exception->getConnection()->disconnect();
+                $this->querySentinel();
+
+                goto SENTINEL_RETRY;
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function writeRequest(CommandInterface $command)
+    {
+        $this->retryCommandOnFailure(__FUNCTION__, $command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function readResponse(CommandInterface $command)
+    {
+        return $this->retryCommandOnFailure(__FUNCTION__, $command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommand(CommandInterface $command)
+    {
+        return $this->retryCommandOnFailure(__FUNCTION__, $command);
     }
 }
