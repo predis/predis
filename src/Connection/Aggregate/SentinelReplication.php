@@ -61,6 +61,11 @@ class SentinelReplication extends MasterSlaveReplication
     protected $autoRetry = true;
 
     /**
+     * Flag for automatic fetching of available sentinels.
+     */
+    protected $updateSentinels = false;
+
+    /**
      * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param string                     $service           Name of the service for autodiscovery.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
@@ -100,6 +105,16 @@ class SentinelReplication extends MasterSlaveReplication
     public function setAutomaticRetry($retry)
     {
         $this->autoRetry = (bool) $retry;
+    }
+
+    /**
+     * Set automatic fetching of available sentinels.
+     *
+     * @param bool $update Enable or disable automatic updates.
+     */
+    public function setUpdateSentinels($update)
+    {
+        $this->updateSentinels = (bool) $update;
     }
 
     /**
@@ -236,6 +251,10 @@ class SentinelReplication extends MasterSlaveReplication
      */
     public function querySentinel()
     {
+        if ($this->updateSentinels) {
+            $this->updateSentinels();
+        }
+
         $this->wipeServerList();
 
         SENTINEL_QUERY: {
@@ -253,6 +272,36 @@ class SentinelReplication extends MasterSlaveReplication
 
                 foreach ($slavesParameters as $slaveParameters) {
                     $this->add($this->connectionFactory->create($slaveParameters));
+                }
+            } catch (ConnectionException $exception) {
+                $this->sentinelConnection = null;
+
+                goto SENTINEL_QUERY;
+            }
+        }
+    }
+
+    /**
+     * Updates the full list of sentinels by asking to a sentinel server.
+     */
+    public function updateSentinels()
+    {
+        SENTINEL_QUERY: {
+            $sentinel = $this->getSentinelConnection();
+
+            try {
+                $payload = $sentinel->executeCommand(
+                    RawCommand::create('SENTINEL', 'sentinels', $this->service)
+                );
+
+                $this->sentinels = array();
+                $this->sentinels[] = $sentinel->getParameters()->toArray();
+
+                foreach ($payload as $sentinel) {
+                    $this->sentinels[] = array(
+                        'host' => $sentinel[3],
+                        'port' => $sentinel[5],
+                    );
                 }
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
