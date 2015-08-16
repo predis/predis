@@ -16,6 +16,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\Factory as ConnectionFactory;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
@@ -49,6 +50,11 @@ class SentinelReplication extends MasterSlaveReplication
     protected $sentinelConnection;
 
     /**
+     * Timeout for the connection to a sentinel.
+     */
+    protected $sentinelTimeout = 0.100;
+
+    /**
      * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param string                     $service           Name of the service for autodiscovery.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
@@ -65,6 +71,19 @@ class SentinelReplication extends MasterSlaveReplication
         $this->connectionFactory = $connectionFactory;
 
         parent::__construct($strategy);
+    }
+
+    /**
+     * Sets a default timeout for connections to sentinels.
+     *
+     * When "timeout" is present in the connection parameters of sentinels, its
+     * value overrides the default sentinel timeout.
+     *
+     * @param float $timeout Timeout value.
+     */
+    public function setDefaultSentinelTimeout($timeout)
+    {
+        $this->sentinelTimeout = (float) $timeout;
     }
 
     /**
@@ -89,6 +108,32 @@ class SentinelReplication extends MasterSlaveReplication
     }
 
     /**
+     * Creates the connection to a sentinel server.
+     *
+     * @return NodeConnectionInterface
+     */
+    protected function createSentinelConnection($parameters)
+    {
+        if ($parameters instanceof NodeConnectionInterface) {
+            return $parameters;
+        }
+
+        if (is_string($parameters)) {
+            $parameters = Parameters::parse($parameters);
+        }
+
+        if (is_array($parameters)) {
+            $parameters += array(
+                'timeout' => $this->sentinelTimeout,
+            );
+        }
+
+        $connection = $this->connectionFactory->create($parameters);
+
+        return $connection;
+    }
+
+    /**
      * Returns the current sentinel connection.
      *
      * If there is no active sentinel connection, a new connection is created.
@@ -103,7 +148,7 @@ class SentinelReplication extends MasterSlaveReplication
             }
 
             $sentinel = array_shift($this->sentinels);
-            $this->sentinelConnection = $this->connectionFactory->create($sentinel);
+            $this->sentinelConnection = $this->createSentinelConnection($sentinel);
         }
 
         return $this->sentinelConnection;
