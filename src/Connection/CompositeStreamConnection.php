@@ -73,7 +73,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
             }
 
             $value .= $chunk;
-        } while (($length -= strlen($chunk)) > 0);
+        } while (($length -= mb_strlen($chunk, '8bit')) > 0);
 
         return $value;
     }

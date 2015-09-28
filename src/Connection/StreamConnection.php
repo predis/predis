@@ -183,7 +183,7 @@ class StreamConnection extends AbstractConnection
     {
         $socket = $this->getResource();
 
-        while (($length = strlen($buffer)) > 0) {
+        while (($length = mb_strlen($buffer, '8bit')) > 0) {
             $written = @fwrite($socket, $buffer);
 
             if ($length === $written) {
@@ -235,7 +235,7 @@ class StreamConnection extends AbstractConnection
                     }
 
                     $bulkData .= $chunk;
-                    $bytesLeft = $size - strlen($bulkData);
+                    $bytesLeft = $size - mb_strlen($bulkData, '8bit');
                 } while ($bytesLeft > 0);
 
                 return substr($bulkData, 0, -2);
@@ -283,7 +283,7 @@ class StreamConnection extends AbstractConnection
 
         for ($i = 0, $reqlen--; $i < $reqlen; ++$i) {
             $argument = $arguments[$i];
-            $arglen = strlen($argument);
+            $arglen = mb_strlen($argument, '8bit');
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 

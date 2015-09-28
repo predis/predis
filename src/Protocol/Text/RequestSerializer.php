@@ -38,7 +38,7 @@ class RequestSerializer implements RequestSerializerInterface
 
         for ($i = 0, $reqlen--; $i < $reqlen; ++$i) {
             $argument = $arguments[$i];
-            $arglen = strlen($argument);
+            $arglen = mb_strlen($argument, '8bit');
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
