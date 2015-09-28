@@ -367,6 +367,20 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
+    public function testReadsMultiByteResponses()
+    {
+        $profile = $this->getCurrentProfile();
+        $connection = $this->createConnection(true);
+
+        $connection->executeCommand($profile->createCommand('set', array('foo', '€')));
+
+        $connection->writeRequest($profile->createCommand('get', array('foo')));
+        $this->assertSame('€', $connection->read());
+    }
+    
+    /**
+     * @group connected
+     */
     public function testReadsIntegerResponses()
     {
         $profile = $this->getCurrentProfile();
