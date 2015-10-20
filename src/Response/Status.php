@@ -18,9 +18,19 @@ namespace Predis\Response;
  */
 class Status implements ResponseInterface
 {
-    private static $OK;
-    private static $QUEUED;
+    /**
+     * @var string
+     */
+    const OK = 'OK';
 
+    /**
+     * @var string
+     */
+    const QUEUED = 'QUEUED';
+
+    /**
+     * @var string
+     */
     private $payload;
 
     /**
@@ -64,8 +74,8 @@ class Status implements ResponseInterface
     public static function get($payload)
     {
         switch ($payload) {
-            case 'OK':
-            case 'QUEUED':
+            case self::OK:
+            case self::QUEUED:
                 if (isset(self::$$payload)) {
                     return self::$$payload;
                 }
