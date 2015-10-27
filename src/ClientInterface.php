@@ -123,7 +123,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    zremrangebyrank($key, $start, $stop)
  * @method int    zremrangebyscore($key, $min, $max)
  * @method array  zrevrange($key, $start, $stop, array $options = null)
- * @method array  zrevrangebyscore($key, $min, $max, array $options = null)
+ * @method array  zrevrangebyscore($key, $max, $min, array $options = null)
  * @method int    zrevrank($key, $member)
  * @method int    zunionstore($destination, array $keys, array $options = null)
  * @method string zscore($key, $member)
