@@ -94,7 +94,7 @@ use Predis\Profile\ProfileInterface;
  * @method mixed  ltrim($key, $start, $stop)
  * @method string rpop($key)
  * @method string rpoplpush($source, $destination)
- * @method int    rpush($key, array $values)
+ * @method int    rpush($key, $value)
  * @method int    rpushx($key, $value)
  * @method int    sadd($key, array $members)
  * @method int    scard($key)
