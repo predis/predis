@@ -779,7 +779,7 @@ class RedisClusterTest extends PredisTestCase
 			->will($this->returnValue($connection2));
 
 		// mock loadCacheSlotsMapFile to point all hashes to the second host
-		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('loadCacheSlotsMapFile'), [$factory]);
+		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('loadCacheSlotsMapFile'), array($factory));
 		$cluster->expects($this->atLeastOnce())
 			->method('loadCacheSlotsMapFile')
 			->will($this->returnCallback(function () use ($cluster) {$cluster->setSlots(0, 16383, '127.0.0.1:6380');} ));
@@ -837,7 +837,7 @@ class RedisClusterTest extends PredisTestCase
 			->with(array('host' => '127.0.0.1', 'port' => '6380'))
 			->will($this->returnValue($connection2));
 
-		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getCacheSlotMapFile'), [$factory]);
+		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getCacheSlotMapFile'), array($factory));
 		$cluster->expects($this->atLeastOnce())
 			->method('getCacheSlotMapFile')
 			->will($this->returnValue($cached_file));
