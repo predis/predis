@@ -313,7 +313,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
         $cluster = new RedisCluster(new Connection\Factory());
-	    $cluster->add($connection1);
+        $cluster->add($connection1);
         $cluster->add($connection2);
 
         $cluster->setSlots(0, 2047, '127.0.0.1:6379');
@@ -742,7 +742,7 @@ class RedisClusterTest extends PredisTestCase
                 ->with(array('host' => '127.0.0.1', 'port' => '6380'))
                 ->will($this->returnValue($connection2));
 
-	    $cluster = new RedisCluster($factory);
+        $cluster = new RedisCluster($factory);
         $cluster->add($connection1);
 
         $this->assertSame('foobar', $cluster->executeCommand($cmdGET));
