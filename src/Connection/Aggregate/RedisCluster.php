@@ -164,7 +164,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         $this->slotsMap = array();
 
 	    // load cache if set
-	    $this->loadCacheSlotsMapFile();
+	    if ($this->cacheSlotMapDirectory) {
+		    $this->loadCacheSlotsMapFile();
+	    }
 
 	    // load slots passes into connections
         foreach ($this->pool as $connectionID => $connection) {
