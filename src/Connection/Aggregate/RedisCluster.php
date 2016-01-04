@@ -55,6 +55,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 	private $cacheSlotMapDirectory;
 	private $cacheSlotMapFile;
 
+	const CACHED_FILENAME_PREFIX = 'predis-cached-slots';
+
     /**
      * @param FactoryInterface  $connections Optional connection factory.
      * @param StrategyInterface $strategy    Optional cluster strategy.
@@ -600,7 +602,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 	protected function getCacheSlotMapFile()
 	{
 		if ($this->cacheSlotMapDirectory && !$this->cacheSlotMapFile) {
-			$this->cacheSlotMapFile = $this->cacheSlotMapDirectory . '/' . 'redis-cached-slots-' . md5(serialize($this->pool));
+			$this->cacheSlotMapFile = $this->cacheSlotMapDirectory . '/' . static::CACHED_FILENAME_PREFIX . '-' . md5(serialize($this->pool));
 		}
 
 		return $this->cacheSlotMapFile;
