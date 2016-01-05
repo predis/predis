@@ -162,6 +162,7 @@ use Predis\Profile\ProfileInterface;
  * @method mixed  slowlog($subcommand, $argument = null)
  * @method array  time()
  * @method array  command()
+ * @method int    wait($numslaves, $timeout = 0)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

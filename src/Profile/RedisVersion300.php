@@ -265,6 +265,8 @@ class RedisVersion300 extends RedisProfile
 
             /* ---------------- Redis 3.0 ---------------- */
 
+            /* remote server control commands */
+            'WAIT' => 'Predis\Command\ServerWait',
         );
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="tests/bootstrap.php"
+    colors="true"
+    beStrictAboutTestSize="true"
+    checkForUnintentionallyCoveredCode="true"
+    beStrictAboutTestsThatDoNotTestAnything="true">
+
+    <testsuites>
+        <testsuite name="Predis Test Suite">
+            <directory>tests/Predis/</directory>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <include>
+            <group>redis-cluster</group>
+        </include>
+    </groups>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" />
+    </logging>
+
+    <php>
+        <!-- Redis Cluster -->
+        <const name="REDIS_SERVER_VERSION" value="3.0" />
+        <const name="REDIS_CLUSTER_HOST" value="127.0.0.1" />
+        <const name="REDIS_CLUSTER_PORT" value="7000" />
+        <const name="REDIS_CLUSTER_NUM_SLAVES" value="1" />
+    </php>
+</phpunit>

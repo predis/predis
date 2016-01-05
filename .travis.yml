@@ -14,11 +14,16 @@ branches:
     - php5.2_backport
     - documentation
 services: redis-server
+install: make travis-install
 before_script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
+  - make travis-run
 script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
+  - vendor/bin/phpunit -c phpunit.xml.cluster.travisci
+after_script:
+  - make stop
 matrix:
   allow_failures:
     - php: hhvm

@@ -55,4 +55,23 @@ class RedisStrategy extends ClusterStrategy
             'This cluster strategy does not provide an external distributor'
         );
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getDefaultCommands()
+    {
+        $commands = parent::getDefaultCommands();
+        $commands['WAIT'] = array($this, 'getSlotForRandomKey');
+
+        return $commands;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getSlotForRandomKey()
+    {
+        return $this->hashGenerator->hash(uniqid('', true)) & 0x3FFF;
+    }
 }

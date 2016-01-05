@@ -189,6 +189,7 @@ class RedisVersion300Test extends PredisProfileTestCase
             148 => 'PFCOUNT',
             149 => 'PFMERGE',
             150 => 'COMMAND',
+            151 => 'WAIT',
         );
     }
 }

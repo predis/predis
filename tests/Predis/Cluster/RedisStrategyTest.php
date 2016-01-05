@@ -386,6 +386,9 @@ class RedisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+
+            /* remote server commands */
+            'WAIT' => 'keys-first',
         );
 
         if (isset($type)) {
