@@ -50,10 +50,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new client instance.
      *
      * @param bool $flushdb Flush selected database before returning the client.
+     * @param bool $cluster Use the cluster config.
      *
      * @return Client
      */
-    public function getClient($flushdb = true)
+    public function getClient($flushdb = true, $cluster = false)
     {
         $profile = $this->getProfile();
 
@@ -63,7 +64,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
             );
         }
 
-        $client = $this->createClient(null, null, $flushdb);
+        $client = $this->createClient(null, null, $flushdb, $cluster);
 
         return $client;
     }

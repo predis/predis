@@ -17,6 +17,7 @@
             <group>ext-phpiredis</group>
             <group>ext-curl</group>
             <group>realm-webdis</group>
+            <group>redis-cluster</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -36,6 +37,11 @@
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
         <const name="REDIS_SERVER_DBNUM" value="15" />
+
+        <!-- Redis Cluster -->
+        <const name="REDIS_CLUSTER_HOST" value="127.0.0.1" />
+        <const name="REDIS_CLUSTER_PORT" value="30001" />
+        <const name="REDIS_CLUSTER_NUM_SLAVES" value="1" />
 
         <!-- Webdis -->
         <const name="WEBDIS_SERVER_HOST" value="127.0.0.1" />

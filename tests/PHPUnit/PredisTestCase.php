@@ -95,6 +95,14 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return array
+     */
+    protected function getClusterParametersArray()
+    {
+        return array(sprintf('tcp://%s:%s', REDIS_CLUSTER_HOST, REDIS_CLUSTER_PORT));
+    }
+
+    /**
      * Returns a named array with the default client options and their values.
      *
      * @return array Default connection parameters.
@@ -166,13 +174,14 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      * @param array $parameters Additional connection parameters.
      * @param array $options    Additional client options.
      * @param bool  $flushdb    Flush selected database before returning the client.
+     * @param bool  $cluster    Use the cluster config.
      *
      * @return Client
      */
-    protected function createClient(array $parameters = null, array $options = null, $flushdb = true)
+    protected function createClient(array $parameters = null, array $options = null, $flushdb = true, $cluster = false)
     {
         $parameters = array_merge(
-            $this->getDefaultParametersArray(),
+            $cluster ? $this->getClusterParametersArray() : $this->getDefaultParametersArray(),
             $parameters ?: array()
         );
 
@@ -183,10 +192,15 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             $options ?: array()
         );
 
+        if ($cluster) {
+            $options['cluster'] = 'redis';
+        }
+
         $client = new Client($parameters, $options);
         $client->connect();
 
-        if ($flushdb) {
+        if ($flushdb && !$cluster) {
+            // TODO: Implement `FLUSHALL` and `CLUSTER RESET`
             $client->flushdb();
         }
 
