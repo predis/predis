@@ -25,8 +25,8 @@ use Predis\Command\CommandInterface;
 interface StrategyInterface
 {
     /**
-     * Returns a slot for the given command used for clustering distribution or
-     * NULL when this is not possible.
+     * Returns a slot for the given command used for clustering distribution, NULL when this
+     * is not possible or FALSE when there should be a random node selected (i.e. WAIT)
      *
      * @param CommandInterface $command Command instance.
      *

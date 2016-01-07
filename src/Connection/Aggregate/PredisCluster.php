@@ -130,6 +130,11 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $slot = $this->strategy->getSlot($command);
 
+        // Workaround to allow "slotless" commands like `WAIT` to still work on a random node
+        if (false === $slot) {
+            $slot = mt_rand(0x0000, 0x3FFF);
+        }
+
         if (!isset($slot)) {
             throw new NotSupportedException(
                 "Cannot use '{$command->getId()}' over clusters of connections."

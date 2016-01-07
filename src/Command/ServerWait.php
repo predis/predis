@@ -39,4 +39,12 @@ class ServerWait extends Command
 
         return $arguments;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSlot()
+    {
+        return false;
+    }
 }
