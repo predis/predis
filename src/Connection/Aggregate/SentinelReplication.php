@@ -56,9 +56,9 @@ class SentinelReplication extends MasterSlaveReplication
     protected $sentinelTimeout = 0.100;
 
     /**
-     * Flag for automatic retries of commands upon server failure.
+     * Max number of automatic retries of commands upon server failure. 0 = never retry, -1 = unlimited.
      */
-    protected $autoRetry = true;
+    protected $retryLimit = -1;
 
     /**
      * Flag for automatic fetching of available sentinels.
@@ -98,13 +98,13 @@ class SentinelReplication extends MasterSlaveReplication
     }
 
     /**
-     * Set automatic retries of commands upon server failure.
+     * Set maximum number of automatic retries of commands upon server failure. 0 = never retry, -1 = unlimited.
      *
-     * @param bool $retry Retry value.
+     * @param integer $retry Retry value.
      */
-    public function setAutomaticRetry($retry)
+    public function setRetryLimit($retry)
     {
-        $this->autoRetry = (bool) $retry;
+        $this->retryLimit = (int) $retry;
     }
 
     /**
@@ -322,17 +322,20 @@ class SentinelReplication extends MasterSlaveReplication
      */
     private function retryCommandOnFailure($method, $command)
     {
+        $retries = 0;
+
         SENTINEL_RETRY: {
             try {
                 $response = parent::$method($command);
             } catch (ConnectionException $exception) {
-                if (!$this->autoRetry) {
+                if ($retries == $this->retryLimit) {
                     throw $exception;
                 }
 
                 $exception->getConnection()->disconnect();
                 $this->querySentinel();
 
+                $retries++;
                 goto SENTINEL_RETRY;
             }
         }
