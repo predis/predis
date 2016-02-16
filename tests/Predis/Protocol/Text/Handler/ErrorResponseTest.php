@@ -30,7 +30,7 @@ class ErrorResponseTest extends PredisTestCase
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
 
-        $message = "ERR Operation against a key holding the wrong kind of value";
+        $message = 'ERR Operation against a key holding the wrong kind of value';
         $response = $handler->handle($connection, $message);
 
         $this->assertInstanceOf('Predis\Response\Error', $response);

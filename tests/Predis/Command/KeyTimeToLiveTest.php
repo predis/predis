@@ -86,12 +86,10 @@ class KeyTimeToLiveTest extends PredisCommandTestCase
      */
     public function testReturnsLessThanZeroOnNonExistingKeys()
     {
-        $this->executeOnRedisVersion('2.8.0', '<', function ($test) {
-            $test->assertSame(-1, $test->getClient()->ttl('foo'));
-        });
-
-        $this->executeOnRedisVersion('2.8.0', '>=', function ($test) {
-            $test->assertSame(-2, $test->getClient()->ttl('foo'));
-        });
+        if ($this->isRedisServerVersion('<', '2.8.0')) {
+            $this->assertSame(-1, $this->getClient()->ttl('foo'));
+        } else {
+            $this->assertSame(-2, $this->getClient()->ttl('foo'));
+        }
     }
 }

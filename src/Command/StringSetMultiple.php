@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/mset
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StringSetMultiple extends Command

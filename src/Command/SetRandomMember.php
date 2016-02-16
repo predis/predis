@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/srandmember
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SetRandomMember extends Command

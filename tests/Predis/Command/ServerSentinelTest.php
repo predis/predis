@@ -64,35 +64,35 @@ class ServerSentinelTest extends PredisCommandTestCase
     {
         $response = array(
             array(
-                "name", "predis:master",
-                "ip", "127.0.0.1",
-                "port", "6379",
-                "runid", "89f6128a7e5780aa6ef7d4d7022cfafbf799b3ab",
-                "flags", "master",
-                "pending-commands", "0",
-                "last-ok-ping-reply", "386",
-                "last-ping-reply", "386",
-                "info-refresh", "9926",
-                "num-slaves", "1",
-                "num-other-sentinels", "0",
-                "quorum", "2",
+                'name', 'predis:master',
+                'ip', '127.0.0.1',
+                'port', '6379',
+                'runid', '89f6128a7e5780aa6ef7d4d7022cfafbf799b3ab',
+                'flags', 'master',
+                'pending-commands', '0',
+                'last-ok-ping-reply', '386',
+                'last-ping-reply', '386',
+                'info-refresh', '9926',
+                'num-slaves', '1',
+                'num-other-sentinels', '0',
+                'quorum', '2',
             ),
         );
 
         $expected = array(
             array(
-                "name" => "predis:master",
-                "ip" => "127.0.0.1",
-                "port" => "6379",
-                "runid" => "89f6128a7e5780aa6ef7d4d7022cfafbf799b3ab",
-                "flags" => "master",
-                "pending-commands" => "0",
-                "last-ok-ping-reply" => "386",
-                "last-ping-reply" => "386",
-                "info-refresh" => "9926",
-                "num-slaves" => "1",
-                "num-other-sentinels" => "0",
-                "quorum" => "2",
+                'name' => 'predis:master',
+                'ip' => '127.0.0.1',
+                'port' => '6379',
+                'runid' => '89f6128a7e5780aa6ef7d4d7022cfafbf799b3ab',
+                'flags' => 'master',
+                'pending-commands' => '0',
+                'last-ok-ping-reply' => '386',
+                'last-ping-reply' => '386',
+                'info-refresh' => '9926',
+                'num-slaves' => '1',
+                'num-other-sentinels' => '0',
+                'quorum' => '2',
             ),
         );
 
@@ -108,40 +108,40 @@ class ServerSentinelTest extends PredisCommandTestCase
     {
         $response = array(
             array(
-                "name", "127.0.0.1:6380",
-                "ip", "127.0.0.1",
-                "port", "6380",
-                "runid", "92aea60e4fead2507cccd6574e4c7139d401d0ae",
-                "flags", "slave",
-                "pending-commands", "0",
-                "last-ok-ping-reply", "1011",
-                "last-ping-reply", "1011",
-                "info-refresh", "4366",
-                "master-link-down-time", "0",
-                "master-link-status", "ok",
-                "master-host", "127.0.0.1",
-                "master-port", "6379",
-                "slave-priority", "100",
-            )
+                'name', '127.0.0.1:6380',
+                'ip', '127.0.0.1',
+                'port', '6380',
+                'runid', '92aea60e4fead2507cccd6574e4c7139d401d0ae',
+                'flags', 'slave',
+                'pending-commands', '0',
+                'last-ok-ping-reply', '1011',
+                'last-ping-reply', '1011',
+                'info-refresh', '4366',
+                'master-link-down-time', '0',
+                'master-link-status', 'ok',
+                'master-host', '127.0.0.1',
+                'master-port', '6379',
+                'slave-priority', '100',
+            ),
         );
 
         $expected = array(
             array(
-                "name" => "127.0.0.1:6380",
-                "ip" => "127.0.0.1",
-                "port" => "6380",
-                "runid" => "92aea60e4fead2507cccd6574e4c7139d401d0ae",
-                "flags" => "slave",
-                "pending-commands" => "0",
-                "last-ok-ping-reply" => "1011",
-                "last-ping-reply" => "1011",
-                "info-refresh" => "4366",
-                "master-link-down-time" => "0",
-                "master-link-status" => "ok",
-                "master-host" => "127.0.0.1",
-                "master-port" => "6379",
-                "slave-priority" => "100",
-            )
+                'name' => '127.0.0.1:6380',
+                'ip' => '127.0.0.1',
+                'port' => '6380',
+                'runid' => '92aea60e4fead2507cccd6574e4c7139d401d0ae',
+                'flags' => 'slave',
+                'pending-commands' => '0',
+                'last-ok-ping-reply' => '1011',
+                'last-ping-reply' => '1011',
+                'info-refresh' => '4366',
+                'master-link-down-time' => '0',
+                'master-link-status' => 'ok',
+                'master-host' => '127.0.0.1',
+                'master-port' => '6379',
+                'slave-priority' => '100',
+            ),
         );
 
         $command = $this->getCommandWithArguments('slaves', 'predis:master');
@@ -154,8 +154,8 @@ class ServerSentinelTest extends PredisCommandTestCase
      */
     public function testSentinelIsMasterDownByAddr()
     {
-        $response = array("0", "7388832d5fdee6a2e301d6bbc5052bd1526d741c");
-        $expected = array("0", "7388832d5fdee6a2e301d6bbc5052bd1526d741c");
+        $response = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
+        $expected = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
 
         $command = $this->getCommandWithArguments('is-master-down-by-addr', '127.0.0.1', '6379');
 
@@ -167,8 +167,8 @@ class ServerSentinelTest extends PredisCommandTestCase
      */
     public function testSentinelGetMasterAddrByName()
     {
-        $response = array("127.0.0.1", "6379");
-        $expected = array("127.0.0.1", "6379");
+        $response = array('127.0.0.1', '6379');
+        $expected = array('127.0.0.1', '6379');
 
         $command = $this->getCommandWithArguments('get-master-addr-by-name', 'predis:master');
 

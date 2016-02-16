@@ -11,8 +11,8 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub
@@ -32,7 +32,7 @@ class DispatcherLoopTest extends PredisTestCase
             'host' => REDIS_SERVER_HOST,
             'port' => REDIS_SERVER_PORT,
             'database' => REDIS_SERVER_DBNUM,
-            // Prevents suite from handing on broken test
+            // Prevents suite from hanging on broken test
             'read_write_timeout' => 2,
         );
 

@@ -77,7 +77,7 @@ class StringPreciseSetExpireTest extends PredisCommandTestCase
 
         $redis->psetex('foo', 50, 'bar');
         $this->sleep(0.5);
-        $this->assertFalse($redis->exists('foo'));;
+        $this->assertFalse($redis->exists('foo'));
     }
 
     /**

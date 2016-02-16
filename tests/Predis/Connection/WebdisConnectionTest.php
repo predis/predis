@@ -12,13 +12,14 @@
 namespace Predis\Connection;
 
 use PredisTestCase;
-use Predis\Profile;
 
 /**
  * @group ext-curl
  * @group ext-phpiredis
  * @group realm-connection
  * @group realm-webdis
+ * @requires extension phpiredis
+ * @requires extension curl
  */
 class WebdisConnectionTest extends PredisTestCase
 {
@@ -27,9 +28,29 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testIsConnectedAlwaysReturnsTrue()
     {
-        $connection = new WebdisConnection($this->getParameters());
+        $connection = $this->createConnection();
 
         $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSupportsSchemeUnix()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'http'));
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid scheme: 'tcp'.
+     */
+    public function testThrowsExceptionOnInvalidScheme()
+    {
+        $connection = $this->createConnectionWithParams(array('scheme' => 'tcp'));
     }
 
     /**
@@ -39,8 +60,8 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testWritingCommandsIsNotSupported()
     {
-        $connection = new WebdisConnection($this->getParameters());
-        $connection->writeRequest($this->getProfile()->createCommand('ping'));
+        $connection = $this->createConnection();
+        $connection->writeRequest($this->getCurrentProfile()->createCommand('ping'));
     }
 
     /**
@@ -50,8 +71,8 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testReadingResponsesIsNotSupported()
     {
-        $connection = new WebdisConnection($this->getParameters());
-        $connection->readResponse($this->getProfile()->createCommand('ping'));
+        $connection = $this->createConnection();
+        $connection->readResponse($this->getCurrentProfile()->createCommand('ping'));
     }
 
     /**
@@ -61,7 +82,7 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testReadingFromConnectionIsNotSupported()
     {
-        $connection = new WebdisConnection($this->getParameters());
+        $connection = $this->createConnection();
         $connection->read();
     }
 
@@ -69,12 +90,11 @@ class WebdisConnectionTest extends PredisTestCase
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported.
-     *
      */
     public function testAddingConnectCommandsIsNotSupported()
     {
-        $connection = new WebdisConnection($this->getParameters());
-        $connection->addConnectCommand($this->getProfile()->createCommand('ping'));
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($this->getCurrentProfile()->createCommand('ping'));
     }
 
     /**
@@ -84,8 +104,8 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testRejectCommandSelect()
     {
-        $connection = new WebdisConnection($this->getParameters());
-        $connection->executeCommand($this->getProfile()->createCommand('select', array(0)));
+        $connection = $this->createConnection();
+        $connection->executeCommand($this->getCurrentProfile()->createCommand('select', array(0)));
     }
 
     /**
@@ -95,8 +115,8 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testRejectCommandAuth()
     {
-        $connection = new WebdisConnection($this->getParameters());
-        $connection->executeCommand($this->getProfile()->createCommand('auth', array('foobar')));
+        $connection = $this->createConnection();
+        $connection->executeCommand($this->getCurrentProfile()->createCommand('auth', array('foobar')));
     }
 
     /**
@@ -104,8 +124,12 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testCanBeSerialized()
     {
-        $parameters = $this->getParameters(array('alias' => 'webdis'));
-        $connection = new WebdisConnection($parameters);
+        $parameters = $this->getParameters(array(
+            'alias' => 'redis',
+            'read_write_timeout' => 10,
+        ));
+
+        $connection = $this->createConnectionWithParams($parameters);
 
         $unserialized = unserialize(serialize($connection));
 
@@ -120,15 +144,17 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testExecutesCommandsOnServer()
+    public function testExecutesMultipleCommandsOnServer()
     {
-        $connection = $this->getConnection($profile);
+        $profile = $this->getCurrentProfile();
 
-        $cmdPing   = $profile->createCommand('ping');
-        $cmdEcho   = $profile->createCommand('echo', array('echoed'));
-        $cmdGet    = $profile->createCommand('get', array('foobar'));
-        $cmdRpush  = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdPing = $profile->createCommand('ping');
+        $cmdEcho = $profile->createCommand('echo', array('echoed'));
+        $cmdGet = $profile->createCommand('get', array('foobar'));
+        $cmdRpush = $profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
         $cmdLrange = $profile->createCommand('lrange', array('metavars', 0, -1));
+
+        $connection = $this->createConnection(true);
 
         $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
         $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
@@ -145,9 +171,8 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testThrowExceptionWhenUnableToConnect()
     {
-        $parameters = $this->getParameters(array('host' => '169.254.10.10'));
-        $connection = new WebdisConnection($parameters);
-        $connection->executeCommand($this->getProfile()->createCommand('ping'));
+        $connection = $this->createConnectionWithParams(array('host' => '169.254.10.10'));
+        $connection->executeCommand($this->getCurrentProfile()->createCommand('ping'));
     }
 
     // ******************************************************************** //
@@ -169,17 +194,23 @@ class WebdisConnectionTest extends PredisTestCase
     }
 
     /**
-     * Returns a new instance of a connection instance.
-     *
-     * @param mixed $profile    Redis profile.
-     * @param array $parameters Additional connection parameters.
-     *
-     * @return WebdisConnection
+     * {@inheritdoc}
      */
-    protected function getConnection(&$profile = null, array $parameters = array())
+    protected function createConnection()
     {
-        $parameters = $this->getParameters($parameters);
-        $profile = $this->getProfile();
+        return $this->createConnectionWithParams(array());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createConnectionWithParams($parameters)
+    {
+        $profile = $this->getCurrentProfile();
+
+        if (!$parameters instanceof ParametersInterface) {
+            $parameters = $this->getParameters($parameters);
+        }
 
         $connection = new WebdisConnection($parameters);
         $connection->executeCommand($profile->createCommand('flushdb'));

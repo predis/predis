@@ -11,13 +11,11 @@
 
 namespace Predis;
 
-use Exception;
-
 /**
  * Base exception class for Predis-related errors.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class PredisException extends Exception
+abstract class PredisException extends \Exception
 {
 }

@@ -11,9 +11,8 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
@@ -41,6 +40,7 @@ use Predis\Response\Status as StatusResponse;
  * @link http://webd.is
  * @link http://github.com/nicolasff/webdis
  * @link http://github.com/seppo0010/phpiredis
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class WebdisConnection implements NodeConnectionInterface
@@ -59,7 +59,7 @@ class WebdisConnection implements NodeConnectionInterface
         $this->assertExtensions();
 
         if ($parameters->scheme !== 'http') {
-            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
+            throw new \InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
         $this->parameters = $parameters;
@@ -118,10 +118,14 @@ class WebdisConnection implements NodeConnectionInterface
     {
         $parameters = $this->getParameters();
 
+        if (filter_var($host = $parameters->host, FILTER_VALIDATE_IP)) {
+            $host = "[$host]";
+        }
+
         $options = array(
             CURLOPT_FAILONERROR => true,
             CURLOPT_CONNECTTIMEOUT_MS => $parameters->timeout * 1000,
-            CURLOPT_URL => "{$parameters->scheme}://{$parameters->host}:{$parameters->port}",
+            CURLOPT_URL => "$parameters->scheme://$host:$parameters->port",
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
             CURLOPT_WRITEFUNCTION => array($this, 'feedReader'),
@@ -219,9 +223,9 @@ class WebdisConnection implements NodeConnectionInterface
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return string
-     *
      * @throws NotSupportedException
+     *
+     * @return string
      */
     protected function getCommandId(CommandInterface $command)
     {

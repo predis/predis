@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/zlexcount
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZSetLexCount extends Command

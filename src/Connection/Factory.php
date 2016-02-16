@@ -11,9 +11,6 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
-use UnexpectedValueException;
-use ReflectionClass;
 use Predis\Command\RawCommand;
 
 /**
@@ -24,8 +21,9 @@ use Predis\Command\RawCommand;
 class Factory implements FactoryInterface
 {
     protected $schemes = array(
-        'tcp'  => 'Predis\Connection\StreamConnection',
+        'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
+        'redis' => 'Predis\Connection\StreamConnection',
         'http' => 'Predis\Connection\WebdisConnection',
     );
 
@@ -36,9 +34,9 @@ class Factory implements FactoryInterface
      *
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
      *
-     * @return mixed
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return mixed
      */
     protected function checkInitializer($initializer)
     {
@@ -46,10 +44,10 @@ class Factory implements FactoryInterface
             return $initializer;
         }
 
-        $class = new ReflectionClass($initializer);
+        $class = new \ReflectionClass($initializer);
 
         if (!$class->isSubclassOf('Predis\Connection\NodeConnectionInterface')) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object.'
             );
         }
@@ -85,7 +83,7 @@ class Factory implements FactoryInterface
         $scheme = $parameters->scheme;
 
         if (!isset($this->schemes[$scheme])) {
-            throw new InvalidArgumentException("Unknown connection scheme: '$scheme'.");
+            throw new \InvalidArgumentException("Unknown connection scheme: '$scheme'.");
         }
 
         $initializer = $this->schemes[$scheme];
@@ -98,8 +96,8 @@ class Factory implements FactoryInterface
         }
 
         if (!$connection instanceof NodeConnectionInterface) {
-            throw new UnexpectedValueException(
-                "Objects returned by connection initializers must implement ".
+            throw new \UnexpectedValueException(
+                'Objects returned by connection initializers must implement '.
                 "'Predis\Connection\NodeConnectionInterface'."
             );
         }

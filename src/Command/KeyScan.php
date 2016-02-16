@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/scan
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyScan extends Command

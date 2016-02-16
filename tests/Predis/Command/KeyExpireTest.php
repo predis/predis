@@ -77,30 +77,13 @@ class KeyExpireTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->expire('foo', 1));
         $this->assertSame(1, $redis->ttl('foo'));
 
         $this->sleep(2.0);
-
         $this->assertFalse($redis->exists('foo'));
-    }
-
-    /**
-     * @medium
-     * @group connected
-     * @group slow
-     */
-    public function testConsistencyWithTTL()
-    {
-        $redis = $this->getClient();
-
-        $redis->set('foo', 'bar');
-
-        $this->assertTrue($redis->expire('foo', 10));
-        $this->sleep(1.5);
-        $this->assertLessThan(10, $redis->ttl('foo'));
     }
 
     /**
@@ -110,7 +93,7 @@ class KeyExpireTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->expire('foo', -10));
         $this->assertFalse($redis->exists('foo'));

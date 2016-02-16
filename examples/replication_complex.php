@@ -81,5 +81,5 @@ $hashes = $client->hmgetall('metavars', 'servers');
 $replication = $client->getConnection();
 $stillOnSlave = $replication->getCurrent() === $replication->getConnectionById('slave');
 
-echo "Is still on slave? ", $stillOnSlave ? 'YES!' : 'NO!', PHP_EOL;
+echo 'Is still on slave? ', $stillOnSlave ? 'YES!' : 'NO!', PHP_EOL;
 var_export($hashes);

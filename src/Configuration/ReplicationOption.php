@@ -11,7 +11,6 @@
 
 namespace Predis\Configuration;
 
-use InvalidArgumentException;
 use Predis\Connection\Aggregate\MasterSlaveReplication;
 use Predis\Connection\Aggregate\ReplicationInterface;
 
@@ -47,7 +46,7 @@ class ReplicationOption implements OptionInterface
             return $asbool ? $this->getDefault($options) : null;
         }
 
-        throw new InvalidArgumentException(
+        throw new \InvalidArgumentException(
             "An instance of type 'Predis\Connection\Aggregate\ReplicationInterface' was expected."
         );
     }

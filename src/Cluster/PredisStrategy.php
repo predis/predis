@@ -56,7 +56,7 @@ class PredisStrategy extends ClusterStrategy
 
         $currentKey = $this->extractKeyTag($keys[0]);
 
-        for ($i = 1; $i < $count; $i++) {
+        for ($i = 1; $i < $count; ++$i) {
             $nextKey = $this->extractKeyTag($keys[$i]);
 
             if ($currentKey !== $nextKey) {

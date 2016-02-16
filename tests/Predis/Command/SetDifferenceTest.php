@@ -83,8 +83,8 @@ class SetDifferenceTest extends PredisCommandTestCase
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st', 'letters:2nd'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st', 'letters:2nd'));
     }
 
     /**

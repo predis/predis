@@ -11,13 +11,11 @@
 
 namespace Predis\Pipeline;
 
-use Exception;
-use InvalidArgumentException;
-use PredisTestCase;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\Profile;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *
@@ -349,7 +347,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->echo('two');
                 throw new ClientException('TEST');
             });
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             // NOOP
         }
 
@@ -426,7 +424,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             // NOOP
         }
 
@@ -452,7 +450,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             // NOOP
         }
 
@@ -507,7 +505,7 @@ class PipelineTest extends PredisTestCase
     {
         return function ($command) {
             if (($id = $command->getId()) !== 'ECHO') {
-                throw new InvalidArgumentException("Expected ECHO, got {$id}");
+                throw new \InvalidArgumentException("Expected ECHO, got {$id}");
             }
 
             list($echoed) = $command->getArguments();

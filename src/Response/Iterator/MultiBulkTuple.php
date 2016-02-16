@@ -11,10 +11,6 @@
 
 namespace Predis\Response\Iterator;
 
-use OuterIterator;
-use InvalidArgumentException;
-use UnexpectedValueException;
-
 /**
  * Outer iterator consuming streamable multibulk responses by yielding tuples of
  * keys and values.
@@ -24,7 +20,7 @@ use UnexpectedValueException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MultiBulkTuple extends MultiBulk implements OuterIterator
+class MultiBulkTuple extends MultiBulk implements \OuterIterator
 {
     private $iterator;
 
@@ -38,7 +34,7 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
         $this->size = count($iterator) / 2;
         $this->iterator = $iterator;
         $this->position = $iterator->getPosition();
-        $this->current  = $this->size > 0 ? $this->getValue() : null;
+        $this->current = $this->size > 0 ? $this->getValue() : null;
     }
 
     /**
@@ -52,13 +48,13 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
     protected function checkPreconditions(MultiBulk $iterator)
     {
         if ($iterator->getPosition() !== 0) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 'Cannot initialize a tuple iterator using an already initiated iterator.'
             );
         }
 
         if (($size = count($iterator)) % 2 !== 0) {
-            throw new UnexpectedValueException("Invalid response size for a tuple iterator.");
+            throw new \UnexpectedValueException('Invalid response size for a tuple iterator.');
         }
     }
 

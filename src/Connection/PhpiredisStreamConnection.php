@@ -11,8 +11,8 @@
 
 namespace Predis\Connection;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
 
@@ -32,7 +32,7 @@ use Predis\Response\Status as StatusResponse;
  *
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'tcp' or 'unix'.
+ *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
@@ -43,6 +43,7 @@ use Predis\Response\Status as StatusResponse;
  *  - persistent: the connection is left intact after a GC collection.
  *
  * @link https://github.com/nrk/phpiredis
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PhpiredisStreamConnection extends StreamConnection
@@ -88,7 +89,7 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     protected function tcpStreamInitializer(ParametersInterface $parameters)
     {
-        $uri = "tcp://{$parameters->host}:{$parameters->port}";
+        $uri = "tcp://[{$parameters->host}]:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
         $socket = null;
 
@@ -112,7 +113,7 @@ class PhpiredisStreamConnection extends StreamConnection
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
 
             $timeout = array(
-                'sec'  => $timeoutSeconds = floor($rwtimeout),
+                'sec' => $timeoutSeconds = floor($rwtimeout),
                 'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
             );
 

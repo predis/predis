@@ -11,8 +11,8 @@
 
 namespace Predis\Replication;
 
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 /**
  * Defines a strategy for master/slave replication.
@@ -41,9 +41,9 @@ class ReplicationStrategy
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return bool
-     *
      * @throws NotSupportedException
+     *
+     * @return bool
      */
     public function isReadOperation(CommandInterface $command)
     {
@@ -154,17 +154,17 @@ class ReplicationStrategy
     protected function getDisallowedOperations()
     {
         return array(
-            'SHUTDOWN'          => true,
-            'INFO'              => true,
-            'DBSIZE'            => true,
-            'LASTSAVE'          => true,
-            'CONFIG'            => true,
-            'MONITOR'           => true,
-            'SLAVEOF'           => true,
-            'SAVE'              => true,
-            'BGSAVE'            => true,
-            'BGREWRITEAOF'      => true,
-            'SLOWLOG'           => true,
+            'SHUTDOWN' => true,
+            'INFO' => true,
+            'DBSIZE' => true,
+            'LASTSAVE' => true,
+            'CONFIG' => true,
+            'MONITOR' => true,
+            'SLAVEOF' => true,
+            'SAVE' => true,
+            'BGSAVE' => true,
+            'BGREWRITEAOF' => true,
+            'SLOWLOG' => true,
         );
     }
 
@@ -176,59 +176,62 @@ class ReplicationStrategy
     protected function getReadOnlyOperations()
     {
         return array(
-            'EXISTS'            => true,
-            'TYPE'              => true,
-            'KEYS'              => true,
-            'SCAN'              => true,
-            'RANDOMKEY'         => true,
-            'TTL'               => true,
-            'GET'               => true,
-            'MGET'              => true,
-            'SUBSTR'            => true,
-            'STRLEN'            => true,
-            'GETRANGE'          => true,
-            'GETBIT'            => true,
-            'LLEN'              => true,
-            'LRANGE'            => true,
-            'LINDEX'            => true,
-            'SCARD'             => true,
-            'SISMEMBER'         => true,
-            'SINTER'            => true,
-            'SUNION'            => true,
-            'SDIFF'             => true,
-            'SMEMBERS'          => true,
-            'SSCAN'             => true,
-            'SRANDMEMBER'       => true,
-            'ZRANGE'            => true,
-            'ZREVRANGE'         => true,
-            'ZRANGEBYSCORE'     => true,
-            'ZREVRANGEBYSCORE'  => true,
-            'ZCARD'             => true,
-            'ZSCORE'            => true,
-            'ZCOUNT'            => true,
-            'ZRANK'             => true,
-            'ZREVRANK'          => true,
-            'ZSCAN'             => true,
-            'ZLEXCOUNT'         => true,
-            'ZRANGEBYLEX'       => true,
-            'HGET'              => true,
-            'HMGET'             => true,
-            'HEXISTS'           => true,
-            'HLEN'              => true,
-            'HKEYS'             => true,
-            'HVALS'             => true,
-            'HGETALL'           => true,
-            'HSCAN'             => true,
-            'PING'              => true,
-            'AUTH'              => true,
-            'SELECT'            => true,
-            'ECHO'              => true,
-            'QUIT'              => true,
-            'OBJECT'            => true,
-            'BITCOUNT'          => true,
-            'TIME'              => true,
-            'PFCOUNT'           => true,
-            'SORT'              => array($this, 'isSortReadOnly'),
+            'EXISTS' => true,
+            'TYPE' => true,
+            'KEYS' => true,
+            'SCAN' => true,
+            'RANDOMKEY' => true,
+            'TTL' => true,
+            'GET' => true,
+            'MGET' => true,
+            'SUBSTR' => true,
+            'STRLEN' => true,
+            'GETRANGE' => true,
+            'GETBIT' => true,
+            'LLEN' => true,
+            'LRANGE' => true,
+            'LINDEX' => true,
+            'SCARD' => true,
+            'SISMEMBER' => true,
+            'SINTER' => true,
+            'SUNION' => true,
+            'SDIFF' => true,
+            'SMEMBERS' => true,
+            'SSCAN' => true,
+            'SRANDMEMBER' => true,
+            'ZRANGE' => true,
+            'ZREVRANGE' => true,
+            'ZRANGEBYSCORE' => true,
+            'ZREVRANGEBYSCORE' => true,
+            'ZCARD' => true,
+            'ZSCORE' => true,
+            'ZCOUNT' => true,
+            'ZRANK' => true,
+            'ZREVRANK' => true,
+            'ZSCAN' => true,
+            'ZLEXCOUNT' => true,
+            'ZRANGEBYLEX' => true,
+            'ZREVRANGEBYLEX' => true,
+            'HGET' => true,
+            'HMGET' => true,
+            'HEXISTS' => true,
+            'HLEN' => true,
+            'HKEYS' => true,
+            'HVALS' => true,
+            'HGETALL' => true,
+            'HSCAN' => true,
+            'HSTRLEN' => true,
+            'PING' => true,
+            'AUTH' => true,
+            'SELECT' => true,
+            'ECHO' => true,
+            'QUIT' => true,
+            'OBJECT' => true,
+            'BITCOUNT' => true,
+            'BITPOS' => true,
+            'TIME' => true,
+            'PFCOUNT' => true,
+            'SORT' => array($this, 'isSortReadOnly'),
         );
     }
 }

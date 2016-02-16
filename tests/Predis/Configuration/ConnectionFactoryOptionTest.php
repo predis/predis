@@ -11,8 +11,6 @@
 
 namespace Predis\Configuration;
 
-use InvalidArgumentException;
-use stdClass;
 use PredisTestCase;
 
 /**
@@ -79,6 +77,6 @@ class ConnectionFactoryOptionTest extends PredisTestCase
         $option = new ConnectionFactoryOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $option->filter($options, new stdClass);
+        $option->filter($options, new \stdClass());
     }
 }

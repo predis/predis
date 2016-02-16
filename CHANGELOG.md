@@ -1,3 +1,34 @@
+v1.0.3 (2015-07-30)
+================================================================================
+
+- __FIX__: the previous release introduced a severe regression on HHVM that made
+  the library unable to connect to Redis when using IPv4 addresses. Code running
+  on the standard PHP interpreter is not affected.
+
+
+v1.0.2 (2015-07-30)
+================================================================================
+
+- IPv6 is now fully supported.
+
+- Added `redis` as an accepted scheme for connection parameters. When using this
+  scheme, the rules used to parse URI strings match the provisional registration
+  [published by IANA](http://www.iana.org/assignments/uri-schemes/prov/redis).
+
+- Added new or missing commands: `HSTRLEN` (>= 3.2), `ZREVRANGEBYLEX` (>= 2.8)
+  and `MIGRATE` (>= 2.6).
+
+- Implemented support for the `ZADD` modifiers `NX|XX`, `CH`, `INCR` (Redis >=
+  3.0.2) using the simplified signature where scores and members are passed as
+  a named array.
+
+- __FIX__: `Predis\Configuration\Options` must not trigger the autoloader when
+  option values are strings (ISSUE #257).
+
+- __FIX__: `BITPOS` was not defined in the key-prefix processor (ISSUE #265) and
+  in the replication strategy.
+
+
 v1.0.1 (2015-01-02)
 ================================================================================
 

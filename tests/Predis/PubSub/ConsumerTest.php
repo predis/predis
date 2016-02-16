@@ -11,10 +11,10 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
 use Predis\PubSub\Consumer as PubSubConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub
@@ -343,6 +343,7 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requires extension pcntl
      */
     public function testPubSubAgainstRedisServerBlocking()
     {

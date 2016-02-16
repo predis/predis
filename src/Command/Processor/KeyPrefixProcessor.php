@@ -11,7 +11,6 @@
 
 namespace Predis\Command\Processor;
 
-use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
 
@@ -34,127 +33,132 @@ class KeyPrefixProcessor implements ProcessorInterface
         $this->prefix = $prefix;
         $this->commands = array(
             /* ---------------- Redis 1.2 ---------------- */
-            'EXISTS'                    => 'self::first',
-            'DEL'                       => 'self::all',
-            'TYPE'                      => 'self::first',
-            'KEYS'                      => 'self::first',
-            'RENAME'                    => 'self::all',
-            'RENAMENX'                  => 'self::all',
-            'EXPIRE'                    => 'self::first',
-            'EXPIREAT'                  => 'self::first',
-            'TTL'                       => 'self::first',
-            'MOVE'                      => 'self::first',
-            'SORT'                      => 'self::sort',
-            'DUMP'                      => 'self::first',
-            'RESTORE'                   => 'self::first',
-            'SET'                       => 'self::first',
-            'SETNX'                     => 'self::first',
-            'MSET'                      => 'self::interleaved',
-            'MSETNX'                    => 'self::interleaved',
-            'GET'                       => 'self::first',
-            'MGET'                      => 'self::all',
-            'GETSET'                    => 'self::first',
-            'INCR'                      => 'self::first',
-            'INCRBY'                    => 'self::first',
-            'DECR'                      => 'self::first',
-            'DECRBY'                    => 'self::first',
-            'RPUSH'                     => 'self::first',
-            'LPUSH'                     => 'self::first',
-            'LLEN'                      => 'self::first',
-            'LRANGE'                    => 'self::first',
-            'LTRIM'                     => 'self::first',
-            'LINDEX'                    => 'self::first',
-            'LSET'                      => 'self::first',
-            'LREM'                      => 'self::first',
-            'LPOP'                      => 'self::first',
-            'RPOP'                      => 'self::first',
-            'RPOPLPUSH'                 => 'self::all',
-            'SADD'                      => 'self::first',
-            'SREM'                      => 'self::first',
-            'SPOP'                      => 'self::first',
-            'SMOVE'                     => 'self::skipLast',
-            'SCARD'                     => 'self::first',
-            'SISMEMBER'                 => 'self::first',
-            'SINTER'                    => 'self::all',
-            'SINTERSTORE'               => 'self::all',
-            'SUNION'                    => 'self::all',
-            'SUNIONSTORE'               => 'self::all',
-            'SDIFF'                     => 'self::all',
-            'SDIFFSTORE'                => 'self::all',
-            'SMEMBERS'                  => 'self::first',
-            'SRANDMEMBER'               => 'self::first',
-            'ZADD'                      => 'self::first',
-            'ZINCRBY'                   => 'self::first',
-            'ZREM'                      => 'self::first',
-            'ZRANGE'                    => 'self::first',
-            'ZREVRANGE'                 => 'self::first',
-            'ZRANGEBYSCORE'             => 'self::first',
-            'ZCARD'                     => 'self::first',
-            'ZSCORE'                    => 'self::first',
-            'ZREMRANGEBYSCORE'          => 'self::first',
+            'EXISTS' => 'static::first',
+            'DEL' => 'static::all',
+            'TYPE' => 'static::first',
+            'KEYS' => 'static::first',
+            'RENAME' => 'static::all',
+            'RENAMENX' => 'static::all',
+            'EXPIRE' => 'static::first',
+            'EXPIREAT' => 'static::first',
+            'TTL' => 'static::first',
+            'MOVE' => 'static::first',
+            'SORT' => 'static::sort',
+            'DUMP' => 'static::first',
+            'RESTORE' => 'static::first',
+            'SET' => 'static::first',
+            'SETNX' => 'static::first',
+            'MSET' => 'static::interleaved',
+            'MSETNX' => 'static::interleaved',
+            'GET' => 'static::first',
+            'MGET' => 'static::all',
+            'GETSET' => 'static::first',
+            'INCR' => 'static::first',
+            'INCRBY' => 'static::first',
+            'DECR' => 'static::first',
+            'DECRBY' => 'static::first',
+            'RPUSH' => 'static::first',
+            'LPUSH' => 'static::first',
+            'LLEN' => 'static::first',
+            'LRANGE' => 'static::first',
+            'LTRIM' => 'static::first',
+            'LINDEX' => 'static::first',
+            'LSET' => 'static::first',
+            'LREM' => 'static::first',
+            'LPOP' => 'static::first',
+            'RPOP' => 'static::first',
+            'RPOPLPUSH' => 'static::all',
+            'SADD' => 'static::first',
+            'SREM' => 'static::first',
+            'SPOP' => 'static::first',
+            'SMOVE' => 'static::skipLast',
+            'SCARD' => 'static::first',
+            'SISMEMBER' => 'static::first',
+            'SINTER' => 'static::all',
+            'SINTERSTORE' => 'static::all',
+            'SUNION' => 'static::all',
+            'SUNIONSTORE' => 'static::all',
+            'SDIFF' => 'static::all',
+            'SDIFFSTORE' => 'static::all',
+            'SMEMBERS' => 'static::first',
+            'SRANDMEMBER' => 'static::first',
+            'ZADD' => 'static::first',
+            'ZINCRBY' => 'static::first',
+            'ZREM' => 'static::first',
+            'ZRANGE' => 'static::first',
+            'ZREVRANGE' => 'static::first',
+            'ZRANGEBYSCORE' => 'static::first',
+            'ZCARD' => 'static::first',
+            'ZSCORE' => 'static::first',
+            'ZREMRANGEBYSCORE' => 'static::first',
             /* ---------------- Redis 2.0 ---------------- */
-            'SETEX'                     => 'self::first',
-            'APPEND'                    => 'self::first',
-            'SUBSTR'                    => 'self::first',
-            'BLPOP'                     => 'self::skipLast',
-            'BRPOP'                     => 'self::skipLast',
-            'ZUNIONSTORE'               => 'self::zsetStore',
-            'ZINTERSTORE'               => 'self::zsetStore',
-            'ZCOUNT'                    => 'self::first',
-            'ZRANK'                     => 'self::first',
-            'ZREVRANK'                  => 'self::first',
-            'ZREMRANGEBYRANK'           => 'self::first',
-            'HSET'                      => 'self::first',
-            'HSETNX'                    => 'self::first',
-            'HMSET'                     => 'self::first',
-            'HINCRBY'                   => 'self::first',
-            'HGET'                      => 'self::first',
-            'HMGET'                     => 'self::first',
-            'HDEL'                      => 'self::first',
-            'HEXISTS'                   => 'self::first',
-            'HLEN'                      => 'self::first',
-            'HKEYS'                     => 'self::first',
-            'HVALS'                     => 'self::first',
-            'HGETALL'                   => 'self::first',
-            'SUBSCRIBE'                 => 'self::all',
-            'UNSUBSCRIBE'               => 'self::all',
-            'PSUBSCRIBE'                => 'self::all',
-            'PUNSUBSCRIBE'              => 'self::all',
-            'PUBLISH'                   => 'self::first',
+            'SETEX' => 'static::first',
+            'APPEND' => 'static::first',
+            'SUBSTR' => 'static::first',
+            'BLPOP' => 'static::skipLast',
+            'BRPOP' => 'static::skipLast',
+            'ZUNIONSTORE' => 'static::zsetStore',
+            'ZINTERSTORE' => 'static::zsetStore',
+            'ZCOUNT' => 'static::first',
+            'ZRANK' => 'static::first',
+            'ZREVRANK' => 'static::first',
+            'ZREMRANGEBYRANK' => 'static::first',
+            'HSET' => 'static::first',
+            'HSETNX' => 'static::first',
+            'HMSET' => 'static::first',
+            'HINCRBY' => 'static::first',
+            'HGET' => 'static::first',
+            'HMGET' => 'static::first',
+            'HDEL' => 'static::first',
+            'HEXISTS' => 'static::first',
+            'HLEN' => 'static::first',
+            'HKEYS' => 'static::first',
+            'HVALS' => 'static::first',
+            'HGETALL' => 'static::first',
+            'SUBSCRIBE' => 'static::all',
+            'UNSUBSCRIBE' => 'static::all',
+            'PSUBSCRIBE' => 'static::all',
+            'PUNSUBSCRIBE' => 'static::all',
+            'PUBLISH' => 'static::first',
             /* ---------------- Redis 2.2 ---------------- */
-            'PERSIST'                   => 'self::first',
-            'STRLEN'                    => 'self::first',
-            'SETRANGE'                  => 'self::first',
-            'GETRANGE'                  => 'self::first',
-            'SETBIT'                    => 'self::first',
-            'GETBIT'                    => 'self::first',
-            'RPUSHX'                    => 'self::first',
-            'LPUSHX'                    => 'self::first',
-            'LINSERT'                   => 'self::first',
-            'BRPOPLPUSH'                => 'self::skipLast',
-            'ZREVRANGEBYSCORE'          => 'self::first',
-            'WATCH'                     => 'self::all',
+            'PERSIST' => 'static::first',
+            'STRLEN' => 'static::first',
+            'SETRANGE' => 'static::first',
+            'GETRANGE' => 'static::first',
+            'SETBIT' => 'static::first',
+            'GETBIT' => 'static::first',
+            'RPUSHX' => 'static::first',
+            'LPUSHX' => 'static::first',
+            'LINSERT' => 'static::first',
+            'BRPOPLPUSH' => 'static::skipLast',
+            'ZREVRANGEBYSCORE' => 'static::first',
+            'WATCH' => 'static::all',
             /* ---------------- Redis 2.6 ---------------- */
-            'PTTL'                      => 'self::first',
-            'PEXPIRE'                   => 'self::first',
-            'PEXPIREAT'                 => 'self::first',
-            'PSETEX'                    => 'self::first',
-            'INCRBYFLOAT'               => 'self::first',
-            'BITOP'                     => 'self::skipFirst',
-            'BITCOUNT'                  => 'self::first',
-            'HINCRBYFLOAT'              => 'self::first',
-            'EVAL'                      => 'self::evalKeys',
-            'EVALSHA'                   => 'self::evalKeys',
+            'PTTL' => 'static::first',
+            'PEXPIRE' => 'static::first',
+            'PEXPIREAT' => 'static::first',
+            'PSETEX' => 'static::first',
+            'INCRBYFLOAT' => 'static::first',
+            'BITOP' => 'static::skipFirst',
+            'BITCOUNT' => 'static::first',
+            'HINCRBYFLOAT' => 'static::first',
+            'EVAL' => 'static::evalKeys',
+            'EVALSHA' => 'static::evalKeys',
+            'MIGRATE' => 'static::migrate',
             /* ---------------- Redis 2.8 ---------------- */
-            'SSCAN'                     => 'self::first',
-            'ZSCAN'                     => 'self::first',
-            'HSCAN'                     => 'self::first',
-            'PFADD'                     => 'self::first',
-            'PFCOUNT'                   => 'self::all',
-            'PFMERGE'                   => 'self::all',
-            'ZLEXCOUNT'                 => 'self::first',
-            'ZRANGEBYLEX'               => 'self::first',
-            'ZREMRANGEBYLEX'            => 'self::first',
+            'SSCAN' => 'static::first',
+            'ZSCAN' => 'static::first',
+            'HSCAN' => 'static::first',
+            'PFADD' => 'static::first',
+            'PFCOUNT' => 'static::all',
+            'PFMERGE' => 'static::all',
+            'ZLEXCOUNT' => 'static::first',
+            'ZRANGEBYLEX' => 'static::first',
+            'ZREMRANGEBYLEX' => 'static::first',
+            'ZREVRANGEBYLEX' => 'static::first',
+            'BITPOS' => 'static::first',
+            /* ---------------- Redis 3.2 ---------------- */
+            'HSTRLEN' => 'static::first',
         );
     }
 
@@ -217,8 +221,8 @@ class KeyPrefixProcessor implements ProcessorInterface
         }
 
         if (!is_callable($callback)) {
-            throw new InvalidArgumentException(
-                "Callback must be a valid callable object or NULL"
+            throw new \InvalidArgumentException(
+                'Callback must be a valid callable object or NULL'
             );
         }
 
@@ -294,7 +298,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         if ($arguments = $command->getArguments()) {
             $length = count($arguments);
 
-            for ($i = 1; $i < $length; $i++) {
+            for ($i = 1; $i < $length; ++$i) {
                 $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
@@ -313,7 +317,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         if ($arguments = $command->getArguments()) {
             $length = count($arguments);
 
-            for ($i = 0; $i < $length - 1; $i++) {
+            for ($i = 0; $i < $length - 1; ++$i) {
                 $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
@@ -333,7 +337,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             $arguments[0] = "$prefix{$arguments[0]}";
 
             if (($count = count($arguments)) > 1) {
-                for ($i = 1; $i < $count; $i++) {
+                for ($i = 1; $i < $count; ++$i) {
                     switch ($arguments[$i]) {
                         case 'BY':
                         case 'STORE':
@@ -367,7 +371,7 @@ class KeyPrefixProcessor implements ProcessorInterface
     public static function evalKeys(CommandInterface $command, $prefix)
     {
         if ($arguments = $command->getArguments()) {
-            for ($i = 2; $i < $arguments[1] + 2; $i++) {
+            for ($i = 2; $i < $arguments[1] + 2; ++$i) {
                 $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
@@ -387,10 +391,24 @@ class KeyPrefixProcessor implements ProcessorInterface
             $arguments[0] = "$prefix{$arguments[0]}";
             $length = ((int) $arguments[1]) + 2;
 
-            for ($i = 2; $i < $length; $i++) {
+            for ($i = 2; $i < $length; ++$i) {
                 $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
+            $command->setRawArguments($arguments);
+        }
+    }
+
+    /**
+     * Applies the specified prefix to the key of a MIGRATE command.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function migrate(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $arguments[2] = "$prefix{$arguments[2]}";
             $command->setRawArguments($arguments);
         }
     }

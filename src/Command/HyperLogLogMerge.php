@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/pfmerge
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HyperLogLogMerge extends Command

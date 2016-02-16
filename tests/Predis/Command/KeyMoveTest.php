@@ -60,7 +60,8 @@ class KeyMoveTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @todo This test fails if REDIS_SERVER_DBNUM is 0.
+     *
+     * @todo Should be improved, this test fails when REDIS_SERVER_DBNUM is 0.
      */
     public function testMovesKeysToDifferentDatabases()
     {

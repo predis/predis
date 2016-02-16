@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/hmset
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class HashSetMultiple extends Command

@@ -78,13 +78,14 @@ class KeyExpireAtTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $now = time();
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->expireat('foo', $now + 1));
-        $this->assertLessThanOrEqual(1, $redis->ttl('foo'));
+        $this->assertThat($redis->ttl('foo'), $this->logicalAnd(
+            $this->greaterThanOrEqual(0), $this->lessThanOrEqual(1)
+        ));
 
-        $this->sleep(2);
-
+        $this->sleep(2.0);
         $this->assertFalse($redis->exists('foo'));
     }
 
@@ -96,7 +97,7 @@ class KeyExpireAtTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $now = time();
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->expireat('foo', $now - 100));
         $this->assertFalse($redis->exists('foo'));

@@ -11,9 +11,9 @@
 
 namespace Predis\Profile;
 
-use PredisTestCase;
 use Predis\Command\CommandInterface;
 use Predis\Command\Processor\ProcessorChain;
+use PredisTestCase;
 
 /**
  *
@@ -29,7 +29,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     protected function getProfile($version = null)
     {
-        $this->markTestIncomplete("Server profile must be defined in ".get_class($this));
+        $this->markTestIncomplete('Server profile must be defined in '.get_class($this));
     }
 
     /**
@@ -240,11 +240,11 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @todo Could it be that objects passed to the return callback of a mocked
-     *       method are cloned instead of being passed by reference?
      */
     public function testSingleProcessor()
     {
+        // Could it be that objects passed to the return callback of a mocked
+        // method are cloned instead of being passed by reference?
         $argsRef = null;
 
         $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');

@@ -11,11 +11,9 @@
 
 namespace Predis\Configuration;
 
-use InvalidArgumentException;
-use stdClass;
-use PredisTestCase;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *
@@ -147,7 +145,7 @@ class ProfileOptionTest extends PredisTestCase
         $option = new ProfileOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $option->filter($options, new stdClass);
+        $option->filter($options, new \stdClass());
     }
 
     /**

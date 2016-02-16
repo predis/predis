@@ -11,8 +11,8 @@
 
 namespace Predis\Collection\Iterator;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -238,7 +238,7 @@ class SortedSetKeyTest extends PredisTestCase
                ->method('zscan')
                ->with('key:zset', 5, array())
                ->will($this->returnValue(array(0, array(
-                    'member:3rd' => 3.0
+                    'member:3rd' => 3.0,
                ))));
 
         $iterator = new SortedSetKey($client, 'key:zset');

@@ -11,11 +11,11 @@
 
 namespace Predis\Connection\Aggregate;
 
-use PredisTestCase;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Profile;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *
@@ -635,6 +635,40 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testParseIPv6AddresseAndPortPairInRedirectionPayload()
+    {
+        $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
+
+        $command = Profile\Factory::getDefault()->createCommand('get', array('node:1001'));
+
+        $connection1 = $this->getMockConnection('tcp://[2001:db8:0:f101::1]:6379');
+        $connection1->expects($this->once())
+                   ->method('executeCommand')
+                   ->with($command)
+                   ->will($this->returnValue($movedResponse));
+
+        $connection2 = $this->getMockConnection('tcp://[2001:db8:0:f101::2]:6379');
+        $connection2->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($command)
+                    ->will($this->returnValue('foobar'));
+
+        $factory = $this->getMock('Predis\Connection\Factory');
+        $factory->expects($this->once())
+                ->method('create')
+                ->with(array('host' => '2001:db8:0:f101::2', 'port' => '6379'))
+                ->will($this->returnValue($connection2));
+
+        $cluster = new RedisCluster($factory);
+        $cluster->useClusterSlots(false);
+        $cluster->add($connection1);
+
+        $cluster->executeCommand($command);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testFetchSlotsMapFromClusterWithClusterSlotsCommand()
     {
         $response = array(
@@ -645,15 +679,15 @@ class RedisClusterTest extends PredisTestCase
             array(15360, 16383, array('10.1.0.52', 6398), array('10.1.0.51', 6398)),
             array(1024 ,  2047, array('10.1.0.52', 6391), array('10.1.0.51', 6391)),
             array(11264, 12287, array('10.1.0.52', 6396), array('10.1.0.51', 6396)),
-            array( 5120,  6143, array('10.1.0.52', 6393), array('10.1.0.51', 6393)),
-            array(    0,  1023, array('10.1.0.51', 6381), array('10.1.0.52', 6381)),
+            array(5120,  6143, array('10.1.0.52', 6393), array('10.1.0.51', 6393)),
+            array(0,  1023, array('10.1.0.51', 6381), array('10.1.0.52', 6381)),
             array(13312, 14335, array('10.1.0.52', 6397), array('10.1.0.51', 6397)),
-            array( 4096,  5119, array('10.1.0.51', 6383), array('10.1.0.52', 6383)),
-            array( 9216, 10239, array('10.1.0.52', 6395), array('10.1.0.51', 6395)),
-            array( 8192,  9215, array('10.1.0.51', 6385), array('10.1.0.52', 6385)),
+            array(4096,  5119, array('10.1.0.51', 6383), array('10.1.0.52', 6383)),
+            array(9216, 10239, array('10.1.0.52', 6395), array('10.1.0.51', 6395)),
+            array(8192,  9215, array('10.1.0.51', 6385), array('10.1.0.52', 6385)),
             array(10240, 11263, array('10.1.0.51', 6386), array('10.1.0.52', 6386)),
-            array( 2048,  3071, array('10.1.0.51', 6382), array('10.1.0.52', 6382)),
-            array( 7168,  8191, array('10.1.0.52', 6394), array('10.1.0.51', 6394)),
+            array(2048,  3071, array('10.1.0.51', 6382), array('10.1.0.52', 6382)),
+            array(7168,  8191, array('10.1.0.52', 6394), array('10.1.0.51', 6394)),
         );
 
         $command = Command\RawCommand::create('CLUSTER', 'SLOTS');

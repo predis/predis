@@ -11,7 +11,6 @@
 
 namespace Predis;
 
-use Exception;
 use Predis\Connection\NodeConnectionInterface;
 
 /**
@@ -27,13 +26,13 @@ abstract class CommunicationException extends PredisException
      * @param NodeConnectionInterface $connection     Connection that generated the exception.
      * @param string                  $message        Error message.
      * @param int                     $code           Error code.
-     * @param Exception               $innerException Inner exception for wrapping the original error.
+     * @param \Exception              $innerException Inner exception for wrapping the original error.
      */
     public function __construct(
         NodeConnectionInterface $connection,
         $message = null,
         $code = null,
-        Exception $innerException = null
+        \Exception $innerException = null
     ) {
         parent::__construct($message, $code, $innerException);
         $this->connection = $connection;

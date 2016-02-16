@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/sdiffstore
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SetDifferenceStore extends SetIntersectionStore

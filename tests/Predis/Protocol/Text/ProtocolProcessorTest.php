@@ -47,8 +47,6 @@ class ProtocolProcessorTest extends PredisTestCase
 
     /**
      * @group disconnected
-     *
-     * @todo Improve test coverage
      */
     public function testConnectionRead()
     {
@@ -58,26 +56,26 @@ class ProtocolProcessorTest extends PredisTestCase
 
         $connection->expects($this->at(0))
                    ->method('readLine')
-                   ->will($this->returnValue("+OK"));
+                   ->will($this->returnValue('+OK'));
 
         $connection->expects($this->at(1))
                    ->method('readLine')
-                   ->will($this->returnValue("-ERR error message"));
+                   ->will($this->returnValue('-ERR error message'));
 
         $connection->expects($this->at(2))
                    ->method('readLine')
-                   ->will($this->returnValue(":2"));
+                   ->will($this->returnValue(':2'));
 
         $connection->expects($this->at(3))
                    ->method('readLine')
-                   ->will($this->returnValue("$-1"));
+                   ->will($this->returnValue('$-1'));
 
         $connection->expects($this->at(4))
                    ->method('readLine')
-                   ->will($this->returnValue("*-1"));
+                   ->will($this->returnValue('*-1'));
 
         $this->assertEquals('OK', $protocol->read($connection));
-        $this->assertEquals("ERR error message", $protocol->read($connection));
+        $this->assertEquals('ERR error message', $protocol->read($connection));
         $this->assertSame(2, $protocol->read($connection));
         $this->assertNull($protocol->read($connection));
         $this->assertNull($protocol->read($connection));
@@ -95,7 +93,7 @@ class ProtocolProcessorTest extends PredisTestCase
 
         $connection->expects($this->once(4))
                    ->method('readLine')
-                   ->will($this->returnValue("*1"));
+                   ->will($this->returnValue('*1'));
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $protocol->read($connection));
     }

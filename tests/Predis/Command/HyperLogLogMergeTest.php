@@ -14,7 +14,8 @@ namespace Predis\Command;
 /**
  * @group commands
  * @group realm-hyperloglog
- * @todo Add integration tests depending on the minor redis version
+ *
+ * @todo Add integration tests depending on the minor redis version.
  */
 class HyperLogLogMergeTest extends PredisCommandTestCase
 {

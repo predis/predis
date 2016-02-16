@@ -11,12 +11,10 @@
 
 namespace Predis\Configuration;
 
-use stdClass;
 use PredisTestCase;
 
 /**
- * @todo We should test the inner work performed by this class
- *       using mock objects, but it is quite hard to to that.
+ * @todo Use mock objects to test the inner workings of the Options class.
  */
 class OptionsTest extends PredisTestCase
 {
@@ -41,11 +39,11 @@ class OptionsTest extends PredisTestCase
     public function testConstructorWithArrayArgument()
     {
         $options = new Options(array(
-            'exceptions'  => false,
-            'profile'     => '2.0',
-            'prefix'      => 'prefix:',
+            'exceptions' => false,
+            'profile' => '2.0',
+            'prefix' => 'prefix:',
             'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster'     => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
+            'cluster' => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
             'replication' => $this->getMock('Predis\Connection\Aggregate\ReplicationInterface'),
         ));
 
@@ -89,7 +87,7 @@ class OptionsTest extends PredisTestCase
         $options = new Options(array(
             'prefix' => 'prefix:',
             'custom' => 'foobar',
-            'void'   => null,
+            'void' => null,
         ));
 
         $this->assertTrue($options->defined('prefix'));
@@ -106,7 +104,7 @@ class OptionsTest extends PredisTestCase
         $options = new Options(array(
             'prefix' => 'prefix:',
             'custom' => 'foobar',
-            'void'   => null,
+            'void' => null,
         ));
 
         $this->assertTrue(isset($options->prefix));
@@ -162,7 +160,7 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $custom = new stdClass;
+        $custom = new \stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
@@ -177,5 +175,25 @@ class OptionsTest extends PredisTestCase
 
         $this->assertSame($custom, $options->custom);
         $this->assertSame($custom, $options->custom);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
+    {
+        $trigger = $this->getMock('stdClass', array('autoload'));
+        $trigger->expects($this->never())->method('autoload');
+
+        spl_autoload_register($autoload = function ($class) use ($trigger) {
+            $trigger->autoload($class);
+        }, true, false);
+
+        try {
+            $options = new Options(array('prefix' => 'pfx'));
+            $pfx = $options->prefix;
+        } catch (\Exception $_) {
+            spl_autoload_unregister($autoload);
+        }
     }
 }

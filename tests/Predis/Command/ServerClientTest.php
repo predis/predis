@@ -106,17 +106,17 @@ class ServerClientTest extends PredisCommandTestCase
         $command = $this->getCommand();
         $command->setArguments(array('list'));
 
-        $raw =<<<BUFFER
+        $raw = <<<BUFFER
 addr=127.0.0.1:45393 fd=6 idle=0 flags=N db=0 sub=0 psub=0
 addr=127.0.0.1:45394 fd=7 idle=0 flags=N db=0 sub=0 psub=0
 addr=127.0.0.1:45395 fd=8 idle=0 flags=N db=0 sub=0 psub=0
 
 BUFFER;
 
-        $parsed = array (
-            array('addr'=>'127.0.0.1:45393','fd'=>'6','idle'=>'0','flags'=>'N','db'=>'0','sub'=>'0','psub'=>'0'),
-            array('addr'=>'127.0.0.1:45394','fd'=>'7','idle'=>'0','flags'=>'N','db'=>'0','sub'=>'0','psub'=>'0'),
-            array('addr'=>'127.0.0.1:45395','fd'=>'8','idle'=>'0','flags'=>'N','db'=>'0','sub'=>'0','psub'=>'0'),
+        $parsed = array(
+            array('addr' => '127.0.0.1:45393','fd' => '6','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
+            array('addr' => '127.0.0.1:45394','fd' => '7','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
+            array('addr' => '127.0.0.1:45395','fd' => '8','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
         );
 
         $this->assertSame($parsed, $command->parseResponse($raw));
@@ -147,13 +147,13 @@ BUFFER;
      */
     public function testGetsNameOfConnection()
     {
-         $redis = $this->getClient();
-         $clientName = $redis->client('GETNAME');
-         $this->assertNull($clientName);
+        $redis = $this->getClient();
+        $clientName = $redis->client('GETNAME');
+        $this->assertNull($clientName);
 
-         $expectedConnectionName = 'foo-bar';
-         $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
-         $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+        $expectedConnectionName = 'foo-bar';
+        $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
+        $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
     }
 
     /**
@@ -162,11 +162,11 @@ BUFFER;
      */
     public function testSetsNameOfConnection()
     {
-         $redis = $this->getClient();
+        $redis = $this->getClient();
 
-         $expectedConnectionName = 'foo-baz';
-         $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
-         $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+        $expectedConnectionName = 'foo-baz';
+        $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
+        $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
     }
 
     /**
@@ -187,12 +187,13 @@ BUFFER;
      * @dataProvider invalidConnectionNameProvider
      *
      * @expectedException \Predis\Response\ServerException
+     *
      * @param string $invalidConnectionName
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
     {
-         $redis = $this->getClient();
-         $redis->client('SETNAME', $invalidConnectionName);
+        $redis = $this->getClient();
+        $redis->client('SETNAME', $invalidConnectionName);
     }
 
     /**

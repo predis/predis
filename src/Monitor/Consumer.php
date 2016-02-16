@@ -11,17 +11,16 @@
 
 namespace Predis\Monitor;
 
-use Iterator;
 use Predis\ClientInterface;
-use Predis\NotSupportedException;
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\NotSupportedException;
 
 /**
  * Redis MONITOR consumer.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Consumer implements Iterator
+class Consumer implements \Iterator
 {
     private $client;
     private $valid;
@@ -120,7 +119,7 @@ class Consumer implements Iterator
      */
     public function next()
     {
-        $this->position++;
+        ++$this->position;
     }
 
     /**
@@ -165,9 +164,9 @@ class Consumer implements Iterator
 
         return (object) array(
             'timestamp' => (float) $timestamp,
-            'database'  => $database,
-            'client'    => $client,
-            'command'   => substr($command, 1, -1),
+            'database' => $database,
+            'client' => $client,
+            'command' => substr($command, 1, -1),
             'arguments' => $arguments,
         );
     }

@@ -47,6 +47,18 @@ class FactoryTest extends PredisTestCase
         $this->assertEquals($tcp->host, $parameters->host);
         $this->assertEquals($tcp->database, $parameters->database);
 
+        $tcp = new Parameters(array(
+            'scheme' => 'redis',
+            'host' => 'locahost',
+        ));
+
+        $connection = $factory->create($tcp);
+        $parameters = $connection->getParameters();
+        $this->assertInstanceOf('Predis\Connection\StreamConnection', $connection);
+        $this->assertEquals($tcp->scheme, $parameters->scheme);
+        $this->assertEquals($tcp->host, $parameters->host);
+        $this->assertEquals($tcp->database, $parameters->database);
+
         $unix = new Parameters(array(
             'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
@@ -125,13 +137,14 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     *
      * @todo This test smells but there's no other way around it right now.
      */
     public function testCreateConnectionWithInitializationCommands()
     {
         $parameters = new Parameters(array(
             'database' => '0',
-            'password' => 'foobar'
+            'password' => 'foobar',
         ));
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
@@ -246,7 +259,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \InvalidArgumentException
-     * @expecteExceptionMessage Unknown connection scheme: 'redis'.
+     * @expecteExceptionMessage Unknown connection scheme: 'test'.
      */
     public function testDefineAndUndefineConnection()
     {
@@ -254,11 +267,11 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        $factory->define('redis', $connectionClass);
-        $this->assertInstanceOf($connectionClass, $factory->create('redis://127.0.0.1'));
+        $factory->define('test', $connectionClass);
+        $this->assertInstanceOf($connectionClass, $factory->create('test://127.0.0.1'));
 
-        $factory->undefine('redis');
-        $factory->create('redis://127.0.0.1');
+        $factory->undefine('test');
+        $factory->create('test://127.0.0.1');
     }
 
     /**
@@ -296,7 +309,7 @@ class FactoryTest extends PredisTestCase
         $factory->expects($this->exactly(3))
                 ->method('create')
                 ->will($this->returnCallback(function ($_) use ($connectionClass) {
-                    return new $connectionClass;
+                    return new $connectionClass();
                 }));
 
         $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
@@ -315,7 +328,6 @@ class FactoryTest extends PredisTestCase
 
         $factory->aggregate($cluster, array());
     }
-
 
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //

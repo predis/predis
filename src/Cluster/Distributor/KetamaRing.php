@@ -40,7 +40,7 @@ class KetamaRing extends HashRing
         $nodeHash = $this->getNodeHash($nodeObject);
         $replicas = (int) floor($weightRatio * $totalNodes * ($replicas / 4));
 
-        for ($i = 0; $i < $replicas; $i++) {
+        for ($i = 0; $i < $replicas; ++$i) {
             $unpackedDigest = unpack('V4', md5("$nodeHash-$i", true));
 
             foreach ($unpackedDigest as $key) {

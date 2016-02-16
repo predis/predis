@@ -11,8 +11,8 @@
 
 namespace Predis\Pipeline;
 
-use PredisTestCase;
 use Predis\Client;
+use PredisTestCase;
 
 /**
  *

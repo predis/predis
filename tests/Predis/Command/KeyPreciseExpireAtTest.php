@@ -68,13 +68,12 @@ class KeyPreciseExpireAtTest extends PredisCommandTestCase
         $ttl = 1.5;
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->pexpireat('foo', time() + $ttl * 1000));
         $this->assertLessThan($ttl * 1000, $redis->pttl('foo'));
 
         $this->sleep($ttl + 0.5);
-
         $this->assertFalse($redis->exists('foo'));
     }
 
@@ -85,7 +84,7 @@ class KeyPreciseExpireAtTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
         $this->assertTrue($redis->expireat('foo', time() - 100000));
         $this->assertFalse($redis->exists('foo'));

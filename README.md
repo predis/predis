@@ -8,25 +8,25 @@
 
 Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3.
 
-By default Predis does not require any additional C extension, but it can be optionally paired with
-[phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of serializing and parsing the
-Redis protocol. An asynchronous implementation of the client, albeit experimental, is also available
-through [Predis\Async](https://github.com/nrk/predis-async).
+By default this library does not require any additional C extension, but it can be optionally paired
+with [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of serializing and parsing
+the [Redis RESP Protocol](http://redis.io/topics/protocol). An asynchronous implementation of Predis
+is available through [Predis\Async](https://github.com/nrk/predis-async) (__experimental__).
 
-Predis can be used with [HHVM](http://www.hhvm.com) >= 2.3.0, but there are no guarantees you will
+Predis can be used with [HHVM](http://www.hhvm.com) >= 2.3.0 but there are no guarantees you will
 not run into unexpected issues (especially when the JIT compiler is enabled via `Eval.Jit = true`)
-due to HHVM being still under heavy development, thus unstable and not yet 100% compatible with PHP.
+due to HHVM being still under heavy development and not yet 100% compatible with the _standard_ PHP.
 
-More details about the project can be found in our [frequently asked questions](FAQ.md) section or
-on the online [wiki](https://github.com/nrk/predis/wiki).
+More details about this project can be found on the [frequently asked questions](FAQ.md) and on the
+[wiki](https://github.com/nrk/predis/wiki).
 
 
 ## Main features ##
 
-- Wide range of Redis versions supported (from __2.0__ to __3.0__ and __unstable__) using profiles.
-- Cluster of nodes via client-side sharding using consistent hashing or custom distributors.
+- Support for a wide range of Redis versions (from __2.0__ to __3.0__) using profiles.
+- Clustering via client-side sharding using consistent hashing or custom distributors.
 - Smart support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
-- Support for master-slave replication configurations (write on master, read from slaves).
+- Support for master-slave replication (write operations on master, read operations on slaves).
 - Transparent key prefixing for all known Redis commands using a customizable prefixing strategy.
 - Command pipelining (works on both single nodes and aggregate connections).
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
@@ -34,15 +34,15 @@ on the online [wiki](https://github.com/nrk/predis/wiki).
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
 - Connections to Redis are established lazily by the client upon the first command.
 - Support for both TCP/IP and UNIX domain sockets and persistent connections.
-- Support for [Webdis](http://webd.is) (both `ext-curl` and `ext-phpiredis` are needed).
+- Support for [Webdis](http://webd.is) (requires both `ext-curl` and `ext-phpiredis`).
 - Support for custom connection classes for providing different network or protocol backends.
-- Flexible system for defining and registering custom sets of supported commands or profiles.
+- Flexible system for defining custom commands and server profiles.
 
 
 ## How to use Predis ##
 
 Predis is available on [Packagist](http://packagist.org/packages/predis/predis) which allows a quick
-installation using [Composer](http://packagist.org/about-composer). Alternatively, the library can
+_installation_ using [Composer](http://packagist.org/about-composer). Alternatively, the library can
 be found on our [own PEAR channel](http://pear.nrk.io) for a more traditional installation via PEAR.
 Ultimately, archives of each release are [available on GitHub](https://github.com/nrk/predis/tags).
 
@@ -61,17 +61,17 @@ require 'Predis/Autoloader.php';
 Predis\Autoloader::register();
 ```
 
-It is possible to easily create a [phar](http://www.php.net/manual/en/intro.phar.php) archive from
-the repository just by launching `bin/create-phar`. The generated phar contains a stub defining an
-autoloader function for Predis, so you just need to require the phar to start using the library.
-Alternatively it is possible to generate one single PHP file holding every class like older versions
-of Predis by launching `bin/create-single-file`, but this practice __is not__ encouraged.
+It is possible to create a [phar](http://www.php.net/manual/en/intro.phar.php) archive directly from
+the repository by launching `bin/create-phar`. The phar contains a stub defining its own autoloader
+so you just need to `require()` it to start using the library. Ultimately it is possible to generate
+a single big PHP file containing all the source code simply by launching `bin/create-single-file`,
+but this practice __is not__ encouraged.
 
 
 ### Connecting to Redis ###
 
-When not specifying any connection parameter to create a new client, Predis assumes `127.0.0.1` and
-`6379` as the default host and port with a connection timeout of 5 seconds:
+When creating a client instance without passing any connection parameter, Predis assumes `127.0.0.1`
+and `6379` as default host and port. The default timeout for the `connect()` operation is 5 seconds:
 
 ```php
 $client = new Predis\Client();
@@ -79,21 +79,27 @@ $client->set('foo', 'bar');
 $value = $client->get('foo');
 ```
 
-Connection parameters can be supplied either in the form of URI strings or named arrays. While the
-latter is the preferred way to supply parameters, URI strings can be useful for quick configurations
-or when parameters are read from a non-structured source:
+Connection parameters can be supplied either in the form of URI strings or named arrays. The latter
+is the preferred way to supply parameters, but URI strings can be useful when parameters are read
+from non-structured or partially-structured sources:
 
 ```php
-// Named array of connection parameters:
+// Parameters passed using a named array:
 $client = new Predis\Client([
     'scheme' => 'tcp',
     'host'   => '10.0.0.1',
     'port'   => 6379,
 ]);
 
-// Same set of parameters, but using an URI string:
+// Same set of parameters, passed using an URI string:
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
+
+Starting with Predis v1.0.2 the client also understands the `redis` scheme in URI strings as defined
+by the [provisional IANA registration](http://www.iana.org/assignments/uri-schemes/prov/redis).
+
+The actual list of supported connection parameters can vary depending on each connection backend so
+it is recommended to refer to their specific documentation or implementation for details.
 
 When an array of connection parameters is provided, Predis automatically works in cluster mode using
 client-side sharding. Both named arrays and URI strings can be mixed when providing configurations
@@ -106,8 +112,7 @@ $client = new Predis\Client([
 ]);
 ```
 
-The actual list of supported connection parameters can vary depending on each connection backend so
-it is recommended to refer to their specific documentation or implementation for details.
+See the [aggregate connections](#aggregate-connections) section of this document for more details.
 
 
 ### Client configuration ###
@@ -116,14 +121,11 @@ Various aspects of the client can be configured simply by passing options to the
 `Predis\Client::__construct()`:
 
 ```php
-$client = new \Predis\Client(
-    $connection_parameters,
-    ['profile' => '2.8', 'prefix' => 'sample:']
-);
+$client = new Predis\Client($parameters, ['profile' => '2.8', 'prefix' => 'sample:']);
 ```
 
-Options are managed using a mini DI-alike container and their values
-are usually lazily initialized only when needed. Predis by default supports the following options:
+Options are managed through a mini DI-alike container while their values can be lazily initialized
+only when needed. This is a list of the options supported by default:
 
   - `profile`: which profile to use in order to match a specific version of Redis.
   - `prefix`: a prefix string that is automatically applied to keys found in commands.
@@ -139,18 +141,18 @@ the options container for later use through the library.
 
 ### Aggregate connections ###
 
-Predis is able to aggregate multiple connections which is the base for cluster and replication. By
-default the client implements a cluster of nodes using either client-side sharding (default) or a
-Redis-backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial).
+Predis is able to aggregate multiple connections which is the base for clustering and replication.
+By default the client implements a cluster of nodes using either client-side sharding (default) or
+a Redis-backed solution using [redis-cluster](http://redis.io/topics/cluster-tutorial).
 As for replication, Predis can handle a single-master and multiple-slaves setup by executing read
-operations on slaves and switching to the master for write operations. The replication behavior is
-fully configurable.
+operations on slaves and switching to the master only for write operations. The replication behavior
+is fully configurable.
 
 #### Replication ####
 
-The client can be configured to work in a master / slave replication setup by executing read-only
-commands on slave nodes and automatically switch to the master node as soon as a command performing
-a write operation is executed. This is the basic configuration needed to work with replication:
+The client can be configured to operate in a master-slave setup by executing read-only commands on
+slave nodes and automatically switch to the master node as soon as it detects a command that will
+perform a write operation. This is the basic configuration needed to work with replication:
 
 ```php
 // Parameters require one master node specifically marked with `alias=master`.
@@ -161,10 +163,10 @@ $client = new Predis\Client($parameters, $options);
 ```
 
 While Predis is able to distinguish commands performing write and read-only operations, `EVAL` and
-`EVALSHA` represent a corner case in which the client switches to the master node because it is not
-able to tell when a Lua script is safe to be executed on slaves. While this is the default behavior,
+`EVALSHA` represent a corner case in which the client switches to the master node because it cannot
+tell when a Lua script is safe to be executed on slaves. While this is indeed the default behavior,
 when certain Lua scripts do not perform write operations it is possible to provide an hint to tell
-the client to stick with slaves for their execution.
+the client to stick with slaves for their execution:
 
 ```php
 $parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
@@ -182,7 +184,7 @@ $client->evalsha(sha1($LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 ```
 
 The `examples` directory contains two complete scripts showing how replication can be configured for
-[simple](examples/replication_simple.php) or [complex](examples/replication_complex.php) scenarios.
+[basic](examples/replication_simple.php) and [complex](examples/replication_complex.php) scenarios.
 
 
 #### Cluster ####
@@ -198,12 +200,12 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
-When using redis-cluster, it is not necessary to pass all of the nodes that compose your cluster but
-you can simply specify only a few nodes: Predis will automatically fetch the full and updated slots
-map directly from Redis by contacting one of the servers.
+When using redis-cluster it is not necessary to pass all of the nodes that compose your cluster, you
+can specify only a few nodes and the client will automatically fetch the full and updated slots map
+directly from Redis by contacting one of the servers.
 
 __NOTE__: our support for redis-cluster does not currently consider master / slave replication but
-this feature will be added in a future release of this library.
+this feature will be added in a future release of the library.
 
 
 ### Command pipelines ###
@@ -214,7 +216,7 @@ The client can execute the pipeline inside a callable block or return a pipeline
 ability to chain commands thanks to its fluent interface:
 
 ```php
-// Executes a pipeline inside a given callable block:
+// Executes a pipeline inside the given callable block:
 $responses = $client->pipeline(function ($pipe) {
     for ($i = 0; $i < 1000; $i++) {
         $pipe->set("key:$i", str_pad($i, 4, '0', 0));
@@ -222,7 +224,7 @@ $responses = $client->pipeline(function ($pipe) {
     }
 });
 
-// Returns a pipeline instance with fluent interface:
+// Returns a pipeline that can be chained thanks to its fluent interface:
 $responses = $client->pipeline()->set('foo', 'bar')->get('foo')->execute();
 ```
 
@@ -233,13 +235,13 @@ The client provides an abstraction for Redis transactions based on `MULTI` and `
 interface to command pipelines:
 
 ```php
-// Executes a transaction inside a given callable block:
+// Executes a transaction inside the given callable block:
 $responses = $client->transaction(function ($tx) {
     $tx->set('foo', 'bar');
     $tx->get('foo');
 });
 
-// Returns a transaction instance with fluent interface:
+// Returns a transaction that can be chained thanks to its fluent interface:
 $responses = $client->transaction()->set('foo', 'bar')->get('foo')->execute();
 ```
 
@@ -251,9 +253,9 @@ of a transaction using CAS you can see [the following example](examples/transact
 ### Adding new commands ###
 
 While we try to update Predis to stay up to date with all the commands available in Redis, you might
-prefer to stick with an older version of the library or provide a different way to filter arguments
-or parse responses for specific commands. To achieve that, Predis provides the ability to implement
-new command classes to define or override commands in the server profiles used by the client:
+prefer to stick with an old version of the library or provide a different way to filter arguments or
+parse responses for specific commands. To achieve that, Predis provides the ability to implement new
+command classes to define or override commands in the default server profiles used by the client:
 
 ```php
 // Define a new command by extending Predis\Command\Command:
@@ -273,8 +275,8 @@ $response = $client->newcmd();
 ```
 
 There is also a method to send raw commands without filtering their arguments or parsing responses.
-Users must provide the arguments list as an array, following the command signatures as defined by
-the [Redis documentation for commands](http://redis.io/commands):
+Users must provide the list of arguments for the command as an array, following the signatures as
+defined by the [Redis documentation for commands](http://redis.io/commands):
 
 ```php
 $response = $client->executeRaw(['SET', 'foo', 'bar']);
@@ -284,16 +286,16 @@ $response = $client->executeRaw(['SET', 'foo', 'bar']);
 ### Script commands ###
 
 While it is possible to leverage [Lua scripting](http://redis.io/commands/eval) on Redis 2.6+ using
-[`EVAL`](http://redis.io/commands/eval) and [`EVALSHA`](http://redis.io/commands/evalsha), Predis
-offers script commands as an higher level abstraction aiming to make things simple. Script commands
-can be registered in the server profile used by the client and are accessible as if they were plain
-Redis commands, but they define Lua scripts that get transmitted to the server for remote execution.
-Internally they use [`EVALSHA`](http://redis.io/commands/evalsha) by default and identify a script
-by its SHA1 hash to save bandwidth, but [`EVAL`](http://redis.io/commands/eval) is used as a fall
-back when needed:
+[`EVAL`](http://redis.io/commands/eval) and [`EVALSHA`](http://redis.io/commands/evalsha) directly,
+Predis offers script commands as an higher level abstraction built upon them to make things simple.
+Script commands can be registered in the server profile used by the client and are accessible as if
+they were plain Redis commands, but they define Lua scripts that get transmitted to the server for
+remote execution. Internally they use [`EVALSHA`](http://redis.io/commands/evalsha) by default and
+identify a script by its SHA1 hash to save bandwidth, but [`EVAL`](http://redis.io/commands/eval)
+is used as a fall back when needed:
 
 ```php
-// Define a new scriptable command by extending Predis\Command\ScriptCommand:
+// Define a new script command by extending Predis\Command\ScriptCommand:
 class ListPushRandomValue extends Predis\Command\ScriptCommand
 {
     public function getKeysCount()
@@ -312,7 +314,7 @@ LUA;
     }
 }
 
-// Inject your script command in the current profile:
+// Inject the script command in the current profile:
 $client = new Predis\Client();
 $client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
 
@@ -325,19 +327,19 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 Predis can use different connection backends to connect to Redis. Two of them leverage a third party
 extension such as [phpiredis](https://github.com/nrk/phpiredis) resulting in major performance gains
 especially when dealing with big multibulk responses. While one is based on PHP streams, the other
-is based on socket resources provided by `ext-socket`. Both support TCP/IP or UNIX domain sockets:
+is based on socket resources provided by `ext-socket`. Both support TCP/IP and UNIX domain sockets:
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', [
     'connections' => [
-        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',  // PHP streams
-        'unix' => 'Predis\Connection\PhpiredisSocketConnection',  // ext-socket
+        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',  // PHP stream resources
+        'unix' => 'Predis\Connection\PhpiredisSocketConnection',  // ext-socket resources
     ],
 ]);
 ```
 
 Developers can create their own connection classes to support whole new network backends, extend
-existing ones or provide completely different implementations. Connection classes must implement
+existing classes or provide completely different implementations. Connection classes must implement
 `Predis\Connection\NodeConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
 
 ```php

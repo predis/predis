@@ -79,7 +79,7 @@ class SetDifferenceStoreTest extends PredisCommandTestCase
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
         $this->assertSame(7, $redis->sdiffstore('letters:destination', 'letters:1st'));
-        $this->assertSameValues(array( 'a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
     }
 
     /**

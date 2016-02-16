@@ -49,4 +49,4 @@ function zpop($client, $key)
 $client = new Predis\Client($single_server);
 $zpopped = zpop($client, 'zset');
 
-echo isset($zpopped) ? "ZPOPed $zpopped" : "Nothing to ZPOP!", PHP_EOL;
+echo isset($zpopped) ? "ZPOPed $zpopped" : 'Nothing to ZPOP!', PHP_EOL;

@@ -109,17 +109,13 @@ class PubSubUnsubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @todo Disabled for now, must investigate why this test hangs on PUNSUBSCRIBE.
      */
-    public function __testUnsubscribesFromAllSubscribedChannels()
+    public function testUnsubscribesFromAllSubscribedChannels()
     {
         $redis = $this->getClient();
 
         $this->assertSame(array('subscribe', 'channel:foo', 1), $redis->subscribe('channel:foo'));
         $this->assertSame(array('subscribe', 'channel:bar', 2), $redis->subscribe('channel:bar'));
-
-        $this->assertSame(array('punsubscribe', 'channel:foo', 1), $redis->punsubscribe());
-        $this->assertSame(array('punsubscribe', 'channel:bar', 0), $redis->getConnection()->read());
-        $this->assertSame('echoed', $redis->echo('echoed'));
+        $this->assertSame(array('punsubscribe', null, 2), $redis->punsubscribe());
     }
 }

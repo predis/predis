@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/psetex
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StringPreciseSetExpire extends StringSetExpire

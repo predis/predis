@@ -11,7 +11,6 @@
 
 namespace Predis;
 
-use ReflectionProperty;
 use PredisTestCase;
 
 /**
@@ -281,8 +280,8 @@ class ClientTest extends PredisTestCase
         $fnreplication->expects($this->never())->method('__invoke');
 
         $arg2 = array(
-            'aggregate'   => function () use ($fnaggregate) { return $fnaggregate; },
-            'cluster'     => function () use ($fncluster) { return $fncluster; },
+            'aggregate' => function () use ($fnaggregate) { return $fnaggregate; },
+            'cluster' => function () use ($fncluster) { return $fncluster; },
             'replication' => function () use ($fnreplication) { return $fnreplication; },
         );
 
@@ -376,7 +375,7 @@ class ClientTest extends PredisTestCase
         $ping = $profile->createCommand('ping', array());
         $hgetall = $profile->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->with($ping)
@@ -402,7 +401,7 @@ class ClientTest extends PredisTestCase
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue($expectedResponse));
@@ -419,7 +418,7 @@ class ClientTest extends PredisTestCase
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
-        $connection= $this->getMock('Predis\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
                    ->will($this->returnValue($expectedResponse));
@@ -688,7 +687,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
-        $reflection = new ReflectionProperty($pubsub, 'options');
+        $reflection = new \ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
 
         $this->assertSame($options, $reflection->getValue($pubsub));
@@ -731,7 +730,6 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @todo I hate this test but reflection is the easiest way in this case.
      */
     public function testTransactionWithArrayReturnsMultiExecTransactionWithOptions()
     {
@@ -741,11 +739,12 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
-        $property = new ReflectionProperty($tx, 'modeCAS');
+        // I hate this part but reflection is the easiest way in this case.
+        $property = new \ReflectionProperty($tx, 'modeCAS');
         $property->setAccessible(true);
         $this->assertSame($options['cas'], $property->getValue($tx));
 
-        $property = new ReflectionProperty($tx, 'attempts');
+        $property = new \ReflectionProperty($tx, 'attempts');
         $property->setAccessible(true);
         $this->assertSame($options['retry'], $property->getValue($tx));
     }
@@ -755,8 +754,7 @@ class ClientTest extends PredisTestCase
      */
     public function testTransactionWithArrayAndCallableExecutesMultiExec()
     {
-        // NOTE: we use CAS since testing the actual MULTI/EXEC context
-        //       here is not the point.
+        // We use CAS here as we don't care about the actual MULTI/EXEC context.
         $options = array('cas' => true, 'retry' => 3);
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');

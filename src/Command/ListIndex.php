@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/lindex
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ListIndex extends Command

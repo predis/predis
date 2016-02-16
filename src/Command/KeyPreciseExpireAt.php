@@ -13,6 +13,7 @@ namespace Predis\Command;
 
 /**
  * @link http://redis.io/commands/pexpireat
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyPreciseExpireAt extends KeyExpireAt

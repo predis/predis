@@ -43,11 +43,11 @@ class Options implements OptionsInterface
     protected function getHandlers()
     {
         return array(
-            'cluster'     => 'Predis\Configuration\ClusterOption',
+            'cluster' => 'Predis\Configuration\ClusterOption',
             'connections' => 'Predis\Configuration\ConnectionFactoryOption',
-            'exceptions'  => 'Predis\Configuration\ExceptionsOption',
-            'prefix'      => 'Predis\Configuration\PrefixOption',
-            'profile'     => 'Predis\Configuration\ProfileOption',
+            'exceptions' => 'Predis\Configuration\ExceptionsOption',
+            'prefix' => 'Predis\Configuration\PrefixOption',
+            'profile' => 'Predis\Configuration\ProfileOption',
             'replication' => 'Predis\Configuration\ReplicationOption',
         );
     }
@@ -100,7 +100,7 @@ class Options implements OptionsInterface
             $value = $this->input[$option];
             unset($this->input[$option]);
 
-            if (method_exists($value, '__invoke')) {
+            if (is_object($value) && method_exists($value, '__invoke')) {
                 $value = $value($this, $option);
             }
 
@@ -117,6 +117,6 @@ class Options implements OptionsInterface
             return $this->options[$option] = $this->getDefault($option);
         }
 
-        return null;
+        return;
     }
 }

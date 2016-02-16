@@ -45,7 +45,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $arguments = array('zset:destination', 2, 'zset1', 'zset2', $modifiers);
 
         $expected = array(
-            'zset:destination', 2, 'zset1', 'zset2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum'
+            'zset:destination', 2, 'zset1', 'zset2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum',
         );
 
         $command = $this->getCommand();
@@ -66,7 +66,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
         $arguments = array('zset:destination', array('zset1', 'zset2'), $modifiers);
 
         $expected = array(
-            'zset:destination', 2, 'zset1', 'zset2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum'
+            'zset:destination', 2, 'zset1', 'zset2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum',
         );
 
         $command = $this->getCommand();

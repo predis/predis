@@ -28,7 +28,7 @@ foreach (($monitor = $client->monitor()) as $event) {
     // If we notice a ECHO command with the message QUIT_MONITOR, we stop the
     // monitor consumer and then break the loop.
     if ($event->command === 'ECHO' && $event->arguments === '"QUIT_MONITOR"') {
-        echo "Exiting the monitor loop...", PHP_EOL;
+        echo 'Exiting the monitor loop...', PHP_EOL;
         $monitor->stop();
         break;
     }

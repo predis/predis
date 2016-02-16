@@ -11,7 +11,6 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
 use Predis\Connection\ConnectionInterface;
 
 /**
@@ -24,7 +23,7 @@ class FireAndForget extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
         while (!$commands->isEmpty()) {
             $connection->writeRequest($commands->dequeue());

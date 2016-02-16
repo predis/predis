@@ -41,7 +41,7 @@ class BulkResponseTest extends PredisTestCase
      */
     public function testBulk()
     {
-        $bulk = "This is a bulk string.";
+        $bulk = 'This is a bulk string.';
         $bulkLengh = strlen($bulk);
 
         $handler = new Handler\BulkResponse();

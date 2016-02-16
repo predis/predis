@@ -20,6 +20,7 @@ use Predis\Protocol\ProtocolException;
  * It translates the payload an integer or NULL.
  *
  * @link http://redis.io/topics/protocol
+ *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class IntegerResponse implements ResponseHandlerInterface
@@ -39,6 +40,6 @@ class IntegerResponse implements ResponseHandlerInterface
             ));
         }
 
-        return null;
+        return;
     }
 }

@@ -11,8 +11,8 @@
 
 namespace Predis\Replication;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *
@@ -29,7 +29,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('read') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertTrue($strategy->isReadOperation($command));
+
+            $this->assertTrue(
+                $strategy->isReadOperation($command),
+                "$commandId is expected to be a read operation."
+            );
         }
     }
 
@@ -43,7 +47,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('write') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertFalse($strategy->isReadOperation($command), $commandId);
+
+            $this->assertFalse(
+                $strategy->isReadOperation($command),
+                "$commandId is expected to be a write operation."
+            );
         }
     }
 
@@ -57,7 +65,11 @@ class ReplicationStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('disallowed') as $commandId) {
             $command = $profile->createCommand($commandId);
-            $this->assertTrue($strategy->isDisallowedOperation($command), $commandId);
+
+            $this->assertTrue(
+                $strategy->isDisallowedOperation($command),
+                "$commandId is expected to be a disallowed operation."
+            );
         }
     }
 
@@ -70,10 +82,16 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $cmdReadSort = $profile->createCommand('SORT', array('key:list'));
-        $this->assertTrue($strategy->isReadOperation($cmdReadSort), 'SORT [read-only]');
+        $this->assertTrue(
+            $strategy->isReadOperation($cmdReadSort),
+            'SORT is expected to be a read operation.'
+        );
 
         $cmdWriteSort = $profile->createCommand('SORT', array('key:list', array('store' => 'key:stored')));
-        $this->assertFalse($strategy->isReadOperation($cmdWriteSort), 'SORT [write with STORE]');
+        $this->assertFalse(
+            $strategy->isReadOperation($cmdWriteSort),
+            'SORT with STORE is expected to be a write operation.'
+        );
     }
 
     /**
@@ -240,136 +258,140 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $commands = array(
             /* commands operating on the connection */
-            'AUTH'                  => 'read',
-            'SELECT'                => 'read',
-            'ECHO'                  => 'read',
-            'QUIT'                  => 'read',
-            'OBJECT'                => 'read',
-            'BITCOUNT'              => 'read',
-            'TIME'                  => 'read',
-            'SHUTDOWN'              => 'disallowed',
-            'INFO'                  => 'disallowed',
-            'DBSIZE'                => 'disallowed',
-            'LASTSAVE'              => 'disallowed',
-            'CONFIG'                => 'disallowed',
-            'MONITOR'               => 'disallowed',
-            'SLAVEOF'               => 'disallowed',
-            'SAVE'                  => 'disallowed',
-            'BGSAVE'                => 'disallowed',
-            'BGREWRITEAOF'          => 'disallowed',
-            'SLOWLOG'               => 'disallowed',
+            'AUTH' => 'read',
+            'SELECT' => 'read',
+            'ECHO' => 'read',
+            'QUIT' => 'read',
+            'OBJECT' => 'read',
+            'TIME' => 'read',
+            'SHUTDOWN' => 'disallowed',
+            'INFO' => 'disallowed',
+            'DBSIZE' => 'disallowed',
+            'LASTSAVE' => 'disallowed',
+            'CONFIG' => 'disallowed',
+            'MONITOR' => 'disallowed',
+            'SLAVEOF' => 'disallowed',
+            'SAVE' => 'disallowed',
+            'BGSAVE' => 'disallowed',
+            'BGREWRITEAOF' => 'disallowed',
+            'SLOWLOG' => 'disallowed',
 
             /* commands operating on the key space */
-            'EXISTS'                => 'read',
-            'DEL'                   => 'write',
-            'TYPE'                  => 'read',
-            'EXPIRE'                => 'write',
-            'EXPIREAT'              => 'write',
-            'PERSIST'               => 'write',
-            'PEXPIRE'               => 'write',
-            'PEXPIREAT'             => 'write',
-            'TTL'                   => 'read',
-            'PTTL'                  => 'write',
-            'SORT'                  => 'variable',
-            'KEYS'                  => 'read',
-            'SCAN'                  => 'read',
-            'RANDOMKEY'             => 'read',
+            'EXISTS' => 'read',
+            'DEL' => 'write',
+            'TYPE' => 'read',
+            'EXPIRE' => 'write',
+            'EXPIREAT' => 'write',
+            'PERSIST' => 'write',
+            'PEXPIRE' => 'write',
+            'PEXPIREAT' => 'write',
+            'TTL' => 'read',
+            'PTTL' => 'write',
+            'SORT' => 'variable',
+            'KEYS' => 'read',
+            'SCAN' => 'read',
+            'RANDOMKEY' => 'read',
 
             /* commands operating on string values */
-            'APPEND'                => 'write',
-            'DECR'                  => 'write',
-            'DECRBY'                => 'write',
-            'GET'                   => 'read',
-            'GETBIT'                => 'read',
-            'MGET'                  => 'read',
-            'SET'                   => 'write',
-            'GETRANGE'              => 'read',
-            'GETSET'                => 'write',
-            'INCR'                  => 'write',
-            'INCRBY'                => 'write',
-            'INCRBYFLOAT'           => 'write',
-            'SETBIT'                => 'write',
-            'SETEX'                 => 'write',
-            'MSET'                  => 'write',
-            'MSETNX'                => 'write',
-            'SETNX'                 => 'write',
-            'SETRANGE'              => 'write',
-            'STRLEN'                => 'read',
-            'SUBSTR'                => 'read',
+            'APPEND' => 'write',
+            'DECR' => 'write',
+            'DECRBY' => 'write',
+            'GET' => 'read',
+            'GETBIT' => 'read',
+            'BITCOUNT' => 'read',
+            'BITPOS' => 'read',
+            'BITOP' => 'write',
+            'MGET' => 'read',
+            'SET' => 'write',
+            'GETRANGE' => 'read',
+            'GETSET' => 'write',
+            'INCR' => 'write',
+            'INCRBY' => 'write',
+            'INCRBYFLOAT' => 'write',
+            'SETBIT' => 'write',
+            'SETEX' => 'write',
+            'MSET' => 'write',
+            'MSETNX' => 'write',
+            'SETNX' => 'write',
+            'SETRANGE' => 'write',
+            'STRLEN' => 'read',
+            'SUBSTR' => 'read',
 
             /* commands operating on lists */
-            'LINSERT'               => 'write',
-            'LINDEX'                => 'read',
-            'LLEN'                  => 'read',
-            'LPOP'                  => 'write',
-            'RPOP'                  => 'write',
-            'BLPOP'                 => 'write',
-            'BRPOP'                 => 'write',
-            'LPUSH'                 => 'write',
-            'LPUSHX'                => 'write',
-            'RPUSH'                 => 'write',
-            'RPUSHX'                => 'write',
-            'LRANGE'                => 'read',
-            'LREM'                  => 'write',
-            'LSET'                  => 'write',
-            'LTRIM'                 => 'write',
+            'LINSERT' => 'write',
+            'LINDEX' => 'read',
+            'LLEN' => 'read',
+            'LPOP' => 'write',
+            'RPOP' => 'write',
+            'BLPOP' => 'write',
+            'BRPOP' => 'write',
+            'LPUSH' => 'write',
+            'LPUSHX' => 'write',
+            'RPUSH' => 'write',
+            'RPUSHX' => 'write',
+            'LRANGE' => 'read',
+            'LREM' => 'write',
+            'LSET' => 'write',
+            'LTRIM' => 'write',
 
             /* commands operating on sets */
-            'SADD'                  => 'write',
-            'SCARD'                 => 'read',
-            'SISMEMBER'             => 'read',
-            'SMEMBERS'              => 'read',
-            'SSCAN'                 => 'read',
-            'SRANDMEMBER'           => 'read',
-            'SPOP'                  => 'write',
-            'SREM'                  => 'write',
-            'SINTER'                => 'read',
-            'SUNION'                => 'read',
-            'SDIFF'                 => 'read',
+            'SADD' => 'write',
+            'SCARD' => 'read',
+            'SISMEMBER' => 'read',
+            'SMEMBERS' => 'read',
+            'SSCAN' => 'read',
+            'SRANDMEMBER' => 'read',
+            'SPOP' => 'write',
+            'SREM' => 'write',
+            'SINTER' => 'read',
+            'SUNION' => 'read',
+            'SDIFF' => 'read',
 
             /* commands operating on sorted sets */
-            'ZADD'                  => 'write',
-            'ZCARD'                 => 'read',
-            'ZCOUNT'                => 'read',
-            'ZINCRBY'               => 'write',
-            'ZRANGE'                => 'read',
-            'ZRANGEBYSCORE'         => 'read',
-            'ZRANK'                 => 'read',
-            'ZREM'                  => 'write',
-            'ZREMRANGEBYRANK'       => 'write',
-            'ZREMRANGEBYSCORE'      => 'write',
-            'ZREVRANGE'             => 'read',
-            'ZREVRANGEBYSCORE'      => 'read',
-            'ZREVRANK'              => 'read',
-            'ZSCORE'                => 'read',
-            'ZSCAN'                 => 'read',
-            'ZLEXCOUNT'             => 'read',
-            'ZRANGEBYLEX'           => 'read',
-            'ZREMRANGEBYLEX'        => 'write',
+            'ZADD' => 'write',
+            'ZCARD' => 'read',
+            'ZCOUNT' => 'read',
+            'ZINCRBY' => 'write',
+            'ZRANGE' => 'read',
+            'ZRANGEBYSCORE' => 'read',
+            'ZRANK' => 'read',
+            'ZREM' => 'write',
+            'ZREMRANGEBYRANK' => 'write',
+            'ZREMRANGEBYSCORE' => 'write',
+            'ZREVRANGE' => 'read',
+            'ZREVRANGEBYSCORE' => 'read',
+            'ZREVRANK' => 'read',
+            'ZSCORE' => 'read',
+            'ZSCAN' => 'read',
+            'ZLEXCOUNT' => 'read',
+            'ZRANGEBYLEX' => 'read',
+            'ZREMRANGEBYLEX' => 'write',
+            'ZREVRANGEBYLEX' => 'read',
 
             /* commands operating on hashes */
-            'HDEL'                  => 'write',
-            'HEXISTS'               => 'read',
-            'HGET'                  => 'read',
-            'HGETALL'               => 'read',
-            'HMGET'                 => 'read',
-            'HINCRBY'               => 'write',
-            'HINCRBYFLOAT'          => 'write',
-            'HKEYS'                 => 'read',
-            'HLEN'                  => 'read',
-            'HSET'                  => 'write',
-            'HSETNX'                => 'write',
-            'HVALS'                 => 'read',
-            'HSCAN'                 => 'read',
+            'HDEL' => 'write',
+            'HEXISTS' => 'read',
+            'HGET' => 'read',
+            'HGETALL' => 'read',
+            'HMGET' => 'read',
+            'HINCRBY' => 'write',
+            'HINCRBYFLOAT' => 'write',
+            'HKEYS' => 'read',
+            'HLEN' => 'read',
+            'HSET' => 'write',
+            'HSETNX' => 'write',
+            'HVALS' => 'read',
+            'HSCAN' => 'read',
+            'HSTRLEN' => 'read',
 
             /* commands operating on HyperLogLog */
-            'PFADD'                 => 'write',
-            'PFMERGE'               => 'write',
-            'PFCOUNT'               => 'read',
+            'PFADD' => 'write',
+            'PFMERGE' => 'write',
+            'PFCOUNT' => 'read',
 
             /* scripting */
-            'EVAL'                  => 'write',
-            'EVALSHA'               => 'write',
+            'EVAL' => 'write',
+            'EVALSHA' => 'write',
         );
 
         if (isset($type)) {

@@ -11,10 +11,10 @@
 
 namespace Predis\Monitor;
 
-use PredisTestCase;
 use Predis\Client;
-use Predis\Profile;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use Predis\Profile;
+use PredisTestCase;
 
 /**
  * @group realm-monitor
@@ -75,9 +75,10 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @todo We should investigate why disconnect is invoked 2 times in this test,
-     *       but the reason is probably that the GC invokes __destruct() on monitor
-     *       thus calling $client->disconnect() a second time at the end of the test.
+     *
+     * @todo Investigate why disconnect() is invoked 2 times in this test, but
+     *       the reason is probably that the GC invokes __destruct() on monitor
+     *       thus calling disconnect() a second time at the end of the test.
      */
     public function testStoppingConsumerClosesConnection()
     {

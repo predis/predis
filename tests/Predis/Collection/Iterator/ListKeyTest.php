@@ -11,8 +11,8 @@
 
 namespace Predis\Collection\Iterator;
 
-use PredisTestCase;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -90,7 +90,7 @@ class ListKeyTest extends PredisTestCase
                ->method('lrange')
                ->with('key:list', 0, 9)
                ->will($this->returnValue(array(
-                    'item:1', 'item:2', 'item:3', 'item:4', 'item:5', 'item:6', 'item:7', 'item:8', 'item:9', 'item:10'
+                    'item:1', 'item:2', 'item:3', 'item:4', 'item:5', 'item:6', 'item:7', 'item:8', 'item:9', 'item:10',
                )));
         $client->expects($this->at(2))
                ->method('lrange')

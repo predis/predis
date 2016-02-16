@@ -11,9 +11,9 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Profile;
+use PredisTestCase;
 
 /**
  *
