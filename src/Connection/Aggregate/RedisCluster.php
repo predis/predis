@@ -512,7 +512,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 
     /**
      * Enables automatic fetching of the current slots map from one of the nodes
-     * using the CLUSTER SLOTS command. This option is disabled by default but
+     * using the CLUSTER SLOTS command. This option is enabled by default as
      * asking the current slots map to Redis upon -MOVED responses may reduce
      * overhead by eliminating the trial-and-error nature of the node guessing
      * procedure, mostly when targeting many keys that would end up in a lot of
