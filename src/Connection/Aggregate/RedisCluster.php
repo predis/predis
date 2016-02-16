@@ -165,8 +165,11 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 continue;
             }
 
-            $slots = explode('-', $parameters->slots, 2);
-            $this->setSlots($slots[0], $slots[1], $connectionID);
+            foreach (explode(',', $parameters->slots) as $slotRange) {
+                list($first,$last) = explode('-', $slotRange, 2);
+
+                $this->setSlots($first, $last, $connectionID);
+            }
         }
     }
 
@@ -192,11 +195,12 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             // We only support master servers for now, so we ignore subsequent
             // elements in the $slots array identifying slaves.
             list($start, $end, $master) = $slots;
+            list($masterHost, $masterPort) = $master;
 
-            if ($master[0] === '') {
+            if ($masterHost === '') {
                 $this->setSlots($start, $end, (string) $connection);
             } else {
-                $this->setSlots($start, $end, "{$master[0]}:{$master[1]}");
+                $this->setSlots($start, $end, "{$masterHost}:{$masterPort}");
             }
         }
 
@@ -276,11 +280,11 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     protected function createConnection($connectionID)
     {
-        $separator = strrpos($connectionID, ':');
+        list($host,$port) = explode(':', $connectionID, 2);
 
         $parameters = array_merge($this->defaultParameters, array(
-            'host' => substr($connectionID, 0, $separator),
-            'port' => substr($connectionID, $separator + 1),
+            'host' => $host,
+            'port' => $port,
         ));
 
         $connection = $this->connections->create($parameters);
