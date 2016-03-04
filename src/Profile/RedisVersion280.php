@@ -100,6 +100,7 @@ class RedisVersion280 extends RedisProfile
             'ZREVRANGE' => 'Predis\Command\ZSetReverseRange',
             'ZRANGEBYSCORE' => 'Predis\Command\ZSetRangeByScore',
             'ZCARD' => 'Predis\Command\ZSetCardinality',
+            'ZDIFF' => 'Predis\Command\ZSetDifference',
             'ZSCORE' => 'Predis\Command\ZSetScore',
             'ZREMRANGEBYSCORE' => 'Predis\Command\ZSetRemoveRangeByScore',
 
