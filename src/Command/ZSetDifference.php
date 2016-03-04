@@ -12,8 +12,6 @@
 namespace Predis\Command;
 
 /**
- * @link http://redis.io/commands/sdiff
- *
  * @author Kevin Simard <kev.simard@gmail.com>
  */
 class ZSetDifference extends ScriptCommand
