@@ -160,10 +160,8 @@ class StreamConnection extends AbstractConnection
         if (parent::connect() && $this->initCommands) {
             foreach ($this->initCommands as $command) {
                 $response = $this->executeCommand($command);
-                if ($response instanceof ResponseInterface) {
-                    if ($response instanceof ErrorResponseInterface) {
-                        $this->onConnectionError($command->parseResponse($response), 0);
-                    }
+                if ($response instanceof ResponseInterface && $response instanceof ErrorResponseInterface) {
+                    $this->onConnectionError($command->parseResponse($response), 0);
                 }
             }
         }
