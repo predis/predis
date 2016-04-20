@@ -112,6 +112,9 @@ class Parameters implements ParametersInterface
             if (isset($parsed['pass'])) {
                 $parsed['password'] = $parsed['pass'];
                 unset($parsed['pass']);
+            } elseif (isset($parsed['user'])) {
+                $parsed['password'] = $parsed['user'];
+                unset($parsed['user']);
             }
 
             if (isset($parsed['path']) && preg_match('/^\/(\d+)(\/.*)?/', $parsed['path'], $path)) {
