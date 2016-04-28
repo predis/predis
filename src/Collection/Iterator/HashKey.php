@@ -51,6 +51,7 @@ class HashKey extends CursorBasedIterator
     protected function extractNext()
     {
         $this->position = key($this->elements);
-        $this->current = array_shift($this->elements);
+        $this->current = $this->position === null ? null : $this->elements[$this->position];
+        unset($this->elements[$this->position]);
     }
 }
