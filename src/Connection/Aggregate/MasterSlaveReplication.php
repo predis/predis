@@ -23,9 +23,24 @@ use Predis\Replication\ReplicationStrategy;
  */
 class MasterSlaveReplication implements ReplicationInterface
 {
+    /**
+     * @var ReplicationStrategy
+     */
     protected $strategy;
+
+    /**
+     * @var NodeConnectionInterface
+     */
     protected $master;
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
     protected $slaves;
+
+    /**
+     * @var NodeConnectionInterface
+     */
     protected $current;
 
     /**
