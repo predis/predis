@@ -749,6 +749,127 @@ class RedisClusterTest extends PredisTestCase
         $this->assertSame(2, count($cluster));
     }
 
+	/**
+	 * @group disconnected
+	 */
+	public function testCacheAskSlotsMap()
+	{
+		$cmdGET = Command\RawCommand::create('GET', 'node:1001');
+
+		// setup host the cluster client connects to
+		$connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+
+		// ensure no calls get sent to this host as the cached file directs to a different host
+		$connection1->expects($this->never())
+			->method('executeCommand');
+
+		// setup connection to the host that cached file redirects to
+		$connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+
+		// ensure only one executeCommand ('GET', not 'CLUSTER CLIENT') sent to correct host
+		$connection2->expects($this->once())
+			->method('executeCommand')
+			->with($cmdGET)
+			->will($this->returnValue('foobar'));
+
+		$factory = $this->getMock('Predis\Connection\Factory');
+		$factory->expects($this->once())
+			->method('create')
+			->with(array('host' => '127.0.0.1', 'port' => '6380'))
+			->will($this->returnValue($connection2));
+
+		// mock loadCacheSlotsMapFile to point all hashes to the second host
+		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('loadCacheSlotsMapFile'), array($factory));
+		$cluster->expects($this->atLeastOnce())
+			->method('loadCacheSlotsMapFile')
+			->will($this->returnCallback(function () use ($cluster) {$cluster->setSlots(0, 16383, '127.0.0.1:6380');} ));
+
+
+		$cluster->useClusterSlots(true);
+		$cluster->setCacheSlotMapDirectory('/dev/shm');
+		$cluster->add($connection1);
+
+		$this->assertSame('foobar', $cluster->executeCommand($cmdGET));
+		$this->assertSame(2, count($cluster));
+	}
+
+	/**
+	 * @group disconnected
+	 */
+	public function testCacheAskSlotsMapCreateCacheFile()
+	{
+		// ensure the OS has a /tmp directory which is writable
+		if (!is_writable('/tmp'))
+			$this->markTestSkipped('directory \'/tmp\' does not exist or is not writable');
+
+		$cached_file = '/tmp/' . RedisCluster::CACHED_FILENAME_PREFIX . '-unittest';
+
+		// ensure the file does not exist before the test
+		if (is_file($cached_file))
+			unlink($cached_file);
+
+		$cmdGET = Command\RawCommand::create('GET', 'node:1001');
+		$rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
+		$rspSlotsArray = array(
+			array(0   ,  8191, array('127.0.0.1', 6379)),
+			array(8192, 16383, array('127.0.0.1', 6380)),
+		);
+
+		$connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+		$connection1->expects($this->once())
+			->method('executeCommand')
+			->with($cmdGET)
+			->will($this->returnValue($rspMOVED));
+
+		$connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+		$connection2->expects($this->at(0))
+			->method('executeCommand')
+			->with($this->isRedisCommand('CLUSTER', array('SLOTS')))
+			->will($this->returnValue($rspSlotsArray));
+		$connection2->expects($this->at(2))
+			->method('executeCommand')
+			->with($cmdGET)
+			->will($this->returnValue('foobar'));
+
+		$factory = $this->getMock('Predis\Connection\Factory');
+		$factory->expects($this->once())
+			->method('create')
+			->with(array('host' => '127.0.0.1', 'port' => '6380'))
+			->will($this->returnValue($connection2));
+
+		$cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getCacheSlotMapFile'), array($factory));
+		$cluster->expects($this->atLeastOnce())
+			->method('getCacheSlotMapFile')
+			->will($this->returnValue($cached_file));
+
+		$cluster->setCacheSlotMapDirectory('/tmp');
+		$cluster->add($connection1);
+
+		$this->assertSame('foobar', $cluster->executeCommand($cmdGET));
+		$this->assertSame(2, count($cluster));
+
+		// ensure the cached file was written to disk
+		$this->assertTrue(is_file($cached_file));
+
+		// ensure the cached file has a row for each slot returned from 'CLUSTER SLOTS'
+		$this->assertCount(count($rspSlotsArray), file($cached_file));
+
+		// clean up from test
+		if (is_file($cached_file))
+			unlink($cached_file);
+	}
+
+	/**
+	 * @group disconnected
+	 * @expectedException \Predis\ClientException
+	 * @expectedExceptionMessage is not writable
+	 */
+	public function testThrowsExceptionOnInvalidCacheDirectory()
+	{
+		$cluster = new RedisCluster(new Connection\Factory());
+		$cluster->setCacheSlotMapDirectory('/invalid/directory');
+	}
+
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
@@ -795,7 +916,7 @@ class RedisClusterTest extends PredisTestCase
      *
      * @param mixed $parameters Optional parameters.
      *
-     * @return mixed
+     * @return \Predis\Connection\NodeConnectionInterface
      */
     protected function getMockConnection($parameters = null)
     {

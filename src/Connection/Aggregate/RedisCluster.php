@@ -11,6 +11,7 @@
 
 namespace Predis\Connection\Aggregate;
 
+use Predis\ClientException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
@@ -51,6 +52,10 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $slotsMap;
     private $strategy;
     private $connections;
+	private $cacheSlotMapDirectory;
+	private $cacheSlotMapFile;
+
+	const CACHED_FILENAME_PREFIX = 'predis-cached-slots';
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -158,6 +163,12 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $this->slotsMap = array();
 
+	    // load cache if set
+	    if ($this->cacheSlotMapDirectory) {
+		    $this->loadCacheSlotsMapFile();
+	    }
+
+	    // load slots passes into connections
         foreach ($this->pool as $connectionID => $connection) {
             $parameters = $connection->getParameters();
 
@@ -188,17 +199,28 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         $command = RawCommand::create('CLUSTER', 'SLOTS');
         $response = $connection->executeCommand($command);
 
+	    $cachedSlotMap = '';
+
         foreach ($response as $slots) {
             // We only support master servers for now, so we ignore subsequent
             // elements in the $slots array identifying slaves.
             list($start, $end, $master) = $slots;
 
-            if ($master[0] === '') {
-                $this->setSlots($start, $end, (string) $connection);
-            } else {
-                $this->setSlots($start, $end, "{$master[0]}:{$master[1]}");
-            }
+	        if ($master[0] === '') {
+		        $master = (string) $connection;
+	        }
+	        else {
+		        $master = $master[0] . ':' . $master[1];
+	        }
+
+	        $this->setSlots($start, $end, $master);
+	        $cachedSlotMap .= $start . '-' . $end . '-' . $master . PHP_EOL;
         }
+
+	    // save the results of the slot map to a cache file
+	    if ($this->cacheSlotMapDirectory) {
+		    file_put_contents($this->getCacheSlotMapFile(), $cachedSlotMap, LOCK_EX);
+	    }
 
         return $this->slotsMap;
     }
@@ -550,4 +572,58 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             $parameters ?: array()
         );
     }
+
+	/**
+	 * Turn on caching of CLUSTER SLOTS and choose a directory to save the
+	 * cache file to.  Turning on caching will help save a CLUSTER SLOTS call
+	 * on new PHP processes.
+	 *
+	 * Ensure the directory is writable.  On linux, /dev/shm is a good option
+	 * to reduce disk i/o.
+	 *
+	 * @param string $directory
+	 * @throws ClientException
+	 */
+	public function setCacheSlotMapDirectory($directory)
+	{
+		if (!is_writable($directory))
+			throw new ClientException('directory \'' . $directory . '\' is not writable');
+
+		$this->cacheSlotMapDirectory = $directory;
+	}
+
+	/**
+	 * Gets the name of the file used to cache the CLUSTER SLOTS request.  The
+	 * name is hashed off the connection pool to allow cached data for each
+	 * unique pool being connected to.
+	 *
+	 * This method will return null if setCacheSlotMapDirectory() not set
+	 *
+	 * @return string|null
+	 */
+	protected function getCacheSlotMapFile()
+	{
+		if ($this->cacheSlotMapDirectory && !$this->cacheSlotMapFile) {
+			$this->cacheSlotMapFile = $this->cacheSlotMapDirectory . '/' . static::CACHED_FILENAME_PREFIX . '-' . md5(serialize($this->pool));
+		}
+
+		return $this->cacheSlotMapFile;
+	}
+
+	/**
+	 * Try to load a cached CLUSTER SLOTS response
+	 */
+	protected function loadCacheSlotsMapFile()
+	{
+		if ($this->cacheSlotMapDirectory && is_file($this->getCacheSlotMapFile())) {
+			$cached_slots = file($this->getCacheSlotMapFile());
+
+			if (is_array($cached_slots)) {
+				foreach ($cached_slots as $cached_slot) {
+					$slots = explode('-', $cached_slot);
+					$this->setSlots($slots[0], $slots[1], $slots[2]);
+				}
+			}
+		}
+	}
 }
