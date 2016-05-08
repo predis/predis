@@ -61,4 +61,27 @@ class RequestSerializerTest extends PredisTestCase
 
         $this->assertSame("*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n", $result);
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testSerializerDoesNotBreakOnArgumentsWithHoles()
+    {
+        $serializer = new RequestSerializer();
+
+        $command = $this->getMock('Predis\Command\CommandInterface');
+
+        $command->expects($this->once())
+                ->method('getId')
+                ->will($this->returnValue('DEL'));
+
+        $command->expects($this->once())
+                ->method('getArguments')
+                ->will($this->returnValue(array(0 => 'key:1', 2 => 'key:2')));
+
+        $result = $serializer->serialize($command);
+
+        $this->assertSame("*3\r\n$3\r\nDEL\r\n$5\r\nkey:1\r\n$5\r\nkey:2\r\n", $result);
+    }
+
 }
