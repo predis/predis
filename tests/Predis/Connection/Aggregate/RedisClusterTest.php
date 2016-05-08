@@ -673,11 +673,11 @@ class RedisClusterTest extends PredisTestCase
     {
         $response = array(
             array(12288, 13311, array('10.1.0.51', 6387), array('10.1.0.52', 6387)),
-            array(3072 ,  4095, array('10.1.0.52', 6392), array('10.1.0.51', 6392)),
-            array(6144 ,  7167, array('', 6384), array('10.1.0.52', 6384)),
+            array(3072,  4095, array('10.1.0.52', 6392), array('10.1.0.51', 6392)),
+            array(6144,  7167, array('', 6384), array('10.1.0.52', 6384)),
             array(14336, 15359, array('10.1.0.51', 6388), array('10.1.0.52', 6388)),
             array(15360, 16383, array('10.1.0.52', 6398), array('10.1.0.51', 6398)),
-            array(1024 ,  2047, array('10.1.0.52', 6391), array('10.1.0.51', 6391)),
+            array(1024,  2047, array('10.1.0.52', 6391), array('10.1.0.51', 6391)),
             array(11264, 12287, array('10.1.0.52', 6396), array('10.1.0.51', 6396)),
             array(5120,  6143, array('10.1.0.52', 6393), array('10.1.0.51', 6393)),
             array(0,  1023, array('10.1.0.51', 6381), array('10.1.0.52', 6381)),
@@ -716,7 +716,7 @@ class RedisClusterTest extends PredisTestCase
         $cmdGET = Command\RawCommand::create('GET', 'node:1001');
         $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
         $rspSlotsArray = array(
-            array(0   ,  8191, array('127.0.0.1', 6379)),
+            array(0,  8191, array('127.0.0.1', 6379)),
             array(8192, 16383, array('127.0.0.1', 6380)),
         );
 

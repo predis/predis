@@ -114,9 +114,9 @@ addr=127.0.0.1:45395 fd=8 idle=0 flags=N db=0 sub=0 psub=0
 BUFFER;
 
         $parsed = array(
-            array('addr' => '127.0.0.1:45393','fd' => '6','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
-            array('addr' => '127.0.0.1:45394','fd' => '7','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
-            array('addr' => '127.0.0.1:45395','fd' => '8','idle' => '0','flags' => 'N','db' => '0','sub' => '0','psub' => '0'),
+            array('addr' => '127.0.0.1:45393', 'fd' => '6', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
+            array('addr' => '127.0.0.1:45394', 'fd' => '7', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
+            array('addr' => '127.0.0.1:45395', 'fd' => '8', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
         );
 
         $this->assertSame($parsed, $command->parseResponse($raw));

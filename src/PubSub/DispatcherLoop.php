@@ -91,7 +91,7 @@ class DispatcherLoop
      * Binds a callback to a channel.
      *
      * @param string   $channel  Channel name.
-     * @param Callable $callback A callback.
+     * @param callable $callback A callback.
      */
     public function attachCallback($channel, $callback)
     {

@@ -52,7 +52,7 @@ class ServerConfigTest extends PredisCommandTestCase
      */
     public function testParseResponseOfConfigGet()
     {
-        $raw = array('slowlog-log-slower-than','10000','slowlog-max-len','64','loglevel','verbose');
+        $raw = array('slowlog-log-slower-than', '10000', 'slowlog-max-len', '64', 'loglevel', 'verbose');
         $expected = array(
             'slowlog-log-slower-than' => '10000',
             'slowlog-max-len' => '64',

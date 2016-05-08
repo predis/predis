@@ -267,7 +267,7 @@ BUFFER;
             'used_cpu_user_children' => '0.00',
             'cluster_enabled' => '0',
             'db0' => array('keys' => '2', 'expires' => '0'),
-            'db5' => array('keys' => '1','expires' => '0'),
+            'db5' => array('keys' => '1', 'expires' => '0'),
         );
 
         $this->assertSame($expected, $this->getCommand()->parseResponse($raw));
