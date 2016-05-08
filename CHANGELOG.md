@@ -1,3 +1,9 @@
+v1.0.4 (2016-xx-xx)
+================================================================================
+
+- __FIX__: broken values returned by `Predis\Collection\Iterator\HashKey` when
+  iterating hash keys containing integer fields (PR #330, ISSUE #331).
+
 v1.0.3 (2015-07-30)
 ================================================================================
 
