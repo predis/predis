@@ -57,6 +57,51 @@ class HashKeyTest extends PredisTestCase
     }
 
     /**
+     * @link https://github.com/nrk/predis/pull/330
+     * @link https://github.com/nrk/predis/issues/331
+     * @group disconnected
+     */
+    public function testIterationWithIntegerFields()
+    {
+        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+
+        $client->expects($this->any())
+               ->method('getProfile')
+               ->will($this->returnValue(Profile\Factory::get('2.8')));
+        $client->expects($this->once())
+               ->method('hscan')
+               ->with('key:hash', 0, array())
+               ->will($this->returnValue(array(0, array(
+                    1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar'
+               ))));
+
+        $iterator = new HashKey($client, 'key:hash');
+
+        $iterator->rewind();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame('a', $iterator->current());
+        $this->assertSame(1, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame('b', $iterator->current());
+        $this->assertSame(2, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame(100, $iterator->current());
+        $this->assertSame(3, $iterator->key());
+
+        $iterator->next();
+        $this->assertTrue($iterator->valid());
+        $this->assertSame('bar', $iterator->current());
+        $this->assertSame('foo', $iterator->key());
+
+        $iterator->next();
+        $this->assertFalse($iterator->valid());
+    }
+
+    /**
      * @group disconnected
      */
     public function testIterationOnSingleFetch()
