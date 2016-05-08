@@ -4,6 +4,11 @@ v1.0.4 (2016-xx-xx)
 - __FIX__: broken values returned by `Predis\Collection\Iterator\HashKey` when
   iterating hash keys containing integer fields (PR #330, ISSUE #331).
 
+- __FIX__: prevent failures when `Predis\Connection\StreamConnection` serializes
+  commands with holes in their arguments (e.g. `[0 => 'key:0', 1 => 'key:1']`).
+  The same fix has been applied to `Predis\Protocol\Text\RequestSerializer`.
+  (ISSUE #316).
+
 v1.0.3 (2015-07-30)
 ================================================================================
 

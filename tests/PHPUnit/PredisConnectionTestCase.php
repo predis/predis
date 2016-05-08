@@ -222,6 +222,19 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testExecutesCommandWithHolesInArguments()
+    {
+        $profile = $this->getCurrentProfile();
+        $cmdDel = $profile->createCommand('mget', array(0 => 'key:0', 2 => 'key:2'));
+
+        $connection = $this->createConnection();
+
+        $this->assertSame(array(null, null), $connection->executeCommand($cmdDel));
+    }
+
+    /**
      * @group connected
      */
     public function testExecutesMultipleCommandsOnServer()
