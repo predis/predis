@@ -30,11 +30,6 @@ v1.1.0 (2015-xx-xx)
   must use either the `tls` or `rediss` scheme.
 
 
-- __FIX__: prevent failures when `Predis\Connection\StreamConnection` serializes
-  commands with holes in their arguments (e.g. `[0 => 'key:0', 1 => 'key:1']`).
-  The same fix has been applied to `Predis\Protocol\Text\RequestSerializer`.
-  (ISSUE #316).
-
 v1.0.3 (2015-07-30)
 ================================================================================
 
