@@ -242,7 +242,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     }
 
     /**
-     * @group disconnected
+     * @group connected
      */
     public function testExecutesCommandWithHolesInArguments()
     {
