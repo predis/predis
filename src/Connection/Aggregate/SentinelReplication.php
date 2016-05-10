@@ -11,6 +11,7 @@
 
 namespace Predis\Connection\Aggregate;
 
+use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
@@ -19,6 +20,7 @@ use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
+use Predis\Replication\RoleException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 
@@ -325,6 +327,28 @@ class SentinelReplication extends MasterSlaveReplication
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getConnection(CommandInterface $command)
+    {
+        $connection = parent::getConnection($command);
+
+        if (!$connection->isConnected()) {
+            $role = $connection->executeCommand(RawCommand::create('ROLE'));
+
+            if ($connection === $this->master && $role[0] !== 'master') {
+                throw new RoleException($connection, "Expected master but got $role[0] [$connection]");
+            }
+
+            if ($connection !== $this->master && $role[0] !== 'slave') {
+                throw new RoleException($connection, "Expected slave but got $role[0] [$connection]");
+            }
+        }
+
+        return $connection;
+    }
+
+    /**
      * Retries the execution of a command upon server failure after asking a new
      * configuration to one of the sentinels.
      *
@@ -340,7 +364,7 @@ class SentinelReplication extends MasterSlaveReplication
         SENTINEL_RETRY: {
             try {
                 $response = parent::$method($command);
-            } catch (ConnectionException $exception) {
+            } catch (CommunicationException $exception) {
                 if ($retries == $this->retryLimit) {
                     throw $exception;
                 }
