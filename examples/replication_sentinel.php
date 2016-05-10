@@ -54,7 +54,7 @@ $current = $client->getConnection()->getCurrent()->getParameters();
 echo "We fetched 'foo' from {$current->alias} and its value is '$bar'.", PHP_EOL;
 
 /* OUTPUT:
-Does 'foo' exist on slave? yes.
+Does 'foo' exist on slave-127.0.0.1:6381? yes.
 Now 'foo' has been set to 'bar' on master!
 We fetched 'foo' from master and its value is 'bar'.
 */

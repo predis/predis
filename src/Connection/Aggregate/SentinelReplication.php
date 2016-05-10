@@ -240,6 +240,7 @@ class SentinelReplication extends MasterSlaveReplication
             $slaves[] = array(
                 'host' => $slave[3],
                 'port' => $slave[5],
+                'alias' => "slave-$slave[3]:$slave[5]",
             );
         }
 
