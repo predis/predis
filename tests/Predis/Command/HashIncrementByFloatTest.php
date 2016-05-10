@@ -88,7 +88,7 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR hash value is not a valid float
+     * @expectedExceptionMessageRegExp /ERR hash value is not a( valid)? float/
      */
     public function testThrowsExceptionOnStringField()
     {
