@@ -12,6 +12,7 @@
 namespace Predis\Configuration;
 
 use Predis\Connection\Aggregate\MasterSlaveReplication;
+use Predis\Connection\Aggregate\SentinelReplication;
 use Predis\Connection\Aggregate\ReplicationInterface;
 
 /**
@@ -37,6 +38,12 @@ class ReplicationOption implements OptionInterface
 
         if (is_bool($value) || $value === null) {
             return $value ? $this->getDefault($options) : null;
+        }
+
+        if ($value === 'sentinel') {
+            return function ($sentinels, $options) {
+                return new SentinelReplication($sentinels, $options->service, $options->connections);
+            };
         }
 
         if (

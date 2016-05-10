@@ -34,12 +34,8 @@ $sentinels = array(
 );
 
 $client = new Predis\Client($sentinels, array(
+    'replication' => 'sentinel',
     'service' => 'mymaster',
-    'aggregate' => function () {
-        return function ($sentinels, $options) {
-            return new SentinelReplication($sentinels, $options->service, $options->connections);
-        };
-    },
 ));
 
 // Read operation.
