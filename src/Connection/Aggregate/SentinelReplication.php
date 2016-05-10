@@ -56,7 +56,11 @@ class SentinelReplication extends MasterSlaveReplication
     protected $sentinelTimeout = 0.100;
 
     /**
-     * Max number of automatic retries of commands upon server failure. 0 = never retry, -1 = unlimited.
+     * Max number of automatic retries of commands upon server failure.
+     *
+     * -1 = unlimited retry attempts
+     *  0 = no retry attempts (fails immediatly)
+     *  n = fail only after n retry attempts
      */
     protected $retryLimit = -1;
 
@@ -98,9 +102,13 @@ class SentinelReplication extends MasterSlaveReplication
     }
 
     /**
-     * Set maximum number of automatic retries of commands upon server failure. 0 = never retry, -1 = unlimited.
+     * Set maximum number of automatic retries of commands upon server failure.
      *
-     * @param integer $retry Retry value.
+     * -1 = unlimited retry attempts
+     *  0 = no retry attempts (fails immediatly)
+     *  n = fail only after n retry attempts
+     *
+     * @param integer $retry Number of retry attempts.
      */
     public function setRetryLimit($retry)
     {
