@@ -107,8 +107,8 @@ class ServerCommandTest extends PredisCommandTestCase
         // Predis\Response\Status instead of plain strings. This class responds
         // to __toString() so the string conversion is implicit, but assertSame
         // checks for strict equality while assertEquals is loose.
-        $expected = array(array('command', 0, array('readonly', 'loading', 'stale'), 0, 0, 0));
-        $this->assertCount(1, $response = $redis->command('INFO', 'COMMAND'));
+        $expected = array(array('get', 2, array('readonly', 'fast'), 1, 1, 1));
+        $this->assertCount(1, $response = $redis->command('INFO', 'GET'));
         $this->assertEquals($expected, $response);
     }
 
