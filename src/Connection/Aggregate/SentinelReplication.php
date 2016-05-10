@@ -62,7 +62,7 @@ class SentinelReplication extends MasterSlaveReplication
      *  0 = no retry attempts (fails immediatly)
      *  n = fail only after n retry attempts
      */
-    protected $retryLimit = -1;
+    protected $retryLimit = 20;
 
     /**
      * Flag for automatic fetching of available sentinels.
