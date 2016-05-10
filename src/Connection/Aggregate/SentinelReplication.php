@@ -211,6 +211,10 @@ class SentinelReplication extends MasterSlaveReplication
             throw new ServerException('ERR No such master with that name');
         }
 
+        if ($payload instanceof ErrorResponseInterface) {
+            throw new ServerException($payload->getMessage());
+        }
+
         return array(
             'host' => $payload[0],
             'port' => $payload[1],
@@ -235,7 +239,7 @@ class SentinelReplication extends MasterSlaveReplication
         );
 
         if ($payload instanceof ErrorResponseInterface) {
-            throw new ServerException($response->getMessage());
+            throw new ServerException($payload->getMessage());
         }
 
         foreach ($payload as $slave) {
