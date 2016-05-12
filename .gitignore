@@ -7,3 +7,4 @@ package.xml
 composer.lock
 experiments/
 vendor/
+.idea/

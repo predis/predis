@@ -121,6 +121,7 @@ use Predis\Command\CommandInterface;
  * @method $this zscore($key, $member)
  * @method $this zscan($key, $cursor, array $options = null)
  * @method $this zrangebylex($key, $start, $stop, array $options = null)
+ * @method $this zrevrangebylex($key, $start, $stop, array $options = null)
  * @method $this zremrangebylex($key, $min, $max)
  * @method $this zlexcount($key, $min, $max)
  * @method $this pfadd($key, array $elements)
