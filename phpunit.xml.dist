@@ -3,7 +3,6 @@
 <phpunit bootstrap="tests/bootstrap.php"
     colors="true"
     beStrictAboutTestSize="true"
-    checkForUnintentionallyCoveredCode="true"
     beStrictAboutTestsThatDoNotTestAnything="true">
 
     <testsuites>
