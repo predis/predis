@@ -11,6 +11,11 @@
 
 namespace Predis\Command;
 
+/**
+ * @link http://redis.io/commands/zrevrangebylex
+ *
+ * @author Daniele Alessandri <suppakilla@gmail.com>
+ */
 class ZSetReverseRangeByLex extends ZSetRangeByLex
 {
     /**

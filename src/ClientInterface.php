@@ -129,6 +129,7 @@ use Predis\Profile\ProfileInterface;
  * @method string zscore($key, $member)
  * @method array  zscan($key, $cursor, array $options = null)
  * @method array  zrangebylex($key, $start, $stop, array $options = null)
+ * @method array  zrevrangebylex($key, $start, $stop, array $options = null)
  * @method int    zremrangebylex($key, $min, $max)
  * @method int    zlexcount($key, $min, $max)
  * @method int    pfadd($key, array $elements)
