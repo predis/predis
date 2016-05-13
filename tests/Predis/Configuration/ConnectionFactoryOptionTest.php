@@ -57,6 +57,32 @@ class ConnectionFactoryOptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testUsesParametersOptionToSetDefaultParameters()
+    {
+        $parameters = array('database' => 5, 'password' => 'mypassword');
+
+        $default = $this->getMock('Predis\Connection\Factory');
+        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+
+        $options->expects($this->once())
+                ->method('defined')
+                ->with('parameters')
+                ->will($this->returnValue(true));
+
+        $options->expects($this->once())
+                ->method('__get')
+                ->with('parameters')
+                ->will($this->returnValue($parameters));
+
+        $option = new ConnectionFactoryOption();
+        $factory = $option->getDefault($options);
+
+        $this->assertSame($parameters, $factory->getDefaultParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAcceptsConnectionFactoryInstance()
     {
         $options = $this->getMock('Predis\Configuration\OptionsInterface');

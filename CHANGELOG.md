@@ -19,8 +19,10 @@ v1.1.0 (2015-xx-xx)
   considered obsolete and will not be supported from the next major release.
 
 - Added support for default connection parameters in `Predis\Connection\Factory`
-  augmenting the user-supplied parameters used to create new connections.
-   but they do not override specific parameters when already defined.
+  augmenting the user-supplied parameters used to create new connections. These
+  parameters do not override specific parameters when already defined. They can
+  also be passed via client options when configuring the client using the newly
+  added `parameters` option.
 
 - Removed the default value for `timeout` from `Predis\Connection\Parameters`.
   The fallback to a default value is a responsibility of connection classes, but
