@@ -33,7 +33,7 @@ v1.1.0 (2016-0x-xx)
 
 - `Predis\Connection\Aggregate\MasterSlaveReplication` now tries to send again
   read-only commands to the next slave when the one picked by the client fails,
-  and eventually switches to master is no other slave is available. The master
+  and eventually switches to master if no other slave is available. The master
   connection is also used for read-only commands when no slaves are registered.
 
 - `Predis\Connection\Aggregate\MasterSlaveReplication` exposes 2 new methods to
