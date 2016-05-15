@@ -65,8 +65,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
+     * @expectedException \Predis\ClientException
+     * @expectedExceptionMessage No available connection for replication
      */
     public function testThrowsExceptionOnEmptyReplication()
     {
@@ -76,34 +76,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
-    public function testThrowsExceptionOnMissingMaster()
-    {
-        $replication = new MasterSlaveReplication();
-        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
-
-        $replication->connect();
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
-     */
-    public function testThrowsExceptionOnMissingSlave()
-    {
-        $replication = new MasterSlaveReplication();
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
-
-        $replication->connect();
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testConnectForcesConnectionToOneOfSlaves()
+    public function testConnectsToOneOfSlaves()
     {
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->never())->method('connect');
@@ -116,6 +90,20 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave);
 
         $replication->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConnectsToMasterOnMissingSlaves()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->connect();
+        $this->assertSame($master, $replication->getCurrent());
     }
 
     /**
@@ -203,13 +191,120 @@ class MasterSlaveReplicationTest extends PredisTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid connection or connection not found.
      */
-    public function testThrowsErrorWhenSwitchingToUnknownConnection()
+    public function testThrowsErrorWhenSwitchingToUnknownConnectionByAlias()
     {
         $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
         $replication->switchTo('unknown');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanSwitchConnectionByInstance()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchTo($master);
+        $this->assertSame($master, $replication->getCurrent());
+        $replication->switchTo($slave1);
+        $this->assertSame($slave1, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorWhenSwitchingToUnknownConnectionByInstance()
+    {
+        $replication = new MasterSlaveReplication();
+        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
+        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
+
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication->switchTo($slave2);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanSwitchToMaster()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchToMaster();
+        $this->assertSame($master, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined()
+    {
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+
+        $replication->switchToMaster();
+    }
+
+    /**
+     * @group disconnected
+     * @todo We should find a way to test that the slave is indeed randomly selected.
+     */
+    public function testCanSwitchToRandomSlave()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchToSlave();
+        $this->assertSame($slave1, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->switchToSlave();
     }
 
     /**
@@ -251,6 +346,25 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $this->assertSame($master, $replication->getConnection($cmd));
 
         $cmd = $profile->createCommand('get', array('foo'));
+        $this->assertSame($master, $replication->getConnection($cmd));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUsesMasterOnReadRequestsWhenNoSlavesAvailable()
+    {
+        $profile = Profile\Factory::getDefault();
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $cmd = $profile->createCommand('exists', array('foo'));
+        $this->assertSame($master, $replication->getConnection($cmd));
+
+        $cmd = $profile->createCommand('set', array('foo', 'bar'));
         $this->assertSame($master, $replication->getConnection($cmd));
     }
 
@@ -431,6 +545,153 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
         $replication->executeCommand($cmdSortNormal);
         $replication->executeCommand($cmdSortStore);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardsUnreachableSlaveAndExecutesReadOnlyCommandOnNextSlave()
+    {
+        $profile = Profile\Factory::getDefault();
+        $cmdExists = $profile->createCommand('exists', array('key'));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->never())->method('executeCommand');
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->throwException(new Connection\ConnectionException($slave1)));
+
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->returnValue(1));
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $replication->switchTo($slave1);
+
+        $response = $replication->executeCommand($cmdExists);
+
+        $this->assertSame(1, $response);
+        $this->assertNull($replication->getConnectionById('slave1'));
+        $this->assertSame($slave2, $replication->getConnectionById('slave2'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardsUnreachableSlavesAndExecutesReadOnlyCommandOnMaster()
+    {
+        $profile = Profile\Factory::getDefault();
+        $cmdExists = $profile->createCommand('exists', array('key'));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->returnValue(1));
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->throwException(new Connection\ConnectionException($slave1)));
+
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->throwException(new Connection\ConnectionException($slave2)));
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $replication->switchTo($slave1);
+
+        $response = $replication->executeCommand($cmdExists);
+
+        $this->assertSame(1, $response);
+        $this->assertNull($replication->getConnectionById('slave1'));
+        $this->assertNull($replication->getConnectionById('slave2'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSucceedOnReadOnlyCommandAndNoConnectionSetAsMaster()
+    {
+        $profile = Profile\Factory::getDefault();
+        $cmdExists = $profile->createCommand('exists', array('key'));
+
+        $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->returnValue(1));
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+
+        $response = $replication->executeCommand($cmdExists);
+
+        $this->assertSame(1, $response);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\ClientException
+     * @expectedMessage No master server available for replication
+     */
+    public function testFailsOnWriteCommandAndNoConnectionSetAsMaster()
+    {
+        $profile = Profile\Factory::getDefault();
+        $cmdSet = $profile->createCommand('set', array('key', 'value'));
+
+        $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
+        $slave1->expects($this->never())->method('executeCommand');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdSet);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\Connection\ConnectionException
+     */
+    public function testFailsOnUnreachableMaster()
+    {
+        $profile = Profile\Factory::getDefault();
+        $cmdSet = $profile->createCommand('set', array('key', 'value'));
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdSet)
+               ->will($this->throwException(new Connection\ConnectionException($master)));
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->never())
+               ->method('executeCommand');
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->executeCommand($cmdSet);
     }
 
     /**
