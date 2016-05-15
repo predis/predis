@@ -31,6 +31,15 @@ v1.1.0 (2015-xx-xx)
 - Implemented support for SSL-encrypted connections, the connection parameters
   must use either the `tls` or `rediss` scheme.
 
+- `Predis\Connection\Aggregate\MasterSlaveReplication` now tries to send again
+  read-only commands to the next slave when the one picked by the client fails,
+  and eventually switches to master is no other slave is available. The master
+  connection is also used for read-only commands when no slaves are registered.
+
+- `Predis\Connection\Aggregate\MasterSlaveReplication` exposes 2 new methods to
+  force a switch to the master connection (`switchToMaster()`) or to a randomly
+  picked slave (`switchToSlave()`).
+
 
 v1.0.3 (2015-07-30)
 ================================================================================
