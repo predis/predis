@@ -639,12 +639,12 @@ class SentinelReplication implements ReplicationInterface
             try {
                 $response = $this->getConnection($command)->$method($command);
             } catch (CommunicationException $exception) {
+                $this->wipeServerList();
+                $exception->getConnection()->disconnect();
+
                 if ($retries == $this->retryLimit) {
                     throw $exception;
                 }
-
-                $this->wipeServerList();
-                $exception->getConnection()->disconnect();
 
                 usleep($this->retryWait * 1000);
 
