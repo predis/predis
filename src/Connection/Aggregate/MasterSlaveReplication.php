@@ -11,7 +11,9 @@
 
 namespace Predis\Connection\Aggregate;
 
+use Predis\ClientException;
 use Predis\Command\CommandInterface;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\ReplicationStrategy;
 
@@ -116,13 +118,13 @@ class MasterSlaveReplication implements ReplicationInterface
             if ($this->strategy->isReadOperation($command) && $slave = $this->pickSlave()) {
                 $this->current = $slave;
             } else {
-                $this->current = $this->getMaster();
+                $this->current = $this->getMasterOrDie();
             }
 
             return $this->current;
         }
 
-        if ($this->current === $master = $this->getMaster()) {
+        if ($this->current === $master = $this->getMasterOrDie()) {
             return $master;
         }
 
@@ -181,6 +183,20 @@ class MasterSlaveReplication implements ReplicationInterface
     public function getMaster()
     {
         return $this->master;
+    }
+
+    /**
+     * Returns the connection associated to the master server.
+     *
+     * @return NodeConnectionInterface
+     */
+    private function getMasterOrDie()
+    {
+        if (!$connection = $this->getMaster()) {
+            throw new ClientException('No master server available for replication');
+        }
+
+        return $connection;
     }
 
     /**
@@ -249,11 +265,50 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
+     * Retries the execution of a command upon slave failure.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $method  Actual method.
+     *
+     * @return mixed
+     */
+    private function retryCommandOnFailure(CommandInterface $command, $method)
+    {
+        RETRY_COMMAND: {
+            try {
+                $response = $this->getConnection($command)->$method($command);
+            } catch (ConnectionException $exception) {
+                $connection = $exception->getConnection();
+                $connection->disconnect();
+
+                if ($connection === $this->master) {
+                    // Throw immediatly if the client was connected to master,
+                    // even when the command represents a read-only operation.
+                    throw $exception;
+                } else {
+                    // Otherwise remove the failing slave and attempt to execute
+                    // the command again on one of the remaining slaves...
+                    $this->remove($connection);
+                }
+
+                // ... that is, unless we have no more connections to use.
+                if (!$this->slaves && !$this->master) {
+                    throw $exception;
+                }
+
+                goto RETRY_COMMAND;
+            }
+        }
+
+        return $response;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function writeRequest(CommandInterface $command)
     {
-        $this->getConnection($command)->writeRequest($command);
+        $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
@@ -261,7 +316,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function readResponse(CommandInterface $command)
     {
-        return $this->getConnection($command)->readResponse($command);
+        return $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
@@ -269,7 +324,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->getConnection($command)->executeCommand($command);
+        return $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
