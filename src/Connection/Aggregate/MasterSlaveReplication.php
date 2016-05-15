@@ -158,6 +158,7 @@ class MasterSlaveReplication implements ReplicationInterface
         if (!$connection instanceof NodeConnectionInterface) {
             $connection = $this->getConnectionById($connection);
         }
+
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
             throw new \InvalidArgumentException('Invalid connection or connection not found.');
         }
