@@ -36,7 +36,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $slaves;
+    protected $slaves = array();
 
     /**
      * @var NodeConnectionInterface
@@ -48,7 +48,6 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function __construct(ReplicationStrategy $strategy = null)
     {
-        $this->slaves = array();
         $this->strategy = $strategy ?: new ReplicationStrategy();
     }
 
