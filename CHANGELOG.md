@@ -1,4 +1,4 @@
-v1.1.0 (2015-xx-xx)
+v1.1.0 (2016-0x-xx)
 ================================================================================
 
 - Responses to the following commands are no more casted into boolean values:
