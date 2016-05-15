@@ -257,6 +257,25 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testUsesMasterOnReadRequestsWhenNoSlavesAvailable()
+    {
+        $profile = Profile\Factory::getDefault();
+
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $cmd = $profile->createCommand('exists', array('foo'));
+        $this->assertSame($master, $replication->getConnection($cmd));
+
+        $cmd = $profile->createCommand('set', array('foo', 'bar'));
+        $this->assertSame($master, $replication->getConnection($cmd));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSwitchesFromSlaveToMasterOnWriteRequestss()
     {
         $profile = Profile\Factory::getDefault();

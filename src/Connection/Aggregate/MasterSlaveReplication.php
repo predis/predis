@@ -112,21 +112,22 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnection(CommandInterface $command)
     {
-        if ($this->current === null) {
-            $this->check();
-            $this->current = $this->strategy->isReadOperation($command)
-                ? $this->pickSlave()
-                : $this->master;
+        if (!$this->current) {
+            if ($this->strategy->isReadOperation($command) && $slave = $this->pickSlave()) {
+                $this->current = $slave;
+            } else {
+                $this->current = $this->getMaster();
+            }
 
             return $this->current;
         }
 
-        if ($this->current === $this->master) {
-            return $this->current;
+        if ($this->current === $master = $this->getMaster()) {
+            return $master;
         }
 
-        if (!$this->strategy->isReadOperation($command)) {
-            $this->current = $this->master;
+        if (!$this->strategy->isReadOperation($command) || !$this->slaves) {
+            $this->current = $master;
         }
 
         return $this->current;
