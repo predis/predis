@@ -626,12 +626,12 @@ class SentinelReplication implements ReplicationInterface
      * Retries the execution of a command upon server failure after asking a new
      * configuration to one of the sentinels.
      *
-     * @param string           $method  Actual method.
      * @param CommandInterface $command Command instance.
+     * @param string           $method  Actual method.
      *
      * @return mixed
      */
-    private function retryCommandOnFailure($method, $command)
+    private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         $retries = 0;
 
@@ -661,7 +661,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function writeRequest(CommandInterface $command)
     {
-        $this->retryCommandOnFailure(__FUNCTION__, $command);
+        $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
@@ -669,7 +669,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function readResponse(CommandInterface $command)
     {
-        return $this->retryCommandOnFailure(__FUNCTION__, $command);
+        return $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
@@ -677,7 +677,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->retryCommandOnFailure(__FUNCTION__, $command);
+        return $this->retryCommandOnFailure($command, __FUNCTION__);
     }
 
     /**
