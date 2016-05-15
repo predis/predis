@@ -191,13 +191,120 @@ class MasterSlaveReplicationTest extends PredisTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid connection or connection not found.
      */
-    public function testThrowsErrorWhenSwitchingToUnknownConnection()
+    public function testThrowsErrorWhenSwitchingToUnknownConnectionByAlias()
     {
         $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
         $replication->switchTo('unknown');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanSwitchConnectionByInstance()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchTo($master);
+        $this->assertSame($master, $replication->getCurrent());
+        $replication->switchTo($slave1);
+        $this->assertSame($slave1, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorWhenSwitchingToUnknownConnectionByInstance()
+    {
+        $replication = new MasterSlaveReplication();
+        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
+        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
+
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication->switchTo($slave2);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanSwitchToMaster()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchToMaster();
+        $this->assertSame($master, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined()
+    {
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+
+        $replication->switchToMaster();
+    }
+
+    /**
+     * @group disconnected
+     * @todo We should find a way to test that the slave is indeed randomly selected.
+     */
+    public function testCanSwitchToRandomSlave()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertNull($replication->getCurrent());
+
+        $replication->switchToSlave();
+        $this->assertSame($slave1, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection or connection not found.
+     */
+    public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->switchToSlave();
     }
 
     /**

@@ -150,11 +150,32 @@ class MasterSlaveReplication implements ReplicationInterface
             $connection = $this->getConnectionById($connection);
         }
 
+        if (!$connection) {
+            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+        }
+
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
             throw new \InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->current = $connection;
+    }
+
+    /**
+     * Switches to the master server.
+     */
+    public function switchToMaster()
+    {
+        $this->switchTo('master');
+    }
+
+    /**
+     * Switches to a random slave server.
+     */
+    public function switchToSlave()
+    {
+        $connection = $this->pickSlave();
+        $this->switchTo($connection);
     }
 
     /**
