@@ -65,8 +65,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
+     * @expectedException \Predis\ClientException
+     * @expectedExceptionMessage No available connection for replication
      */
     public function testThrowsExceptionOnEmptyReplication()
     {
@@ -76,34 +76,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
      */
-    public function testThrowsExceptionOnMissingMaster()
-    {
-        $replication = new MasterSlaveReplication();
-        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
-
-        $replication->connect();
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Replication needs one master and at least one slave.
-     */
-    public function testThrowsExceptionOnMissingSlave()
-    {
-        $replication = new MasterSlaveReplication();
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
-
-        $replication->connect();
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testConnectForcesConnectionToOneOfSlaves()
+    public function testConnectsToOneOfSlaves()
     {
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->never())->method('connect');
@@ -116,6 +90,20 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave);
 
         $replication->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConnectsToMasterOnMissingSlaves()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->connect();
+        $this->assertSame($master, $replication->getCurrent());
     }
 
     /**

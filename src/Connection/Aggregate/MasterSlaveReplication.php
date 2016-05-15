@@ -54,16 +54,6 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
-     * Checks if one master and at least one slave have been defined.
-     */
-    protected function check()
-    {
-        if (!isset($this->master) || !$this->slaves) {
-            throw new \RuntimeException('Replication needs one master and at least one slave.');
-        }
-    }
-
-    /**
      * Resets the connection state.
      */
     protected function reset()
@@ -156,8 +146,6 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function switchTo($connection)
     {
-        $this->check();
-
         if (!$connection instanceof NodeConnectionInterface) {
             $connection = $this->getConnectionById($connection);
         }
@@ -242,9 +230,12 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function connect()
     {
-        if ($this->current === null) {
-            $this->check();
-            $this->current = $this->pickSlave();
+        if (!$this->current) {
+            if (!$this->current = $this->pickSlave()) {
+                if (!$this->current = $this->getMaster()) {
+                    throw new ClientException("No available connection for replication");
+                }
+            }
         }
 
         $this->current->connect();
