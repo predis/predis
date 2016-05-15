@@ -279,12 +279,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
-        $replication->add($slave2);
 
         $this->assertNull($replication->getCurrent());
 
