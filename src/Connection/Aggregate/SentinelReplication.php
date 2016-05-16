@@ -318,6 +318,21 @@ class SentinelReplication implements ReplicationInterface
     }
 
     /**
+     * Handles error responses returned by redis-sentinel.
+     *
+     * @param NodeConnectionInterface $sentinel Connection to a sentinel server.
+     * @param ErrorResponseInterface  $error    Error response.
+     */
+    private function handleSentinelErrorResponse(NodeConnectionInterface $sentinel, ErrorResponseInterface $error)
+    {
+        if ($error->getErrorType() === 'IDONTKNOW') {
+            throw new ConnectionException($sentinel, $error->getMessage());
+        } else {
+            throw new ServerException($error->getMessage());
+        }
+    }
+
+    /**
      * Fetches the details for the master server from a sentinel.
      *
      * @param NodeConnectionInterface $sentinel Connection to a sentinel server.
@@ -336,7 +351,7 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if ($payload instanceof ErrorResponseInterface) {
-            throw new ServerException($payload->getMessage());
+            $this->handleSentinelErrorResponse($sentinel, $payload);
         }
 
         return array(
@@ -363,7 +378,7 @@ class SentinelReplication implements ReplicationInterface
         );
 
         if ($payload instanceof ErrorResponseInterface) {
-            throw new ServerException($payload->getMessage());
+            $this->handleSentinelErrorResponse($sentinel, $payload);
         }
 
         foreach ($payload as $slave) {
