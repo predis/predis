@@ -71,7 +71,7 @@ class MasterSlaveReplication implements ReplicationInterface
         if ($alias === 'master') {
             $this->master = $connection;
         } else {
-            $this->slaves[$alias ?: count($this->slaves)] = $connection;
+            $this->slaves[$alias ?: "slave-$connection"] = $connection;
         }
 
         $this->reset();

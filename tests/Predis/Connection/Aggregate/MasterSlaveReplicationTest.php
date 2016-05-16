@@ -65,6 +65,22 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testAddingConnectionsToReplicationWithoutAliasesResultsInCustomId()
+    {
+        $slave1 = $this->getMockConnection('tcp://host1');
+        $slave2 = $this->getMockConnection('tcp://host2:6380');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertSame($slave1, $replication->getConnectionById('slave-host1:6379'));
+        $this->assertSame($slave2, $replication->getConnectionById('slave-host2:6380'));
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\ClientException
      * @expectedExceptionMessage No available connection for replication
      */
