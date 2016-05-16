@@ -15,7 +15,6 @@ use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
-use Predis\Connection\Factory as ConnectionFactory;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
