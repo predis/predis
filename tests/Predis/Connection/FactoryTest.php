@@ -269,7 +269,7 @@ class FactoryTest extends PredisTestCase
     public function testCreateConnectionWithoutInitializationCommands()
     {
         $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->never())->method('create');
+        $profile->expects($this->never())->method('createCommand');
 
         $factory = new Factory($profile);
         $parameters = new Parameters();
