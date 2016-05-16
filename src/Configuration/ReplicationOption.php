@@ -56,6 +56,13 @@ class ReplicationOption implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        return new MasterSlaveReplication();
+        $replication = new MasterSlaveReplication();
+
+        if ($options->autodiscovery) {
+            $replication->setConnectionFactory($options->connections);
+            $replication->setAutoDiscovery(true);
+        }
+
+        return $replication;
     }
 }

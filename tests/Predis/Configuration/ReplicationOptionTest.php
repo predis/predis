@@ -55,6 +55,34 @@ class ReplicationOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testConfiguresAutomaticDiscoveryWhenAutodiscoveryOptionIsPresent()
+    {
+        $option = new ReplicationOption();
+        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $connFactory = $this->getMock('Predis\Connection\FactoryInterface');
+
+        $options->expects($this->at(0))
+                ->method('__get')
+                ->with('autodiscovery')
+                ->will($this->returnValue(true));
+        $options->expects($this->at(1))
+                ->method('__get')
+                ->with('connections')
+                ->will($this->returnValue($connFactory));
+
+        $replication = $option->getDefault($options);
+
+        // TODO: I know, I know...
+        $reflection = new \ReflectionProperty($replication, 'autoDiscovery');
+        $reflection->setAccessible(true);
+
+        $this->assertTrue($reflection->getValue($replication));
+
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidInstanceType()

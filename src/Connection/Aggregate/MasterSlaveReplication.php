@@ -13,8 +13,11 @@ namespace Predis\Connection\Aggregate;
 
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
+use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 
 /**
@@ -46,11 +49,46 @@ class MasterSlaveReplication implements ReplicationInterface
     protected $current;
 
     /**
+     * @var bool
+     */
+    protected $autoDiscovery = false;
+
+    /**
+     * @var FactoryInterface
+     */
+    protected $connectionFactory;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct(ReplicationStrategy $strategy = null)
     {
         $this->strategy = $strategy ?: new ReplicationStrategy();
+    }
+
+    /**
+     * Configures the automatic discovery of the replication configuration on failure.
+     *
+     * @param bool $value Enable or disable auto discovery.
+     */
+    public function setAutoDiscovery($value)
+    {
+        if (!$this->connectionFactory) {
+            throw new ClientException('Automatic discovery requires a connection factory');
+        }
+
+        $this->autoDiscovery = (bool) $value;
+    }
+
+    /**
+     * Sets the connection factory used to create the connections by the auto
+     * discovery procedure.
+     *
+     * @param FactoryInterface $connectionFactory Connection factory instance.
+     */
+    public function setConnectionFactory(FactoryInterface $connectionFactory)
+    {
+        $this->connectionFactory = $connectionFactory;
     }
 
     /**
@@ -202,7 +240,7 @@ class MasterSlaveReplication implements ReplicationInterface
     private function getMasterOrDie()
     {
         if (!$connection = $this->getMaster()) {
-            throw new ClientException('No master server available for replication');
+            throw new MissingMasterException('No master server available for replication');
         }
 
         return $connection;
@@ -254,7 +292,7 @@ class MasterSlaveReplication implements ReplicationInterface
         if (!$this->current) {
             if (!$this->current = $this->pickSlave()) {
                 if (!$this->current = $this->getMaster()) {
-                    throw new ClientException("No available connection for replication");
+                    throw new ClientException('No available connection for replication');
                 }
             }
         }
@@ -277,6 +315,111 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
+     * Handles response from INFO.
+     *
+     * @param string $response
+     *
+     * @return array
+     */
+    private function handleInfoResponse($response)
+    {
+        $info = array();
+
+        foreach (preg_split('/\r?\n/', $response) as $row) {
+            if (strpos($row, ':') === false) {
+                continue;
+            }
+
+            list($k, $v) = explode(':', $row, 2);
+            $info[$k] = $v;
+        }
+
+        return $info;
+    }
+
+    /**
+     * Fetches the replication configuration from one of the servers.
+     */
+    public function discover()
+    {
+        if (!$this->connectionFactory) {
+            throw new ClientException('Discovery requires a connection factory');
+        }
+
+        RETRY_FETCH: {
+            try {
+                if ($connection = $this->getMaster()) {
+                    $this->discoverFromMaster($connection, $this->connectionFactory);
+                } elseif ($connection = $this->pickSlave()) {
+                    $this->discoverFromSlave($connection, $this->connectionFactory);
+                } else {
+                    throw new ClientException('No connection available for discovery');
+                }
+            } catch (ConnectionException $exception) {
+                $this->remove($connection);
+                goto RETRY_FETCH;
+            }
+        }
+    }
+
+    /**
+     * Discovers the replication configuration by contacting the master node.
+     *
+     * @param NodeConnectionInterface $connection        Connection to the master node.
+     * @param FactoryInterface        $connectionFactory Connection factory instance.
+     */
+    protected function discoverFromMaster(NodeConnectionInterface $connection, FactoryInterface $connectionFactory)
+    {
+        $response = $connection->executeCommand(RawCommand::create('INFO', 'REPLICATION'));
+        $replication = $this->handleInfoResponse($response);
+
+        if ($replication['role'] !== 'master') {
+            throw new ClientException("Role mismatch (expected master, got slave) [$connection]");
+        }
+
+        $this->slaves = array();
+
+        foreach ($replication as $k => $v) {
+            $parameters = null;
+
+            if (strpos($k, 'slave') === 0 && preg_match('/ip=(?P<host>.*),port=(?P<port>\d+)/', $v, $parameters)) {
+                $slaveConnection = $connectionFactory->create(array(
+                    'host' => $parameters['host'],
+                    'port' => $parameters['port'],
+                ));
+
+                $this->add($slaveConnection);
+            }
+        }
+    }
+
+    /**
+     * Discovers the replication configuration by contacting one of the slaves.
+     *
+     * @param NodeConnectionInterface $connection        Connection to one of the slaves.
+     * @param FactoryInterface        $connectionFactory Connection factory instance.
+     */
+    protected function discoverFromSlave(NodeConnectionInterface $connection, FactoryInterface $connectionFactory)
+    {
+        $response = $connection->executeCommand(RawCommand::create('INFO', 'REPLICATION'));
+        $replication = $this->handleInfoResponse($response);
+
+        if ($replication['role'] !== 'slave') {
+            throw new ClientException("Role mismatch (expected slave, got master) [$connection]");
+        }
+
+        $masterConnection = $connectionFactory->create(array(
+            'host' => $replication['master_host'],
+            'port' => $replication['master_port'],
+            'alias' => 'master',
+        ));
+
+        $this->add($masterConnection);
+
+        $this->discoverFromMaster($masterConnection, $connectionFactory);
+    }
+
+    /**
      * Retries the execution of a command upon slave failure.
      *
      * @param CommandInterface $command Command instance.
@@ -293,9 +436,10 @@ class MasterSlaveReplication implements ReplicationInterface
                 $connection = $exception->getConnection();
                 $connection->disconnect();
 
-                if ($connection === $this->master) {
-                    // Throw immediatly if the client was connected to master,
-                    // even when the command represents a read-only operation.
+                if ($connection === $this->master && !$this->autoDiscovery) {
+                    // Throw immediatly when master connection is failing, even
+                    // if the command represents a read-only operation, unless
+                    // automatic discovery has been enabled.
                     throw $exception;
                 } else {
                     // Otherwise remove the failing slave and attempt to execute
@@ -305,6 +449,16 @@ class MasterSlaveReplication implements ReplicationInterface
 
                 // ... that is, unless we have no more connections to use.
                 if (!$this->slaves && !$this->master) {
+                    throw $exception;
+                } elseif ($this->autoDiscovery) {
+                    $this->discover();
+                }
+
+                goto RETRY_COMMAND;
+            } catch (MissingMasterException $exception) {
+                if ($this->autoDiscovery) {
+                    $this->discover();
+                } else {
                     throw $exception;
                 }
 

@@ -12,6 +12,7 @@
 namespace Predis\Connection\Aggregate;
 
 use Predis\Connection;
+use Predis\Command;
 use Predis\Profile;
 use Predis\Replication\ReplicationStrategy;
 use PredisTestCase;
@@ -664,7 +665,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
+     * @expectedException \Predis\Replication\MissingMasterException
      * @expectedMessage No master server available for replication
      */
     public function testFailsOnWriteCommandAndNoConnectionSetAsMaster()
@@ -805,6 +806,294 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
         $replication->executeCommand($cmdEval);
         $replication->executeCommand($cmdEvalSha);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\ClientException
+     * @expectedMessage Discovery requires a connection factory
+     */
+    public function testDiscoveryRequiresConnectionFactory()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->discover();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscoversReplicationConfigurationFromMaster()
+    {
+        $connFactory = new Connection\Factory();
+        $cmdInfo = Command\RawCommand::create('INFO', 'REPLICATION');
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:master
+connected_slaves:2
+slave0:ip=127.0.0.1,port=6382,state=online,offset=12979,lag=0
+slave1:ip=127.0.0.1,port=6383,state=online,offset=12979,lag=1
+master_repl_offset:12979
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:2
+repl_backlog_histlen:12978
+"));
+
+        $replication = new MasterSlaveReplication();
+        $replication->setConnectionFactory($connFactory);
+
+        $replication->add($master);
+
+        $replication->discover();
+
+        $this->assertCount(2, $slaves = $replication->getSlaves());
+        $this->assertContainsOnlyInstancesOf('Predis\Connection\ConnectionInterface', $slaves);
+
+        $this->assertSame('127.0.0.1:6381', (string) $replication->getMaster());
+        $this->assertSame('127.0.0.1:6382', (string) $slaves[0]);
+        $this->assertSame('127.0.0.1:6383', (string) $slaves[1]);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscoversReplicationConfigurationFromSlave()
+    {
+        $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
+
+        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory->expects($this->at(0))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6381', 'alias' => 'master'))
+                    ->will($this->returnValue($master));
+        $connFactory->expects($this->at(1))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6382'))
+                    ->will($this->returnValue($slave1));
+        $connFactory->expects($this->at(2))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6383'))
+                    ->will($this->returnValue($slave2));
+
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6381
+master_link_status:up
+master_last_io_seconds_ago:8
+master_sync_in_progress:0
+slave_repl_offset:17715532
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_repl_offset:0
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+"));
+
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:master
+connected_slaves:2
+slave0:ip=127.0.0.1,port=6382,state=online,offset=12979,lag=0
+slave1:ip=127.0.0.1,port=6383,state=online,offset=12979,lag=1
+master_repl_offset:12979
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:2
+repl_backlog_histlen:12978
+"));
+
+        $replication = new MasterSlaveReplication();
+        $replication->setConnectionFactory($connFactory);
+
+        $replication->add($slave1);
+
+        $replication->discover();
+
+        $this->assertCount(2, $slaves = $replication->getSlaves());
+        $this->assertContainsOnlyInstancesOf('Predis\Connection\ConnectionInterface', $slaves);
+
+        $this->assertSame('127.0.0.1:6381', (string) $replication->getMaster());
+        $this->assertSame('127.0.0.1:6382', (string) $slaves[0]);
+        $this->assertSame('127.0.0.1:6383', (string) $slaves[1]);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscoversReplicationConfigurationFromSlaveIfMasterFails()
+    {
+        $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
+
+        $masterKO = $this->getMockConnection('tcp://127.0.0.1:7381?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
+
+        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory->expects($this->at(0))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6381', 'alias' => 'master'))
+                    ->will($this->returnValue($master));
+        $connFactory->expects($this->at(1))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6382'))
+                    ->will($this->returnValue($slave1));
+        $connFactory->expects($this->at(2))
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6383'))
+                    ->will($this->returnValue($slave2));
+
+
+        $masterKO->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->throwException(new Connection\ConnectionException($masterKO)));
+
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6381
+master_link_status:up
+master_last_io_seconds_ago:8
+master_sync_in_progress:0
+slave_repl_offset:17715532
+slave_priority:100
+slave_read_only:1
+connected_slaves:0
+master_repl_offset:0
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+"));
+
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:master
+connected_slaves:2
+slave0:ip=127.0.0.1,port=6382,state=online,offset=12979,lag=0
+slave1:ip=127.0.0.1,port=6383,state=online,offset=12979,lag=1
+master_repl_offset:12979
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:2
+repl_backlog_histlen:12978
+"));
+
+        $replication = new MasterSlaveReplication();
+        $replication->setConnectionFactory($connFactory);
+
+        $replication->add($masterKO);
+        $replication->add($slave1);
+
+        $replication->discover();
+
+        $this->assertCount(2, $slaves = $replication->getSlaves());
+        $this->assertContainsOnlyInstancesOf('Predis\Connection\ConnectionInterface', $slaves);
+
+        $this->assertSame('127.0.0.1:6381', (string) $replication->getMaster());
+        $this->assertSame('127.0.0.1:6382', (string) $slaves[0]);
+        $this->assertSame('127.0.0.1:6383', (string) $slaves[1]);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\ClientException
+     * @expectedMessage Automatic discovery requires a connection factory
+     */
+    public function testAutomaticDiscoveryRequiresConnectionFactory()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $replication->setAutoDiscovery(true);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAutomaticDiscoveryOnUnreachableServer()
+    {
+        $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
+        $cmdExists = $command = Command\RawCommand::create('EXISTS', 'key');
+
+        $slaveKO = $this->getMockConnection('tcp://127.0.0.1:7382?alias=slaveKO');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
+
+        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory->expects($this->once())
+                    ->method('create')
+                    ->with(array('host' => '127.0.0.1', 'port' => '6382'))
+                    ->will($this->returnValue($slave1));
+
+
+        $slaveKO->expects($this->once())
+                ->method('executeCommand')
+                ->with($cmdExists)
+                ->will($this->throwException(new Connection\ConnectionException($slaveKO)));
+
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdExists)
+               ->will($this->returnValue(1));
+
+        $master->expects($this->once())
+               ->method('executeCommand')
+               ->with($cmdInfo)
+               ->will($this->returnValue("
+# Replication
+role:master
+connected_slaves:2
+slave0:ip=127.0.0.1,port=6382,state=online,offset=12979,lag=0
+master_repl_offset:12979
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:2
+repl_backlog_histlen:12978
+"));
+
+        $replication = new MasterSlaveReplication();
+        $replication->setConnectionFactory($connFactory);
+        $replication->setAutoDiscovery(true);
+
+        $replication->add($master);
+        $replication->add($slaveKO);
+
+        $replication->executeCommand($cmdExists);
     }
 
     /**
