@@ -31,14 +31,21 @@ v1.1.0 (2016-0x-xx)
 - Implemented support for SSL-encrypted connections, the connection parameters
   must use either the `tls` or `rediss` scheme.
 
-- `Predis\Connection\Aggregate\MasterSlaveReplication` now tries to send again
-  read-only commands to the next slave when the one picked by the client fails,
-  and eventually switches to master if no other slave is available. The master
-  connection is also used for read-only commands when no slaves are registered.
+- Various improvements to `Predis\Connection\Aggregate\MasterSlaveReplication`:
 
-- `Predis\Connection\Aggregate\MasterSlaveReplication` exposes 2 new methods to
-  force a switch to the master connection (`switchToMaster()`) or to a randomly
-  picked slave (`switchToSlave()`).
+  - It tries to resend read-only commands to the next slave when the one picked
+    by the client fails, and eventually switches to the master server when no
+    other slave is available. When no slaves are registered, the master server
+    is used to executed read-only commands.
+
+  - It is possible to discover the current replication configuration on the fly
+    by invoking the `discover()` method which internally relies on the output of
+    the command `INFO REPLICATION` executed against the master server or one of
+    the slaves. The connection can also be configured to do this automatically
+    when it fails to reach one of the servers.
+
+  - Implemented `switchToMaster()` and `switchToSlave()` to make make it easier
+    to force a switch to the master server or a random slave if needed.
 
 
 v1.0.3 (2015-07-30)
