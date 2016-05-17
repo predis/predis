@@ -18,6 +18,10 @@ v1.1.0 (2016-0x-xx)
   (note the lack of a double slash after the scheme). The old format should be
   considered obsolete and will not be supported from the next major release.
 
+- When initialization commands such as `SELECT` and `AUTH` (sent as soon as the
+  connection is established) return error responses, the client now throws an
+  exception with the message returned by Redis.
+
 - Added support for default connection parameters in `Predis\Connection\Factory`
   augmenting the user-supplied parameters used to create new connections. These
   parameters do not override specific parameters when already defined. They can
