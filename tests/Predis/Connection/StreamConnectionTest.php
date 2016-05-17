@@ -29,7 +29,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInitializationCommandFailure()
     {
         $cmdSelect = RawCommand::create('SELECT', '1000');
-        $responseError =
 
         $connection = $this->getMockBuilder(static::CONNECTION_CLASS)
                            ->setMethods(array('executeCommand', 'createResource'))
