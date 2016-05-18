@@ -165,8 +165,15 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 continue;
             }
 
-            $slots = explode('-', $parameters->slots, 2);
-            $this->setSlots($slots[0], $slots[1], $connectionID);
+            foreach (explode(',', $parameters->slots) as $slotRange) {
+                $slots = explode('-', $slotRange, 2);
+
+                if (!isset($slots[1])) {
+                    $slots[1] = $slots[0];
+                }
+
+                $this->setSlots($slots[0], $slots[1], $connectionID);
+            }
         }
     }
 
@@ -205,6 +212,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 
     /**
      * Returns the current slots map for the cluster.
+     *
+     * The order of the returned $slot => $server dictionary is not guaranteed.
      *
      * @return array
      */

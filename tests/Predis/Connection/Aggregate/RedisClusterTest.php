@@ -333,7 +333,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanAssignConnectionsToCustomSlotsFromParameters()
+    public function testCanAssignConnectionsToRangeOfSlotsFromParameters()
     {
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-5460');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-10921');
@@ -344,15 +344,50 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
+        $cluster->buildSlotsMap();
+
         $expectedMap = array_merge(
             array_fill(0, 5461, '127.0.0.1:6379'),
             array_fill(5460, 5461, '127.0.0.1:6380'),
             array_fill(10921, 5462, '127.0.0.1:6381')
         );
 
+        $actualMap = $cluster->getSlotsMap();
+        ksort($actualMap);
+
+        $this->assertSame($expectedMap, $actualMap);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCanAssignConnectionsToSingleSlotOrRangesOfSlotsFromParameters()
+    {
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-5460,5500-5600,11000');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-5499,5600-10921');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10922-10999,11001-16383');
+
+        $cluster = new RedisCluster(new Connection\Factory());
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
         $cluster->buildSlotsMap();
 
-        $this->assertSame($expectedMap, $cluster->getSlotsMap());
+        $expectedMap = array_merge(
+            array_fill(0, 5461, '127.0.0.1:6379'),
+            array_fill(5460, 39, '127.0.0.1:6380'),
+            array_fill(5499, 101, '127.0.0.1:6379'),
+            array_fill(5599, 5321, '127.0.0.1:6380'),
+            array_fill(10921, 78, '127.0.0.1:6381'),
+            array_fill(11000, 1, '127.0.0.1:6379'),
+            array_fill(11000, 5383, '127.0.0.1:6381')
+        );
+
+        $actualMap = $cluster->getSlotsMap();
+        ksort($actualMap);
+
+        $this->assertSame($expectedMap, $actualMap);
     }
 
     /**
