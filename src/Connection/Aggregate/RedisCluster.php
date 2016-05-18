@@ -117,6 +117,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 $this->slotsMap
             );
 
+            $this->slots = array_diff($this->slots, array($connection));
+
             return true;
         }
 
