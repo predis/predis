@@ -289,6 +289,7 @@ class SentinelReplication implements ReplicationInterface
                 );
 
                 $this->sentinels = array();
+                // NOTE: sentinel server does not return itself, so we add it back.
                 $this->sentinels[] = $sentinel->getParameters()->toArray();
 
                 foreach ($payload as $sentinel) {
