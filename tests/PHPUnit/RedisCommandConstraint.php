@@ -10,6 +10,7 @@
  */
 
 use Predis\Command\CommandInterface;
+use SebastianBergmann\Exporter\Exporter;
 
 /**
  * Constraint that verifies a redis command.
@@ -72,6 +73,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
      */
     public function toString()
     {
+        $exporter = new Exporter();
         $string = 'is a Redis command';
 
         if ($this->commandID) {
@@ -80,7 +82,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
 
         if ($this->arguments) {
             $string .= " and the following arguments:\n\n";
-            $string .= \PHPUnit_Util_Type::export($this->arguments);
+            $string .= $exporter->export($this->arguments);
         }
 
         return $string;
