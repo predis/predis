@@ -206,17 +206,18 @@ class SentinelReplication implements ReplicationInterface
      */
     public function remove(NodeConnectionInterface $connection)
     {
-        if ($connection->getParameters()->alias === 'master') {
-            $this->wipeServerList();
+        if ($connection === $this->master) {
+            $this->master = null;
+            $this->reset();
 
             return true;
-        } else {
-            if (($id = array_search($connection, $this->slaves, true)) !== false) {
-                unset($this->slaves[$id]);
-                $this->wipeServerList();
+        }
 
-                return true;
-            }
+        if (false !== $id = array_search($connection, $this->slaves, true)) {
+            unset($this->slaves[$id]);
+            $this->reset();
+
+            return true;
         }
 
         return false;
