@@ -570,7 +570,7 @@ class SentinelReplication implements ReplicationInterface
             $connection = $this->getConnectionById($connection);
         }
 
-        if ($connection === $this->current) {
+        if ($connection && $connection === $this->current) {
             return;
         }
 
