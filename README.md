@@ -7,16 +7,13 @@
 [![Build status][ico-travis]][link-travis]
 [![HHVM support][ico-hhvm]][link-hhvm]
 
-Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3.
+Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3
+and HHVM >= 2.3.0.
 
 By default this library does not require any additional C extension, but it can be optionally paired
 with [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of serializing and parsing
 the [Redis RESP Protocol](http://redis.io/topics/protocol). An asynchronous implementation of Predis
 is available through [Predis\Async](https://github.com/nrk/predis-async) (__experimental__).
-
-Predis can be used with [HHVM](http://www.hhvm.com) >= 2.3.0 but there are no guarantees you will
-not run into unexpected issues (especially when the JIT compiler is enabled via `Eval.Jit = true`)
-due to HHVM being still under heavy development and not yet 100% compatible with the _standard_ PHP.
 
 More details about this project can be found on the [frequently asked questions](FAQ.md) and on the
 [wiki](https://github.com/nrk/predis/wiki).
