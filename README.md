@@ -1,10 +1,11 @@
 # Predis #
 
-[![Latest Stable Version](https://poser.pugx.org/predis/predis/v/stable.png)](https://packagist.org/packages/predis/predis)
-[![Total Downloads](https://poser.pugx.org/predis/predis/downloads.png)](https://packagist.org/packages/predis/predis)
-[![License](https://poser.pugx.org/predis/predis/license.svg)](https://packagist.org/packages/predis/predis)
-[![Build Status](https://travis-ci.org/nrk/predis.svg?branch=master)](https://travis-ci.org/nrk/predis)
-[![HHVM Status](http://hhvm.h4cc.de/badge/predis/predis.png)](http://hhvm.h4cc.de/package/predis/predis)
+[![Latest stable][ico-version-stable]][link-packagist]
+[![Latest development][ico-version-dev]][link-packagist]
+[![Software license][ico-license]](LICENSE)
+[![Daily installs][ico-downloads-daily]][link-downloads]
+[![Build status][ico-travis]][link-travis]
+[![HHVM support][ico-hhvm]][link-hhvm]
 
 Predis is a flexible and feature-complete [Redis](http://redis.io) client library for PHP >= 5.3.
 
@@ -433,3 +434,15 @@ found [on its project page](http://travis-ci.org/nrk/predis).
 ### License ###
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
+
+[ico-license]: https://img.shields.io/github/license/nrk/predis.svg?style=flat-square
+[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
+[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
+[ico-downloads-daily]: https://img.shields.io/packagist/dd/predis/predis.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/nrk/predis.svg?style=flat-square
+[ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/predis/predis
+[link-travis]: https://travis-ci.org/nrk/predis
+[link-downloads]: https://packagist.org/packages/predis/predis/stats
+[link-hhvm]: http://hhvm.h4cc.de/package/predis/predis
