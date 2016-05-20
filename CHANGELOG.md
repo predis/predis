@@ -37,10 +37,11 @@ v1.1.0 (2016-0x-xx)
 
 - Various improvements to `Predis\Connection\Aggregate\MasterSlaveReplication`:
 
-  - It tries to resend read-only commands to the next slave when the one picked
-    by the client fails, and eventually switches to the master server when no
-    other slave is available. When no slaves are registered, the master server
-    is used to executed read-only commands.
+  - When the client fails to send a command on one slave because the connection
+    fails or that specific slave is resyncing (`-LOADING` response from Redis),
+    the associated connection is removed before attempting to send the command
+    to the next slave in the pool. When no other slaves are availabe the client
+    picks the master server also for read-only commands as last resort.
 
   - It is possible to discover the current replication configuration on the fly
     by invoking the `discover()` method which internally relies on the output of
