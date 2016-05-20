@@ -19,6 +19,7 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
+use Predis\Response\ErrorInterface as ResponseErrorInterface;
 
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
@@ -431,7 +432,12 @@ class MasterSlaveReplication implements ReplicationInterface
     {
         RETRY_COMMAND: {
             try {
-                $response = $this->getConnection($command)->$method($command);
+                $connection = $this->getConnection($command);
+                $response = $connection->$method($command);
+
+                if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
+                    throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
+                }
             } catch (ConnectionException $exception) {
                 $connection = $exception->getConnection();
                 $connection->disconnect();

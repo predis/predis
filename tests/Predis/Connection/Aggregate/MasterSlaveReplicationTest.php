@@ -15,6 +15,7 @@ use Predis\Connection;
 use Predis\Command;
 use Predis\Profile;
 use Predis\Replication\ReplicationStrategy;
+use Predis\Response;
 use PredisTestCase;
 
 /**
@@ -680,6 +681,50 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave1);
 
         $replication->executeCommand($cmdSet);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardsSlaveWhenRespondsLOADINGAndExecutesReadOnlyCommandOnNextSlave()
+    {
+        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master->expects($this->never())
+               ->method('executeCommand');
+
+        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1->expects($this->once())
+               ->method('executeCommand')
+               ->with($this->isRedisCommand(
+                   'EXISTS', array('key')
+               ))
+               ->will($this->returnValue(
+                   new Response\Error('LOADING')
+               ));
+
+        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2->expects($this->once())
+               ->method('executeCommand')
+               ->with($this->isRedisCommand(
+                   'EXISTS', array('key')
+               ))
+               ->will($this->returnValue(1));
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $replication->switchTo($slave1);
+
+        $response = $replication->executeCommand(
+            Command\RawCommand::create('exists', 'key')
+        );
+
+        $this->assertSame(1, $response);
+        $this->assertNull($replication->getConnectionById('slave1'));
+        $this->assertSame($slave2, $replication->getConnectionById('slave2'));
     }
 
     /**
