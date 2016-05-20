@@ -1,9 +1,15 @@
 v1.0.4 (2016-xx-xx)
 ================================================================================
 
-- When configuring the client for redis-cluster, connections to nodes can now be
-  preassigned to non-contiguous slot ranges via the `slots` connection parameter
-  using a comma separator: `tcp://127.0.0.1:6379?slots=0-5460,5500-5600,11000`.
+- Various improvements in the handling of redis-cluster:
+
+    - If the connection to a specific node fails when executing a command, the
+      client tries to connect to another node in order to refresh the slots map
+      and then performs another attempt to execute the same command.
+
+    - Connections to nodes can be preassigned to non-contiguous slot ranges via
+      the `slots` parameter using a comma separator. This is how it looks like
+      in practice: `tcp://127.0.0.1:6379?slots=0-5460,5500-5600,11000`.
 
 - __FIX__: broken values returned by `Predis\Collection\Iterator\HashKey` when
   iterating hash keys containing integer fields (PR #330, ISSUE #331).
