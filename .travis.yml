@@ -11,7 +11,7 @@ branches:
   except:
     - v0.5
     - v0.6
-    - php5.2_backport
+    - v0.6-PHP_5.2
     - documentation
 services: redis-server
 before_script:
