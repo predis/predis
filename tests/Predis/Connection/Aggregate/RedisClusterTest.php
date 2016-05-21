@@ -507,7 +507,7 @@ class RedisClusterTest extends PredisTestCase
                         'GET', array('node:1001')
                     ))
                     ->will($this->throwException(
-                        new Connection\ConnectionException($connection1, "Unknown connection error [127.0.0.1:6382]")
+                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6382]')
                     ));
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');

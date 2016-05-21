@@ -72,7 +72,7 @@ class HashKeyTest extends PredisTestCase
                ->method('hscan')
                ->with('key:hash', 0, array())
                ->will($this->returnValue(array(0, array(
-                    1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar'
+                    1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar',
                ))));
 
         $iterator = new HashKey($client, 'key:hash');
