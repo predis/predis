@@ -83,5 +83,4 @@ class RequestSerializerTest extends PredisTestCase
 
         $this->assertSame("*3\r\n$3\r\nDEL\r\n$5\r\nkey:1\r\n$5\r\nkey:2\r\n", $result);
     }
-
 }

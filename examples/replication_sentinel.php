@@ -18,8 +18,6 @@ require __DIR__.'/shared.php';
 // updated configuration to clients thus avoiding static configurations for the
 // replication servers and their roles.
 
-use Predis\Connection\Aggregate\SentinelReplication;
-
 // Instead of connection parameters pointing to redis nodes, we provide a list
 // of instances of redis-sentinel. Users should always provide a timeout value
 // low enough to not hinder operations just in case a sentinel is unreachable

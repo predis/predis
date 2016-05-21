@@ -63,7 +63,7 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
         $connection->method('executeCommand')
                    ->with($cmdSelect)
                    ->will($this->returnValue(
-                       new ErrorResponse("ERR invalid DB index")
+                       new ErrorResponse('ERR invalid DB index')
                    ));
 
         $connection->method('createResource');

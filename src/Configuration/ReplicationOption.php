@@ -12,8 +12,8 @@
 namespace Predis\Configuration;
 
 use Predis\Connection\Aggregate\MasterSlaveReplication;
-use Predis\Connection\Aggregate\SentinelReplication;
 use Predis\Connection\Aggregate\ReplicationInterface;
+use Predis\Connection\Aggregate\SentinelReplication;
 
 /**
  * Configures an aggregate connection used for master/slave replication among

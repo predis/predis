@@ -11,8 +11,8 @@
 
 namespace Predis\Connection\Aggregate;
 
-use Predis\Connection;
 use Predis\Command;
+use Predis\Connection;
 use Predis\Profile;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
@@ -291,6 +291,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
+     *
      * @todo We should find a way to test that the slave is indeed randomly selected.
      */
     public function testCanSwitchToRandomSlave()
@@ -880,7 +881,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $master->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:master
 connected_slaves:2
@@ -891,7 +892,7 @@ repl_backlog_active:1
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
-"));
+'));
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -936,7 +937,7 @@ repl_backlog_histlen:12978
         $slave1->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -953,12 +954,12 @@ repl_backlog_active:0
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
-"));
+'));
 
         $master->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:master
 connected_slaves:2
@@ -969,7 +970,7 @@ repl_backlog_active:1
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
-"));
+'));
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1012,7 +1013,6 @@ repl_backlog_histlen:12978
                     ->with(array('host' => '127.0.0.1', 'port' => '6383'))
                     ->will($this->returnValue($slave2));
 
-
         $masterKO->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
@@ -1021,7 +1021,7 @@ repl_backlog_histlen:12978
         $slave1->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -1038,12 +1038,12 @@ repl_backlog_active:0
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
-"));
+'));
 
         $master->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:master
 connected_slaves:2
@@ -1054,7 +1054,7 @@ repl_backlog_active:1
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
-"));
+'));
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1105,7 +1105,6 @@ repl_backlog_histlen:12978
                     ->with(array('host' => '127.0.0.1', 'port' => '6382'))
                     ->will($this->returnValue($slave1));
 
-
         $slaveKO->expects($this->once())
                 ->method('executeCommand')
                 ->with($cmdExists)
@@ -1119,7 +1118,7 @@ repl_backlog_histlen:12978
         $master->expects($this->once())
                ->method('executeCommand')
                ->with($cmdInfo)
-               ->will($this->returnValue("
+               ->will($this->returnValue('
 # Replication
 role:master
 connected_slaves:2
@@ -1129,7 +1128,7 @@ repl_backlog_active:1
 repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
-"));
+'));
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);

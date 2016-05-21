@@ -70,10 +70,10 @@ class Options implements OptionsInterface
      */
     public function defined($option)
     {
-        return (
+        return
             array_key_exists($option, $this->options) ||
             array_key_exists($option, $this->input)
-        );
+        ;
     }
 
     /**

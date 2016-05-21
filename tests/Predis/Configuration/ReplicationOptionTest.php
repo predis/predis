@@ -78,7 +78,6 @@ class ReplicationOptionTest extends PredisTestCase
         $reflection->setAccessible(true);
 
         $this->assertTrue($reflection->getValue($replication));
-
     }
 
     /**

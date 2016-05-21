@@ -11,9 +11,9 @@
 
 namespace Predis\Connection\Aggregate;
 
-use Predis\CommunicationException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
