@@ -120,13 +120,18 @@ class Client implements ClientInterface
             if ($options->defined('aggregate')) {
                 $initializer = $this->getConnectionInitializerWrapper($options->aggregate);
                 $connection = $initializer($parameters, $options);
-            } else {
-                if ($options->defined('replication') && $replication = $options->replication) {
-                    $connection = $replication;
-                } else {
-                    $connection = $options->cluster;
-                }
+            } elseif ($options->defined('replication')) {
+                $replication = $options->replication;
 
+                if ($replication instanceof AggregateConnectionInterface) {
+                    $connection = $replication;
+                    $options->connections->aggregate($connection, $parameters);
+                } else {
+                    $initializer = $this->getConnectionInitializerWrapper($replication);
+                    $connection = $initializer($parameters, $options);
+                }
+            } else {
+                $connection = $options->cluster;
                 $options->connections->aggregate($connection, $parameters);
             }
 

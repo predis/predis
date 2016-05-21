@@ -13,6 +13,8 @@ v1.1.0 (2016-0x-xx)
   is needed to prevent confusion with how `path` is used to select a database
   when using the `redis` scheme.
 
+- Implemented support for redis-sentinel in the context of replication.
+
 - Changed how Predis handles URI strings in the context of UNIX domain sockets:
   `unix:///path/to/socket` should be used now instead of `unix:/path/to/socket`
   (note the lack of a double slash after the scheme). The old format should be
