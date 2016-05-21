@@ -201,7 +201,7 @@ the `service` option set to the name of the service:
 
 ```php
 $sentinels = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
-$options   = ['replication' => 'redis-sentinel', 'service' => 'mymaster'];
+$options   = ['replication' => 'sentinel', 'service' => 'mymaster'];
 
 $client = new Predis\Client($sentinels, $options);
 ```
