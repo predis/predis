@@ -23,9 +23,8 @@ More details about this project can be found on the [frequently asked questions]
 
 - Support for a wide range of Redis versions (from __2.0__ to __3.0__) using profiles.
 - Clustering via client-side sharding using consistent hashing or custom distributors.
-- Smart support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
-- Support for master-slave replication (write operations on master, read operations on slaves).
-- Support for redis-sentinel to provide high-availability in replication scenarios.
+- Support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
+- Support for master-slave replication setups and [redis-sentinel](http://redis.io/topics/sentinel).
 - Transparent key prefixing for all known Redis commands using a customizable prefixing strategy.
 - Command pipelining (works on both single nodes and aggregate connections).
 - Abstraction for Redis transactions (Redis >= 2.0) supporting CAS operations (Redis >= 2.2).
@@ -157,7 +156,7 @@ only when needed. This is a list of the options supported by default:
   - `exceptions`: whether the client should throw or return responses upon Redis errors.
   - `connections`: connection backends or a connection factory to be used by the client.
   - `cluster`: which backend to use for clustering (`predis`, `redis` or custom configuration).
-  - `replication`: which backend to use for replication (predis or custom configuration).
+  - `replication`: which backend to use for replication (TRUE, `sentinel` or custom configuration).
   - `aggregate`: custom connections aggregator (overrides both `cluster` and `replication`).
 
 Users can provide custom options with their values or lazy callable initializers that are stored in
@@ -175,16 +174,36 @@ is fully configurable.
 
 #### Replication ####
 
-The client can be configured to operate in a master-slave setup by executing read-only commands on
-slave nodes and automatically switch to the master node as soon as it detects a command that will
-perform a write operation. This is the basic configuration needed to work with replication:
+The client can be configured to operate in a single master / multiple slaves setup to provide better
+service availability. When using replication, Predis recognizes read-only commands and sends them to
+a random slave in order to provide some sort of load-balancing and switches to the master as soon as
+it detects a command that performs any kind of operation that would end up modifying the keyspace or
+the value of a key. Instead of raising a connection error when a slave fails, the client attempts to
+fall back to a different slave among the ones provided in the configuration.
+
+The basic configuration needed to use the client in replication mode requires one Redis server to be
+identified as the master (this can be done via connection parameters using the `alias` parameter set
+to `master`) and one or more servers acting as slaves:
 
 ```php
-// Parameters require one master node specifically marked with `alias=master`.
-$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2?alias=slave-01'];
+$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
 $options    = ['replication' => true];
 
 $client = new Predis\Client($parameters, $options);
+```
+
+The above configuration has a static list of servers and relies entirely on the client's logic, but
+it is possible to rely on [`redis-sentinel`](http://redis.io/topics/sentinel) for a more robust HA
+environment with sentinel servers acting as a source of authority for clients for service discovery.
+The minimum configuration required by the client to work with redis-sentinel is a list of connection
+parameters pointing to a bunch of sentinel instances, the `replication` option set to `sentinel` and
+the `service` option set to the name of the service:
+
+```php
+$sentinels = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$options   = ['replication' => 'redis-sentinel', 'service' => 'mymaster'];
+
+$client = new Predis\Client($sentinels, $options);
 ```
 
 While Predis is able to distinguish commands performing write and read-only operations, `EVAL` and
@@ -208,9 +227,8 @@ $client->eval($LUA_SCRIPT, 0);             // Sticks to slave using `eval`...
 $client->evalsha(sha1($LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 ```
 
-The `examples` directory contains two complete scripts showing how replication can be configured for
-[basic](examples/replication_simple.php) and [complex](examples/replication_complex.php) scenarios.
-
+The [`examples`](examples/) directory contains a few scripts that demonstrate how the client can be
+configured and used to leverage replication in both basic and complex scenarios.
 
 #### Cluster ####
 
