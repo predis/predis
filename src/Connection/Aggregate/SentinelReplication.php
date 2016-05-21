@@ -101,14 +101,14 @@ class SentinelReplication implements ReplicationInterface
     protected $updateSentinels = false;
 
     /**
-     * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param string                     $service           Name of the service for autodiscovery.
+     * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
      * @param ReplicationStrategy        $strategy          Replication strategy instance.
      */
     public function __construct(
-        array $sentinels,
         $service,
+        array $sentinels,
         ConnectionFactoryInterface $connectionFactory,
         ReplicationStrategy $strategy = null
     ) {

@@ -1040,7 +1040,7 @@ class SentinelReplicationTest extends PredisTestCase
         $factory = new Connection\Factory();
 
         $replication = new SentinelReplication(
-            array('tcp://127.0.0.1:5381?alias=sentinel1'), 'svc', $factory, $strategy
+            'svc', array('tcp://127.0.0.1:5381?alias=sentinel1'), $factory, $strategy
         );
 
         $this->assertSame($strategy, $replication->getReplicationStrategy());
@@ -1060,7 +1060,7 @@ class SentinelReplicationTest extends PredisTestCase
         $strategy = new Replication\ReplicationStrategy();
         $factory = new Connection\Factory();
 
-        $replication = new SentinelReplication(array($sentinel1), 'svc', $factory, $strategy);
+        $replication = new SentinelReplication('svc', array($sentinel1), $factory, $strategy);
 
         $replication->add($master);
         $replication->add($slave1);
@@ -1091,7 +1091,7 @@ class SentinelReplicationTest extends PredisTestCase
     {
         $factory = $factory ?: new Connection\Factory();
 
-        $replication = new SentinelReplication($sentinels, $service, $factory);
+        $replication = new SentinelReplication($service, $sentinels, $factory);
         $replication->setRetryWait(0);
 
         return $replication;

@@ -42,7 +42,7 @@ class ReplicationOption implements OptionInterface
 
         if ($value === 'sentinel') {
             return function ($sentinels, $options) {
-                return new SentinelReplication($sentinels, $options->service, $options->connections);
+                return new SentinelReplication($options->service, $sentinels, $options->connections);
             };
         }
 
