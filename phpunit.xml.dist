@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit bootstrap="tests/bootstrap.php"
-    colors="true"
-    beStrictAboutTestSize="true"
-    checkForUnintentionallyCoveredCode="true"
-    beStrictAboutTestsThatDoNotTestAnything="true">
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         syntaxCheck="true"
+         beStrictAboutTestSize="true"
+         beStrictAboutTestsThatDoNotTestAnything="true">
 
     <testsuites>
         <testsuite name="Predis Test Suite">
