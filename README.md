@@ -98,9 +98,9 @@ $client = new Predis\Client('unix:/path/to/redis.sock');
 ```
 
 The client can leverage TLS/SSL encryption to connect to secured remote Redis instances without the
-the need to configure an SSL proxy like stunnel. This can be useful when connecting to nodes running
-on various cloud hosting providers. Encryption can be enabled with the use the `tls` scheme and an
-array of suitable [options](http://php.net/manual/context.ssl.php) passed via the `ssl` parameter:
+need to configure an SSL proxy like stunnel. This can be useful when connecting to nodes running on
+various cloud hosting providers. Encryption can be enabled with using the `tls` scheme and an array
+of suitable [options](http://php.net/manual/context.ssl.php) passed via the `ssl` parameter:
 
 ```php
 // Named array of connection parameters:
