@@ -1,10 +1,10 @@
 v1.1.0 (2016-0x-xx)
 ================================================================================
 
-- Responses to the following commands are no more casted into boolean values:
-  `SETNX`, `MSETNX`, `PFADD`, `EXISTS`, `MOVE`, `PERSIST`, `EXPIRE`, `EXPIREAT`,
-  `RENAMENX`, `HSET`, `HSETNX`, `HEXISTS`, `SISMEMBER`, `SMOVE`. The original
-  integer value is returned instead.
+- Responses to the following commands are not casted into booleans anymore, the
+  original integer value is returned: `SETNX`, `MSETNX`, `SMOVE`, `SISMEMBER`,
+  `HSET`, `HSETNX`, `HEXISTS`, `PFADD`, `EXISTS`, `MOVE`, `PERSIST`, `EXPIRE`,
+  `EXPIREAT`, `RENAMENX`.
 
 - Non-boolean string values passed to the `persistent` connection parameter can
   be used to create different persistent connections. Note that this feature was
@@ -13,31 +13,32 @@ v1.1.0 (2016-0x-xx)
   is needed to prevent confusion with how `path` is used to select a database
   when using the `redis` scheme.
 
-- Implemented support for redis-sentinel in the context of replication.
+- Error responses to initialization commands (the ones being automatically sent
+  when a connection is established, such as `SELECT` and `AUTH` when `database`
+  and `password` are set in connection parameters) result in an exception being
+  thrown by the client regardless of the value of the `exception` client option.
 
-- Changed how Predis handles URI strings in the context of UNIX domain sockets:
-  `unix:///path/to/socket` should be used now instead of `unix:/path/to/socket`
-  (note the lack of a double slash after the scheme). The old format should be
-  considered obsolete and will not be supported from the next major release.
+- Using `unix:///path/to/socket` in URI strings to specify a UNIX domain socket
+  file is now deprecated in favor of the format `unix:/path/to/socket` (note the
+  lack of the double slash after the scheme) and will not be supported starting
+  with the next majore release.
 
-- When initialization commands such as `SELECT` and `AUTH` (sent as soon as the
-  connection is established) return error responses, the client now throws an
-  exception with the message returned by Redis.
+- Implemented full support for redis-sentinel.
 
-- Added support for default connection parameters in `Predis\Connection\Factory`
-  augmenting the user-supplied parameters used to create new connections. These
-  parameters do not override specific parameters when already defined. They can
-  also be passed via client options when configuring the client using the newly
-  added `parameters` option.
+- Implemented the ability to specify some default connection parameters via the
+  `parameters` client option to be used by `Predis\Connection\Factory`. Default
+  parameters augment the user-supplied parameters when creating new connections
+  to Redis (but do not take the precedence over them) and are mostly useful when
+  using aggregate connections such as clustering or replication, especially with
+  redis-cluster or redis-sentinel as they create connections on the fly based on
+  responses and redirections from Redis.
 
-- Removed the default value for `timeout` from `Predis\Connection\Parameters`.
-  The fallback to a default value is a responsibility of connection classes, but
-  internally the default timeout for connect() operations is still 5 seconds.
+- Implemented SSL-encrypted connections. SSL-encrypted connections to Redis must
+  use the `tls` or `rediss` schemes in connection parameters along with specific
+  options via the `ssl` parameter (see http://php.net/manual/context.ssl.php).
 
-- Implemented support for SSL-encrypted connections, the connection parameters
-  must use either the `tls` or `rediss` scheme.
-
-- Various improvements to `Predis\Connection\Aggregate\MasterSlaveReplication`:
+- Various improvements to `Predis\Connection\Aggregate\MasterSlaveReplication`
+  (the default replication backend that does not rely on redis-sentinel):
 
   - When the client fails to send a command on one slave because the connection
     fails or that specific slave is resyncing (`-LOADING` response from Redis),
