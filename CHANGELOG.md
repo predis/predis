@@ -1,11 +1,11 @@
-v1.0.4 (2016-xx-xx)
+v1.0.4 (2016-05-xx)
 ================================================================================
 
 - Various improvements in the handling of redis-cluster:
 
     - If the connection to a specific node fails when executing a command, the
       client tries to connect to another node in order to refresh the slots map
-      and then performs another attempt to execute the same command.
+      and perform a new attempt to execute the command.
 
     - Connections to nodes can be preassigned to non-contiguous slot ranges via
       the `slots` parameter using a comma separator. This is how it looks like
