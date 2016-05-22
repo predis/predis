@@ -164,7 +164,7 @@ are stored in the options container for later use through the library.
 
 Aggregate connections are the foundation upon which Predis implements clustering and replication and
 they are used to group multiple connections to single Redis nodes and hide the specific logic needed
-to handle them properly depending on the context. Aggregate connections usually requires an array of
+to handle them properly depending on the context. Aggregate connections usually require an array of
 connection parameters when creating a new client instance.
 
 #### Cluster ####
