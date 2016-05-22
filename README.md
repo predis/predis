@@ -222,26 +222,6 @@ $client->evalsha(sha1($LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 The [`examples`](examples/) directory contains a few scripts that demonstrate how the client can be
 configured and used to leverage replication in both basic and complex scenarios.
 
-#### Cluster ####
-
-Simply passing an array of connection parameters to the client constructor configures Predis to work
-in cluster mode using client-side sharding. If you, on the other hand, want to leverage Redis >= 3.0
-nodes coordinated by redis-cluster, then the client must be initialized like this:
-
-```php
-$parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2'];
-$options    = ['cluster' => 'redis'];
-
-$client = new Predis\Client($parameters, $options);
-```
-
-When using redis-cluster it is not necessary to pass all of the nodes that compose your cluster, you
-can specify only a few nodes and the client will automatically fetch the full and updated slots map
-directly from Redis by contacting one of the servers.
-
-__NOTE__: our support for redis-cluster does not currently consider master / slave replication but
-this feature will be added in a future release of the library.
-
 
 ### Command pipelines ###
 
