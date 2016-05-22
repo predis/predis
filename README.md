@@ -94,7 +94,7 @@ the parameters must use the `unix` scheme and specify a path for the socket file
 
 ```php
 $client = new Predis\Client(['scheme' => 'unix', 'path' => '/path/to/redis.sock']);
-$client = new Predis\Client('unix:/path/to/redis.sock');
+$client = new Predis\Client('unix:///path/to/redis.sock');
 ```
 
 The connection schemes [`redis`](http://www.iana.org/assignments/uri-schemes/prov/redis) (alias of
