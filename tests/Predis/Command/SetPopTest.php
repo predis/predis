@@ -38,8 +38,8 @@ class SetPopTest extends PredisCommandTestCase
      */
     public function testFilterArguments()
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = array('key', 2);
+        $expected = array('key', 2);
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,6 +66,22 @@ class SetPopTest extends PredisCommandTestCase
 
         $this->assertContains($redis->spop('letters'), array('a', 'b'));
         $this->assertContains($redis->spop('letters'), array('a', 'b'));
+
+        $this->assertNull($redis->spop('letters'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 3.2.0
+     */
+    public function testPopsMoreRandomMembersFromSet()
+    {
+        $redis = $this->getClient();
+
+        $redis->sadd('letters', 'a', 'b', 'c');
+
+        $this->assertSameValues(array('a', 'b', 'c'), $redis->spop('letters', 3));
+        $this->assertEmpty($redis->spop('letters', 3));
 
         $this->assertNull($redis->spop('letters'));
     }
