@@ -443,8 +443,8 @@ class MasterSlaveReplication implements ReplicationInterface
                 $connection->disconnect();
 
                 if ($connection === $this->master && !$this->autoDiscovery) {
-                    // Throw immediatly when master connection is failing, even
-                    // if the command represents a read-only operation, unless
+                    // Throw immediately when master connection is failing, even
+                    // when the command represents a read-only operation, unless
                     // automatic discovery has been enabled.
                     throw $exception;
                 } else {
