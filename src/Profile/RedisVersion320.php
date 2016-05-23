@@ -267,6 +267,7 @@ class RedisVersion320 extends RedisProfile
 
             /* commands operating on hashes */
             'HSTRLEN' => 'Predis\Command\HashStringLength',
+            'BITFIELD' => 'Predis\Command\StringBitField',
         );
     }
 }

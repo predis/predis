@@ -873,6 +873,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', 'field'),
                 array('prefix:key', 'field'),
             ),
+            array('BITFIELD',
+                array('key', 'GET', 'u8', '0', 'SET', 'u8', '0', '1'),
+                array('prefix:key', 'GET', 'u8', '0', 'SET', 'u8', '0', '1'),
+            ),
         );
     }
 }

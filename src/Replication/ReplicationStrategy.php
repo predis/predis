@@ -115,6 +115,31 @@ class ReplicationStrategy
     }
 
     /**
+     * Checks if BITFIELD performs a read-only operation by looking for certain
+     * SET and INCRYBY modifiers in the arguments array of the command.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return bool
+     */
+    protected function isBitfieldReadOnly(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+
+        if ($argc >= 2) {
+            for ($i = 1; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'SET' || $argument === 'INCRBY') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Marks a command as a read-only operation.
      *
      * When the behavior of a command can be decided only at runtime depending
@@ -242,6 +267,7 @@ class ReplicationStrategy
             'TIME' => true,
             'PFCOUNT' => true,
             'SORT' => array($this, 'isSortReadOnly'),
+            'BITFIELD' => array($this, 'isBitfieldReadOnly'),
         );
     }
 }

@@ -159,6 +159,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'BITPOS' => 'static::first',
             /* ---------------- Redis 3.2 ---------------- */
             'HSTRLEN' => 'static::first',
+            'BITFIELD' => 'static::first',
         );
     }
 

@@ -96,6 +96,51 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testBitFieldCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('BITFIELD', array('key'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'BITFIELD with no modifiers is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET only is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'SET', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with SET is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'INCRBY', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with INCRBY is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0', 'INCRBY', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET and INCRBY is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0', 'SET', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET and SET is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
@@ -316,6 +361,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'SETRANGE' => 'write',
             'STRLEN' => 'read',
             'SUBSTR' => 'read',
+            'BITFIELD' => 'variable',
 
             /* commands operating on lists */
             'LINSERT' => 'write',

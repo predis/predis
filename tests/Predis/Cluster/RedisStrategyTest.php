@@ -320,6 +320,7 @@ class RedisStrategyTest extends PredisTestCase
             'SUBSTR' => 'keys-first',
             'BITOP' => 'keys-bitop',
             'BITCOUNT' => 'keys-first',
+            'BITFIELD' => 'keys-first',
 
             /* commands operating on lists */
             'LINSERT' => 'keys-first',
