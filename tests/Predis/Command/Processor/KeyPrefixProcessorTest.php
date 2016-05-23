@@ -868,6 +868,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key1', 'key2', 'key3'),
                 array('prefix:key1', 'prefix:key2', 'prefix:key3'),
             ),
+            /* ---------------- Redis 3.2 ---------------- */
+            array('BITFIELD',
+                array('key', 'GET', 'u8', '0', 'SET', 'u8', '0', '1'),
+                array('prefix:key', 'GET', 'u8', '0', 'SET', 'u8', '0', '1'),
+            ),
         );
     }
 }

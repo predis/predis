@@ -190,6 +190,7 @@ class RedisVersion320Test extends PredisProfileTestCase
             149 => 'PFMERGE',
             150 => 'COMMAND',
             151 => 'HSTRLEN',
+            152 => 'BITFIELD',
         );
     }
 }
