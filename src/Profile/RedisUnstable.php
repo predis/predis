@@ -16,7 +16,7 @@ namespace Predis\Profile;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisUnstable extends RedisVersion300
+class RedisUnstable extends RedisVersion320
 {
     /**
      * {@inheritdoc}
@@ -32,10 +32,7 @@ class RedisUnstable extends RedisVersion300
     public function getSupportedCommands()
     {
         return array_merge(parent::getSupportedCommands(), array(
-            /* ---------------- Redis 3.2 ---------------- */
-
-            /* commands operating on hashes */
-            'HSTRLEN' => 'Predis\Command\HashStringLength',
+            // EMPTY
         ));
     }
 }
