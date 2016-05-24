@@ -13,16 +13,16 @@ namespace Predis\Command;
 
 /**
  * @group commands
- * @group realm-set
+ * @group realm-geospatial
  */
-class SetPopTest extends PredisCommandTestCase
+class GeospatialGeoDistTest extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}
      */
     protected function getExpectedCommand()
     {
-        return 'Predis\Command\SetPop';
+        return 'Predis\Command\GeospatialGeoDist';
     }
 
     /**
@@ -30,7 +30,7 @@ class SetPopTest extends PredisCommandTestCase
      */
     protected function getExpectedId()
     {
-        return 'SPOP';
+        return 'GEODIST';
     }
 
     /**
@@ -38,8 +38,8 @@ class SetPopTest extends PredisCommandTestCase
      */
     public function testFilterArguments()
     {
-        $arguments = array('key', 2);
-        $expected = array('key', 2);
+        $arguments = array('key', 'member:1', 'member:2', 'km');
+        $expected = array('key', 'member:1', 'member:2', 'km');
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,42 +52,29 @@ class SetPopTest extends PredisCommandTestCase
      */
     public function testParseResponse()
     {
-        $this->assertSame('member', $this->getCommand()->parseResponse('member'));
-    }
+        $raw = array('103.31822459492736');
+        $expected = array('103.31822459492736');
 
-    /**
-     * @group connected
-     */
-    public function testPopsRandomMemberFromSet()
-    {
-        $redis = $this->getClient();
+        $command = $this->getCommand();
 
-        $redis->sadd('letters', 'a', 'b');
-
-        $this->assertContains($redis->spop('letters'), array('a', 'b'));
-        $this->assertContains($redis->spop('letters'), array('a', 'b'));
-
-        $this->assertNull($redis->spop('letters'));
+        $this->assertSame($expected, $command->parseResponse($raw));
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testPopsMoreRandomMembersFromSet()
+    public function testCommandReturnsGeoDistance()
     {
         $redis = $this->getClient();
 
-        $redis->sadd('letters', 'a', 'b', 'c');
-
-        $this->assertSameValues(array('a', 'b', 'c'), $redis->spop('letters', 3));
-        $this->assertEmpty($redis->spop('letters', 3));
-
-        $this->assertNull($redis->spop('letters'));
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
+        $this->assertSame('166.2742', $redis->geodist('Sicily', 'Palermo', 'Catania', 'km'));
     }
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 3.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
@@ -95,7 +82,7 @@ class SetPopTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
-        $redis->spop('foo');
+        $redis->lpush('Sicily', 'Palermo');
+        $redis->geodist('Sicily', 'Palermo', 'Catania');
     }
 }

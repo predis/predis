@@ -96,6 +96,105 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testBitFieldCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('BITFIELD', array('key'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'BITFIELD with no modifiers is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET only is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'SET', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with SET is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'INCRBY', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with INCRBY is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0', 'INCRBY', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET and INCRBY is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('BITFIELD', array('key', 'GET', 'u4', '0', 'SET', 'u4', '0', 1));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'BITFIELD with GET and SET is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGeoradiusCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GEORADIUS is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUS with STORE is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUS with STOREDIST is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGeoradiusByMemberCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER with STORE is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER with STOREDIST is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
@@ -316,6 +415,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'SETRANGE' => 'write',
             'STRLEN' => 'read',
             'SUBSTR' => 'read',
+            'BITFIELD' => 'variable',
 
             /* commands operating on lists */
             'LINSERT' => 'write',
@@ -392,6 +492,14 @@ class ReplicationStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'write',
             'EVALSHA' => 'write',
+
+            /* commands performing geospatial operations */
+            'GEOADD' => 'write',
+            'GEOHASH' => 'read',
+            'GEOPOS' => 'read',
+            'GEODIST' => 'read',
+            'GEORADIUS' => 'variable',
+            'GEORADIUSBYMEMBER' => 'variable',
         );
 
         if (isset($type)) {

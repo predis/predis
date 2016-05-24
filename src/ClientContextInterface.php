@@ -38,6 +38,7 @@ use Predis\Command\CommandInterface;
  * @method $this append($key, $value)
  * @method $this bitcount($key, $start = null, $end = null)
  * @method $this bitop($operation, $destkey, $key)
+ * @method $this bitfield($key, ...)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this get($key)
@@ -98,7 +99,7 @@ use Predis\Command\CommandInterface;
  * @method $this sismember($key, $member)
  * @method $this smembers($key)
  * @method $this smove($source, $destination, $member)
- * @method $this spop($key)
+ * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
  * @method $this sscan($key, $cursor, array $options = null)
@@ -156,6 +157,12 @@ use Predis\Command\CommandInterface;
  * @method $this slowlog($subcommand, $argument = null)
  * @method $this time()
  * @method $this command()
+ * @method $this geoadd($key, $longitude, $latitude, $member)
+ * @method $this geohash($key, array $members)
+ * @method $this geopos($key, array $members)
+ * @method $this geodist($key, $member1, $member2, $unit = null)
+ * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
+ * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

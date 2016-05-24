@@ -80,6 +80,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'SUBSTR' => $getKeyFromFirstArgument,
             'BITOP' => array($this, 'getKeyFromBitOp'),
             'BITCOUNT' => $getKeyFromFirstArgument,
+            'BITFIELD' => $getKeyFromFirstArgument,
 
             /* commands operating on lists */
             'LINSERT' => $getKeyFromFirstArgument,
@@ -164,6 +165,14 @@ abstract class ClusterStrategy implements StrategyInterface
             /* scripting */
             'EVAL' => array($this, 'getKeyFromScriptingCommands'),
             'EVALSHA' => array($this, 'getKeyFromScriptingCommands'),
+
+            /* commands performing geospatial operations */
+            'GEOADD' => $getKeyFromFirstArgument,
+            'GEOHASH' => $getKeyFromFirstArgument,
+            'GEOPOS' => $getKeyFromFirstArgument,
+            'GEODIST' => $getKeyFromFirstArgument,
+            'GEORADIUS' => array($this, 'getKeyFromGeoradiusCommands'),
+            'GEORADIUSBYMEMBER' => array($this, 'getKeyFromGeoradiusCommands'),
         );
     }
 
@@ -320,6 +329,39 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
             return $arguments[1];
         }
+    }
+
+    /**
+     * Extracts the key from GEORADIUS and GEORADIUSBYMEMBER commands.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromGeoradiusCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
+
+        if ($argc > $startIndex) {
+            $keys = array($arguments[0]);
+
+            for ($i = $startIndex; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                    $keys[] = $arguments[++$i];
+                }
+            }
+
+            if ($this->checkSameSlotForKeys($keys)) {
+                return $arguments[0];
+            } else {
+                return null;
+            }
+        }
+
+        return $arguments[0];
     }
 
     /**

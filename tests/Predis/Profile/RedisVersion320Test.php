@@ -14,14 +14,14 @@ namespace Predis\Profile;
 /**
  *
  */
-class RedisUnstableTest extends PredisProfileTestCase
+class RedisVersion320Test extends PredisProfileTestCase
 {
     /**
      * {@inheritdoc}
      */
     public function getProfile($version = null)
     {
-        return new RedisUnstable();
+        return new RedisVersion320();
     }
 
     /**

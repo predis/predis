@@ -115,6 +115,57 @@ class ReplicationStrategy
     }
 
     /**
+     * Checks if BITFIELD performs a read-only operation by looking for certain
+     * SET and INCRYBY modifiers in the arguments array of the command.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return bool
+     */
+    protected function isBitfieldReadOnly(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+
+        if ($argc >= 2) {
+            for ($i = 1; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'SET' || $argument === 'INCRBY') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if a GEORADIUS command is a readable operation by parsing the
+     * arguments array of the specified commad instance.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return bool
+     */
+    protected function isGeoradiusReadOnly(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
+
+        if ($argc > $startIndex) {
+            for ($i = $startIndex; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Marks a command as a read-only operation.
      *
      * When the behavior of a command can be decided only at runtime depending
@@ -242,6 +293,12 @@ class ReplicationStrategy
             'TIME' => true,
             'PFCOUNT' => true,
             'SORT' => array($this, 'isSortReadOnly'),
+            'BITFIELD' => array($this, 'isBitfieldReadOnly'),
+            'GEOHASH' => true,
+            'GEOPOS' => true,
+            'GEODIST' => true,
+            'GEORADIUS' => array($this, 'isGeoradiusReadOnly'),
+            'GEORADIUSBYMEMBER' => array($this, 'isGeoradiusReadOnly'),
         );
     }
 }

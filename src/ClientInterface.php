@@ -46,6 +46,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    append($key, $value)
  * @method int    bitcount($key, $start = null, $end = null)
  * @method int    bitop($operation, $destkey, $key)
+ * @method array  bitfield($key, ...)
  * @method int    decr($key)
  * @method int    decrby($key, $decrement)
  * @method string get($key)
@@ -106,7 +107,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    sismember($key, $member)
  * @method array  smembers($key)
  * @method int    smove($source, $destination, $member)
- * @method string spop($key)
+ * @method string spop($key, $count = null)
  * @method string srandmember($key, $count = null)
  * @method int    srem($key, $member)
  * @method array  sscan($key, $cursor, array $options = null)
@@ -164,6 +165,12 @@ use Predis\Profile\ProfileInterface;
  * @method mixed  slowlog($subcommand, $argument = null)
  * @method array  time()
  * @method array  command()
+ * @method int    geoadd($key, $longitude, $latitude, $member)
+ * @method array  geohash($key, array $members)
+ * @method array  geopos($key, array $members)
+ * @method string geodist($key, $member1, $member2, $unit = null)
+ * @method array  georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
+ * @method array  georadiusbymember($key, $member, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
