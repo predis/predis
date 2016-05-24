@@ -868,6 +868,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key1', 'key2', 'key3'),
                 array('prefix:key1', 'prefix:key2', 'prefix:key3'),
             ),
+            /* ---------------- Redis 3.2 ---------------- */
+            array('HSTRLEN',
+                array('key', 'field'),
+                array('prefix:key', 'field'),
+            ),
         );
     }
 }
