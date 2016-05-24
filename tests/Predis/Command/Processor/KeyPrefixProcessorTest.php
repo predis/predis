@@ -881,6 +881,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', 'member:1', 'member:2'),
                 array('prefix:key', 'member:1', 'member:2'),
             ),
+            array('GEOPOS',
+                array('key', 'member:1', 'member:2'),
+                array('prefix:key', 'member:1', 'member:2'),
+            ),
         );
     }
 }
