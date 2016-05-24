@@ -268,6 +268,7 @@ class ReplicationStrategy
             'PFCOUNT' => true,
             'SORT' => array($this, 'isSortReadOnly'),
             'BITFIELD' => array($this, 'isBitfieldReadOnly'),
+            'GEOHASH' => true,
         );
     }
 }

@@ -271,6 +271,7 @@ class RedisVersion320 extends RedisProfile
 
             /* commands performing geospatial operations */
             'GEOADD' => 'Predis\Command\GeospatialGeoAdd',
+            'GEOHASH' => 'Predis\Command\GeospatialGeoHash',
         );
     }
 }

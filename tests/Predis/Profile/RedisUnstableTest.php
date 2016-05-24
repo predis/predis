@@ -192,6 +192,7 @@ class RedisUnstableTest extends PredisProfileTestCase
             151 => 'HSTRLEN',
             152 => 'BITFIELD',
             153 => 'GEOADD',
+            154 => 'GEOHASH',
         );
     }
 }
