@@ -160,6 +160,7 @@ use Predis\Command\CommandInterface;
  * @method $this geohash($key, array $members)
  * @method $this geopos($key, array $members)
  * @method $this geodist($key, $member1, $member2, $unit = null)
+ * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

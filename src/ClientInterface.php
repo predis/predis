@@ -168,6 +168,7 @@ use Predis\Profile\ProfileInterface;
  * @method array  geohash($key, array $members)
  * @method array  geopos($key, array $members)
  * @method string geodist($key, $member1, $member2, $unit = null)
+ * @method array  georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

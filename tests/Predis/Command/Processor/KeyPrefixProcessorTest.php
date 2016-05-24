@@ -889,6 +889,14 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', 'member:1', 'member:2', 'km'),
                 array('prefix:key', 'member:1', 'member:2', 'km'),
             ),
+            array('GEORADIUS',
+                array('key', '15', '37', '200', 'km'),
+                array('prefix:key', '15', '37', '200', 'km'),
+            ),
+            array('GEORADIUS',
+                array('key', '15', '37', '200', 'km', 'WITHDIST', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'),
+                array('prefix:key', '15', '37', '200', 'km', 'WITHDIST', 'STORE', 'prefix:key:store', 'STOREDIST', 'prefix:key:storedist'),
+            ),
         );
     }
 }
