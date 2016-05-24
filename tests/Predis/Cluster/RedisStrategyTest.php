@@ -138,6 +138,24 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForSortCommand()
+    {
+        $strategy = $this->getClusterStrategy();
+        $profile = Profile\Factory::getDevelopment();
+        $arguments = array('{key}:1', 'value1', '{key}:2', 'value2');
+
+        $commandID = 'SORT';
+
+        $command = $profile->createCommand($commandID, array('{key}:1'));
+        $this->assertNotNull($strategy->getSlot($command), $commandID);
+
+        $command = $profile->createCommand($commandID, array('{key}:1', array('STORE' => '{key}:2')));
+        $this->assertNotNull($strategy->getSlot($command), $commandID);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForBlockingListCommandsWithOneKey()
     {
         $strategy = $this->getClusterStrategy();

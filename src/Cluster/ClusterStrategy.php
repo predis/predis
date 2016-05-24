@@ -53,7 +53,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'PEXPIREAT' => $getKeyFromFirstArgument,
             'TTL' => $getKeyFromFirstArgument,
             'PTTL' => $getKeyFromFirstArgument,
-            'SORT' => $getKeyFromFirstArgument, // TODO
+            'SORT' => array($this, 'getKeyFromSortCommand'),
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
 
@@ -258,6 +258,35 @@ abstract class ClusterStrategy implements StrategyInterface
 
         if ($this->checkSameSlotForKeys($keys)) {
             return $arguments[0];
+        }
+    }
+
+    /**
+     * Extracts the key from SORT command.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromSortCommand(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $firstKey = $arguments[0];
+
+        if (1 === $argc = count($arguments)) {
+            return $firstKey;
+        }
+
+        $keys = array($firstKey);
+
+        for ($i = 1; $i < $argc; $i++) {
+            if (strtoupper($arguments[$i]) === 'STORE') {
+                $keys[] = $arguments[++$i];
+            }
+        }
+
+        if ($this->checkSameSlotForKeys($keys)) {
+            return $firstKey;
         }
     }
 
