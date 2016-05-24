@@ -443,6 +443,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'GEOADD' => 'write',
             'GEOHASH' => 'read',
             'GEOPOS' => 'read',
+            'GEODIST' => 'read',
         );
 
         if (isset($type)) {

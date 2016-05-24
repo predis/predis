@@ -273,6 +273,7 @@ class RedisVersion320 extends RedisProfile
             'GEOADD' => 'Predis\Command\GeospatialGeoAdd',
             'GEOHASH' => 'Predis\Command\GeospatialGeoHash',
             'GEOPOS' => 'Predis\Command\GeospatialGeoPos',
+            'GEODIST' => 'Predis\Command\GeospatialGeoDist',
         );
     }
 }

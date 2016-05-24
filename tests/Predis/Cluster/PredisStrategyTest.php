@@ -400,6 +400,7 @@ class PredisStrategyTest extends PredisTestCase
             'GEOADD' => 'keys-first',
             'GEOHASH' => 'keys-first',
             'GEOPOS' => 'keys-first',
+            'GEODIST' => 'keys-first',
         );
 
         if (isset($type)) {

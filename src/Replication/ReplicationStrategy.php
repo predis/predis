@@ -270,6 +270,7 @@ class ReplicationStrategy
             'BITFIELD' => array($this, 'isBitfieldReadOnly'),
             'GEOHASH' => true,
             'GEOPOS' => true,
+            'GEODIST' => true,
         );
     }
 }
