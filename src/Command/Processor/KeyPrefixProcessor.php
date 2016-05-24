@@ -161,6 +161,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'HSTRLEN' => 'static::first',
             'BITFIELD' => 'static::first',
             'GEOADD' => 'static::first',
+            'GEOHASH' => 'static::first',
         );
     }
 

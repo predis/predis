@@ -157,6 +157,7 @@ use Predis\Command\CommandInterface;
  * @method $this time()
  * @method $this command()
  * @method $this geoadd($key, $longitude, $latitude, $member)
+ * @method $this geohash($key, array $members)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

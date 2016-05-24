@@ -877,6 +877,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', '13.361389', '38.115556', 'member:1', '15.087269', '37.502669', 'member:2'),
                 array('prefix:key', '13.361389', '38.115556', 'member:1', '15.087269', '37.502669', 'member:2'),
             ),
+            array('GEOHASH',
+                array('key', 'member:1', 'member:2'),
+                array('prefix:key', 'member:1', 'member:2'),
+            ),
         );
     }
 }
