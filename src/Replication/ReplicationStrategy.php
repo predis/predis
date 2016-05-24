@@ -100,8 +100,18 @@ class ReplicationStrategy
     protected function isSortReadOnly(CommandInterface $command)
     {
         $arguments = $command->getArguments();
+        $argc = count($arguments);
 
-        return ($c = count($arguments)) === 1 ? true : $arguments[$c - 2] !== 'STORE';
+        if ($argc > 1) {
+            for ($i = 1; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'STORE') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
