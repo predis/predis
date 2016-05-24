@@ -377,6 +377,9 @@ class PredisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+
+            /* commands performing geospatial operations */
+            'GEOADD' => 'keys-first',
         );
 
         if (isset($type)) {

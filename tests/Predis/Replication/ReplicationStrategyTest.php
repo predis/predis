@@ -438,6 +438,9 @@ class ReplicationStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'write',
             'EVALSHA' => 'write',
+
+            /* commands performing geospatial operations */
+            'GEOADD' => 'write',
         );
 
         if (isset($type)) {

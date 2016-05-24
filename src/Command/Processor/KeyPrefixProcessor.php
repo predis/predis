@@ -160,6 +160,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             /* ---------------- Redis 3.2 ---------------- */
             'HSTRLEN' => 'static::first',
             'BITFIELD' => 'static::first',
+            'GEOADD' => 'static::first',
         );
     }
 

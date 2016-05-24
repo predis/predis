@@ -164,6 +164,7 @@ use Predis\Profile\ProfileInterface;
  * @method mixed  slowlog($subcommand, $argument = null)
  * @method array  time()
  * @method array  command()
+ * @method int    geoadd($key, $longitude, $latitude, $member)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

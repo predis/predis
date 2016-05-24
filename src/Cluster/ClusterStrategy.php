@@ -165,6 +165,9 @@ abstract class ClusterStrategy implements StrategyInterface
             /* scripting */
             'EVAL' => array($this, 'getKeyFromScriptingCommands'),
             'EVALSHA' => array($this, 'getKeyFromScriptingCommands'),
+
+            /* commands performing geospatial operations */
+            'GEOADD' => $getKeyFromFirstArgument,
         );
     }
 

@@ -156,6 +156,7 @@ use Predis\Command\CommandInterface;
  * @method $this slowlog($subcommand, $argument = null)
  * @method $this time()
  * @method $this command()
+ * @method $this geoadd($key, $longitude, $latitude, $member)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
