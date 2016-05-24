@@ -79,6 +79,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    hset($key, $field, $value)
  * @method int    hsetnx($key, $field, $value)
  * @method array  hvals($key)
+ * @method int    hstrlen($key, $field)
  * @method array  blpop(array $keys, $timeout)
  * @method array  brpop(array $keys, $timeout)
  * @method array  brpoplpush($source, $destination, $timeout)
