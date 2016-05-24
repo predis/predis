@@ -141,6 +141,33 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testGeoradiusCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GEORADIUS is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUS with STORE is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUS with STOREDIST is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
@@ -444,6 +471,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'GEOHASH' => 'read',
             'GEOPOS' => 'read',
             'GEODIST' => 'read',
+            'GEORADIUS' => 'variable',
         );
 
         if (isset($type)) {

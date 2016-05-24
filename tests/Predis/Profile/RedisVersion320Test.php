@@ -195,6 +195,7 @@ class RedisVersion320Test extends PredisProfileTestCase
             154 => 'GEOHASH',
             155 => 'GEOPOS',
             156 => 'GEODIST',
+            157 => 'GEORADIUS',
         );
     }
 }

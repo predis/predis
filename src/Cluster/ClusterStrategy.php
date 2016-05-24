@@ -171,6 +171,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEOHASH' => $getKeyFromFirstArgument,
             'GEOPOS' => $getKeyFromFirstArgument,
             'GEODIST' => $getKeyFromFirstArgument,
+            'GEORADIUS' => array($this, 'getKeyFromGeoradiusCommands'),
         );
     }
 
@@ -327,6 +328,38 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
             return $arguments[1];
         }
+    }
+
+    /**
+     * Extracts the key from GEORADIUS command.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromGeoradiusCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+
+        if ($argc > 5) {
+            $keys = array($arguments[0]);
+
+            for ($i = 5; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                    $keys[] = $arguments[++$i];
+                }
+            }
+
+            if ($this->checkSameSlotForKeys($keys)) {
+                return $arguments[0];
+            } else {
+                return null;
+            }
+        }
+
+        return $arguments[0];
     }
 
     /**

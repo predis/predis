@@ -140,6 +140,31 @@ class ReplicationStrategy
     }
 
     /**
+     * Checks if a GEORADIUS command is a readable operation by parsing the
+     * arguments array of the specified commad instance.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return bool
+     */
+    protected function isGeoradiusReadOnly(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+        $argc = count($arguments);
+
+        if ($argc > 5) {
+            for ($i = 5; $i < $argc; $i++) {
+                $argument = strtoupper($arguments[$i]);
+                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Marks a command as a read-only operation.
      *
      * When the behavior of a command can be decided only at runtime depending
@@ -271,6 +296,7 @@ class ReplicationStrategy
             'GEOHASH' => true,
             'GEOPOS' => true,
             'GEODIST' => true,
+            'GEORADIUS' => array($this, 'isGeoradiusReadOnly'),
         );
     }
 }
