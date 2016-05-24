@@ -170,6 +170,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEOADD' => $getKeyFromFirstArgument,
             'GEOHASH' => $getKeyFromFirstArgument,
             'GEOPOS' => $getKeyFromFirstArgument,
+            'GEODIST' => $getKeyFromFirstArgument,
         );
     }
 

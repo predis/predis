@@ -163,6 +163,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEOADD' => 'static::first',
             'GEOHASH' => 'static::first',
             'GEOPOS' => 'static::first',
+            'GEODIST' => 'static::first',
         );
     }
 
