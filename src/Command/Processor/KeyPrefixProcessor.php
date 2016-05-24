@@ -165,6 +165,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEOPOS' => 'static::first',
             'GEODIST' => 'static::first',
             'GEORADIUS' => 'static::georadius',
+            'GEORADIUSBYMEMBER' => 'static::georadius',
         );
     }
 
@@ -429,9 +430,10 @@ class KeyPrefixProcessor implements ProcessorInterface
     {
         if ($arguments = $command->getArguments()) {
             $arguments[0] = "$prefix{$arguments[0]}";
+            $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
 
-            if (($count = count($arguments)) > 5) {
-                for ($i = 5; $i < $count; ++$i) {
+            if (($count = count($arguments)) > $startIndex) {
+                for ($i = $startIndex; $i < $count; ++$i) {
                     switch (strtoupper($arguments[$i])) {
                         case 'STORE':
                         case 'STOREDIST':

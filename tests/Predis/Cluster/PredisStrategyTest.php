@@ -172,6 +172,23 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForGeoradiusByMemberCommand()
+    {
+        $strategy = $this->getClusterStrategy();
+        $profile = Profile\Factory::getDevelopment();
+
+        $commandID = 'GEORADIUSBYMEMBER';
+
+        $command = $profile->createCommand($commandID, array('{key}:1', 'member', 1, 'km'));
+        $this->assertNotNull($strategy->getSlot($command), $commandID);
+
+        $command = $profile->createCommand($commandID, array('{key}:1', 'member', 1, 'km', 'store', '{key}:2', 'storedist', '{key}:3'));
+        $this->assertNotNull($strategy->getSlot($command), $commandID);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForEvalCommand()
     {
         $strategy = $this->getClusterStrategy();
@@ -401,6 +418,7 @@ class PredisStrategyTest extends PredisTestCase
             'GEOPOS' => 'keys-first',
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
+            'GEORADIUSBYMEMBER' => 'keys-georadius',
         );
 
         if (isset($type)) {

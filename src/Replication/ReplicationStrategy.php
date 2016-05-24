@@ -141,9 +141,10 @@ class ReplicationStrategy
     {
         $arguments = $command->getArguments();
         $argc = count($arguments);
+        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
 
-        if ($argc > 5) {
-            for ($i = 5; $i < $argc; $i++) {
+        if ($argc > $startIndex) {
+            for ($i = $startIndex; $i < $argc; $i++) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     return false;
@@ -287,6 +288,7 @@ class ReplicationStrategy
             'GEOPOS' => true,
             'GEODIST' => true,
             'GEORADIUS' => array($this, 'isGeoradiusReadOnly'),
+            'GEORADIUSBYMEMBER' => array($this, 'isGeoradiusReadOnly'),
         );
     }
 }

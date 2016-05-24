@@ -168,6 +168,33 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testGeoradiusByMemberCommand()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km'));
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER is expected to be a read operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER with STORE is expected to be a write operation.'
+        );
+
+        $command = $profile->createCommand('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GEORADIUSBYMEMBER with STOREDIST is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \Predis\NotSupportedException
      * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
@@ -472,6 +499,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'GEOPOS' => 'read',
             'GEODIST' => 'read',
             'GEORADIUS' => 'variable',
+            'GEORADIUSBYMEMBER' => 'variable',
         );
 
         if (isset($type)) {
