@@ -71,6 +71,7 @@ use Predis\Command\CommandInterface;
  * @method $this hset($key, $field, $value)
  * @method $this hsetnx($key, $field, $value)
  * @method $this hvals($key)
+ * @method $this hstrlen($key, $field)
  * @method $this blpop(array $keys, $timeout)
  * @method $this brpop(array $keys, $timeout)
  * @method $this brpoplpush($source, $destination, $timeout)
