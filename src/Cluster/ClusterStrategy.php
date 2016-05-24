@@ -172,6 +172,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEOPOS' => $getKeyFromFirstArgument,
             'GEODIST' => $getKeyFromFirstArgument,
             'GEORADIUS' => array($this, 'getKeyFromGeoradiusCommands'),
+            'GEORADIUSBYMEMBER' => array($this, 'getKeyFromGeoradiusCommands'),
         );
     }
 
@@ -331,7 +332,7 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
-     * Extracts the key from GEORADIUS command.
+     * Extracts the key from GEORADIUS and GEORADIUSBYMEMBER commands.
      *
      * @param CommandInterface $command Command instance.
      *
@@ -341,11 +342,12 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
         $argc = count($arguments);
+        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
 
-        if ($argc > 5) {
+        if ($argc > $startIndex) {
             $keys = array($arguments[0]);
 
-            for ($i = 5; $i < $argc; $i++) {
+            for ($i = $startIndex; $i < $argc; $i++) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     $keys[] = $arguments[++$i];

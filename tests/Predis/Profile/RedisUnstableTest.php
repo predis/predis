@@ -196,6 +196,7 @@ class RedisUnstableTest extends PredisProfileTestCase
             155 => 'GEOPOS',
             156 => 'GEODIST',
             157 => 'GEORADIUS',
+            158 => 'GEORADIUSBYMEMBER',
         );
     }
 }
