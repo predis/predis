@@ -98,7 +98,7 @@ use Predis\Command\CommandInterface;
  * @method $this sismember($key, $member)
  * @method $this smembers($key)
  * @method $this smove($source, $destination, $member)
- * @method $this spop($key)
+ * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
  * @method $this sscan($key, $cursor, array $options = null)
