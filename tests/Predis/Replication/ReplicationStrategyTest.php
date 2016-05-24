@@ -442,6 +442,7 @@ class ReplicationStrategyTest extends PredisTestCase
             /* commands performing geospatial operations */
             'GEOADD' => 'write',
             'GEOHASH' => 'read',
+            'GEOPOS' => 'read',
         );
 
         if (isset($type)) {

@@ -162,6 +162,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'BITFIELD' => 'static::first',
             'GEOADD' => 'static::first',
             'GEOHASH' => 'static::first',
+            'GEOPOS' => 'static::first',
         );
     }
 

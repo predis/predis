@@ -399,6 +399,7 @@ class PredisStrategyTest extends PredisTestCase
             /* commands performing geospatial operations */
             'GEOADD' => 'keys-first',
             'GEOHASH' => 'keys-first',
+            'GEOPOS' => 'keys-first',
         );
 
         if (isset($type)) {

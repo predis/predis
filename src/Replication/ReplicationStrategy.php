@@ -269,6 +269,7 @@ class ReplicationStrategy
             'SORT' => array($this, 'isSortReadOnly'),
             'BITFIELD' => array($this, 'isBitfieldReadOnly'),
             'GEOHASH' => true,
+            'GEOPOS' => true,
         );
     }
 }
