@@ -107,7 +107,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    sismember($key, $member)
  * @method array  smembers($key)
  * @method int    smove($source, $destination, $member)
- * @method string spop($key)
+ * @method string spop($key, $count = null)
  * @method string srandmember($key, $count = null)
  * @method int    srem($key, $member)
  * @method array  sscan($key, $cursor, array $options = null)
