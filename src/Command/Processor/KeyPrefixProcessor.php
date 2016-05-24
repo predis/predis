@@ -338,7 +338,7 @@ class KeyPrefixProcessor implements ProcessorInterface
 
             if (($count = count($arguments)) > 1) {
                 for ($i = 1; $i < $count; ++$i) {
-                    switch ($arguments[$i]) {
+                    switch (strtoupper($arguments[$i])) {
                         case 'BY':
                         case 'STORE':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";
