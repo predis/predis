@@ -425,7 +425,7 @@ Predis has a comprehensive test suite covering every aspect of the library. This
 integration tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct
 behavior of the implementation of each command and automatically skips commands not defined in the
 specified Redis profile. If you do not have Redis up and running, integration tests can be disabled.
-By default the test suite is configured to execute integration tests using the profile for Redis 2.8
+By default the test suite is configured to execute integration tests using the profile for Redis 3.2
 (which is the current stable version of Redis) but can optionally target a Redis instance built from
 the `unstable` branch by modifying `phpunit.xml` and setting `REDIS_SERVER_VERSION` to `dev` so that
 the development server profile will be used. You can refer to [the tests README](tests/README.md)
