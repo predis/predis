@@ -385,7 +385,7 @@ class SentinelReplication implements ReplicationInterface
         foreach ($payload as $slave) {
             $flags = explode(',', $slave[9]);
 
-            if (array_intersect($flags, array('s_down', 'disconnected'))) {
+            if (array_intersect($flags, array('s_down', 'o_down', 'disconnected'))) {
                 continue;
             }
 
