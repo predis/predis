@@ -1,6 +1,8 @@
 v1.1.0 (2016-0x-xx)
 ================================================================================
 
+- Bumped the default server profile used by the client to Redis 3.2.
+
 - Responses to the following commands are not casted into booleans anymore, the
   original integer value is returned: `SETNX`, `MSETNX`, `SMOVE`, `SISMEMBER`,
   `HSET`, `HSETNX`, `HEXISTS`, `PFADD`, `EXISTS`, `MOVE`, `PERSIST`, `EXPIRE`,
