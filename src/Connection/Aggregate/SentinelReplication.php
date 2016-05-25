@@ -535,11 +535,11 @@ class SentinelReplication implements ReplicationInterface
     {
         $connection = $this->getConnectionInternal($command);
 
-        if (!$connection->isConnected() && ($this->slaves || $this->master)) {
-            $this->assertConnectionRole(
-                $connection,
-                $this->strategy->isReadOperation($command) ? 'slave' : 'master'
-            );
+        if (!$connection->isConnected()) {
+            // When we do not have any available slave in the pool we can expect
+            // read-only operations to hit the master server.
+            $expectedRole = $this->strategy->isReadOperation($command) && $this->slaves ? 'slave' : 'master';
+            $this->assertConnectionRole($connection, $expectedRole);
         }
 
         return $connection;

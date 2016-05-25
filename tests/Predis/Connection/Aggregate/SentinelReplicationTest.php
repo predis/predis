@@ -798,6 +798,49 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testGetConnectionReturnsMasterForReadOnlyOperationsOnUnavailableSlaves()
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
+        $sentinel1->expects($this->once())
+                  ->method('executeCommand')
+                  ->with($this->isRedisCommand(
+                      'SENTINEL', array('slaves', 'svc')
+                  ))
+                  ->will($this->returnValue(
+                      array(
+                          array(
+                              'name', '127.0.0.1:6382',
+                              'ip', '127.0.0.1',
+                              'port', '6382',
+                              'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                              'flags', 'slave,s_down,disconnected',
+                              'master-host', '127.0.0.1',
+                              'master-port', '6381',
+                          ),
+                      )
+                  ));
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $master->expects($this->once())
+               ->method('isConnected')
+               ->will($this->returnValue(false));
+        $master->expects($this->at(2))
+               ->method('executeCommand')
+               ->with($this->isRedisCommand('ROLE'))
+               ->will($this->returnValue(array(
+                   'master', '0', array(),
+               )));
+
+        $replication = $this->getReplicationConnection('svc', array($sentinel1));
+
+        $replication->add($master);
+
+        $replication->getConnection(Command\RawCommand::create('get', 'key'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodExecuteCommandSendsCommandToNodeAndReturnsResponse()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
