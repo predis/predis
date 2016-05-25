@@ -1,6 +1,12 @@
 v1.0.4 (2016-05-xx)
 ================================================================================
 
+- Added new profile for Redis 3.2 with its new commands: `HSTRLEN`, `BITFIELD`,
+  `GEOADD`, `GEOHASH`, `GEOPOS`, `GEODIST`, `GEORADIUS`, `GEORADIUSBYMEMBER`.
+  The default server profile for Predis is still the one for Redis 3.0 you must
+  set the `profile` client option to `3.2` when initializing the client in order
+  to be able to use them when connecting to Redis 3.2.
+
 - Various improvements in the handling of redis-cluster:
 
     - If the connection to a specific node fails when executing a command, the
