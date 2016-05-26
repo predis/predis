@@ -489,28 +489,25 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRetriesExecutingCommandAfterFetchingNewSlotsMapOnConnectionFailure()
+    public function testRetriesExecutingCommandOnConnectionFailureOnlyAfterFetchingNewSlotsMap()
     {
         $slotsmap = array(
-            array(0, 5500, array('127.0.0.1', 9381), array()),
-            array(5501, 11000, array('127.0.0.1', 6382), array()),
-            array(1101, 16383, array('127.0.0.1', 6383), array()),
+            array(0, 5460, array('127.0.0.1', 9381), array()),
+            array(5461, 10921, array('127.0.0.1', 6382), array()),
+            array(10922, 16383, array('127.0.0.1', 6383), array()),
         );
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-1364');
-        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=1365-2729');
-        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=2730-4095');
 
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381');
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
         $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($this->isRedisCommand(
                         'GET', array('node:1001')
                     ))
                     ->will($this->throwException(
-                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6382]')
+                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
                     ));
 
-        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10921');
         $connection2->expects($this->any())
                     ->method('executeCommand')
                     ->with($this->isRedisCommand(
@@ -518,7 +515,7 @@ class RedisClusterTest extends PredisTestCase
                     ))
                     ->will($this->returnValue($slotsmap));
 
-        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10922-16383');
         $connection3->expects($this->any())
                     ->method('executeCommand')
                     ->with($this->isRedisCommand(
@@ -562,6 +559,206 @@ class RedisClusterTest extends PredisTestCase
         $this->assertSame('value:5001', $cluster->executeCommand(
             Command\RawCommand::create('get', 'node:5001')
         ));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRetriesExecutingCommandOnConnectionFailureButDoNotAskSlotsMapWhenDisabled()
+    {
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5500');
+        $connection1->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'GET', array('node:1001')
+                    ))
+                    ->will($this->throwException(
+                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                    ));
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5501-11000');
+        $connection2->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'GET', array('node:1001')
+                    ))
+                    ->will($this->returnValue(
+                        new Response\Error('MOVED 1970 127.0.0.1:9381')
+                    ));
+
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=11101-16383');
+        $connection3->expects($this->never())
+                    ->method('executeCommand');
+
+        $connection4 = $this->getMockConnection('tcp://127.0.0.1:9381');
+        $connection4->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'GET', array('node:1001')
+                    ))
+                    ->will($this->returnValue('value:1001'));
+
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory->expects($this->once())
+                 ->method('create')
+                 ->with(array(
+                    'host' => '127.0.0.1',
+                    'port' => '9381',
+                  ))
+                 ->will($this->returnValue($connection4));
+
+        // TODO: I'm not sure about mocking a protected method, but it'll do for now
+        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster->expects($this->never())
+                ->method('getRandomConnection');
+
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $this->assertSame('value:1001', $cluster->executeCommand(
+            Command\RawCommand::create('get', 'node:1001')
+        ));
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\ClientException
+     * @expectedExceptionMessage No connections available in the pool
+     */
+    public function testThrowsClientExceptionWhenExecutingCommandWithEmptyPool()
+    {
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory->expects($this->never())->method('create');
+
+        $cluster = new RedisCluster($factory);
+
+        $cluster->executeCommand(Command\RawCommand::create('get', 'node:1001'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAskSlotsMapReturnEmptyArrayOnEmptyConnectionsPool()
+    {
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory->expects($this->never())->method('create');
+
+        $cluster = new RedisCluster($factory);
+
+        $this->assertEmpty($cluster->askSlotsMap());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAskSlotsMapRetriesOnDifferentNodeOnConnectionFailure()
+    {
+        $slotsmap = array(
+            array(0, 5460, array('127.0.0.1', 9381), array()),
+            array(5461, 10921, array('127.0.0.1', 6382), array()),
+            array(10922, 16383, array('127.0.0.1', 6383), array()),
+        );
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'CLUSTER', array('SLOTS')
+                    ))
+                    ->will($this->throwException(
+                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                    ));
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10921');
+        $connection2->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'CLUSTER', array('SLOTS')
+                    ))
+                    ->will($this->throwException(
+                        new Connection\ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6383]')
+                    ));
+
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10922-16383');
+        $connection3->expects($this->once())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'CLUSTER', array('SLOTS')
+                    ))
+                    ->will($this->returnValue($slotsmap));
+
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory->expects($this->never())->method('create');
+
+        // TODO: I'm not sure about mocking a protected method, but it'll do for now
+        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster->expects($this->exactly(3))
+                ->method('getRandomConnection')
+                ->will($this->onConsecutiveCalls($connection1, $connection2, $connection3));
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $this->assertCount(16384, $cluster->askSlotsMap());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\Connection\ConnectionException
+     * @expectedExceptionMessage Unknown connection error [127.0.0.1:6382]
+     */
+    public function testAskSlotsMapHonorsRetryLimitOnMultipleConnectionFailures()
+    {
+        $slotsmap = array(
+            array(0, 5460, array('127.0.0.1', 9381), array()),
+            array(5461, 10921, array('127.0.0.1', 6382), array()),
+            array(10922, 16383, array('127.0.0.1', 6383), array()),
+        );
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1->expects($this->any())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'CLUSTER', array('SLOTS')
+                    ))
+                    ->will($this->throwException(
+                        new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                    ));
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10921');
+        $connection2->expects($this->any())
+                    ->method('executeCommand')
+                    ->with($this->isRedisCommand(
+                        'CLUSTER', array('SLOTS')
+                    ))
+                    ->will($this->throwException(
+                        new Connection\ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6382]')
+                    ));
+
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10922-16383');
+        $connection3->expects($this->never())
+                    ->method('executeCommand');
+
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory->expects($this->never())->method('create');
+
+        // TODO: I'm not sure about mocking a protected method, but it'll do for now
+        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster->expects($this->exactly(2))
+                ->method('getRandomConnection')
+                ->will($this->onConsecutiveCalls($connection1, $connection2));
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $cluster->setRetryLimit(1);
+
+        $cluster->askSlotsMap();
     }
 
     /**
