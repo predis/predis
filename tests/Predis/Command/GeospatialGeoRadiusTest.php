@@ -40,12 +40,12 @@ class GeospatialGeoRadiusTest extends PredisCommandTestCase
     {
         $arguments = array(
             'Sicily', 15, 37, 200, 'km',
-            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'
+            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
         );
 
         $expected = array(
             'Sicily', 15, 37, 200, 'km',
-            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'
+            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
         );
 
         $command = $this->getCommand();
@@ -73,7 +73,7 @@ class GeospatialGeoRadiusTest extends PredisCommandTestCase
 
         $expected = array(
             'Sicily', 15, 37, 200, 'km',
-            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'
+            'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
         );
 
         $command = $this->getCommand();

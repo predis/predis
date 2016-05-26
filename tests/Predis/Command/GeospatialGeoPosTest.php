@@ -67,13 +67,13 @@ class GeospatialGeoPosTest extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array(
-            array("13.361389338970184", "38.115556395496299"),
-            array("15.087267458438873", "37.50266842333162"),
+            array('13.361389338970184', '38.115556395496299'),
+            array('15.087267458438873', '37.50266842333162'),
         );
 
         $expected = array(
-            array("13.361389338970184", "38.115556395496299"),
-            array("15.087267458438873", "37.50266842333162"),
+            array('13.361389338970184', '38.115556395496299'),
+            array('15.087267458438873', '37.50266842333162'),
         );
 
         $command = $this->getCommand();
@@ -91,8 +91,8 @@ class GeospatialGeoPosTest extends PredisCommandTestCase
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
         $this->assertEquals(array(
-            array("13.361389338970184", "38.115556395496299"),
-            array("15.087267458438873", "37.50266842333162"),
+            array('13.361389338970184', '38.115556395496299'),
+            array('15.087267458438873', '37.50266842333162'),
         ), $redis->geopos('Sicily', 'Palermo', 'Catania'));
     }
 

@@ -288,7 +288,7 @@ abstract class ClusterStrategy implements StrategyInterface
 
         $keys = array($firstKey);
 
-        for ($i = 1; $i < $argc; $i++) {
+        for ($i = 1; $i < $argc; ++$i) {
             if (strtoupper($arguments[$i]) === 'STORE') {
                 $keys[] = $arguments[++$i];
             }
@@ -347,7 +347,7 @@ abstract class ClusterStrategy implements StrategyInterface
         if ($argc > $startIndex) {
             $keys = array($arguments[0]);
 
-            for ($i = $startIndex; $i < $argc; $i++) {
+            for ($i = $startIndex; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     $keys[] = $arguments[++$i];
@@ -357,7 +357,7 @@ abstract class ClusterStrategy implements StrategyInterface
             if ($this->checkSameSlotForKeys($keys)) {
                 return $arguments[0];
             } else {
-                return null;
+                return;
             }
         }
 

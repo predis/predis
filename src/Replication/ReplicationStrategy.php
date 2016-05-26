@@ -103,7 +103,7 @@ class ReplicationStrategy
         $argc = count($arguments);
 
         if ($argc > 1) {
-            for ($i = 1; $i < $argc; $i++) {
+            for ($i = 1; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'STORE') {
                     return false;
@@ -128,7 +128,7 @@ class ReplicationStrategy
         $argc = count($arguments);
 
         if ($argc >= 2) {
-            for ($i = 1; $i < $argc; $i++) {
+            for ($i = 1; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'SET' || $argument === 'INCRBY') {
                     return false;
@@ -154,7 +154,7 @@ class ReplicationStrategy
         $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
 
         if ($argc > $startIndex) {
-            for ($i = $startIndex; $i < $argc; $i++) {
+            for ($i = $startIndex; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     return false;
