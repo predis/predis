@@ -36,6 +36,69 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testParametersForSentinelConnectionShouldNotUseDatabaseAndPassword()
+    {
+        $replication = $this->getReplicationConnection('svc', array(
+            'tcp://127.0.0.1:5381?alias=sentinel1&database=1&password=secret',
+        ));
+
+        $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
+
+        $this->assertArrayNotHasKey('password', $parameters);
+        $this->assertArrayNotHasKey('database', $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParametersForSentinelConnectionHaveDefaultTimeout()
+    {
+        $replication = $this->getReplicationConnection('svc', array(
+            'tcp://127.0.0.1:5381?alias=sentinel',
+        ));
+
+        $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
+
+        $this->assertArrayHasKey('timeout', $parameters);
+        $this->assertSame(0.100, $parameters['timeout']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParametersForSentinelConnectionCanOverrideDefaultTimeout()
+    {
+        $replication = $this->getReplicationConnection('svc', array(
+            'tcp://127.0.0.1:5381?alias=sentinel&timeout=1',
+        ));
+
+        $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
+
+        $this->assertArrayHasKey('timeout', $parameters);
+        $this->assertSame('1', $parameters['timeout']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConnectionParametersInstanceForSentinelConnectionIsNotModified()
+    {
+        $originalParameters = Connection\Parameters::create(
+            'tcp://127.0.0.1:5381?alias=sentinel1&database=1&password=secret'
+        );
+
+        $replication = $this->getReplicationConnection('svc', array($originalParameters));
+
+        $parameters = $replication->getSentinelConnection()->getParameters();
+
+        $this->assertSame($originalParameters, $parameters);
+        $this->assertNotNull($parameters->password);
+        $this->assertNotNull($parameters->database);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodGetSentinelConnectionReturnsFirstAvailableSentinel()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
