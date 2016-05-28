@@ -39,6 +39,16 @@ v1.1.0 (2016-0x-xx)
   use the `tls` or `rediss` schemes in connection parameters along with specific
   options via the `ssl` parameter (see http://php.net/manual/context.ssl.php).
 
+- Iterating over `Predis\Connection\Aggregate\RedisCluster` now returns all the
+  connections currently mapped in the slots map instead of just the connections
+  initialized in the pool. When the slots map is retrieved from Redis (which is
+  done automatically by default) this allows to iterate over all of the current
+  master nodes of the cluster. When the use of `CLUSTER SLOTS` is disabled (see
+  the `useClusterSlots()` method) the iteration returns only connections with a
+  a slots range associated in their parameters (the ones supplied when creating
+  a client instance) or the ones initialized by `-MOVED` responses to make the
+  behaviour of the iteration consistent between the two modes of operation.
+
 - Various improvements to `Predis\Connection\Aggregate\MasterSlaveReplication`
   (the default replication backend that does not rely on redis-sentinel):
 

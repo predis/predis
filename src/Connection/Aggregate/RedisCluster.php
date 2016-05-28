@@ -171,6 +171,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * cluster, so it is most effective when all of the connections supplied on
      * initialization have the "slots" parameter properly set accordingly to the
      * current cluster configuration.
+     *
+     * @return array
      */
     public function buildSlotsMap()
     {
@@ -193,6 +195,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 $this->setSlots($slots[0], $slots[1], $connectionID);
             }
         }
+
+        return $this->slotsMap;
     }
 
     /**
@@ -608,7 +612,23 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function getIterator()
     {
-        return new \ArrayIterator(array_values($this->pool));
+        if ($this->useClusterSlots) {
+            $slotsmap = $this->getSlotsMap() ?: $this->askSlotsMap();
+        } else {
+            $slotsmap = $this->getSlotsMap() ?: $this->buildSlotsMap();
+        }
+
+        $connections = array();
+
+        foreach (array_unique($slotsmap) as $node) {
+            if (!$connection = $this->getConnectionById($node)) {
+                $this->add($connection = $this->createConnection($node));
+            }
+
+            $connections[] = $connection;
+        }
+
+        return new \ArrayIterator($connections);
     }
 
     /**
