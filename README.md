@@ -235,14 +235,14 @@ must be provided via the global `parameters` client option. This option can also
 a different database index. The client options array would then look like this:
 
 ```php
-$options   = [
+$options = [
     'replication' => 'sentinel',
     'service' => 'mymaster',
     'parameters' => [
         'password' => $secretpassword,
         'database' => 10,
     ],
-  ];
+];
 ```
 
 While Predis is able to distinguish commands performing write and read-only operations, `EVAL` and
