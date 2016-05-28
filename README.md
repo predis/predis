@@ -230,6 +230,21 @@ $options   = ['replication' => 'sentinel', 'service' => 'mymaster'];
 $client = new Predis\Client($sentinels, $options);
 ```
 
+If the master and slave nodes are configured to require an authentication from clients, a password
+must be provided via the global `parameters` client option. This option can also be used to specify
+a different database index. The client options array would then look like this:
+
+```php
+$options   = [
+    'replication' => 'sentinel',
+    'service' => 'mymaster',
+    'parameters' => [
+        'password' => $secretpassword,
+        'database' => 10,
+    ],
+  ];
+```
+
 While Predis is able to distinguish commands performing write and read-only operations, `EVAL` and
 `EVALSHA` represent a corner case in which the client switches to the master node because it cannot
 tell when a Lua script is safe to be executed on slaves. While this is indeed the default behavior,
