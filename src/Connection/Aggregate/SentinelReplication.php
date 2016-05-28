@@ -18,6 +18,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -238,16 +239,22 @@ class SentinelReplication implements ReplicationInterface
             $parameters = Parameters::parse($parameters);
         }
 
+        if ($parameters instanceof ParametersInterface) {
+            /** @var ParametersInterface  $parameters */
+            $parameters = $parameters->toArray();
+        }
+
         if (is_array($parameters)) {
-            $parameters += array(
+            $parameters = array(
                 'timeout' => $this->sentinelTimeout,
 
                 // We need to override password and database by setting them to
                 // NULL as they are not needed when connecting to sentinels.
                 'password' => null,
                 'database' => null,
-            );
+            ) + $parameters;
         }
+
 
         $connection = $this->connectionFactory->create($parameters);
 
