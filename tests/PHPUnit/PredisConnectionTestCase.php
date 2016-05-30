@@ -116,18 +116,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $this->assertEquals($parameters, $unserialized->getParameters());
     }
 
-    /**
-     * @group disconnected
-     * @group slow
-     * @expectedException \Predis\Connection\ConnectionException
-     */
-    public function testThrowExceptionWhenUnableToConnect()
-    {
-        $parameters = array('host' => '169.254.10.10', 'timeout' => 0.5);
-        $connection = $this->createConnectionWithParams($parameters, false);
-        $connection->executeCommand($this->getCurrentProfile()->createCommand('ping'));
-    }
-
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
@@ -448,9 +436,17 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
+        // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
+        // unfortunately, this is the version still being used by Travis CI.
+        if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
+            $timeout = 1;
+        } else {
+            $timeout = 0.1;
+        }
+
         $connection = $this->createConnectionWithParams(array(
             'host' => '169.254.10.10',
-            'timeout' => 0.1,
+            'timeout' => $timeout,
         ), false);
 
         $connection->connect();
@@ -464,9 +460,17 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnConnectionTimeoutIPv6()
     {
+        // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
+        // unfortunately, this is the version still being used by Travis CI.
+        if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
+            $timeout = 1;
+        } else {
+            $timeout = 0.1;
+        }
+
         $connection = $this->createConnectionWithParams(array(
             'host' => '0:0:0:0:0:ffff:a9fe:a0a',
-            'timeout' => 0.1,
+            'timeout' => $timeout,
         ), false);
 
         $connection->connect();
