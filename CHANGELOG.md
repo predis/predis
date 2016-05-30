@@ -1,4 +1,4 @@
-v1.0.4 (2016-05-xx)
+v1.0.4 (2016-05-30)
 ================================================================================
 
 - Added new profile for Redis 3.2 with its new commands: `HSTRLEN`, `BITFIELD`,
