@@ -135,6 +135,12 @@ $client = new Predis\Client([
 
 See the [aggregate connections](#aggregate-connections) section of this document for more details.
 
+Connections to Redis are lazy meaning that the client connects to a server only if and when needed.
+While it is recommended to let the client do its own stuff under the hood, there may be times when
+it is still desired to have control of when the connection is opened or closed: this can easily be
+achieved by invoking `$client->connect()` and `$client->disconnect()`. Please note that the effect
+of these methods on aggregate connections may differ depending on each specific implementation.
+
 
 ### Client configuration ###
 
