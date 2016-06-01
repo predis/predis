@@ -31,7 +31,8 @@ class IntegerResponse implements ResponseHandlerInterface
     public function handle(CompositeConnectionInterface $connection, $payload)
     {
         if (is_numeric($payload)) {
-            return (int) $payload;
+            $integer = (int) $payload;
+            return $integer == $payload ? $integer : $payload;
         }
 
         if ($payload !== 'nil') {
