@@ -1216,30 +1216,4 @@ class SentinelReplicationTest extends PredisTestCase
 
         return $connection;
     }
-
-    /**
-     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
-     *
-     * @param mixed $parameters Optional parameters.
-     *
-     * @return mixed
-     */
-    protected function getMockConnection($parameters = null)
-    {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-
-        if ($parameters) {
-            $parameters = Connection\Parameters::create($parameters);
-            $hash = "{$parameters->host}:{$parameters->port}";
-
-            $connection->expects($this->any())
-                       ->method('getParameters')
-                       ->will($this->returnValue($parameters));
-            $connection->expects($this->any())
-                       ->method('__toString')
-                       ->will($this->returnValue($hash));
-        }
-
-        return $connection;
-    }
 }

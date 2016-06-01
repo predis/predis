@@ -204,6 +204,32 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
+     *
+     * @param mixed $parameters Optional parameters.
+     *
+     * @return mixed
+     */
+    protected function getMockConnection($parameters = null)
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        if ($parameters) {
+            $parameters = Connection\Parameters::create($parameters);
+            $hash = "{$parameters->host}:{$parameters->port}";
+
+            $connection->expects($this->any())
+                       ->method('getParameters')
+                       ->will($this->returnValue($parameters));
+            $connection->expects($this->any())
+                       ->method('__toString')
+                       ->will($this->returnValue($hash));
+        }
+
+        return $connection;
+    }
+
+    /**
      * Returns the server version of the Redis instance used by the test suite.
      *
      * @throws RuntimeException When the client cannot retrieve the current server version
