@@ -28,7 +28,7 @@ function zpop($client, $key)
 {
     $element = null;
     $options = array(
-        'cas'   => true,    // Initialize with support for CAS operations
+        'cas' => true,      // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
         'retry' => 3,       // Number of retries on aborted transactions, after
                             // which the client bails out with an exception.

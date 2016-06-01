@@ -11,7 +11,6 @@
 
 namespace Predis\Connection\Aggregate;
 
-use Predis\Connection;
 use Predis\Profile;
 use PredisTestCase;
 
