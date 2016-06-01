@@ -1,11 +1,12 @@
 # Predis #
 
+[![Software license][ico-license]](LICENSE)
 [![Latest stable][ico-version-stable]][link-packagist]
 [![Latest development][ico-version-dev]][link-packagist]
-[![Software license][ico-license]](LICENSE)
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
 [![HHVM support][ico-hhvm]][link-hhvm]
+[![Gitter room][ico-gitter]][link-gitter]
 
 Flexible and feature-complete [Redis](http://redis.io) client for PHP >= 5.3 and HHVM >= 2.3.0.
 
@@ -476,8 +477,10 @@ The code for Predis is distributed under the terms of the MIT license (see [LICE
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/nrk/predis.svg?style=flat-square
 [ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
+[ico-gitter]: https://img.shields.io/gitter/room/nrk/predis.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
 [link-travis]: https://travis-ci.org/nrk/predis
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
 [link-hhvm]: http://hhvm.h4cc.de/package/predis/predis
+[link-gitter]: https://gitter.im/nrk/predis
