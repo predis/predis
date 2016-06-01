@@ -38,7 +38,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Client implements ClientInterface
+class Client implements ClientInterface, \IteratorAggregate
 {
     const VERSION = '1.1.0-dev';
 
@@ -524,5 +524,24 @@ class Client implements ClientInterface
     public function monitor()
     {
         return new MonitorConsumer($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        $clients = array();
+        $connection = $this->getConnection();
+
+        if (!$connection instanceof \Traversable) {
+            throw new ClientException('The underlying connection is not traversable');
+        }
+
+        foreach ($connection as $node) {
+            $clients[(string) $node] = new static($node, $this->getOptions());
+        }
+
+        return new \ArrayIterator($clients);
     }
 }

@@ -815,6 +815,55 @@ class ClientTest extends PredisTestCase
         $this->assertTrue($client->executeCommand($command));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testGetIteratorWithTraversableConnections()
+    {
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
+
+        $aggregate = new \Predis\Connection\Aggregate\PredisCluster();
+
+        $aggregate->add($connection1);
+        $aggregate->add($connection2);
+        $aggregate->add($connection3);
+
+        $client = new Client($aggregate);
+
+        $iterator = $client->getIterator();
+
+        $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
+        $this->assertSame($connection1, $nodeClient->getConnection());
+        $this->assertSame('127.0.0.1:6381', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
+        $this->assertSame($connection2, $nodeClient->getConnection());
+        $this->assertSame('127.0.0.1:6382', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
+        $this->assertSame($connection3, $nodeClient->getConnection());
+        $this->assertSame('127.0.0.1:6383', $iterator->key());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\ClientException
+     * @expectedExceptionMessage The underlying connection is not traversable
+     */
+    public function testGetIteratorWithNonTraversableConnectionThrowsException()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $client = new Client($connection);
+
+        $client->getIterator();
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
@@ -842,5 +891,31 @@ class ClientTest extends PredisTestCase
         }
 
         return $uriString;
+    }
+
+    /**
+     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
+     *
+     * @param mixed $parameters Optional parameters.
+     *
+     * @return mixed
+     */
+    protected function getMockConnection($parameters = null)
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        if ($parameters) {
+            $parameters = \Predis\Connection\Parameters::create($parameters);
+            $hash = "{$parameters->host}:{$parameters->port}";
+
+            $connection->expects($this->any())
+                       ->method('getParameters')
+                       ->will($this->returnValue($parameters));
+            $connection->expects($this->any())
+                       ->method('__toString')
+                       ->will($this->returnValue($hash));
+        }
+
+        return $connection;
     }
 }

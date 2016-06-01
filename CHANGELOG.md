@@ -39,6 +39,10 @@ v1.1.0 (2016-0x-xx)
   use the `tls` or `rediss` schemes in connection parameters along with specific
   options via the `ssl` parameter (see http://php.net/manual/context.ssl.php).
 
+- Implemented the `IteratorAggregate` interface for `Predis\Client` so now it is
+  possible to iterate over traversable aggregate connections and get a key/value
+  pair consisting of $connectionID => $clientInstance for each node.
+
 - Iterating over `Predis\Connection\Aggregate\RedisCluster` now returns all the
   connections currently mapped in the slots map instead of just the connections
   initialized in the pool. When the slots map is retrieved from Redis (which is
