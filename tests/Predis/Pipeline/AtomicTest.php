@@ -87,7 +87,7 @@ class AtomicTest extends PredisTestCase
                    ->will($this->onConsecutiveCalls($queued, $queued, $error));
         $connection->expects($this->at(7))
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\TransactionDiscard'));
+                   ->with($this->isRedisCommand('DISCARD'));
 
         $pipeline = new Atomic(new Client($connection));
 

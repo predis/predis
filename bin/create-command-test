@@ -15,7 +15,7 @@
 // of a test case to test a Redis command by specifying the name of the class
 // in the Predis\Command namespace (only classes in this namespace are valid).
 // For example, to generate a test case for SET (which is represented by the
-// Predis\Command\StringSet class):
+// Predis\Command\Redis\StringSet class):
 //
 //   $ ./bin/generate-command-test --class=StringSet
 //
@@ -92,8 +92,8 @@ class CommandTestCaseGenerator
             throw new RuntimeException("Missing 'class' option.");
         }
 
-        $options['fqn'] = "Predis\\Command\\{$options['class']}";
-        $options['path'] = "Command/{$options['class']}.php";
+        $options['fqn'] = "Predis\\Command\\Redis\\{$options['class']}";
+        $options['path'] = "Command/Redis/{$options['class']}.php";
 
         $source = __DIR__.'/../src/'.$options['path'];
         if (!file_exists($source)) {
@@ -173,7 +173,7 @@ class CommandTestCaseGenerator
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command;
+namespace Predis\Command\Redis;
 
 /**
  * @group commands

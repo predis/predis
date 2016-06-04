@@ -439,7 +439,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
+                   ->with($this->isInstanceOf('Predis\Command\Redis\ConnectionPing'))
                    ->will($this->returnValue('PONG'));
 
         $profile = $this->getMock('Predis\Profile\ProfileInterface');
@@ -466,7 +466,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
+                   ->with($this->isRedisCommand('PING'))
                    ->will($this->returnValue($expectedResponse));
 
         $client = new Client($connection);
@@ -483,7 +483,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\ConnectionPing'))
+                   ->with($this->isRedisCommand('PING'))
                    ->will($this->returnValue($expectedResponse));
 
         $client = new Client($connection, array('exceptions' => false));
@@ -807,7 +807,7 @@ class ClientTest extends PredisTestCase
                    ->will($this->returnValue(new Response\Error('NOSCRIPT')));
         $connection->expects($this->at(1))
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\ServerEval'))
+                   ->with($this->isRedisCommand('EVAL'))
                    ->will($this->returnValue('OK'));
 
         $client = new Client($connection);

@@ -127,8 +127,8 @@ abstract class PredisProfileTestCase extends PredisTestCase
     {
         $profile = $this->getProfile();
 
-        $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('ping'));
-        $this->assertSame('Predis\Command\ConnectionPing', $profile->getCommandClass('PING'));
+        $this->assertSame('Predis\Command\Redis\ConnectionPing', $profile->getCommandClass('ping'));
+        $this->assertSame('Predis\Command\Redis\ConnectionPing', $profile->getCommandClass('PING'));
 
         $this->assertNull($profile->getCommandClass('unknown'));
         $this->assertNull($profile->getCommandClass('UNKNOWN'));

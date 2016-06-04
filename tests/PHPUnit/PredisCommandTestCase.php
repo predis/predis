@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command;
+namespace Predis\Command\Redis;
 
 use Predis\Client;
+use Predis\Command;
 use Predis\Profile;
 use PredisTestCase;
 

@@ -11,6 +11,8 @@
 
 namespace Predis\Command;
 
+use Predis\Command\Redis\ServerEvalSHA;
+
 /**
  * Base class used to implement an higher level abstraction for commands based
  * on Lua scripting with EVAL and EVALSHA.

@@ -70,8 +70,9 @@ $ phpunit --exclude-group slow
 
 We also provide an helper script in the `bin` directory that can be used to automatically generate a
 file with the scheleton of a test case to test a Redis command by specifying the name of the class
-in the `Predis\Command` namespace (only classes in this namespace are considered valid). For example
- to generate a test case for `SET` (represented by the `Predis\Command\StringSet` class):
+in the `Predis\Command\Redis` namespace (only classes in this namespace are considered valid).
+For example to generate a test case for `SET` (represented by the `Predis\Command\Redis\StringSet`
+class):
 
 ```bash
 $ ./bin/create-command-test --class=StringSet
