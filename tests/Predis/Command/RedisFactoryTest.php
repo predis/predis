@@ -11,7 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Command\CommandInterface;
 use Predis\Command\Processor\ProcessorChain;
 use PredisTestCase;
 
@@ -23,24 +22,13 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetVersion()
-    {
-        $factory = new RedisFactory();
-
-        $this->assertSame('3.2', $factory->getVersion());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testSupportedCommands()
     {
         $factory = new RedisFactory();
 
-        $expected = $this->getExpectedCommands();
-        $commands = $this->getCommands($factory);
-
-        $this->assertSame($expected, $commands);
+        foreach ($this->getExpectedCommands() as $commandID) {
+            $this->assertTrue($factory->supportsCommand($commandID));
+        }
     }
 
     /**
@@ -92,14 +80,49 @@ class RedisFactoryTest extends PredisTestCase
     public function testDefineCommand()
     {
         $factory = new RedisFactory();
-        $command = $this->getMock('Predis\Command\CommandInterface');
 
+        $command = $this->getMock('Predis\Command\CommandInterface');
         $factory->defineCommand('mock', get_class($command));
 
         $this->assertTrue($factory->supportsCommand('mock'));
         $this->assertTrue($factory->supportsCommand('MOCK'));
 
         $this->assertSame(get_class($command), $factory->getCommandClass('mock'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUndefineCommandInClassAutoload()
+    {
+        $factory = new RedisFactory();
+
+        $this->assertTrue($factory->supportsCommand('PING'));
+        $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
+
+        $factory->defineCommand('PING', null);
+
+        $this->assertFalse($factory->supportsCommand('PING'));
+        $this->assertNull($factory->getCommandClass('PING'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUndefineCommandInClassMap()
+    {
+        $factory = new RedisFactory();
+
+        $commandClass = get_class($this->getMock('Predis\Command\CommandInterface'));
+        $factory->defineCommand('MOCK', $commandClass);
+
+        $this->assertTrue($factory->supportsCommand('MOCK'));
+        $this->assertSame($commandClass, $factory->getCommandClass('MOCK'));
+
+        $factory->defineCommand('MOCK', null);
+
+        $this->assertFalse($factory->supportsCommand('MOCK'));
+        $this->assertNull($factory->getCommandClass('MOCK'));
     }
 
     /**
@@ -239,20 +262,6 @@ class RedisFactoryTest extends PredisTestCase
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
-
-    /**
-     * Returns the list of commands supported by the specified command factory.
-     *
-     * @param FactoryInterface $factory Command factory instance.
-     *
-     * @return array
-     */
-    protected function getCommands(FactoryInterface $factory)
-    {
-        $commands = $factory->getSupportedCommands();
-
-        return array_keys($commands);
-    }
 
     /**
      * Returns the expected list of commands supported by the tested factory.

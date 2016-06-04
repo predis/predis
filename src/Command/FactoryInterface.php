@@ -11,8 +11,6 @@
 
 namespace Predis\Command;
 
-use Predis\Command\CommandInterface;
-
 /**
  * Command factory interface.
  *
@@ -23,13 +21,6 @@ use Predis\Command\CommandInterface;
  */
 interface FactoryInterface
 {
-    /**
-     * Returns a string representing the current command factory.
-     *
-     * @return string
-     */
-    public function getVersion();
-
     /**
      * Checks if the command factory supports the specified command.
      *

@@ -24,31 +24,15 @@ use Predis\Command\Processor\ProcessorInterface;
  */
 abstract class Factory implements FactoryInterface
 {
-    private $commands;
-    private $processor;
-
-    /**
-     *
-     */
-    public function __construct()
-    {
-        $this->commands = $this->getSupportedCommands();
-    }
-
-    /**
-     * Returns all the commands supported by this factory mapped to their actual
-     * PHP classes.
-     *
-     * @return array
-     */
-    abstract protected function getSupportedCommands();
+    protected $commands = array();
+    protected $processor;
 
     /**
      * {@inheritdoc}
      */
     public function supportsCommand($commandID)
     {
-        return isset($this->commands[strtoupper($commandID)]);
+        return $this->getCommandClass($commandID) !== null;
     }
 
     /**
@@ -84,13 +68,12 @@ abstract class Factory implements FactoryInterface
      */
     public function createCommand($commandID, array $arguments = array())
     {
-        $commandID = strtoupper($commandID);
+        if (!$commandClass = $this->getCommandClass($commandID)) {
+            $commandID = strtoupper($commandID);
 
-        if (!isset($this->commands[$commandID])) {
             throw new ClientException("Command '$commandID' is not a registered Redis command.");
         }
 
-        $commandClass = $this->commands[$commandID];
         $command = new $commandClass();
         $command->setArguments($arguments);
 
@@ -111,10 +94,12 @@ abstract class Factory implements FactoryInterface
      */
     public function defineCommand($commandID, $class)
     {
-        $reflection = new \ReflectionClass($class);
+        if ($class !== null) {
+            $reflection = new \ReflectionClass($class);
 
-        if (!$reflection->isSubclassOf('Predis\Command\CommandInterface')) {
-            throw new \InvalidArgumentException("The class '$class' is not a valid command class.");
+            if (!$reflection->isSubclassOf('Predis\Command\CommandInterface')) {
+                throw new \InvalidArgumentException("The class '$class' is not a valid command class.");
+            }
         }
 
         $this->commands[strtoupper($commandID)] = $class;

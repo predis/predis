@@ -1,17 +1,21 @@
 v2.0.0 (201x-xx-xx)
 ================================================================================
 
+- Classes for Redis commands have been moved into the new `Predis\Command\Redis`
+  namespace and each class name mirrors the respective Redis command ID.
+
 - The concept of server profiles is gone, the library now uses a single command
   factory to create instances of commands classes. The `profile` option has been
   replaced by the `commands` option accepting `Predis\Command\FactoryInterface`
   to customize the underlying command factory. The default command factory class
   used by Predis is `Predis\Command\RedisFactory` and it still allows developers
-  to define or override commands with their own implementations.
+  to define or override commands with their own implementations. In addition to
+  that, `Predis\Command\RedisFactory` relies on a convention-over-configuration
+  approach by looking for a suitable class with the same name as the command ID
+  in the `Predis\Command\Redis` when the internal class map does not contain a
+  class associated.
 
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
-
-- Classes for Redis commands have been moved into the new `Predis\Command\Redis`
-  namespace and each class name mirrors the respective Redis command ID.
 
 
 v1.1.0 (2016-06-02)
