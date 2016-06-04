@@ -31,12 +31,12 @@ class ServerSlaveOf extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
-            return array('NO', 'ONE');
+            $arguments = array('NO', 'ONE');
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

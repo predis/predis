@@ -31,7 +31,7 @@ class ZSetRange extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);
@@ -44,12 +44,11 @@ class ZSetRange extends Command
 
             if ($lastType === 'array') {
                 $options = $this->prepareOptions(array_pop($arguments));
-
-                return array_merge($arguments, $options);
+                $arguments = array_merge($arguments, $options);
             }
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 
     /**

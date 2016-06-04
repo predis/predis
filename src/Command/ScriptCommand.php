@@ -57,13 +57,15 @@ abstract class ScriptCommand extends ServerEvalSHA
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (($numkeys = $this->getKeysCount()) && $numkeys < 0) {
             $numkeys = count($arguments) + $numkeys;
         }
 
-        return array_merge(array(sha1($this->getScript()), (int) $numkeys), $arguments);
+        $arguments = array_merge(array(sha1($this->getScript()), (int) $numkeys), $arguments);
+
+        parent::setArguments($arguments);
     }
 
     /**

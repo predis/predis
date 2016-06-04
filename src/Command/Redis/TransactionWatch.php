@@ -31,12 +31,12 @@ class TransactionWatch extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (isset($arguments[0]) && is_array($arguments[0])) {
-            return $arguments[0];
+            $arguments = $arguments[0];
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

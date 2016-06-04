@@ -31,10 +31,12 @@ class KeySort extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 1) {
-            return $arguments;
+            parent::setArguments($arguments);
+
+            return;
         }
 
         $query = array($arguments[0]);
@@ -80,6 +82,6 @@ class KeySort extends Command
             $query[] = $sortParams['STORE'];
         }
 
-        return $query;
+        parent::setArguments($query);
     }
 }

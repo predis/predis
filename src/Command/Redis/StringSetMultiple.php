@@ -31,7 +31,7 @@ class StringSetMultiple extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 1 && is_array($arguments[0])) {
             $flattenedKVs = array();
@@ -42,9 +42,9 @@ class StringSetMultiple extends Command
                 $flattenedKVs[] = $v;
             }
 
-            return $flattenedKVs;
+            $arguments = $flattenedKVs;
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

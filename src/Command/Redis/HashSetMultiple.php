@@ -31,7 +31,7 @@ class HashSetMultiple extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $flattenedKVs = array($arguments[0]);
@@ -42,9 +42,9 @@ class HashSetMultiple extends Command
                 $flattenedKVs[] = $v;
             }
 
-            return $flattenedKVs;
+            $arguments = $flattenedKVs;
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

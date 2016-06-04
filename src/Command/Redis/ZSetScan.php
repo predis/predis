@@ -31,14 +31,14 @@ class ZSetScan extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
             $options = $this->prepareOptions(array_pop($arguments));
             $arguments = array_merge($arguments, $options);
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 
     /**

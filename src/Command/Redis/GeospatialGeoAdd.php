@@ -31,7 +31,7 @@ class GeospatialGeoAdd extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             foreach (array_pop($arguments) as $item) {
@@ -39,6 +39,6 @@ class GeospatialGeoAdd extends Command
             }
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

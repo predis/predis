@@ -31,13 +31,13 @@ class ListPopFirstBlocking extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[0])) {
             list($arguments, $timeout) = $arguments;
             array_push($arguments, $timeout);
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

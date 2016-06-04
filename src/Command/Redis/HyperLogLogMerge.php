@@ -31,8 +31,10 @@ class HyperLogLogMerge extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
-        return self::normalizeArguments($arguments);
+        $arguments = self::normalizeArguments($arguments);
+
+        parent::setArguments($arguments);
     }
 }

@@ -31,7 +31,7 @@ class GeospatialGeoRadius extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if ($arguments && is_array(end($arguments))) {
             $options = array_change_key_case(array_pop($arguments), CASE_UPPER);
@@ -68,6 +68,6 @@ class GeospatialGeoRadius extends Command
             }
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

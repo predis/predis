@@ -31,12 +31,12 @@ class SetIntersectionStore extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
-            return array_merge(array($arguments[0]), $arguments[1]);
+            $arguments = array_merge(array($arguments[0]), $arguments[1]);
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

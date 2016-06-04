@@ -31,7 +31,7 @@ class KeyMigrate extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (is_array(end($arguments))) {
             foreach (array_pop($arguments) as $modifier => $value) {
@@ -47,6 +47,6 @@ class KeyMigrate extends Command
             }
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }

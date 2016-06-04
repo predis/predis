@@ -31,7 +31,7 @@ class ZSetUnionStore extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         $options = array();
         $argc = count($arguments);
@@ -47,7 +47,7 @@ class ZSetUnionStore extends Command
             );
         }
 
-        return array_merge($arguments, $options);
+        parent::setArguments(array_merge($arguments, $options));
     }
 
     /**

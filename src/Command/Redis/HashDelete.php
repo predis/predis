@@ -31,8 +31,10 @@ class HashDelete extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
-        return self::normalizeVariadic($arguments);
+        $arguments = self::normalizeVariadic($arguments);
+
+        parent::setArguments($arguments);
     }
 }

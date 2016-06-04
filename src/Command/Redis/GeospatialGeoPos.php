@@ -31,13 +31,13 @@ class GeospatialGeoPos extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
             $members = array_pop($arguments);
             $arguments = array_merge($arguments, $members);
         }
 
-        return $arguments;
+        parent::setArguments($arguments);
     }
 }
