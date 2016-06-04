@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection\Aggregate;
+namespace Predis\Connection\Replication;
 
 use Predis\ClientException;
 use Predis\Command\CommandInterface;

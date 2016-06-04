@@ -44,7 +44,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testPubSubConsumerDoesNotWorkOnClusters()
     {
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $cluster = $this->getMock('Predis\Connection\Cluster\ClusterInterface');
         $client = new Client($cluster);
 
         new PubSubConsumer($client);

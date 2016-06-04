@@ -17,6 +17,10 @@ v2.0.0 (201x-xx-xx)
 
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
 
+- The `Predis\Connection\Aggregate` namespace has been split into two separate
+  namespaces for cluster backends (`Predis\Connection\Cluster`) and replication
+  backends (`Predis\Connection\Replication`).
+
 
 v1.1.0 (2016-06-02)
 ================================================================================

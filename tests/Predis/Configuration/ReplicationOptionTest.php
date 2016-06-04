@@ -26,8 +26,8 @@ class ReplicationOptionTest extends PredisTestCase
         $option = new ReplicationOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->getDefault($options));
-        $this->assertInstanceOf('Predis\Connection\Aggregate\MasterSlaveReplication', $option->getDefault($options));
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $option->getDefault($options));
+        $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $option->getDefault($options));
     }
 
     /**
@@ -40,16 +40,16 @@ class ReplicationOptionTest extends PredisTestCase
 
         $this->assertNull($option->filter($options, null));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, true));
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $option->filter($options, true));
         $this->assertNull($option->filter($options, false));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 1));
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $option->filter($options, 1));
         $this->assertNull($option->filter($options, 0));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 'true'));
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $option->filter($options, 'true'));
         $this->assertNull($option->filter($options, 'false'));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 'on'));
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $option->filter($options, 'on'));
         $this->assertNull($option->filter($options, 'off'));
     }
 

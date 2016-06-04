@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection\Aggregate;
+namespace Predis\Connection\Cluster;
 
 use PredisTestCase;
 

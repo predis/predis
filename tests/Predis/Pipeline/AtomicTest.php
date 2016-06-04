@@ -153,7 +153,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testExecutorWithAggregateConnection()
     {
-        $connection = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
         $pipeline = new Atomic(new Client($connection));
 
         $pipeline->ping();

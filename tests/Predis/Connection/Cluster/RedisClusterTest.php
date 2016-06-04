@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Connection\Aggregate;
+namespace Predis\Connection\Cluster;
 
 use Predis\Command;
 use Predis\Connection;
@@ -300,7 +300,7 @@ class RedisClusterTest extends PredisTestCase
                  ->will($this->returnValue($connection4));
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster = $this->getMock('Predis\Connection\Cluster\RedisCluster', array('getRandomConnection'), array($factory));
         $cluster->expects($this->exactly(1))
                 ->method('getRandomConnection')
                 ->will($this->returnValue($connection1));
@@ -669,7 +669,7 @@ class RedisClusterTest extends PredisTestCase
                  ->will($this->returnValue($connection4));
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster = $this->getMock('Predis\Connection\Cluster\RedisCluster', array('getRandomConnection'), array($factory));
         $cluster->expects($this->never())
                 ->method('getRandomConnection');
 
@@ -755,7 +755,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster = $this->getMock('Predis\Connection\Cluster\RedisCluster', array('getRandomConnection'), array($factory));
         $cluster->expects($this->exactly(3))
                 ->method('getRandomConnection')
                 ->will($this->onConsecutiveCalls($connection1, $connection2, $connection3));
@@ -808,7 +808,7 @@ class RedisClusterTest extends PredisTestCase
         $factory->expects($this->never())->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        $cluster = $this->getMock('Predis\Connection\Aggregate\RedisCluster', array('getRandomConnection'), array($factory));
+        $cluster = $this->getMock('Predis\Connection\Cluster\RedisCluster', array('getRandomConnection'), array($factory));
         $cluster->expects($this->exactly(2))
                 ->method('getRandomConnection')
                 ->will($this->onConsecutiveCalls($connection1, $connection2));

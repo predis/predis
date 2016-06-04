@@ -12,7 +12,7 @@
 namespace Predis\Pipeline;
 
 use Predis\CommunicationException;
-use Predis\Connection\Aggregate\ClusterInterface;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;

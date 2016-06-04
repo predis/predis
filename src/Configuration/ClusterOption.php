@@ -11,9 +11,9 @@
 
 namespace Predis\Configuration;
 
-use Predis\Connection\Aggregate\ClusterInterface;
-use Predis\Connection\Aggregate\PredisCluster;
-use Predis\Connection\Aggregate\RedisCluster;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\PredisCluster;
+use Predis\Connection\Cluster\RedisCluster;
 
 /**
  * Configures an aggregate connection used for clustering
@@ -59,7 +59,7 @@ class ClusterOption implements OptionInterface
 
         if (!$value instanceof ClusterInterface) {
             throw new \InvalidArgumentException(
-                "An instance of type 'Predis\Connection\Aggregate\ClusterInterface' was expected."
+                "An instance of type 'Predis\Connection\Cluster\ClusterInterface' was expected."
             );
         }
 

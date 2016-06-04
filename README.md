@@ -265,7 +265,7 @@ $options    = ['replication' => function () {
     $strategy = new Predis\Replication\ReplicationStrategy();
     $strategy->setScriptReadOnly($LUA_SCRIPT);
 
-    return new Predis\Connection\Aggregate\MasterSlaveReplication($strategy);
+    return new Predis\Connection\Replication\MasterSlaveReplication($strategy);
 }];
 
 $client = new Predis\Client($parameters, $options);

@@ -102,7 +102,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($arg1);
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $client->getConnection());
     }
 
     /**
@@ -124,7 +124,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client($arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $client->getConnection());
     }
 
     /**
@@ -137,7 +137,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client(array($connection1, $connection2));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
         $this->assertSame($connection1, $cluster->getConnectionById(0));
         $this->assertSame($connection2, $cluster->getConnectionById(1));
     }
@@ -165,14 +165,14 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument()
     {
-        $cluster = new Connection\Aggregate\PredisCluster();
+        $cluster = new Connection\Cluster\PredisCluster();
 
         $factory = new Connection\Factory();
         $factory->aggregate($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
 
         $client = new Client($cluster);
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $client->getConnection());
         $this->assertSame($cluster, $client->getConnection());
     }
 
@@ -181,14 +181,14 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument()
     {
-        $replication = new Connection\Aggregate\MasterSlaveReplication();
+        $replication = new Connection\Replication\MasterSlaveReplication();
 
         $factory = new Connection\Factory();
         $factory->aggregate($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
 
         $client = new Client($replication);
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $client->getConnection());
         $this->assertSame($replication, $client->getConnection());
     }
 
@@ -252,7 +252,7 @@ class ClientTest extends PredisTestCase
         $arg2 = array('replication' => true);
         $client = new Client($arg1, $arg2);
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $connection = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $connection = $client->getConnection());
         $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
         $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
     }
@@ -579,7 +579,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
@@ -606,7 +606,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $cluster = $client->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
@@ -823,7 +823,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Aggregate\PredisCluster();
+        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);

@@ -427,7 +427,7 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $cluster = $this->getMock('Predis\Connection\Cluster\ClusterInterface');
         $cluster->expects($this->exactly(2))
                 ->method('add')
                 ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
@@ -446,7 +446,7 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $cluster = $this->getMock('Predis\Connection\Cluster\ClusterInterface');
         $cluster->expects($this->exactly(4))
                 ->method('add')
                 ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
@@ -466,7 +466,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testAggregateConnectionWithEmptyListOfParameters()
     {
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $cluster = $this->getMock('Predis\Connection\Cluster\ClusterInterface');
         $cluster->expects($this->never())->method('add');
 
         $factory = $this->getMock('Predis\Connection\Factory', array('create'));

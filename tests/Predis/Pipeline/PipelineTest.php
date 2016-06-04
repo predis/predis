@@ -240,7 +240,7 @@ class PipelineTest extends PredisTestCase
     {
         $pong = new Response\Status('PONG');
 
-        $connection = $this->getMock('Predis\Connection\Aggregate\ReplicationInterface');
+        $connection = $this->getMock('Predis\Connection\Replication\ReplicationInterface');
         $connection->expects($this->once())
                    ->method('switchTo')
                    ->with('master');

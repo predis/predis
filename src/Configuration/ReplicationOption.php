@@ -11,9 +11,9 @@
 
 namespace Predis\Configuration;
 
-use Predis\Connection\Aggregate\MasterSlaveReplication;
-use Predis\Connection\Aggregate\ReplicationInterface;
-use Predis\Connection\Aggregate\SentinelReplication;
+use Predis\Connection\Replication\MasterSlaveReplication;
+use Predis\Connection\Replication\ReplicationInterface;
+use Predis\Connection\Replication\SentinelReplication;
 
 /**
  * Configures an aggregate connection used for master/slave replication among
@@ -54,7 +54,7 @@ class ReplicationOption implements OptionInterface
         }
 
         throw new \InvalidArgumentException(
-            "An instance of type 'Predis\Connection\Aggregate\ReplicationInterface' was expected."
+            "An instance of type 'Predis\Connection\Replication\ReplicationInterface' was expected."
         );
     }
 

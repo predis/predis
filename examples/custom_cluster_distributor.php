@@ -18,7 +18,7 @@ require __DIR__.'/shared.php';
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Cluster\PredisStrategy;
-use Predis\Connection\Aggregate\PredisCluster;
+use Predis\Connection\Cluster\PredisCluster;
 
 class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 {
