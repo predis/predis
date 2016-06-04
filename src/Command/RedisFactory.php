@@ -35,247 +35,247 @@ class RedisFactory extends Factory
             /* ---------------- Redis 1.2 ---------------- */
 
             /* commands operating on the key space */
-            'EXISTS' => 'Predis\Command\Redis\KeyExists',
-            'DEL' => 'Predis\Command\Redis\KeyDelete',
-            'TYPE' => 'Predis\Command\Redis\KeyType',
-            'KEYS' => 'Predis\Command\Redis\KeyKeys',
-            'RANDOMKEY' => 'Predis\Command\Redis\KeyRandom',
-            'RENAME' => 'Predis\Command\Redis\KeyRename',
-            'RENAMENX' => 'Predis\Command\Redis\KeyRenamePreserve',
-            'EXPIRE' => 'Predis\Command\Redis\KeyExpire',
-            'EXPIREAT' => 'Predis\Command\Redis\KeyExpireAt',
-            'TTL' => 'Predis\Command\Redis\KeyTimeToLive',
-            'MOVE' => 'Predis\Command\Redis\KeyMove',
-            'SORT' => 'Predis\Command\Redis\KeySort',
-            'DUMP' => 'Predis\Command\Redis\KeyDump',
-            'RESTORE' => 'Predis\Command\Redis\KeyRestore',
+            'EXISTS' => 'Predis\Command\Redis\EXISTS',
+            'DEL' => 'Predis\Command\Redis\DEL',
+            'TYPE' => 'Predis\Command\Redis\TYPE',
+            'KEYS' => 'Predis\Command\Redis\KEYS',
+            'RANDOMKEY' => 'Predis\Command\Redis\RANDOMKEY',
+            'RENAME' => 'Predis\Command\Redis\RENAME',
+            'RENAMENX' => 'Predis\Command\Redis\RENAMENX',
+            'EXPIRE' => 'Predis\Command\Redis\EXPIRE',
+            'EXPIREAT' => 'Predis\Command\Redis\EXPIREAT',
+            'TTL' => 'Predis\Command\Redis\TTL',
+            'MOVE' => 'Predis\Command\Redis\MOVE',
+            'SORT' => 'Predis\Command\Redis\SORT',
+            'DUMP' => 'Predis\Command\Redis\DUMP',
+            'RESTORE' => 'Predis\Command\Redis\RESTORE',
 
             /* commands operating on string values */
-            'SET' => 'Predis\Command\Redis\StringSet',
-            'SETNX' => 'Predis\Command\Redis\StringSetPreserve',
-            'MSET' => 'Predis\Command\Redis\StringSetMultiple',
-            'MSETNX' => 'Predis\Command\Redis\StringSetMultiplePreserve',
-            'GET' => 'Predis\Command\Redis\StringGet',
-            'MGET' => 'Predis\Command\Redis\StringGetMultiple',
-            'GETSET' => 'Predis\Command\Redis\StringGetSet',
-            'INCR' => 'Predis\Command\Redis\StringIncrement',
-            'INCRBY' => 'Predis\Command\Redis\StringIncrementBy',
-            'DECR' => 'Predis\Command\Redis\StringDecrement',
-            'DECRBY' => 'Predis\Command\Redis\StringDecrementBy',
+            'SET' => 'Predis\Command\Redis\SET',
+            'SETNX' => 'Predis\Command\Redis\SETNX',
+            'MSET' => 'Predis\Command\Redis\MSET',
+            'MSETNX' => 'Predis\Command\Redis\MSETNX',
+            'GET' => 'Predis\Command\Redis\GET',
+            'MGET' => 'Predis\Command\Redis\MGET',
+            'GETSET' => 'Predis\Command\Redis\GETSET',
+            'INCR' => 'Predis\Command\Redis\INCR',
+            'INCRBY' => 'Predis\Command\Redis\INCRBY',
+            'DECR' => 'Predis\Command\Redis\DECR',
+            'DECRBY' => 'Predis\Command\Redis\DECRBY',
 
             /* commands operating on lists */
-            'RPUSH' => 'Predis\Command\Redis\ListPushTail',
-            'LPUSH' => 'Predis\Command\Redis\ListPushHead',
-            'LLEN' => 'Predis\Command\Redis\ListLength',
-            'LRANGE' => 'Predis\Command\Redis\ListRange',
-            'LTRIM' => 'Predis\Command\Redis\ListTrim',
-            'LINDEX' => 'Predis\Command\Redis\ListIndex',
-            'LSET' => 'Predis\Command\Redis\ListSet',
-            'LREM' => 'Predis\Command\Redis\ListRemove',
-            'LPOP' => 'Predis\Command\Redis\ListPopFirst',
-            'RPOP' => 'Predis\Command\Redis\ListPopLast',
-            'RPOPLPUSH' => 'Predis\Command\Redis\ListPopLastPushHead',
+            'RPUSH' => 'Predis\Command\Redis\RPUSH',
+            'LPUSH' => 'Predis\Command\Redis\LPUSH',
+            'LLEN' => 'Predis\Command\Redis\LLEN',
+            'LRANGE' => 'Predis\Command\Redis\LRANGE',
+            'LTRIM' => 'Predis\Command\Redis\LTRIM',
+            'LINDEX' => 'Predis\Command\Redis\LINDEX',
+            'LSET' => 'Predis\Command\Redis\LSET',
+            'LREM' => 'Predis\Command\Redis\LREM',
+            'LPOP' => 'Predis\Command\Redis\LPOP',
+            'RPOP' => 'Predis\Command\Redis\RPOP',
+            'RPOPLPUSH' => 'Predis\Command\Redis\RPOPLPUSH',
 
             /* commands operating on sets */
-            'SADD' => 'Predis\Command\Redis\SetAdd',
-            'SREM' => 'Predis\Command\Redis\SetRemove',
-            'SPOP' => 'Predis\Command\Redis\SetPop',
-            'SMOVE' => 'Predis\Command\Redis\SetMove',
-            'SCARD' => 'Predis\Command\Redis\SetCardinality',
-            'SISMEMBER' => 'Predis\Command\Redis\SetIsMember',
-            'SINTER' => 'Predis\Command\Redis\SetIntersection',
-            'SINTERSTORE' => 'Predis\Command\Redis\SetIntersectionStore',
-            'SUNION' => 'Predis\Command\Redis\SetUnion',
-            'SUNIONSTORE' => 'Predis\Command\Redis\SetUnionStore',
-            'SDIFF' => 'Predis\Command\Redis\SetDifference',
-            'SDIFFSTORE' => 'Predis\Command\Redis\SetDifferenceStore',
-            'SMEMBERS' => 'Predis\Command\Redis\SetMembers',
-            'SRANDMEMBER' => 'Predis\Command\Redis\SetRandomMember',
+            'SADD' => 'Predis\Command\Redis\SADD',
+            'SREM' => 'Predis\Command\Redis\SREM',
+            'SPOP' => 'Predis\Command\Redis\SPOP',
+            'SMOVE' => 'Predis\Command\Redis\SMOVE',
+            'SCARD' => 'Predis\Command\Redis\SCARD',
+            'SISMEMBER' => 'Predis\Command\Redis\SISMEMBER',
+            'SINTER' => 'Predis\Command\Redis\SINTER',
+            'SINTERSTORE' => 'Predis\Command\Redis\SINTERSTORE',
+            'SUNION' => 'Predis\Command\Redis\SUNION',
+            'SUNIONSTORE' => 'Predis\Command\Redis\SUNIONSTORE',
+            'SDIFF' => 'Predis\Command\Redis\SDIFF',
+            'SDIFFSTORE' => 'Predis\Command\Redis\SDIFFSTORE',
+            'SMEMBERS' => 'Predis\Command\Redis\SMEMBERS',
+            'SRANDMEMBER' => 'Predis\Command\Redis\SRANDMEMBER',
 
             /* commands operating on sorted sets */
-            'ZADD' => 'Predis\Command\Redis\ZSetAdd',
-            'ZINCRBY' => 'Predis\Command\Redis\ZSetIncrementBy',
-            'ZREM' => 'Predis\Command\Redis\ZSetRemove',
-            'ZRANGE' => 'Predis\Command\Redis\ZSetRange',
-            'ZREVRANGE' => 'Predis\Command\Redis\ZSetReverseRange',
-            'ZRANGEBYSCORE' => 'Predis\Command\Redis\ZSetRangeByScore',
-            'ZCARD' => 'Predis\Command\Redis\ZSetCardinality',
-            'ZSCORE' => 'Predis\Command\Redis\ZSetScore',
-            'ZREMRANGEBYSCORE' => 'Predis\Command\Redis\ZSetRemoveRangeByScore',
+            'ZADD' => 'Predis\Command\Redis\ZADD',
+            'ZINCRBY' => 'Predis\Command\Redis\ZINCRBY',
+            'ZREM' => 'Predis\Command\Redis\ZREM',
+            'ZRANGE' => 'Predis\Command\Redis\ZRANGE',
+            'ZREVRANGE' => 'Predis\Command\Redis\ZREVRANGE',
+            'ZRANGEBYSCORE' => 'Predis\Command\Redis\ZRANGEBYSCORE',
+            'ZCARD' => 'Predis\Command\Redis\ZCARD',
+            'ZSCORE' => 'Predis\Command\Redis\ZSCORE',
+            'ZREMRANGEBYSCORE' => 'Predis\Command\Redis\ZREMRANGEBYSCORE',
 
             /* connection related commands */
-            'PING' => 'Predis\Command\Redis\ConnectionPing',
-            'AUTH' => 'Predis\Command\Redis\ConnectionAuth',
-            'SELECT' => 'Predis\Command\Redis\ConnectionSelect',
-            'ECHO' => 'Predis\Command\Redis\ConnectionEcho',
-            'QUIT' => 'Predis\Command\Redis\ConnectionQuit',
+            'PING' => 'Predis\Command\Redis\PING',
+            'AUTH' => 'Predis\Command\Redis\AUTH',
+            'SELECT' => 'Predis\Command\Redis\SELECT',
+            'ECHO' => 'Predis\Command\Redis\ECHO_',
+            'QUIT' => 'Predis\Command\Redis\QUIT',
 
             /* remote server control commands */
-            'INFO' => 'Predis\Command\Redis\ServerInfo',
-            'SLAVEOF' => 'Predis\Command\Redis\ServerSlaveOf',
-            'MONITOR' => 'Predis\Command\Redis\ServerMonitor',
-            'DBSIZE' => 'Predis\Command\Redis\ServerDatabaseSize',
-            'FLUSHDB' => 'Predis\Command\Redis\ServerFlushDatabase',
-            'FLUSHALL' => 'Predis\Command\Redis\ServerFlushAll',
-            'SAVE' => 'Predis\Command\Redis\ServerSave',
-            'BGSAVE' => 'Predis\Command\Redis\ServerBackgroundSave',
-            'LASTSAVE' => 'Predis\Command\Redis\ServerLastSave',
-            'SHUTDOWN' => 'Predis\Command\Redis\ServerShutdown',
-            'BGREWRITEAOF' => 'Predis\Command\Redis\ServerBackgroundRewriteAOF',
+            'INFO' => 'Predis\Command\Redis\INFO',
+            'SLAVEOF' => 'Predis\Command\Redis\SLAVEOF',
+            'MONITOR' => 'Predis\Command\Redis\MONITOR',
+            'DBSIZE' => 'Predis\Command\Redis\DBSIZE',
+            'FLUSHDB' => 'Predis\Command\Redis\FLUSHDB',
+            'FLUSHALL' => 'Predis\Command\Redis\FLUSHALL',
+            'SAVE' => 'Predis\Command\Redis\SAVE',
+            'BGSAVE' => 'Predis\Command\Redis\BGSAVE',
+            'LASTSAVE' => 'Predis\Command\Redis\LASTSAVE',
+            'SHUTDOWN' => 'Predis\Command\Redis\SHUTDOWN',
+            'BGREWRITEAOF' => 'Predis\Command\Redis\BGREWRITEAOF',
 
             /* ---------------- Redis 2.0 ---------------- */
 
             /* commands operating on string values */
-            'SETEX' => 'Predis\Command\Redis\StringSetExpire',
-            'APPEND' => 'Predis\Command\Redis\StringAppend',
-            'SUBSTR' => 'Predis\Command\Redis\StringSubstr',
+            'SETEX' => 'Predis\Command\Redis\SETEX',
+            'APPEND' => 'Predis\Command\Redis\APPEND',
+            'SUBSTR' => 'Predis\Command\Redis\SUBSTR',
 
             /* commands operating on lists */
-            'BLPOP' => 'Predis\Command\Redis\ListPopFirstBlocking',
-            'BRPOP' => 'Predis\Command\Redis\ListPopLastBlocking',
+            'BLPOP' => 'Predis\Command\Redis\BLPOP',
+            'BRPOP' => 'Predis\Command\Redis\BRPOP',
 
             /* commands operating on sorted sets */
-            'ZUNIONSTORE' => 'Predis\Command\Redis\ZSetUnionStore',
-            'ZINTERSTORE' => 'Predis\Command\Redis\ZSetIntersectionStore',
-            'ZCOUNT' => 'Predis\Command\Redis\ZSetCount',
-            'ZRANK' => 'Predis\Command\Redis\ZSetRank',
-            'ZREVRANK' => 'Predis\Command\Redis\ZSetReverseRank',
-            'ZREMRANGEBYRANK' => 'Predis\Command\Redis\ZSetRemoveRangeByRank',
+            'ZUNIONSTORE' => 'Predis\Command\Redis\ZUNIONSTORE',
+            'ZINTERSTORE' => 'Predis\Command\Redis\ZINTERSTORE',
+            'ZCOUNT' => 'Predis\Command\Redis\ZCOUNT',
+            'ZRANK' => 'Predis\Command\Redis\ZRANK',
+            'ZREVRANK' => 'Predis\Command\Redis\ZREVRANK',
+            'ZREMRANGEBYRANK' => 'Predis\Command\Redis\ZREMRANGEBYRANK',
 
             /* commands operating on hashes */
-            'HSET' => 'Predis\Command\Redis\HashSet',
-            'HSETNX' => 'Predis\Command\Redis\HashSetPreserve',
-            'HMSET' => 'Predis\Command\Redis\HashSetMultiple',
-            'HINCRBY' => 'Predis\Command\Redis\HashIncrementBy',
-            'HGET' => 'Predis\Command\Redis\HashGet',
-            'HMGET' => 'Predis\Command\Redis\HashGetMultiple',
-            'HDEL' => 'Predis\Command\Redis\HashDelete',
-            'HEXISTS' => 'Predis\Command\Redis\HashExists',
-            'HLEN' => 'Predis\Command\Redis\HashLength',
-            'HKEYS' => 'Predis\Command\Redis\HashKeys',
-            'HVALS' => 'Predis\Command\Redis\HashValues',
-            'HGETALL' => 'Predis\Command\Redis\HashGetAll',
+            'HSET' => 'Predis\Command\Redis\HSET',
+            'HSETNX' => 'Predis\Command\Redis\HSETNX',
+            'HMSET' => 'Predis\Command\Redis\HMSET',
+            'HINCRBY' => 'Predis\Command\Redis\HINCRBY',
+            'HGET' => 'Predis\Command\Redis\HGET',
+            'HMGET' => 'Predis\Command\Redis\HMGET',
+            'HDEL' => 'Predis\Command\Redis\HDEL',
+            'HEXISTS' => 'Predis\Command\Redis\HEXISTS',
+            'HLEN' => 'Predis\Command\Redis\HLEN',
+            'HKEYS' => 'Predis\Command\Redis\HKEYS',
+            'HVALS' => 'Predis\Command\Redis\HVALS',
+            'HGETALL' => 'Predis\Command\Redis\HGETALL',
 
             /* transactions */
-            'MULTI' => 'Predis\Command\Redis\TransactionMulti',
-            'EXEC' => 'Predis\Command\Redis\TransactionExec',
-            'DISCARD' => 'Predis\Command\Redis\TransactionDiscard',
+            'MULTI' => 'Predis\Command\Redis\MULTI',
+            'EXEC' => 'Predis\Command\Redis\EXEC',
+            'DISCARD' => 'Predis\Command\Redis\DISCARD',
 
             /* publish - subscribe */
-            'SUBSCRIBE' => 'Predis\Command\Redis\PubSubSubscribe',
-            'UNSUBSCRIBE' => 'Predis\Command\Redis\PubSubUnsubscribe',
-            'PSUBSCRIBE' => 'Predis\Command\Redis\PubSubSubscribeByPattern',
-            'PUNSUBSCRIBE' => 'Predis\Command\Redis\PubSubUnsubscribeByPattern',
-            'PUBLISH' => 'Predis\Command\Redis\PubSubPublish',
+            'SUBSCRIBE' => 'Predis\Command\Redis\SUBSCRIBE',
+            'UNSUBSCRIBE' => 'Predis\Command\Redis\UNSUBSCRIBE',
+            'PSUBSCRIBE' => 'Predis\Command\Redis\PSUBSCRIBE',
+            'PUNSUBSCRIBE' => 'Predis\Command\Redis\PUNSUBSCRIBE',
+            'PUBLISH' => 'Predis\Command\Redis\PUBLISH',
 
             /* remote server control commands */
-            'CONFIG' => 'Predis\Command\Redis\ServerConfig',
+            'CONFIG' => 'Predis\Command\Redis\CONFIG',
 
             /* ---------------- Redis 2.2 ---------------- */
 
             /* commands operating on the key space */
-            'PERSIST' => 'Predis\Command\Redis\KeyPersist',
+            'PERSIST' => 'Predis\Command\Redis\PERSIST',
 
             /* commands operating on string values */
-            'STRLEN' => 'Predis\Command\Redis\StringStrlen',
-            'SETRANGE' => 'Predis\Command\Redis\StringSetRange',
-            'GETRANGE' => 'Predis\Command\Redis\StringGetRange',
-            'SETBIT' => 'Predis\Command\Redis\StringSetBit',
-            'GETBIT' => 'Predis\Command\Redis\StringGetBit',
+            'STRLEN' => 'Predis\Command\Redis\STRLEN',
+            'SETRANGE' => 'Predis\Command\Redis\SETRANGE',
+            'GETRANGE' => 'Predis\Command\Redis\GETRANGE',
+            'SETBIT' => 'Predis\Command\Redis\SETBIT',
+            'GETBIT' => 'Predis\Command\Redis\GETBIT',
 
             /* commands operating on lists */
-            'RPUSHX' => 'Predis\Command\Redis\ListPushTailX',
-            'LPUSHX' => 'Predis\Command\Redis\ListPushHeadX',
-            'LINSERT' => 'Predis\Command\Redis\ListInsert',
-            'BRPOPLPUSH' => 'Predis\Command\Redis\ListPopLastPushHeadBlocking',
+            'RPUSHX' => 'Predis\Command\Redis\RPUSHX',
+            'LPUSHX' => 'Predis\Command\Redis\LPUSHX',
+            'LINSERT' => 'Predis\Command\Redis\LINSERT',
+            'BRPOPLPUSH' => 'Predis\Command\Redis\BRPOPLPUSH',
 
             /* commands operating on sorted sets */
-            'ZREVRANGEBYSCORE' => 'Predis\Command\Redis\ZSetReverseRangeByScore',
+            'ZREVRANGEBYSCORE' => 'Predis\Command\Redis\ZREVRANGEBYSCORE',
 
             /* transactions */
-            'WATCH' => 'Predis\Command\Redis\TransactionWatch',
-            'UNWATCH' => 'Predis\Command\Redis\TransactionUnwatch',
+            'WATCH' => 'Predis\Command\Redis\WATCH',
+            'UNWATCH' => 'Predis\Command\Redis\UNWATCH',
 
             /* remote server control commands */
-            'OBJECT' => 'Predis\Command\Redis\ServerObject',
-            'SLOWLOG' => 'Predis\Command\Redis\ServerSlowlog',
+            'OBJECT' => 'Predis\Command\Redis\OBJECT',
+            'SLOWLOG' => 'Predis\Command\Redis\SLOWLOG',
 
             /* ---------------- Redis 2.4 ---------------- */
 
             /* remote server control commands */
-            'CLIENT' => 'Predis\Command\Redis\ServerClient',
+            'CLIENT' => 'Predis\Command\Redis\CLIENT',
 
             /* ---------------- Redis 2.6 ---------------- */
 
             /* commands operating on the key space */
-            'PTTL' => 'Predis\Command\Redis\KeyPreciseTimeToLive',
-            'PEXPIRE' => 'Predis\Command\Redis\KeyPreciseExpire',
-            'PEXPIREAT' => 'Predis\Command\Redis\KeyPreciseExpireAt',
-            'MIGRATE' => 'Predis\Command\Redis\KeyMigrate',
+            'PTTL' => 'Predis\Command\Redis\PTTL',
+            'PEXPIRE' => 'Predis\Command\Redis\PEXPIRE',
+            'PEXPIREAT' => 'Predis\Command\Redis\PEXPIREAT',
+            'MIGRATE' => 'Predis\Command\Redis\MIGRATE',
 
             /* commands operating on string values */
-            'PSETEX' => 'Predis\Command\Redis\StringPreciseSetExpire',
-            'INCRBYFLOAT' => 'Predis\Command\Redis\StringIncrementByFloat',
-            'BITOP' => 'Predis\Command\Redis\StringBitOp',
-            'BITCOUNT' => 'Predis\Command\Redis\StringBitCount',
+            'PSETEX' => 'Predis\Command\Redis\PSETEX',
+            'INCRBYFLOAT' => 'Predis\Command\Redis\INCRBYFLOAT',
+            'BITOP' => 'Predis\Command\Redis\BITOP',
+            'BITCOUNT' => 'Predis\Command\Redis\BITCOUNT',
 
             /* commands operating on hashes */
-            'HINCRBYFLOAT' => 'Predis\Command\Redis\HashIncrementByFloat',
+            'HINCRBYFLOAT' => 'Predis\Command\Redis\HINCRBYFLOAT',
 
             /* scripting */
-            'EVAL' => 'Predis\Command\Redis\ServerEval',
-            'EVALSHA' => 'Predis\Command\Redis\ServerEvalSHA',
-            'SCRIPT' => 'Predis\Command\Redis\ServerScript',
+            'EVAL' => 'Predis\Command\Redis\EVAL_',
+            'EVALSHA' => 'Predis\Command\Redis\EVALSHA',
+            'SCRIPT' => 'Predis\Command\Redis\SCRIPT',
 
             /* remote server control commands */
-            'TIME' => 'Predis\Command\Redis\ServerTime',
-            'SENTINEL' => 'Predis\Command\Redis\ServerSentinel',
+            'TIME' => 'Predis\Command\Redis\TIME',
+            'SENTINEL' => 'Predis\Command\Redis\SENTINEL',
 
             /* ---------------- Redis 2.8 ---------------- */
 
             /* commands operating on the key space */
-            'SCAN' => 'Predis\Command\Redis\KeyScan',
+            'SCAN' => 'Predis\Command\Redis\SCAN',
 
             /* commands operating on string values */
-            'BITPOS' => 'Predis\Command\Redis\StringBitPos',
+            'BITPOS' => 'Predis\Command\Redis\BITPOS',
 
             /* commands operating on sets */
-            'SSCAN' => 'Predis\Command\Redis\SetScan',
+            'SSCAN' => 'Predis\Command\Redis\SSCAN',
 
             /* commands operating on sorted sets */
-            'ZSCAN' => 'Predis\Command\Redis\ZSetScan',
-            'ZLEXCOUNT' => 'Predis\Command\Redis\ZSetLexCount',
-            'ZRANGEBYLEX' => 'Predis\Command\Redis\ZSetRangeByLex',
-            'ZREMRANGEBYLEX' => 'Predis\Command\Redis\ZSetRemoveRangeByLex',
-            'ZREVRANGEBYLEX' => 'Predis\Command\Redis\ZSetReverseRangeByLex',
+            'ZSCAN' => 'Predis\Command\Redis\ZSCAN',
+            'ZLEXCOUNT' => 'Predis\Command\Redis\ZLEXCOUNT',
+            'ZRANGEBYLEX' => 'Predis\Command\Redis\ZRANGEBYLEX',
+            'ZREMRANGEBYLEX' => 'Predis\Command\Redis\ZREMRANGEBYLEX',
+            'ZREVRANGEBYLEX' => 'Predis\Command\Redis\ZREVRANGEBYLEX',
 
             /* commands operating on hashes */
-            'HSCAN' => 'Predis\Command\Redis\HashScan',
+            'HSCAN' => 'Predis\Command\Redis\HSCAN',
 
             /* publish - subscribe */
-            'PUBSUB' => 'Predis\Command\Redis\PubSubPubsub',
+            'PUBSUB' => 'Predis\Command\Redis\PUBSUB',
 
             /* commands operating on HyperLogLog */
-            'PFADD' => 'Predis\Command\Redis\HyperLogLogAdd',
-            'PFCOUNT' => 'Predis\Command\Redis\HyperLogLogCount',
-            'PFMERGE' => 'Predis\Command\Redis\HyperLogLogMerge',
+            'PFADD' => 'Predis\Command\Redis\PFADD',
+            'PFCOUNT' => 'Predis\Command\Redis\PFCOUNT',
+            'PFMERGE' => 'Predis\Command\Redis\PFMERGE',
 
             /* remote server control commands */
-            'COMMAND' => 'Predis\Command\Redis\ServerCommand',
+            'COMMAND' => 'Predis\Command\Redis\COMMAND',
 
             /* ---------------- Redis 3.2 ---------------- */
 
             /* commands operating on hashes */
-            'HSTRLEN' => 'Predis\Command\Redis\HashStringLength',
-            'BITFIELD' => 'Predis\Command\Redis\StringBitField',
+            'HSTRLEN' => 'Predis\Command\Redis\HSTRLEN',
+            'BITFIELD' => 'Predis\Command\Redis\BITFIELD',
 
             /* commands performing geospatial operations */
-            'GEOADD' => 'Predis\Command\Redis\GeospatialGeoAdd',
-            'GEOHASH' => 'Predis\Command\Redis\GeospatialGeoHash',
-            'GEOPOS' => 'Predis\Command\Redis\GeospatialGeoPos',
-            'GEODIST' => 'Predis\Command\Redis\GeospatialGeoDist',
-            'GEORADIUS' => 'Predis\Command\Redis\GeospatialGeoRadius',
-            'GEORADIUSBYMEMBER' => 'Predis\Command\Redis\GeospatialGeoRadiusByMember',
+            'GEOADD' => 'Predis\Command\Redis\GEOADD',
+            'GEOHASH' => 'Predis\Command\Redis\GEOHASH',
+            'GEOPOS' => 'Predis\Command\Redis\GEOPOS',
+            'GEODIST' => 'Predis\Command\Redis\GEODIST',
+            'GEORADIUS' => 'Predis\Command\Redis\GEORADIUS',
+            'GEORADIUSBYMEMBER' => 'Predis\Command\Redis\GEORADIUSBYMEMBER',
         );
     }
 }

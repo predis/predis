@@ -11,7 +11,7 @@ v2.0.0 (201x-xx-xx)
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
 
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`
-  namespace.
+  namespace and each class name mirrors the respective Redis command ID.
 
 
 v1.1.0 (2016-06-02)

@@ -438,7 +438,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
                    ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\Redis\ConnectionPing'))
+                   ->with($this->isInstanceOf('Predis\Command\Redis\PING'))
                    ->will($this->returnValue('PONG'));
 
         $commands = $this->getMock('Predis\Command\FactoryInterface');

@@ -45,6 +45,11 @@ class CommandTestCaseGenerator
         if (!isset($options['class'])) {
             throw new RuntimeException("Missing 'class' option.");
         }
+
+        if (!isset($options['realm'])) {
+            throw new RuntimeException("Missing 'realm' option.");
+        }
+
         $this->options = $options;
     }
 
@@ -92,6 +97,10 @@ class CommandTestCaseGenerator
             throw new RuntimeException("Missing 'class' option.");
         }
 
+        if (!isset($options['realm'])) {
+            throw new RuntimeException("Missing 'realm' option.");
+        }
+
         $options['fqn'] = "Predis\\Command\\Redis\\{$options['class']}";
         $options['path'] = "Command/Redis/{$options['class']}.php";
 
@@ -101,7 +110,7 @@ class CommandTestCaseGenerator
         }
 
         if (!isset($options['output'])) {
-            $options['output'] = sprintf("%s/%s", $options['tests'], str_replace('.php', 'Test.php', $options['path']));
+            $options['output'] = sprintf("%s/%s", $options['tests'], str_replace('.php', '_Test.php', $options['path']));
         }
 
         return new self($options);
@@ -109,18 +118,11 @@ class CommandTestCaseGenerator
 
     protected function getTestRealm()
     {
-        if (isset($this->options['realm'])) {
-            if (!$this->options['realm']) {
-                throw new RuntimeException('Invalid value for realm has been sepcified (empty).');
-            }
-            return $this->options['realm'];
+        if (empty($this->options['realm'])) {
+            throw new RuntimeException('Invalid value for realm has been sepcified (empty).');
         }
 
-        $fqnParts = explode('\\', $this->options['fqn']);
-        $class = array_pop($fqnParts);
-        list($realm,) = preg_split('/([[:upper:]][[:lower:]]+)/', $class, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-        return strtolower($realm);
+        return $this->options['realm'];
     }
 
     public function generate()
@@ -130,6 +132,7 @@ class CommandTestCaseGenerator
         if (!$reflection->isInstantiable()) {
             throw new RuntimeException("Class $class must be instantiable, abstract classes or interfaces are not allowed.");
         }
+
         if (!$reflection->implementsInterface('Predis\Command\CommandInterface')) {
             throw new RuntimeException("Class $class must implement Predis\Command\CommandInterface.");
         }

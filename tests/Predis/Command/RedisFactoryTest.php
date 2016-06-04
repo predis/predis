@@ -79,8 +79,8 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $this->assertSame('Predis\Command\Redis\ConnectionPing', $factory->getCommandClass('ping'));
-        $this->assertSame('Predis\Command\Redis\ConnectionPing', $factory->getCommandClass('PING'));
+        $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('ping'));
+        $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
 
         $this->assertNull($factory->getCommandClass('unknown'));
         $this->assertNull($factory->getCommandClass('UNKNOWN'));

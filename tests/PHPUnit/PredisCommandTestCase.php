@@ -23,7 +23,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns the expected command.
      *
-     * @return CommandInterface|string Instance or FQN of the expected command.
+     * @return Command\CommandInterface|string Instance or FQN of the expected command.
      */
     abstract protected function getExpectedCommand();
 
@@ -37,13 +37,13 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance.
      *
-     * @return CommandInterface
+     * @return Command\CommandInterface
      */
     public function getCommand()
     {
         $command = $this->getExpectedCommand();
 
-        return $command instanceof CommandInterface ? $command : new $command();
+        return $command instanceof Command\CommandInterface ? $command : new $command();
     }
 
     /**
@@ -75,7 +75,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     protected function isPrefixable()
     {
-        return $this->getCommand() instanceof PrefixableCommandInterface;
+        return $this->getCommand() instanceof Command\PrefixableCommandInterface;
     }
 
     /**
