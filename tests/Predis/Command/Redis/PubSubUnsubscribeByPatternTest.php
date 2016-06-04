@@ -76,6 +76,7 @@ class PubSubUnsubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDoesNotSwitchToSubscribeMode()
     {
@@ -87,6 +88,7 @@ class PubSubUnsubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromNotSubscribedChannels()
     {
@@ -97,6 +99,7 @@ class PubSubUnsubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromSubscribedChannels()
     {
@@ -109,6 +112,7 @@ class PubSubUnsubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testUnsubscribesFromAllSubscribedChannels()
     {

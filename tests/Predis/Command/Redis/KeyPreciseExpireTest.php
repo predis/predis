@@ -60,6 +60,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsZeroOnNonExistingKeys()
     {
@@ -71,6 +72,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
     /**
      * @medium
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @group slow
      */
     public function testCanExpireKeys()
@@ -88,6 +90,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
      /**
       * @medium
       * @group connected
+      * @requiresRedisVersion >= 2.6.0
       * @group slow
       */
      public function testConsistencyWithTTL()
@@ -106,6 +109,7 @@ class KeyPreciseExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testDeletesKeysOnNegativeTTL()
     {

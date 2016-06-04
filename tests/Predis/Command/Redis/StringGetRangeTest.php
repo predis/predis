@@ -57,6 +57,7 @@ class StringGetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      */
     public function testReturnsSubstring()
     {
@@ -75,6 +76,7 @@ class StringGetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      */
     public function testReturnsEmptyStringOnNonExistingKey()
     {
@@ -85,6 +87,7 @@ class StringGetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

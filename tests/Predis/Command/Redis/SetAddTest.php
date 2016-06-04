@@ -83,6 +83,17 @@ class SetAddTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
+     */
+    public function testAddsMembersToSetVariadic()
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(3, $redis->sadd('letters', 'a', 'b', 'c', 'b'));
+    }
+
+    /**
+     * @group connected
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

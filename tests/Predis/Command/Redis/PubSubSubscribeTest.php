@@ -76,6 +76,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTheFirstSubscribedChannelDetails()
     {
@@ -86,6 +87,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendSubscribeAfterSubscribe()
     {
@@ -97,6 +99,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterSubscribe()
     {
@@ -108,6 +111,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendUnsubscribeAfterSubscribe()
     {
@@ -120,6 +124,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPunsubscribeAfterSubscribe()
     {
@@ -132,11 +137,12 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendQuitAfterSubscribe()
     {
         $redis = $this->getClient();
-        $quit = $this->getProfile()->createCommand('quit');
+        $quit = $this->getCommandFactory()->createCommand('quit');
 
         $this->assertSame(array('subscribe', 'channel:foo', 1), $redis->subscribe('channel:foo'));
         $this->assertEquals('OK', $redis->executeCommand($quit));
@@ -144,6 +150,7 @@ class PubSubSubscribeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessageRegExp /ERR only .* allowed in this context/
      */

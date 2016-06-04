@@ -60,6 +60,7 @@ class ServerTimeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsServerTime()
     {

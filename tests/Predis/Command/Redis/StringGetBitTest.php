@@ -59,6 +59,7 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCanGetBitsFromString()
     {
@@ -74,6 +75,7 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
@@ -87,6 +89,7 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
@@ -100,6 +103,7 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

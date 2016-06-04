@@ -25,6 +25,7 @@ class DispatcherLoopTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDispatcherLoopAgainstRedisServer()
     {
@@ -36,12 +37,10 @@ class DispatcherLoopTest extends PredisTestCase
             'read_write_timeout' => 2,
         );
 
-        $options = array('profile' => REDIS_SERVER_VERSION);
-
-        $producer = new Client($parameters, $options);
+        $producer = new Client($parameters);
         $producer->connect();
 
-        $consumer = new Client($parameters, $options);
+        $consumer = new Client($parameters);
         $consumer->connect();
 
         $pubsub = new Consumer($consumer);
@@ -84,6 +83,7 @@ class DispatcherLoopTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDispatcherLoopAgainstRedisServerWithPrefix()
     {
@@ -95,15 +95,13 @@ class DispatcherLoopTest extends PredisTestCase
             'read_write_timeout' => 2,
         );
 
-        $options = array('profile' => REDIS_SERVER_VERSION);
-
-        $producerNonPfx = new Client($parameters, $options);
+        $producerNonPfx = new Client($parameters);
         $producerNonPfx->connect();
 
-        $producerPfx = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $producerPfx = new Client($parameters, array('prefix' => 'foobar'));
         $producerPfx->connect();
 
-        $consumer = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $consumer = new Client($parameters, array('prefix' => 'foobar'));
 
         $pubsub = new Consumer($consumer);
         $dispatcher = new DispatcherLoop($pubsub);

@@ -76,6 +76,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTheFirstPsubscribedChannelDetails()
     {
@@ -86,6 +87,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterPsubscribe()
     {
@@ -97,6 +99,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendSubscribeAfterPsubscribe()
     {
@@ -108,6 +111,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendUnsubscribeAfterPsubscribe()
     {
@@ -120,6 +124,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPunsubscribeAfterPsubscribe()
     {
@@ -132,11 +137,12 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendQuitAfterPsubscribe()
     {
         $redis = $this->getClient();
-        $quit = $this->getProfile()->createCommand('quit');
+        $quit = $this->getCommandFactory()->createCommand('quit');
 
         $this->assertSame(array('subscribe', 'channel1', 1), $redis->subscribe('channel1'));
         $this->assertEquals('OK', $redis->executeCommand($quit));
@@ -144,6 +150,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessageRegExp /ERR only .* allowed in this context/
      */

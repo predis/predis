@@ -85,6 +85,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresUnionInNewSortedSet()
     {
@@ -106,6 +107,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresUnionWithAggregateModifier()
     {
@@ -138,6 +140,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresUnionWithWeightsModifier()
     {
@@ -156,6 +159,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresUnionWithCombinedModifiers()
     {
@@ -174,6 +178,7 @@ class ZSetUnionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

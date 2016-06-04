@@ -90,6 +90,7 @@ class SetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithoutMatch()
     {
@@ -104,6 +105,7 @@ class SetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithMatchingMembers()
     {
@@ -117,6 +119,7 @@ class SetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithNoMatchingMembers()
     {

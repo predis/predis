@@ -57,6 +57,7 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testExistsReturnsAnArrayOfValues()
     {
@@ -70,6 +71,7 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testLoadReturnsHashOfScripts()
     {
@@ -83,6 +85,7 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testFlushesExistingScripts()
     {
@@ -96,6 +99,7 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()

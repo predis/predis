@@ -19,8 +19,9 @@ namespace Predis\Configuration;
  * @property-read mixed connections Connection factory.
  * @property-read mixed exceptions  Toggles exceptions in client for -ERR responses.
  * @property-read mixed prefix      Key prefixing strategy using the given prefix.
- * @property-read mixed profile     Server profile.
+ * @property-read mixed commands    Command factory.
  * @property-read mixed replication Aggregate connection for replication.
+ * @property-read mixed parameters  Default connection parameters for aggregate connections.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

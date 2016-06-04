@@ -59,6 +59,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCanSetBitsOfStrings()
     {
@@ -73,6 +74,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCreatesNewKeyOnNonExistingKey()
     {
@@ -86,6 +88,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit is not an integer or out of range
      */
@@ -96,6 +99,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
@@ -106,6 +110,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
@@ -116,6 +121,7 @@ class StringSetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

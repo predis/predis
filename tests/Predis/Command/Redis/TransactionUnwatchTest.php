@@ -54,6 +54,7 @@ class TransactionUnwatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testUnwatchWatchedKeys()
     {
@@ -73,6 +74,7 @@ class TransactionUnwatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCanBeCalledInsideTransaction()
     {

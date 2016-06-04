@@ -57,6 +57,7 @@ class StringSetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCreatesNewKeyOnNonExistingKey()
     {
@@ -71,6 +72,7 @@ class StringSetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testOverwritesOrAppendBytesInKeys()
     {
@@ -87,6 +89,7 @@ class StringSetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testHandlesBinaryData()
     {
@@ -100,6 +103,7 @@ class StringSetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR offset is out of range
      */
@@ -110,6 +114,7 @@ class StringSetRangeTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

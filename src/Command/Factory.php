@@ -9,17 +9,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Profile;
+namespace Predis\Command;
 
 use Predis\ClientException;
 use Predis\Command\Processor\ProcessorInterface;
 
 /**
- * Base class implementing common functionalities for Redis server profiles.
+ * Base command factory.
+ *
+ * This class provides all of the common functionalities needed for the creation
+ * of new instances of Redis commands.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-abstract class RedisProfile implements ProfileInterface
+abstract class Factory implements FactoryInterface
 {
     private $commands;
     private $processor;
@@ -33,8 +36,8 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
-     * Returns a map of all the commands supported by the profile and their
-     * actual PHP classes.
+     * Returns all the commands supported by this factory mapped to their actual
+     * PHP classes.
      *
      * @return array
      */
@@ -63,8 +66,7 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
-     * Returns the fully-qualified name of a class representing the specified
-     * command ID registered in the current server profile.
+     * Returns the FQN of a class that represents the specified command ID.
      *
      * @param string $commandID Command ID.
      *
@@ -100,7 +102,7 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
-     * Defines a new command in the server profile.
+     * Defines a new command in the factory.
      *
      * @param string $commandID Command ID.
      * @param string $class     Fully-qualified name of a Predis\Command\CommandInterface.
@@ -132,15 +134,5 @@ abstract class RedisProfile implements ProfileInterface
     public function getProcessor()
     {
         return $this->processor;
-    }
-
-    /**
-     * Returns the version of server profile as its string representation.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getVersion();
     }
 }

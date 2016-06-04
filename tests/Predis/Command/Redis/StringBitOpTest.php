@@ -76,6 +76,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseAND()
     {
@@ -90,6 +91,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseOR()
     {
@@ -104,6 +106,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseXOR()
     {
@@ -118,6 +121,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseNOT()
     {
@@ -131,6 +135,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR BITOP NOT must be called with a single source key.
      */
@@ -141,6 +146,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR syntax error
      */
@@ -151,6 +157,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
@@ -164,6 +171,7 @@ class StringBitOpTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testDoesNotThrowExceptionOnInvalidDestinationKey()
     {

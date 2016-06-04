@@ -12,7 +12,6 @@
 use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
-use Predis\Profile;
 
 /**
  * Base test case class for the Predis test suite.
@@ -112,7 +111,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     protected function getDefaultOptionsArray()
     {
         return array(
-            'profile' => REDIS_SERVER_VERSION,
+            'commands' => new Command\RedisFactory(),
         );
     }
 
@@ -145,29 +144,13 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Returns a new instance of server profile.
+     * Returns a new instance of command factory.
      *
-     * @param string $version Redis profile.
-     *
-     * @return Profile\ProfileInterface
+     * @return Command\FactoryInterface
      */
-    protected function getProfile($version = null)
+    protected function getCommandFactory()
     {
-        return Profile\Factory::get($version ?: REDIS_SERVER_VERSION);
-    }
-
-    /**
-     * Returns the current server profile in use by the test suite.
-     *
-     * @return Profile\ProfileInterface
-     */
-    protected function getCurrentProfile()
-    {
-        static $profile;
-
-        $profile = $this->getProfile();
-
-        return $profile;
+        return new Command\RedisFactory();
     }
 
     /**
@@ -188,7 +171,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
 
         $options = array_merge(
             array(
-                'profile' => $this->getProfile(),
+                'commands' => $this->getCommandFactory(),
             ),
             $options ?: array()
         );

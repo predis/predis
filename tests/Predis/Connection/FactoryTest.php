@@ -268,14 +268,17 @@ class FactoryTest extends PredisTestCase
      */
     public function testCreateConnectionWithoutInitializationCommands()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->never())->method('createCommand');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->never())->method('addConnectCommand');
 
-        $factory = new Factory($profile);
-        $parameters = new Parameters();
-        $connection = $factory->create($parameters);
+        $parameters = new Parameters(array('scheme' => 'test'));
 
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+        $factory = new Factory();
+        $factory->define('test', function ($scheme, $parameters) use ($connection) {
+            return $connection;
+        });
+
+        $this->assertSame($connection, $factory->create($parameters));
     }
 
     /**

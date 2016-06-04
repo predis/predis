@@ -66,6 +66,7 @@ class ServerEvalSHATest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testExecutesSpecifiedLuaScript()
     {
@@ -81,6 +82,7 @@ class ServerEvalSHATest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnWrongNumberOfKeys()
@@ -96,6 +98,7 @@ class ServerEvalSHATest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidScript()

@@ -54,6 +54,7 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testAbortsTransactionAndRestoresNormalFlow()
     {
@@ -68,6 +69,7 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR DISCARD without MULTI
      */

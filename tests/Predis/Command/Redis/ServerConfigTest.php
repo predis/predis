@@ -82,6 +82,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsListOfConfigurationValues()
     {
@@ -96,6 +97,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsListOfOneConfigurationEntry()
     {
@@ -108,6 +110,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsEmptyListOnUnknownConfigurationEntry()
     {
@@ -118,6 +121,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTrueOnSuccessfulConfiguration()
     {
@@ -134,6 +138,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR Unsupported CONFIG parameter: foo
      */
@@ -146,6 +151,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTrueOnResetstat()
     {
@@ -156,6 +162,7 @@ class ServerConfigTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnUnknownSubcommand()

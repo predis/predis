@@ -20,7 +20,7 @@ More details about this project can be found on the [frequently asked questions]
 
 ## Main features ##
 
-- Support for different versions of Redis (from __2.0__ to __3.2__) using profiles.
+- Support for Redis from __2.0__ to __3.2__.
 - Support for clustering using client-side sharding and pluggable keyspace distributors.
 - Support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication setups and [redis-sentinel](http://redis.io/topics/sentinel).
@@ -33,7 +33,7 @@ More details about this project can be found on the [frequently asked questions]
 - Connections can be established via TCP/IP (also TLS/SSL-encrypted) or UNIX domain sockets.
 - Support for [Webdis](http://webd.is) (requires both `ext-curl` and `ext-phpiredis`).
 - Support for custom connection classes for providing different network or protocol backends.
-- Flexible system for defining custom commands and profiles and override the default ones.
+- Flexible system for defining custom commands and override the default ones.
 
 
 ## How to _install_ and use Predis ##
@@ -148,13 +148,12 @@ Many aspects and behaviors of the client can be configured by passing specific c
 second argument of `Predis\Client::__construct()`:
 
 ```php
-$client = new Predis\Client($parameters, ['profile' => '2.8', 'prefix' => 'sample:']);
+$client = new Predis\Client($parameters, ['prefix' => 'sample:']);
 ```
 
 Options are managed using a mini DI-alike container and their values can be lazily initialized only
 when needed. The client options supported by default in Predis are:
 
-  - `profile`: specifies the profile to use to match a specific version of Redis.
   - `prefix`: prefix string automatically applied to keys found in commands.
   - `exceptions`: whether the client should throw or return responses upon Redis errors.
   - `connections`: list of connection backends or a connection factory instance.
@@ -162,6 +161,7 @@ when needed. The client options supported by default in Predis are:
   - `replication`: specifies a replication backend (`TRUE`, `sentinel` or callable object).
   - `aggregate`: overrides `cluster` and `replication` to provide a custom connections aggregator.
   - `parameters`: list of default connection parameters for aggregate connections.
+  - `commands`: specifies a command factory instance to use through the library.
 
 Users can also provide custom options with values or callable objects (for lazy initialization) that
 are stored in the options container for later use through the library.
@@ -324,7 +324,7 @@ of a transaction using CAS you can see [the following example](examples/transact
 While we try to update Predis to stay up to date with all the commands available in Redis, you might
 prefer to stick with an old version of the library or provide a different way to filter arguments or
 parse responses for specific commands. To achieve that, Predis provides the ability to implement new
-command classes to define or override commands in the default server profiles used by the client:
+command classes to define or override commands in the default command factory used by the client:
 
 ```php
 // Define a new command by extending Predis\Command\Command:
@@ -336,9 +336,9 @@ class BrandNewRedisCommand extends Predis\Command\Command
     }
 }
 
-// Inject your command in the current profile:
+// Inject your command in the current command factory:
 $client = new Predis\Client();
-$client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
+$client->getCommandFactory()->defineCommand('newcmd', 'BrandNewRedisCommand');
 
 $response = $client->newcmd();
 ```
@@ -357,7 +357,7 @@ $response = $client->executeRaw(['SET', 'foo', 'bar']);
 While it is possible to leverage [Lua scripting](http://redis.io/commands/eval) on Redis 2.6+ using
 directly [`EVAL`](http://redis.io/commands/eval) and [`EVALSHA`](http://redis.io/commands/evalsha),
 Predis offers script commands as an higher level abstraction built upon them to make things simple.
-Script commands can be registered in the server profile used by the client and are accessible as if
+Script commands can be registered in the command factory used by the client and are accessible as if
 they were plain Redis commands, but they define Lua scripts that get transmitted to the server for
 remote execution. Internally they use [`EVALSHA`](http://redis.io/commands/evalsha) by default and
 identify a script by its SHA1 hash to save bandwidth, but [`EVAL`](http://redis.io/commands/eval)
@@ -383,9 +383,9 @@ LUA;
     }
 }
 
-// Inject the script command in the current profile:
+// Inject the script command in the current command factory:
 $client = new Predis\Client();
-$client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
+$client->getCommandFactory()->defineCommand('lpushrand', 'ListPushRandomValue');
 
 $response = $client->lpushrand('random_values', $seed = mt_rand());
 ```
@@ -443,15 +443,11 @@ stay consistent while working on the project.
 __ATTENTION__: Do not ever run the test suite shipped with Predis against instances of Redis running
 in production environments or containing data you are interested in!
 
-Predis has a comprehensive test suite covering every aspect of the library. This test suite performs
-integration tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct
-behavior of the implementation of each command and automatically skips commands not defined in the
-specified Redis profile. If you do not have Redis up and running, integration tests can be disabled.
-By default the test suite is configured to execute integration tests using the profile for Redis 3.2
-(which is the current stable version of Redis) but can optionally target a Redis instance built from
-the `unstable` branch by modifying `phpunit.xml` and setting `REDIS_SERVER_VERSION` to `dev` so that
-the development server profile will be used. You can refer to [the tests README](tests/README.md)
-for more detailed information about testing Predis.
+Predis has a comprehensive test suite covering every aspect of the library and that can optionally
+perform integration tests against a running instance of Redis (required >= 2.4.0 in order to verify
+the correct behavior of the implementation of each command. Integration tests for unsupported Redis
+commands are automatically skipped. If you do not have Redis up and running, integration tests can
+be disabled. See [the tests README](tests/README.md) for more details about testing this library.
 
 Predis uses Travis CI for continuous integration and the history for past and current builds can be
 found [on its project page](http://travis-ci.org/nrk/predis).

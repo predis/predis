@@ -57,12 +57,12 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     public function testReadsMultibulkResponsesAsIterators()
     {
         $connection = $this->createConnection(true);
-        $profile = $this->getCurrentProfile();
+        $commands = $this->getCommandFactory();
 
         $connection->getProtocol()->useIterableMultibulk(true);
 
-        $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeRequest($profile->createCommand('lrange', array('metavars', 0, -1)));
+        $connection->executeCommand($commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
+        $connection->writeRequest($commands->createCommand('lrange', array('metavars', 0, -1)));
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkIterator', $iterator = $connection->read());
         $this->assertSame(array('foo', 'hoge', 'lol'), iterator_to_array($iterator));

@@ -11,7 +11,6 @@
 
 namespace Predis\Connection\Aggregate;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -222,7 +221,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testReturnsCorrectConnectionUsingCommandInstance()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection2 = $this->getMockConnection('tcp://host1:7002');
@@ -231,23 +230,23 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $set = $profile->createCommand('set', array('node01:5431', 'foobar'));
-        $get = $profile->createCommand('get', array('node01:5431'));
+        $set = $commands->createCommand('set', array('node01:5431', 'foobar'));
+        $get = $commands->createCommand('get', array('node01:5431'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
 
-        $set = $profile->createCommand('set', array('prefix:{node01:5431}', 'foobar'));
-        $get = $profile->createCommand('get', array('prefix:{node01:5431}'));
+        $set = $commands->createCommand('set', array('prefix:{node01:5431}', 'foobar'));
+        $get = $commands->createCommand('get', array('prefix:{node01:5431}'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
 
-        $set = $profile->createCommand('set', array('node02:3212', 'foobar'));
-        $get = $profile->createCommand('get', array('node02:3212'));
+        $set = $commands->createCommand('set', array('node02:3212', 'foobar'));
+        $get = $commands->createCommand('get', array('node02:3212'));
         $this->assertSame($connection2, $cluster->getConnection($set));
         $this->assertSame($connection2, $cluster->getConnection($get));
 
-        $set = $profile->createCommand('set', array('prefix:{node02:3212}', 'foobar'));
-        $get = $profile->createCommand('get', array('prefix:{node02:3212}'));
+        $set = $commands->createCommand('set', array('prefix:{node02:3212}', 'foobar'));
+        $get = $commands->createCommand('get', array('prefix:{node02:3212}'));
         $this->assertSame($connection2, $cluster->getConnection($set));
         $this->assertSame($connection2, $cluster->getConnection($get));
     }
@@ -259,7 +258,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testThrowsExceptionOnNonShardableCommand()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping');
+        $ping = $this->getCommandFactory()->createCommand('ping');
 
         $cluster = new PredisCluster();
         $cluster->add($this->getMockConnection());
@@ -272,7 +271,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testSupportsKeyHashTags()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
@@ -281,13 +280,13 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $set = $profile->createCommand('set', array('{node:1001}:foo', 'foobar'));
-        $get = $profile->createCommand('get', array('{node:1001}:foo'));
+        $set = $commands->createCommand('set', array('{node:1001}:foo', 'foobar'));
+        $get = $commands->createCommand('get', array('{node:1001}:foo'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
 
-        $set = $profile->createCommand('set', array('{node:1001}:bar', 'foobar'));
-        $get = $profile->createCommand('get', array('{node:1001}:bar'));
+        $set = $commands->createCommand('set', array('{node:1001}:bar', 'foobar'));
+        $get = $commands->createCommand('get', array('{node:1001}:bar'));
         $this->assertSame($connection1, $cluster->getConnection($set));
         $this->assertSame($connection1, $cluster->getConnection($get));
     }
@@ -297,7 +296,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));
+        $command = $this->getCommandFactory()->createCommand('get', array('node01:5431'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->once())->method('writeRequest')->with($command);
@@ -317,7 +316,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $command = Profile\Factory::getDefault()->createCommand('get', array('node02:3212'));
+        $command = $this->getCommandFactory()->createCommand('get', array('node02:3212'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->never())->method('readResponse');
@@ -337,7 +336,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testExecutesCommandOnCorrectConnection()
     {
-        $command = Profile\Factory::getDefault()->createCommand('get', array('node01:5431'));
+        $command = $this->getCommandFactory()->createCommand('get', array('node01:5431'));
 
         $connection1 = $this->getMockConnection('tcp://host1:7001');
         $connection1->expects($this->once())->method('executeCommand')->with($command);
@@ -357,7 +356,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testExecuteCommandOnEachNode()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->createCommand('ping', array());
 
         $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection1->expects($this->once())

@@ -57,6 +57,7 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testIncrementsValueOfFieldByFloat()
     {
@@ -72,6 +73,7 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testDecrementsValueOfFieldByFloat()
     {
@@ -87,6 +89,7 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessageRegExp /ERR hash value is not a( valid)? float/
      */
@@ -100,6 +103,7 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

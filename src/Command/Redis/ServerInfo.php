@@ -33,10 +33,51 @@ class ServerInfo extends Command
      */
     public function parseResponse($data)
     {
-        $info = array();
-        $infoLines = preg_split('/\r?\n/', $data);
+        if (empty($data) || !$lines = preg_split('/\r?\n/', $data)) {
+            return array();
+        }
 
-        foreach ($infoLines as $row) {
+        if (strpos($lines[0], '#') === 0) {
+            return $this->parseNewResponseFormat($lines);
+        } else {
+            return $this->parseOldResponseFormat($lines);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseNewResponseFormat($lines)
+    {
+        $info = array();
+        $current = null;
+
+        foreach ($lines as $row) {
+            if ($row === '') {
+                continue;
+            }
+
+            if (preg_match('/^# (\w+)$/', $row, $matches)) {
+                $info[$matches[1]] = array();
+                $current = &$info[$matches[1]];
+                continue;
+            }
+
+            list($k, $v) = $this->parseRow($row);
+            $current[$k] = $v;
+        }
+
+        return $info;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseOldResponseFormat($lines)
+    {
+        $info = array();
+
+        foreach ($lines as $row) {
             if (strpos($row, ':') === false) {
                 continue;
             }
@@ -83,31 +124,5 @@ class ServerInfo extends Command
         }
 
         return $db;
-    }
-
-    /**
-     * Parses the response and extracts the allocation statistics.
-     *
-     * @param string $str Response buffer.
-     *
-     * @return array
-     */
-    protected function parseAllocationStats($str)
-    {
-        $stats = array();
-
-        foreach (explode(',', $str) as $kv) {
-            @list($size, $objects, $extra) = explode('=', $kv);
-
-            // hack to prevent incorrect values when parsing the >=256 key
-            if (isset($extra)) {
-                $size = ">=$objects";
-                $objects = $extra;
-            }
-
-            $stats[$size] = $objects;
-        }
-
-        return $stats;
     }
 }

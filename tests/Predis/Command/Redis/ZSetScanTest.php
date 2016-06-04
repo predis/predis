@@ -90,6 +90,7 @@ class ZSetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithoutMatch()
     {
@@ -108,6 +109,7 @@ class ZSetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithMatchingMembers()
     {
@@ -122,6 +124,7 @@ class ZSetScanTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithNoMatchingMembers()
     {

@@ -13,7 +13,6 @@ namespace Predis\Command\Redis;
 
 use Predis\Client;
 use Predis\Command;
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -56,11 +55,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     public function getClient($flushdb = true)
     {
-        $profile = $this->getProfile();
+        $commands = $this->getCommandFactory();
 
-        if (!$profile->supportsCommand($id = $this->getExpectedId())) {
+        if (!$commands->supportsCommand($id = $this->getExpectedId())) {
             $this->markTestSkipped(
-                "The profile {$profile->getVersion()} does not support command {$id}"
+                "The current command factory does not support command $id"
             );
         }
 

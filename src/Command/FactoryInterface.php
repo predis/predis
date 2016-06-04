@@ -9,28 +9,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Profile;
+namespace Predis\Command;
 
 use Predis\Command\CommandInterface;
 
 /**
- * A profile defines all the features and commands supported by certain versions
- * of Redis. Instances of Predis\Client should use a server profile matching the
- * version of Redis being used.
+ * Command factory interface.
+ *
+ * Each Redis command should have a class counterpart and commands factories are
+ * used to create new instances of these classes through the library.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-interface ProfileInterface
+interface FactoryInterface
 {
     /**
-     * Returns the profile version corresponding to the Redis version.
+     * Returns a string representing the current command factory.
      *
      * @return string
      */
     public function getVersion();
 
     /**
-     * Checks if the profile supports the specified command.
+     * Checks if the command factory supports the specified command.
      *
      * @param string $commandID Command ID.
      *
@@ -39,7 +40,7 @@ interface ProfileInterface
     public function supportsCommand($commandID);
 
     /**
-     * Checks if the profile supports the specified list of commands.
+     * Checks if the command factory supports the specified list of commands.
      *
      * @param array $commandIDs List of command IDs.
      *

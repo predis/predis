@@ -13,11 +13,10 @@ require __DIR__.'/shared.php';
 
 // This example will not work with versions of Redis < 2.6.
 //
-// Additionally to the EVAL command defined in the current development profile,
-// the Predis\Command\ScriptCommand class can be used to build an higher level
-// abstraction for "scriptable" commands so that they will appear just like any
-// other command on the client-side. This is a quick example used to implement
-// INCREX.
+// Additionally to the EVAL command, the Predis\Command\ScriptCommand class can
+// be used to leverage an higher level abstraction for Lua scripting that makes
+// scripts appear just like any other command on the client-side. This is basic
+// example on how a script-based INCREX command can be defined:
 
 use Predis\Command\ScriptCommand;
 
@@ -50,11 +49,11 @@ LUA;
 }
 
 $client = new Predis\Client($single_server, array(
-    'profile' => function ($options) {
-        $profile = $options->getDefault('profile');
-        $profile->defineCommand('increxby', 'IncrementExistingKeysBy');
+    'commands' => function ($options) {
+        $commands = $options->getDefault('commands');
+        $commands->defineCommand('increxby', 'IncrementExistingKeysBy');
 
-        return $profile;
+        return $commands;
     },
 ));
 

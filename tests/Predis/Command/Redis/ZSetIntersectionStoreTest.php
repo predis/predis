@@ -85,6 +85,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresIntersectionInNewSortedSet()
     {
@@ -103,6 +104,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresIntersectionWithAggregateModifier()
     {
@@ -126,6 +128,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresIntersectionWithWeightsModifier()
     {
@@ -141,6 +144,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testStoresIntersectionWithCombinedModifiers()
     {
@@ -156,6 +160,7 @@ class ZSetIntersectionStoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

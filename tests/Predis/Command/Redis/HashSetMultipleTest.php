@@ -71,6 +71,7 @@ class HashSetMultipleTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testSetsSpecifiedFieldsOfHash()
     {
@@ -85,8 +86,9 @@ class HashSetMultipleTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
-    public function testSetsTheSpecifiedFie()
+    public function testSetsTheSpecifiedField()
     {
         $redis = $this->getClient();
 
@@ -97,6 +99,7 @@ class HashSetMultipleTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

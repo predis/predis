@@ -61,6 +61,7 @@ class KeyPreciseExpireAtTest extends PredisCommandTestCase
     /**
      * @medium
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @group slow
      */
     public function testCanExpireKeys()
@@ -80,6 +81,7 @@ class KeyPreciseExpireAtTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testDeletesKeysOnPastUnixTime()
     {

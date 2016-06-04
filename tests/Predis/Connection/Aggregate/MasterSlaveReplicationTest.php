@@ -13,7 +13,6 @@ namespace Predis\Connection\Aggregate;
 
 use Predis\Command;
 use Predis\Connection;
-use Predis\Profile;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
 use PredisTestCase;
@@ -329,7 +328,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testUsesSlavesOnReadOnlyCommands()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
@@ -338,10 +337,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $cmd = $profile->createCommand('exists', array('foo'));
+        $cmd = $commands->createCommand('exists', array('foo'));
         $this->assertSame($slave1, $replication->getConnection($cmd));
 
-        $cmd = $profile->createCommand('get', array('foo'));
+        $cmd = $commands->createCommand('get', array('foo'));
         $this->assertSame($slave1, $replication->getConnection($cmd));
     }
 
@@ -350,7 +349,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testUsesMasterOnWriteRequests()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
@@ -359,10 +358,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $cmd = $profile->createCommand('set', array('foo', 'bar'));
+        $cmd = $commands->createCommand('set', array('foo', 'bar'));
         $this->assertSame($master, $replication->getConnection($cmd));
 
-        $cmd = $profile->createCommand('get', array('foo'));
+        $cmd = $commands->createCommand('get', array('foo'));
         $this->assertSame($master, $replication->getConnection($cmd));
     }
 
@@ -371,17 +370,17 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testUsesMasterOnReadRequestsWhenNoSlavesAvailable()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
 
-        $cmd = $profile->createCommand('exists', array('foo'));
+        $cmd = $commands->createCommand('exists', array('foo'));
         $this->assertSame($master, $replication->getConnection($cmd));
 
-        $cmd = $profile->createCommand('set', array('foo', 'bar'));
+        $cmd = $commands->createCommand('set', array('foo', 'bar'));
         $this->assertSame($master, $replication->getConnection($cmd));
     }
 
@@ -390,7 +389,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testSwitchesFromSlaveToMasterOnWriteRequestss()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
@@ -399,13 +398,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $cmd = $profile->createCommand('exists', array('foo'));
+        $cmd = $commands->createCommand('exists', array('foo'));
         $this->assertSame($slave1, $replication->getConnection($cmd));
 
-        $cmd = $profile->createCommand('set', array('foo', 'bar'));
+        $cmd = $commands->createCommand('set', array('foo', 'bar'));
         $this->assertSame($master, $replication->getConnection($cmd));
 
-        $cmd = $profile->createCommand('exists', array('foo'));
+        $cmd = $commands->createCommand('exists', array('foo'));
         $this->assertSame($master, $replication->getConnection($cmd));
     }
 
@@ -414,9 +413,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('foo'));
-        $cmdSet = $profile->createCommand('set', array('foo', 'bar'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('foo'));
+        $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('writeRequest')->with($cmdSet);
@@ -437,9 +436,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('foo'));
-        $cmdSet = $profile->createCommand('set', array('foo', 'bar'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('foo'));
+        $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('readResponse')->with($cmdSet);
@@ -460,9 +459,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testExecutesCommandOnCorrectConnection()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('foo'));
-        $cmdSet = $profile->createCommand('set', array('foo', 'bar'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('foo'));
+        $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdSet);
@@ -483,8 +482,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testWatchTriggersSwitchToMasterConnection()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdWatch = $profile->createCommand('watch', array('foo'));
+        $commands = $this->getCommandFactory();
+        $cmdWatch = $commands->createCommand('watch', array('foo'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdWatch);
@@ -504,8 +503,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testMultiTriggersSwitchToMasterConnection()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdMulti = $profile->createCommand('multi');
+        $commands = $this->getCommandFactory();
+        $cmdMulti = $commands->createCommand('multi');
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdMulti);
@@ -525,8 +524,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testEvalTriggersSwitchToMasterConnection()
     {
-        $profile = Profile\Factory::get('dev');
-        $cmdEval = $profile->createCommand('eval', array("return redis.call('info')"));
+        $commands = $this->getCommandFactory();
+        $cmdEval = $commands->createCommand('eval', array("return redis.call('info')"));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdEval);
@@ -546,9 +545,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testSortTriggersSwitchToMasterConnectionOnStoreModifier()
     {
-        $profile = Profile\Factory::get('dev');
-        $cmdSortNormal = $profile->createCommand('sort', array('key'));
-        $cmdSortStore = $profile->createCommand('sort', array('key', array('store' => 'key:store')));
+        $commands = $this->getCommandFactory();
+        $cmdSortNormal = $commands->createCommand('sort', array('key'));
+        $cmdSortStore = $commands->createCommand('sort', array('key', array('store' => 'key:store')));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdSortStore);
@@ -569,8 +568,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testDiscardsUnreachableSlaveAndExecutesReadOnlyCommandOnNextSlave()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('key'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('key'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->never())->method('executeCommand');
@@ -607,8 +606,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testDiscardsUnreachableSlavesAndExecutesReadOnlyCommandOnMaster()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('key'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('key'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())
@@ -648,8 +647,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testSucceedOnReadOnlyCommandAndNoConnectionSetAsMaster()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExists = $profile->createCommand('exists', array('key'));
+        $commands = $this->getCommandFactory();
+        $cmdExists = $commands->createCommand('exists', array('key'));
 
         $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
         $slave1->expects($this->once())
@@ -672,8 +671,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testFailsOnWriteCommandAndNoConnectionSetAsMaster()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdSet = $profile->createCommand('set', array('key', 'value'));
+        $commands = $this->getCommandFactory();
+        $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
         $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
         $slave1->expects($this->never())->method('executeCommand');
@@ -734,8 +733,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testFailsOnUnreachableMaster()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdSet = $profile->createCommand('set', array('key', 'value'));
+        $commands = $this->getCommandFactory();
+        $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())
@@ -762,7 +761,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testThrowsExceptionOnNonSupportedCommand()
     {
-        $cmd = Profile\Factory::getDefault()->createCommand('info');
+        $cmd = $this->getCommandFactory()->createCommand('info');
 
         $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
@@ -776,9 +775,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testCanOverrideReadOnlyFlagForCommands()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdSet = $profile->createCommand('set', array('foo', 'bar'));
-        $cmdGet = $profile->createCommand('get', array('foo'));
+        $commands = $this->getCommandFactory();
+        $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
+        $cmdGet = $commands->createCommand('get', array('foo'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdGet);
@@ -802,9 +801,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testAcceptsCallableToOverrideReadOnlyFlagForCommands()
     {
-        $profile = Profile\Factory::getDefault();
-        $cmdExistsFoo = $profile->createCommand('exists', array('foo'));
-        $cmdExistsBar = $profile->createCommand('exists', array('bar'));
+        $commands = $this->getCommandFactory();
+        $cmdExistsFoo = $commands->createCommand('exists', array('foo'));
+        $cmdExistsBar = $commands->createCommand('exists', array('bar'));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->once())->method('executeCommand')->with($cmdExistsBar);
@@ -831,10 +830,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testCanSetReadOnlyFlagForEvalScripts()
     {
-        $profile = Profile\Factory::get('dev');
+        $commands = $this->getCommandFactory();
 
-        $cmdEval = $profile->createCommand('eval', array($script = "return redis.call('info');"));
-        $cmdEvalSha = $profile->createCommand('evalsha', array($scriptSHA1 = sha1($script)));
+        $cmdEval = $commands->createCommand('eval', array($script = "return redis.call('info');"));
+        $cmdEvalSha = $commands->createCommand('evalsha', array($scriptSHA1 = sha1($script)));
 
         $master = $this->getMockConnection('tcp://host1?alias=master');
         $master->expects($this->never())->method('executeCommand');

@@ -72,6 +72,7 @@ class ServerSlowlogTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.12
      */
     public function testReturnsAnArrayOfLoggedCommands()
     {
@@ -97,6 +98,7 @@ class ServerSlowlogTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.12
      */
     public function testCanResetTheLog()
     {
@@ -107,6 +109,7 @@ class ServerSlowlogTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.12
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()

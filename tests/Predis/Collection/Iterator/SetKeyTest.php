@@ -11,7 +11,6 @@
 
 namespace Predis\Collection\Iterator;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -22,15 +21,19 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'SSCAN'.
+     * @expectedExceptionMessage 'SSCAN' is not supported by the current command factory.
      */
-    public function testThrowsExceptionOnInvalidProfile()
+    public function testThrowsExceptionOnMissingCommand()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->any())
+                 ->method('supportsCommand')
+                 ->will($this->returnValue(false));
 
+        $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.0')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($commands));
 
         new SetKey($client, 'key:set');
     }
@@ -40,11 +43,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('sscan')
                ->with('key:set', 0, array())
@@ -61,11 +64,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('sscan')
                ->with('key:set', 0, array())
@@ -97,11 +100,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array())
@@ -137,11 +140,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array())
@@ -172,11 +175,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array())
@@ -216,11 +219,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('MATCH' => 'member:*'))
@@ -247,11 +250,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('MATCH' => 'member:*'))
@@ -282,11 +285,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('COUNT' => 2))
@@ -313,11 +316,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('COUNT' => 1))
@@ -348,11 +351,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
@@ -379,11 +382,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('sscan')
                ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
@@ -414,11 +417,11 @@ class SetKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'sscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'sscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->exactly(2))
                ->method('sscan')
                ->with('key:set', 0, array())

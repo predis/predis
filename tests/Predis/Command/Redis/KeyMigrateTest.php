@@ -87,6 +87,7 @@ class KeyMigrateTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsStatusNOKEYOnNonExistingKey()
     {
@@ -98,6 +99,7 @@ class KeyMigrateTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @group slow
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage IOERR

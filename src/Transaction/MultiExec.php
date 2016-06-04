@@ -72,9 +72,9 @@ class MultiExec implements ClientContextInterface
             );
         }
 
-        if (!$client->getProfile()->supportsCommands(array('MULTI', 'EXEC', 'DISCARD'))) {
+        if (!$client->getCommandFactory()->supportsCommands(array('MULTI', 'EXEC', 'DISCARD'))) {
             throw new NotSupportedException(
-                'The current profile does not support MULTI, EXEC and DISCARD.'
+                'MULTI, EXEC and DISCARD are not supported by the current command factory.'
             );
         }
     }
@@ -228,8 +228,8 @@ class MultiExec implements ClientContextInterface
      */
     public function watch($keys)
     {
-        if (!$this->client->getProfile()->supportsCommand('WATCH')) {
-            throw new NotSupportedException('WATCH is not supported by the current profile.');
+        if (!$this->client->getCommandFactory()->supportsCommand('WATCH')) {
+            throw new NotSupportedException('WATCH is not supported by the current command factory.');
         }
 
         if ($this->state->isWatchAllowed()) {
@@ -268,9 +268,9 @@ class MultiExec implements ClientContextInterface
      */
     public function unwatch()
     {
-        if (!$this->client->getProfile()->supportsCommand('UNWATCH')) {
+        if (!$this->client->getCommandFactory()->supportsCommand('UNWATCH')) {
             throw new NotSupportedException(
-                'UNWATCH is not supported by the current profile.'
+                'UNWATCH is not supported by the current command factory.'
             );
         }
 

@@ -11,7 +11,6 @@
 
 namespace Predis\Collection\Iterator;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -21,14 +20,34 @@ class ListKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
+     * @expectedException \Predis\NotSupportedException
+     * @expectedExceptionMessage 'LRANGE' is not supported by the current command factory.
+     */
+    public function testThrowsExceptionOnMissingCommand()
+    {
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->any())
+                 ->method('supportsCommand')
+                 ->will($this->returnValue(false));
+
+        $client = $this->getMock('Predis\ClientInterface');
+        $client->expects($this->any())
+               ->method('getCommandFactory')
+               ->will($this->returnValue($commands));
+
+        new ListKey($client, 'key:list');
+    }
+
+    /**
+     * @group disconnected
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -45,11 +64,11 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -81,11 +100,11 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 9)
@@ -117,8 +136,8 @@ class ListKeyTest extends PredisTestCase
     {
         $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -132,8 +151,8 @@ class ListKeyTest extends PredisTestCase
     {
         $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -143,11 +162,11 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationWithCountParameter()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 4)
@@ -174,11 +193,11 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationWithCountParameterOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('lrange')
                ->with('key:list', 0, 1)
@@ -214,11 +233,11 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'lrange'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::getDefault()));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->exactly(2))
                ->method('lrange')
                ->with('key:list', 0, 9)

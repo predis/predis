@@ -43,12 +43,8 @@ The suite performs integration tests against a running instance of Redis (>= 2.4
 correct behavior of the implementation of each command and certain abstractions implemented in the
 library that depend on them. These tests are identified by the __connected__ group.
 
-Integration tests for commands that are not defined in the specified server profile (see the value
-of the `REDIS_SERVER_VERSION` constant in `phpunit.xml`) are marked as __skipped__ automatically.
-
-By default, the test suite is configured to execute integration tests using the server profile for
-Redis 3.2. You can run the suite against a Redis instance built from the `unstable` branch with the
-development profile by changing the `REDIS_SERVER_VERSION` to `dev` in the `phpunit.xml` file.
+Integration tests for commands that are not supported by the running instance of Redis are marked as
+__skipped__ automatically.
 
 If you do not have a Redis instance up and running or available for testing, you can completely
 disable integration tests by excluding the __connected__ group:

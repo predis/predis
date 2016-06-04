@@ -57,6 +57,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testCreatesNewKeyOnNonExistingKey()
     {
@@ -68,6 +69,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsTheValueOfTheKeyAfterIncrement()
     {
@@ -84,6 +86,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not a valid float
      */
@@ -96,6 +99,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not a valid float
      */
@@ -109,6 +113,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

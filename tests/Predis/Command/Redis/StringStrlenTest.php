@@ -57,6 +57,7 @@ class StringStrlenTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsTheLengthOfString()
     {
@@ -71,6 +72,7 @@ class StringStrlenTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroOnNonExistingKeys()
     {
@@ -81,6 +83,7 @@ class StringStrlenTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

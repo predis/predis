@@ -33,7 +33,7 @@ class ClientTest extends PredisTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
+        $this->assertSame($options->commands, $client->getCommandFactory());
 
         $this->assertFalse($client->isConnected());
     }
@@ -53,7 +53,7 @@ class ClientTest extends PredisTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
+        $this->assertSame($options->commands, $client->getCommandFactory());
 
         $this->assertFalse($client->isConnected());
     }
@@ -73,7 +73,7 @@ class ClientTest extends PredisTestCase
         $this->assertSame($parameters->port, 6379);
 
         $options = $client->getOptions();
-        $this->assertSame($options->profile->getVersion(), Profile\Factory::getDefault()->getVersion());
+        $this->assertSame($options->commands, $client->getCommandFactory());
 
         $this->assertFalse($client->isConnected());
     }
@@ -233,15 +233,14 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithNullAndArrayArgument()
     {
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $connections = $this->getMock('Predis\Connection\FactoryInterface');
 
-        $arg2 = array('profile' => '2.0', 'prefix' => 'prefix:', 'connections' => $factory);
+        $arg2 = array('prefix' => 'prefix:', 'connections' => $connections);
         $client = new Client(null, $arg2);
 
-        $profile = $client->getProfile();
-        $this->assertSame($profile->getVersion(), Profile\Factory::get('2.0')->getVersion());
-        $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $profile->getProcessor());
-        $this->assertSame('prefix:', $profile->getProcessor()->getPrefix());
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $commands = $client->getCommandFactory());
+        $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $commands->getProcessor());
+        $this->assertSame('prefix:', $commands->getProcessor()->getPrefix());
     }
 
     /**
@@ -351,17 +350,17 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreatesNewCommandUsingSpecifiedProfile()
+    public function testCreatesNewCommandUsingSpecifiedCommandFactory()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->createCommand('ping', array());
 
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->once())
-                ->method('createCommand')
-                ->with('ping', array())
-                ->will($this->returnValue($ping));
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->once())
+                 ->method('createCommand')
+                 ->with('ping', array())
+                 ->will($this->returnValue($ping));
 
-        $client = new Client(null, array('profile' => $profile));
+        $client = new Client(null, array('commands' => $commands));
         $this->assertSame($ping, $client->createCommand('ping', array()));
     }
 
@@ -370,10 +369,10 @@ class ClientTest extends PredisTestCase
      */
     public function testExecuteCommandReturnsParsedResponses()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
-        $ping = $profile->createCommand('ping', array());
-        $hgetall = $profile->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
+        $ping = $commands->createCommand('ping', array());
+        $hgetall = $commands->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->at(0))
@@ -398,7 +397,7 @@ class ClientTest extends PredisTestCase
      */
     public function testExecuteCommandThrowsExceptionOnRedisError()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
@@ -415,7 +414,7 @@ class ClientTest extends PredisTestCase
      */
     public function testExecuteCommandReturnsErrorResponseOnRedisError()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->createCommand('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
@@ -434,7 +433,7 @@ class ClientTest extends PredisTestCase
      */
     public function testCallingRedisCommandExecutesInstanceOfCommand()
     {
-        $ping = Profile\Factory::getDefault()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->createCommand('ping', array());
 
         $connection = $this->getMock('Predis\Connection\ConnectionInterface');
         $connection->expects($this->once())
@@ -442,13 +441,13 @@ class ClientTest extends PredisTestCase
                    ->with($this->isInstanceOf('Predis\Command\Redis\ConnectionPing'))
                    ->will($this->returnValue('PONG'));
 
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->once())
-                ->method('createCommand')
-                ->with('ping', array())
-                ->will($this->returnValue($ping));
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->once())
+                 ->method('createCommand')
+                 ->with('ping', array())
+                 ->will($this->returnValue($ping));
 
-        $options = array('profile' => $profile);
+        $options = array('commands' => $commands);
         $client = $this->getMock('Predis\Client', null, array($connection, $options));
 
         $this->assertEquals('PONG', $client->ping());

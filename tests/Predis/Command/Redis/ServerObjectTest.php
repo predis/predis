@@ -57,6 +57,7 @@ class ServerObjectTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.3
      */
     public function testObjectRefcount()
     {
@@ -68,6 +69,7 @@ class ServerObjectTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.3
      */
     public function testObjectIdletime()
     {
@@ -79,6 +81,7 @@ class ServerObjectTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.3
      */
     public function testObjectEncoding()
     {
@@ -90,6 +93,7 @@ class ServerObjectTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.3
      */
     public function testReturnsNullOnNonExistingKey()
     {
@@ -102,6 +106,7 @@ class ServerObjectTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.3
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()

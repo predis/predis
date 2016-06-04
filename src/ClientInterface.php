@@ -12,9 +12,9 @@
 namespace Predis;
 
 use Predis\Command\CommandInterface;
+use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
-use Predis\Profile\ProfileInterface;
 
 /**
  * Interface defining a client able to execute commands against Redis.
@@ -177,11 +177,11 @@ use Predis\Profile\ProfileInterface;
 interface ClientInterface
 {
     /**
-     * Returns the server profile used by the client.
+     * Returns the command factory used by the client.
      *
-     * @return ProfileInterface
+     * @return FactoryInterface
      */
-    public function getProfile();
+    public function getCommandFactory();
 
     /**
      * Returns the client options specified upon initialization.

@@ -11,7 +11,6 @@
 
 namespace Predis\Collection\Iterator;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -22,15 +21,19 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'ZSCAN'.
+     * @expectedExceptionMessage 'ZSCAN' is not supported by the current command factory.
      */
-    public function testThrowsExceptionOnInvalidProfile()
+    public function testThrowsExceptionOnMissingCommand()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->any())
+                 ->method('supportsCommand')
+                 ->will($this->returnValue(false));
 
+        $client = $this->getMock('Predis\ClientInterface');
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.0')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($commands));
 
         new SortedSetKey($client, 'key:zset');
     }
@@ -40,11 +43,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -62,11 +65,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithIntegerMembers()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -100,11 +103,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->once())
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -138,11 +141,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -182,11 +185,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -219,11 +222,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array())
@@ -267,11 +270,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*'))
@@ -300,11 +303,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*'))
@@ -339,11 +342,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('COUNT' => 2))
@@ -372,11 +375,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('COUNT' => 1))
@@ -411,11 +414,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
@@ -444,11 +447,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->at(1))
                ->method('zscan')
                ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
@@ -483,11 +486,11 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'zscan'));
 
         $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
+               ->method('getCommandFactory')
+               ->will($this->returnValue($this->getCommandFactory()));
         $client->expects($this->exactly(2))
                ->method('zscan')
                ->with('key:zset', 0, array())

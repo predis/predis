@@ -57,6 +57,7 @@ class PubSubPublishTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testPublishesMessagesToChannel()
     {

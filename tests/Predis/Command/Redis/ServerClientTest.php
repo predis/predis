@@ -124,6 +124,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      */
     public function testReturnsListOfConnectedClients()
     {
@@ -198,6 +199,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptioOnWrongModifier()
@@ -209,6 +211,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR No such client
      */

@@ -57,6 +57,7 @@ class ListPushTailXTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testPushesElementsToHeadOfExistingList()
     {
@@ -70,6 +71,7 @@ class ListPushTailXTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testDoesNotPushElementOnNonExistingKey()
     {
@@ -82,6 +84,7 @@ class ListPushTailXTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

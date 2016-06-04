@@ -57,6 +57,7 @@ class ZSetCountTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsNumberOfElementsInGivenScoreRange()
     {
@@ -75,6 +76,7 @@ class ZSetCountTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testInfinityScoreIntervals()
     {
@@ -89,6 +91,7 @@ class ZSetCountTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testExclusiveScoreIntervals()
     {
@@ -103,6 +106,7 @@ class ZSetCountTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

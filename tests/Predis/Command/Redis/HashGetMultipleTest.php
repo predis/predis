@@ -76,6 +76,7 @@ class HashGetMultipleTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsValuesOfSpecifiedFields()
     {
@@ -91,6 +92,7 @@ class HashGetMultipleTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

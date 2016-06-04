@@ -13,7 +13,6 @@ namespace Predis\Monitor;
 
 use Predis\Client;
 use Predis\Monitor\Consumer as MonitorConsumer;
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -24,17 +23,17 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'MONITOR'.
+     * @expectedExceptionMessage 'MONITOR' is not supported by the current command factory.
      */
     public function testMonitorConsumerRequireMonitorCommand()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->once())
-                ->method('supportsCommand')
-                ->with('MONITOR')
-                ->will($this->returnValue(false));
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $commands->expects($this->once())
+                 ->method('supportsCommand')
+                 ->with('MONITOR')
+                 ->will($this->returnValue(false));
 
-        $client = new Client(null, array('profile' => $profile));
+        $client = new Client(null, array('commands' => $commands));
 
         new MonitorConsumer($client);
     }
@@ -57,7 +56,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testConstructorStartsConsumer()
     {
-        $cmdMonitor = Profile\Factory::getDefault()->createCommand('monitor');
+        $cmdMonitor = $this->getCommandFactory()->createCommand('monitor');
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
@@ -168,13 +167,12 @@ class ConsumerTest extends PredisTestCase
             'read_write_timeout' => 2,
         );
 
-        $options = array('profile' => REDIS_SERVER_VERSION);
         $echoed = array();
 
-        $producer = new Client($parameters, $options);
+        $producer = new Client($parameters);
         $producer->connect();
 
-        $consumer = new Client($parameters, $options);
+        $consumer = new Client($parameters);
         $consumer->connect();
 
         $monitor = new MonitorConsumer($consumer);

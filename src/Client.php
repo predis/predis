@@ -44,7 +44,7 @@ class Client implements ClientInterface, \IteratorAggregate
 
     protected $connection;
     protected $options;
-    private $profile;
+    private $commands;
 
     /**
      * @param mixed $parameters Connection parameters for one or more servers.
@@ -54,7 +54,7 @@ class Client implements ClientInterface, \IteratorAggregate
     {
         $this->options = $this->createOptions($options ?: array());
         $this->connection = $this->createConnection($parameters ?: array());
-        $this->profile = $this->options->profile;
+        $this->commands = $this->options->commands;
     }
 
     /**
@@ -174,9 +174,9 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function getProfile()
+    public function getCommandFactory()
     {
-        return $this->profile;
+        return $this->commands;
     }
 
     /**
@@ -320,7 +320,7 @@ class Client implements ClientInterface, \IteratorAggregate
      */
     public function createCommand($commandID, $arguments = array())
     {
-        return $this->profile->createCommand($commandID, $arguments);
+        return $this->commands->createCommand($commandID, $arguments);
     }
 
     /**

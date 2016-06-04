@@ -60,6 +60,7 @@ class KeyPersistTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testRemovesExpireFromKey()
     {
@@ -74,6 +75,7 @@ class KeyPersistTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroOnNonExpiringKeys()
     {
@@ -86,6 +88,7 @@ class KeyPersistTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroOnNonExistentKeys()
     {

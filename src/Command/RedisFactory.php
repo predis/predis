@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Profile;
+namespace Predis\Command;
 
 /**
- * Server profile for Redis 3.0.
+ * Command factory for the mainline Redis server.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RedisVersion320 extends RedisProfile
+class RedisFactory extends Factory
 {
     /**
      * {@inheritdoc}
@@ -111,7 +111,7 @@ class RedisVersion320 extends RedisProfile
             'QUIT' => 'Predis\Command\Redis\ConnectionQuit',
 
             /* remote server control commands */
-            'INFO' => 'Predis\Command\Redis\ServerInfoV26x',
+            'INFO' => 'Predis\Command\Redis\ServerInfo',
             'SLAVEOF' => 'Predis\Command\Redis\ServerSlaveOf',
             'MONITOR' => 'Predis\Command\Redis\ServerMonitor',
             'DBSIZE' => 'Predis\Command\Redis\ServerDatabaseSize',

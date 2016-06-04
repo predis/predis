@@ -71,6 +71,7 @@ class TransactionWatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testAbortsTransactionOnExternalWriteOperations()
     {
@@ -89,6 +90,7 @@ class TransactionWatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testCanWatchNotYetExistingKeys()
     {
@@ -105,6 +107,7 @@ class TransactionWatchTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR WATCH inside MULTI is not allowed
      */

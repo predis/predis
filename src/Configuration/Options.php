@@ -47,7 +47,7 @@ class Options implements OptionsInterface
             'connections' => 'Predis\Configuration\ConnectionFactoryOption',
             'exceptions' => 'Predis\Configuration\ExceptionsOption',
             'prefix' => 'Predis\Configuration\PrefixOption',
-            'profile' => 'Predis\Configuration\ProfileOption',
+            'commands' => 'Predis\Configuration\CommandsOption',
             'replication' => 'Predis\Configuration\ReplicationOption',
         );
     }

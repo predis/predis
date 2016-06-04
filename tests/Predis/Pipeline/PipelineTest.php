@@ -13,7 +13,6 @@ namespace Predis\Pipeline;
 
 use Predis\Client;
 use Predis\ClientException;
-use Predis\Profile;
 use Predis\Response;
 use PredisTestCase;
 
@@ -132,10 +131,10 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteReturnsPipelineForFluentInterface()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $pipeline = new Pipeline(new Client($connection));
-        $command = $profile->createCommand('echo', array('one'));
+        $command = $commands->createCommand('echo', array('one'));
 
         $this->assertSame($pipeline, $pipeline->executeCommand($command));
     }
@@ -145,7 +144,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteCommandDoesNotSendCommandsWithoutExecute()
     {
-        $profile = Profile\Factory::getDefault();
+        $commands = $this->getCommandFactory();
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->never())->method('writeRequest');
@@ -153,9 +152,9 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $pipeline->executeCommand($profile->createCommand('echo', array('one')));
-        $pipeline->executeCommand($profile->createCommand('echo', array('two')));
-        $pipeline->executeCommand($profile->createCommand('echo', array('three')));
+        $pipeline->executeCommand($commands->createCommand('echo', array('one')));
+        $pipeline->executeCommand($commands->createCommand('echo', array('two')));
+        $pipeline->executeCommand($commands->createCommand('echo', array('three')));
     }
 
     /**

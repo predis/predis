@@ -126,6 +126,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsElementsInScoreRange()
     {
@@ -143,6 +144,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testInfinityScoreIntervals()
     {
@@ -157,6 +159,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testExclusiveScoreIntervals()
     {
@@ -171,6 +174,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testRangeWithWithscoresModifier()
     {
@@ -185,6 +189,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testRangeWithLimitModifier()
     {
@@ -199,6 +204,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testRangeWithCombinedModifiers()
     {
@@ -214,6 +220,7 @@ class ZSetReverseRangeByScoreTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

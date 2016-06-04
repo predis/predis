@@ -57,6 +57,7 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testIncrementsValueOfFieldByInteger()
     {
@@ -70,6 +71,7 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDecrementsValueOfFieldByInteger()
     {
@@ -83,6 +85,7 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR hash value is not an integer
      */
@@ -96,6 +99,7 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

@@ -57,6 +57,7 @@ class ListLengthTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsLengthOfList()
     {
@@ -71,6 +72,7 @@ class ListLengthTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroLengthOnNonExistingList()
     {
@@ -81,6 +83,7 @@ class ListLengthTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.2.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */

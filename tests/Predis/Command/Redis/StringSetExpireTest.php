@@ -57,6 +57,7 @@ class StringSetExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testCreatesNewKeyAndSetsTTL()
     {
@@ -71,6 +72,7 @@ class StringSetExpireTest extends PredisCommandTestCase
      * @medium
      * @group connected
      * @group slow
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testKeyExpiresAfterTTL()
     {
@@ -84,6 +86,7 @@ class StringSetExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR value is not an integer or out of range
      */
@@ -94,6 +97,7 @@ class StringSetExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time
      */
@@ -104,6 +108,7 @@ class StringSetExpireTest extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      * @expectedException \Predis\Response\ServerException
      * @expectedExceptionMessage ERR invalid expire time
      */
