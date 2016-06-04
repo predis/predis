@@ -8,6 +8,8 @@ v2.0.0 (201x-xx-xx)
   used by Predis is `Predis\Command\RedisFactory` and it still allows developers
   to define or override commands with their own implementations.
 
+- Changed the signature for the constructor of `Predis\Command\RawCommand`.
+
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`
   namespace.
 

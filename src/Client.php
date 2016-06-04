@@ -289,9 +289,10 @@ class Client implements ClientInterface, \IteratorAggregate
     public function executeRaw(array $arguments, &$error = null)
     {
         $error = false;
+        $commandID = array_shift($arguments);
 
         $response = $this->connection->executeCommand(
-            new RawCommand($arguments)
+            new RawCommand($commandID, $arguments)
         );
 
         if ($response instanceof ResponseInterface) {

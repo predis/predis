@@ -344,7 +344,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
 
     public function getCommandInstance($commandID, array $arguments)
     {
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
         $command->setRawArguments($arguments);
 
         return $command;
