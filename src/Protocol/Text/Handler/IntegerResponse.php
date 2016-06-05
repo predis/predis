@@ -32,6 +32,7 @@ class IntegerResponse implements ResponseHandlerInterface
     {
         if (is_numeric($payload)) {
             $integer = (int) $payload;
+
             return $integer == $payload ? $integer : $payload;
         }
 
