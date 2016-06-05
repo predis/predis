@@ -9,21 +9,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Configuration;
+namespace Predis\Configuration\Option;
 
 use PredisTestCase;
 
 /**
  *
  */
-class ExceptionsOptionTest extends PredisTestCase
+class ExceptionsTest extends PredisTestCase
 {
     /**
      * @group disconnected
      */
     public function testDefaultOptionValue()
     {
-        $option = new ExceptionsOption();
+        $option = new Exceptions();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $this->assertTrue($option->getDefault($options));
@@ -34,7 +34,7 @@ class ExceptionsOptionTest extends PredisTestCase
      */
     public function testAcceptsDifferentValuesAndFiltersThemAsBooleans()
     {
-        $option = new ExceptionsOption();
+        $option = new Exceptions();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $this->assertFalse($option->filter($options, null));
@@ -57,7 +57,7 @@ class ExceptionsOptionTest extends PredisTestCase
      */
     public function testReturnsFalesOnValuesNotParsableAsBooleans()
     {
-        $option = new ExceptionsOption();
+        $option = new Exceptions();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $this->assertFalse($option->filter($options, new \stdClass()));

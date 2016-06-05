@@ -21,8 +21,8 @@ namespace Predis\Configuration;
  */
 class Options implements OptionsInterface
 {
+    protected $options = array();
     protected $input;
-    protected $options;
     protected $handlers;
 
     /**
@@ -43,12 +43,13 @@ class Options implements OptionsInterface
     protected function getHandlers()
     {
         return array(
-            'cluster' => 'Predis\Configuration\ClusterOption',
-            'connections' => 'Predis\Configuration\ConnectionFactoryOption',
-            'exceptions' => 'Predis\Configuration\ExceptionsOption',
-            'prefix' => 'Predis\Configuration\PrefixOption',
-            'commands' => 'Predis\Configuration\CommandsOption',
-            'replication' => 'Predis\Configuration\ReplicationOption',
+            'aggregate' => 'Predis\Configuration\Option\Aggregate',
+            'cluster' => 'Predis\Configuration\Option\Cluster',
+            'replication' => 'Predis\Configuration\Option\Replication',
+            'connections' => 'Predis\Configuration\Option\Connections',
+            'commands' => 'Predis\Configuration\Option\Commands',
+            'exceptions' => 'Predis\Configuration\Option\Exceptions',
+            'prefix' => 'Predis\Configuration\Option\Prefix',
         );
     }
 
@@ -100,14 +101,12 @@ class Options implements OptionsInterface
             $value = $this->input[$option];
             unset($this->input[$option]);
 
-            if (is_object($value) && method_exists($value, '__invoke')) {
-                $value = $value($this, $option);
-            }
-
             if (isset($this->handlers[$option])) {
                 $handler = $this->handlers[$option];
                 $handler = new $handler();
                 $value = $handler->filter($this, $value);
+            } elseif (is_object($value) && method_exists($value, '__invoke')) {
+                $value = $value($this);
             }
 
             return $this->options[$option] = $value;

@@ -1,6 +1,26 @@
 v2.0.0 (201x-xx-xx)
 ================================================================================
 
+- Accepted values for some client options have changed, this is the new list of
+  accepted values:
+
+  - `aggregate`: callable returning an aggregate connection.
+  - `cluster`: string value (`predis`, `redis`), callable returning an aggregate
+    connection.
+  - `replication`: string value (`predis`, `sentinel`), callable returning an
+     aggregate connection.
+  - `commands`: command factory, named array mapping command IDs to PHP classes,
+    callable returning a command factory or a named array.
+  - `connections`: connection factory, callable returning a connection factory,
+    named array mapping connection schemes to PHP classes.
+  - `prefix`: string value, command processor, callable.
+  - `exceptions`: boolean.
+
+  Note that both the `cluster` and `replication` options now return a closure
+  acting as initializer instead of an aggregate connection instance.
+
+- Client option classes now live in the `Predis\Configuration\Option` namespace.
+
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`
   namespace and each class name mirrors the respective Redis command ID.
 

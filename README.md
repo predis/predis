@@ -154,12 +154,12 @@ $client = new Predis\Client($parameters, ['prefix' => 'sample:']);
 Options are managed using a mini DI-alike container and their values can be lazily initialized only
 when needed. The client options supported by default in Predis are:
 
-  - `prefix`: prefix string automatically applied to keys found in commands.
+  - `prefix`: prefix string applied to every key found in commands.
   - `exceptions`: whether the client should throw or return responses upon Redis errors.
   - `connections`: list of connection backends or a connection factory instance.
-  - `cluster`: specifies a cluster backend (`predis`, `redis` or callable object).
-  - `replication`: specifies a replication backend (`TRUE`, `sentinel` or callable object).
-  - `aggregate`: overrides `cluster` and `replication` to provide a custom connections aggregator.
+  - `cluster`: specifies a cluster backend (`predis`, `redis` or callable).
+  - `replication`: specifies a replication backend (`predis`, `sentinel` or callable).
+  - `aggregate`: configures the client with a custom aggregate connection (callable).
   - `parameters`: list of default connection parameters for aggregate connections.
   - `commands`: specifies a command factory instance to use through the library.
 
@@ -337,8 +337,11 @@ class BrandNewRedisCommand extends Predis\Command\Command
 }
 
 // Inject your command in the current command factory:
-$client = new Predis\Client();
-$client->getCommandFactory()->defineCommand('newcmd', 'BrandNewRedisCommand');
+$client = new Predis\Client($parameters, [
+    'commands' => [
+        'newcmd' => 'BrandNewRedisCommand',
+    ],
+]);
 
 $response = $client->newcmd();
 ```
@@ -384,8 +387,11 @@ LUA;
 }
 
 // Inject the script command in the current command factory:
-$client = new Predis\Client();
-$client->getCommandFactory()->defineCommand('lpushrand', 'ListPushRandomValue');
+$client = new Predis\Client($parameters, [
+    'commands' => [
+        'lpushrand' => 'ListPushRandomValue',
+    ],
+]);
 
 $response = $client->lpushrand('random_values', $seed = mt_rand());
 ```

@@ -92,8 +92,10 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Array of connection parameters requires `cluster`, `replication` or `aggregate` client option
      */
-    public function testConstructorWithArrayOfArrayArgument()
+    public function testConstructorThrowsExceptionWithArrayOfParametersArgumentAndMissingOption()
     {
         $arg1 = array(
             array('host' => 'localhost', 'port' => 7000),
@@ -101,8 +103,23 @@ class ClientTest extends PredisTestCase
         );
 
         $client = new Client($arg1);
+    }
 
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $client->getConnection());
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithArrayOfArrayArgumentAndClusterOption()
+    {
+        $arg1 = array(
+            array('host' => 'localhost', 'port' => 7000),
+            array('host' => 'localhost', 'port' => 7001),
+        );
+
+        $client = new Client($arg1, array(
+            'aggregate' => $this->getAggregateInitializer($arg1),
+        ));
+
+        $this->assertInstanceOf('Predis\Connection\AggregateConnectionInterface', $client->getConnection());
     }
 
     /**
@@ -122,9 +139,13 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithArrayOfStringArgument()
     {
-        $client = new Client($arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001'));
+        $arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001');
 
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $client->getConnection());
+        $client = new Client($arg1, array(
+            'aggregate' => $this->getAggregateInitializer($arg1),
+        ));
+
+        $this->assertInstanceOf('Predis\Connection\AggregateConnectionInterface', $client->getConnection());
     }
 
     /**
@@ -132,14 +153,16 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithArrayOfConnectionsArgument()
     {
-        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $arg1 = array(
+            $this->getMock('Predis\Connection\NodeConnectionInterface'),
+            $this->getMock('Predis\Connection\NodeConnectionInterface'),
+        );
 
-        $client = new Client(array($connection1, $connection2));
+        $client = new Client($arg1, array(
+            'aggregate' => $this->getAggregateInitializer($arg1),
+        ));
 
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
-        $this->assertSame($connection1, $cluster->getConnectionById(0));
-        $this->assertSame($connection2, $cluster->getConnectionById(1));
+        $this->assertInstanceOf('Predis\Connection\AggregateConnectionInterface', $client->getConnection());
     }
 
     /**
@@ -212,8 +235,8 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage The callable connection initializer returned an invalid type.
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Callable parameters must return a valid connection
      */
     public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
     {
@@ -249,7 +272,7 @@ class ClientTest extends PredisTestCase
     public function testConstructorWithArrayAndOptionReplication()
     {
         $arg1 = array('tcp://host1?alias=master', 'tcp://host2?alias=slave');
-        $arg2 = array('replication' => true);
+        $arg2 = array('replication' => 'predis');
         $client = new Client($arg1, $arg2);
 
         $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $connection = $client->getConnection());
@@ -260,28 +283,28 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayAndOptionAggregate()
+    public function testClusterOptionHasPrecedenceOverReplicationOptionAndAggregateOption()
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
-        $connection = $this->getMock('Predis\Connection\ConnectionInterface');
-
-        $fnaggregate = $this->getMock('stdClass', array('__invoke'));
-        $fnaggregate->expects($this->once())
-                    ->method('__invoke')
-                    ->with($arg1)
-                    ->will($this->returnValue($connection));
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $fncluster = $this->getMock('stdClass', array('__invoke'));
-        $fncluster->expects($this->never())->method('__invoke');
+        $fncluster->expects($this->once())
+                  ->method('__invoke')
+                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+                  ->will($this->returnValue($connection));
 
         $fnreplication = $this->getMock('stdClass', array('__invoke'));
         $fnreplication->expects($this->never())->method('__invoke');
 
+        $fnaggregate = $this->getMock('stdClass', array('__invoke'));
+        $fnaggregate->expects($this->never())->method('__invoke');
+
         $arg2 = array(
-            'aggregate' => function () use ($fnaggregate) { return $fnaggregate; },
-            'cluster' => function () use ($fncluster) { return $fncluster; },
-            'replication' => function () use ($fnreplication) { return $fnreplication; },
+            'cluster' => $fncluster,
+            'replication' => $fnreplication,
+            'aggregate' => $fnaggregate,
         );
 
         $client = new Client($arg1, $arg2);
@@ -291,22 +314,56 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
-    public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()
+    public function testReplicationOptionHasPrecedenceOverAggregateOption()
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+
+        $fnreplication = $this->getMock('stdClass', array('__invoke'));
+        $fnreplication->expects($this->once())
+                      ->method('__invoke')
+                      ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+                      ->will($this->returnValue($connection));
+
+        $fnaggregate = $this->getMock('stdClass', array('__invoke'));
+        $fnaggregate->expects($this->never())->method('__invoke');
+
+        $arg2 = array(
+            'replication' => $fnreplication,
+            'aggregate' => $fnaggregate,
+        );
+
+        $client = new Client($arg1, $arg2);
+
+        $this->assertSame($connection, $client->getConnection());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAggregateOptionDoesNotTriggerAggregationInClient()
+    {
+        $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $fnaggregate = $this->getMock('stdClass', array('__invoke'));
         $fnaggregate->expects($this->once())
                     ->method('__invoke')
-                    ->with($arg1)
-                    ->will($this->returnValue(false));
+                    ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+                    ->will($this->returnValue($connection));
 
-        $arg2 = array('aggregate' => function () use ($fnaggregate) { return $fnaggregate; });
+        $connections = $this->getMock('Predis\Connection\FactoryInterface');
+        $connections->expects($this->never())
+                    ->method('aggregate');
 
-        new Client($arg1, $arg2);
+        $arg2 = array('aggregate' => $fnaggregate, 'connections' => $connections);
+
+        $client = new Client($arg1, $arg2);
+
+        $this->assertSame($connection, $client->getConnection());
     }
 
     /**
@@ -577,7 +634,7 @@ class ClientTest extends PredisTestCase
      */
     public function testGetConnectionFromAggregateConnectionWithAlias()
     {
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'));
+        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
 
         $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
@@ -604,7 +661,7 @@ class ClientTest extends PredisTestCase
      */
     public function testCreateClientWithConnectionFromAggregateConnection()
     {
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));
+        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:', 'cluster' => 'predis'));
 
         $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
@@ -623,7 +680,7 @@ class ClientTest extends PredisTestCase
     public function testGetClientForReturnsInstanceOfSubclass()
     {
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
-        $client = $this->getMock('Predis\Client', array('dummy'), array($nodes), 'SubclassedClient');
+        $client = $this->getMock('Predis\Client', array('dummy'), array($nodes, array('cluster' => 'predis')), 'SubclassedClient');
 
         $this->assertInstanceOf('SubclassedClient', $client->getClientFor('node02'));
     }
@@ -890,5 +947,25 @@ class ClientTest extends PredisTestCase
         }
 
         return $uriString;
+    }
+
+    /**
+     * Returns a mock callable simulating an aggregate connection initializer.
+     *
+     * @param mixed $parameters Expected connection parameters
+     *
+     * @return callable
+     */
+    protected function getAggregateInitializer($parameters)
+    {
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $parameters)
+                 ->will($this->returnValue($connection));
+
+        return $callable;
     }
 }

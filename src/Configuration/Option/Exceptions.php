@@ -9,7 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Configuration;
+namespace Predis\Configuration\Option;
+
+use Predis\Configuration\OptionInterface;
+use Predis\Configuration\OptionsInterface;
 
 /**
  * Configures whether consumers (such as the client) should throw exceptions on
@@ -17,7 +20,7 @@ namespace Predis\Configuration;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ExceptionsOption implements OptionInterface
+class Exceptions implements OptionInterface
 {
     /**
      * {@inheritdoc}

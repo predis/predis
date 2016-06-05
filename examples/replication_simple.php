@@ -26,7 +26,7 @@ $parameters = array(
     'tcp://127.0.0.1:6380?database=15&alias=slave',
 );
 
-$options = array('replication' => true);
+$options = array('replication' => 'predis');
 
 $client = new Predis\Client($parameters, $options);
 

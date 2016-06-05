@@ -49,12 +49,9 @@ LUA;
 }
 
 $client = new Predis\Client($single_server, array(
-    'commands' => function ($options) {
-        $commands = $options->getDefault('commands');
-        $commands->defineCommand('increxby', 'IncrementExistingKeysBy');
-
-        return $commands;
-    },
+    'commands' => array(
+        'increxby' => 'IncrementExistingKeysBy',
+    ),
 ));
 
 $client->mset('foo', 10, 'foobar', 100);

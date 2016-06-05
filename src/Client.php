@@ -19,6 +19,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\Replication\SentinelReplication;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
@@ -102,73 +103,68 @@ class Client implements ClientInterface, \IteratorAggregate
      */
     protected function createConnection($parameters)
     {
+        $options = $this->getOptions();
+
         if ($parameters instanceof ConnectionInterface) {
             return $parameters;
         }
 
         if ($parameters instanceof ParametersInterface || is_string($parameters)) {
-            return $this->options->connections->create($parameters);
+            return $options->connections->create($parameters);
         }
 
         if (is_array($parameters)) {
             if (!isset($parameters[0])) {
-                return $this->options->connections->create($parameters);
+                return $options->connections->create($parameters);
             }
 
-            $options = $this->options;
-
-            if ($options->defined('aggregate')) {
-                $initializer = $this->getConnectionInitializerWrapper($options->aggregate);
-                $connection = $initializer($parameters, $options);
+            if ($options->defined('cluster')) {
+                return $this->createAggregateConnection($parameters, 'cluster');
             } elseif ($options->defined('replication')) {
-                $replication = $options->replication;
-
-                if ($replication instanceof AggregateConnectionInterface) {
-                    $connection = $replication;
-                    $options->connections->aggregate($connection, $parameters);
-                } else {
-                    $initializer = $this->getConnectionInitializerWrapper($replication);
-                    $connection = $initializer($parameters, $options);
-                }
+                return $this->createAggregateConnection($parameters, 'replication');
+            } elseif ($options->defined('aggregate')) {
+                return $this->createAggregateConnection($parameters, 'aggregate');
             } else {
-                $connection = $options->cluster;
-                $options->connections->aggregate($connection, $parameters);
+                throw new \InvalidArgumentException(
+                    'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
+                );
             }
-
-            return $connection;
         }
 
         if (is_callable($parameters)) {
-            $initializer = $this->getConnectionInitializerWrapper($parameters);
-            $connection = $initializer($this->options);
+            $connection = call_user_func($parameters, $options);
+
+            if (!$connection instanceof ConnectionInterface) {
+                throw new \InvalidArgumentException('Callable parameters must return a valid connection');
+            }
 
             return $connection;
         }
 
-        throw new \InvalidArgumentException('Invalid type for connection parameters.');
+        throw new \InvalidArgumentException('Invalid type for connection parameters');
     }
 
     /**
-     * Wraps a callable to make sure that its returned value represents a valid
-     * connection type.
+     * Creates an aggregate connection.
      *
-     * @param mixed $callable
+     * @param mixed  $parameters Connection parameters.
+     * @param string $option     Option for aggregate connections (`aggregate`, `cluster`, `replication`).
      *
      * @return \Closure
      */
-    protected function getConnectionInitializerWrapper($callable)
+    protected function createAggregateConnection($parameters, $option)
     {
-        return function () use ($callable) {
-            $connection = call_user_func_array($callable, func_get_args());
+        $options = $this->getOptions();
 
-            if (!$connection instanceof ConnectionInterface) {
-                throw new \UnexpectedValueException(
-                    'The callable connection initializer returned an invalid type.'
-                );
-            }
+        $initializer = $options->$option;
+        $connection = $initializer($parameters);
 
-            return $connection;
-        };
+        // TODO: this is dirty but we must skip the redis-sentinel backend for now.
+        if ($option !== 'aggregate' && !$connection instanceof SentinelReplication) {
+            $options->connections->aggregate($connection, $parameters);
+        }
+
+        return $connection;
     }
 
     /**

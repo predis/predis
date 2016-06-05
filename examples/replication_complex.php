@@ -52,12 +52,9 @@ $parameters = array(
 );
 
 $options = array(
-    'commands' => function ($options) {
-        $commands = $options->getDefault('commands');
-        $commands->defineCommand('hmgetall', 'HashMultipleGetAll');
-
-        return $commands;
-    },
+    'commands' => array(
+        'hmgetall' => 'HashMultipleGetAll',
+    ),
     'replication' => function () {
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);

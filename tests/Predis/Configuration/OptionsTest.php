@@ -25,12 +25,13 @@ class OptionsTest extends PredisTestCase
     {
         $options = new Options();
 
-        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $options->replication);
         $this->assertTrue($options->exceptions);
         $this->assertNull($options->prefix);
+        $this->assertNull($options->aggregate);
+        $this->assertInstanceOf('Closure', $options->cluster);
+        $this->assertInstanceOf('Closure', $options->replication);
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
     }
 
     /**
@@ -38,21 +39,38 @@ class OptionsTest extends PredisTestCase
      */
     public function testConstructorWithArrayArgument()
     {
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->any())
+                 ->method('__invoke')
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+                 ->will($this->returnValue($connection));
+
         $options = new Options(array(
             'exceptions' => false,
             'prefix' => 'prefix:',
             'commands' => $this->getMock('Predis\Command\FactoryInterface'),
             'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster' => $this->getMock('Predis\Connection\Cluster\ClusterInterface'),
-            'replication' => $this->getMock('Predis\Connection\Replication\ReplicationInterface'),
+            'cluster' => $callable,
+            'replication' => $callable,
+            'aggregate' => $callable,
         ));
 
         $this->assertInternalType('bool', $options->exceptions);
-        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
+
         $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $options->replication);
+
+        $this->assertInstanceOf('Closure', $initializer = $options->aggregate);
+        $this->assertSame($connection, $initializer($options, array()));
+
+        $this->assertInstanceOf('Closure', $initializer = $options->cluster);
+        $this->assertSame($connection, $initializer($options, array()));
+
+        $this->assertInstanceOf('Closure', $initializer = $options->replication);
+        $this->assertSame($connection, $initializer($options, array()));
     }
 
     /**
@@ -144,7 +162,7 @@ class OptionsTest extends PredisTestCase
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'commands')
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($commands));
 
         $options = new Options(array(
@@ -166,7 +184,7 @@ class OptionsTest extends PredisTestCase
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'custom')
+                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
                  ->will($this->returnValue($custom));
 
         $options = new Options(array(
@@ -190,7 +208,7 @@ class OptionsTest extends PredisTestCase
         }, true, false);
 
         try {
-            $options = new Options(array('prefix' => 'pfx'));
+            $options = new Options(array('custom' => 'value'));
             $pfx = $options->prefix;
         } catch (\Exception $_) {
             spl_autoload_unregister($autoload);

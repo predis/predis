@@ -9,8 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Configuration;
+namespace Predis\Configuration\Option;
 
+use Predis\Configuration\OptionInterface;
+use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 
@@ -20,13 +22,17 @@ use Predis\Connection\FactoryInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class ConnectionFactoryOption implements OptionInterface
+class Connections implements OptionInterface
 {
     /**
      * {@inheritdoc}
      */
     public function filter(OptionsInterface $options, $value)
     {
+        if (is_callable($value)) {
+            $value = call_user_func($value, $options);
+        }
+
         if ($value instanceof FactoryInterface) {
             return $value;
         } elseif (is_array($value)) {
@@ -38,9 +44,9 @@ class ConnectionFactoryOption implements OptionInterface
 
             return $factory;
         } else {
-            throw new \InvalidArgumentException(
-                'Invalid value provided for the connections option.'
-            );
+            $class = get_class($this);
+
+            throw new \InvalidArgumentException("$class expects a valid connection factory");
         }
     }
 

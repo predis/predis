@@ -9,10 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Configuration;
+namespace Predis\Configuration\Option;
 
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\Processor\ProcessorInterface;
+use Predis\Configuration\OptionInterface;
+use Predis\Configuration\OptionsInterface;
 
 /**
  * Configures a command processor that apply the specified prefix string to a
@@ -20,18 +22,22 @@ use Predis\Command\Processor\ProcessorInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class PrefixOption implements OptionInterface
+class Prefix implements OptionInterface
 {
     /**
      * {@inheritdoc}
      */
     public function filter(OptionsInterface $options, $value)
     {
+        if (is_callable($value)) {
+            $value = call_user_func($value, $options);
+        }
+
         if ($value instanceof ProcessorInterface) {
             return $value;
         }
 
-        return new KeyPrefixProcessor($value);
+        return new KeyPrefixProcessor((string) $value);
     }
 
     /**
