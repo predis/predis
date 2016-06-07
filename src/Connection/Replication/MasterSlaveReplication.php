@@ -181,7 +181,10 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Switches the connection in use by the backend to the specified instance
+     * or alias of a connection.
+     *
+     * @param NodeConnectionInterface|string $connection Instance or alias of a connection.
      */
     public function switchTo($connection)
     {
@@ -201,7 +204,7 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
-     * Switches to the master server.
+     * {@inheritdoc}
      */
     public function switchToMaster()
     {
@@ -209,7 +212,7 @@ class MasterSlaveReplication implements ReplicationInterface
     }
 
     /**
-     * Switches to a random slave server.
+     * {@inheritdoc}
      */
     public function switchToSlave()
     {

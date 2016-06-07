@@ -242,8 +242,7 @@ class PipelineTest extends PredisTestCase
 
         $connection = $this->getMock('Predis\Connection\Replication\ReplicationInterface');
         $connection->expects($this->once())
-                   ->method('switchTo')
-                   ->with('master');
+                   ->method('switchToMaster');
         $connection->expects($this->exactly(3))
                    ->method('writeRequest');
         $connection->expects($this->exactly(3))

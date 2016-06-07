@@ -41,6 +41,10 @@ v2.0.0 (201x-xx-xx)
   namespaces for cluster backends (`Predis\Connection\Cluster`) and replication
   backends (`Predis\Connection\Replication`).
 
+- The methods `switchToMaster()` and `switchToSlave()` have been promoted to be
+  part of `Predis\Connection\Replication\ReplicationInterface` while the method
+  `switchTo($connection)` has been removed from it.
+
 
 v1.1.0 (2016-06-02)
 ================================================================================

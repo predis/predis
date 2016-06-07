@@ -587,7 +587,7 @@ class SentinelReplication implements ReplicationInterface
     }
 
     /**
-     * Switches to the master server.
+     * {@inheritdoc}
      */
     public function switchToMaster()
     {
@@ -595,7 +595,7 @@ class SentinelReplication implements ReplicationInterface
     }
 
     /**
-     * Switches to a random slave server.
+     * {@inheritdoc}
      */
     public function switchToSlave()
     {

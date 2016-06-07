@@ -22,29 +22,31 @@ use Predis\Connection\NodeConnectionInterface;
 interface ReplicationInterface extends AggregateConnectionInterface
 {
     /**
-     * Switches the internal connection instance in use.
-     *
-     * @param string $connection Alias of a connection
+     * Switches the internal connection in use to the master server.
      */
-    public function switchTo($connection);
+    public function switchToMaster();
 
     /**
-     * Returns the connection instance currently in use by the aggregate
-     * connection.
+     * Switches the internal connection in use to a random slave server.
+     */
+    public function switchToSlave();
+
+    /**
+     * Returns the connection in use by the replication backend.
      *
      * @return NodeConnectionInterface
      */
     public function getCurrent();
 
     /**
-     * Returns the connection instance for the master Redis node.
+     * Returns the connection to the master server.
      *
      * @return NodeConnectionInterface
      */
     public function getMaster();
 
     /**
-     * Returns a list of connection instances to slave nodes.
+     * Returns a list of connections to slave servers.
      *
      * @return NodeConnectionInterface
      */

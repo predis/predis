@@ -112,7 +112,7 @@ class Pipeline implements ClientContextInterface
         $connection = $this->getClient()->getConnection();
 
         if ($connection instanceof ReplicationInterface) {
-            $connection->switchTo('master');
+            $connection->switchToMaster();
         }
 
         return $connection;
