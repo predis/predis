@@ -35,16 +35,18 @@ class Aggregate implements OptionInterface
     protected function getConnectionInitializer(OptionsInterface $options, $callable)
     {
         if (!is_callable($callable)) {
-            $class = get_class($this);
+            $class = get_called_class();
 
             throw new \InvalidArgumentException("$class expects a valid callable");
         }
 
-        return function ($parameters = null) use ($callable, $options) {
+        $option = $this;
+
+        return function ($parameters = null) use ($callable, $options, $option) {
             $connection = call_user_func($callable, $options, $parameters);
 
             if (!$connection instanceof AggregateConnectionInterface) {
-                $class = get_class($this);
+                $class = get_class($option);
 
                 throw new \InvalidArgumentException("$class expects a valid connection type returned by callable initializer");
             }

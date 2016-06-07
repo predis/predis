@@ -43,7 +43,7 @@ class Commands implements OptionInterface
         }
 
         if (!$value instanceof FactoryInterface) {
-            $class = get_class($this);
+            $class = get_called_class();
 
             throw new \InvalidArgumentException("$class expects a valid command factory");
         }

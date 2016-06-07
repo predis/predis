@@ -44,7 +44,7 @@ class Connections implements OptionInterface
 
             return $factory;
         } else {
-            $class = get_class($this);
+            $class = get_called_class();
 
             throw new \InvalidArgumentException("$class expects a valid connection factory");
         }
