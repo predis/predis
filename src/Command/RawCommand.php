@@ -48,7 +48,7 @@ class RawCommand implements CommandInterface
     public static function create($commandID /* [ $arg, ... */)
     {
         $arguments = func_get_args();
-        $command = new self(array_shift($arguments), $arguments);
+        $command = new static(array_shift($arguments), $arguments);
 
         return $command;
     }
