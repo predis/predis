@@ -43,8 +43,19 @@ class Client implements ClientInterface, \IteratorAggregate
 {
     const VERSION = '2.0.0-dev';
 
-    protected $connection;
-    protected $options;
+    /**
+     * @var Predis\Configuration\OptionsInterface
+     */
+    private $options;
+
+    /**
+     * @var Predis\Connection\ConnectionInterface
+     */
+    private $connection;
+
+    /**
+     * @var Predis\Command\FactoryInterface
+     */
     private $commands;
 
     /**
