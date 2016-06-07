@@ -35,6 +35,13 @@ v2.0.0 (201x-xx-xx)
   in the `Predis\Command\Redis` when the internal class map does not contain a
   class associated.
 
+- The method `Predis\Client::getClientFor($connectionID)` has been replaced by
+  `Predis\Client::on($connectionID, $callable = null)`. This new method returns
+  a new client instance for the specified node just like before when the second
+  argument is omitted, otherwise the callback is invoked and the new client is
+  passed to it. The value returned by the callback is used as the return value
+  of the "on()" method.
+
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
 
 - The `Predis\Connection\Aggregate` namespace has been split into two separate

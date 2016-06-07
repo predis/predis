@@ -195,23 +195,34 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Creates a new client instance for the specified connection ID or alias,
-     * only when working with an aggregate connection (cluster, replication).
-     * The new client instances uses the same options of the original one.
+     * Creates a new client from the specified connection ID / alias.
      *
-     * @param string $connectionID Identifier of a connection.
+     * The new client instances inherites the same options of the original one.
+     * When no callable object is supplied, this method returns the new client.
+     * When a callable object is supplied, the new client is passed as its sole
+     * argument and its return value is returned by this method to the caller.
      *
-     * @throws \InvalidArgumentException
+     * NOTE: This method works only when the client is configured to work with
+     * aggregate connections (cluster, replication).
      *
-     * @return Client
+     * @param string        $connectionID Identifier of a connection.
+     * @param callable|null $callable     Optional callable object.
+     *
+     * @return ClientInterface|mixed
      */
-    public function getClientFor($connectionID)
+    public function on($connectionID, $callable = null)
     {
         if (!$connection = $this->getConnectionById($connectionID)) {
-            throw new \InvalidArgumentException("Invalid connection ID: $connectionID.");
+            throw new \InvalidArgumentException("Invalid connection ID: `$connectionID`");
         }
 
-        return new static($connection, $this->options);
+        $client = new static($connection, $this->getOptions());
+
+        if ($callable) {
+            return call_user_func($callable, $client);
+        } else {
+            return $client;
+        }
     }
 
     /**

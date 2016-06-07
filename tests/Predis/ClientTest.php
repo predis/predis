@@ -659,7 +659,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateClientWithConnectionFromAggregateConnection()
+    public function testOnMethodCreatesClientWithConnectionFromAggregateConnection()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:', 'cluster' => 'predis'));
 
@@ -667,7 +667,7 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
-        $clientNode02 = $client->getClientFor('node02');
+        $clientNode02 = $client->on('node02');
 
         $this->assertInstanceOf('Predis\Client', $clientNode02);
         $this->assertSame($node02, $clientNode02->getConnection());
@@ -677,12 +677,60 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientForReturnsInstanceOfSubclass()
+    public function testOnMethodReturnsInstanceOfSubclass()
     {
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
         $client = $this->getMock('Predis\Client', array('dummy'), array($nodes, array('cluster' => 'predis')), 'SubclassedClient');
 
-        $this->assertInstanceOf('SubclassedClient', $client->getClientFor('node02'));
+        $this->assertInstanceOf('SubclassedClient', $client->on('node02'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testOnMethodInvokesCallableInSecondArgumentAndReturnsItsReturnValue()
+    {
+        $test = $this;
+        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->once())
+                 ->method('__invoke')
+                 ->with($this->callback(function ($clientNode) use ($test, $client) {
+                     $test->isInstanceOf('Predis\ClientInterface', $clientNode);
+                     $test->assertNotSame($client, $clientNode);
+                     $test->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection = $clientNode->getConnection());
+                     $test->assertSame('node02', $connection->getParameters()->alias);
+
+                     return true;
+                 }))
+                 ->will($this->returnValue('value'));
+
+        $this->assertSame('value', $client->on('node02', $callable));
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\NotSupportedException
+     * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections
+     */
+    public function testOnMethodThrowsExceptionWithNodeConnection()
+    {
+        $client = new Client('tcp://127.0.0.1?alias=node01');
+
+        $client->on('node01');
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid connection ID: `nodeXX`
+     */
+    public function testOnMethodThrowsExceptionWithUnknownConnectionID()
+    {
+        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
+
+        $client->on('nodeXX');
     }
 
     /**
