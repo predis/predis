@@ -52,6 +52,11 @@ v2.0.0 (201x-xx-xx)
   part of `Predis\Connection\Replication\ReplicationInterface` while the method
   `switchTo($connection)` has been removed from it.
 
+- The method `Predis\Connection\Cluster\PredisCluster::executeCommandOnNodes()`
+  has been removed as it is possible to achieve the same by iterating over the
+  connection or, even better, over the client instance in order to execute the
+  same command against all of the registered connections.
+
 
 v1.1.0 (2016-06-02)
 ================================================================================

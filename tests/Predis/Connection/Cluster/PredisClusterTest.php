@@ -354,32 +354,6 @@ class PredisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandOnEachNode()
-    {
-        $ping = $this->getCommandFactory()->createCommand('ping', array());
-
-        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection1->expects($this->once())
-                    ->method('executeCommand')
-                    ->with($ping)
-                    ->will($this->returnValue(true));
-
-        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection2->expects($this->once())
-                    ->method('executeCommand')
-                    ->with($ping)
-                    ->will($this->returnValue(false));
-
-        $cluster = new PredisCluster();
-        $cluster->add($connection1);
-        $cluster->add($connection2);
-
-        $this->assertSame(array(true, false), $cluster->executeCommandOnNodes($ping));
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testCanBeSerialized()
     {
         $connection1 = $this->getMockConnection('tcp://host1?alias=first');
