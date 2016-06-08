@@ -25,7 +25,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -46,7 +46,7 @@ class BulkResponseTest extends PredisTestCase
 
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -64,7 +64,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -75,17 +75,34 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a bulk response.
+     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a bulk response [tcp://127.0.0.1:6379]
      */
-    public function testInvalidLength()
+    public function testInvalidLengthString()
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \Predis\Protocol\ProtocolException
+     * @expectedExceptionMessage Value '-5' is not a valid length for a bulk response [tcp://127.0.0.1:6379]
+     */
+    public function testInvalidLengthInteger()
+    {
+        $handler = new Handler\BulkResponse();
+
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+
+        $connection->expects($this->never())->method('readLine');
+        $connection->expects($this->never())->method('readBuffer');
+
+        $handler->handle($connection, '-5');
     }
 }

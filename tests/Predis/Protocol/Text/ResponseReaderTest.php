@@ -57,7 +57,7 @@ class ResponseReaderTest extends PredisTestCase
         $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -89,13 +89,13 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unexpected empty reponse header.
+     * @expectedExceptionMessage Unexpected empty reponse header [tcp://127.0.0.1:6379]
      */
     public function testEmptyResponseHeader()
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
 
         $connection->expects($this->once())
                    ->method('readLine')
@@ -106,13 +106,13 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unknown response prefix: '!'.
+     * @expectedExceptionMessage Unknown response prefix: '!' [tcp://127.0.0.1:6379]
      */
     public function testUnknownResponsePrefix()
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
 
         $connection->expects($this->once())
                    ->method('readLine')

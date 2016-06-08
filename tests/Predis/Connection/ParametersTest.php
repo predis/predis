@@ -316,6 +316,49 @@ class ParametersTest extends PredisTestCase
         Parameters::parse('tcp://invalid:uri');
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithDefaultParameters()
+    {
+        $parameters = new Parameters();
+
+        $this->assertSame('tcp://127.0.0.1:6379', (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithUnixScheme()
+    {
+        $uri = 'unix:/path/to/redis.sock';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithIPv4()
+    {
+        $uri = 'tcp://127.0.0.1:6379';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithIPv6()
+    {
+        $uri = 'tcp://[::1]:6379';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

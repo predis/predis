@@ -129,6 +129,14 @@ class Parameters implements ParametersInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        return $this->parameters;
+    }
+
+    /**
      * Validates and converts each value of the connection parameters array.
      *
      * @param array $parameters Connection parameters.
@@ -161,9 +169,17 @@ class Parameters implements ParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function __toString()
     {
-        return $this->parameters;
+        if ($this->scheme === 'unix') {
+            return "$this->scheme:$this->path";
+        }
+
+        if (filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            return "$this->scheme://[$this->host]:$this->port";
+        }
+
+        return "$this->scheme://$this->host:$this->port";
     }
 
     /**

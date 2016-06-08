@@ -187,15 +187,16 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
+     * Returns a basic mocked connection of the specified type.
      *
-     * @param mixed $parameters Optional parameters.
+     * @param string $interface  Connection type.
+     * @param mixed  $parameters Optional parameters.
      *
-     * @return mixed
+     * @return \Predis\Connection\NodeConnectionInterface
      */
-    protected function getMockConnection($parameters = null)
+    protected function getMockConnectionOfType($interface, $parameters = null)
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMock($interface);
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);
@@ -210,6 +211,18 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
         }
 
         return $connection;
+    }
+
+    /**
+     * Returns a basic mocked connection of type Predis\Connection\NodeConnectionInterface.
+     *
+     * @param mixed $parameters Optional parameters.
+     *
+     * @return \Predis\Connection\NodeConnectionInterface
+     */
+    protected function getMockConnection($parameters = null)
+    {
+        return $this->getMockConnectionOfType('Predis\Connection\NodeConnectionInterface', $parameters);
     }
 
     /**

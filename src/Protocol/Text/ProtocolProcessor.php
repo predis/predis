@@ -99,7 +99,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
             default:
                 CommunicationException::handle(new ProtocolException(
-                    $connection, "Unknown response prefix: '$prefix'."
+                    $connection, "Unknown response prefix: '$prefix' [{$connection->getParameters()}]"
                 ));
 
                 return;

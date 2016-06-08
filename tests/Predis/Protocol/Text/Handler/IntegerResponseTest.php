@@ -54,13 +54,13 @@ class IntegerResponseTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid numeric response.
+     * @expectedExceptionMessage Cannot parse 'invalid' as a valid numeric response [tcp://127.0.0.1:6379]
      */
     public function testInvalid()
     {
         $handler = new Handler\IntegerResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
