@@ -24,12 +24,22 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArguments()
+    public function testGetId()
+    {
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+
+        $this->assertSame('EVALSHA', $command->getId());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetScriptHash()
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
         $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
+        $command->expects($this->exactly(2))
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
         $command->expects($this->once())
@@ -37,45 +47,7 @@ class ScriptCommandTest extends PredisTestCase
                 ->will($this->returnValue(2));
         $command->setArguments($arguments);
 
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testGetArgumentsWithNegativeKeysCount()
-    {
-        $arguments = array('key1', 'key2', 'value1', 'value2');
-
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
-                ->method('getScript')
-                ->will($this->returnValue(self::LUA_SCRIPT));
-        $command->expects($this->once())
-                ->method('getKeysCount')
-                ->will($this->returnValue(-2));
-        $command->setArguments($arguments);
-
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testGetArgumentsWithZeroKeysCount()
-    {
-        $arguments = array('value1', 'value2', 'value3');
-
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
-                ->method('getScript')
-                ->will($this->returnValue(self::LUA_SCRIPT));
-        $command->expects($this->once())
-                ->method('getKeysCount')
-                ->will($this->returnValue(0));
-        $command->setArguments($arguments);
-
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 0), $arguments), $command->getArguments());
+        $this->assertSame(self::LUA_SCRIPT_SHA1, $command->getScriptHash());
     }
 
     /**
@@ -104,13 +76,10 @@ class ScriptCommandTest extends PredisTestCase
     {
         $arguments = array('value1', 'value2', 'value3');
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue(self::LUA_SCRIPT));
-        $command->expects($this->exactly(2))
-                ->method('getKeysCount')
-                ->will($this->returnValue(0));
         $command->setArguments($arguments);
 
         $this->assertSame(array(), $command->getKeys());
@@ -138,7 +107,7 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetScriptHash()
+    public function testGetArguments()
     {
         $arguments = array('key1', 'key2', 'value1', 'value2');
 
@@ -151,6 +120,81 @@ class ScriptCommandTest extends PredisTestCase
                 ->will($this->returnValue(2));
         $command->setArguments($arguments);
 
-        $this->assertSame(self::LUA_SCRIPT_SHA1, $command->getScriptHash());
+        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetArgumentsWithZeroKeysCount()
+    {
+        $arguments = array('value1', 'value2', 'value3');
+
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command->expects($this->once())
+                ->method('getScript')
+                ->will($this->returnValue(self::LUA_SCRIPT));
+        $command->setArguments($arguments);
+
+        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 0), $arguments), $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetArgumentsWithNegativeKeysCount()
+    {
+        $arguments = array('key1', 'key2', 'value1', 'value2');
+
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command->expects($this->once())
+                ->method('getScript')
+                ->will($this->returnValue(self::LUA_SCRIPT));
+        $command->expects($this->once())
+                ->method('getKeysCount')
+                ->will($this->returnValue(-2));
+        $command->setArguments($arguments);
+
+        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetEvalArguments()
+    {
+        $arguments = array('key1', 'key2', 'value1', 'value2');
+
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command->expects($this->exactly(2))
+                ->method('getScript')
+                ->will($this->returnValue(self::LUA_SCRIPT));
+        $command->expects($this->once())
+                ->method('getKeysCount')
+                ->will($this->returnValue(2));
+        $command->setArguments($arguments);
+
+        $this->assertSame(array_merge(array(self::LUA_SCRIPT, 2), $arguments), $command->getEvalArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetEvalCommand()
+    {
+        $arguments = array('key1', 'key2', 'value1', 'value2');
+
+        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command->expects($this->exactly(2))
+                ->method('getScript')
+                ->will($this->returnValue(self::LUA_SCRIPT));
+        $command->expects($this->once())
+                ->method('getKeysCount')
+                ->will($this->returnValue(2));
+        $command->setArguments($arguments);
+
+        $evalCMD = new RawCommand('EVAL', array_merge(array(self::LUA_SCRIPT, 2), $arguments));
+
+        $this->assertRedisCommand($evalCMD, $command->getEvalCommand());
     }
 }

@@ -373,10 +373,7 @@ class Client implements ClientInterface, \IteratorAggregate
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
         if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
-            $eval = $this->createCommand('EVAL');
-            $eval->setRawArguments($command->getEvalArguments());
-
-            $response = $this->executeCommand($eval);
+            $response = $this->executeCommand($command->getEvalCommand());
 
             if (!$response instanceof ResponseInterface) {
                 $response = $command->parseResponse($response);
