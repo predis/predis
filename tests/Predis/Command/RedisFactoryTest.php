@@ -226,12 +226,15 @@ class RedisFactoryTest extends PredisTestCase
         $argsRef = null;
 
         $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
-        $processor->expects($this->once())
-                  ->method('process')
-                  ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-                  ->will($this->returnCallback(function (CommandInterface $cmd) use (&$argsRef) {
-                        $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
-                    }));
+        $processor
+            ->expects($this->once())
+            ->method('process')
+            ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
+            ->will($this->returnCallback(
+                function (CommandInterface $cmd) use (&$argsRef) {
+                    $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
+                }
+            ));
 
         $factory = new RedisFactory();
         $factory->setProcessor($processor);
@@ -246,8 +249,9 @@ class RedisFactoryTest extends PredisTestCase
     public function testChainOfProcessors()
     {
         $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
-        $processor->expects($this->exactly(2))
-                  ->method('process');
+        $processor
+            ->expects($this->exactly(2))
+            ->method('process');
 
         $chain = new ProcessorChain();
         $chain->add($processor);

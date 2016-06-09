@@ -240,12 +240,14 @@ class RedisStrategyTest extends PredisTestCase
         $arguments = array('key:1', 'value1');
 
         $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
-        $command->expects($this->once())
-                ->method('getScript')
-                ->will($this->returnValue('return true'));
-        $command->expects($this->exactly(2))
-                ->method('getKeysCount')
-                ->will($this->returnValue(1));
+        $command
+            ->expects($this->once())
+            ->method('getScript')
+            ->will($this->returnValue('return true'));
+        $command
+            ->expects($this->exactly(2))
+            ->method('getKeysCount')
+            ->will($this->returnValue(1));
         $command->setArguments($arguments);
 
         $this->assertNotNull($strategy->getSlot($command), "Script Command [{$command->getId()}]");
@@ -278,10 +280,11 @@ class RedisStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-                 ->will($this->returnValue('key'));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
+            ->will($this->returnValue('key'));
 
         $strategy->setCommandHandler('get', $callable);
 

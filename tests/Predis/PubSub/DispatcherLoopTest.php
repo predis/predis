@@ -47,26 +47,29 @@ class DispatcherLoopTest extends PredisTestCase
         $dispatcher = new DispatcherLoop($pubsub);
 
         $function01 = $this->getMock('stdClass', array('__invoke'));
-        $function01->expects($this->exactly(2))
-                   ->method('__invoke')
-                   ->with($this->logicalOr(
-                       $this->equalTo('01:argument'),
-                       $this->equalTo('01:quit')
-                   ), $dispatcher)
-                   ->will($this->returnCallback(function ($arg, $dispatcher) {
-                       if ($arg === '01:quit') {
-                           $dispatcher->stop();
-                       }
-                   }));
+        $function01
+            ->expects($this->exactly(2))
+            ->method('__invoke')
+            ->with($this->logicalOr(
+                $this->equalTo('01:argument'),
+                $this->equalTo('01:quit')
+            ), $dispatcher)
+            ->will($this->returnCallback(function ($arg, $dispatcher) {
+                if ($arg === '01:quit') {
+                    $dispatcher->stop();
+                }
+            }));
 
         $function02 = $this->getMock('stdClass', array('__invoke'));
-        $function02->expects($this->once())
-                   ->method('__invoke')
-                   ->with('02:argument');
+        $function02
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with('02:argument');
 
         $function03 = $this->getMock('stdClass', array('__invoke'));
-        $function03->expects($this->never())
-                   ->method('__invoke');
+        $function03
+            ->expects($this->never())
+            ->method('__invoke');
 
         $dispatcher->attachCallback('function:01', $function01);
         $dispatcher->attachCallback('function:02', $function02);
@@ -107,12 +110,13 @@ class DispatcherLoopTest extends PredisTestCase
         $dispatcher = new DispatcherLoop($pubsub);
 
         $callback = $this->getMock('stdClass', array('__invoke'));
-        $callback->expects($this->exactly(1))
-                 ->method('__invoke')
-                 ->with($this->equalTo('arg:prefixed'), $dispatcher)
-                 ->will($this->returnCallback(function ($arg, $dispatcher) {
-                     $dispatcher->stop();
-                 }));
+        $callback
+            ->expects($this->exactly(1))
+            ->method('__invoke')
+            ->with($this->equalTo('arg:prefixed'), $dispatcher)
+            ->will($this->returnCallback(function ($arg, $dispatcher) {
+                $dispatcher->stop();
+            }));
 
         $dispatcher->attachCallback('callback', $callback);
 

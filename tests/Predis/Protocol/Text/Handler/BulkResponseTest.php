@@ -23,15 +23,17 @@ class BulkResponseTest extends PredisTestCase
      */
     public function testZeroLengthBulk()
     {
-        $handler = new Handler\BulkResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->once())
+            ->method('readBuffer')
+            ->with($this->equalTo(2))
+            ->will($this->returnValue("\r\n"));
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->once())
-                   ->method('readBuffer')
-                   ->with($this->equalTo(2))
-                   ->will($this->returnValue("\r\n"));
+        $handler = new Handler\BulkResponse();
 
         $this->assertSame('', $handler->handle($connection, '0'));
     }
@@ -44,15 +46,17 @@ class BulkResponseTest extends PredisTestCase
         $bulk = 'This is a bulk string.';
         $bulkLengh = strlen($bulk);
 
-        $handler = new Handler\BulkResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->once())
+            ->method('readBuffer')
+            ->with($this->equalTo($bulkLengh + 2))
+            ->will($this->returnValue("$bulk\r\n"));
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->once())
-                   ->method('readBuffer')
-                   ->with($this->equalTo($bulkLengh + 2))
-                   ->will($this->returnValue("$bulk\r\n"));
+        $handler = new Handler\BulkResponse();
 
         $this->assertSame($bulk, $handler->handle($connection, (string) $bulkLengh));
     }
@@ -62,12 +66,15 @@ class BulkResponseTest extends PredisTestCase
      */
     public function testNull()
     {
-        $handler = new Handler\BulkResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\BulkResponse();
 
         $this->assertNull($handler->handle($connection, '-1'));
     }
@@ -79,12 +86,15 @@ class BulkResponseTest extends PredisTestCase
      */
     public function testInvalidLengthString()
     {
-        $handler = new Handler\BulkResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\BulkResponse();
 
         $handler->handle($connection, 'invalid');
     }
@@ -96,12 +106,15 @@ class BulkResponseTest extends PredisTestCase
      */
     public function testInvalidLengthInteger()
     {
-        $handler = new Handler\BulkResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\BulkResponse();
 
         $handler->handle($connection, '-5');
     }

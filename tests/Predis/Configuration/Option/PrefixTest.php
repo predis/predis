@@ -69,13 +69,15 @@ class PrefixTest extends PredisTestCase
         $option = new Prefix();
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($processor));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue(
+                $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface')
+            ));
 
         $prefix = $option->filter($options, $callable);
 
@@ -92,10 +94,11 @@ class PrefixTest extends PredisTestCase
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue('pfx:'));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue('pfx:'));
 
         $prefix = $option->filter($options, $callable);
 
@@ -114,9 +117,10 @@ class PrefixTest extends PredisTestCase
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $input = $this->getMock('stdClass', array('__toString'));
-        $input->expects($this->once())
-              ->method('__toString')
-              ->will($this->returnValue('pfx:'));
+        $input
+            ->expects($this->once())
+            ->method('__toString')
+            ->will($this->returnValue('pfx:'));
 
         $prefix = $option->filter($options, $input);
 

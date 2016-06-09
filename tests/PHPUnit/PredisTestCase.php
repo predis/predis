@@ -202,12 +202,14 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
             $parameters = Connection\Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
-            $connection->expects($this->any())
-                       ->method('getParameters')
-                       ->will($this->returnValue($parameters));
-            $connection->expects($this->any())
-                       ->method('__toString')
-                       ->will($this->returnValue($hash));
+            $connection
+                ->expects($this->any())
+                ->method('getParameters')
+                ->will($this->returnValue($parameters));
+            $connection
+                ->expects($this->any())
+                ->method('__toString')
+                ->will($this->returnValue($hash));
         }
 
         return $connection;

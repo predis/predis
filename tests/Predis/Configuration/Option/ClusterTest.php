@@ -42,10 +42,11 @@ class ClusterTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -64,10 +65,11 @@ class ClusterTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 
@@ -82,9 +84,10 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $options->expects($this->never())
-                ->method('__get')
-                ->with('connections');
+        $options
+            ->expects($this->never())
+            ->method('__get')
+            ->with('connections');
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'predis'));
         $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = array()));
@@ -98,12 +101,13 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $options->expects($this->once())
-                ->method('__get')
-                ->with('connections')
-                ->will($this->returnValue(
-                    $this->getMock('Predis\Connection\FactoryInterface')
-                ));
+        $options
+            ->expects($this->once())
+            ->method('__get')
+            ->with('connections')
+            ->will($this->returnValue(
+                $this->getMock('Predis\Connection\FactoryInterface')
+            ));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'redis'));
         $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = array()));

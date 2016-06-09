@@ -23,12 +23,15 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testInteger()
     {
-        $handler = new Handler\IntegerResponse();
-
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\IntegerResponse();
 
         $this->assertSame(0, $handler->handle($connection, '0'));
         $this->assertSame(1, $handler->handle($connection, '1'));
@@ -41,12 +44,15 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testNull()
     {
-        $handler = new Handler\IntegerResponse();
-
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\IntegerResponse();
 
         $this->assertNull($handler->handle($connection, 'nil'));
     }
@@ -58,12 +64,15 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testInvalid()
     {
-        $handler = new Handler\IntegerResponse();
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\IntegerResponse();
 
         $handler->handle($connection, 'invalid');
     }

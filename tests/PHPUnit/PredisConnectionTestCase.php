@@ -273,8 +273,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         $cmdEcho = $this->getMock($commands->getCommandClass('echo'), array('parseResponse'));
         $cmdEcho->setArguments(array('ECHOED'));
-        $cmdEcho->expects($this->never())
-                ->method('parseResponse');
+        $cmdEcho
+            ->expects($this->never())
+            ->method('parseResponse');
 
         $connection = $this->createConnection();
         $connection->writeRequest($cmdEcho);
@@ -290,8 +291,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         $cmdEcho = $this->getMock($commands->getCommandClass('echo'), array('parseResponse'));
         $cmdEcho->setArguments(array('ECHOED'));
-        $cmdEcho->expects($this->never())
-                ->method('parseResponse');
+        $cmdEcho
+            ->expects($this->never())
+            ->method('parseResponse');
 
         $connection = $this->createConnection();
         $connection->writeRequest($cmdEcho);
@@ -332,14 +334,16 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
 
         $cmdPing = $this->getMock($commands->getCommandClass('ping'), array('getArguments'));
-        $cmdPing->expects($this->once())
-                ->method('getArguments')
-                ->will($this->returnValue(array()));
+        $cmdPing
+            ->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array()));
 
         $cmdEcho = $this->getMock($commands->getCommandClass('echo'), array('getArguments'));
-        $cmdEcho->expects($this->once())
-                ->method('getArguments')
-                ->will($this->returnValue(array('ECHOED')));
+        $cmdEcho
+            ->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array('ECHOED')));
 
         $connection = $this->createConnection();
         $connection->addConnectCommand($cmdPing);

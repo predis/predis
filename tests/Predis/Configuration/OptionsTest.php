@@ -42,10 +42,11 @@ class OptionsTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->any())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->any())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $options = new Options(array(
             'exceptions' => false,
@@ -160,10 +161,11 @@ class OptionsTest extends PredisTestCase
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($commands));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($commands));
 
         $options = new Options(array(
             'commands' => $callable,
@@ -182,10 +184,11 @@ class OptionsTest extends PredisTestCase
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($custom));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($custom));
 
         $options = new Options(array(
             'custom' => $callable,
@@ -201,7 +204,9 @@ class OptionsTest extends PredisTestCase
     public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
     {
         $trigger = $this->getMock('stdClass', array('autoload'));
-        $trigger->expects($this->never())->method('autoload');
+        $trigger
+            ->expects($this->never())
+            ->method('autoload');
 
         spl_autoload_register($autoload = function ($class) use ($trigger) {
             $trigger->autoload($class);

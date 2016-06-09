@@ -72,7 +72,10 @@ class SentinelReplicationTest extends PredisTestCase
             'tcp://127.0.0.1:5381?alias=sentinel&timeout=1',
         ));
 
-        $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
+        $parameters = $replication
+            ->getSentinelConnection()
+            ->getParameters()
+            ->toArray();
 
         $this->assertArrayHasKey('timeout', $parameters);
         $this->assertSame('1', $parameters['timeout']);
@@ -89,7 +92,9 @@ class SentinelReplicationTest extends PredisTestCase
 
         $replication = $this->getReplicationConnection('svc', array($originalParameters));
 
-        $parameters = $replication->getSentinelConnection()->getParameters();
+        $parameters = $replication
+            ->getSentinelConnection()
+            ->getParameters();
 
         $this->assertSame($originalParameters, $parameters);
         $this->assertNotNull($parameters->password);
@@ -166,32 +171,32 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodUpdateSentinelsFetchesSentinelNodes()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->once())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('sentinels', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:5382',
-                              'ip', '127.0.0.1',
-                              'port', '5382',
-                              'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
-                              'flags', 'sentinel',
-                          ),
-                          array(
-                              'name', '127.0.0.1:5383',
-                              'ip', '127.0.0.1',
-                              'port', '5383',
-                              'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
-                              'flags', 'sentinel',
-                          ),
-                      )
-                  ));
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:5382',
+                        'ip', '127.0.0.1',
+                        'port', '5382',
+                        'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
+                        'flags', 'sentinel',
+                    ),
+                    array(
+                        'name', '127.0.0.1:5383',
+                        'ip', '127.0.0.1',
+                        'port', '5383',
+                        'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
+                        'flags', 'sentinel',
+                    ),
+                )
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
-
         $replication->updateSentinels();
 
         // TODO: sorry for the smell...
@@ -214,35 +219,36 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodUpdateSentinelsRemovesCurrentSentinelAndRetriesNextOneOnFailure()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->once())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('sentinels', 'svc')
-                  ))
-                  ->will($this->throwException(
-                     new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
-                  ));
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
+            ));
 
         $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?alias=sentinel2');
-        $sentinel2->expects($this->once())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('sentinels', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:5383',
-                              'ip', '127.0.0.1',
-                              'port', '5383',
-                              'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
-                              'flags', 'sentinel',
-                          ),
-                      )
-                  ));
+        $sentinel2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:5383',
+                        'ip', '127.0.0.1',
+                        'port', '5383',
+                        'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
+                        'flags', 'sentinel',
+                    ),
+                )
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1, $sentinel2));
-
         $replication->updateSentinels();
 
         // TODO: sorry for the smell...
@@ -266,17 +272,17 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodUpdateSentinelsThrowsExceptionOnNoAvailableSentinel()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->once())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('sentinels', 'svc')
-                  ))
-                  ->will($this->throwException(
-                     new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
-                  ));
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
-
         $replication->updateSentinels();
     }
 
@@ -286,50 +292,51 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodQuerySentinelFetchesMasterNodeSlaveNodesAndSentinelNodes()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->exactly(3))
-                  ->method('executeCommand')
-                  ->withConsecutive(
-                      $this->isRedisCommand('SENTINEL', array('sentinels', 'svc')),
-                      $this->isRedisCommand('SENTINEL', array('get-master-addr-by-name', 'svc')),
-                      $this->isRedisCommand('SENTINEL', array('slaves', 'svc'))
-                  )
-                  ->will($this->onConsecutiveCalls(
-                      // SENTINEL sentinels svc
-                      array(
-                          array(
-                              'name', '127.0.0.1:5382',
-                              'ip', '127.0.0.1',
-                              'port', '5382',
-                              'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
-                              'flags', 'sentinel',
-                          ),
-                      ),
+        $sentinel1
+            ->expects($this->exactly(3))
+            ->method('executeCommand')
+            ->withConsecutive(
+                $this->isRedisCommand('SENTINEL', array('sentinels', 'svc')),
+                $this->isRedisCommand('SENTINEL', array('get-master-addr-by-name', 'svc')),
+                $this->isRedisCommand('SENTINEL', array('slaves', 'svc'))
+            )
+            ->will($this->onConsecutiveCalls(
+                // SENTINEL sentinels svc
+                array(
+                    array(
+                        'name', '127.0.0.1:5382',
+                        'ip', '127.0.0.1',
+                        'port', '5382',
+                        'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
+                        'flags', 'sentinel',
+                    ),
+                ),
 
-                      // SENTINEL get-master-addr-by-name svc
-                      array('127.0.0.1', '6381'),
+                // SENTINEL get-master-addr-by-name svc
+                array('127.0.0.1', '6381'),
 
-                      // SENTINEL slaves svc
-                      array(
-                          array(
-                              'name', '127.0.0.1:6382',
-                              'ip', '127.0.0.1',
-                              'port', '6382',
-                              'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                          array(
-                              'name', '127.0.0.1:6383',
-                              'ip', '127.0.0.1',
-                              'port', '6383',
-                              'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                      )
-                  ));
+                // SENTINEL slaves svc
+                array(
+                    array(
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                    array(
+                        'name', '127.0.0.1:6383',
+                        'ip', '127.0.0.1',
+                        'port', '6383',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
 
         $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?alias=sentinel2');
 
@@ -368,14 +375,15 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodGetMasterAsksSentinelForMasterOnMasterNotSet()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->at(0))
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('get-master-addr-by-name', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array('127.0.0.1', '6381')
-                  ));
+        $sentinel1
+            ->expects($this->at(0))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->returnValue(
+                array('127.0.0.1', '6381')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -390,14 +398,15 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodGetMasterThrowsExceptionOnNoAvailableSentinels()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('get-master-addr-by-name', 'svc')
-                  ))
-                  ->will($this->throwException(
-                      new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -410,33 +419,34 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodGetSlavesOnEmptySlavePoolAsksSentinelForSlaves()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->at(0))
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('slaves', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:6382',
-                              'ip', '127.0.0.1',
-                              'port', '6382',
-                              'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                          array(
-                              'name', '127.0.0.1:6383',
-                              'ip', '127.0.0.1',
-                              'port', '6383',
-                              'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                      )
-                  ));
+        $sentinel1
+            ->expects($this->at(0))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                    array(
+                        'name', '127.0.0.1:6383',
+                        'ip', '127.0.0.1',
+                        'port', '6383',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -454,14 +464,15 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodGetSlavesThrowsExceptionOnNoAvailableSentinels()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('slaves', 'svc')
-                  ))
-                  ->will($this->throwException(
-                      new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -487,12 +498,14 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->never())
-               ->method('connect');
+        $master
+            ->expects($this->never())
+            ->method('connect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->once())
-               ->method('connect');
+        $slave1
+            ->expects($this->once())
+            ->method('connect');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -508,42 +521,46 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodConnectOnEmptySlavePoolAsksSentinelForSlavesAndForcesConnectionToSlave()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('slaves', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:6382',
-                              'ip', '127.0.0.1',
-                              'port', '6382',
-                              'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                      )
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->never())
-               ->method('connect');
+        $master
+            ->expects($this->never())
+            ->method('connect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->once())
-               ->method('connect');
+        $slave1
+            ->expects($this->once())
+            ->method('connect');
 
         $factory = $this->getMock('Predis\Connection\FactoryInterface');
-        $factory->expects($this->once())
-                 ->method('create')
-                 ->with(array(
-                    'host' => '127.0.0.1',
-                    'port' => '6382',
-                    'alias' => 'slave-127.0.0.1:6382',
-                  ))
-                 ->will($this->returnValue($slave1));
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(array(
+                'host' => '127.0.0.1',
+                'port' => '6382',
+                'alias' => 'slave-127.0.0.1:6382',
+            ))
+           ->will($this->returnValue($slave1));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1), $factory);
 
@@ -558,16 +575,24 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodDisconnectForcesDisconnectionOnAllConnectionsInPool()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->never())->method('disconnect');
+        $sentinel1
+            ->expects($this->never())
+            ->method('disconnect');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->once())->method('disconnect');
+        $master
+            ->expects($this->once())
+            ->method('disconnect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->once())->method('disconnect');
+        $slave1
+            ->expects($this->once())
+            ->method('disconnect');
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
-        $slave2->expects($this->once())->method('disconnect');
+        $slave2
+            ->expects($this->once())
+            ->method('disconnect');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -586,9 +611,10 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->exactly(2))
-               ->method('isConnected')
-               ->will($this->onConsecutiveCalls(true, false));
+        $slave1
+            ->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will($this->onConsecutiveCalls(true, false));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -612,6 +638,7 @@ class SentinelReplicationTest extends PredisTestCase
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
+
         $replication->add($master);
         $replication->add($slave1);
 
@@ -628,13 +655,19 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->once())->method('connect');
+        $master
+            ->expects($this->once())
+            ->method('connect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->never())->method('connect');
+        $slave1
+            ->expects($this->never())
+            ->method('connect');
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave2');
-        $slave2->expects($this->once())->method('connect');
+        $slave2
+            ->expects($this->once())
+            ->method('connect');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -677,10 +710,14 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->once())->method('connect');
+        $master
+            ->expects($this->once())
+            ->method('connect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->never())->method('connect');
+        $slave1
+            ->expects($this->never())
+            ->method('connect');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -700,10 +737,14 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->never())->method('connect');
+        $master
+            ->expects($this->never())
+            ->method('connect');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->once())->method('connect');
+        $slave1
+            ->expects($this->once())
+            ->method('connect');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -723,15 +764,17 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->exactly(2))
-               ->method('isConnected')
-               ->will($this->onConsecutiveCalls(false, true));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                   'master', 3129659, array(array('127.0.0.1', 6382, 3129242)),
-               )));
+        $master
+            ->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will($this->onConsecutiveCalls(false, true));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'master', 3129659, array(array('127.0.0.1', 6382, 3129242)),
+            )));
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
 
@@ -759,16 +802,17 @@ class SentinelReplicationTest extends PredisTestCase
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->exactly(2))
-               ->method('isConnected')
-               ->will($this->onConsecutiveCalls(false, true));
-
-        $slave1->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                  'slave', '127.0.0.1', 9000, 'connected', 3167038,
-               )));
+        $slave1
+            ->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will($this->onConsecutiveCalls(false, true));
+        $slave1
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'slave', '127.0.0.1', 9000, 'connected', 3167038,
+            )));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -792,26 +836,30 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->exactly(2))
-               ->method('isConnected')
-               ->will($this->onConsecutiveCalls(false, true));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                   'master', 3129659, array(array('127.0.0.1', 6382, 3129242)),
-               )));
+        $master
+            ->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will($this->onConsecutiveCalls(false, true));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'master', 3129659, array(array('127.0.0.1', 6382, 3129242)),
+            )));
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->exactly(1))
-               ->method('isConnected')
-               ->will($this->onConsecutiveCalls(false));
-        $slave1->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                  'slave', '127.0.0.1', 9000, 'connected', 3167038,
-               )));
+        $slave1
+            ->expects($this->exactly(1))
+            ->method('isConnected')
+            ->will($this->onConsecutiveCalls(false));
+        $slave1
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'slave', '127.0.0.1', 9000, 'connected', 3167038,
+            )));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -841,15 +889,17 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->once())
-               ->method('isConnected')
-               ->will($this->returnValue(false));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                   'slave', '127.0.0.1', 9000, 'connected', 3167038,
-               )));
+        $master
+            ->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(false));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'slave', '127.0.0.1', 9000, 'connected', 3167038,
+            )));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -864,35 +914,38 @@ class SentinelReplicationTest extends PredisTestCase
     public function testGetConnectionReturnsMasterForReadOnlyOperationsOnUnavailableSlaves()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->once())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('slaves', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:6382',
-                              'ip', '127.0.0.1',
-                              'port', '6382',
-                              'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
-                              'flags', 'slave,s_down,disconnected',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                      )
-                  ));
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave,s_down,disconnected',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->once())
-               ->method('isConnected')
-               ->will($this->returnValue(false));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('ROLE'))
-               ->will($this->returnValue(array(
-                   'master', '0', array(),
-               )));
+        $master
+            ->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(false));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'master', '0', array(),
+            )));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -915,22 +968,30 @@ class SentinelReplicationTest extends PredisTestCase
         $cmdSetResponse = Response\Status::get('OK');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('SET', array('key', $cmdGetResponse)))
-               ->will($this->returnValue($cmdSetResponse));
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SET', array('key', $cmdGetResponse)
+            ))
+           ->will($this->returnValue($cmdSetResponse));
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
-        $slave1->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('GET', array('key')))
-               ->will($this->returnValue($cmdGetResponse));
+        $slave1
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $slave1
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'GET', array('key')
+            ))
+            ->will($this->returnValue($cmdGetResponse));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -947,59 +1008,70 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodExecuteCommandRetriesReadOnlyCommandOnNextSlaveOnFailure()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('slaves', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array(
-                          array(
-                              'name', '127.0.0.1:6383',
-                              'ip', '127.0.0.1',
-                              'port', '6383',
-                              'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
-                              'flags', 'slave',
-                              'master-host', '127.0.0.1',
-                              'master-port', '6381',
-                          ),
-                      )
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:6383',
+                        'ip', '127.0.0.1',
+                        'port', '6383',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave1->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
-        $slave1->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('GET', array('key')))
-               ->will($this->throwException(
-                  new Connection\ConnectionException($slave1, 'Unknown connection error [127.0.0.1:6382]')
-               ));
+        $slave1
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $slave1
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'GET', array('key')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($slave1, 'Unknown connection error [127.0.0.1:6382]')
+            ));
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
-        $slave2->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
-        $slave2->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('GET', array('key')))
-               ->will($this->returnValue('value'));
+        $slave2
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $slave2
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'GET', array('key')
+            ))
+            ->will($this->returnValue('value'));
 
         $factory = $this->getMock('Predis\Connection\FactoryInterface');
-        $factory->expects($this->once())
-                 ->method('create')
-                 ->with(array(
-                    'host' => '127.0.0.1',
-                    'port' => '6383',
-                    'alias' => 'slave-127.0.0.1:6383',
-                  ))
-                 ->will($this->returnValue($slave2));
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(array(
+                'host' => '127.0.0.1',
+                'port' => '6383',
+                'alias' => 'slave-127.0.0.1:6383',
+            ))
+            ->will($this->returnValue($slave2));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1), $factory);
 
@@ -1017,44 +1089,54 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodExecuteCommandRetriesWriteCommandOnNewMasterOnFailure()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('get-master-addr-by-name', 'svc')
-                  ))
-                  ->will($this->returnValue(
-                      array('127.0.0.1', '6391')
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->returnValue(
+                array('127.0.0.1', '6391')
+            ));
 
         $masterOld = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $masterOld->expects($this->any())
-                  ->method('isConnected')
-                  ->will($this->returnValue(true));
-        $masterOld->expects($this->at(2))
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand('DEL', array('key')))
-                  ->will($this->throwException(
-                      new Connection\ConnectionException($masterOld, 'Unknown connection error [127.0.0.1:6381]')
-                  ));
+        $masterOld
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $masterOld
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'DEL', array('key')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($masterOld, 'Unknown connection error [127.0.0.1:6381]')
+            ));
 
         $masterNew = $this->getMockConnection('tcp://127.0.0.1:6391?alias=master');
-        $masterNew->expects($this->any())
-                  ->method('isConnected')
-                  ->will($this->returnValue(true));
-        $masterNew->expects($this->at(2))
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand('DEL', array('key')))
-                  ->will($this->returnValue(1));
+        $masterNew
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $masterNew
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'DEL', array('key')
+            ))
+            ->will($this->returnValue(1));
 
         $factory = $this->getMock('Predis\Connection\FactoryInterface');
-        $factory->expects($this->once())
-                 ->method('create')
-                 ->with(array(
-                    'host' => '127.0.0.1',
-                    'port' => '6391',
-                    'alias' => 'master',
-                  ))
-                 ->will($this->returnValue($masterNew));
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(array(
+                'host' => '127.0.0.1',
+                'port' => '6391',
+                'alias' => 'master',
+            ))
+            ->will($this->returnValue($masterNew));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1), $factory);
 
@@ -1073,23 +1155,28 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodExecuteCommandThrowsExceptionOnUnknownServiceName()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('get-master-addr-by-name', 'svc')
-                  ))
-                  ->will($this->returnValue(null));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->returnValue(null));
 
         $masterOld = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $masterOld->expects($this->any())
-                  ->method('isConnected')
-                  ->will($this->returnValue(true));
-        $masterOld->expects($this->at(2))
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand('DEL', array('key')))
-                  ->will($this->throwException(
-                      new Connection\ConnectionException($masterOld, 'Unknown connection error [127.0.0.1:6381]')
-                  ));
+        $masterOld
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $masterOld
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'DEL', array('key')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($masterOld, 'Unknown connection error [127.0.0.1:6381]')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
@@ -1108,25 +1195,30 @@ class SentinelReplicationTest extends PredisTestCase
     public function testMethodExecuteCommandThrowsExceptionOnConnectionFailureAndNoAvailableSentinels()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
-        $sentinel1->expects($this->any())
-                  ->method('executeCommand')
-                  ->with($this->isRedisCommand(
-                      'SENTINEL', array('get-master-addr-by-name', 'svc')
-                  ))
-                  ->will($this->throwException(
-                      new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
-                  ));
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
+            ));
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $master->expects($this->any())
-               ->method('isConnected')
-               ->will($this->returnValue(true));
-        $master->expects($this->at(2))
-               ->method('executeCommand')
-               ->with($this->isRedisCommand('DEL', array('key')))
-               ->will($this->throwException(
-                   new Connection\ConnectionException($master, 'Unknown connection error [127.0.0.1:6381]')
-               ));
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+        $master
+            ->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'DEL', array('key')
+            ))
+            ->will($this->throwException(
+                new Connection\ConnectionException($master, 'Unknown connection error [127.0.0.1:6381]')
+            ));
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
 

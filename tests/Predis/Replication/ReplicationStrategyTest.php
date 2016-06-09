@@ -214,9 +214,10 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
-        $command->expects($this->any())
-                ->method('getId')
-                ->will($this->returnValue('CMDTEST'));
+        $command
+            ->expects($this->any())
+            ->method('getId')
+            ->will($this->returnValue('CMDTEST'));
 
         $this->assertFalse($strategy->isReadOperation($command));
     }
@@ -229,9 +230,10 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
-        $command->expects($this->any())
-                ->method('getId')
-                ->will($this->returnValue('CMDTEST'));
+        $command
+            ->expects($this->any())
+            ->method('getId')
+            ->will($this->returnValue('CMDTEST'));
 
         $strategy->setCommandReadOnly('CMDTEST', true);
         $this->assertTrue($strategy->isReadOperation($command));
@@ -245,9 +247,10 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $command = $this->getMock('Predis\Command\CommandInterface');
-        $command->expects($this->any())
-                ->method('getId')
-                ->will($this->returnValue('CMDTEST'));
+        $command
+            ->expects($this->any())
+            ->method('getId')
+            ->will($this->returnValue('CMDTEST'));
 
         $strategy->setCommandReadOnly('CMDTEST', false);
         $this->assertFalse($strategy->isReadOperation($command));
@@ -307,9 +310,10 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
-        $command->expects($this->any())
-                ->method('getScript')
-                ->will($this->returnValue($script = 'return true'));
+        $command
+            ->expects($this->any())
+            ->method('getScript')
+            ->will($this->returnValue($script = 'return true'));
 
         $strategy->setScriptReadOnly($script, function ($command) {
             return $command->getArgument(2) === true;
@@ -330,9 +334,10 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
-        $command->expects($this->any())
-                ->method('getScript')
-                ->will($this->returnValue($script = 'return true'));
+        $command
+            ->expects($this->any())
+            ->method('getScript')
+            ->will($this->returnValue($script = 'return true'));
 
         $command->setArguments(array('trigger', false));
 

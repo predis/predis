@@ -41,14 +41,16 @@ class ReplicationTest extends PredisTestCase
         $connectionFactory = $this->getMock('Predis\Connection\FactoryInterface');
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $options->expects($this->at(0))
-                ->method('__get')
-                ->with('autodiscovery')
-                ->will($this->returnValue(true));
-        $options->expects($this->at(1))
-                ->method('__get')
-                ->with('connections')
-                ->will($this->returnValue($connectionFactory));
+        $options
+            ->expects($this->at(0))
+            ->method('__get')
+            ->with('autodiscovery')
+            ->will($this->returnValue(true));
+        $options
+            ->expects($this->at(1))
+            ->method('__get')
+            ->with('connections')
+            ->will($this->returnValue($connectionFactory));
 
         $this->assertInstanceOf('Closure', $initializer = $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $connection = $initializer($options));
@@ -71,10 +73,11 @@ class ReplicationTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -93,10 +96,11 @@ class ReplicationTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 
@@ -124,16 +128,18 @@ class ReplicationTest extends PredisTestCase
         $option = new Replication();
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $options->expects($this->at(0))
-                ->method('__get')
-                ->with('service')
-                ->will($this->returnValue('mymaster'));
-        $options->expects($this->at(1))
-                ->method('__get')
-                ->with('connections')
-                ->will($this->returnValue(
-                    $this->getMock('Predis\Connection\FactoryInterface')
-                ));
+        $options
+            ->expects($this->at(0))
+            ->method('__get')
+            ->with('service')
+            ->will($this->returnValue('mymaster'));
+        $options
+            ->expects($this->at(1))
+            ->method('__get')
+            ->with('connections')
+            ->will($this->returnValue(
+                $this->getMock('Predis\Connection\FactoryInterface')
+            ));
 
         $parameters = array(
             $this->getMock('Predis\Connection\NodeConnectionInterface'),

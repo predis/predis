@@ -41,10 +41,11 @@ class AggregateTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -63,10 +64,11 @@ class AggregateTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($connection));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 

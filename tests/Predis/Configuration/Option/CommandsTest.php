@@ -43,14 +43,18 @@ class CommandsTest extends PredisTestCase
         $option = new Commands();
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $options->expects($this->once())
-                ->method('__isset')
-                ->with('prefix')
-                ->will($this->returnValue(true));
-        $options->expects($this->once())
-                ->method('__get')
-                ->with('prefix')
-                ->will($this->returnValue(new KeyPrefixProcessor('prefix:')));
+        $options
+            ->expects($this->once())
+            ->method('__isset')
+            ->with('prefix')
+            ->will($this->returnValue(true));
+        $options
+            ->expects($this->once())
+            ->method('__get')
+            ->with('prefix')
+            ->will($this->returnValue(
+                new KeyPrefixProcessor('prefix:')
+            ));
 
         $commands = $option->getDefault($options);
 
@@ -108,10 +112,11 @@ class CommandsTest extends PredisTestCase
         $commands = $this->getMock('Predis\Command\FactoryInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($commands));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($commands));
 
         $this->assertSame($commands, $option->filter($options, $callable));
     }
@@ -131,10 +136,11 @@ class CommandsTest extends PredisTestCase
         );
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue($dictionary));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($dictionary));
 
         $commands = $option->filter($options, $callable);
 
@@ -155,10 +161,13 @@ class CommandsTest extends PredisTestCase
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-                 ->will($this->returnValue(new \stdClass()));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue(
+                new \stdClass()
+            ));
 
         $option->filter($options, $callable);
     }

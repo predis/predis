@@ -198,10 +198,11 @@ class KetamaRingTest extends PredisDistributorTestCase
         $node = '127.0.0.1:7000';
         $callable = $this->getMock('stdClass', array('__invoke'));
 
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($node)
-                 ->will($this->returnValue($node));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($node)
+            ->will($this->returnValue($node));
 
         $distributor = new KetamaRing($callable);
         $distributor->add($node);
