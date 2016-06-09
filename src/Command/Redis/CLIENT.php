@@ -46,7 +46,7 @@ class CLIENT extends RedisCommand
             case 'SETNAME':
             default:
                 return $data;
-        }
+        } // @codeCoverageIgnore
     }
 
     /**

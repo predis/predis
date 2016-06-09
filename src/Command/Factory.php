@@ -52,9 +52,12 @@ abstract class Factory implements FactoryInterface
     /**
      * Returns the FQN of a class that represents the specified command ID.
      *
+     * @codeCoverageIgnore
+     *
      * @param string $commandID Command ID.
      *
      * @return string|null
+     *
      */
     public function getCommandClass($commandID)
     {

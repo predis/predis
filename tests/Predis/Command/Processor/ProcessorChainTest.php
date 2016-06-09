@@ -151,6 +151,78 @@ class ProcessorChainTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testOffsetGet()
+    {
+        $processors = array(
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+        );
+
+        $chain = new ProcessorChain($processors);
+
+        $this->assertSame($processors[0], $chain[0]);
+        $this->assertSame($processors[1], $chain[1]);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testOffsetIsset()
+    {
+        $processors = array(
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+        );
+
+        $chain = new ProcessorChain($processors);
+
+        $this->assertTrue(isset($chain[0]));
+        $this->assertTrue(isset($chain[1]));
+        $this->assertFalse(isset($chain[2]));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testOffsetSet()
+    {
+        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+
+        $chain = new ProcessorChain();
+        $chain[0] = $processor;
+
+        $this->assertSame($processor, $chain[0]);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Processor chain accepts only instances of `Predis\Command\Processor\ProcessorInterface`
+     */
+    public function testOffsetSetWithInvalidType()
+    {
+        $chain = new ProcessorChain();
+        $chain[0] = new \stdClass();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetIterator()
+    {
+        $processors = array(
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+            $this->getMock('Predis\Command\Processor\ProcessorInterface'),
+        );
+
+        $chain = new ProcessorChain($processors);
+
+        $this->assertSame($processors, iterator_to_array($chain->getIterator()));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testProcessChain()
     {
         $command = $this->getMock('Predis\Command\CommandInterface');

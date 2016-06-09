@@ -90,7 +90,7 @@ class Client implements ClientInterface, \IteratorAggregate
             return $options;
         }
 
-        throw new \InvalidArgumentException('Invalid type for client options.');
+        throw new \InvalidArgumentException('Invalid type for client options');
     }
 
     /**
@@ -416,9 +416,11 @@ class Client implements ClientInterface, \IteratorAggregate
 
                 return $this->$initializer($arg0, $arg1);
 
+        // @codeCoverageIgnoreStart
             default:
                 return $this->$initializer($this, $argv);
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**

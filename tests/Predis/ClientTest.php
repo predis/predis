@@ -368,6 +368,26 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid type for connection parameters
+     */
+    public function testConstructorWithInvalidArgumentType()
+    {
+        $client = new Client(new \stdClass);
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid type for client options
+     */
+    public function testConstructorWithInvalidOptionType()
+    {
+        $client = new Client('tcp://host1', new \stdClass);
+    }
+
+    /**
+     * @group disconnected
      */
     public function testConnectAndDisconnect()
     {
@@ -802,24 +822,46 @@ class ClientTest extends PredisTestCase
      */
     public function testPubSubLoopWithArrayAndCallableExecutesPubSub()
     {
-        // NOTE: we use a subscribe count of 0 in the fake message to trick
-        //       the context and to make it think that it can be closed
-        //       since there are no more subscriptions active.
-
-        $message = array('subscribe', 'channel', 0);
-        $options = array('subscribe' => 'channel');
-
+        // NOTE: we use a subscribe count of 0 in the message payload to trick
+        //       the context and forcing it to be closed since there are no more
+        //       active subscriptions.
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('read')
-                   ->will($this->returnValue($message));
+                   ->will($this->returnValue(array('subscribe', 'channel', 0)));
 
         $callable = $this->getMock('stdClass', array('__invoke'));
         $callable->expects($this->once())
                  ->method('__invoke');
 
         $client = new Client($connection);
-        $client->pubSubLoop($options, $callable);
+        $this->assertNull($client->pubSubLoop(array('subscribe' => 'channel'), $callable));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPubSubLoopWithCallableReturningFalseStopsPubSubConsumer()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->at(1))
+                   ->method('read')
+                   ->will($this->returnValue(array('subscribe', 'channel', 1)));
+        $connection->expects($this->at(2))
+                   ->method('writeRequest')
+                   ->with($this->isRedisCommand('UNSUBSCRIBE'));
+        $connection->expects($this->at(3))
+                   ->method('read')
+                   ->will($this->returnValue(array('unsubscribe', 'channel', 0)));
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable->expects($this->at(0))
+                 ->method('__invoke')
+                 ->will($this->returnValue(false));
+
+        $client = new Client($connection);
+
+        $this->assertNull($client->pubSubLoop(array('subscribe' => 'channel'), $callable));
     }
 
     /**

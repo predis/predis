@@ -104,6 +104,17 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testGetArgumentAtIndex()
+    {
+        $command = new RawCommand('GET', array('key'));
+
+        $this->assertSame('key', $command->getArgument(0));
+        $this->assertNull($command->getArgument(1));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSetAndGetHash()
     {
         $slot = 1024;

@@ -51,6 +51,8 @@ class SLOWLOG_Test extends PredisCommandTestCase
     }
 
     /**
+     * This is the response type for SLOWLOG GET
+     *
      * @group disconnected
      */
     public function testParseResponse()
@@ -68,6 +70,18 @@ class SLOWLOG_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->assertSame($expected, $command->parseResponse($raw));
+    }
+
+    /**
+     * This is the response type for SLOWLOG LEN
+     *
+     * @group disconnected
+     */
+    public function testParseResponseInteger()
+    {
+        $command = $this->getCommand();
+
+        $this->assertSame(10, $command->parseResponse(10));
     }
 
     /**
