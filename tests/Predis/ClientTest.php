@@ -383,7 +383,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithInvalidArgumentType()
     {
-        $client = new Client(new \stdClass);
+        $client = new Client(new \stdClass());
     }
 
     /**
@@ -393,7 +393,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithInvalidOptionType()
     {
-        $client = new Client('tcp://host1', new \stdClass);
+        $client = new Client('tcp://host1', new \stdClass());
     }
 
     /**

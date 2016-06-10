@@ -57,7 +57,6 @@ abstract class Factory implements FactoryInterface
      * @param string $commandID Command ID.
      *
      * @return string|null
-     *
      */
     public function getCommandClass($commandID)
     {

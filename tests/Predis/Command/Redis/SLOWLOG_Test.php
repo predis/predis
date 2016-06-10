@@ -51,7 +51,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
     }
 
     /**
-     * This is the response type for SLOWLOG GET
+     * This is the response type for SLOWLOG GET.
      *
      * @group disconnected
      */
@@ -73,7 +73,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
     }
 
     /**
-     * This is the response type for SLOWLOG LEN
+     * This is the response type for SLOWLOG LEN.
      *
      * @group disconnected
      */

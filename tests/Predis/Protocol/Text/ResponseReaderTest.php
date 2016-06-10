@@ -106,7 +106,6 @@ class ResponseReaderTest extends PredisTestCase
      */
     public function testUnknownResponsePrefix()
     {
-
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
         $connection
             ->expects($this->once())
