@@ -102,11 +102,18 @@ class ClusterTest extends PredisTestCase
 
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
         $options
-            ->expects($this->once())
+            ->expects($this->at(0))
             ->method('__get')
             ->with('connections')
             ->will($this->returnValue(
                 $this->getMock('Predis\Connection\FactoryInterface')
+            ));
+        $options
+            ->expects($this->at(1))
+            ->method('__get')
+            ->with('crc16')
+            ->will($this->returnValue(
+                $this->getMock('Predis\Cluster\Hash\HashGeneratorInterface')
             ));
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'redis'));

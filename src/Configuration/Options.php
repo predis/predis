@@ -50,6 +50,7 @@ class Options implements OptionsInterface
             'commands' => 'Predis\Configuration\Option\Commands',
             'exceptions' => 'Predis\Configuration\Option\Exceptions',
             'prefix' => 'Predis\Configuration\Option\Prefix',
+            'crc16' => 'Predis\Configuration\Option\CRC16',
         );
     }
 

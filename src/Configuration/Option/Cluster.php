@@ -11,6 +11,7 @@
 
 namespace Predis\Configuration\Option;
 
+use Predis\Cluster\RedisStrategy;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
 use Predis\Connection\Cluster\RedisCluster;
@@ -38,7 +39,7 @@ class Cluster extends Aggregate
             $callback = $this->getDefault($options);
         } elseif ($description === 'redis') {
             $callback = function ($options) {
-                return new RedisCluster($options->connections);
+                return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
             };
         } else {
             throw new \InvalidArgumentException(
