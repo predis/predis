@@ -572,6 +572,52 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testMethodConnectOnEmptySlavePoolAsksSentinelForSlavesAndForcesConnectionToMasterIfStillEmpty()
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
+        $sentinel1
+            ->expects($this->at(0))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array()
+            ));
+        $sentinel1
+            ->expects($this->at(1))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('get-master-addr-by-name', 'svc')
+            ))
+            ->will($this->returnValue(
+                array('127.0.0.1', '6381')
+            ));
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $master
+            ->expects($this->once())
+            ->method('connect');
+
+        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(array(
+                'host' => '127.0.0.1',
+                'port' => '6381',
+                'alias' => 'master',
+            ))
+            ->will($this->returnValue($master));
+
+        $replication = $this->getReplicationConnection('svc', array($sentinel1), $factory);
+
+        $replication->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodDisconnectForcesDisconnectionOnAllConnectionsInPool()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
