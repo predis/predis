@@ -278,7 +278,7 @@ class Client implements ClientInterface, \IteratorAggregate
      * applying any prefix to keys or throwing exceptions on Redis errors even
      * regardless of client options.
      *
-     * It is possibile to indentify Redis error responses from normal responses
+     * It is possible to identify Redis error responses from normal responses
      * using the second optional argument which is populated by reference.
      *
      * @param array $arguments Command arguments as defined by the command signature.
@@ -481,7 +481,7 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Creates a new publis/subscribe context and returns it, or starts its loop
+     * Creates a new publish/subscribe context and returns it, or starts its loop
      * inside the optionally provided callable object.
      *
      * @param mixed ... Array of options, a callable for execution, or both.
