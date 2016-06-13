@@ -617,7 +617,9 @@ class SentinelReplication implements ReplicationInterface
     public function connect()
     {
         if (!$this->current) {
-            $this->current = $this->pickSlave();
+            if (!$this->current = $this->pickSlave()) {
+                $this->current = $this->getMaster();
+            }
         }
 
         $this->current->connect();
