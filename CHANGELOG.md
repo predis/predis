@@ -9,6 +9,13 @@ v1.1.1 (2016-xx-xx)
   `connect()` on the redis-sentinel connection backend should fall back to the
   master connection instead of failing (ISSUE #342).
 
+- __FIX__: the two connection backends based on ext-phpiredis has some kind of
+  issues with the GC and the internal use of closures as reader callbacks that
+  prevented connections going out of scope from being properly collected and the
+  underlying stream or socket resources from being closed and freed. This should
+  not have had any actual effect in real-world scenarios due to the lifecycle of
+  PHP scripts, but we fixed it anyway (ISSUE #345).
+
 
 v1.1.0 (2016-06-02)
 ================================================================================

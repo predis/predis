@@ -160,9 +160,15 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     protected function getStatusHandler()
     {
-        return function ($payload) {
-            return StatusResponse::get($payload);
-        };
+        static $statusHandler;
+
+        if (!$statusHandler) {
+            $statusHandler = function ($payload) {
+                return StatusResponse::get($payload);
+            };
+        }
+
+        return $statusHandler;
     }
 
     /**
@@ -172,9 +178,15 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     protected function getErrorHandler()
     {
-        return function ($errorMessage) {
-            return new ErrorResponse($errorMessage);
-        };
+        static $errorHandler;
+
+        if (!$errorHandler) {
+            $errorHandler = function ($errorMessage) {
+                return new ErrorResponse($errorMessage);
+            };
+        }
+
+        return $errorHandler;
     }
 
     /**
