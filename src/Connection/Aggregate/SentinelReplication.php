@@ -239,9 +239,10 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if (is_array($parameters)) {
-            // We unset "password" and "database" from user-supplied parameters
-            // as they are not needed when connecting to sentinels.
-            unset($parameters['database'], $parameters['password']);
+            // We explicitly set "database" and "password" to null,
+            // so that no AUTH and SELECT command is send to the sentinels.
+            $parameters['database'] = null;
+            $parameters['password'] = null;
 
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;

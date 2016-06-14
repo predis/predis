@@ -44,8 +44,7 @@ class SentinelReplicationTest extends PredisTestCase
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
-        $this->assertArrayNotHasKey('password', $parameters);
-        $this->assertArrayNotHasKey('database', $parameters);
+        $this->assertArraySubset(array('database' => null, 'password' => null), $parameters);
     }
 
     /**
