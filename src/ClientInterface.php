@@ -46,7 +46,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    append($key, $value)
  * @method int    bitcount($key, $start = null, $end = null)
  * @method int    bitop($operation, $destkey, $key)
- * @method array  bitfield($key, ...)
+ * @method array  bitfield($key, $subcommand, ...$subcommandArg)
  * @method int    decr($key)
  * @method int    decrby($key, $decrement)
  * @method string get($key)
