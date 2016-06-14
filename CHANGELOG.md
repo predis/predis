@@ -1,3 +1,15 @@
+v1.1.1 (2016-xx-xx)
+================================================================================
+
+- __FIX__: `password` and `database` from the global `parameters` client option
+  were still being applied to sentinels connections making them fail (sentinels
+  do not understand the `AUTH` and `SELECT` commands) (PR #346).
+
+- __FIX__: when a sentinel instance reports no sentinel for a service, invoking
+  `connect()` on the redis-sentinel connection backend should fall back to the
+  master connection instead of failing (ISSUE #342).
+
+
 v1.1.0 (2016-06-02)
 ================================================================================
 
