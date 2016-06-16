@@ -36,11 +36,13 @@ v2.0.0 (201x-xx-xx)
   class associated.
 
 - The method `Predis\Client::getClientFor($connectionID)` has been replaced by
-  `Predis\Client::on($connectionID, $callable = null)`. This new method returns
-  a new client instance for the specified node just like before when the second
-  argument is omitted, otherwise the callback is invoked and the new client is
-  passed to it. The value returned by the callback is used as the return value
-  of the "on()" method.
+  `getClientBy($selector, $value, $callable = null)` which is more flexible as
+  it is not limited to picking a connection from the underlying replication or
+  cluster backend by ID, but allows users to specify a `$selector` that can be
+  either `id` (the old behavior), `key`, `slot` or `command`. The client uses
+  duck-typing instead of type-checking to verify that the underlying connection
+  implements a method that matches the specified selector which means that some
+  selectors may not be available to all kinds of connection backends.
 
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
 

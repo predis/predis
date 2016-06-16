@@ -712,7 +712,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOnMethodCreatesClientWithConnectionFromAggregateConnection()
+    public function testGetClientByMethodCreatesClientWithConnectionFromAggregateConnection()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:', 'cluster' => 'predis'));
 
@@ -720,7 +720,7 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
 
-        $clientNode02 = $client->on('node02');
+        $clientNode02 = $client->getClientBy('id', 'node02');
 
         $this->assertInstanceOf('Predis\Client', $clientNode02);
         $this->assertSame($node02, $clientNode02->getConnection());
@@ -730,18 +730,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOnMethodReturnsInstanceOfSubclass()
+    public function testGetClientByMethodReturnsInstanceOfSubclass()
     {
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
         $client = $this->getMock('Predis\Client', array('dummy'), array($nodes, array('cluster' => 'predis')), 'SubclassedClient');
 
-        $this->assertInstanceOf('SubclassedClient', $client->on('node02'));
+        $this->assertInstanceOf('SubclassedClient', $client->getClientBy('id', 'node02'));
     }
 
     /**
      * @group disconnected
      */
-    public function testOnMethodInvokesCallableInSecondArgumentAndReturnsItsReturnValue()
+    public function testGetClientByMethodInvokesCallableInSecondArgumentAndReturnsItsReturnValue()
     {
         $test = $this;
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
@@ -760,31 +760,142 @@ class ClientTest extends PredisTestCase
             }))
             ->will($this->returnValue('value'));
 
-        $this->assertSame('value', $client->on('node02', $callable));
+        $this->assertSame('value', $client->getClientBy('id', 'node02', $callable));
     }
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections
      */
-    public function testOnMethodThrowsExceptionWithNodeConnection()
+    public function testGetClientByMethodSupportsSelectingConnectionById()
     {
-        $client = new Client('tcp://127.0.0.1?alias=node01');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
-        $client->on('node01');
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionById'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionById')
+            ->with('nodeXX')
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('id', 'nodeXX');
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
     }
 
     /**
      * @group disconnected
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection ID: `nodeXX`
+     * @expectedExceptionMessage Cannot find a connection by id matching `nodeXX`
      */
-    public function testOnMethodThrowsExceptionWithUnknownConnectionID()
+    public function testGetClientByMethodThrowsExceptionSelectingConnectionByUnknownId()
     {
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
+        $aggregate = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionById')
+            ->with('nodeXX')
+            ->will($this->returnValue(null));
 
-        $client->on('nodeXX');
+        $client = new Client($aggregate);
+        $client->getClientBy('id', 'nodeXX');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientByMethodSupportsSelectingConnectionByKey()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionByKey'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionByKey')
+            ->with('key:1')
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('key', 'key:1');
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientByMethodSupportsSelectingConnectionBySlot()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionBySlot'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionBySlot')
+            ->with(5460)
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('slot', 5460);
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientByMethodSupportsSelectingConnectionByCommand()
+    {
+        $command = \Predis\Command\RawCommand::create('GET', 'key');
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionByCommand'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionByCommand')
+            ->with($command)
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('command', $command);
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid selector type: `unknown`
+     */
+    public function testGetClientByMethodThrowsExceptionWhenSelectingConnectionByUnknownType()
+    {
+        $client = new Client('tcp://127.0.0.1?alias=node01');
+
+        $client->getClientBy('unknown', 'test');
+    }
+
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Selecting connection by id is not supported by Predis\Connection\StreamConnection
+     */
+    public function testGetClientByMethodThrowsExceptionWhenConnectionDoesNotSupportSelectorType()
+    {
+        $client = new Client('tcp://127.0.0.1?alias=node01');
+
+        $client->getClientBy('id', 'node01');
     }
 
     /**

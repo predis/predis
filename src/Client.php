@@ -195,25 +195,38 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Creates a new client from the specified connection ID / alias.
+     * Creates a new client from the specified .
      *
      * The new client instances inherites the same options of the original one.
      * When no callable object is supplied, this method returns the new client.
      * When a callable object is supplied, the new client is passed as its sole
      * argument and its return value is returned by this method to the caller.
      *
-     * NOTE: This method works only when the client is configured to work with
-     * aggregate connections (cluster, replication).
+     * NOTE: This method works against any kind of underlying connection object
+     * as it uses a duck-typing approach and looks for a suitable method that
+     * matches the selector type to extract the correct connection.
      *
-     * @param string        $connectionID Identifier of a connection.
-     * @param callable|null $callable     Optional callable object.
+     * @param string        $selector Type of selector (`id`, `key`, `slot`, `command`)
+     * @param string        $value    Values of selector.
+     * @param callable|null $callable Optional callable object.
      *
      * @return ClientInterface|mixed
      */
-    public function on($connectionID, $callable = null)
+    public function getClientBy($selector, $value, $callable = null)
     {
-        if (!$connection = $this->getConnectionById($connectionID)) {
-            throw new \InvalidArgumentException("Invalid connection ID: `$connectionID`");
+        $selector = strtolower($selector);
+
+        if (!in_array($selector, array('id', 'key', 'slot', 'command'))) {
+            throw new \InvalidArgumentException("Invalid selector type: `$selector`");
+        }
+
+        if (!method_exists($this->connection, $method = "getConnectionBy$selector")) {
+            $class = get_class($this->connection);
+            throw new \InvalidArgumentException("Selecting connection by $selector is not supported by $class");
+        }
+
+        if (!$connection = $this->connection->$method($value)) {
+            throw new \InvalidArgumentException("Cannot find a connection by $selector matching `$value`");
         }
 
         $client = new static($connection, $this->getOptions());

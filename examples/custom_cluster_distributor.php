@@ -104,8 +104,8 @@ for ($i = 0; $i < 100; ++$i) {
     $client->get("key:$i");
 }
 
-$server1 = $client->on('first')->info();
-$server2 = $client->on('second')->info();
+$server1 = $client->getClientBy('id', 'first')->info();
+$server2 = $client->getClientBy('id', 'second')->info();
 
 if (isset($server1['Keyspace'], $server2['Keyspace'])) {
     $server1 = $server1['Keyspace'];
