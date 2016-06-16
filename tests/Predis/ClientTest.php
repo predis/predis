@@ -685,51 +685,6 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionFromAggregateConnectionWithAlias()
-    {
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
-
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
-
-        $this->assertSame('host1', $node01->getParameters()->host);
-        $this->assertSame('host2', $node02->getParameters()->host);
-    }
-
-    /**
-     * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Retrieving connections by ID is supported only by aggregate connections.
-     */
-    public function testGetConnectionByIdWorksOnlyWithAggregateConnections()
-    {
-        $client = new Client();
-
-        $client->getConnectionById('node01');
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testGetClientByMethodCreatesClientWithConnectionFromAggregateConnection()
-    {
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:', 'cluster' => 'predis'));
-
-        $this->assertInstanceOf('Predis\Connection\Cluster\ClusterInterface', $cluster = $client->getConnection());
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node01 = $client->getConnectionById('node01'));
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $node02 = $client->getConnectionById('node02'));
-
-        $clientNode02 = $client->getClientBy('id', 'node02');
-
-        $this->assertInstanceOf('Predis\Client', $clientNode02);
-        $this->assertSame($node02, $clientNode02->getConnection());
-        $this->assertSame($client->getOptions(), $clientNode02->getOptions());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testGetClientByMethodReturnsInstanceOfSubclass()
     {
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');

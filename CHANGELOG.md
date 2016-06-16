@@ -44,6 +44,8 @@ v2.0.0 (201x-xx-xx)
   implements a method that matches the specified selector which means that some
   selectors may not be available to all kinds of connection backends.
 
+- The method `Predis\Client::getConnectionById($connectionID)` has been removed.
+
 - Changed the signature for the constructor of `Predis\Command\RawCommand`.
 
 - The `Predis\Connection\Aggregate` namespace has been split into two separate

@@ -16,7 +16,6 @@ use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
-use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\SentinelReplication;
@@ -281,27 +280,6 @@ class Client implements ClientInterface, \IteratorAggregate
     public function getConnection()
     {
         return $this->connection;
-    }
-
-    /**
-     * Retrieves the specified connection from the aggregate connection when the
-     * client is in cluster or replication mode.
-     *
-     * @param string $connectionID Index or alias of the single connection.
-     *
-     * @throws NotSupportedException
-     *
-     * @return Connection\NodeConnectionInterface
-     */
-    public function getConnectionById($connectionID)
-    {
-        if (!$this->connection instanceof AggregateConnectionInterface) {
-            throw new NotSupportedException(
-                'Retrieving connections by ID is supported only by aggregate connections.'
-            );
-        }
-
-        return $this->connection->getConnectionById($connectionID);
     }
 
     /**
