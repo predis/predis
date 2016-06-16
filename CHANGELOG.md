@@ -1,4 +1,4 @@
-v1.1.1 (2016-xx-xx)
+v1.1.1 (2016-06-16)
 ================================================================================
 
 - __FIX__: `password` and `database` from the global `parameters` client option
