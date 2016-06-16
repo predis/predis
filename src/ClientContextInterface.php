@@ -38,7 +38,7 @@ use Predis\Command\CommandInterface;
  * @method $this append($key, $value)
  * @method $this bitcount($key, $start = null, $end = null)
  * @method $this bitop($operation, $destkey, $key)
- * @method $this bitfield($key, ...)
+ * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this get($key)
