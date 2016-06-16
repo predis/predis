@@ -372,7 +372,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function getConnection(CommandInterface $command)
+    public function getConnectionByCommand(CommandInterface $command)
     {
         $slot = $this->strategy->getSlot($command);
 
@@ -547,7 +547,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 
         RETRY_COMMAND: {
             try {
-                $response = $this->getConnection($command)->$method($command);
+                $response = $this->getConnectionByCommand($command)->$method($command);
             } catch (ConnectionException $exception) {
                 $connection = $exception->getConnection();
                 $connection->disconnect();

@@ -141,7 +141,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection(CommandInterface $command)
+    public function getConnectionByCommand(CommandInterface $command)
     {
         if (!$this->current) {
             if ($this->strategy->isReadOperation($command) && $slave = $this->pickSlave()) {
@@ -435,7 +435,7 @@ class MasterSlaveReplication implements ReplicationInterface
     {
         RETRY_COMMAND: {
             try {
-                $connection = $this->getConnection($command);
+                $connection = $this->getConnectionByCommand($command);
                 $response = $connection->$method($command);
 
                 if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {

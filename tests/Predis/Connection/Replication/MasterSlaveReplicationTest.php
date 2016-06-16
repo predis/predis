@@ -367,10 +367,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave1);
 
         $cmd = $commands->createCommand('exists', array('foo'));
-        $this->assertSame($slave1, $replication->getConnection($cmd));
+        $this->assertSame($slave1, $replication->getConnectionByCommand($cmd));
 
         $cmd = $commands->createCommand('get', array('foo'));
-        $this->assertSame($slave1, $replication->getConnection($cmd));
+        $this->assertSame($slave1, $replication->getConnectionByCommand($cmd));
     }
 
     /**
@@ -389,10 +389,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave1);
 
         $cmd = $commands->createCommand('set', array('foo', 'bar'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
 
         $cmd = $commands->createCommand('get', array('foo'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
     }
 
     /**
@@ -409,10 +409,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($master);
 
         $cmd = $commands->createCommand('exists', array('foo'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
 
         $cmd = $commands->createCommand('set', array('foo', 'bar'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
     }
 
     /**
@@ -431,13 +431,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($slave1);
 
         $cmd = $commands->createCommand('exists', array('foo'));
-        $this->assertSame($slave1, $replication->getConnection($cmd));
+        $this->assertSame($slave1, $replication->getConnectionByCommand($cmd));
 
         $cmd = $commands->createCommand('set', array('foo', 'bar'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
 
         $cmd = $commands->createCommand('exists', array('foo'));
-        $this->assertSame($master, $replication->getConnection($cmd));
+        $this->assertSame($master, $replication->getConnectionByCommand($cmd));
     }
 
     /**
@@ -867,7 +867,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));
         $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
 
-        $replication->getConnection($cmd);
+        $replication->getConnectionByCommand($cmd);
     }
 
     /**

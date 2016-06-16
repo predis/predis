@@ -126,7 +126,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function getConnection(CommandInterface $command)
+    public function getConnectionByCommand(CommandInterface $command)
     {
         $slot = $this->strategy->getSlot($command);
 
@@ -196,7 +196,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function writeRequest(CommandInterface $command)
     {
-        $this->getConnection($command)->writeRequest($command);
+        $this->getConnectionByCommand($command)->writeRequest($command);
     }
 
     /**
@@ -204,7 +204,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function readResponse(CommandInterface $command)
     {
-        return $this->getConnection($command)->readResponse($command);
+        return $this->getConnectionByCommand($command)->readResponse($command);
     }
 
     /**
@@ -212,6 +212,6 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->getConnection($command)->executeCommand($command);
+        return $this->getConnectionByCommand($command)->executeCommand($command);
     }
 }

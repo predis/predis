@@ -531,7 +531,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection(CommandInterface $command)
+    public function getConnectionByCommand(CommandInterface $command)
     {
         $connection = $this->getConnectionInternal($command);
 
@@ -655,7 +655,7 @@ class SentinelReplication implements ReplicationInterface
 
         SENTINEL_RETRY: {
             try {
-                $response = $this->getConnection($command)->$method($command);
+                $response = $this->getConnectionByCommand($command)->$method($command);
             } catch (CommunicationException $exception) {
                 $this->wipeServerList();
                 $exception->getConnection()->disconnect();

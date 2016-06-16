@@ -527,18 +527,18 @@ class RedisClusterTest extends PredisTestCase
 
         $set = $commands->createCommand('set', array('node:1001', 'foobar'));
         $get = $commands->createCommand('get', array('node:1001'));
-        $this->assertSame($connection1, $cluster->getConnection($set));
-        $this->assertSame($connection1, $cluster->getConnection($get));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
 
         $set = $commands->createCommand('set', array('node:1048', 'foobar'));
         $get = $commands->createCommand('get', array('node:1048'));
-        $this->assertSame($connection2, $cluster->getConnection($set));
-        $this->assertSame($connection2, $cluster->getConnection($get));
+        $this->assertSame($connection2, $cluster->getConnectionByCommand($set));
+        $this->assertSame($connection2, $cluster->getConnectionByCommand($get));
 
         $set = $commands->createCommand('set', array('node:1082', 'foobar'));
         $get = $commands->createCommand('get', array('node:1082'));
-        $this->assertSame($connection3, $cluster->getConnection($set));
-        $this->assertSame($connection3, $cluster->getConnection($get));
+        $this->assertSame($connection3, $cluster->getConnectionByCommand($set));
+        $this->assertSame($connection3, $cluster->getConnectionByCommand($get));
     }
 
     /**
@@ -917,13 +917,13 @@ class RedisClusterTest extends PredisTestCase
 
         $set = $commands->createCommand('set', array('{node:1001}:foo', 'foobar'));
         $get = $commands->createCommand('get', array('{node:1001}:foo'));
-        $this->assertSame($connection1, $cluster->getConnection($set));
-        $this->assertSame($connection1, $cluster->getConnection($get));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
 
         $set = $commands->createCommand('set', array('{node:1001}:bar', 'foobar'));
         $get = $commands->createCommand('get', array('{node:1001}:bar'));
-        $this->assertSame($connection1, $cluster->getConnection($set));
-        $this->assertSame($connection1, $cluster->getConnection($get));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
     }
 
     /**
@@ -1259,7 +1259,7 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->add($this->getMockConnection('tcp://127.0.0.1:6379'));
 
-        $cluster->getConnection($ping);
+        $cluster->getConnectionByCommand($ping);
     }
 
     /**

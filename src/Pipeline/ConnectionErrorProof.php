@@ -93,7 +93,7 @@ class ConnectionErrorProof extends Pipeline
         $exceptions = array();
 
         foreach ($commands as $command) {
-            $cmdConnection = $connection->getConnection($command);
+            $cmdConnection = $connection->getConnectionByCommand($command);
 
             if (isset($exceptions[spl_object_hash($cmdConnection)])) {
                 continue;
@@ -109,7 +109,7 @@ class ConnectionErrorProof extends Pipeline
         for ($i = 0; $i < $sizeOfPipe; ++$i) {
             $command = $commands->dequeue();
 
-            $cmdConnection = $connection->getConnection($command);
+            $cmdConnection = $connection->getConnectionByCommand($command);
             $connectionHash = spl_object_hash($cmdConnection);
 
             if (isset($exceptions[$connectionHash])) {

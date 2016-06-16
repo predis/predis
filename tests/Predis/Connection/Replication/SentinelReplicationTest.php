@@ -828,11 +828,11 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $this->assertSame($master, $replication->getConnection(
+        $this->assertSame($master, $replication->getConnectionByCommand(
             Command\RawCommand::create('set', 'key', 'value')
         ));
 
-        $this->assertSame($master, $replication->getConnection(
+        $this->assertSame($master, $replication->getConnectionByCommand(
             Command\RawCommand::create('del', 'key')
         ));
     }
@@ -864,11 +864,11 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $this->assertSame($slave1, $replication->getConnection(
+        $this->assertSame($slave1, $replication->getConnectionByCommand(
             Command\RawCommand::create('get', 'key')
         ));
 
-        $this->assertSame($slave1, $replication->getConnection(
+        $this->assertSame($slave1, $replication->getConnectionByCommand(
             Command\RawCommand::create('exists', 'key')
         ));
     }
@@ -911,15 +911,15 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->add($master);
         $replication->add($slave1);
 
-        $this->assertSame($slave1, $replication->getConnection(
+        $this->assertSame($slave1, $replication->getConnectionByCommand(
             Command\RawCommand::create('exists', 'key')
         ));
 
-        $this->assertSame($master, $replication->getConnection(
+        $this->assertSame($master, $replication->getConnectionByCommand(
             Command\RawCommand::create('set', 'key', 'value')
         ));
 
-        $this->assertSame($master, $replication->getConnection(
+        $this->assertSame($master, $replication->getConnectionByCommand(
             Command\RawCommand::create('get', 'key')
         ));
     }
@@ -950,7 +950,7 @@ class SentinelReplicationTest extends PredisTestCase
 
         $replication->add($master);
 
-        $replication->getConnection(Command\RawCommand::create('del', 'key'));
+        $replication->getConnectionByCommand(Command\RawCommand::create('del', 'key'));
     }
 
     /**
@@ -996,7 +996,7 @@ class SentinelReplicationTest extends PredisTestCase
 
         $replication->add($master);
 
-        $replication->getConnection(Command\RawCommand::create('get', 'key'));
+        $replication->getConnectionByCommand(Command\RawCommand::create('get', 'key'));
     }
 
     /**
