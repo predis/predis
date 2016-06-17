@@ -19,6 +19,12 @@ v2.0.0 (201x-xx-xx)
   Note that both the `cluster` and `replication` options now return a closure
   acting as initializer instead of an aggregate connection instance.
 
+- Added the new `Predis\Cluster\Hash\PhpiredisCRC16` class using ext-phpiredis
+  to speed-up the generation of the CRC16 hash of keys for redis-cluster. Predis
+  automatically uses this class when ext-phpiredis is loaded, but it is possible
+  to configure the hash generator using the new `crc16` client option (accepted
+  values `predis`, `phpiredis` or an hash generator instance).
+
 - Client option classes now live in the `Predis\Configuration\Option` namespace.
 
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`
