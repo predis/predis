@@ -351,34 +351,6 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanAssignConnectionsToCustomSlots()
-    {
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
-        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
-        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
-
-        $cluster = new RedisCluster(new Connection\Factory());
-
-        $cluster->add($connection1);
-        $cluster->add($connection2);
-        $cluster->add($connection3);
-
-        $cluster->setSlots(0, 1364, '127.0.0.1:6379');
-        $cluster->setSlots(1365, 2729, '127.0.0.1:6380');
-        $cluster->setSlots(2730, 4095, '127.0.0.1:6381');
-
-        $expectedMap = array_merge(
-            array_fill(0, 1365, '127.0.0.1:6379'),
-            array_fill(1364, 1365, '127.0.0.1:6380'),
-            array_fill(2729, 1366, '127.0.0.1:6381')
-        );
-
-        $this->assertSame($expectedMap, $cluster->getSlotsMap());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testAddingConnectionResetsSlotsMap()
     {
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
@@ -388,12 +360,14 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->add($connection1);
 
-        $cluster->setSlots(0, 4095, '127.0.0.1:6379');
-        $this->assertSame(array_fill(0, 4096, '127.0.0.1:6379'), $cluster->getSlotsMap());
+        $slotmap = $cluster->getSlotMap();
+        $slotmap->setSlots(0, 5460, '127.0.0.1:6379');
+
+        $this->assertSame(array_fill(0, 5461, '127.0.0.1:6379'), $slotmap->toArray());
 
         $cluster->add($connection2);
 
-        $this->assertEmpty($cluster->getSlotsMap());
+        $this->assertCount(0, $slotmap);
     }
 
     /**
@@ -409,18 +383,20 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $cluster->setSlots(0, 2047, '127.0.0.1:6379');
-        $cluster->setSlots(2048, 4095, '127.0.0.1:6380');
+        $slotmap = $cluster->getSlotMap();
+        $slotmap->setSlots(0, 5460, '127.0.0.1:6379');
+        $slotmap->setSlots(5461, 10921, '127.0.0.1:6380');
 
         $expectedMap = array_merge(
-            array_fill(0, 2048, '127.0.0.1:6379'),
-            array_fill(2048, 2048, '127.0.0.1:6380')
+            array_fill(0, 5461, '127.0.0.1:6379'),
+            array_fill(5460, 5461, '127.0.0.1:6380')
         );
 
-        $this->assertSame($expectedMap, $cluster->getSlotsMap());
+        $this->assertSame($expectedMap, $slotmap->toArray());
 
         $cluster->remove($connection1);
-        $this->assertEmpty($cluster->getSlotsMap());
+
+        $this->assertCount(0, $slotmap);
     }
 
     /**
@@ -438,7 +414,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $cluster->buildSlotsMap();
+        $cluster->buildSlotMap();
 
         $expectedMap = array_merge(
             array_fill(0, 5461, '127.0.0.1:6379'),
@@ -446,7 +422,8 @@ class RedisClusterTest extends PredisTestCase
             array_fill(10921, 5462, '127.0.0.1:6381')
         );
 
-        $actualMap = $cluster->getSlotsMap();
+        $actualMap = $cluster->getSlotMap()->toArray();
+
         ksort($actualMap);
 
         $this->assertSame($expectedMap, $actualMap);
@@ -467,7 +444,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $cluster->buildSlotsMap();
+        $cluster->buildSlotMap();
 
         $expectedMap = array_merge(
             array_fill(0, 5461, '127.0.0.1:6379'),
@@ -479,7 +456,8 @@ class RedisClusterTest extends PredisTestCase
             array_fill(11000, 5383, '127.0.0.1:6381')
         );
 
-        $actualMap = $cluster->getSlotsMap();
+        $actualMap = $cluster->getSlotMap()->toArray();
+
         ksort($actualMap);
 
         $this->assertSame($expectedMap, $actualMap);
@@ -504,7 +482,7 @@ class RedisClusterTest extends PredisTestCase
         $this->assertSame($connection2, $cluster->getConnectionBySlot(5461));
         $this->assertSame($connection3, $cluster->getConnectionBySlot(10922));
 
-        $cluster->setSlots(5461, 7096, '127.0.0.1:6380');
+        $cluster->getSlotMap()->setSlots(5461, 7096, '127.0.0.1:6380');
         $this->assertSame($connection2, $cluster->getConnectionBySlot(5461));
     }
 
@@ -679,7 +657,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRetriesExecutingCommandOnConnectionFailureButDoNotAskSlotsMapWhenDisabled()
+    public function testRetriesExecutingCommandOnConnectionFailureButDoNotAskSlotMapWhenDisabled()
     {
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5500');
         $connection1
@@ -766,7 +744,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAskSlotsMapReturnEmptyArrayOnEmptyConnectionsPool()
+    public function testAskSlotMapReturnEmptyArrayOnEmptyConnectionsPool()
     {
         $factory = $this->getMock('Predis\Connection\FactoryInterface');
         $factory
@@ -774,14 +752,15 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         $cluster = new RedisCluster($factory);
+        $cluster->askSlotMap();
 
-        $this->assertEmpty($cluster->askSlotsMap());
+        $this->assertCount(0, $cluster->getSlotMap());
     }
 
     /**
      * @group disconnected
      */
-    public function testAskSlotsMapRetriesOnDifferentNodeOnConnectionFailure()
+    public function testAskSlotMapRetriesOnDifferentNodeOnConnectionFailure()
     {
         $slotsmap = array(
             array(0, 5460, array('127.0.0.1', 9381), array()),
@@ -836,7 +815,9 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $this->assertCount(16384, $cluster->askSlotsMap());
+        $cluster->askSlotMap();
+
+        $this->assertCount(16384, $cluster->getSlotMap());
     }
 
     /**
@@ -844,7 +825,7 @@ class RedisClusterTest extends PredisTestCase
      * @expectedException \Predis\Connection\ConnectionException
      * @expectedExceptionMessage Unknown connection error [127.0.0.1:6382]
      */
-    public function testAskSlotsMapHonorsRetryLimitOnMultipleConnectionFailures()
+    public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures()
     {
         $slotsmap = array(
             array(0, 5460, array('127.0.0.1', 9381), array()),
@@ -897,7 +878,7 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->setRetryLimit(1);
 
-        $cluster->askSlotsMap();
+        $cluster->askSlotMap();
     }
 
     /**
@@ -1190,7 +1171,7 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->add($connection1);
 
-        $cluster->askSlotsMap();
+        $cluster->askSlotMap();
 
         $this->assertSame($cluster->getConnectionBySlot('6144'), $connection1);
     }
@@ -1198,7 +1179,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAskSlotsMapToRedisClusterOnMovedResponseByDefault()
+    public function testAskSlotMapToRedisClusterOnMovedResponseByDefault()
     {
         $cmdGET = Command\RawCommand::create('GET', 'node:1001');
         $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
@@ -1223,7 +1204,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->will($this->returnValue($rspSlotsArray));
         $connection2
-            ->expects($this->at(2))
+            ->expects($this->at(3))
             ->method('executeCommand')
             ->with($cmdGET)
             ->will($this->returnValue('foobar'));
@@ -1278,7 +1259,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $cluster->buildSlotsMap();
+        $cluster->buildSlotMap();
 
         $unserialized = unserialize(serialize($cluster));
 
