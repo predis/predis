@@ -292,6 +292,17 @@ class RedisStrategyTest extends PredisTestCase
         $this->assertNotNull($strategy->getSlot($command));
     }
 
+    /**
+     * @group disconnected
+     * @expectedException \Predis\NotSupportedException
+     * @expectedExceptionMessage Predis\Cluster\RedisStrategy does not provide an external distributor
+     */
+    public function testThrowsExceptionOnGetDistributorMethod()
+    {
+        $strategy = $this->getClusterStrategy();
+        $strategy->getDistributor();
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
