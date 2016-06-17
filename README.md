@@ -223,7 +223,7 @@ to `master`) and one or more servers acting as slaves:
 
 ```php
 $parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
-$options    = ['replication' => true];
+$options    = ['replication' => 'predis'];
 
 $client = new Predis\Client($parameters, $options);
 ```
