@@ -33,7 +33,7 @@ class Parameters implements ParametersInterface
      */
     public function __construct(array $parameters = array())
     {
-        $this->parameters = $this->filter($parameters) + $this->getDefaults();
+        $this->parameters = $parameters + $this->getDefaults();
     }
 
     /**
@@ -134,18 +134,6 @@ class Parameters implements ParametersInterface
     public function toArray()
     {
         return $this->parameters;
-    }
-
-    /**
-     * Validates and converts each value of the connection parameters array.
-     *
-     * @param array $parameters Connection parameters.
-     *
-     * @return array
-     */
-    protected function filter(array $parameters)
-    {
-        return $parameters ?: array();
     }
 
     /**
