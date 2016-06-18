@@ -47,8 +47,8 @@ LUA;
 // ------------------------------------------------------------------------- //
 
 $parameters = array(
-    'tcp://127.0.0.1:6379/?alias=master',
-    'tcp://127.0.0.1:6380/?alias=slave',
+    'tcp://127.0.0.1:6381?role=master&database=15',
+    'tcp://127.0.0.1:6382?role=slave&alias=slave-01&database=15',
 );
 
 $options = array(
@@ -76,7 +76,7 @@ $client = new Predis\Client($parameters, $options);
 $hashes = $client->hmgetall('metavars', 'servers');
 
 $replication = $client->getConnection();
-$stillOnSlave = $replication->getCurrent() === $replication->getConnectionById('slave');
+$stillOnSlave = $replication->getCurrent() === $replication->getConnectionByAlias('slave-01');
 
 echo 'Is still on slave? ', $stillOnSlave ? 'YES!' : 'NO!', PHP_EOL;
 var_export($hashes);

@@ -27,18 +27,18 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testAddingConnectionsToReplication()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
         $replication->add($slave1);
         $replication->add($slave2);
 
-        $this->assertSame($master, $replication->getConnectionById('master'));
-        $this->assertSame($slave1, $replication->getConnectionById('slave1'));
-        $this->assertSame($slave2, $replication->getConnectionById('slave2'));
+        $this->assertSame($master, $replication->getConnectionById('127.0.0.1:6379'));
+        $this->assertSame($slave1, $replication->getConnectionById('127.0.0.1:6380'));
+        $this->assertSame($slave2, $replication->getConnectionById('127.0.0.1:6381'));
 
         $this->assertSame($master, $replication->getMaster());
         $this->assertSame(array($slave1, $slave2), $replication->getSlaves());
@@ -47,11 +47,26 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAddingConnectionsWithoutRoleParameterDefaultsToSlaveRole()
+    {
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($slave1);
+        $replication->add($slave2);
+
+        $this->assertSame(array($slave1, $slave2), $replication->getSlaves());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testRemovingConnectionsFromReplication()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -67,17 +82,80 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAddingConnectionsToReplicationWithoutAliasesResultsInCustomId()
+    public function testGetConnectionByIdOnEmptyReplication()
     {
-        $slave1 = $this->getMockConnection('tcp://host1');
-        $slave2 = $this->getMockConnection('tcp://host2:6380');
+        $replication = new MasterSlaveReplication();
+
+        $this->assertNull($replication->getConnectionById('127.0.0.1:6379'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByAlias()
+    {
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6379?alias=aliased');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
         $replication = new MasterSlaveReplication();
         $replication->add($slave1);
         $replication->add($slave2);
 
-        $this->assertSame($slave1, $replication->getConnectionById('slave-host1:6379'));
-        $this->assertSame($slave2, $replication->getConnectionById('slave-host2:6380'));
+        $this->assertSame($slave1, $replication->getConnectionByAlias('aliased'));
+        $this->assertNull($replication->getConnectionByAlias('127.0.0.1:6380'));
+        $this->assertNull($replication->getConnectionByAlias('unkswn'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByAliasOnEmptyReplication()
+    {
+        $replication = new MasterSlaveReplication();
+
+        $this->assertNull($replication->getConnectionByAlias('unknown'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByRole()
+    {
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $this->assertSame($master, $replication->getConnectionByRole('master'));
+        $this->assertSame($slave1, $replication->getConnectionByRole('slave'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByRoleOnEmptyReplication()
+    {
+        $replication = new MasterSlaveReplication();
+
+        $this->assertNull($replication->getConnectionByRole('master'));
+        $this->assertNull($replication->getConnectionByRole('slave'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByRoleUnknown()
+    {
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $this->assertNull($replication->getConnectionByRole('unknown'));
     }
 
     /**
@@ -96,12 +174,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testConnectsToOneOfSlaves()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->never())
             ->method('connect');
 
-        $slave = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->once())
             ->method('connect');
@@ -118,7 +196,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testConnectsToMasterOnMissingSlaves()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -132,13 +210,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testIsConnectedReturnsTrueIfAtLeastOneConnectionIsOpen()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->never())
             ->method('isConnected')
             ->will($this->returnValue(false));
 
-        $slave = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->once())
             ->method('isConnected')
@@ -157,13 +235,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testIsConnectedReturnsFalseIfAllConnectionsAreClosed()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->any())
             ->method('isConnected')
             ->will($this->returnValue(false));
 
-        $slave = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->any())
             ->method('isConnected')
@@ -186,12 +264,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testDisconnectForcesCurrentConnectionToDisconnect()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('disconnect');
 
-        $slave = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->once())
             ->method('disconnect');
@@ -206,10 +284,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSwitchConnectionByAlias()
+    public function testCanSwitchConnection()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -217,10 +295,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
         $this->assertNull($replication->getCurrent());
 
-        $replication->switchTo('master');
+        $replication->switchTo($master);
         $this->assertSame($master, $replication->getCurrent());
 
-        $replication->switchTo('slave1');
+        $replication->switchTo($slave1);
         $this->assertSame($slave1, $replication->getCurrent());
     }
 
@@ -229,14 +307,16 @@ class MasterSlaveReplicationTest extends PredisTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid connection or connection not found.
      */
-    public function testThrowsErrorWhenSwitchingToUnknownConnectionByAlias()
+    public function testThrowsErrorWhenSwitchingToConnectionNotInPool()
     {
         $replication = new MasterSlaveReplication();
 
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
-        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6380?role=slave'));
 
-        $replication->switchTo('unknown');
+        $unknown = $this->getMockConnection('tcp://127.0.0.1:6381');
+
+        $replication->switchTo($unknown);
     }
 
     /**
@@ -244,8 +324,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testCanSwitchConnectionByInstance()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -269,10 +349,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $replication = new MasterSlaveReplication();
 
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
-        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6380?role=slave'));
 
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
         $replication->switchTo($slave2);
     }
@@ -282,9 +362,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testCanSwitchToMaster()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -305,7 +385,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined()
     {
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -321,8 +401,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testCanSwitchToRandomSlave()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -342,7 +422,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
 
@@ -358,8 +438,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -380,8 +460,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -402,7 +482,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
 
@@ -418,12 +498,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSwitchesFromSlaveToMasterOnWriteRequestss()
+    public function testSwitchesFromSlaveToMasterOnWriteRequests()
     {
         $commands = $this->getCommandFactory();
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave1');
 
         $replication = new MasterSlaveReplication();
 
@@ -449,13 +529,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdExists = $commands->createCommand('exists', array('foo'));
         $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('writeRequest')
             ->with($cmdSet);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('writeRequest')
@@ -478,13 +558,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdExists = $commands->createCommand('exists', array('foo'));
         $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('readResponse')
             ->with($cmdSet);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('readResponse')
@@ -508,13 +588,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdExists = $commands->createCommand('exists', array('foo'));
         $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdSet);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -537,13 +617,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdWatch = $commands->createCommand('watch', array('foo'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdWatch);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->never())
             ->method('executeCommand');
@@ -564,13 +644,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdMulti = $commands->createCommand('multi');
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdMulti);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->never())
             ->method('executeCommand');
@@ -591,13 +671,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdEval = $commands->createCommand('eval', array("return redis.call('info')"));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdEval);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->never())
             ->method('executeCommand');
@@ -619,13 +699,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdSortNormal = $commands->createCommand('sort', array('key'));
         $cmdSortStore = $commands->createCommand('sort', array('key', array('store' => 'key:store')));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdSortStore);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -648,12 +728,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->createCommand('exists', array('key'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->never())
             ->method('executeCommand');
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave&role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -662,7 +742,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
                 new Connection\ConnectionException($slave1)
             ));
 
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave&alias=slave2');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
@@ -680,8 +760,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $response = $replication->executeCommand($cmdExists);
 
         $this->assertSame(1, $response);
-        $this->assertNull($replication->getConnectionById('slave1'));
-        $this->assertSame($slave2, $replication->getConnectionById('slave2'));
+        $this->assertNull($replication->getConnectionByAlias('slave1'));
+        $this->assertSame($slave2, $replication->getConnectionByAlias('slave2'));
     }
 
     /**
@@ -692,21 +772,21 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->createCommand('exists', array('key'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
             ->will($this->returnValue(1));
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
             ->will($this->throwException(new Connection\ConnectionException($slave1)));
 
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
@@ -726,8 +806,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $response = $replication->executeCommand($cmdExists);
 
         $this->assertSame(1, $response);
-        $this->assertNull($replication->getConnectionById('slave1'));
-        $this->assertNull($replication->getConnectionById('slave2'));
+        $this->assertNull($replication->getConnectionById('127.0.0.1:6380'));
+        $this->assertNull($replication->getConnectionById('127.0.0.1:6381'));
     }
 
     /**
@@ -738,7 +818,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->createCommand('exists', array('key'));
 
-        $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6379?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -764,7 +844,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
-        $slave1 = $this->getMockConnection('tcp://host1?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6379?role=slave');
         $slave1
             ->expects($this->never())
             ->method('executeCommand');
@@ -781,11 +861,11 @@ class MasterSlaveReplicationTest extends PredisTestCase
      */
     public function testDiscardsSlaveWhenRespondsLOADINGAndExecutesReadOnlyCommandOnNextSlave()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master->expects($this->never())
                ->method('executeCommand');
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -796,7 +876,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
                 new Response\Error('LOADING')
             ));
 
-        $slave2 = $this->getMockConnection('tcp://host3?alias=slave2');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
@@ -818,8 +898,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
         );
 
         $this->assertSame(1, $response);
-        $this->assertNull($replication->getConnectionById('slave1'));
-        $this->assertSame($slave2, $replication->getConnectionById('slave2'));
+        $this->assertNull($replication->getConnectionById('127.0.0.1:6380'));
+        $this->assertSame($slave2, $replication->getConnectionById('127.0.0.1:6381'));
     }
 
     /**
@@ -831,7 +911,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
@@ -840,7 +920,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
                 new Connection\ConnectionException($master)
             ));
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->never())
             ->method('executeCommand');
@@ -864,8 +944,8 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
         $replication = new MasterSlaveReplication();
 
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
-        $replication->add($this->getMockConnection('tcp://host2?alias=slave1'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6380?role=slave'));
 
         $replication->getConnectionByCommand($cmd);
     }
@@ -879,13 +959,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdSet = $commands->createCommand('set', array('foo', 'bar'));
         $cmdGet = $commands->createCommand('get', array('foo'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdGet);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -912,13 +992,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdExistsFoo = $commands->createCommand('exists', array('foo'));
         $cmdExistsBar = $commands->createCommand('exists', array('bar'));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExistsBar);
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
@@ -951,12 +1031,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $cmdEval = $commands->createCommand('eval', array($script = "return redis.call('info');"));
         $cmdEvalSha = $commands->createCommand('evalsha', array($scriptSHA1 = sha1($script)));
 
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->never())
             ->method('executeCommand');
 
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->exactly(2))
             ->method('executeCommand')
@@ -986,7 +1066,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $replication = new MasterSlaveReplication();
 
-        $replication->add($this->getMockConnection('tcp://host1?alias=master'));
+        $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
 
         $replication->discover();
     }
@@ -999,7 +1079,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $connFactory = new Connection\Factory();
         $cmdInfo = Command\RawCommand::create('INFO', 'REPLICATION');
 
-        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
         $master
             ->expects($this->once())
             ->method('executeCommand')
@@ -1040,9 +1120,9 @@ repl_backlog_histlen:12978
     {
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
 
-        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
         $connFactory = $this->getMock('Predis\Connection\Factory');
         $connFactory
@@ -1051,7 +1131,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6381',
-                'alias' => 'master',
+                'role' => 'master',
             ))
             ->will($this->returnValue($master));
         $connFactory
@@ -1060,6 +1140,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6382',
+                'role' => 'slave',
             ))
             ->will($this->returnValue($slave1));
         $connFactory
@@ -1068,6 +1149,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6383',
+                'role' => 'slave',
             ))
             ->will($this->returnValue($slave2));
 
@@ -1135,10 +1217,10 @@ repl_backlog_histlen:12978
     {
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
 
-        $masterKO = $this->getMockConnection('tcp://127.0.0.1:7381?alias=master');
-        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
-        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
+        $masterKO = $this->getMockConnection('tcp://127.0.0.1:7381?role=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
         $connFactory = $this->getMock('Predis\Connection\Factory');
         $connFactory
@@ -1147,7 +1229,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6381',
-                'alias' => 'master',
+                'role' => 'master',
             ))
             ->will($this->returnValue($master));
         $connFactory
@@ -1156,6 +1238,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6382',
+                'role' => 'slave',
             ))
             ->will($this->returnValue($slave1));
         $connFactory
@@ -1164,6 +1247,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6383',
+                'role' => 'slave',
             ))
             ->will($this->returnValue($slave2));
 
@@ -1240,7 +1324,7 @@ repl_backlog_histlen:12978
      */
     public function testAutomaticDiscoveryRequiresConnectionFactory()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
 
@@ -1257,9 +1341,9 @@ repl_backlog_histlen:12978
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
         $cmdExists = $command = Command\RawCommand::create('EXISTS', 'key');
 
-        $slaveKO = $this->getMockConnection('tcp://127.0.0.1:7382?alias=slaveKO');
-        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
-        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
+        $slaveKO = $this->getMockConnection('tcp://127.0.0.1:7382?role=slave');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
 
         $connFactory = $this->getMock('Predis\Connection\Factory');
         $connFactory
@@ -1268,6 +1352,7 @@ repl_backlog_histlen:12978
             ->with(array(
                 'host' => '127.0.0.1',
                 'port' => '6382',
+                'role' => 'slave',
             ))
             ->will($this->returnValue($slave1));
 
@@ -1331,8 +1416,8 @@ repl_backlog_histlen:12978
      */
     public function testCanBeSerialized()
     {
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
 
@@ -1341,7 +1426,7 @@ repl_backlog_histlen:12978
 
         $unserialized = unserialize(serialize($replication));
 
-        $this->assertEquals($master, $unserialized->getConnectionById('master'));
-        $this->assertEquals($slave1, $unserialized->getConnectionById('slave1'));
+        $this->assertEquals($master, $unserialized->getConnectionByRole('master'));
+        $this->assertEquals($slave1, $unserialized->getConnectionByRole('slave'));
     }
 }

@@ -45,6 +45,16 @@ class MasterSlaveReplication implements ReplicationInterface
     protected $slaves = array();
 
     /**
+     * @var NodeConnectionInterface[]
+     */
+    protected $pool = array();
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
+    protected $aliases = array();
+
+    /**
      * @var NodeConnectionInterface
      */
     protected $current;
@@ -105,13 +115,20 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function add(NodeConnectionInterface $connection)
     {
-        $alias = $connection->getParameters()->alias;
+        $parameters = $connection->getParameters();
 
-        if ($alias === 'master') {
+        if ('master' === $parameters->role) {
             $this->master = $connection;
         } else {
-            $this->slaves[$alias ?: "slave-$connection"] = $connection;
+            // everything else is considered a slvave.
+            $this->slaves[] = $connection;
         }
+
+        if (isset($parameters->alias)) {
+            $this->aliases[$parameters->alias] = $connection;
+        }
+
+        $this->pool[(string) $connection] = $connection;
 
         $this->reset();
     }
@@ -121,21 +138,23 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function remove(NodeConnectionInterface $connection)
     {
-        if ($connection->getParameters()->alias === 'master') {
+        if ($connection === $this->master) {
             $this->master = null;
-            $this->reset();
-
-            return true;
+        } elseif (false !== $id = array_search($connection, $this->slaves, true)) {
+            unset($this->slaves[$id]);
         } else {
-            if (($id = array_search($connection, $this->slaves, true)) !== false) {
-                unset($this->slaves[$id]);
-                $this->reset();
-
-                return true;
-            }
+            return false;
         }
 
-        return false;
+        unset($this->pool[(string) $connection]);
+
+        if ($this->aliases && $alias = $connection->getParameters()->alias) {
+            unset($this->aliases[$alias]);
+        }
+
+        $this->reset();
+
+        return true;
     }
 
     /**
@@ -167,33 +186,52 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($connectionId)
+    public function getConnectionById($id)
     {
-        if ($connectionId === 'master') {
-            return $this->master;
+        if (isset($this->pool[$id])) {
+            return $this->pool[$id];
         }
-
-        if (isset($this->slaves[$connectionId])) {
-            return $this->slaves[$connectionId];
-        }
-
-        return;
     }
 
     /**
-     * Switches the connection in use by the backend to the specified instance
-     * or alias of a connection.
+     * Returns a connection instance by its alias.
      *
-     * @param NodeConnectionInterface|string $connection Instance or alias of a connection.
+     * @param string $alias Connection alias.
+     *
+     * @return NodeConnectionInterface|null
      */
-    public function switchTo($connection)
+    public function getConnectionByAlias($alias)
     {
-        if (!$connection instanceof NodeConnectionInterface) {
-            $connection = $this->getConnectionById($connection);
+        if (isset($this->aliases[$alias])) {
+            return $this->aliases[$alias];
         }
+    }
 
-        if (!$connection) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+    /**
+     * Returns a connection by its role.
+     *
+     * @param string $role Connection role (`master` or `slave`)
+     *
+     * @return NodeConnectionInterface|null
+     */
+    public function getConnectionByRole($role)
+    {
+        if ($role === 'master') {
+            return $this->getMaster();
+        } elseif ($role === 'slave') {
+            return $this->pickSlave();
+        }
+    }
+
+    /**
+     * Switches the internal connection in use by the backend.
+     *
+     * @param NodeConnectionInterface $connection Connection instance in the pool.
+     */
+    public function switchTo(NodeConnectionInterface $connection)
+    {
+        if ($connection && $connection === $this->current) {
+            return;
         }
 
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
@@ -208,7 +246,11 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function switchToMaster()
     {
-        $this->switchTo('master');
+        if (!$connection = $this->getConnectionByRole('master')) {
+            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+        }
+
+        $this->switchTo($connection);
     }
 
     /**
@@ -216,7 +258,10 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function switchToSlave()
     {
-        $connection = $this->pickSlave();
+        if (!$connection = $this->getConnectionByRole('slave')) {
+            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+        }
+
         $this->switchTo($connection);
     }
 
@@ -255,7 +300,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getSlaves()
     {
-        return array_values($this->slaves);
+        return $this->slaves;
     }
 
     /**
@@ -309,11 +354,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function disconnect()
     {
-        if ($this->master) {
-            $this->master->disconnect();
-        }
-
-        foreach ($this->slaves as $connection) {
+        foreach ($this->pool as $connection) {
             $connection->disconnect();
         }
     }
@@ -390,6 +431,7 @@ class MasterSlaveReplication implements ReplicationInterface
                 $slaveConnection = $connectionFactory->create(array(
                     'host' => $parameters['host'],
                     'port' => $parameters['port'],
+                    'role' => 'slave',
                 ));
 
                 $this->add($slaveConnection);
@@ -415,7 +457,7 @@ class MasterSlaveReplication implements ReplicationInterface
         $masterConnection = $connectionFactory->create(array(
             'host' => $replication['master_host'],
             'port' => $replication['master_port'],
-            'alias' => 'master',
+            'role' => 'master',
         ));
 
         $this->add($masterConnection);
@@ -507,6 +549,6 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function __sleep()
     {
-        return array('master', 'slaves', 'strategy');
+        return array('master', 'slaves', 'pool', 'aliases', 'strategy');
     }
 }

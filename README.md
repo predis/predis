@@ -218,11 +218,11 @@ the value of a key. Instead of raising a connection error when a slave fails, th
 fall back to a different slave among the ones provided in the configuration.
 
 The basic configuration needed to use the client in replication mode requires one Redis server to be
-identified as the master (this can be done via connection parameters using the `alias` parameter set
-to `master`) and one or more servers acting as slaves:
+identified as the master (this can be done via connection parameters by setting the `role` parameter
+to `master`) and one or more slaves (in this case setting `role` to `slave` for slaves is optional):
 
 ```php
-$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$parameters = ['tcp://10.0.0.1?role=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
 $options    = ['replication' => 'predis'];
 
 $client = new Predis\Client($parameters, $options);
@@ -264,7 +264,7 @@ when certain Lua scripts do not perform write operations it is possible to provi
 the client to stick with slaves for their execution:
 
 ```php
-$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$parameters = ['tcp://10.0.0.1?role=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
 $options    = ['replication' => function () {
     // Set scripts that won't trigger a switch from a slave to the master node.
     $strategy = new Predis\Replication\ReplicationStrategy();

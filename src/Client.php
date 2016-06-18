@@ -215,7 +215,7 @@ class Client implements ClientInterface, \IteratorAggregate
     {
         $selector = strtolower($selector);
 
-        if (!in_array($selector, array('id', 'key', 'slot', 'command'))) {
+        if (!in_array($selector, array('id', 'key', 'slot', 'role', 'alias', 'command'))) {
             throw new \InvalidArgumentException("Invalid selector type: `$selector`");
         }
 

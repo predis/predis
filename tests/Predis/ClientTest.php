@@ -273,13 +273,13 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithArrayAndOptionReplication()
     {
-        $arg1 = array('tcp://host1?alias=master', 'tcp://host2?alias=slave');
+        $arg1 = array('tcp://127.0.0.1:6379?role=master', 'tcp://127.0.0.1:6380?role=slave');
         $arg2 = array('replication' => 'predis');
         $client = new Client($arg1, $arg2);
 
         $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $connection = $client->getConnection());
-        $this->assertSame('host1', $connection->getConnectionById('master')->getParameters()->host);
-        $this->assertSame('host2', $connection->getConnectionById('slave')->getParameters()->host);
+        $this->assertSame('127.0.0.1:6379', (string) $connection->getConnectionByRole('master'));
+        $this->assertSame('127.0.0.1:6380', (string) $connection->getConnectionByRole('slave'));
     }
 
     /**
@@ -731,11 +731,11 @@ class ClientTest extends PredisTestCase
         $aggregate
             ->expects($this->once())
             ->method('getConnectionById')
-            ->with('nodeXX')
+            ->with('127.0.0.1:6379')
             ->will($this->returnValue($connection));
 
         $client = new Client($aggregate);
-        $nodeClient = $client->getClientBy('id', 'nodeXX');
+        $nodeClient = $client->getClientBy('id', '127.0.0.1:6379');
 
         $this->assertSame($connection, $nodeClient->getConnection());
         $this->assertSame($client->getOptions(), $nodeClient->getOptions());
@@ -744,7 +744,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Cannot find a connection by id matching `nodeXX`
+     * @expectedExceptionMessage Cannot find a connection by id matching `127.0.0.1:7000`
      */
     public function testGetClientByMethodThrowsExceptionSelectingConnectionByUnknownId()
     {
@@ -752,11 +752,34 @@ class ClientTest extends PredisTestCase
         $aggregate
             ->expects($this->once())
             ->method('getConnectionById')
-            ->with('nodeXX')
+            ->with('127.0.0.1:7000')
             ->will($this->returnValue(null));
 
         $client = new Client($aggregate);
-        $client->getClientBy('id', 'nodeXX');
+        $client->getClientBy('id', '127.0.0.1:7000');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientByMethodSupportsSelectingConnectionByAlias()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionByAlias'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionByAlias')
+            ->with('myalias')
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('alias', 'myalias');
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
     }
 
     /**
@@ -800,6 +823,29 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('slot', 5460);
+
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame($client->getOptions(), $nodeClient->getOptions());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetClientByMethodSupportsSelectingConnectionByRole()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+
+        $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->setMethods(array('getConnectionByRole'))
+            ->getMockForAbstractClass();
+        $aggregate
+            ->expects($this->once())
+            ->method('getConnectionByRole')
+            ->with('master')
+            ->will($this->returnValue($connection));
+
+        $client = new Client($aggregate);
+        $nodeClient = $client->getClientBy('role', 'master');
 
         $this->assertSame($connection, $nodeClient->getConnection());
         $this->assertSame($client->getOptions(), $nodeClient->getOptions());

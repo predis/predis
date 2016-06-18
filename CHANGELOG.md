@@ -25,6 +25,17 @@ v2.0.0 (201x-xx-xx)
   to configure the hash generator using the new `crc16` client option (accepted
   values `predis`, `phpiredis` or an hash generator instance).
 
+- Replication backends now use the `role` parameter instead of `alias` in order
+  to distinguish the role of a connection. Accepted values are `master`, `slave`
+  and, for redis-sentinel, `sentinel`. This led to a redesign of how connections
+  can be retrieved from replication backends: the method getConnectionById() now
+  retrieves a connection only by its ID (ip:port pair), to get a connection by
+  its alias there is the new method getConnectionByAlias(). This method is not
+  supported by the redis-sentinel backend due to its dynamic nature (connections
+  are retrieved and initialized at runtime from sentinels) but it is possible to
+  get a single connection from the pool by using its ID. It is also possible to
+  retrive a connection by role using the method getConnectionByRole().
+
 - Client option classes now live in the `Predis\Configuration\Option` namespace.
 
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`

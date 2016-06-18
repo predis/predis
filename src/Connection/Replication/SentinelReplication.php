@@ -40,6 +40,11 @@ class SentinelReplication implements ReplicationInterface
     protected $slaves = array();
 
     /**
+     * @var NodeConnectionInterface[]
+     */
+    protected $pool = array();
+
+    /**
      * @var NodeConnectionInterface
      */
     protected $current;
@@ -183,6 +188,7 @@ class SentinelReplication implements ReplicationInterface
 
         $this->master = null;
         $this->slaves = array();
+        $this->pool = array();
     }
 
     /**
@@ -190,13 +196,20 @@ class SentinelReplication implements ReplicationInterface
      */
     public function add(NodeConnectionInterface $connection)
     {
-        $alias = $connection->getParameters()->alias;
+        $parameters = $connection->getParameters();
 
-        if ($alias === 'master') {
+        if ('master' === $role = $parameters->role) {
             $this->master = $connection;
+        } elseif ('sentinel' === $role) {
+            $this->sentinels[] = $connection;
+            // sentinels are not considered part of the pool.
+            return;
         } else {
-            $this->slaves[$alias ?: count($this->slaves)] = $connection;
+            // everything else is considered a slave.
+            $this->slaves[] = $connection;
         }
+
+        $this->pool[(string) $connection] = $connection;
 
         $this->reset();
     }
@@ -208,19 +221,21 @@ class SentinelReplication implements ReplicationInterface
     {
         if ($connection === $this->master) {
             $this->master = null;
-            $this->reset();
-
-            return true;
-        }
-
-        if (false !== $id = array_search($connection, $this->slaves, true)) {
+        } elseif (false !== $id = array_search($connection, $this->slaves, true)) {
             unset($this->slaves[$id]);
-            $this->reset();
+        } elseif (false !== $id = array_search($connection, $this->sentinels, true)) {
+            unset($this->sentinels[$id]);
 
             return true;
+        } else {
+            return false;
         }
 
-        return false;
+        unset($this->pool[(string) $connection]);
+
+        $this->reset();
+
+        return true;
     }
 
     /**
@@ -296,6 +311,7 @@ class SentinelReplication implements ReplicationInterface
                     $this->sentinels[] = array(
                         'host' => $sentinel[3],
                         'port' => $sentinel[5],
+                        'role' => 'sentinel',
                     );
                 }
             } catch (ConnectionException $exception) {
@@ -358,7 +374,7 @@ class SentinelReplication implements ReplicationInterface
         return array(
             'host' => $payload[0],
             'port' => $payload[1],
-            'alias' => 'master',
+            'role' => 'master',
         );
     }
 
@@ -392,7 +408,7 @@ class SentinelReplication implements ReplicationInterface
             $slaves[] = array(
                 'host' => $slave[3],
                 'port' => $slave[5],
-                'alias' => "slave-$slave[1]",
+                'role' => 'slave',
             );
         }
 
@@ -467,7 +483,7 @@ class SentinelReplication implements ReplicationInterface
             }
         }
 
-        return array_values($this->slaves ?: array());
+        return array_values($this->slaves);
     }
 
     /**
@@ -548,28 +564,41 @@ class SentinelReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($connectionId)
+    public function getConnectionById($id)
     {
-        if ($connectionId === 'master') {
-            return $this->getMaster();
-        }
-
-        $this->getSlaves();
-
-        if (isset($this->slaves[$connectionId])) {
-            return $this->slaves[$connectionId];
+        if (isset($this->pool[$id])) {
+            return $this->pool[$id];
         }
     }
 
     /**
-     * {@inheritdoc}
+     * Returns a connection by its role.
+     *
+     * @param string $role Connection role (`master`, `slave` or `sentinel`)
+     *
+     * @return NodeConnectionInterface|null
      */
-    public function switchTo($connection)
+    public function getConnectionByRole($role)
     {
-        if (!$connection instanceof NodeConnectionInterface) {
-            $connection = $this->getConnectionById($connection);
+        if ($role === 'master') {
+            return $this->getMaster();
+        } elseif ($role === 'slave') {
+            return $this->pickSlave();
+        } elseif ($role === 'sentinel') {
+            return $this->getSentinelConnection();
         }
+    }
 
+    /**
+     * Switches the internal connection in use by the backend.
+     *
+     * Sentinel connections are not considered as part of the pool, meaning that
+     * trying to switch to a sentinel will throw an exception.
+     *
+     * @param NodeConnectionInterface $connection Connection instance in the pool.
+     */
+    public function switchTo(NodeConnectionInterface $connection)
+    {
         if ($connection && $connection === $this->current) {
             return;
         }
@@ -592,7 +621,8 @@ class SentinelReplication implements ReplicationInterface
      */
     public function switchToMaster()
     {
-        $this->switchTo('master');
+        $connection = $this->getConnectionByRole('master');
+        $this->switchTo($connection);
     }
 
     /**
@@ -600,7 +630,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function switchToSlave()
     {
-        $connection = $this->pickSlave();
+        $connection = $this->getConnectionByRole('slave');
         $this->switchTo($connection);
     }
 
@@ -631,11 +661,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function disconnect()
     {
-        if ($this->master) {
-            $this->master->disconnect();
-        }
-
-        foreach ($this->slaves as $connection) {
+        foreach ($this->pool as $connection) {
             $connection->disconnect();
         }
     }
@@ -714,7 +740,7 @@ class SentinelReplication implements ReplicationInterface
     public function __sleep()
     {
         return array(
-            'master', 'slaves', 'service', 'sentinels', 'connectionFactory', 'strategy',
+            'master', 'slaves', 'pool', 'service', 'sentinels', 'connectionFactory', 'strategy',
         );
     }
 }
