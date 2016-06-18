@@ -104,8 +104,8 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Returns the specified slot range.
      *
-     * @param int $first      Initial slot of the range.
-     * @param int $last       Last slot of the range.
+     * @param int $first Initial slot of the range.
+     * @param int $last  Last slot of the range.
      *
      * @return array
      */
@@ -131,7 +131,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Returns the node assigned to the specified slot
+     * Returns the node assigned to the specified slot.
      *
      * @param int $slot Slot index.
      *
@@ -162,7 +162,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Returns the node assigned to the specified slot
+     * Returns the node assigned to the specified slot.
      *
      * @param int $slot Slot index.
      *
