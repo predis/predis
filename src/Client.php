@@ -40,7 +40,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  */
 class Client implements ClientInterface, \IteratorAggregate
 {
-    const VERSION = '1.1.1';
+    const VERSION = '1.1.2-dev';
 
     protected $connection;
     protected $options;
