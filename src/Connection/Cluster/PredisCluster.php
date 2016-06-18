@@ -27,8 +27,24 @@ use Predis\NotSupportedException;
  */
 class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
-    private $pool;
+    /**
+     * @var NodeConnectionInterface[]
+     */
+    private $pool = array();
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
+    private $aliases = array();
+
+    /**
+     * @var StrategyInterface
+     */
     private $strategy;
+
+    /**
+     * @var Predis\Cluster\Distributor\DistributorInterface
+     */
     private $distributor;
 
     /**
@@ -36,7 +52,6 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function __construct(StrategyInterface $strategy = null)
     {
-        $this->pool = array();
         $this->strategy = $strategy ?: new PredisStrategy();
         $this->distributor = $this->strategy->getDistributor();
     }
@@ -82,14 +97,13 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $parameters = $connection->getParameters();
 
+        $this->pool[(string) $connection] = $connection;
+
         if (isset($parameters->alias)) {
-            $this->pool[$parameters->alias] = $connection;
-        } else {
-            $this->pool[] = $connection;
+            $this->aliases[$parameters->alias] = $connection;
         }
 
-        $weight = isset($parameters->weight) ? $parameters->weight : null;
-        $this->distributor->add($connection, $weight);
+        $this->distributor->add($connection, $parameters->weight);
     }
 
     /**
@@ -97,27 +111,15 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function remove(NodeConnectionInterface $connection)
     {
-        if (($id = array_search($connection, $this->pool, true)) !== false) {
+        if (false !== $id = array_search($connection, $this->pool, true)) {
             unset($this->pool[$id]);
             $this->distributor->remove($connection);
 
+            if ($this->aliases && $alias = $connection->getParameters()->alias) {
+                unset($this->aliases[$alias]);
+            }
+
             return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes a connection instance using its alias or index.
-     *
-     * @param string $connectionID Alias or index of a connection.
-     *
-     * @return bool Returns true if the connection was in the pool.
-     */
-    public function removeById($connectionID)
-    {
-        if ($connection = $this->getConnectionById($connectionID)) {
-            return $this->remove($connection);
         }
 
         return false;
@@ -144,9 +146,37 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function getConnectionById($connectionID)
+    public function getConnectionById($id)
     {
-        return isset($this->pool[$connectionID]) ? $this->pool[$connectionID] : null;
+        if (isset($this->pool[$id])) {
+            return $this->pool[$id];
+        }
+    }
+
+    /**
+     * Returns a connection instance by its alias.
+     *
+     * @param string $alias Connection alias.
+     *
+     * @return NodeConnectionInterface|null
+     */
+    public function getConnectionByAlias($alias)
+    {
+        if (isset($this->aliases[$alias])) {
+            return $this->aliases[$alias];
+        }
+    }
+
+    /**
+     * Retrieves a connection instance by slot.
+     *
+     * @param string $key Key string.
+     *
+     * @return NodeConnectionInterface|null
+     */
+    public function getConnectionBySlot($slot)
+    {
+        return $this->distributor->getBySlot($slot);
     }
 
     /**

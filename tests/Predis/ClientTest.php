@@ -690,7 +690,7 @@ class ClientTest extends PredisTestCase
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
         $client = $this->getMock('Predis\Client', array('dummy'), array($nodes, array('cluster' => 'predis')), 'SubclassedClient');
 
-        $this->assertInstanceOf('SubclassedClient', $client->getClientBy('id', 'node02'));
+        $this->assertInstanceOf('SubclassedClient', $client->getClientBy('alias', 'node02'));
     }
 
     /**
@@ -715,7 +715,7 @@ class ClientTest extends PredisTestCase
             }))
             ->will($this->returnValue('value'));
 
-        $this->assertSame('value', $client->getClientBy('id', 'node02', $callable));
+        $this->assertSame('value', $client->getClientBy('alias', 'node02', $callable));
     }
 
     /**

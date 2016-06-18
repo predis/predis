@@ -36,6 +36,10 @@ v2.0.0 (201x-xx-xx)
   get a single connection from the pool by using its ID. It is also possible to
   retrive a connection by role using the method getConnectionByRole().
 
+- The concept of connection ID (ip:port pair) and connection alias (the `alias`
+  parameter) in `Predis\Connection\Cluster\PredisCluster` has been separated.
+  This change does not affect distribution and it is safe for existing clusters.
+
 - Client option classes now live in the `Predis\Configuration\Option` namespace.
 
 - Classes for Redis commands have been moved into the new `Predis\Command\Redis`
