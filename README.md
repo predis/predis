@@ -177,18 +177,18 @@ are stored in the options container for later use through the library.
 Aggregate connections are the foundation upon which Predis implements clustering and replication and
 they are used to group multiple connections to single Redis nodes and hide the specific logic needed
 to handle them properly depending on the context. Aggregate connections usually require an array of
-connection parameters when creating a new client instance.
+connection parameters along with the appropriate client option when creating a new client instance.
 
 #### Cluster ####
 
-By default, when no specific client options are set and an array of connection parameters is passed
-to the client's constructor, Predis configures itself to work in clustering mode using a traditional
-client-side sharding approach to create a cluster of independent nodes and distribute the keyspace
-among them. This approach needs some form of external health monitoring of nodes and requires manual
-operations to rebalance the keyspace when changing its configuration by adding or removing nodes:
+Predis can be configured to work in clustering mode with a traditional client-side sharding approach
+to create a cluster of independent nodes and distribute the keyspace among them. This approach needs
+some sort of external health monitoring of nodes and requires the keyspace to be rebalanced manually
+when nodes are added or removed:
 
 ```php
 $parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$options    = ['cluster' => 'predis'];
 
 $client = new Predis\Client($parameters);
 ```
