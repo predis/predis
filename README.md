@@ -127,14 +127,16 @@ the rules described on their respective IANA provisional registration documents.
 The actual list of supported connection parameters can vary depending on each connection backend so
 it is recommended to refer to their specific documentation or implementation for details.
 
-When an array of connection parameters is provided, Predis automatically works in cluster mode using
-client-side sharding. Both named arrays and URI strings can be mixed when providing configurations
+Predis can aggregate multiple connections when providing an array of connection parameters and the
+appropriate option to instruct the client about how to aggregate them (clustering, replication or a
+custom aggregation logic). Named arrays and URI strings can be mixed when providing configurations
 for each node:
 
 ```php
 $client = new Predis\Client([
-    'tcp://10.0.0.1?alias=first-node',
-    ['host' => '10.0.0.2', 'alias' => 'second-node'],
+    'tcp://10.0.0.1?alias=first-node', ['host' => '10.0.0.2', 'alias' => 'second-node'],
+], [
+    'cluster' => 'predis',
 ]);
 ```
 
