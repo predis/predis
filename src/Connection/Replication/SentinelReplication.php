@@ -543,9 +543,9 @@ class SentinelReplication implements ReplicationInterface
             $info = $connection->executeCommand(RawCommand::create('INFO'));
             preg_match('#role:([a-zA-Z]+)#m', $info, $matches);
             if (! empty($matches)) {
-                $actualRole = [$matches[1]];
+                $actualRole = array($matches[1]);
             } else {
-                $actualRole = [''];
+                $actualRole = array('');
             }
         }
         if ($role !== $actualRole[0]) {
