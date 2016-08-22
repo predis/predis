@@ -1040,6 +1040,46 @@ class SentinelReplicationTest extends PredisTestCase
 
         $replication->getConnectionByCommand(Command\RawCommand::create('del', 'key'));
     }
+    
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByCommandFallbacksRoleOnOldVersions()
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $master
+            ->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(false));
+        $master
+            ->expects($this->at(3))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(new Response\Error("ERR unknown command 'ROLE'")));
+        
+        $replicationInfo = "# Replication
+            role:master
+            connected_slaves:0
+            master_repl_offset:0
+            repl_backlog_active:0
+            repl_backlog_size:1048576
+            repl_backlog_first_byte_offset:0
+            repl_backlog_histlen:0
+        ";
+        
+        $master
+            ->expects($this->at(4))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('INFO REPLICATION'))
+            ->will($this->returnValue($replicationInfo));
+        $replication = $this->getReplicationConnection('svc', array($sentinel1));
+        
+        $replication->add($master);
+        
+        $replication->getConnectionByCommand(Command\RawCommand::create('del', 'key'));
+    }
 
     /**
      * @group disconnected

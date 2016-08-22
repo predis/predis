@@ -20,7 +20,6 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
-use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 
@@ -539,9 +538,9 @@ class SentinelReplication implements ReplicationInterface
     {
         $role = strtolower($role);
         $actualRole = $connection->executeCommand(RawCommand::create('ROLE'));
-        if (is_object($actualRole) && $actualRole instanceof Error) {
-            $info = $connection->executeCommand(RawCommand::create('INFO'));
-            preg_match('#role:([a-zA-Z]+)#m', $info, $matches);
+        if ($actualRole instanceof ErrorResponseInterface) {
+            $info = $connection->executeCommand(RawCommand::create('INFO REPLICATION'));
+            preg_match('/role:([a-zA-Z]+)/i', $info, $matches);
             if (! empty($matches)) {
                 $actualRole = array($matches[1]);
             } else {
