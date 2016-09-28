@@ -69,7 +69,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     public function isConnected()
     {
-        return isset($this->resource);
+        return isset($this->resource) && !feof($this->resource);
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     public function getResource()
     {
-        if (isset($this->resource)) {
+        if ($this->isConnected()) {
             return $this->resource;
         }
 
