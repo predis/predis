@@ -108,7 +108,7 @@ of suitable [options](http://php.net/manual/context.ssl.php) passed via the `ssl
 $client = new Predis\Client([
   'scheme' => 'tls',
   'ssl'    => ['cafile' => 'private.pem', 'verify_peer' => true],
-]
+]);
 
 // Same set of parameters, but using an URI string:
 $client = new Predis\Client('tls://127.0.0.1?ssl[cafile]=private.pem&ssl[verify_peer]=1');
