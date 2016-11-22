@@ -14,6 +14,7 @@ namespace Predis\Connection\Aggregate;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\ReplicationStrategy;
+use Predis\Connection\ConnectionException;
 
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
@@ -268,7 +269,27 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        return $this->getConnection($command)->executeCommand($command);
+        $connection = $this->getConnection($command);
+        $result     = null;
+        try{
+            $result = $connection->executeCommand($command);
+        }
+        catch(ConnectionException $e){
+            //Only switch to other read-slave if current connection is not master and there is more than 1 read-slave available
+            if($connection != $this->master && count($this->slaves) > 1){
+                foreach($this->slaves as $slave){
+                    if($slave == $connection){
+                        unset($this->slaves[$slave->getParameters()->alias]);
+                    }
+                }
+                $this->current = null;
+                return $this->executeCommand($command);
+            }
+
+            // If no error handling was performed, this block should remain "transparent" (i.e. throw the exception without doing anything)
+            throw $e;
+        }
+        return $result;
     }
 
     /**
