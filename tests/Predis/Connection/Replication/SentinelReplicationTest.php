@@ -1072,7 +1072,7 @@ class SentinelReplicationTest extends PredisTestCase
         $master
             ->expects($this->at(4))
             ->method('executeCommand')
-            ->with($this->isRedisCommand('INFO', ['REPLICATION']))
+            ->with($this->isRedisCommand('INFO', array('REPLICATION')))
             ->will($this->returnValue($replicationInfo));
         $replication = $this->getReplicationConnection('svc', array($sentinel1));
         
