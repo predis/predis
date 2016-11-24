@@ -89,6 +89,11 @@ class StreamConnection extends AbstractConnection
         if (isset($parameters->persistent) && (bool) $parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
             $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+
+            $database = isset($parameters->database) ? $parameters->database : 0;
+            if ($database) {
+                $uri .= '?database='.$database;
+            }
         }
 
         $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
