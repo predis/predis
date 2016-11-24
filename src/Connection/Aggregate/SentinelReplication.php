@@ -558,8 +558,11 @@ class SentinelReplication implements ReplicationInterface
 
         $this->getSlaves();
 
-        if (isset($this->slaves[$connectionId])) {
-            return $this->slaves[$connectionId];
+        // fixed $connectionId is an index
+        $slaves = is_numeric($connectionId) ? array_values($this->slaves) : $this->slaves;
+
+        if (isset($slaves[$connectionId])) {
+            return $slaves[$connectionId];
         }
     }
 

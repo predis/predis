@@ -129,6 +129,8 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertSame($master, $replication->getConnectionById('master'));
         $this->assertSame($slave1, $replication->getConnectionById('slave1'));
         $this->assertSame($slave2, $replication->getConnectionById('slave2'));
+        $this->assertSame($slave1, $replication->getConnectionById(0));
+        $this->assertSame($slave2, $replication->getConnectionById(1));
 
         $this->assertSame($master, $replication->getMaster());
         $this->assertSame(array($slave1, $slave2), $replication->getSlaves());
@@ -658,6 +660,7 @@ class SentinelReplicationTest extends PredisTestCase
 
         $this->assertSame($master, $replication->getConnectionById('master'));
         $this->assertSame($slave1, $replication->getConnectionById('slave1'));
+        $this->assertSame($slave1, $replication->getConnectionById(0));
         $this->assertNull($replication->getConnectionById('unknown'));
     }
 
@@ -1218,6 +1221,8 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertEquals($master, $unserialized->getConnectionById('master'));
         $this->assertEquals($slave1, $unserialized->getConnectionById('slave1'));
         $this->assertEquals($master, $unserialized->getConnectionById('slave2'));
+        $this->assertEquals($slave1, $unserialized->getConnectionById(0));
+        $this->assertEquals($master, $unserialized->getConnectionById(1));
         $this->assertEquals($strategy, $unserialized->getReplicationStrategy());
     }
 
