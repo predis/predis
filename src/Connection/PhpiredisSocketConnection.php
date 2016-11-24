@@ -15,6 +15,8 @@ use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
 
 /**
  * This class provides the implementation of a Predis connection that uses the
@@ -308,7 +310,10 @@ class PhpiredisSocketConnection extends AbstractConnection
     {
         if (parent::connect() && $this->initCommands) {
             foreach ($this->initCommands as $command) {
-                $this->executeCommand($command);
+                $response = $this->executeCommand($command);
+                if ($response instanceof ResponseInterface && $response instanceof ErrorResponseInterface) {
+                    $this->onConnectionError($command->parseResponse($response), 0);
+                }
             }
         }
     }

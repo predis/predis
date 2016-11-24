@@ -14,6 +14,8 @@ namespace Predis\Connection;
 use Predis\Command\CommandInterface;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -157,7 +159,10 @@ class StreamConnection extends AbstractConnection
     {
         if (parent::connect() && $this->initCommands) {
             foreach ($this->initCommands as $command) {
-                $this->executeCommand($command);
+                $response = $this->executeCommand($command);
+                if ($response instanceof ResponseInterface && $response instanceof ErrorResponseInterface) {
+                    $this->onConnectionError($command->parseResponse($response), 0);
+                }
             }
         }
     }
