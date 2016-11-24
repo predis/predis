@@ -273,7 +273,9 @@ class MasterSlaveReplication implements ReplicationInterface
     protected function pickSlave()
     {
         if ($this->slaves) {
-            return $this->slaves[array_rand($this->slaves)];
+            $keys = array_keys($this->slaves);
+            $key = $keys[mt_rand(0, count($keys) - 1)];
+            return $this->slaves[$key];
         }
     }
 

@@ -436,7 +436,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     protected function getRandomConnection()
     {
         if ($this->pool) {
-            return $this->pool[array_rand($this->pool)];
+            $keys = array_keys($this->pool);
+            $key = $keys[mt_rand(0, count($keys) - 1)];
+            return $this->pool[$key];
         }
     }
 
