@@ -144,6 +144,16 @@ class PipelineContext
     }
 
     /**
+     * This method is an alias of execute
+     *
+     * @see self::execute()
+     */
+    public function exec($callable = null)
+    {
+        return $this->execute($callable);
+    }
+
+    /**
      * Handles the actual execution of the whole pipeline.
      *
      * @param mixed $callable Callback for execution.
