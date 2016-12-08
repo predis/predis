@@ -209,7 +209,8 @@ class StreamConnection extends AbstractConnection
         }
 
         $prefix  = $chunk[0];
-        $payload = substr($chunk, 1, -2);
+        #$payload = substr($chunk, 1, -2);
+        $payload = substr(trim($chunk), 1);
 
         switch ($prefix) {
             case '+':
