@@ -113,7 +113,7 @@ use Predis\Profile\ProfileInterface;
  * @method array  sscan($key, $cursor, array $options = null)
  * @method array  sunion(array $keys)
  * @method int    sunionstore($destination, array $keys)
- * @method int    zadd($key, array $membersAndScoresDictionary)
+ * @method int    zadd($key, $Score,$Name)
  * @method int    zcard($key)
  * @method string zcount($key, $min, $max)
  * @method string zincrby($key, $increment, $member)
