@@ -24,7 +24,7 @@ class PrefixOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new PrefixOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $this->assertNull($option->getDefault($options));
     }
@@ -35,7 +35,7 @@ class PrefixOptionTest extends PredisTestCase
     public function testAcceptsStringAndReturnsCommandProcessor()
     {
         $option = new PrefixOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $return = $option->filter($options, $value = 'prefix:');
 
@@ -50,8 +50,8 @@ class PrefixOptionTest extends PredisTestCase
     public function testAcceptsCommandProcessorInstance()
     {
         $option = new PrefixOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
+        $processor = $this->createMock('Predis\Command\Processor\ProcessorInterface');
 
         $return = $option->filter($options, $processor);
 

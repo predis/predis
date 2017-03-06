@@ -24,7 +24,7 @@ class ReplicationOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Aggregate\MasterSlaveReplication', $option->getDefault($options));
@@ -36,7 +36,7 @@ class ReplicationOptionTest extends PredisTestCase
     public function testAcceptsValuesThatCanBeInterpretedAsBooleans()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $this->assertNull($option->filter($options, null));
 
@@ -59,8 +59,8 @@ class ReplicationOptionTest extends PredisTestCase
     public function testConfiguresAutomaticDiscoveryWhenAutodiscoveryOptionIsPresent()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connFactory = $this->getMock('Predis\Connection\FactoryInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
+        $connFactory = $this->createMock('Predis\Connection\FactoryInterface');
 
         $options->expects($this->at(0))
                 ->method('__get')
@@ -87,8 +87,8 @@ class ReplicationOptionTest extends PredisTestCase
     public function testThrowsExceptionOnInvalidInstanceType()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
+        $value = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
         $option->filter($options, $value);
     }

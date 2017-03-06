@@ -220,7 +220,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))->setMethods(array('parseResponse'))->getMock();
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
@@ -271,7 +271,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))->setMethods(array('parseResponse'))->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -288,7 +288,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))->setMethods(array('parseResponse'))->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -306,11 +306,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))->setMethods(array('parseResponse'))->getMock();
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))->setMethods(array('parseResponse'))->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -331,12 +331,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('getArguments'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))->setMethods(array('getArguments'))->getMock();
         $cmdPing->expects($this->once())
                 ->method('getArguments')
                 ->will($this->returnValue(array()));
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('getArguments'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))->setMethods(array('getArguments'))->getMock();
         $cmdEcho->expects($this->once())
                 ->method('getArguments')
                 ->will($this->returnValue(array('ECHOED')));

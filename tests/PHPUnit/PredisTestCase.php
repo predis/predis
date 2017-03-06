@@ -17,7 +17,7 @@ use Predis\Profile;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
+abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
 
@@ -212,7 +212,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getMockConnection($parameters = null)
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);
@@ -301,7 +301,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      * Checks that the Redis server version used to run integration tests mets
      * the requirements specified with the @requiresRedisVersion annotation.
      *
-     * @throws \PHPUnit_Framework_SkippedTestError When expected Redis server version is not met.
+     * @throws \PHPUnit\Framework\SkippedTestError When expected Redis server version is not met.
      */
     protected function checkRequiredRedisServerVersion()
     {

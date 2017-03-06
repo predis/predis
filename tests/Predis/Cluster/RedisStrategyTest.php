@@ -240,7 +240,7 @@ class RedisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $arguments = array('key:1', 'value1');
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')->setMethods(array('getScript', 'getKeysCount'))->getMock();
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return true'));
@@ -278,7 +278,7 @@ class RedisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $profile = Profile\Factory::getDevelopment();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Command\CommandInterface'))

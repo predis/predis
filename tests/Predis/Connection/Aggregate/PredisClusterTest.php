@@ -359,13 +359,13 @@ class PredisClusterTest extends PredisTestCase
     {
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
-        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection1 = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
                     ->will($this->returnValue(true));
 
-        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection2 = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection2->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)

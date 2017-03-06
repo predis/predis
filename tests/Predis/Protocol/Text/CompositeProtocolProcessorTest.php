@@ -38,8 +38,8 @@ class CompositeProtocolProcessorTest extends PredisTestCase
      */
     public function testConstructorWithArguments()
     {
-        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
-        $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
+        $serializer = $this->createMock('Predis\Protocol\RequestSerializerInterface');
+        $reader = $this->createMock('Predis\Protocol\ResponseReaderInterface');
 
         $protocol = new CompositeProtocolProcessor($serializer, $reader);
 
@@ -52,7 +52,7 @@ class CompositeProtocolProcessorTest extends PredisTestCase
      */
     public function testCustomRequestSerializer()
     {
-        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
+        $serializer = $this->createMock('Predis\Protocol\RequestSerializerInterface');
 
         $protocol = new CompositeProtocolProcessor();
         $protocol->setRequestSerializer($serializer);
@@ -65,7 +65,7 @@ class CompositeProtocolProcessorTest extends PredisTestCase
      */
     public function testCustomResponseReader()
     {
-        $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
+        $reader = $this->createMock('Predis\Protocol\ResponseReaderInterface');
 
         $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
@@ -80,9 +80,9 @@ class CompositeProtocolProcessorTest extends PredisTestCase
     {
         $serialized = "*1\r\n$4\r\nPING\r\n";
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-        $serializer = $this->getMock('Predis\Protocol\RequestSerializerInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
+        $serializer = $this->createMock('Predis\Protocol\RequestSerializerInterface');
 
         $protocol = new CompositeProtocolProcessor($serializer);
 
@@ -103,8 +103,8 @@ class CompositeProtocolProcessorTest extends PredisTestCase
      */
     public function testConnectionRead()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-        $reader = $this->getMock('Predis\Protocol\ResponseReaderInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
+        $reader = $this->createMock('Predis\Protocol\ResponseReaderInterface');
 
         $protocol = new CompositeProtocolProcessor(null, $reader);
 

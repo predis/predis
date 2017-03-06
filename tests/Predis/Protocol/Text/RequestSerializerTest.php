@@ -25,7 +25,7 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
 
         $command->expects($this->once())
                 ->method('getId')
@@ -47,7 +47,7 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
 
         $command->expects($this->once())
                 ->method('getId')
@@ -69,7 +69,7 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
 
         $command->expects($this->once())
                 ->method('getId')

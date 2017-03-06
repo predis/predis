@@ -26,7 +26,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $serialized = "*1\r\n$4\r\nPING\r\n";
         $protocol = new ProtocolProcessor();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
 
         $command->expects($this->once())
                 ->method('getId')
@@ -36,7 +36,7 @@ class ProtocolProcessorTest extends PredisTestCase
                 ->method('getArguments')
                 ->will($this->returnValue(array()));
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('writeBuffer')
@@ -52,7 +52,7 @@ class ProtocolProcessorTest extends PredisTestCase
     {
         $protocol = new ProtocolProcessor();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -89,7 +89,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $protocol = new ProtocolProcessor();
         $protocol->useIterableMultibulk(true);
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once(4))
                    ->method('readLine')
@@ -107,7 +107,7 @@ class ProtocolProcessorTest extends PredisTestCase
     {
         $protocol = new ProtocolProcessor();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')

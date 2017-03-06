@@ -26,7 +26,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testThrowsExceptionOnInvalidProfile()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $client = $this->createMock('Predis\ClientInterface');
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -40,7 +40,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -62,7 +62,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithIntegerMembers()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -100,7 +100,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -138,7 +138,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -182,7 +182,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -219,7 +219,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -267,7 +267,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -300,7 +300,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -339,7 +339,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -372,7 +372,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -411,7 +411,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -444,7 +444,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -483,7 +483,7 @@ class SortedSetKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'zscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'zscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
