@@ -25,7 +25,8 @@ class ServerExceptionTest extends PredisTestCase
      */
     public function testExceptionMessage()
     {
-        $this->setExpectedException('Predis\Response\ServerException', self::ERR_WRONG_KEY_TYPE);
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage(self::ERR_WRONG_KEY_TYPE);
 
         throw new ServerException(self::ERR_WRONG_KEY_TYPE);
     }

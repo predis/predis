@@ -24,7 +24,7 @@ class ClusterOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->getDefault($options));
     }

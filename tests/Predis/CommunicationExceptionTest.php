@@ -27,7 +27,8 @@ class CommunicationExceptionTest extends PredisTestCase
         $connection = $this->getMockedConnectionBase();
         $exception = $this->getException($connection, $message);
 
-        $this->setExpectedException('Predis\CommunicationException', $message);
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage($message);
 
         throw $exception;
     }

@@ -25,7 +25,8 @@ class ClientExceptionTest extends PredisTestCase
     {
         $message = 'This is a client exception.';
 
-        $this->setExpectedException('Predis\ClientException', $message);
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage($message);
 
         throw new ClientException($message);
     }
