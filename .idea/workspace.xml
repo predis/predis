@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4187b780-64fd-4092-9d45-697df8f72dd9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/PHPUnit/PredisTestCase.php" afterPath="$PROJECT_DIR$/tests/PHPUnit/PredisTestCase.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/ClientTest.php" afterPath="$PROJECT_DIR$/tests/Predis/ClientTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/HashRingTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/HashRingTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/KetamaRingTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/KetamaRingTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Cluster/PredisStrategyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Cluster/PredisStrategyTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Command/Processor/KeyPrefixProcessorTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Command/Processor/KeyPrefixProcessorTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Configuration/OptionsTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Configuration/OptionsTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Connection/FactoryTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Connection/FactoryTest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/PubSub/DispatcherLoopTest.php" afterPath="$PROJECT_DIR$/tests/Predis/PubSub/DispatcherLoopTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php" afterPath="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -46,81 +41,81 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="KetamaRingTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/Cluster/Distributor/KetamaRingTest.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="198" column="20" lean-forward="false" selection-start-line="198" selection-start-column="20" selection-end-line="198" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PredisStrategyTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/Cluster/PredisStrategyTest.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="229" column="132" lean-forward="false" selection-start-line="229" selection-start-column="132" selection-end-line="229" selection-end-column="132" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RedisStrategyTest.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="RedisStrategyTest.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="242" column="19" lean-forward="true" selection-start-line="242" selection-start-column="19" selection-end-line="242" selection-end-column="102" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KeyPrefixProcessorTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/Command/Processor/KeyPrefixProcessorTest.php">
-          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="218">
-              <caret line="311" column="20" lean-forward="false" selection-start-line="311" selection-start-column="20" selection-end-line="311" selection-end-column="20" />
+              <caret line="242" column="19" lean-forward="false" selection-start-line="242" selection-start-column="19" selection-end-line="242" selection-end-column="19" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OptionsTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/Configuration/OptionsTest.php">
+      <file leaf-file-name="ScriptCommandTest.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Command/ScriptCommandTest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="258">
+              <caret line="144" column="19" lean-forward="false" selection-start-line="144" selection-start-column="19" selection-end-line="144" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HashKeyTest.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="225">
-              <caret line="165" column="20" lean-forward="false" selection-start-line="165" selection-start-column="20" selection-end-line="165" selection-end-column="20" />
+              <caret line="491" column="18" lean-forward="false" selection-start-line="491" selection-start-column="18" selection-end-line="491" selection-end-column="18" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FactoryTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/Connection/FactoryTest.php">
+      <file leaf-file-name="KeyspaceTest.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="236">
-              <caret line="351" column="27" lean-forward="false" selection-start-line="351" selection-start-column="27" selection-end-line="351" selection-end-column="27" />
+            <state relative-caret-position="577">
+              <caret line="432" column="0" lean-forward="true" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DispatcherLoopTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/Predis/PubSub/DispatcherLoopTest.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="110" column="20" lean-forward="false" selection-start-line="110" selection-start-column="20" selection-end-line="110" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PredisTestCase.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/PHPUnit/PredisTestCase.php">
+      <file leaf-file-name="AbstractConnection.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Connection/AbstractConnection.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="217">
-              <caret line="214" column="39" lean-forward="false" selection-start-line="214" selection-start-column="39" selection-end-line="214" selection-end-column="39" />
+              <caret line="154" column="0" lean-forward="false" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ListKeyTest.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="258">
+              <caret line="132" column="35" lean-forward="false" selection-start-line="132" selection-start-column="35" selection-end-line="132" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SetKeyTest.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="416" column="18" lean-forward="false" selection-start-line="416" selection-start-column="18" selection-end-line="416" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SortedSetKeyTest.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="214">
+              <caret line="42" column="18" lean-forward="true" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="80" />
               <folding />
             </state>
           </provider>
@@ -142,15 +137,24 @@
       <find>$this-&gt;getMock('stdClass', array('__invoke'));</find>
       <find>getmock</find>
       <find>$this-&gt;getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));</find>
+      <find>$this-&gt;getMock('Predis\Client', array('getProfile', 'hscan'));</find>
+      <find>$this-&gt;getMock('Predis\Client', array('getProfile', 'scan'));</find>
+      <find>$this-&gt;getMock('Predis\Client', array('getProfile', 'lrange'));</find>
+      <find>$this-&gt;getMock('Predis\Client', array('getProfile', 'sscan'));</find>
     </findStrings>
     <replaceStrings>
       <replace>$this-&gt;createMock(</replace>
       <replace>$this-&gt;expectException(</replace>
       <replace>$this-&gt;getMockBuilder('stdClass')-&gt;setMethods(array('__invoke'))-&gt;getMock();</replace>
+      <replace>$this-&gt;getMockBuilder('Predis\Command\ScriptCommand')-&gt;setMethods(array('getScript', 'getKeysCount'))-&gt;getMock();</replace>
+      <replace>$this-&gt;getMockBuilder('Predis\Client')-&gt;setMethods(array('getProfile', 'hscan'))-&gt;getMock();</replace>
+      <replace>$this-&gt;getMockBuilder('Predis\Client')-&gt;setMethods(array('getProfile', 'scan'))-&gt;getMock();</replace>
+      <replace>$this-&gt;getMockBuilder('Predis\Client')-&gt;setMethods(array('getProfile', 'lrange'))-&gt;getMock();</replace>
+      <replace>$this-&gt;getMockBuilder('Predis\Client')-&gt;setMethods(array('getProfile', 'sscan'))-&gt;getMock();</replace>
     </replaceStrings>
     <dirStrings>
-      <dir>C:\repos\predis\tests</dir>
       <dir>C:\repos\predis</dir>
+      <dir>C:\repos\predis\tests</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -168,11 +172,6 @@
         <option value="$PROJECT_DIR$/tests/PHPUnit/ArrayHasSameValuesConstraint.php" />
         <option value="$PROJECT_DIR$/tests/PHPUnit/RedisCommandConstraint.php" />
         <option value="$PROJECT_DIR$/tests/PHPUnit/PredisProfileTestCase.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Command/Processor/ProcessorChainTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Configuration/ClusterOptionTest.php" />
         <option value="$PROJECT_DIR$/tests/PHPUnit/PredisDistributorTestCase.php" />
@@ -183,7 +182,6 @@
         <option value="$PROJECT_DIR$/tests/Predis/Response/ServerExceptionTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/HashRingTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Cluster/Distributor/KetamaRingTest.php" />
-        <option value="$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Command/Processor/KeyPrefixProcessorTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Configuration/OptionsTest.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Connection/FactoryTest.php" />
@@ -191,6 +189,13 @@
         <option value="$PROJECT_DIR$/tests/Predis/ClientTest.php" />
         <option value="$PROJECT_DIR$/tests/PHPUnit/PredisTestCase.php" />
         <option value="$PROJECT_DIR$/tests/Predis/Cluster/PredisStrategyTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Command/ScriptCommandTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php" />
+        <option value="$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php" />
       </list>
     </option>
   </component>
@@ -333,29 +338,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1488815973603</updated>
-      <workItem from="1488815974915" duration="4250000" />
+      <workItem from="1488815974915" duration="4577000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Test - 2017.03.06 at 18h 05m 02s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
-    <history-entry file="Test - 2017.03.06 at 18h 05m 44s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
-    <history-entry file="Test - 2017.03.06 at 18h 06m 46s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
-    <history-entry file="Test - 2017.03.06 at 18h 07m 12s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
-    <history-entry file="Test - 2017.03.06 at 18h 07m 32s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
-    <history-entry file="Test - 2017.03.06 at 18h 07m 45s.xml">
-      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
-    </history-entry>
     <history-entry file="Test - 2017.03.06 at 18h 08m 15s.xml">
       <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
@@ -368,23 +355,41 @@
     <history-entry file="Test - 2017.03.06 at 18h 09m 58s.xml">
       <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
     </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 11m 21s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 11m 53s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 12m 58s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 13m 55s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 14m 42s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
+    <history-entry file="Test - 2017.03.06 at 18h 15m 38s.xml">
+      <configuration name="Test" configurationId="PHPUnitRunConfigurationType" />
+    </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4250000" />
+    <option name="totallyTimeSpent" value="4577000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1176" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18283582" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29721954" sideWeight="0.5442431" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32885906" sideWeight="0.4936034" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12686567" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29721954" sideWeight="0.45575693" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29721954" sideWeight="0.44722813" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3227017" sideWeight="0.475" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32885906" sideWeight="0.5191898" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32885906" sideWeight="0.5063966" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.47867805" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32981783" sideWeight="0.47654584" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -556,46 +561,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="491" column="18" lean-forward="false" selection-start-line="491" selection-start-column="18" selection-end-line="491" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="416" column="18" lean-forward="false" selection-start-line="416" selection-start-column="18" selection-end-line="416" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="216" column="18" lean-forward="false" selection-start-line="216" selection-start-column="18" selection-end-line="216" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="416" column="18" lean-forward="false" selection-start-line="416" selection-start-column="18" selection-end-line="416" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="485" column="18" lean-forward="false" selection-start-line="485" selection-start-column="18" selection-end-line="485" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/Predis/Command/Processor/ProcessorChainTest.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
@@ -603,14 +568,6 @@
           <folding>
             <marker date="1488818703824" expanded="true" signature="357:4718" ph="{...}" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Predis/Command/ScriptCommandTest.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="144" column="19" lean-forward="false" selection-start-line="144" selection-start-column="19" selection-end-line="144" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -674,14 +631,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="261">
           <caret line="30" column="16" lean-forward="false" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Connection/AbstractConnection.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="154" column="0" lean-forward="false" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -776,8 +725,64 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Predis/Cluster/RedisStrategyTest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="242" column="19" lean-forward="true" selection-start-line="242" selection-start-column="19" selection-end-line="242" selection-end-column="102" />
+        <state relative-caret-position="218">
+          <caret line="242" column="19" lean-forward="false" selection-start-line="242" selection-start-column="19" selection-end-line="242" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Command/ScriptCommandTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="258">
+          <caret line="144" column="19" lean-forward="false" selection-start-line="144" selection-start-column="19" selection-end-line="144" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/HashKeyTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="491" column="18" lean-forward="false" selection-start-line="491" selection-start-column="18" selection-end-line="491" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/KeyspaceTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="577">
+          <caret line="432" column="0" lean-forward="true" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Connection/AbstractConnection.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="154" column="0" lean-forward="false" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/ListKeyTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="258">
+          <caret line="132" column="35" lean-forward="false" selection-start-line="132" selection-start-column="35" selection-end-line="132" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SetKeyTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="416" column="18" lean-forward="false" selection-start-line="416" selection-start-column="18" selection-end-line="416" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Predis/Collection/Iterator/SortedSetKeyTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="42" column="18" lean-forward="true" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="80" />
           <folding />
         </state>
       </provider>
