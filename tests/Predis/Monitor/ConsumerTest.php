@@ -84,7 +84,7 @@ class ConsumerTest extends PredisTestCase
     {
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
-        $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('disconnect'))->setConstructorArgs(array($connection))->getMock();
         $client->expects($this->exactly(2))->method('disconnect');
 
         $monitor = new MonitorConsumer($client);
@@ -98,7 +98,7 @@ class ConsumerTest extends PredisTestCase
     {
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
-        $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('disconnect'))->setConstructorArgs(array($connection))->getMock();
         $client->expects($this->once())->method('disconnect');
 
         $monitor = new MonitorConsumer($client);

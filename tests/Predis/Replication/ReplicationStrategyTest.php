@@ -214,7 +214,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -229,7 +229,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -245,7 +245,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->createMock('Predis\Command\CommandInterface');
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -307,7 +307,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->createMock('Predis\Command\ScriptCommand', array('getScript'));
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
@@ -330,7 +330,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->createMock('Predis\Command\ScriptCommand', array('getScript'));
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));

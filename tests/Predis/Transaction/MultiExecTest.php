@@ -28,13 +28,13 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInProfile()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile = $this->createMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommands')
                 ->with(array('MULTI', 'EXEC', 'DISCARD'))
                 ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => $profile));
 
         new MultiExec($client);
@@ -47,7 +47,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedWatchInProfile()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile = $this->createMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommands')
                 ->with(array('MULTI', 'EXEC', 'DISCARD'))
@@ -57,7 +57,7 @@ class MultiExecTest extends PredisTestCase
                 ->with('WATCH')
                 ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => $profile));
 
         $tx = new MultiExec($client, array('options' => 'cas'));
@@ -71,7 +71,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInProfile()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile = $this->createMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommands')
                 ->with(array('MULTI', 'EXEC', 'DISCARD'))
@@ -81,7 +81,7 @@ class MultiExecTest extends PredisTestCase
                 ->with('UNWATCH')
                 ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $client = new Client($connection, array('profile' => $profile));
 
         $tx = new MultiExec($client, array('options' => 'cas'));
@@ -808,7 +808,7 @@ class MultiExecTest extends PredisTestCase
      */
     protected function getMockedConnection($executeCallback)
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->any())
                    ->method('executeCommand')
                    ->will($this->returnCallback($executeCallback));
