@@ -35,8 +35,8 @@ class ClusterOptionTest extends PredisTestCase
     public function testAcceptsInstanceOfClusterInterface()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
+        $cluster = $this->createMock('Predis\Connection\Aggregate\ClusterInterface');
 
         $this->assertSame($cluster, $option->filter($options, $cluster));
     }
@@ -48,12 +48,12 @@ class ClusterOptionTest extends PredisTestCase
     {
         $option = new ClusterOption();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
         $options->expects($this->any())
                 ->method('__get')
                 ->with('connections')
                 ->will($this->returnValue(
-                    $this->getMock('Predis\Connection\FactoryInterface')
+                    $this->createMock('Predis\Connection\FactoryInterface')
                 ));
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis'));
@@ -70,8 +70,8 @@ class ClusterOptionTest extends PredisTestCase
     public function testThrowsExceptionOnInvalidInstanceType()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $class = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
+        $class = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
         $option->filter($options, $class);
     }
@@ -83,7 +83,7 @@ class ClusterOptionTest extends PredisTestCase
     public function testThrowsExceptionOnInvalidShortNameString()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $option->filter($options, 'unknown');
     }

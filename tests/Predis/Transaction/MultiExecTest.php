@@ -418,7 +418,7 @@ class MultiExecTest extends PredisTestCase
         $expected = array('bar');
         $options = array('watch' => array('foo', 'bar'), 'retry' => ($attempts = 2) + 1);
 
-        $sentinel = $this->getMock('stdClass', array('signal'));
+        $sentinel = $this->getMockBuilder('stdClass')->setMethods(array('signal'))->getMock();
         $sentinel->expects($this->exactly($attempts))->method('signal');
 
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);

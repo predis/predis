@@ -534,7 +534,7 @@ class SentinelReplicationTest extends PredisTestCase
         $slave1->expects($this->once())
                ->method('connect');
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->createMock('Predis\Connection\FactoryInterface');
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -578,7 +578,7 @@ class SentinelReplicationTest extends PredisTestCase
         $master->expects($this->once())
                ->method('connect');
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->createMock('Predis\Connection\FactoryInterface');
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -1032,7 +1032,7 @@ class SentinelReplicationTest extends PredisTestCase
                ->with($this->isRedisCommand('GET', array('key')))
                ->will($this->returnValue('value'));
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->createMock('Predis\Connection\FactoryInterface');
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -1087,7 +1087,7 @@ class SentinelReplicationTest extends PredisTestCase
                   ->with($this->isRedisCommand('DEL', array('key')))
                   ->will($this->returnValue(1));
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->createMock('Predis\Connection\FactoryInterface');
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(

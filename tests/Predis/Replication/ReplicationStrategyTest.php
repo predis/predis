@@ -307,7 +307,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->createMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')->setMethods(array('getScript'))->getMock();
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
@@ -330,7 +330,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->createMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')->setMethods(array('getScript'))->getMock();
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));

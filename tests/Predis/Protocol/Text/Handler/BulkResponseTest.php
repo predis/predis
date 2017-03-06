@@ -25,7 +25,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -46,7 +46,7 @@ class BulkResponseTest extends PredisTestCase
 
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -64,7 +64,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -81,7 +81,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

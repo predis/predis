@@ -449,7 +449,7 @@ class ClientTest extends PredisTestCase
                 ->will($this->returnValue($ping));
 
         $options = array('profile' => $profile);
-        $client = $this->getMock('Predis\Client', null, array($connection, $options));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('__construct'))->setConstructorArgs(array($connection, $options))->getMock();
 
         $this->assertEquals('PONG', $client->ping());
     }
@@ -624,7 +624,7 @@ class ClientTest extends PredisTestCase
     public function testGetClientForReturnsInstanceOfSubclass()
     {
         $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
-        $client = $this->getMock('Predis\Client', array('dummy'), array($nodes), 'SubclassedClient');
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('dummy'))->setConstructorArgs(array($nodes))->setMockClassName('SubclassedClient')->getMock();
 
         $this->assertInstanceOf('SubclassedClient', $client->getClientFor('node02'));
     }

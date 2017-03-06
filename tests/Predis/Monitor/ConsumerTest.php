@@ -28,7 +28,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testMonitorConsumerRequireMonitorCommand()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile = $this->createMock('Predis\Profile\ProfileInterface');
         $profile->expects($this->once())
                 ->method('supportsCommand')
                 ->with('MONITOR')
@@ -46,7 +46,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testMonitorConsumerDoesNotWorkOnClusters()
     {
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $cluster = $this->createMock('Predis\Connection\Aggregate\ClusterInterface');
         $client = new Client($cluster);
 
         new MonitorConsumer($client);
@@ -59,9 +59,9 @@ class ConsumerTest extends PredisTestCase
     {
         $cmdMonitor = Profile\Factory::getDefault()->createCommand('monitor');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
-        $client = $this->getMock('Predis\Client', array('createCommand', 'executeCommand'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('createCommand', 'executeCommand'))->setConstructorArgs(array($connection))->getMock();
         $client->expects($this->once())
                ->method('createCommand')
                ->with('MONITOR', array())
@@ -82,7 +82,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testStoppingConsumerClosesConnection()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
         $client = $this->getMockBuilder('Predis\Client')->setMethods(array('disconnect'))->setConstructorArgs(array($connection))->getMock();
         $client->expects($this->exactly(2))->method('disconnect');
@@ -96,7 +96,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testGarbageCollectorRunStopsConsumer()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
 
         $client = $this->getMockBuilder('Predis\Client')->setMethods(array('disconnect'))->setConstructorArgs(array($connection))->getMock();
         $client->expects($this->once())->method('disconnect');
@@ -112,7 +112,7 @@ class ConsumerTest extends PredisTestCase
     {
         $message = '1323367530.939137 (db 15) "MONITOR"';
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));
@@ -135,7 +135,7 @@ class ConsumerTest extends PredisTestCase
     {
         $message = '1323367530.939137 [15 127.0.0.1:37265] "MONITOR"';
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));
