@@ -449,7 +449,8 @@ class ClientTest extends PredisTestCase
                 ->will($this->returnValue($ping));
 
         $options = array('profile' => $profile);
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('__construct'))->setConstructorArgs(array($connection, $options))->getMock();
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('__construct'))
+            ->setConstructorArgs(array($connection, $options))->getMock();
 
         $this->assertEquals('PONG', $client->ping());
     }
