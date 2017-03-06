@@ -227,7 +227,7 @@ class PredisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $arguments = array('{key}:1', '{key}:2', 'value1', 'value2');
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')->setMethods(array('getScript', 'getKeysCount'))->getMock();
         $command->expects($this->once())
                 ->method('getScript')
                 ->will($this->returnValue('return true'));
@@ -265,7 +265,7 @@ class PredisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $profile = Profile\Factory::getDevelopment();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
@@ -290,7 +290,7 @@ class PredisStrategyTest extends PredisTestCase
     {
         $strategy = new PredisStrategy();
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $strategy->getDistributor()->add($connection);
 
         return $strategy;

@@ -141,7 +141,7 @@ class OptionsTest extends PredisTestCase
         $profile = $this->getMock('Predis\Profile\ProfileInterface');
 
         // NOTE: closure values are covered by this test since they define __invoke().
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'profile')
@@ -163,7 +163,7 @@ class OptionsTest extends PredisTestCase
         $custom = new \stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'custom')

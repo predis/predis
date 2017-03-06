@@ -287,7 +287,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $command = $this->getCommandInstance('NEWCMD', array('key', 'value'));
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($command, 'prefix:')
@@ -309,7 +309,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $command = $this->getCommandInstance('SET', array('key', 'value'));
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($command, 'prefix:')

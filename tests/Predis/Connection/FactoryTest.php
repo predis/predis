@@ -349,7 +349,7 @@ class FactoryTest extends PredisTestCase
             return new $connectionClass($parameters);
         };
 
-        $initializerMock = $this->getMock('stdClass', array('__invoke'));
+        $initializerMock = $this->getMockBuilder('stdClass')->setMethods(array('__invoke'))->getMock();
         $initializerMock->expects($this->exactly(2))
                         ->method('__invoke')
                         ->with($parameters)
