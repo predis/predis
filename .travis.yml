@@ -19,3 +19,7 @@ script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   fast_finish: true
+  include:
+    - php: hhvm
+      env:
+        - HHVMPHP7="yes"
