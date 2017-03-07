@@ -15,7 +15,7 @@ use SebastianBergmann\Exporter\Exporter;
 /**
  * Constraint that verifies a redis command.
  */
-class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
+class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
 {
     protected $commandID;
     protected $arguments;
