@@ -39,7 +39,7 @@ class ResponseReaderTest extends PredisTestCase
      */
     public function testReplaceHandler()
     {
-        $handler = $this->getMock('Predis\Protocol\Text\Handler\ResponseHandlerInterface');
+        $handler = $this->createMock('Predis\Protocol\Text\Handler\ResponseHandlerInterface');
 
         $reader = new ResponseReader();
         $reader->setHandler('+', $handler);
@@ -57,7 +57,7 @@ class ResponseReaderTest extends PredisTestCase
         $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -95,7 +95,7 @@ class ResponseReaderTest extends PredisTestCase
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')
@@ -112,7 +112,7 @@ class ResponseReaderTest extends PredisTestCase
     {
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\CompositeConnectionInterface');
 
         $connection->expects($this->once())
                    ->method('readLine')

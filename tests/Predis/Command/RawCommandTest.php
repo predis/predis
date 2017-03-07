@@ -80,7 +80,7 @@ class RawCommandTest extends PredisTestCase
         if (version_compare(PHP_VERSION, "7.1", '>')) {
             $this->markTestSkipped('only for PHP < 7.1');
         }
-        $this->setExpectedException('PHPUnit_Framework_Error_Warning');
+        $this->expectException('PHPUnit_Framework_Error_Warning');
         RawCommand::create();
     }
 
@@ -96,7 +96,7 @@ class RawCommandTest extends PredisTestCase
         if (version_compare(PHP_VERSION, "7.1", '<')) {
             $this->markTestSkipped('only for PHP > 7.1');
         }
-        $this->setExpectedException('ArgumentCountError');
+        $this->expectException('ArgumentCountError');
         RawCommand::create();
     }
 

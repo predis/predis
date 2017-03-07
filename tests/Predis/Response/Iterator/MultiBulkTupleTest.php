@@ -28,7 +28,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testInitiatedMultiBulkIteratorsAreNotValid()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $iterator = new MultiBulk($connection, 2);
         $iterator->next();
 
@@ -42,7 +42,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testMultiBulkWithOddSizesAreInvalid()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $iterator = new MultiBulk($connection, 3);
 
         new MultiBulkTuple($iterator);

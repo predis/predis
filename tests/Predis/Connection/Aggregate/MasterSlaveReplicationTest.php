@@ -920,7 +920,7 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->createMock('Predis\Connection\Factory');
         $connFactory->expects($this->at(0))
                     ->method('create')
                     ->with(array('host' => '127.0.0.1', 'port' => '6381', 'alias' => 'master'))
@@ -999,7 +999,7 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?alias=slave2');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->createMock('Predis\Connection\Factory');
         $connFactory->expects($this->at(0))
                     ->method('create')
                     ->with(array('host' => '127.0.0.1', 'port' => '6381', 'alias' => 'master'))
@@ -1099,7 +1099,7 @@ repl_backlog_histlen:12978
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?alias=slave1');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->createMock('Predis\Connection\Factory');
         $connFactory->expects($this->once())
                     ->method('create')
                     ->with(array('host' => '127.0.0.1', 'port' => '6382'))

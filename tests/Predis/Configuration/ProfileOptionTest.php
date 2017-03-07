@@ -26,7 +26,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $profile = $option->getDefault($options);
 
@@ -41,7 +41,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testAcceptsProfileInstanceAsValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
         $value = Profile\Factory::get('2.0');
 
         $profile = $option->filter($options, $value);
@@ -56,7 +56,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testAcceptsStringInterpretedAsProfileVersion()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $profile = $option->filter($options, '2.0');
 
@@ -71,7 +71,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testAppliesPrefixOnDefaultOptionValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $options->expects($this->once())
                 ->method('__isset')
@@ -97,7 +97,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testAppliesPrefixOnProfileCreatedFromStringValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $options->expects($this->once())
                 ->method('__isset')
@@ -123,7 +123,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testDoesNotApplyPrefixOnProfileValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
         $value = Profile\Factory::getDefault();
 
         $options->expects($this->never())->method('__isset');
@@ -143,7 +143,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testThrowsExceptionOnInvalidValue()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $option->filter($options, new \stdClass());
     }
@@ -155,7 +155,7 @@ class ProfileOptionTest extends PredisTestCase
     public function testThrowsExceptionOnUnrecognizedVersionString()
     {
         $option = new ProfileOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->createMock('Predis\Configuration\OptionsInterface');
 
         $option->filter($options, '0.0');
     }

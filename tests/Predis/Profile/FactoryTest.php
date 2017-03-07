@@ -76,7 +76,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testDefineProfile()
     {
-        $profileClass = get_class($this->getMock('Predis\Profile\ProfileInterface'));
+        $profileClass = get_class($this->createMock('Predis\Profile\ProfileInterface'));
 
         Factory::define('mock', $profileClass);
 

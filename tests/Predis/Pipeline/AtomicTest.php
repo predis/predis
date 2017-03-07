@@ -28,7 +28,7 @@ class AtomicTest extends PredisTestCase
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(2))
                    ->method('executeCommand')
                    ->will($this->onConsecutiveCalls(true, array($pong, $pong, $pong)));
@@ -54,7 +54,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testThrowsExceptionOnAbortedTransaction()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(2))
                    ->method('executeCommand')
                    ->will($this->onConsecutiveCalls(true, null));
@@ -78,7 +78,7 @@ class AtomicTest extends PredisTestCase
         $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->at(0))
                    ->method('executeCommand')
                    ->will($this->returnValue(true));
@@ -107,7 +107,7 @@ class AtomicTest extends PredisTestCase
     {
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->once())
                    ->method('readResponse')
                    ->will($this->returnValue($error));
@@ -129,7 +129,7 @@ class AtomicTest extends PredisTestCase
         $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->createMock('Predis\Connection\NodeConnectionInterface');
         $connection->expects($this->exactly(3))
                    ->method('readResponse')
                    ->will($this->onConsecutiveCalls($queued, $queued, $queued));
@@ -153,7 +153,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testExecutorWithAggregateConnection()
     {
-        $connection = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $connection = $this->createMock('Predis\Connection\Aggregate\ClusterInterface');
         $pipeline = new Atomic(new Client($connection));
 
         $pipeline->ping();
