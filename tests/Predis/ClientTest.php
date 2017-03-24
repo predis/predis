@@ -297,19 +297,15 @@ class ClientTest extends PredisTestCase
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
-        $arg2 = array(
+        $clientReplicationFalse = new Client($arg1, array(
             'cluster' => 'redis',
             'replication' =>  false,
-        );
+        ));
 
-        $clientReplicationFalse = new Client($arg1, $arg2);
-
-        $arg2 = array(
+        $clientReplicationNull = new Client($arg1, array(
             'cluster' => 'redis',
             'replication' =>  null,
-        );
-
-        $clientReplicationNull = new Client($arg1, $arg2);
+        ));
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $clientReplicationFalse->getConnection());
         $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $clientReplicationNull->getConnection());
