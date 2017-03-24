@@ -120,7 +120,7 @@ class Client implements ClientInterface, \IteratorAggregate
             if ($options->defined('aggregate')) {
                 $initializer = $this->getConnectionInitializerWrapper($options->aggregate);
                 $connection = $initializer($parameters, $options);
-            } elseif ($options->defined('replication')) {
+            } elseif ($options->defined('replication') && $options->replication) {
                 $replication = $options->replication;
 
                 if ($replication instanceof AggregateConnectionInterface) {
