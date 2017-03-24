@@ -11,6 +11,7 @@
 
 namespace Predis;
 
+use Predis\Connection\Aggregate\ClusterInterface;
 use PredisTestCase;
 
 /**
@@ -288,6 +289,31 @@ class ClientTest extends PredisTestCase
         $client = new Client($arg1, $arg2);
 
         $this->assertSame($connection, $client->getConnection());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithReplicationFalseOrNull()
+    {
+        $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $arg2 = array(
+            'cluster' => 'redis',
+            'replication' =>  false,
+        );
+
+        $clientReplicationFalse = new Client($arg1, $arg2);
+
+        $arg2 = array(
+            'cluster' => 'redis',
+            'replication' =>  null,
+        );
+
+        $clientReplicationNull = new Client($arg1, $arg2);
+
+        $this->assertInstanceOf(ClusterInterface::class, $clientReplicationFalse->getConnection());
+        $this->assertInstanceOf(ClusterInterface::class, $clientReplicationNull->getConnection());
     }
 
     /**
