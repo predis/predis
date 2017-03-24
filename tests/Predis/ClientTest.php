@@ -292,6 +292,31 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testConstructorWithReplicationFalseOrNull()
+    {
+        $arg1 = array('tcp://host1', 'tcp://host2');
+
+        $arg2 = array(
+            'cluster' => 'redis',
+            'replication' =>  false,
+        );
+
+        $clientReplicationFalse = new Client($arg1, $arg2);
+
+        $arg2 = array(
+            'cluster' => 'redis',
+            'replication' =>  null,
+        );
+
+        $clientReplicationNull = new Client($arg1, $arg2);
+
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $clientReplicationFalse->getConnection());
+        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $clientReplicationNull->getConnection());
+    }
+
+    /**
+     * @group disconnected
      * @expectedException \UnexpectedValueException
      * @expectedExceptionMessage The callable connection initializer returned an invalid type.
      */
