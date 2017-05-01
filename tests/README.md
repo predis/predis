@@ -3,7 +3,7 @@
 __ATTENTION__: Do not ever run this test suite against instances of Redis running
 in production environments or containing data you are interested in! If you still
 want to test this software on a production server without hitting the database,
-please read ahead to undestand how to disable integration tests.
+please read ahead to understand how to disable integration tests.
 
 Predis ships with a comprehensive test suite that uses __PHPUnit__ to cover every
 aspect of the library. The suite is organized into several unit groups with the
@@ -75,7 +75,7 @@ $ phpunit --exclude-group slow
 ### Testing Redis commands ###
 
 We also provide an helper script in the `bin` directory that can be used to automatically
-generate a file with the scheleton of a test case to test a Redis command by specifying
+generate a file with the skeleton of a test case to test a Redis command by specifying
 the name of the class in the `Predis\Command` namespace (only classes in this namespace
 are considered valid). For example, to generate a test case for `SET` (represented by the
 `Predis\Command\StringSet` class):
