@@ -173,7 +173,7 @@ class Factory implements FactoryInterface
     {
         $parameters = $connection->getParameters();
 
-        if (isset($parameters->password)) {
+        if (isset($parameters->password) && !empty($parameters->password)) {
             $connection->addConnectCommand(
                 new RawCommand(array('AUTH', $parameters->password))
             );
