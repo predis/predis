@@ -45,7 +45,7 @@ More details about this project can be found on the [frequently asked questions]
 This library can be found on [Packagist](http://packagist.org/packages/predis/predis) for an easier
 management of projects dependencies using [Composer](http://packagist.org/about-composer) or on our
 [own PEAR channel](http://pear.nrk.io) for a more traditional installation using PEAR. Ultimately,
-compressed archives of each release are [available on GitHub](https://github.com/nrk/predis/tags).
+compressed archives of each release are [available on GitHub](https://github.com/nrk/predis/releases).
 
 
 ### Loading the library ###
