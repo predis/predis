@@ -7,7 +7,6 @@ php:
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
 branches:
   except:
     - v0.5
@@ -22,3 +21,6 @@ script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   fast_finish: true
+  include:
+    - php: hhvm
+      dist: trusty

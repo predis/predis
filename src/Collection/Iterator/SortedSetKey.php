@@ -50,11 +50,11 @@ class SortedSetKey extends CursorBasedIterator
      */
     protected function extractNext()
     {
-        if ($kv = each($this->elements)) {
-            $this->position = $kv[0];
-            $this->current = $kv[1];
-
+        foreach ($this->elements as $k => $v) {
+            $this->position = $k;
+            $this->current = $v;
             unset($this->elements[$this->position]);
+            break;
         }
     }
 }
