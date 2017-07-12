@@ -38,4 +38,15 @@ class PhpiredisCRC16Test extends PredisTestCase
         $this->assertSame(25343, $crc16->hash('key:008'));
         $this->assertSame(29406, $crc16->hash('key:009'));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testHashGenerationWithIntegerValues()
+    {
+        $crc16 = new PhpiredisCRC16();
+
+        $this->assertSame(13907, $crc16->hash(0));
+        $this->assertSame(55177, $crc16->hash(1234));
+    }
 }
