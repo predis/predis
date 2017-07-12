@@ -1,3 +1,10 @@
+v1.1.2 (2017-xx-xx)
+================================================================================
+
+- __FIX__: pure CRC16 implementation failed to calculate the correct hash when
+  the input value passed to the `hash()` method is an integer (PR #450).
+
+
 v1.1.1 (2016-06-16)
 ================================================================================
 
