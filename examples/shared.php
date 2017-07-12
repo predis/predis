@@ -11,6 +11,15 @@
 
 require __DIR__.'/../autoload.php';
 
+// Example files expose Redis data without authentication so do not allow
+// the files to be accessed outside localhost due to safety reasons.
+// Please note that this protection is not flawless. The examples should
+// always be removed before hosting Predis on a public network.
+if ($_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']){
+    header('HTTP/1.0 403 Forbidden');
+    die('Examples can be accessed only locally.');
+}
+
 function redis_version($info)
 {
     if (isset($info['Server']['redis_version'])) {

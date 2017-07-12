@@ -274,6 +274,8 @@ $client->evalsha(sha1($LUA_SCRIPT), 0);    // ... and `evalsha`, too.
 
 The [`examples`](examples/) directory contains a few scripts that demonstrate how the client can be
 configured and used to leverage replication in both basic and complex scenarios.
+Please note that you should remove the examples-directory before hosting Predis on a public
+environment as the examples can possibly expose Redis queries and other data to malicious users.
 
 
 ### Command pipelines ###
