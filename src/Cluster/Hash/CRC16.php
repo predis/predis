@@ -64,7 +64,7 @@ class CRC16 implements HashGeneratorInterface
         $strlen = strlen($value);
 
         for ($i = 0; $i < $strlen; ++$i) {
-            $crc = (($crc << 8) ^ $CCITT_16[($crc >> 8) ^ ord($value[$i])]) & 0xFFFF;
+            $crc = (($crc << 8) ^ $CCITT_16[($crc >> 8) ^ ord(substr($value, $i, 1))]) & 0xFFFF;
         }
 
         return $crc;
