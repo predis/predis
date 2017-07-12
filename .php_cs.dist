@@ -1,0 +1,33 @@
+<?php
+
+$PREDIS_HEADER = <<<EOS
+This file is part of the Predis package.
+
+(c) Daniele Alessandri <suppakilla@gmail.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+EOS;
+
+return PhpCsFixer\Config::create()
+    ->setUsingCache(true)
+    ->setRules(array(
+        '@Symfony' => true,
+        'header_comment' => array(
+            'header' => $PREDIS_HEADER,
+        ),
+        'ordered_imports' => true,
+        'phpdoc_order' => true,
+        'binary_operator_spaces' => array(
+            'align_double_arrow' => false,
+            'align_equals' => false,
+        ),
+        'array_syntax' => array('syntax' => 'long'),
+    ))
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+            ->in(__DIR__.'/bin')
+            ->in(__DIR__.'/src')
+            ->in(__DIR__.'/tests')
+            ->in(__DIR__.'/examples')
+    );
