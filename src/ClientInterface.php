@@ -24,7 +24,7 @@ use Predis\Profile\ProfileInterface;
  * and more friendly interface to ease programming which is described in the
  * following list of methods:
  *
- * @method int    del(array $keys)
+ * @method int    del(array|string $keys)
  * @method string dump($key)
  * @method int    exists($key)
  * @method int    expire($key, $seconds)
@@ -135,7 +135,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    zremrangebylex($key, $min, $max)
  * @method int    zlexcount($key, $min, $max)
  * @method int    pfadd($key, array $elements)
- * @method mixed  pfmerge($destinationKey, array $sourceKeys)
+ * @method mixed  pfmerge($destinationKey, array|string $sourceKeys)
  * @method int    pfcount(array|string $keys)
  * @method mixed  pubsub($subcommand, $argument)
  * @method int    publish($channel, $message)
