@@ -110,11 +110,21 @@ class Pipeline implements ClientContextInterface
     protected function getConnection()
     {
         $connection = $this->getClient()->getConnection();
-
         if ($connection instanceof ReplicationInterface) {
-            $connection->switchTo('master');
+            // Switching for m/s
+            $canUseSlave = true;
+            foreach ($this->pipeline as $item) {
+                if (!$connection->getReplicationStrategy()->isReadOperation($item)) {
+                    $canUseSlave = false;
+                    break;
+                }
+            }
+            if ($canUseSlave) {
+                $connection->switchToSlave();
+            } else {
+                $connection->switchToMaster();
+            }
         }
-
         return $connection;
     }
 
