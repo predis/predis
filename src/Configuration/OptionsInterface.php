@@ -11,17 +11,23 @@
 
 namespace Predis\Configuration;
 
+use Predis\Command\FactoryInterface as CommandFactoryInterface;
+use Predis\Command\Processor\ProcessorInterface;
+use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Replication\ReplicationInterface;
+
 /**
  * Interface defining a container for client options.
  *
- * @property-read mixed aggregate   Custom connection aggregator.
- * @property-read mixed cluster     Aggregate connection for clustering.
- * @property-read mixed connections Connection factory.
- * @property-read mixed exceptions  Toggles exceptions in client for -ERR responses.
- * @property-read mixed prefix      Key prefixing strategy using the given prefix.
- * @property-read mixed commands    Command factory.
- * @property-read mixed replication Aggregate connection for replication.
- * @property-read mixed parameters  Default connection parameters for aggregate connections.
+ * @property-read callable                   aggregate   Custom connection aggregator.
+ * @property-read ClusterInterface           cluster     Aggregate connection for clustering.
+ * @property-read ConnectionFactoryInterface connections Connection factory.
+ * @property-read bool                       exceptions  Toggles exceptions in client for -ERR responses.
+ * @property-read ProcessorInterface         prefix      Key prefixing strategy using the given prefix.
+ * @property-read CommandFactoryInterface    commands    Command factory.
+ * @property-read ReplicationInterface       replication Aggregate connection for replication.
+ * @property-read array                      parameters  Default connection parameters for aggregate connections.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
