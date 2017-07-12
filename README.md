@@ -5,7 +5,6 @@
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
-[![HHVM support][ico-hhvm]][link-hhvm]
 [![Gitter room][ico-gitter]][link-gitter]
 
 Flexible and feature-complete [Redis](http://redis.io) client for PHP >= 5.3 and HHVM >= 2.3.0.
@@ -488,5 +487,4 @@ The code for Predis is distributed under the terms of the MIT license (see [LICE
 [link-packagist]: https://packagist.org/packages/predis/predis
 [link-travis]: https://travis-ci.org/nrk/predis
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
-[link-hhvm]: http://hhvm.h4cc.de/package/predis/predis
 [link-gitter]: https://gitter.im/nrk/predis
