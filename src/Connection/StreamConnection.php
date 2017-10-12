@@ -312,7 +312,7 @@ class StreamConnection extends AbstractConnection
             try {
                 $this->select([$socket], [], []);
             } catch (\Exception $e) {
-                if ($e == 'Interrupted system call') {
+                if ($e->getMessage() == 'Interrupted system call') {
                     pcntl_signal_dispatch();
                     continue;
                 }
@@ -401,7 +401,7 @@ class StreamConnection extends AbstractConnection
                 return;
             }
             // raise all other issues to exceptions
-            throw new \Exception($errstr, 0, $errno, $errfile, $errline);
+            throw new \Exception($errstr, $errno);
         });
 
         $count = stream_select($r, $w, $e, 10.0);
