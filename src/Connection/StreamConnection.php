@@ -1,5 +1,5 @@
 <?php
-
+declare(ticks=1);
 /*
  * This file is part of the Predis package.
  *
@@ -308,7 +308,18 @@ class StreamConnection extends AbstractConnection
     public function read()
     {
         $socket = $this->getResource();
-        $chunk = fgets($socket);
+        while (true) {
+            try {
+                $this->select([$socket], [], []);
+            } catch (\Exception $e) {
+                if ($e == 'Interrupted system call') {
+                    pcntl_signal_dispatch();
+                    continue;
+                }
+            }
+            $chunk = fgets($socket);
+            break;
+        }
 
         if ($chunk === false || $chunk === '') {
             $this->onConnectionError('Error while reading line from the server.');
@@ -372,6 +383,30 @@ class StreamConnection extends AbstractConnection
 
                 return;
         }
+    }
+
+    function select($r, $w, $e)
+    {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline, $errcontext = null) {
+            $last_error = compact('errno', 'errstr', 'errfile', 'errline', 'errcontext');
+
+            // fwrite notice that the stream isn't ready
+            if (strstr($errstr, 'Resource temporarily unavailable')) {
+                // it's allowed to retry
+                return;
+            }
+            // stream_select warning that it has been interrupted by a signal
+            if (strstr($errstr, 'Interrupted system call')) {
+                throw new \Exception("Interrupted system call");
+                // it's allowed while processing signals
+                return;
+            }
+            // raise all other issues to exceptions
+            throw new \Exception($errstr, 0, $errno, $errfile, $errline);
+        });
+
+        $count = stream_select($r, $w, $e, 10.0);
+        return $count;
     }
 
     /**
