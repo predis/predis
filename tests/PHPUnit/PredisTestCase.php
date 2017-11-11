@@ -13,11 +13,12 @@ use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Profile;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
+abstract class PredisTestCase extends TestCase
 {
     protected $redisServerVersion = null;
 
