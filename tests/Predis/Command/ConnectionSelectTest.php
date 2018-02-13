@@ -71,7 +71,7 @@ class ConnectionSelectTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR invalid DB index
+     * @expectedExceptionMessage DB index
      */
     public function testThrowsExceptionOnUnexpectedDatabase()
     {
