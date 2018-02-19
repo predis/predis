@@ -82,7 +82,7 @@ abstract class RedisProfile implements ProfileInterface
      */
     public function createCommand($commandID, array $arguments = array())
     {
-        $commandID = strtoupper($commandID);
+        $commandID = mb_strtoupper($commandID);
 
         if (!isset($this->commands[$commandID])) {
             throw new ClientException("Command '$commandID' is not a registered Redis command.");
