@@ -279,4 +279,24 @@ abstract class PredisProfileTestCase extends PredisTestCase
         $profile->setProcessor($chain);
         $profile->createCommand('info');
     }
+    /**
+     * @group disconnected
+     */
+    public function testTurkishLocaleCapitalization() 
+    {
+        $currentLocale = setlocale(LC_CTYPE, 0);        
+        if(!setlocale(LC_CTYPE, 'tr_TR.UTF-8'))
+        {            
+            $this->markTestSkipped(
+                'The problematic locale is not available.'
+            );
+        }
+        $profile = $this->getProfile();        
+        $commandIdLowercase = $profile->createCommand('exists')->getId();
+        $commandIdUppercase = $profile->createCommand('EXISTS')->getId();
+        // revert back to old locale
+        setlocale(LC_CTYPE, $currentLocale);        
+        $this->assertEquals($commandIdLowercase, $commandIdUppercase);
+        
+    }
 }
