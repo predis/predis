@@ -476,10 +476,10 @@ found [on its project page](http://travis-ci.org/nrk/predis).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/nrk/predis.svg?style=flat-square
-[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
-[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
-[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
+[ico-license]: https://poser.pugx.org/predis/predis/license?format=flat-square
+[ico-version-stable]: https://poser.pugx.org/predis/predis/v/stable?format=flat-square
+[ico-version-dev]: https://poser.pugx.org/predis/predis/v/unstable?format=flat-square
+[ico-downloads-monthly]: https://poser.pugx.org/predis/predis/d/monthly?format=flat-square
 [ico-travis]: https://img.shields.io/travis/nrk/predis.svg?style=flat-square
 [ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
 [ico-gitter]: https://img.shields.io/gitter/room/nrk/predis.svg?style=flat-square
