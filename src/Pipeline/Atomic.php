@@ -80,6 +80,9 @@ class Atomic extends Pipeline
         $executed = $connection->executeCommand($profile->createCommand('exec'));
 
         if (!isset($executed)) {
+            // consider connection fouled
+            $connection->disconnect();
+
             // TODO: should be throwing a more appropriate exception.
             throw new ClientException(
                 'The underlying transaction has been aborted by the server.'
@@ -87,6 +90,17 @@ class Atomic extends Pipeline
         }
 
         if (count($executed) !== count($commands)) {
+            // convert first returned error to ServerException
+            if ($this->throwServerExceptions()) {
+                foreach ($executed as $response) {
+                    if ($response instanceof ErrorResponseInterface)
+                        $this->exception($connection, $response);
+                }
+            }
+
+            // consider connection fouled
+            $connection->disconnect();
+
             $expected = count($commands);
             $received = count($executed);
 
