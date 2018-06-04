@@ -525,8 +525,23 @@ class SentinelReplication implements ReplicationInterface
         $role = strtolower($role);
         $actualRole = $connection->executeCommand(RawCommand::create('ROLE'));
 
-        if ($role !== $actualRole[0]) {
+        if (is_array($actualRole) && $role !== $actualRole[0]) {
             throw new RoleException($connection, "Expected $role but got $actualRole[0] [$connection]");
+        } else if ($actualRole->getMessage() == 'ERR unknown command \'ROLE\'') {
+
+            $server_role = "";
+            $role = strtolower($role);
+            $actualRole = $connection->executeCommand(RawCommand::create('INFO'));
+            $csv = str_getcsv($actualRole, "\n");
+            foreach($csv as $row) {
+                if (preg_match('/role/', $row) == true) {
+                    $server_role = substr($row, strpos($row, ":")+1); 
+                }
+            }
+
+            if ($role !== $server_role) {
+                throw new RoleException($connection, "Expected $role but got $actualRole[0] [$connection]");
+            }
         }
     }
 
