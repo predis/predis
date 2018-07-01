@@ -24,7 +24,7 @@ use Predis\Profile\ProfileInterface;
  * and more friendly interface to ease programming which is described in the
  * following list of methods:
  *
- * @method int    del(array|string $keys)
+ * @method int    del(array | string $keys)
  * @method string dump($key)
  * @method int    exists($key)
  * @method int    expire($key, $seconds)
@@ -81,8 +81,8 @@ use Predis\Profile\ProfileInterface;
  * @method int    hsetnx($key, $field, $value)
  * @method array  hvals($key)
  * @method int    hstrlen($key, $field)
- * @method array  blpop(array|string $keys, $timeout)
- * @method array  brpop(array|string $keys, $timeout)
+ * @method array  blpop(array | string $keys, $timeout)
+ * @method array  brpop(array | string $keys, $timeout)
  * @method array  brpoplpush($source, $destination, $timeout)
  * @method string lindex($key, $index)
  * @method int    linsert($key, $whence, $pivot, $value)
@@ -100,10 +100,10 @@ use Predis\Profile\ProfileInterface;
  * @method int    rpushx($key, $value)
  * @method int    sadd($key, array $members)
  * @method int    scard($key)
- * @method array  sdiff(array|string $keys)
- * @method int    sdiffstore($destination, array|string $keys)
- * @method array  sinter(array|string $keys)
- * @method int    sinterstore($destination, array|string $keys)
+ * @method array  sdiff(array | string $keys)
+ * @method int    sdiffstore($destination, array | string $keys)
+ * @method array  sinter(array | string $keys)
+ * @method int    sinterstore($destination, array | string $keys)
  * @method int    sismember($key, $member)
  * @method array  smembers($key)
  * @method int    smove($source, $destination, $member)
@@ -111,13 +111,13 @@ use Predis\Profile\ProfileInterface;
  * @method string srandmember($key, $count = null)
  * @method int    srem($key, $member)
  * @method array  sscan($key, $cursor, array $options = null)
- * @method array  sunion(array|string $keys)
- * @method int    sunionstore($destination, array|string $keys)
+ * @method array  sunion(array | string $keys)
+ * @method int    sunionstore($destination, array | string $keys)
  * @method int    zadd($key, array $membersAndScoresDictionary)
  * @method int    zcard($key)
  * @method string zcount($key, $min, $max)
  * @method string zincrby($key, $increment, $member)
- * @method int    zinterstore($destination, array|string $keys, array $options = null)
+ * @method int    zinterstore($destination, array | string $keys, array $options = null)
  * @method array  zrange($key, $start, $stop, array $options = null)
  * @method array  zrangebyscore($key, $min, $max, array $options = null)
  * @method int    zrank($key, $member)
@@ -127,7 +127,7 @@ use Predis\Profile\ProfileInterface;
  * @method array  zrevrange($key, $start, $stop, array $options = null)
  * @method array  zrevrangebyscore($key, $max, $min, array $options = null)
  * @method int    zrevrank($key, $member)
- * @method int    zunionstore($destination, array|string $keys, array $options = null)
+ * @method int    zunionstore($destination, array | string $keys, array $options = null)
  * @method string zscore($key, $member)
  * @method array  zscan($key, $cursor, array $options = null)
  * @method array  zrangebylex($key, $start, $stop, array $options = null)
@@ -135,8 +135,8 @@ use Predis\Profile\ProfileInterface;
  * @method int    zremrangebylex($key, $min, $max)
  * @method int    zlexcount($key, $min, $max)
  * @method int    pfadd($key, array $elements)
- * @method mixed  pfmerge($destinationKey, array|string $sourceKeys)
- * @method int    pfcount(array|string $keys)
+ * @method mixed  pfmerge($destinationKey, array | string $sourceKeys)
+ * @method int    pfcount(array | string $keys)
  * @method mixed  pubsub($subcommand, $argument)
  * @method int    publish($channel, $message)
  * @method mixed  discard()
@@ -148,7 +148,7 @@ use Predis\Profile\ProfileInterface;
  * @method mixed  evalsha($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method mixed  script($subcommand, $argument = null)
  * @method mixed  auth($password)
- * @method string echo($message)
+ * @method string echo ($message)
  * @method mixed  ping($message = null)
  * @method mixed  select($database)
  * @method mixed  bgrewriteaof()
@@ -173,67 +173,89 @@ use Predis\Profile\ProfileInterface;
  * @method array  georadiusbymember($key, $member, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * @method int    ftcreate($index, array $options = null, array $schema)
+ * @method int    ftadd($index, $docId, $score, array $options = null, array $fields)
+ * @method int    ftaddhash($index, $docId, $score, array $options = null)
+ * @method int    ftalter($index, $field, array $options = null)
+ * @method array  ftinfo($index)
+ * @method array  ftsearch($index, $query, array $options = null)
+ * @method array  ftaggregate($index_name, $query_string, array $options = null)
+ * @method string ftexplain($index, $query)
+ * @method array  ftdel($index, $docId, $dd = null)
+ * @method array  ftget($index, $docId)
+ * @method array  ftmget($index, array $docIds)
+ * @method array  ftdrop($index, array $keepdocs = null)
+ * @method array  fttagvals($index, $field_name)
+ * @method int    ftsugadd($key, $string, $score, $options = null)
+ * @method array  ftsugget($key, $prefix, $options = null)
+ * @method int    ftsugdel($key, $string)
+ * @method int    ftsuglen($key)
+ * @method string ftsynadd($index, array $terms)
+ * @method int    ftsynupdate($index, $synGroupId, array $terms)
+ * @method array  ftsyndump($index)
+ *
+ * @author Paul Livorsi <paullivorsi@gmail.com>
  */
-interface ClientInterface
-{
-    /**
-     * Returns the server profile used by the client.
-     *
-     * @return ProfileInterface
-     */
-    public function getProfile();
+interface ClientInterface {
+	/**
+	 * Returns the server profile used by the client.
+	 *
+	 * @return ProfileInterface
+	 */
+	public function getProfile();
 
-    /**
-     * Returns the client options specified upon initialization.
-     *
-     * @return OptionsInterface
-     */
-    public function getOptions();
+	/**
+	 * Returns the client options specified upon initialization.
+	 *
+	 * @return OptionsInterface
+	 */
+	public function getOptions();
 
-    /**
-     * Opens the underlying connection to the server.
-     */
-    public function connect();
+	/**
+	 * Opens the underlying connection to the server.
+	 */
+	public function connect();
 
-    /**
-     * Closes the underlying connection from the server.
-     */
-    public function disconnect();
+	/**
+	 * Closes the underlying connection from the server.
+	 */
+	public function disconnect();
 
-    /**
-     * Returns the underlying connection instance.
-     *
-     * @return ConnectionInterface
-     */
-    public function getConnection();
+	/**
+	 * Returns the underlying connection instance.
+	 *
+	 * @return ConnectionInterface
+	 */
+	public function getConnection();
 
-    /**
-     * Creates a new instance of the specified Redis command.
-     *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
-     *
-     * @return CommandInterface
-     */
-    public function createCommand($method, $arguments = array());
+	/**
+	 * Creates a new instance of the specified Redis command.
+	 *
+	 * @param string $method Command ID.
+	 * @param array $arguments Arguments for the command.
+	 *
+	 * @return CommandInterface
+	 */
+	public function createCommand($method, $arguments = array());
 
-    /**
-     * Executes the specified Redis command.
-     *
-     * @param CommandInterface $command Command instance.
-     *
-     * @return mixed
-     */
-    public function executeCommand(CommandInterface $command);
+	/**
+	 * Executes the specified Redis command.
+	 *
+	 * @param CommandInterface $command Command instance.
+	 *
+	 * @return mixed
+	 */
+	public function executeCommand(CommandInterface $command);
 
-    /**
-     * Creates a Redis command with the specified arguments and sends a request
-     * to the server.
-     *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
-     *
-     * @return mixed
-     */
-    public function __call($method, $arguments);
+	/**
+	 * Creates a Redis command with the specified arguments and sends a request
+	 * to the server.
+	 *
+	 * @param string $method Command ID.
+	 * @param array $arguments Arguments for the command.
+	 *
+	 * @return mixed
+	 */
+	public function __call($method, $arguments);
 }

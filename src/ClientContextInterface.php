@@ -165,6 +165,29 @@ use Predis\Command\CommandInterface;
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
+ *
+ * @method int    ftcreate($index, array $options = null, array $schema)
+ * @method int    ftadd($index, $docId, $score, array $options = null, array $fields)
+ * @method int    ftaddhash($index, $docId, $score, array $options = null)
+ * @method int    ftalter($index, $field, array|string $options)
+ * @method array  ftinfo($index)
+ * @method array  ftsearch($index, $query, array $options = null, array $options = null)
+ * @method array  ftaggregate($index_name, $query_string, array $options = null)
+ * @method string ftexplain($index, $query)
+ * @method array  ftdel($index, $docId, $dd = null)
+ * @method array  ftget($index, $docId)
+ * @method array  ftmget($index, array $docIds)
+ * @method array  ftdrop($index, array $keepdocs = null)
+ * @method array  fttagvals($index, $field_name)
+ * @method int    ftsugadd($key, $string, $score, $options = null)
+ * @method array  ftsugget($key, $prefix, $options = null)
+ * @method int    ftsugdel($key, $string)
+ * @method int    ftsuglen($key)
+ * @method string ftsynadd($index, array $terms)
+ * @method int    ftsynupdate($index, $synGroupId, array $terms)
+ * @method array  ftsyndump($index)
+ *
+ * @author Paul Livorsi <paullivorsi@gmail.com>
  */
 interface ClientContextInterface
 {
