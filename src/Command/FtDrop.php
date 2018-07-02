@@ -42,4 +42,3 @@ class FtDrop extends Command {
 		return $arguments;
 	}
 }
-}
