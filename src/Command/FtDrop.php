@@ -30,11 +30,13 @@ class FtDrop extends Command {
 	 */
 	protected function filterArguments(array $arguments)
 	{
-		if (count($arguments) == 2 && is_array($arguments[1]))
+		if (count($arguments) == 2
+			&& is_array($arguments[1]))
 		{
 			$options = array_pop($arguments);
 			$arguments = array_merge($arguments, $options);
-		}elseif($arguments[1] == null)
+		} elseif (isset($arguments[1])
+			&& $arguments[1] == null)
 		{
 			array_pop($arguments);
 		}
