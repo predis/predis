@@ -30,7 +30,8 @@ class FtDel extends Command {
 	 */
 	protected function filterArguments(array $arguments)
 	{
-		if ($arguments[2] == null)
+		if (isset($arguments[2]) 
+			&& $arguments[2] == null)
 		{
 			array_pop($arguments);
 		}
