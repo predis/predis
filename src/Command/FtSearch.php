@@ -134,8 +134,7 @@ class FtSearch extends Command {
 		{
 			$normalized[] = 'RETURN';
 			if (isset($options['RETURN']) &&
-				is_array($options['RETURN']) &&
-				count($options['RETURN']) > 1)
+				is_array($options['RETURN']))
 			{
 				$normalized = array_merge($normalized, $options['RETURN']);
 			}
