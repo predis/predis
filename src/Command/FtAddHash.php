@@ -31,7 +31,9 @@ class FtAddHash extends Command {
 	protected function filterArguments(array $arguments)
 	{
 		$flattenedArguments = array($arguments[0], $arguments[1], $arguments[2]);
-		if ($arguments[3] !== null && is_array($arguments[3]))
+		if (isset($arguments[3]) &&
+			$arguments[3] !== null &&
+			is_array($arguments[3]))
 		{
 			$flattenedArguments = array_merge($flattenedArguments, $arguments[3]);
 		}
