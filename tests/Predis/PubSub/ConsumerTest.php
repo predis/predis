@@ -41,7 +41,7 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer over aggregate connections.
+     * @expectedExceptionMessage Cannot initialize a PUB/SUB consumer over cluster connections.
      */
     public function testPubSubConsumerDoesNotWorkOnClusters()
     {
