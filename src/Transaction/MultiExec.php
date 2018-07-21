@@ -16,7 +16,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
-use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\Aggregate\ClusterInterface;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -66,9 +66,9 @@ class MultiExec implements ClientContextInterface
      */
     private function assertClient(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof AggregateConnectionInterface) {
+        if ($client->getConnection() instanceof ClusterInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a MULTI/EXEC transaction over aggregate connections.'
+                'Cannot initialize a MULTI/EXEC transaction over cluster connections.'
             );
         }
 

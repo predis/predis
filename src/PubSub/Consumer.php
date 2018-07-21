@@ -14,7 +14,7 @@ namespace Predis\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
-use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\Aggregate\ClusterInterface;
 use Predis\NotSupportedException;
 
 /**
@@ -62,9 +62,9 @@ class Consumer extends AbstractConsumer
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof AggregateConnectionInterface) {
+        if ($client->getConnection() instanceof ClusterInterface) {
             throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer over aggregate connections.'
+                'Cannot initialize a PUB/SUB consumer over cluster connections.'
             );
         }
 
