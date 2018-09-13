@@ -103,13 +103,11 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testMethodGetSentinelConnectionReturnsFirstAvailableSentinel()
+    public function testMethodGetSentinelConnectionReturnsRandomAvailableSentinel()
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel&alias=sentinel1');
-        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel&alias=sentinel2');
-        $sentinel3 = $this->getMockSentinelConnection('tcp://127.0.0.1:5383?role=sentinel&alias=sentinel3');
 
-        $replication = $this->getReplicationConnection('svc', array($sentinel1, $sentinel2, $sentinel3));
+        $replication = $this->getReplicationConnection('svc', array($sentinel1));
 
         $this->assertSame($sentinel1, $replication->getSentinelConnection());
     }
