@@ -282,7 +282,9 @@ class SentinelReplication implements ReplicationInterface
             if (!$this->sentinels) {
                 throw new \Predis\ClientException('No sentinel server available for autodiscovery.');
             }
-
+            
+            shuffle($this->sentinels);
+            
             $sentinel = array_shift($this->sentinels);
             $this->sentinelConnection = $this->createSentinelConnection($sentinel);
         }
