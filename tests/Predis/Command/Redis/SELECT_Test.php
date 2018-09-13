@@ -71,7 +71,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR invalid DB index
+     * @expectedExceptionMessage ERR DB index is out of range
      */
     public function testThrowsExceptionOnUnexpectedDatabase()
     {
