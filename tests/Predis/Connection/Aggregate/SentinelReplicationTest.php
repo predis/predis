@@ -315,6 +315,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6382',
                               'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -324,6 +335,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6383',
                               'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -422,6 +444,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6382',
                               'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -431,6 +464,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6383',
                               'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -520,6 +564,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6382',
                               'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -918,6 +973,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6382',
                               'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
                               'flags', 'slave,s_down,disconnected',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -1001,6 +1067,17 @@ class SentinelReplicationTest extends PredisTestCase
                               'port', '6383',
                               'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
                               'flags', 'slave',
+                              'link-pending-commands', '0',
+                              'link-refcount', '0',
+                              'last-ping-sent', '0',
+                              'last-ok-ping-reply', '481',
+                              'last-ping-reply', '481',
+                              'down-after-milliseconds', '5000',
+                              'info-refresh', '7663',
+                              'role-reported', 'slave',
+                              'role-reported-time', '550760',
+                              'master-link-down-time', '0',
+                              'master-link-status', 'ok',
                               'master-host', '127.0.0.1',
                               'master-port', '6381',
                           ),
@@ -1219,6 +1296,60 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertEquals($slave1, $unserialized->getConnectionById('slave1'));
         $this->assertEquals($master, $unserialized->getConnectionById('slave2'));
         $this->assertEquals($strategy, $unserialized->getReplicationStrategy());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionReturnsMasterForReadOnlyOperationsOnBrokenLinkWithSlaves()
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
+        $sentinel1->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('slaves', 'svc')
+            ))
+            ->will($this->returnValue(
+                array(
+                    array(
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'link-pending-commands', '0',
+                        'link-refcount', '0',
+                        'last-ping-sent', '0',
+                        'last-ok-ping-reply', '481',
+                        'last-ping-reply', '481',
+                        'down-after-milliseconds', '5000',
+                        'info-refresh', '7663',
+                        'role-reported', 'slave',
+                        'role-reported-time', '550760',
+                        'master-link-down-time', '0',
+                        'master-link-status', 'err',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ),
+                )
+            ));
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
+        $master->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(false));
+        $master->expects($this->at(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('ROLE'))
+            ->will($this->returnValue(array(
+                'master', '0', array(),
+            )));
+
+        $replication = $this->getReplicationConnection('svc', array($sentinel1));
+
+        $replication->add($master);
+
+        $replication->getConnection(Command\RawCommand::create('get', 'key'));
     }
 
     // ******************************************************************** //
