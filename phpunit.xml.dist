@@ -39,12 +39,12 @@
     <php>
         <!-- Redis -->
         <const name="REDIS_SERVER_VERSION" value="3.2" />
-        <const name="REDIS_SERVER_HOST" value="172.17.0.1" />
+        <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
         <const name="REDIS_SERVER_DBNUM" value="15" />
 
         <!-- Webdis -->
-        <const name="WEBDIS_SERVER_HOST" value="172.17.0.1" />
+        <const name="WEBDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="WEBDIS_SERVER_PORT" value="7379" />
     </php>
 </phpunit>
