@@ -63,4 +63,11 @@ interface ConnectionInterface
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);
+
+	/**
+	 * Returns a string representation of the connection.
+	 *
+	 * @return string
+	 */
+	public function __toString();
 }

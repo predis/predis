@@ -21,13 +21,6 @@ use Predis\Command\CommandInterface;
 interface NodeConnectionInterface extends ConnectionInterface
 {
     /**
-     * Returns a string representation of the connection.
-     *
-     * @return string
-     */
-    public function __toString();
-
-    /**
      * Returns the underlying resource used to communicate with Redis.
      *
      * @return mixed
