@@ -90,31 +90,6 @@ class ReplicationStrategy
     }
 
     /**
-     * Checks if a SORT command is a readable operation by parsing the arguments
-     * array of the specified commad instance.
-     *
-     * @param CommandInterface $command Command instance.
-     *
-     * @return bool
-     */
-    protected function isSortReadOnly(CommandInterface $command)
-    {
-        $arguments = $command->getArguments();
-        $argc = count($arguments);
-
-        if ($argc > 1) {
-            for ($i = 1; $i < $argc; ++$i) {
-                $argument = strtoupper($arguments[$i]);
-                if ($argument === 'STORE') {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Checks if BITFIELD performs a read-only operation by looking for certain
      * SET and INCRYBY modifiers in the arguments array of the command.
      *
@@ -292,7 +267,6 @@ class ReplicationStrategy
             'BITPOS' => true,
             'TIME' => true,
             'PFCOUNT' => true,
-            'SORT' => array($this, 'isSortReadOnly'),
             'BITFIELD' => array($this, 'isBitfieldReadOnly'),
             'GEOHASH' => true,
             'GEOPOS' => true,
