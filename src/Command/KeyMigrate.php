@@ -33,7 +33,7 @@ class KeyMigrate extends Command
     {
         if (is_array(end($arguments))) {
             foreach (array_pop($arguments) as $modifier => $value) {
-                $modifier = strtoupper($modifier);
+                $modifier = mb_strtoupper($modifier);
 
                 if ($modifier === 'COPY' && $value == true) {
                     $arguments[] = $modifier;

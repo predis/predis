@@ -196,7 +196,7 @@ class KeyPrefixProcessor implements ProcessorInterface
     {
         if ($command instanceof PrefixableCommandInterface) {
             $command->prefixKeys($this->prefix);
-        } elseif (isset($this->commands[$commandID = strtoupper($command->getId())])) {
+        } elseif (isset($this->commands[$commandID = mb_strtoupper($command->getId())])) {
             call_user_func($this->commands[$commandID], $command, $this->prefix);
         }
     }
@@ -219,7 +219,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      */
     public function setCommandHandler($commandID, $callback = null)
     {
-        $commandID = strtoupper($commandID);
+        $commandID = mb_strtoupper($commandID);
 
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
@@ -345,7 +345,7 @@ class KeyPrefixProcessor implements ProcessorInterface
 
             if (($count = count($arguments)) > 1) {
                 for ($i = 1; $i < $count; ++$i) {
-                    switch (strtoupper($arguments[$i])) {
+                    switch (mb_strtoupper($arguments[$i])) {
                         case 'BY':
                         case 'STORE':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";
@@ -434,7 +434,7 @@ class KeyPrefixProcessor implements ProcessorInterface
 
             if (($count = count($arguments)) > $startIndex) {
                 for ($i = $startIndex; $i < $count; ++$i) {
-                    switch (strtoupper($arguments[$i])) {
+                    switch (mb_strtoupper($arguments[$i])) {
                         case 'STORE':
                         case 'STOREDIST':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";

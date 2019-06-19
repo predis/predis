@@ -53,7 +53,7 @@ class ZSetRangeByScore extends ZSetRange
         $arguments = $this->getArguments();
 
         for ($i = 3; $i < count($arguments); ++$i) {
-            switch (strtoupper($arguments[$i])) {
+            switch (mb_strtoupper($arguments[$i])) {
                 case 'WITHSCORES':
                     return true;
 

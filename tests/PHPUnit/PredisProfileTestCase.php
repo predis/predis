@@ -252,7 +252,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
                   ->will($this->returnCallback(function (CommandInterface $cmd) use (&$argsRef) {
-                        $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
+                        $cmd->setRawArguments($argsRef = array_map('mb_strtoupper', $cmd->getArguments()));
                     }));
 
         $profile = $this->getProfile();

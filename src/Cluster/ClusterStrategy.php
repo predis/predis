@@ -202,7 +202,7 @@ abstract class ClusterStrategy implements StrategyInterface
      */
     public function setCommandHandler($commandID, $callback = null)
     {
-        $commandID = strtoupper($commandID);
+        $commandID = mb_strtoupper($commandID);
 
         if (!isset($callback)) {
             unset($this->commands[$commandID]);
@@ -289,7 +289,7 @@ abstract class ClusterStrategy implements StrategyInterface
         $keys = array($firstKey);
 
         for ($i = 1; $i < $argc; ++$i) {
-            if (strtoupper($arguments[$i]) === 'STORE') {
+            if (mb_strtoupper($arguments[$i]) === 'STORE') {
                 $keys[] = $arguments[++$i];
             }
         }
@@ -348,7 +348,7 @@ abstract class ClusterStrategy implements StrategyInterface
             $keys = array($arguments[0]);
 
             for ($i = $startIndex; $i < $argc; ++$i) {
-                $argument = strtoupper($arguments[$i]);
+                $argument = mb_strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     $keys[] = $arguments[++$i];
                 }

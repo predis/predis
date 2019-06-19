@@ -34,7 +34,7 @@ class ZSetRange extends Command
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);
 
-            if ($lastType === 'string' && strtoupper($arguments[3]) === 'WITHSCORES') {
+            if ($lastType === 'string' && mb_strtoupper($arguments[3]) === 'WITHSCORES') {
                 // Used for compatibility with older versions
                 $arguments[3] = array('WITHSCORES' => true);
                 $lastType = 'array';
@@ -82,7 +82,7 @@ class ZSetRange extends Command
             return false;
         }
 
-        return strtoupper($arguments[3]) === 'WITHSCORES';
+        return mb_strtoupper($arguments[3]) === 'WITHSCORES';
     }
 
     /**

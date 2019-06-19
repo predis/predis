@@ -66,7 +66,7 @@ class KeySort extends Command
         }
 
         if (isset($sortParams['SORT'])) {
-            $query[] = strtoupper($sortParams['SORT']);
+            $query[] = mb_strtoupper($sortParams['SORT']);
         }
 
         if (isset($sortParams['ALPHA']) && $sortParams['ALPHA'] == true) {

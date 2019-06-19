@@ -52,7 +52,7 @@ class GeospatialGeoRadius extends Command
             }
 
             if (isset($options['SORT'])) {
-                $arguments[] = strtoupper($options['SORT']);
+                $arguments[] = mb_strtoupper($options['SORT']);
             }
 
             if (isset($options['STORE'])) {

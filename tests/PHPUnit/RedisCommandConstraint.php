@@ -27,10 +27,10 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
     public function __construct($command = null, array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
-            $this->commandID = strtoupper($command->getId());
+            $this->commandID = mb_strtoupper($command->getId());
             $this->arguments = $arguments ?: $command->getArguments();
         } else {
-            $this->commandID = strtoupper($command);
+            $this->commandID = mb_strtoupper($command);
             $this->arguments = $arguments;
         }
     }
@@ -44,7 +44,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
             return false;
         }
 
-        if ($this->commandID && strtoupper($other->getId()) !== $this->commandID) {
+        if ($this->commandID && mb_strtoupper($other->getId()) !== $this->commandID) {
             return false;
         }
 

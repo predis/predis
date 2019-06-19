@@ -40,7 +40,7 @@ class RawCommand implements CommandInterface
             );
         }
 
-        $this->commandID = strtoupper(array_shift($arguments));
+        $this->commandID = mb_strtoupper(array_shift($arguments));
         $this->arguments = $arguments;
     }
 

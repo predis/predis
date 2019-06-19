@@ -104,7 +104,7 @@ class ReplicationStrategy
 
         if ($argc > 1) {
             for ($i = 1; $i < $argc; ++$i) {
-                $argument = strtoupper($arguments[$i]);
+                $argument = mb_strtoupper($arguments[$i]);
                 if ($argument === 'STORE') {
                     return false;
                 }
@@ -129,7 +129,7 @@ class ReplicationStrategy
 
         if ($argc >= 2) {
             for ($i = 1; $i < $argc; ++$i) {
-                $argument = strtoupper($arguments[$i]);
+                $argument = mb_strtoupper($arguments[$i]);
                 if ($argument === 'SET' || $argument === 'INCRBY') {
                     return false;
                 }
@@ -155,7 +155,7 @@ class ReplicationStrategy
 
         if ($argc > $startIndex) {
             for ($i = $startIndex; $i < $argc; ++$i) {
-                $argument = strtoupper($arguments[$i]);
+                $argument = mb_strtoupper($arguments[$i]);
                 if ($argument === 'STORE' || $argument === 'STOREDIST') {
                     return false;
                 }
@@ -177,7 +177,7 @@ class ReplicationStrategy
      */
     public function setCommandReadOnly($commandID, $readonly = true)
     {
-        $commandID = strtoupper($commandID);
+        $commandID = mb_strtoupper($commandID);
 
         if ($readonly) {
             $this->readonly[$commandID] = $readonly;
