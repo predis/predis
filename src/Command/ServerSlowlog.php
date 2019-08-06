@@ -40,6 +40,8 @@ class ServerSlowlog extends Command
                     'timestamp' => $entry[1],
                     'duration' => $entry[2],
                     'command' => $entry[3],
+                    'clientIp' => isset($entry[4]) ? $entry[4] : null,
+                    'clientName' => isset($entry[5]) ? $entry[5] : null,
                 );
             }
 
