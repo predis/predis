@@ -12,7 +12,7 @@ before_script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
 script:
-  - vendor/bin/phpunit -c phpunit.xml.travisci
+  - travis_retry vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   fast_finish: true
   include:
