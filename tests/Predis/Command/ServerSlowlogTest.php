@@ -61,7 +61,9 @@ class ServerSlowlogTest extends PredisCommandTestCase
                 'id' => 0,
                 'timestamp' => 1323163469,
                 'duration' => 12451,
-                'command' => array('SORT', 'list:unordered'),
+                'command' => array('SORT', 'list:unordered'),#
+                'clientIp' => null,
+                'clientName' => null,
             ),
         );
 
