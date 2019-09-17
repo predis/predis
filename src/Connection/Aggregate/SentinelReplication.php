@@ -657,8 +657,7 @@ class SentinelReplication implements ReplicationInterface
 
         SENTINEL_RETRY: {
             try {
-                $connection = $this->getConnection($command);
-                $response = $connection->$method($command);
+                $response = $this->getConnection($command)->$method($command);
 
                 // most slaves will be busy, ask master its right
                 if ($response instanceof ErrorResponseInterface && $response->getErrorType() === 'LOADING') {
