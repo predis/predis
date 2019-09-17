@@ -660,8 +660,9 @@ class SentinelReplication implements ReplicationInterface
                 $connection = $this->getConnection($command);
                 $response = $connection->$method($command);
 
+                // most slaves will be busy, ask master its right
                 if ($response instanceof ErrorResponseInterface && $response->getErrorType() === 'LOADING') {
-                    throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
+                    $response = $this->getMaster()->$method($command);
                 }
             } catch (CommunicationException $exception) {
                 $this->wipeServerList();
