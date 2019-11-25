@@ -462,7 +462,7 @@ found [on its project page](http://travis-ci.org/nrk/predis).
 ### Project related links ###
 
 - [Source code](https://github.com/nrk/predis)
-- [Wiki](https://wiki.github.com/nrk/predis)
+- [Wiki](https://github.com/nrk/predis/wiki)
 - [Issue tracker](https://github.com/nrk/predis/issues)
 - [PEAR channel](http://pear.nrk.io)
 
