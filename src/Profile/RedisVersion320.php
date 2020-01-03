@@ -276,6 +276,11 @@ class RedisVersion320 extends RedisProfile
             'GEODIST' => 'Predis\Command\GeospatialGeoDist',
             'GEORADIUS' => 'Predis\Command\GeospatialGeoRadius',
             'GEORADIUSBYMEMBER' => 'Predis\Command\GeospatialGeoRadiusByMember',
+
+            /* ---------------- Redis 5.0 ---------------- */
+
+            /* commands operating on sorted sets */
+            'ZPOPMAX' => 'Predis\Command\ZSetRemoveMaxByScore',
         );
     }
 }

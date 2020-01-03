@@ -197,6 +197,7 @@ class RedisVersion320Test extends PredisProfileTestCase
             156 => 'GEODIST',
             157 => 'GEORADIUS',
             158 => 'GEORADIUSBYMEMBER',
+            159 => 'ZPOPMAX',
         );
     }
 }

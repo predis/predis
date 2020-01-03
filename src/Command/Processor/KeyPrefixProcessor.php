@@ -166,6 +166,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEODIST' => 'static::first',
             'GEORADIUS' => 'static::georadius',
             'GEORADIUSBYMEMBER' => 'static::georadius',
+            /* ---------------- Redis 5.0.0 ---------------- */
+            'ZPOPMAX' => 'static::first'
         );
     }
 

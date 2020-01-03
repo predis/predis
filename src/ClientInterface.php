@@ -171,6 +171,7 @@ use Predis\Profile\ProfileInterface;
  * @method string geodist($key, $member1, $member2, $unit = null)
  * @method array  georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method array  georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method array  zpopmax()
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
