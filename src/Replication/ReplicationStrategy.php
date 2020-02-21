@@ -24,6 +24,7 @@ class ReplicationStrategy
     protected $disallowed;
     protected $readonly;
     protected $readonlySHA1;
+    protected $nonWriteMaster;
 
     /**
      *
@@ -32,6 +33,7 @@ class ReplicationStrategy
     {
         $this->disallowed = $this->getDisallowedOperations();
         $this->readonly = $this->getReadOnlyOperations();
+        $this->nonWriteMaster = $this->getNonWriteMasterOperations();
         $this->readonlySHA1 = array();
     }
 
@@ -74,6 +76,18 @@ class ReplicationStrategy
         }
 
         return false;
+    }
+
+    /**
+     * Returns if the specified command is a command which has to be executed on master but don't
+     * change any data
+     *
+     * @param CommandInterface $command
+     * @return bool
+     */
+    public function isNonWriteOperation(CommandInterface $command) {
+        $id = $command->getId();
+        return isset($this->nonWriteMaster[$id]) || isset($this->readonly[$id]);
     }
 
     /**
@@ -216,16 +230,26 @@ class ReplicationStrategy
     {
         return array(
             'SHUTDOWN' => true,
-            'INFO' => true,
-            'DBSIZE' => true,
-            'LASTSAVE' => true,
             'CONFIG' => true,
             'MONITOR' => true,
             'SLAVEOF' => true,
-            'SAVE' => true,
-            'BGSAVE' => true,
             'BGREWRITEAOF' => true,
             'SLOWLOG' => true,
+        );
+    }
+
+    /**
+     * Returns the default list of master commands which are non writing
+     *
+     * @return array
+     */
+    protected function getNonWriteMasterOperations() {
+        return array(
+            'INFO' => true,
+            'DBSIZE' => true,
+            'LASTSAVE' => true,
+            'SAVE' => true,
+            'BGSAVE' => true,
         );
     }
 

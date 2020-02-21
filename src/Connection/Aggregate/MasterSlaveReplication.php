@@ -147,7 +147,11 @@ class MasterSlaveReplication implements ReplicationInterface
             if ($this->strategy->isReadOperation($command) && $slave = $this->pickSlave()) {
                 $this->current = $slave;
             } else {
-                $this->current = $this->getMasterOrDie();
+                if ($this->strategy->isNonWriteOperation($command)) {
+                    return $this->getMasterOrDie();
+                } else {
+                    $this->current = $this->getMasterOrDie();
+                }
             }
 
             return $this->current;
@@ -158,6 +162,9 @@ class MasterSlaveReplication implements ReplicationInterface
         }
 
         if (!$this->strategy->isReadOperation($command) || !$this->slaves) {
+            if ($this->strategy->isNonWriteOperation($command)) {
+                return $this->getMasterOrDie();
+            }
             $this->current = $master;
         }
 
@@ -348,19 +355,19 @@ class MasterSlaveReplication implements ReplicationInterface
         }
 
         RETRY_FETCH: {
-            try {
-                if ($connection = $this->getMaster()) {
-                    $this->discoverFromMaster($connection, $this->connectionFactory);
-                } elseif ($connection = $this->pickSlave()) {
-                    $this->discoverFromSlave($connection, $this->connectionFactory);
-                } else {
-                    throw new ClientException('No connection available for discovery');
-                }
-            } catch (ConnectionException $exception) {
-                $this->remove($connection);
-                goto RETRY_FETCH;
+        try {
+            if ($connection = $this->getMaster()) {
+                $this->discoverFromMaster($connection, $this->connectionFactory);
+            } elseif ($connection = $this->pickSlave()) {
+                $this->discoverFromSlave($connection, $this->connectionFactory);
+            } else {
+                throw new ClientException('No connection available for discovery');
             }
+        } catch (ConnectionException $exception) {
+            $this->remove($connection);
+            goto RETRY_FETCH;
         }
+    }
     }
 
     /**
@@ -431,46 +438,46 @@ class MasterSlaveReplication implements ReplicationInterface
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         RETRY_COMMAND: {
-            try {
-                $connection = $this->getConnection($command);
-                $response = $connection->$method($command);
+        try {
+            $connection = $this->getConnection($command);
+            $response = $connection->$method($command);
 
-                if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
-                    throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
-                }
-            } catch (ConnectionException $exception) {
-                $connection = $exception->getConnection();
-                $connection->disconnect();
-
-                if ($connection === $this->master && !$this->autoDiscovery) {
-                    // Throw immediately when master connection is failing, even
-                    // when the command represents a read-only operation, unless
-                    // automatic discovery has been enabled.
-                    throw $exception;
-                } else {
-                    // Otherwise remove the failing slave and attempt to execute
-                    // the command again on one of the remaining slaves...
-                    $this->remove($connection);
-                }
-
-                // ... that is, unless we have no more connections to use.
-                if (!$this->slaves && !$this->master) {
-                    throw $exception;
-                } elseif ($this->autoDiscovery) {
-                    $this->discover();
-                }
-
-                goto RETRY_COMMAND;
-            } catch (MissingMasterException $exception) {
-                if ($this->autoDiscovery) {
-                    $this->discover();
-                } else {
-                    throw $exception;
-                }
-
-                goto RETRY_COMMAND;
+            if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
+                throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
             }
+        } catch (ConnectionException $exception) {
+            $connection = $exception->getConnection();
+            $connection->disconnect();
+
+            if ($connection === $this->master && !$this->autoDiscovery) {
+                // Throw immediately when master connection is failing, even
+                // when the command represents a read-only operation, unless
+                // automatic discovery has been enabled.
+                throw $exception;
+            } else {
+                // Otherwise remove the failing slave and attempt to execute
+                // the command again on one of the remaining slaves...
+                $this->remove($connection);
+            }
+
+            // ... that is, unless we have no more connections to use.
+            if (!$this->slaves && !$this->master) {
+                throw $exception;
+            } elseif ($this->autoDiscovery) {
+                $this->discover();
+            }
+
+            goto RETRY_COMMAND;
+        } catch (MissingMasterException $exception) {
+            if ($this->autoDiscovery) {
+                $this->discover();
+            } else {
+                throw $exception;
+            }
+
+            goto RETRY_COMMAND;
         }
+    }
 
         return $response;
     }
