@@ -16,7 +16,7 @@ matrix:
   fast_finish: true
   include:
     - php: 5.3
-      dist: trusty
+      dist: precise
     - php: 5.4
       dist: trusty
     - php: 5.5
@@ -25,5 +25,5 @@ matrix:
       dist: trusty
     - php: 7.0
     - php: 7.1
-    - php: hhvm
+    - php: hhvm-3.18
       dist: trusty
