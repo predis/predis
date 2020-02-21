@@ -33,3 +33,4 @@ matrix:
       dist: trusty
   allow_failures:
     - php: nightly
+    - php: 7.4
