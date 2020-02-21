@@ -758,11 +758,11 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
+     * @expectedExceptionMessage The command 'SHUTDOWN' is not allowed in replication mode.
      */
     public function testThrowsExceptionOnNonSupportedCommand()
     {
-        $cmd = Profile\Factory::getDefault()->createCommand('info');
+        $cmd = Profile\Factory::getDefault()->createCommand('shutdown');
 
         $replication = new MasterSlaveReplication();
         $replication->add($this->getMockConnection('tcp://host1?alias=master'));

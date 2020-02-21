@@ -76,6 +76,24 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testNonWriteMasterCommands()
+    {
+        $profile = Profile\Factory::getDevelopment();
+        $strategy = new ReplicationStrategy();
+
+        foreach ($this->getExpectedCommands('nonWriteMaster') as $commandId) {
+            $command = $profile->createCommand($commandId);
+
+            $this->assertTrue(
+                $strategy->isNonWriteOperation($command),
+                "$commandId is expected to be a non write master operation."
+            );
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSortCommand()
     {
         $profile = Profile\Factory::getDevelopment();
@@ -196,14 +214,14 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
+     * @expectedExceptionMessage The command 'SHUTDOWN' is not allowed in replication mode.
      */
     public function testUsingDisallowedCommandThrowsException()
     {
         $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
-        $command = $profile->createCommand('INFO');
+        $command = $profile->createCommand('SHUTDOWN');
         $strategy->isReadOperation($command);
     }
 
@@ -364,14 +382,14 @@ class ReplicationStrategyTest extends PredisTestCase
             'OBJECT' => 'read',
             'TIME' => 'read',
             'SHUTDOWN' => 'disallowed',
-            'INFO' => 'disallowed',
-            'DBSIZE' => 'disallowed',
-            'LASTSAVE' => 'disallowed',
+            'INFO' => 'nonWriteMaster',
+            'DBSIZE' => 'nonWriteMaster',
+            'LASTSAVE' => 'nonWriteMaster',
             'CONFIG' => 'disallowed',
             'MONITOR' => 'disallowed',
             'SLAVEOF' => 'disallowed',
-            'SAVE' => 'disallowed',
-            'BGSAVE' => 'disallowed',
+            'SAVE' => 'nonWriteMaster',
+            'BGSAVE' => 'nonWriteMaster',
             'BGREWRITEAOF' => 'disallowed',
             'SLOWLOG' => 'disallowed',
 
