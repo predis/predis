@@ -25,5 +25,11 @@ matrix:
       dist: trusty
     - php: 7.0
     - php: 7.1
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4
+    - php: nightly
     - php: hhvm-3.18
       dist: trusty
+  allow_failures:
+    - php: nightly
