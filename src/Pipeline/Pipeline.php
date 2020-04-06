@@ -138,7 +138,7 @@ class Pipeline implements ClientContextInterface
 
         while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
-            $response = $connection->readResponse($command);
+            $response = $connection->executeCommand($command);
 
             if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
