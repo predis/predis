@@ -525,7 +525,13 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     public function readResponse(CommandInterface $command)
     {
-        return $this->retryCommandOnFailure($command, __FUNCTION__);
+        $response = $this->retryCommandOnFailure($command, __FUNCTION__);
+
+        if ($response instanceof ErrorResponseInterface) {
+            return $this->onErrorResponse($command, $response);
+        }
+
+        return $response;
     }
 
     /**

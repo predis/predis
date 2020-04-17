@@ -138,7 +138,7 @@ class Pipeline implements ClientContextInterface
 
         while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
-            $response = $connection->executeCommand($command);
+            $response = $connection->readResponse($command);
 
             if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
@@ -214,6 +214,9 @@ class Pipeline implements ClientContextInterface
             $this->flushPipeline();
         } catch (\Exception $exception) {
             // NOOP
+        } finally {
+            // Clear current pipeline even in case if we had problems
+            $this->flushPipeline(false);
         }
 
         $this->setRunning(false);
