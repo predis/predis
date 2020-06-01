@@ -21,6 +21,7 @@
 
 function executeWithBackup($file, $callback)
 {
+    ////////
     $exception = null;
     $backup = "$file.backup";
 
