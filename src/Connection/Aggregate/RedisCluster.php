@@ -544,12 +544,26 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         $failure = false;
+        $attempts = 0;
 
         RETRY_COMMAND: {
             try {
                 $response = $this->getConnection($command)->$method($command);
             } catch (ConnectionException $exception) {
+                $attempts++;
                 $connection = $exception->getConnection();
+
+                // If this is first error - let's try re-connect to the same host
+                if ($attempts == 1) {
+                    try {
+                        $connection->connect();
+                        goto RETRY_COMMAND;
+
+                    } catch (\Exception $e) {}
+                }
+
+                // Other errors are considered as cluster problems,
+                // So that we need to disconnect this connection and ask new cluster state if failed next try
                 $connection->disconnect();
 
                 $this->remove($connection);
