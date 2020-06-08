@@ -47,6 +47,10 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
     private $useClusterSlots = true;
+
+    /**
+     * @var \Predis\Connection\AbstractConnection[]
+     */
     private $pool = array();
     private $slots = array();
     private $slotsMap;
@@ -209,6 +213,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * @param NodeConnectionInterface $connection Connection to a node of the cluster.
      *
      * @return mixed
+     * @throws ConnectionException
+     * @throws ClientException
      */
     private function queryClusterNodeForSlotsMap(NodeConnectionInterface $connection)
     {
@@ -219,7 +225,20 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             try {
                 $response = $connection->executeCommand($command);
             } catch (ConnectionException $exception) {
+                ++$retries;
                 $connection = $exception->getConnection();
+
+                // If this is first error - let's try re-connect to the same host
+                if ($retries == 1) {
+                    try {
+                        $connection->connect();
+                        goto RETRY_COMMAND;
+
+                    } catch (\Exception $e) {}
+                }
+
+                // Other errors are considered as cluster problems,
+                // So that we need to disconnect this connection and ask new cluster state if failed next try
                 $connection->disconnect();
 
                 $this->remove($connection);
@@ -232,7 +251,6 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
                 }
 
-                ++$retries;
                 goto RETRY_COMMAND;
             }
         }
@@ -537,24 +555,26 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * have to agree that something changed in the configuration of the cluster.
      *
      * @param CommandInterface $command Command instance.
-     * @param string           $method  Actual method.
+     * @param string $method Actual method.
      *
      * @return mixed
+     * @throws ConnectionException
+     * @throws NotSupportedException
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         $failure = false;
-        $attempts = 0;
+        $retries = 0;
 
         RETRY_COMMAND: {
             try {
                 $response = $this->getConnection($command)->$method($command);
             } catch (ConnectionException $exception) {
-                $attempts++;
+                $retries++;
                 $connection = $exception->getConnection();
 
                 // If this is first error - let's try re-connect to the same host
-                if ($attempts == 1) {
+                if ($retries == 1) {
                     try {
                         $connection->connect();
                         goto RETRY_COMMAND;
