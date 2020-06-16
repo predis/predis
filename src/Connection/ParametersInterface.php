@@ -30,6 +30,7 @@ namespace Predis\Connection;
  * @property-read bool   persistent         Leaves the connection open after a GC collection.
  * @property-read string password           Password to access Redis (see the AUTH command).
  * @property-read string database           Database index (see the SELECT command).
+ * @property-read string verify_connect     Verify connection with ECHO command (useful for persistent conneciton problems)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

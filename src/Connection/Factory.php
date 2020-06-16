@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use Predis\Command\ConnectionInitEcho;
 use Predis\Command\RawCommand;
 
 /**
@@ -177,6 +178,15 @@ class Factory implements FactoryInterface
             $connection->addConnectCommand(
                 new RawCommand(array('AUTH', $parameters->password))
             );
+        }
+
+        if (isset($parameters->verify_connect)) {
+            $id = substr(mt_rand(), -4);
+
+            $helloCommand = new ConnectionInitEcho();
+            $helloCommand->setRawArguments([$id]);
+
+            $connection->addConnectCommand($helloCommand);
         }
 
         if (isset($parameters->database)) {

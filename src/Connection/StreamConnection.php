@@ -168,10 +168,6 @@ class StreamConnection extends AbstractConnection
         if (isset($parameters->persistent)) {
             if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
                 $flags |= STREAM_CLIENT_PERSISTENT;
-
-                if ($persistent === null) {
-                    $address = "{$address}/{$parameters->persistent}";
-                }
             }
         }
 
@@ -261,6 +257,12 @@ class StreamConnection extends AbstractConnection
 
                 if ($response instanceof ErrorResponseInterface) {
                     $this->onConnectionError("`{$command->getId()}` failed: $response", 0);
+                }
+
+                if ($this->parameters->verify_connect) {
+                    if ($command->parseResponse($response) instanceof ErrorResponseInterface) {
+                        $this->onConnectionError("`{$command->getId()}` failed: $response", 0);
+                    }
                 }
             }
         }
