@@ -225,6 +225,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 // If this is first error - let's try re-connect to the same host
                 if ($retries == 1) {
                     try {
+                        if ($exception->shouldResetConnection()) {
+                            $connection->disconnect();
+                        }
                         $connection->connect();
                         goto RETRY_COMMAND;
 
@@ -519,6 +522,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 // If this is first error - let's try re-connect to the same host
                 if ($retries == 1) {
                     try {
+                        if ($exception->shouldResetConnection()) {
+                            $connection->disconnect();
+                        }
                         $connection->connect();
                         goto RETRY_COMMAND;
 
