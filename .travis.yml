@@ -1,18 +1,19 @@
 language: php
-sudo: false
+os: linux
+dist: xenial
 branches:
   except:
     - v0.5
     - v0.6
     - v0.6-PHP_5.2
     - documentation
-services: redis-server
+services: redis
 before_script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
 script:
   - vendor/bin/phpunit -c phpunit.xml.travisci
-matrix:
+jobs:
   fast_finish: true
   include:
     - php: 5.3
