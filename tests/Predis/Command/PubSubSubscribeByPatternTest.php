@@ -145,7 +145,7 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessageRegExp /ERR only .* allowed in this context/
+     * @expectedExceptionMessageRegExp /ERR.*only .* allowed in this context/
      */
     public function testCannotSendOtherCommandsAfterPsubscribe()
     {
