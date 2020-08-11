@@ -71,7 +71,7 @@ class ConnectionSelectTest extends PredisCommandTestCase
     /**
      * @group connected
      * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR DB index is out of range
+     * @expectedExceptionMessageRegExp /ERR.*DB index/
      */
     public function testThrowsExceptionOnUnexpectedDatabaseRange()
     {

@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.9"
+        "php": ">=5.3.9",
+        "cweagans/composer-patches": "^1.6"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8"
@@ -27,5 +28,17 @@
     },
     "autoload": {
         "psr-4": {"Predis\\": "src/"}
-    }
+    },
+    "extra": {
+ 		"composer-exit-on-patch-failure": true,
+ 		"patches": {
+ 			"phpunit/phpunit-mock-objects": {
+ 				"Fix PHP 7 and 8 compatibility": "./tests/phpunit_mock_objects.patch"
+ 			},
+ 			"phpunit/phpunit": {
+ 				"Fix PHP 7 compatibility": "./tests/phpunit_php7.patch",
+ 				"Fix PHP 8 compatibility": "./tests/phpunit_php8.patch"
+ 			}
+ 		}
+ 	}
 }
