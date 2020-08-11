@@ -1,35 +1,24 @@
 <?php
 
-/*
- * This file is part of the Predis package.
- *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Predis\Profile;
 
-/**
- * Server profile for Redis 3.0.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
- */
-class RedisVersion320 extends RedisProfile
+
+class RedisVersion500 extends RedisProfile
 {
+
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getVersion()
     {
-        return '3.2';
+        return '5.0';
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function getSupportedCommands()
+    protected function getSupportedCommands()
     {
         return array(
             /* ---------------- Redis 1.2 ---------------- */
@@ -276,6 +265,11 @@ class RedisVersion320 extends RedisProfile
             'GEODIST' => 'Predis\Command\GeospatialGeoDist',
             'GEORADIUS' => 'Predis\Command\GeospatialGeoRadius',
             'GEORADIUSBYMEMBER' => 'Predis\Command\GeospatialGeoRadiusByMember',
+
+            /* ---------------- Redis 5.0 ---------------- */
+
+            /* commands operating on sorted sets */
+            'ZPOPMAX' => 'Predis\Command\ZSetRemoveMaxByScore',
         );
     }
 }
