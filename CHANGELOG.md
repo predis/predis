@@ -1,4 +1,4 @@
-v1.1.2 (2017-xx-xx)
+v1.1.2 (2020-08-11)
 ================================================================================
 
 - __FIX__: pure CRC16 implementation failed to calculate the correct hash when
