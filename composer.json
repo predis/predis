@@ -39,7 +39,9 @@
         "ext-curl": "Allows access to Webdis when paired with phpiredis"
     },
     "autoload": {
-        "psr-4": {"Predis\\": "src/"}
+        "psr-4": {
+            "Predis\\": "src/"
+        }
     },
     "extra": {
  		"composer-exit-on-patch-failure": true,
