@@ -9,7 +9,7 @@ Update Laravel links...
 [![Build status][ico-travis]][link-travis]
 [![Gitter room][ico-gitter]][link-gitter]
 
-Flexible and feature-complete [Redis](http://redis.io) client for PHP >= 5.3 and HHVM >= 2.3.0.
+A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
 Predis does not require any additional C extension by default, but it can be optionally paired with
 [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of the serialization and parsing
@@ -465,12 +465,12 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 - [Source code](https://github.com/predishq/predis)
 - [Wiki](https://github.com/predishq/predis/wiki)
 - [Issue tracker](https://github.com/predishq/predis/issues)
-- [PEAR channel](http://pear.nrk.io)
 
 
 ### Author ###
 
 - [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
+- [Till Krüss](https://till.im) ([Twitter](http://twitter.com/tillkruss))
 
 
 ### License ###
