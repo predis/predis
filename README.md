@@ -1,13 +1,10 @@
 # Predis #
 
-Update Laravel links...
-
 [![Software license][ico-license]](LICENSE)
 [![Latest stable][ico-version-stable]][link-packagist]
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
-[![Gitter room][ico-gitter]][link-gitter]
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
