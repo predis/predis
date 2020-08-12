@@ -12,7 +12,19 @@
         {
             "name": "Daniele Alessandri",
             "email": "suppakilla@gmail.com",
-            "homepage": "http://clorophilla.net"
+            "homepage": "http://clorophilla.net",
+            "role": "Creator & Maintainer"
+        },
+        {
+            "name": "Till Krüss",
+            "homepage": "https://till.im",
+            "role": "Maintainer"
+        }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/tillkruss"
         }
     ],
     "require": {
