@@ -31,3 +31,5 @@ matrix:
     - php: 7.3
     - php: 7.4
     - php: nightly # This is how Travis call PHP 8.0.0-dev - php-nightly
+  allow_failures:
+    - php: nightly
