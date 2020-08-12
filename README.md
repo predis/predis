@@ -1,5 +1,7 @@
 # Predis #
 
+Update Laravel links...
+
 [![Software license][ico-license]](LICENSE)
 [![Latest stable][ico-version-stable]][link-packagist]
 [![Latest development][ico-version-dev]][link-packagist]
@@ -482,9 +484,7 @@ The code for Predis is distributed under the terms of the MIT license (see [LICE
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/predishq/predis.svg?style=flat-square
 [ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
-[ico-gitter]: https://img.shields.io/gitter/room/nrk/predis.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
 [link-travis]: https://travis-ci.org/predishq/predis
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
-[link-gitter]: https://gitter.im/nrk/predis
