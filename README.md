@@ -13,8 +13,7 @@ Flexible and feature-complete [Redis](http://redis.io) client for PHP >= 5.3 and
 
 Predis does not require any additional C extension by default, but it can be optionally paired with
 [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of the serialization and parsing
-of the [Redis RESP Protocol](http://redis.io/topics/protocol). For an __experimental__ asynchronous
-implementation of the client you can refer to [Predis\Async](https://github.com/nrk/predis-async).
+of the [Redis RESP Protocol](http://redis.io/topics/protocol).
 
 More details about this project can be found on the [frequently asked questions](FAQ.md).
 
