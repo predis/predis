@@ -436,13 +436,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
-        // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
-        // unfortunately, this is the version still being used by Travis CI.
-        if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
-            $timeout = 1;
-        } else {
-            $timeout = 0.1;
-        }
+        $timeout = 0.1;
 
         $connection = $this->createConnectionWithParams(array(
             'host' => '169.254.10.10',
@@ -460,13 +454,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnConnectionTimeoutIPv6()
     {
-        // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
-        // unfortunately, this is the version still being used by Travis CI.
-        if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
-            $timeout = 1;
-        } else {
-            $timeout = 0.1;
-        }
+        $timeout = 0.1;
 
         $connection = $this->createConnectionWithParams(array(
             'host' => '0:0:0:0:0:ffff:a9fe:a0a',
@@ -554,10 +542,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     protected function assertPersistentConnection(NodeConnectionInterface $connection)
     {
-        if (version_compare(PHP_VERSION, '5.4.0') < 0 || $this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $this->assertSame('persistent stream', get_resource_type($connection->getResource()));
     }
 
@@ -571,10 +555,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     protected function assertNonPersistentConnection(NodeConnectionInterface $connection)
     {
-        if (version_compare(PHP_VERSION, '5.4.0') < 0 || $this->isHHVM()) {
-            $this->markTestSkipped('This test does not currently work on HHVM.');
-        }
-
         $this->assertSame('stream', get_resource_type($connection->getResource()));
     }
 

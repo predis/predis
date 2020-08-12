@@ -32,16 +32,6 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Returns if the current runtime is HHVM.
-     *
-     * @return bool
-     */
-    protected function isHHVM()
-    {
-        return defined('HHVM_VERSION');
-    }
-
-    /**
      * Verifies that a Redis command is a valid Predis\Command\CommandInterface
      * instance with the specified ID and command arguments.
      *
