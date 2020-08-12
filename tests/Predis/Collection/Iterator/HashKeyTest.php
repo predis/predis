@@ -57,8 +57,8 @@ class HashKeyTest extends PredisTestCase
     }
 
     /**
-     * @link https://github.com/nrk/predis/pull/330
-     * @link https://github.com/nrk/predis/issues/331
+     * @see https://github.com/predishq/predis/pull/330
+     * @see https://github.com/predishq/predis/issues/331
      * @group disconnected
      */
     public function testIterationWithIntegerFields()

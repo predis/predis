@@ -57,7 +57,7 @@ class SortedSetKeyTest extends PredisTestCase
     }
 
     /**
-     * @link https://github.com/nrk/predis/issues/216
+     * @see https://github.com/predishq/predis/issues/216
      * @group disconnected
      */
     public function testIterationWithIntegerMembers()
