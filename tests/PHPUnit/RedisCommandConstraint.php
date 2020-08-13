@@ -15,7 +15,7 @@ use SebastianBergmann\Exporter\Exporter;
 /**
  * Constraint that verifies a redis command.
  */
-class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
+class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
 {
     protected $commandID;
     protected $arguments;
@@ -38,7 +38,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         if (!$other instanceof CommandInterface) {
             return false;
@@ -55,7 +55,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
                 return false;
             }
 
-            for ($i = 0; $i < count($this->arguments); ++$i) {
+            for ($i = 0, $iMax = count($this->arguments); $i < $iMax; ++$i) {
                 if (((string) $this->arguments[$i]) !== ((string) $otherArguments[$i])) {
                     return false;
                 }
@@ -71,7 +71,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
      * @todo Improve output using diff when expected and actual arguments of a
      *       command do not match.
      */
-    public function toString()
+    public function toString(): string
     {
         $exporter = new Exporter();
         $string = 'is a Redis command';
@@ -91,7 +91,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
         $string = is_object($other) ? get_class($other) : $other;
 
