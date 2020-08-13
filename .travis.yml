@@ -7,7 +7,7 @@ branches:
     - v0.6-PHP_5.2
     - documentation
 before_install:
-  - docker run -d --rm -p 127.0.0.1:6379:6379 redis:3
+  - docker run -d --rm -p 127.0.0.1:6379:6379 redis:${REDIS_VERSION:=3}
 before_script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
@@ -19,6 +19,11 @@ matrix:
     - php: 7.2
     - php: 7.3
     - php: 7.4
+      env: REDIS_VERSION=4
+    - php: 7.4
+      env: REDIS_VERSION=5
+    - php: 7.4
+      env: REDIS_VERSION=6
     - php: nightly
   allow_failures:
    - php: nightly
