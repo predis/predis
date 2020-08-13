@@ -93,7 +93,7 @@ class PipelineTest extends PredisTestCase
         $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->once())
+        $connection->expects($this->exactly(2))
                    ->method('readResponse')
                    ->will($this->returnValue($error));
 

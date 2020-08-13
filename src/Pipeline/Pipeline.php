@@ -129,16 +129,30 @@ class Pipeline implements ClientContextInterface
      */
     protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
-        foreach ($commands as $command) {
-            $connection->writeRequest($command);
+        try {
+            foreach ($commands as $command) {
+                $connection->writeRequest($command);
+            }
+
+            $commands_responses = array();
+            while (!$commands->isEmpty()) {
+                $command = $commands->dequeue();
+                $response = $connection->readResponse($command);
+
+                $commands_responses[] = array($command, $response);
+            }
+        } catch (\Exception $e) {
+            // consider open connection(s) fouled, disconnect
+            $connection->disconnect();
+
+            throw $e;
         }
 
         $responses = array();
         $exceptions = $this->throwServerExceptions();
 
-        while (!$commands->isEmpty()) {
-            $command = $commands->dequeue();
-            $response = $connection->readResponse($command);
+        foreach ($commands_responses as $command_response) {
+            list($command, $response) = $command_response;
 
             if (!$response instanceof ResponseInterface) {
                 $responses[] = $command->parseResponse($response);
