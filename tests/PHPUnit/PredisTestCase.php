@@ -17,7 +17,7 @@ use Predis\Profile;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
+abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
 
