@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use PHPUnit\Framework\Constraint\Constraint;
 use Predis\Command\CommandInterface;
 use SebastianBergmann\Exporter\Exporter;
 

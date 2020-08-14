@@ -9,8 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use PHPUnit\Framework\Constraint\Constraint;
-
 /**
  * Constraint that accepts arrays with the same elements but different order.
  */

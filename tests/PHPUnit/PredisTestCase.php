@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use PHPUnit\Framework\Constraint\Constraint;
 use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
@@ -302,7 +301,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Checks that the Redis server version used to run integration tests mets
      * the requirements specified with the @requiresRedisVersion annotation.
      *
-     * @throws \PHPUnit_Framework_SkippedTestError When expected Redis server version is not met.
+     * @throws \PHPUnit\Framework\SkippedTestError When expected Redis server version is not met.
      */
     protected function checkRequiredRedisServerVersion()
     {
@@ -341,6 +340,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     
     public function toString(): string
     {
-        return 'matches predis';
+        return 'predis constraint check';
     }
 }
