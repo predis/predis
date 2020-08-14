@@ -9,10 +9,12 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Constraint\Constraint;
+
 /**
  * Constraint that accepts arrays with the same elements but different order.
  */
-class ArrayHasSameValuesConstraint extends \PHPUnit_Framework_Constraint
+class ArrayHasSameValuesConstraint extends Constraint
 {
     protected $array;
 
@@ -27,7 +29,7 @@ class ArrayHasSameValuesConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         if (count($this->array) !== count($other)) {
             return false;
@@ -43,7 +45,7 @@ class ArrayHasSameValuesConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function toString()
+    public function toString(): string
     {
         return 'two arrays contain the same elements.';
     }
@@ -51,7 +53,7 @@ class ArrayHasSameValuesConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
         return $this->toString();
     }

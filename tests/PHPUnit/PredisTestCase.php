@@ -9,6 +9,7 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Constraint\Constraint;
 use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
@@ -17,7 +18,7 @@ use Predis\Profile;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
+abstract class PredisTestCase extends Constraint
 {
     protected $redisServerVersion = null;
 
@@ -336,5 +337,10 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
         parent::checkRequirements();
 
         $this->checkRequiredRedisServerVersion();
+    }
+    
+    public function toString(): string
+    {
+        return 'matches predis';
     }
 }

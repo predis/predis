@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit bootstrap="tests/bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
@@ -8,13 +7,12 @@
          processIsolation="false"
          stopOnError="false"
          stopOnFailure="false"
-         syntaxCheck="true"
-         beStrictAboutTestSize="true"
+         enforceTimeLimit="true"
          beStrictAboutTestsThatDoNotTestAnything="true">
 
     <testsuites>
         <testsuite name="Predis Test Suite">
-            <directory>tests/Predis/</directory>
+            <directory suffix="Test.php">tests/Predis</directory>
         </testsuite>
     </testsuites>
 
@@ -31,8 +29,8 @@
     </groups>
 
     <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 

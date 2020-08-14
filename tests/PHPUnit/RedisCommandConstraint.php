@@ -9,13 +9,14 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Constraint\Constraint;
 use Predis\Command\CommandInterface;
 use SebastianBergmann\Exporter\Exporter;
 
 /**
  * Constraint that verifies a redis command.
  */
-class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
+class RedisCommandConstraint extends Constraint
 {
     protected $commandID;
     protected $arguments;
@@ -38,7 +39,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    public function matches($other)
+    public function matches($other): bool
     {
         if (!$other instanceof CommandInterface) {
             return false;
@@ -71,7 +72,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
      * @todo Improve output using diff when expected and actual arguments of a
      *       command do not match.
      */
-    public function toString()
+    public function toString(): string
     {
         $exporter = new Exporter();
         $string = 'is a Redis command';
@@ -91,7 +92,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
     /**
      * {@inheritdoc}
      */
-    protected function failureDescription($other)
+    protected function failureDescription($other): string
     {
         $string = is_object($other) ? get_class($other) : $other;
 
