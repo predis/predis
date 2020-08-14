@@ -1,9 +1,9 @@
-# GitHub Action for Predis with PHP 7.2 & Redis 3
+# GitHub Action for Predis with PHP 7.2, 7.3, 7.4 & 8.0 & Redis 3, 4, 5 & 6
 name: Predis Builds
 on: [push, pull_request]
 jobs:
   predis_redis3:
-    name: Predis (PHP ${{ matrix.php-versions }})
+    name: Redis 3 (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-latest
     services:
       redis:
@@ -14,7 +14,109 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+    - name: Get composer cache directory
+      id: composercache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composercache.outputs.dir }}
+        # Use composer.json for key, if composer.lock is not committed.
+        # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+    - name: Test with phpunit
+      run: vendor/bin/phpunit
+
+  predis_redis4:
+    name: Redis 4 (PHP ${{ matrix.php-versions }})
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:4
+        ports:
+        - 6379/tcp
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+    - name: Get composer cache directory
+      id: composercache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composercache.outputs.dir }}
+        # Use composer.json for key, if composer.lock is not committed.
+        # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+    - name: Test with phpunit
+      run: vendor/bin/phpunit
+
+  predis_redis5:
+    name: Redis 5 (PHP ${{ matrix.php-versions }})
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:5
+        ports:
+        - 6379/tcp
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup PHP, with composer and extensions
+      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+    - name: Get composer cache directory
+      id: composercache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.composercache.outputs.dir }}
+        # Use composer.json for key, if composer.lock is not committed.
+        # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install Composer dependencies
+      run: composer install --no-progress --prefer-dist --optimize-autoloader
+    - name: Test with phpunit
+      run: vendor/bin/phpunit
+
+  predis_redis6:
+    name: Redis 6 (PHP ${{ matrix.php-versions }})
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:6
+        ports:
+        - 6379/tcp
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.2', '7.3', '7.4', '8.0']
     steps:
     - name: Checkout
       uses: actions/checkout@v2
