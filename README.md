@@ -4,7 +4,7 @@
 [![Latest stable][ico-version-stable]][link-packagist]
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
-[![Build status][ico-travis]][link-travis]
+[![Build status][ico-build]][link-actions]
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
@@ -36,8 +36,8 @@ More details about this project can be found on the [frequently asked questions]
 ## How to _install_ and use Predis ##
 
 This library can be found on [Packagist](http://packagist.org/packages/predis/predis) for an easier
-management of projects dependencies using [Composer](http://packagist.org/about-composer). Ultimately,
-compressed archives of each release are [available on GitHub](https://github.com/predishq/predis/releases).
+management of projects dependencies using [Composer](http://packagist.org/about-composer).
+Compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
 
 ### Loading the library ###
@@ -449,8 +449,8 @@ the `unstable` branch by modifying `phpunit.xml` and setting `REDIS_SERVER_VERSI
 the development server profile will be used. You can refer to [the tests README](tests/README.md)
 for more detailed information about testing Predis.
 
-Predis uses Travis CI for continuous integration and the history for past and current builds can be
-found [on its project page](http://travis-ci.org/predishq/predis).
+Predis uses GitHub Actions for continuous integration and the history for past and current builds can be
+found [on its actions page](https://github.com/predis/predis/actions).
 
 
 ## Other ##
@@ -458,9 +458,9 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 
 ### Project related links ###
 
-- [Source code](https://github.com/predishq/predis)
-- [Wiki](https://github.com/predishq/predis/wiki)
-- [Issue tracker](https://github.com/predishq/predis/issues)
+- [Source code](https://github.com/predis/predis)
+- [Wiki](https://github.com/predis/predis/wiki)
+- [Issue tracker](https://github.com/predis/predis/issues)
 
 
 ### Author ###
@@ -473,12 +473,12 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/predishq/predis.svg?style=flat-square
-[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
-[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
-[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/predishq/predis.svg?style=flat-square
+[ico-license]: https://img.shields.io/github/license/predis/predis.svg
+[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg
+[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg
+[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg
+[ico-build]: https://img.shields.io/github/workflow/status/predis/predis/Tests/main
 
 [link-packagist]: https://packagist.org/packages/predis/predis
-[link-travis]: https://travis-ci.org/predishq/predis
+[link-actions]: https://github.com/predis/predis/actions
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
