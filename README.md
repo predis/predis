@@ -451,8 +451,8 @@ the `unstable` branch by modifying `phpunit.xml` and setting `REDIS_SERVER_VERSI
 the development server profile will be used. You can refer to [the tests README](tests/README.md)
 for more detailed information about testing Predis.
 
-Predis uses Travis CI for continuous integration and the history for past and current builds can be
-found [on its project page](http://travis-ci.org/predishq/predis).
+Predis uses GitHub Actions for continuous integration and the history for past and current builds can be
+found [on its actions page](https://github.com/predis/predis/actions).
 
 
 ## Other ##

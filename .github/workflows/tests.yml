@@ -1,9 +1,8 @@
-# GitHub Action for Predis with PHP 7.2, 7.3, 7.4 & 8.0 & Redis 3, 4, 5 & 6
-name: Predis Builds
+name: Tests
 on: [push, pull_request]
 jobs:
   predis:
-    name: Redis ${{ matrix.redis-versions }} (PHP ${{ matrix.php-versions }})
+    name: PHP ${{ matrix.php-versions }} (Redis ${{ matrix.redis-versions }})
     runs-on: ubuntu-latest
     services:
       redis:
@@ -19,14 +18,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Setup PHP, with composer and extensions
+    - name: Setup PHP with Composer and extensions
       with:
         php-version: ${{ matrix.php-versions }}
-      uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
-    - name: Get composer cache directory
+      uses: shivammathur/setup-php@v2
+    - name: Get Composer cache directory
       id: composercache
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - name: Cache composer dependencies
+    - name: Cache Composer dependencies
       uses: actions/cache@v2
       with:
         php-version: ${{ matrix.php-versions }}
@@ -35,5 +34,5 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
     - name: Install Composer dependencies
       run: composer install --no-progress --prefer-dist --optimize-autoloader
-    - name: Test with phpunit
+    - name: Test with PHPUnit
       run: vendor/bin/phpunit
