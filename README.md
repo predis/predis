@@ -38,7 +38,7 @@ More details about this project can be found on the [frequently asked questions]
 This library can be found on [Packagist](http://packagist.org/packages/predis/predis) for an easier
 management of projects dependencies using [Composer](http://packagist.org/about-composer) or on our
 [own PEAR channel](http://pear.nrk.io) for a more traditional installation using PEAR. Ultimately,
-compressed archives of each release are [available on GitHub](https://github.com/predishq/predis/releases).
+compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
 
 ### Loading the library ###
@@ -451,7 +451,7 @@ the development server profile will be used. You can refer to [the tests README]
 for more detailed information about testing Predis.
 
 Predis uses Travis CI for continuous integration and the history for past and current builds can be
-found [on its project page](http://travis-ci.org/predishq/predis).
+found [on its project page](http://travis-ci.org/predis/predis).
 
 
 ## Other ##
@@ -459,9 +459,9 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 
 ### Project related links ###
 
-- [Source code](https://github.com/predishq/predis)
-- [Wiki](https://github.com/predishq/predis/wiki)
-- [Issue tracker](https://github.com/predishq/predis/issues)
+- [Source code](https://github.com/predis/predis)
+- [Wiki](https://github.com/predis/predis/wiki)
+- [Issue tracker](https://github.com/predis/predis/issues)
 - [PEAR channel](http://pear.nrk.io)
 
 
@@ -474,13 +474,13 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/predishq/predis.svg?style=flat-square
+[ico-license]: https://img.shields.io/github/license/predis/predis.svg?style=flat-square
 [ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
 [ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/predishq/predis.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/predis/predis.svg?style=flat-square
 [ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
-[link-travis]: https://travis-ci.org/predishq/predis
+[link-travis]: https://travis-ci.org/predis/predis
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
