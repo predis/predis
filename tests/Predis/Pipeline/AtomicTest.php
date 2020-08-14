@@ -29,14 +29,11 @@ class AtomicTest extends PredisTestCase
         $queued = new Response\Status('QUEUED');
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->exactly(2))
-                   ->method('executeCommand')
-                   ->will($this->onConsecutiveCalls(true, array($pong, $pong, $pong)));
-        $connection->expects($this->exactly(3))
+        $connection->expects($this->exactly(5))
                    ->method('writeRequest');
-        $connection->expects($this->at(3))
+        $connection->expects($this->exactly(5))
                    ->method('readResponse')
-                   ->will($this->onConsecutiveCalls($queued, $queued, $queued));
+                   ->will($this->onConsecutiveCalls(true, $queued, $queued, $queued, [ $pong, $pong, $pong ]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -49,15 +46,17 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
+     * @expectedException \Predis\Transaction\AbortedMultiExecException
      * @expectedExceptionMessage The underlying transaction has been aborted by the server.
      */
     public function testThrowsExceptionOnAbortedTransaction()
     {
+        $queued = new Response\Status('QUEUED');
+
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->exactly(2))
-                   ->method('executeCommand')
-                   ->will($this->onConsecutiveCalls(true, null));
+        $connection->expects($this->exactly(5))
+                   ->method('readResponse')
+                   ->will($this->onConsecutiveCalls(true, $queued, $queued, $queued, null));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -79,15 +78,9 @@ class AtomicTest extends PredisTestCase
         $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->at(0))
-                   ->method('executeCommand')
-                   ->will($this->returnValue(true));
-        $connection->expects($this->exactly(3))
+        $connection->expects($this->exactly(5))
                    ->method('readResponse')
-                   ->will($this->onConsecutiveCalls($queued, $queued, $error));
-        $connection->expects($this->at(7))
-                   ->method('executeCommand')
-                   ->with($this->isInstanceOf('Predis\Command\TransactionDiscard'));
+                   ->will($this->onConsecutiveCalls(true, $queued, $queued, $queued, $error));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -130,12 +123,9 @@ class AtomicTest extends PredisTestCase
         $error = new Response\Error('ERR Test error');
 
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->exactly(3))
+        $connection->expects($this->exactly(5))
                    ->method('readResponse')
-                   ->will($this->onConsecutiveCalls($queued, $queued, $queued));
-        $connection->expects($this->at(7))
-                   ->method('executeCommand')
-                   ->will($this->returnValue(array($pong, $pong, $error)));
+                   ->will($this->onConsecutiveCalls(true, $queued, $queued, $queued, array($pong, $pong, $error)));
 
         $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
 

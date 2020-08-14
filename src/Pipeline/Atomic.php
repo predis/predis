@@ -18,6 +18,8 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+use Predis\Transaction\AbortedMultiExecException;
+use Predis\Transaction\MultiExec;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
@@ -62,70 +64,82 @@ class Atomic extends Pipeline
     protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
         $profile = $this->getClient()->getProfile();
-        $connection->executeCommand($profile->createCommand('multi'));
+        $multi = $profile->createCommand('MULTI');
+        $exec = $profile->createCommand('EXEC');
 
+        // open transaction: MULTI
+        $connection->writeRequest($multi);
+
+        // transmit all commands in transaction
         foreach ($commands as $command) {
             $connection->writeRequest($command);
         }
 
+        // execute transaction: EXEC
+        $connection->writeRequest($exec);
+
+        // response to MULTI
+        $response = $connection->readResponse($multi);
+        if ($response instanceof ErrorResponseInterface) {
+            $this->exception($connection, $response); // close connection and throw ServerException
+        }
+
+        // responses to commands (all should be QUEUED result)
+        $ex = null;
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
 
-            if ($response instanceof ErrorResponseInterface) {
-                $connection->executeCommand($profile->createCommand('discard'));
-                throw new ServerException($response->getMessage());
+            // throw first error as a ServerException
+            if (($response instanceof ErrorResponseInterface) && !$ex) {
+                $ex = new ServerException($response->getMessage());
             }
         }
 
-        $executed = $connection->executeCommand($profile->createCommand('exec'));
+        // response to EXEC
+        $responses = $connection->readResponse($exec);
 
-        if (!isset($executed)) {
-            // consider connection fouled
-            $connection->disconnect();
-
-            // TODO: should be throwing a more appropriate exception.
-            throw new ClientException(
-                'The underlying transaction has been aborted by the server.'
-            );
+        // if one of the commands returned an error, only throw after all responses have been received
+        if ($ex) {
+            throw $ex;
         }
 
-        if (count($executed) !== count($commands)) {
-            // convert first returned error to ServerException
-            if ($this->throwServerExceptions()) {
-                foreach ($executed as $response) {
-                    if ($response instanceof ErrorResponseInterface)
-                        $this->exception($connection, $response);
-                }
-            }
+        // if EXEC returned null, the transaction was aborted
+        if (!isset($responses)) {
+            // fake a MultiExec, which is not used in an atomic pipeline
+            $multi_exec = new MultiExec($this->getClient());
+            throw new AbortedMultiExecException($multi_exec, 'The underlying transaction has been aborted by the server.');
+        }
 
-            // consider connection fouled
-            $connection->disconnect();
+        // if EXEC returned an error, throw ServerException (but don't close connection, all responses
+        // have been read and are accounted for)
+        if ($responses instanceof ErrorResponseInterface) {
+            throw new ServerException($responses->getMessage());
+        }
 
+        if (count($responses) !== count($commands)) {
             $expected = count($commands);
-            $received = count($executed);
+            $received = count($responses);
 
             throw new ClientException(
                 "Invalid number of responses [expected $expected, received $received]."
             );
         }
 
-        $responses = array();
-        $sizeOfPipe = count($commands);
         $exceptions = $this->throwServerExceptions();
 
-        for ($i = 0; $i < $sizeOfPipe; ++$i) {
-            $command = $commands->dequeue();
-            $response = $executed[$i];
+        // parse all unparsed results
+        $i = 0;
+        foreach ($commands as $command) {
+            $response = $responses[$i];
 
             if (!$response instanceof ResponseInterface) {
-                $responses[] = $command->parseResponse($response);
+                $responses[$i] = $command->parseResponse($response);
             } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
-            } else {
-                $responses[] = $response;
             }
 
-            unset($executed[$i]);
+
+            $i++;
         }
 
         return $responses;
