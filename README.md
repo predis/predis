@@ -5,7 +5,7 @@
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
-![Build](https://github.com/predishq/predis/workflows/Predis%20Builds/badge.svg)
+![Build](https://github.com/predis/predis/workflows/Predis%20Builds/badge.svg)
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
@@ -39,7 +39,7 @@ More details about this project can be found on the [frequently asked questions]
 This library can be found on [Packagist](http://packagist.org/packages/predis/predis) for an easier
 management of projects dependencies using [Composer](http://packagist.org/about-composer) or on our
 [own PEAR channel](http://pear.nrk.io) for a more traditional installation using PEAR. Ultimately,
-compressed archives of each release are [available on GitHub](https://github.com/predishq/predis/releases).
+compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
 
 ### Loading the library ###
@@ -460,9 +460,9 @@ found [on its project page](http://travis-ci.org/predishq/predis).
 
 ### Project related links ###
 
-- [Source code](https://github.com/predishq/predis)
-- [Wiki](https://github.com/predishq/predis/wiki)
-- [Issue tracker](https://github.com/predishq/predis/issues)
+- [Source code](https://github.com/predis/predis)
+- [Wiki](https://github.com/predis/predis/wiki)
+- [Issue tracker](https://github.com/predis/predis/issues)
 
 
 ### Author ###

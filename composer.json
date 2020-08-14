@@ -3,10 +3,10 @@
     "type": "library",
     "description": "A flexible and feature-complete Redis client for PHP.",
     "keywords": ["nosql", "redis", "predis"],
-    "homepage": "http://github.com/predishq/predis",
+    "homepage": "http://github.com/predis/predis",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/predishq/predis/issues"
+        "issues": "https://github.com/predis/predis/issues"
     },
     "authors": [
         {
