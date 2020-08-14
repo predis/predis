@@ -1,12 +1,10 @@
-*.tgz
-*.phar
+/vendor
 .php-version
 .php_cs.cache
-phpunit.xml
-package.xml
+.phpunit.result.cache
 composer.lock
 experiments/
 vendor/
 .idea/
 .phpunit.result.cache
-
+phpunit.xml
