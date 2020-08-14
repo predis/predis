@@ -5,6 +5,7 @@
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
+![Build](https://github.com/predishq/predis/workflows/Predis%20Builds/badge.svg)
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
