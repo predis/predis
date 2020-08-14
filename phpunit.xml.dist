@@ -12,7 +12,7 @@
 
     <testsuites>
         <testsuite name="Predis Test Suite">
-            <directory suffix="Test.php">tests/Predis</directory>
+            <directory>tests/Predis/</directory>
         </testsuite>
     </testsuites>
 
@@ -29,8 +29,8 @@
     </groups>
 
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
 
