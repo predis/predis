@@ -24,7 +24,7 @@ class ExceptionsOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ExceptionsOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertTrue($option->getDefault($options));
     }
@@ -35,7 +35,7 @@ class ExceptionsOptionTest extends PredisTestCase
     public function testAcceptsDifferentValuesAndFiltersThemAsBooleans()
     {
         $option = new ExceptionsOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertFalse($option->filter($options, null));
 
@@ -58,7 +58,7 @@ class ExceptionsOptionTest extends PredisTestCase
     public function testReturnsFalesOnValuesNotParsableAsBooleans()
     {
         $option = new ExceptionsOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertFalse($option->filter($options, new \stdClass()));
         $this->assertFalse($option->filter($options, 'invalid'));

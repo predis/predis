@@ -68,7 +68,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
      */
     public function testEmptyRingThrowsException()
     {
-        $this->setExpectedException('Predis\Cluster\Distributor\EmptyRingException');
+        $this->expectException('Predis\Cluster\Distributor\EmptyRingException');
 
         $distributor = $this->getDistributorInstance();
         $distributor->getByHash('nodehash');

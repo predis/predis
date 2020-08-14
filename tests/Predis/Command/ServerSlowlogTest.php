@@ -83,14 +83,14 @@ class ServerSlowlogTest extends PredisCommandTestCase
         $redis->config('set', 'slowlog-log-slower-than', 0);
         $redis->set('foo', 'bar');
 
-        $this->assertInternalType('array', $slowlog = $redis->slowlog('GET'));
+        $this->assertIsArray($slowlog = $redis->slowlog('GET'));
         $this->assertGreaterThan(0, count($slowlog));
 
-        $this->assertInternalType('array', $slowlog[0]);
+        $this->assertIsArray($slowlog[0]);
         $this->assertGreaterThan(0, $slowlog[0]['id']);
         $this->assertGreaterThan(0, $slowlog[0]['timestamp']);
         $this->assertGreaterThan(0, $slowlog[0]['duration']);
-        $this->assertInternalType('array', $slowlog[0]['command']);
+        $this->assertIsArray($slowlog[0]['command']);
 
         $redis->config('set', 'slowlog-log-slower-than', $threshold);
     }
@@ -107,10 +107,11 @@ class ServerSlowlogTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->slowlog('INVALID');

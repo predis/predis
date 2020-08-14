@@ -39,7 +39,7 @@ class ResponseReaderTest extends PredisTestCase
      */
     public function testReplaceHandler()
     {
-        $handler = $this->getMock('Predis\Protocol\Text\Handler\ResponseHandlerInterface');
+        $handler = $this->getMockBuilder('Predis\Protocol\Text\Handler\ResponseHandlerInterface')->getMock();
 
         $reader = new ResponseReader();
         $reader->setHandler('+', $handler);
@@ -57,7 +57,7 @@ class ResponseReaderTest extends PredisTestCase
         $protocol = new CompositeProtocolProcessor();
         $protocol->setResponseReader($reader);
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->at(0))
                    ->method('readLine')
@@ -88,14 +88,15 @@ class ResponseReaderTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unexpected empty reponse header.
      */
     public function testEmptyResponseHeader()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage('Unexpected empty reponse header');
+
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->once())
                    ->method('readLine')
@@ -105,14 +106,15 @@ class ResponseReaderTest extends PredisTestCase
     }
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unknown response prefix: '!'.
      */
     public function testUnknownResponsePrefix()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Unknown response prefix: '!'");
+
         $reader = new ResponseReader();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->once())
                    ->method('readLine')

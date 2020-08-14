@@ -42,12 +42,12 @@ class OptionsTest extends PredisTestCase
             'exceptions' => false,
             'profile' => '2.0',
             'prefix' => 'prefix:',
-            'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster' => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
-            'replication' => $this->getMock('Predis\Connection\Aggregate\ReplicationInterface'),
+            'connections' => $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
+            'cluster' => $this->getMockBuilder('Predis\Connection\Aggregate\ClusterInterface')->getMock(),
+            'replication' => $this->getMockBuilder('Predis\Connection\Aggregate\ReplicationInterface')->getMock(),
         ));
 
-        $this->assertInternalType('bool', $options->exceptions);
+        $this->assertIsBool($options->exceptions);
         $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
         $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
@@ -138,10 +138,12 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $profile = $this->getMockBuilder('Predis\Profile\ProfileInterface')->getMock();
 
         // NOTE: closure values are covered by this test since they define __invoke().
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'profile')
@@ -163,7 +165,7 @@ class OptionsTest extends PredisTestCase
         $custom = new \stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')             ->setMethods(array('__invoke'))             ->getMock();
         $callable->expects($this->once())
                  ->method('__invoke')
                  ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'custom')
@@ -182,7 +184,9 @@ class OptionsTest extends PredisTestCase
      */
     public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
     {
-        $trigger = $this->getMock('stdClass', array('autoload'));
+        $trigger = $this->getMockBuilder('stdClass')
+            ->setMethods(array('autoload'))
+            ->getMock();
         $trigger->expects($this->never())->method('autoload');
 
         spl_autoload_register($autoload = function ($class) use ($trigger) {

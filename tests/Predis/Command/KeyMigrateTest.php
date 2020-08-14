@@ -99,11 +99,12 @@ class KeyMigrateTest extends PredisCommandTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage IOERR
      */
     public function testReturnsErrorOnUnreacheableDestination()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('IOERR');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');

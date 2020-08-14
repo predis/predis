@@ -21,12 +21,13 @@ class HashKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'HSCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The current profile does not support 'HSCAN'");
+
+        $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -40,7 +41,9 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getProfile', 'hscan'))
+            ->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -57,13 +60,13 @@ class HashKeyTest extends PredisTestCase
     }
 
     /**
-     * @see https://github.com/predishq/predis/pull/330
-     * @see https://github.com/predishq/predis/issues/331
+     * @see https://github.com/predis/predis/pull/330
+     * @see https://github.com/predis/predis/issues/331
      * @group disconnected
      */
     public function testIterationWithIntegerFields()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -106,7 +109,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -144,7 +147,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -188,7 +191,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -225,7 +228,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -273,7 +276,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -306,7 +309,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -345,7 +348,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -378,7 +381,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -417,7 +420,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -450,7 +453,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -489,7 +492,7 @@ class HashKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'hscan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'hscan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')

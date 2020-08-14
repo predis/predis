@@ -24,7 +24,7 @@ class ClusterOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->getDefault($options));
     }
@@ -35,8 +35,8 @@ class ClusterOptionTest extends PredisTestCase
     public function testAcceptsInstanceOfClusterInterface()
     {
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $cluster = $this->getMockBuilder('Predis\Connection\Aggregate\ClusterInterface')->getMock();
 
         $this->assertSame($cluster, $option->filter($options, $cluster));
     }
@@ -48,12 +48,12 @@ class ClusterOptionTest extends PredisTestCase
     {
         $option = new ClusterOption();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options->expects($this->any())
                 ->method('__get')
                 ->with('connections')
                 ->will($this->returnValue(
-                    $this->getMock('Predis\Connection\FactoryInterface')
+                    $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
                 ));
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\PredisCluster', $option->filter($options, 'predis'));
@@ -65,25 +65,27 @@ class ClusterOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidInstanceType()
     {
+        $this->expectException('InvalidArgumentException');
+
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $class = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $class = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $option->filter($options, $class);
     }
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidShortNameString()
     {
+        $this->expectException('InvalidArgumentException');
+
         $option = new ClusterOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, 'unknown');
     }

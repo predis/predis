@@ -212,7 +212,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnection($parameters = null)
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);

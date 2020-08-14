@@ -83,11 +83,12 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR hash value is not an integer
      */
     public function testThrowsExceptionOnStringField()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR hash value is not an integer');
+
         $redis = $this->getClient();
 
         $redis->hset('metavars', 'foo', 'bar');
@@ -96,11 +97,12 @@ class HashIncrementByTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');

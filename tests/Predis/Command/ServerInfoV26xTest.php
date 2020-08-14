@@ -307,7 +307,7 @@ BUFFER;
         $redis = $this->getClient();
         $command = $this->getCommand();
 
-        $this->assertInternalType('array', $info = $redis->executeCommand($command));
+        $this->assertIsArray($info = $redis->executeCommand($command));
         $this->assertArrayHasKey('redis_version', isset($info['Server']) ? $info['Server'] : $info);
     }
 }

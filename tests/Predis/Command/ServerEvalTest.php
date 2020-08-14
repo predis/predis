@@ -79,10 +79,11 @@ class ServerEvalTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnWrongNumberOfKeys()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
         $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
 
@@ -91,10 +92,11 @@ class ServerEvalTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidScript()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->eval('invalid', 0);

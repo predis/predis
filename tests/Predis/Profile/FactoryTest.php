@@ -63,11 +63,12 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage Unknown server profile: '1.0'.
      */
     public function testGetUndefinedProfile()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage("Unknown server profile: '1.0'");
+
         Factory::get('1.0');
     }
 
@@ -76,7 +77,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testDefineProfile()
     {
-        $profileClass = get_class($this->getMock('Predis\Profile\ProfileInterface'));
+        $profileClass = get_class($this->getMockBuilder('Predis\Profile\ProfileInterface')->getMock());
 
         Factory::define('mock', $profileClass);
 
@@ -85,11 +86,12 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The class 'stdClass' is not a valid profile class.
      */
     public function testDefineInvalidProfile()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("The class 'stdClass' is not a valid profile class");
+
         Factory::define('bogus', 'stdClass');
     }
 }

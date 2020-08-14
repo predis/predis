@@ -24,7 +24,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ConnectionFactoryOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Connection\Factory', $option->getDefault($options));
     }
@@ -34,23 +34,25 @@ class ConnectionFactoryOptionTest extends PredisTestCase
      */
     public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings()
     {
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $class = get_class($this->getMock('Predis\Connection\NodeConnectionInterface'));
+        $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
         $value = array('tcp' => $class, 'redis' => $class);
 
-        $default = $this->getMock('Predis\Connection\FactoryInterface');
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $default->expects($this->exactly(2))
                 ->method('define')
                 ->with($this->matchesRegularExpression('/^tcp|redis$/'), $class);
 
-        $option = $this->getMock('Predis\Configuration\ConnectionFactoryOption', array('getDefault'));
+        $option = $this->getMockBuilder('Predis\Configuration\ConnectionFactoryOption')
+            ->setMethods(array('getDefault'))
+            ->getMock();
         $option->expects($this->once())
                ->method('getDefault')
                ->with($options)
                ->will($this->returnValue($default));
 
-        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory = $option->filter($options, $value));
+        $factory = $option->filter($options, $value);
         $this->assertSame($default, $factory);
     }
 
@@ -61,8 +63,8 @@ class ConnectionFactoryOptionTest extends PredisTestCase
     {
         $parameters = array('database' => 5, 'password' => 'mypassword');
 
-        $default = $this->getMock('Predis\Connection\Factory');
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $default = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options->expects($this->once())
                 ->method('defined')
@@ -85,10 +87,12 @@ class ConnectionFactoryOptionTest extends PredisTestCase
      */
     public function testAcceptsConnectionFactoryInstance()
     {
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = $this->getMock('Predis\Connection\FactoryInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $value = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
-        $option = $this->getMock('Predis\Configuration\ConnectionFactoryOption', array('getDefault'));
+        $option = $this->getMockBuilder('Predis\Configuration\ConnectionFactoryOption')
+            ->setMethods(array('getDefault'))
+            ->getMock();
         $option->expects($this->never())->method('getDefault');
 
         $this->assertSame($value, $option->filter($options, $value));
@@ -96,12 +100,13 @@ class ConnectionFactoryOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidArguments()
     {
+        $this->expectException('InvalidArgumentException');
+
         $option = new ConnectionFactoryOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new \stdClass());
     }

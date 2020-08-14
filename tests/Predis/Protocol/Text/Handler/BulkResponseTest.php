@@ -25,7 +25,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -46,7 +46,7 @@ class BulkResponseTest extends PredisTestCase
 
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->once())
@@ -64,7 +64,7 @@ class BulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -74,14 +74,15 @@ class BulkResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a bulk response.
      */
     public function testInvalidLength()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid length for a bulk response");
+
         $handler = new Handler\BulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

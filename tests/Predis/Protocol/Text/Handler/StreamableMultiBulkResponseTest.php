@@ -25,7 +25,7 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
     {
         $handler = new Handler\StreamableMultiBulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -35,14 +35,15 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a multi-bulk response.
      */
     public function testInvalid()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid length for a multi-bulk response");
+
         $handler = new Handler\StreamableMultiBulkResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

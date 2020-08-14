@@ -47,7 +47,9 @@ class DispatcherLoopTest extends PredisTestCase
         $pubsub = new Consumer($consumer);
         $dispatcher = new DispatcherLoop($pubsub);
 
-        $function01 = $this->getMock('stdClass', array('__invoke'));
+        $function01 = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $function01->expects($this->exactly(2))
                    ->method('__invoke')
                    ->with($this->logicalOr(
@@ -60,12 +62,16 @@ class DispatcherLoopTest extends PredisTestCase
                        }
                    }));
 
-        $function02 = $this->getMock('stdClass', array('__invoke'));
+        $function02 = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $function02->expects($this->once())
                    ->method('__invoke')
                    ->with('02:argument');
 
-        $function03 = $this->getMock('stdClass', array('__invoke'));
+        $function03 = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $function03->expects($this->never())
                    ->method('__invoke');
 
@@ -108,7 +114,9 @@ class DispatcherLoopTest extends PredisTestCase
         $pubsub = new Consumer($consumer);
         $dispatcher = new DispatcherLoop($pubsub);
 
-        $callback = $this->getMock('stdClass', array('__invoke'));
+        $callback = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callback->expects($this->exactly(1))
                  ->method('__invoke')
                  ->with($this->equalTo('arg:prefixed'))

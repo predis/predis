@@ -254,11 +254,12 @@ class PredisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot use 'PING' over clusters of connections.
      */
     public function testThrowsExceptionOnNonShardableCommand()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("Cannot use 'PING' over clusters of connections");
+
         $ping = Profile\Factory::getDefault()->createCommand('ping');
 
         $cluster = new PredisCluster();
@@ -359,13 +360,13 @@ class PredisClusterTest extends PredisTestCase
     {
         $ping = Profile\Factory::getDefault()->createCommand('ping', array());
 
-        $connection1 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection1 = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection1->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)
                     ->will($this->returnValue(true));
 
-        $connection2 = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection2 = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection2->expects($this->once())
                     ->method('executeCommand')
                     ->with($ping)

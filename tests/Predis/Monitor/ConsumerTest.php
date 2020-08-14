@@ -23,12 +23,13 @@ class ConsumerTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'MONITOR'.
      */
     public function testMonitorConsumerRequireMonitorCommand()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The current profile does not support 'MONITOR'");
+
+        $profile = $this->getMockBuilder('Predis\Profile\ProfileInterface')->getMock();
         $profile->expects($this->once())
                 ->method('supportsCommand')
                 ->with('MONITOR')
@@ -41,12 +42,13 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot initialize a monitor consumer over aggregate connections.
      */
     public function testMonitorConsumerDoesNotWorkOnClusters()
     {
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('Cannot initialize a monitor consumer over aggregate connections');
+
+        $cluster = $this->getMockBuilder('Predis\Connection\Aggregate\ClusterInterface')->getMock();
         $client = new Client($cluster);
 
         new MonitorConsumer($client);
@@ -59,9 +61,12 @@ class ConsumerTest extends PredisTestCase
     {
         $cmdMonitor = Profile\Factory::getDefault()->createCommand('monitor');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
-        $client = $this->getMock('Predis\Client', array('createCommand', 'executeCommand'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('createCommand', 'executeCommand'))
+            ->setConstructorArgs(array($connection))
+            ->getMock();
         $client->expects($this->once())
                ->method('createCommand')
                ->with('MONITOR', array())
@@ -82,9 +87,12 @@ class ConsumerTest extends PredisTestCase
      */
     public function testStoppingConsumerClosesConnection()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
-        $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('disconnect'))
+            ->setConstructorArgs(array($connection))
+            ->getMock();
         $client->expects($this->exactly(2))->method('disconnect');
 
         $monitor = new MonitorConsumer($client);
@@ -96,9 +104,12 @@ class ConsumerTest extends PredisTestCase
      */
     public function testGarbageCollectorRunStopsConsumer()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
-        $client = $this->getMock('Predis\Client', array('disconnect'), array($connection));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('disconnect'))
+            ->setConstructorArgs(array($connection))
+            ->getMock();
         $client->expects($this->once())->method('disconnect');
 
         $monitor = new MonitorConsumer($client);
@@ -112,7 +123,7 @@ class ConsumerTest extends PredisTestCase
     {
         $message = '1323367530.939137 (db 15) "MONITOR"';
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));
@@ -135,7 +146,7 @@ class ConsumerTest extends PredisTestCase
     {
         $message = '1323367530.939137 [15 127.0.0.1:37265] "MONITOR"';
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection->expects($this->once())
                    ->method('read')
                    ->will($this->returnValue($message));

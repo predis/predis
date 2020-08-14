@@ -25,7 +25,7 @@ class IntegerResponseTest extends PredisTestCase
     {
         $handler = new Handler\IntegerResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -43,7 +43,7 @@ class IntegerResponseTest extends PredisTestCase
     {
         $handler = new Handler\IntegerResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');
@@ -53,14 +53,15 @@ class IntegerResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid numeric response.
      */
     public function testInvalid()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid numeric response");
+
         $handler = new Handler\IntegerResponse();
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
 
         $connection->expects($this->never())->method('readLine');
         $connection->expects($this->never())->method('readBuffer');

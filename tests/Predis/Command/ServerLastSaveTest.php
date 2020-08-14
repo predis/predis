@@ -59,6 +59,6 @@ class ServerLastSaveTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertInternalType('integer', $redis->lastsave());
+        $this->assertIsInt($redis->lastsave());
     }
 }

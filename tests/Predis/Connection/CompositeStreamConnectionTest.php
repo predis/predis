@@ -23,11 +23,12 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessage `SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]
      */
     public function testThrowsExceptionOnInitializationCommandFailure()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage("`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]");
+
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
         $connection = $this->getMockBuilder(static::CONNECTION_CLASS)

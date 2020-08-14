@@ -24,11 +24,12 @@ class SentinelReplicationTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
      */
     public function testMethodGetSentinelConnectionThrowsExceptionOnEmptySentinelsPool()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $replication = $this->getReplicationConnection('svc', array());
         $replication->getSentinelConnection();
     }
@@ -44,7 +45,8 @@ class SentinelReplicationTest extends PredisTestCase
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
-        $this->assertArraySubset(array('database' => null, 'password' => null), $parameters);
+        $this->assertArrayHasKey('database', $parameters);
+        $this->assertArrayHasKey('password', $parameters);
     }
 
     /**
@@ -259,11 +261,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
      */
     public function testMethodUpdateSentinelsThrowsExceptionOnNoAvailableSentinel()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
         $sentinel1->expects($this->once())
                   ->method('executeCommand')
@@ -383,11 +386,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
      */
     public function testMethodGetMasterThrowsExceptionOnNoAvailableSentinels()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
         $sentinel1->expects($this->any())
                   ->method('executeCommand')
@@ -447,11 +451,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
      */
     public function testMethodGetSlavesThrowsExceptionOnNoAvailableSentinels()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
         $sentinel1->expects($this->any())
                   ->method('executeCommand')
@@ -469,11 +474,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
      */
     public function testMethodConnectThrowsExceptionOnConnectWithEmptySentinelsPool()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $replication = $this->getReplicationConnection('svc', array());
         $replication->connect();
     }
@@ -534,7 +540,7 @@ class SentinelReplicationTest extends PredisTestCase
         $slave1->expects($this->once())
                ->method('connect');
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -578,7 +584,7 @@ class SentinelReplicationTest extends PredisTestCase
         $master->expects($this->once())
                ->method('connect');
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -692,11 +698,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testMethodSwitchToThrowsExceptionOnConnectionNotFound()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid connection or connection not found');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
@@ -874,11 +881,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Replication\RoleException
-     * @expectedExceptionMessage Expected master but got slave [127.0.0.1:6381]
      */
     public function testGetConnectionThrowsExceptionOnNodeRoleMismatch()
     {
+        $this->expectException('Predis\Replication\RoleException');
+        $this->expectExceptionMessage('Expected master but got slave [127.0.0.1:6381]');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?alias=master');
@@ -1032,7 +1040,7 @@ class SentinelReplicationTest extends PredisTestCase
                ->with($this->isRedisCommand('GET', array('key')))
                ->will($this->returnValue('value'));
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -1087,7 +1095,7 @@ class SentinelReplicationTest extends PredisTestCase
                   ->with($this->isRedisCommand('DEL', array('key')))
                   ->will($this->returnValue(1));
 
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory->expects($this->once())
                  ->method('create')
                  ->with(array(
@@ -1108,11 +1116,12 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException Predis\Response\ServerException
-     * @expectedExceptionMessage ERR No such master with that name
      */
     public function testMethodExecuteCommandThrowsExceptionOnUnknownServiceName()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR No such master with that name');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
         $sentinel1->expects($this->any())
                   ->method('executeCommand')
@@ -1142,12 +1151,13 @@ class SentinelReplicationTest extends PredisTestCase
     }
 
     /**
-     * @group disconnected
-     * @expectedException Predis\ClientException
-     * @expectedExceptionMessage No sentinel server available for autodiscovery.
+     * @group disconnected.
      */
     public function testMethodExecuteCommandThrowsExceptionOnConnectionFailureAndNoAvailableSentinels()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No sentinel server available for autodiscovery');
+
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?alias=sentinel1');
         $sentinel1->expects($this->any())
                   ->method('executeCommand')

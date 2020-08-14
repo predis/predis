@@ -76,7 +76,7 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
         $redis->set('foo', 2);
 
         // We use round() to avoid errors on some platforms, see the following
-        // issue https://github.com/predishq/predis/issues/220 for reference.
+        // issue https://github.com/predis/predis/issues/220 for reference.
         $this->assertEquals(22.123, $redis->incrbyfloat('foo', 20.123));
         $this->assertEquals(10, round($redis->incrbyfloat('foo', -12.123), 5));
         $this->assertEquals(-100.01, round($redis->incrbyfloat('foo', -110.01), 5));
@@ -84,11 +84,12 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnDecrementValueNotFloat()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not a valid float');
+
         $redis = $this->getClient();
 
         $redis->incrbyfloat('foo', 'bar');
@@ -96,11 +97,12 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnKeyValueNotFloat()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not a valid float');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
@@ -109,11 +111,12 @@ class StringIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');

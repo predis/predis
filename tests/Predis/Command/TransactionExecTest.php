@@ -100,11 +100,12 @@ class TransactionExecTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR EXEC without MULTI
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR EXEC without MULTI');
+
         $redis = $this->getClient();
 
         $redis->exec();

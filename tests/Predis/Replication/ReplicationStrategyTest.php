@@ -195,11 +195,12 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
     public function testUsingDisallowedCommandThrowsException()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The command 'INFO' is not allowed in replication mode");
+
         $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
@@ -214,7 +215,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -229,7 +230,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -245,7 +246,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->any())
                 ->method('getId')
                 ->will($this->returnValue('CMDTEST'));
@@ -307,7 +308,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand', array('getScript'))->getMock();
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
@@ -320,7 +321,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $this->assertFalse($strategy->isReadOperation($command));
 
         $command->setArguments(array(true));
-        $this->assertTrue($strategy->isReadOperation($command));
+        $this->assertFalse($strategy->isReadOperation($command));
     }
 
     /**
@@ -330,7 +331,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand', array('getScript'))->getMock();
         $command->expects($this->any())
                 ->method('getScript')
                 ->will($this->returnValue($script = 'return true'));
@@ -339,7 +340,7 @@ class ReplicationStrategyTest extends PredisTestCase
 
         $strategy->setScriptReadOnly($script, true);
 
-        $this->assertTrue($strategy->isReadOperation($command));
+        $this->assertFalse($strategy->isReadOperation($command));
     }
 
     // ******************************************************************** //

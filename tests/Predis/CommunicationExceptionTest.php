@@ -27,7 +27,8 @@ class CommunicationExceptionTest extends PredisTestCase
         $connection = $this->getMockedConnectionBase();
         $exception = $this->getException($connection, $message);
 
-        $this->setExpectedException('Predis\CommunicationException', $message);
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage($message);
 
         throw $exception;
     }
@@ -56,16 +57,17 @@ class CommunicationExceptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\CommunicationException
-     * @expectedExceptionMessage Communication error
      */
     public function testCommunicationExceptionHandling()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection->expects($this->once())->method('isConnected')->will($this->returnValue(true));
         $connection->expects($this->once())->method('disconnect');
 
-        $exception = $this->getException($connection, 'Communication error');
+        $message = 'Communication error';
+        $exception = $this->getException($connection, $message);
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage($message);
 
         CommunicationException::handle($exception);
     }

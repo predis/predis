@@ -96,10 +96,11 @@ class ServerScriptTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->script('INVALID');

@@ -116,11 +116,12 @@ class ZSetRemoveRangeByLexTest extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.8.9
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage min or max not valid string range item
      */
     public function testThrowsExceptionOnInvalidRangeFormat()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('min or max not valid string range item');
+
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
@@ -130,11 +131,12 @@ class ZSetRemoveRangeByLexTest extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.8.9
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');

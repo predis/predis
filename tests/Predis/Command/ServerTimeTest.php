@@ -65,8 +65,8 @@ class ServerTimeTest extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertInternalType('array', $time = $redis->time());
-        $this->assertInternalType('string', $time[0]);
-        $this->assertInternalType('string', $time[1]);
+        $this->assertIsArray($time = $redis->time());
+        $this->assertIsString($time[0]);
+        $this->assertIsString($time[1]);
     }
 }

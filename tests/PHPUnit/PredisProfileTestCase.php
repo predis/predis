@@ -140,7 +140,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
     public function testDefineCommand()
     {
         $profile = $this->getProfile();
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
 
         $profile->defineCommand('mock', get_class($command));
 
@@ -152,11 +152,12 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The class 'stdClass' is not a valid command class.
      */
     public function testDefineInvalidCommand()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("The class 'stdClass' is not a valid command class");
+
         $profile = $this->getProfile();
 
         $profile->defineCommand('mock', 'stdClass');
@@ -191,11 +192,12 @@ abstract class PredisProfileTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage Command 'UNKNOWN' is not a registered Redis command.
      */
     public function testCreateUndefinedCommand()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage("Command 'UNKNOWN' is not a registered Redis command");
+
         $profile = $this->getProfile();
         $profile->createCommand('unknown');
     }
@@ -215,7 +217,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testSetProcessor()
     {
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock();
 
         $profile = $this->getProfile();
         $profile->setProcessor($processor);
@@ -228,7 +230,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testSetAndUnsetProcessor()
     {
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock();
         $profile = $this->getProfile();
 
         $profile->setProcessor($processor);
@@ -247,7 +249,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
         // method are cloned instead of being passed by reference?
         $argsRef = null;
 
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock();
         $processor->expects($this->once())
                   ->method('process')
                   ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
@@ -267,7 +269,7 @@ abstract class PredisProfileTestCase extends PredisTestCase
      */
     public function testChainOfProcessors()
     {
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock();
         $processor->expects($this->exactly(2))
                   ->method('process');
 

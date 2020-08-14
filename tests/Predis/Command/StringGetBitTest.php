@@ -74,11 +74,12 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnNegativeOffset()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
+
         $redis = $this->getClient();
 
         $redis->set('key:binary', "\x80\x00\00\x01");
@@ -87,11 +88,12 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR bit offset is not an integer or out of range
      */
     public function testThrowsExceptionOnInvalidOffset()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
+
         $redis = $this->getClient();
 
         $redis->set('key:binary', "\x80\x00\00\x01");
@@ -100,11 +102,12 @@ class StringGetBitTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');

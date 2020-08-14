@@ -80,11 +80,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid scheme: 'udp'.
      */
     public function testThrowsExceptionOnInvalidScheme()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid scheme: 'udp'");
+
         $this->createConnectionWithParams(array('scheme' => 'udp'));
     }
 
@@ -195,7 +196,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->createConnection();
 
         $this->assertFalse($connection->isConnected());
-        $this->assertInternalType('resource', $connection->getResource());
+        $this->assertIsResource($connection->getResource());
         $this->assertTrue($connection->isConnected());
     }
 
@@ -220,7 +221,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))
+            ->setMethods(array('parseResponse'))
+            ->getMock();
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
@@ -271,7 +274,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))
+            ->setMethods(array('parseResponse'))
+            ->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -288,7 +293,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))
+            ->setMethods(array('parseResponse'))
+            ->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -306,11 +313,15 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('parseResponse'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))
+            ->setMethods(array('parseResponse'))
+            ->getMock();
         $cmdPing->expects($this->never())
                 ->method('parseResponse');
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('parseResponse'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))
+            ->setMethods(array('parseResponse'))
+            ->getMock();
         $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->never())
                 ->method('parseResponse');
@@ -331,12 +342,17 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $profile = $this->getCurrentProfile();
 
-        $cmdPing = $this->getMock($profile->getCommandClass('ping'), array('getArguments'));
+        $cmdPing = $this->getMockBuilder($profile->getCommandClass('ping'))
+            ->setMethods(array('getArguments'))
+            ->getMock();
         $cmdPing->expects($this->once())
                 ->method('getArguments')
                 ->will($this->returnValue(array()));
 
-        $cmdEcho = $this->getMock($profile->getCommandClass('echo'), array('getArguments'));
+        $cmdEcho = $this->getMockBuilder($profile->getCommandClass('echo'))
+            ->setMethods(array('getArguments'))
+            ->getMock();
+        $cmdEcho->setArguments(array('ECHOED'));
         $cmdEcho->expects($this->once())
                 ->method('getArguments')
                 ->will($this->returnValue(array('ECHOED')));
@@ -431,11 +447,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessageRegExp /.* \[tcp:\/\/169.254.10.10:6379\]/
      */
     public function testThrowsExceptionOnConnectionTimeout()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessageMatches('/.* \[tcp:\/\/169.254.10.10:6379\]/');
+
         // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
         // unfortunately, this is the version still being used by Travis CI.
         if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
@@ -455,11 +472,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessageRegExp /.* \[tcp:\/\/\[0:0:0:0:0:ffff:a9fe:a0a\]:6379\]/
      */
     public function testThrowsExceptionOnConnectionTimeoutIPv6()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessageMatches('/.* \[tcp:\/\/\[0:0:0:0:0:ffff:a9fe:a0a\]:6379\]/');
+
         // TODO: float timeouts for connect() under HHVM 3.6.6 are broken and,
         // unfortunately, this is the version still being used by Travis CI.
         if (defined('HHVM_VERSION') && version_compare(HHVM_VERSION, '3.6.6', '<=')) {
@@ -479,11 +497,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessageRegExp /.* \[unix:\/tmp\/nonexistent\/redis\.sock]/
      */
     public function testThrowsExceptionOnUnixDomainSocketNotFound()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessageMatches('/.* \[unix:\/tmp\/nonexistent\/redis\.sock]/');
+
         $connection = $this->createConnectionWithParams(array(
             'scheme' => 'unix',
             'path' => '/tmp/nonexistent/redis.sock',
@@ -495,10 +514,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      * @group slow
-     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+
         $profile = $this->getCurrentProfile();
 
         $connection = $this->createConnectionWithParams(array(
@@ -511,10 +531,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @medium
      * @group connected
-     * @expectedException \Predis\Protocol\ProtocolException
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+
         $connection = $this->createConnection();
         $stream = $connection->getResource();
 

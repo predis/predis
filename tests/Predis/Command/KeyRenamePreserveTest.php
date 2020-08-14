@@ -72,11 +72,12 @@ class KeyRenamePreserveTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR no such key
      */
     public function testThrowsExceptionWhenRenamingNonExistingKeys()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR no such key');
+
         $redis = $this->getClient();
 
         $this->assertSame(0, $redis->renamenx('foo', 'foobar'));

@@ -68,11 +68,12 @@ class TransactionDiscardTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR DISCARD without MULTI
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR DISCARD without MULTI');
+
         $redis = $this->getClient();
 
         $redis->discard();

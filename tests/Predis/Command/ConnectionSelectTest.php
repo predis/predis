@@ -70,11 +70,12 @@ class ConnectionSelectTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessageRegExp /ERR.*DB index/
      */
     public function testThrowsExceptionOnUnexpectedDatabaseRange()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessageMatches('/ERR.*DB index/');
+
         $redis = $this->getClient();
 
         $redis->select(100000000);
@@ -82,11 +83,12 @@ class ConnectionSelectTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR invalid DB index
      */
     public function testThrowsExceptionOnUnexpectedDatabaseName()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR invalid DB index');
+
         $redis = $this->getClient();
 
         $redis->select('x');

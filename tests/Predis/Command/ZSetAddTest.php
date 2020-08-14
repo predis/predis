@@ -162,11 +162,12 @@ class ZSetAddTest extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 3.0.2
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage INCR option supports a single increment-element pair
      */
     public function testDoesNotAcceptMultipleScoreElementPairsWithModifierINCR()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('INCR option supports a single increment-element pair');
+
         $redis = $this->getClient();
 
         $redis->zadd('letters', 'INCR', 1, 'a', 2, 'b');
@@ -185,11 +186,12 @@ class ZSetAddTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');

@@ -144,11 +144,12 @@ class PubSubSubscribeByPatternTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessageRegExp /ERR.*only .* allowed in this context/
      */
     public function testCannotSendOtherCommandsAfterPsubscribe()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessageMatches('/ERR.*only .* allowed in this context/');
+
         $redis = $this->getClient();
 
         $redis->psubscribe('channel:*');

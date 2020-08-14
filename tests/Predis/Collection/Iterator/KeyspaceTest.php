@@ -21,12 +21,13 @@ class KeyspaceTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The current profile does not support 'SCAN'.
      */
     public function testThrowsExceptionOnInvalidProfile()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The current profile does not support 'SCAN'");
+
+        $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -40,7 +41,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -61,7 +62,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -97,7 +98,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -137,7 +138,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -172,7 +173,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -216,7 +217,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -247,7 +248,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -282,7 +283,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -313,7 +314,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -348,7 +349,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -379,7 +380,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')
@@ -414,7 +415,7 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getProfile', 'scan'));
+        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
 
         $client->expects($this->any())
                ->method('getProfile')

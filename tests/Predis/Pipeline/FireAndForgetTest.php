@@ -24,7 +24,7 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testPipelineWithSingleConnection()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection->expects($this->exactly(3))->method('writeRequest');
         $connection->expects($this->never())->method('readResponse');
 
@@ -42,7 +42,7 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection()
     {
-        $connection = $this->getMock('Predis\Connection\Aggregate\ReplicationInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\Aggregate\ReplicationInterface')->getMock();
         $connection->expects($this->once())
                    ->method('switchTo')
                    ->with('master');

@@ -24,7 +24,7 @@ class ReplicationOptionTest extends PredisTestCase
     public function testDefaultOptionValue()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Aggregate\MasterSlaveReplication', $option->getDefault($options));
@@ -36,7 +36,7 @@ class ReplicationOptionTest extends PredisTestCase
     public function testAcceptsValuesThatCanBeInterpretedAsBooleans()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertNull($option->filter($options, null));
 
@@ -59,8 +59,8 @@ class ReplicationOptionTest extends PredisTestCase
     public function testConfiguresAutomaticDiscoveryWhenAutodiscoveryOptionIsPresent()
     {
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connFactory = $this->getMock('Predis\Connection\FactoryInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
         $options->expects($this->at(0))
                 ->method('__get')
@@ -82,13 +82,14 @@ class ReplicationOptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
      */
     public function testThrowsExceptionOnInvalidInstanceType()
     {
+        $this->expectException('InvalidArgumentException');
+
         $option = new ReplicationOption();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $value = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $value = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $option->filter($options, $value);
     }

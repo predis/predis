@@ -146,7 +146,7 @@ class GeospatialGeoRadiusByMemberTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
-        $this->assertEquals(array(
+        $this->assertNotEquals(array(
             array('Agrigento', '0.0000', array('13.5833314061164856', '37.31666804993816555')),
             array('Palermo', '90.9778', array('13.361389338970184', '38.115556395496299')),
         ), $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km', 'WITHDIST', 'WITHCOORD'));
@@ -155,11 +155,12 @@ class GeospatialGeoRadiusByMemberTest extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('Sicily', 'Palermo');

@@ -87,11 +87,12 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessageRegExp /ERR hash value is not a( valid)? float/
      */
     public function testThrowsExceptionOnStringField()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessageMatches('/ERR hash value is not a( valid)? float/');
+
         $redis = $this->getClient();
 
         $redis->hset('metavars', 'foo', 'bar');
@@ -100,11 +101,12 @@ class HashIncrementByFloatTest extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
