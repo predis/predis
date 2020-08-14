@@ -4,8 +4,7 @@
 [![Latest stable][ico-version-stable]][link-packagist]
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
-[![Build status][ico-travis]][link-travis]
-![Build](https://github.com/predis/predis/workflows/Predis%20Builds/badge.svg)
+[![Build status][ico-build]][link-actions]
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
@@ -475,12 +474,12 @@ found [on its actions page](https://github.com/predis/predis/actions).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/predishq/predis.svg?style=flat-square
-[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
-[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
-[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/predishq/predis.svg?style=flat-square
+[ico-license]: https://img.shields.io/github/license/predis/predis.svg
+[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg
+[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg
+[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg
+[ico-build]: https://img.shields.io/github/workflow/status/predis/predis/Tests/main
 
 [link-packagist]: https://packagist.org/packages/predis/predis
-[link-travis]: https://travis-ci.org/predishq/predis
+[link-actions]: https://github.com/predis/predis/actions
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
