@@ -146,8 +146,6 @@ class StringBitFieldTest extends PredisCommandTestCase
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
 
-        $this->markTestSkipped('Currently skipped due issues in Redis (see antirez/redis#3259).');
-
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');

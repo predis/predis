@@ -291,9 +291,9 @@ class SentinelReplicationTest extends PredisTestCase
         $sentinel1->expects($this->exactly(3))
                   ->method('executeCommand')
                   ->withConsecutive(
-                      $this->isRedisCommand('SENTINEL', array('sentinels', 'svc')),
-                      $this->isRedisCommand('SENTINEL', array('get-master-addr-by-name', 'svc')),
-                      $this->isRedisCommand('SENTINEL', array('slaves', 'svc'))
+                      array($this->isRedisCommand('SENTINEL', array('sentinels', 'svc'))),
+                      array($this->isRedisCommand('SENTINEL', array('get-master-addr-by-name', 'svc'))),
+                      array($this->isRedisCommand('SENTINEL', array('slaves', 'svc')))
                   )
                   ->will($this->onConsecutiveCalls(
                       // SENTINEL sentinels svc
