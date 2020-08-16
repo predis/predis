@@ -109,12 +109,7 @@ class ServerCommandTest extends PredisCommandTestCase
         // checks for strict equality while assertEquals is loose.
         $expected = array(array('get', 2, array('readonly', 'fast'), 1, 1, 1));
         $this->assertCount(1, $response = $redis->command('INFO', 'GET'));
-
-        if ((float) $this->getRedisServerVersion() < 6) {
-            $this->assertEquals($expected, $response);
-        } else {
-            $this->assertNotEquals($expected, $response);
-        }
+        $this->assertEquals($expected, $response);
     }
 
     /**
