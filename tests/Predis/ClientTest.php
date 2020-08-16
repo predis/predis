@@ -624,6 +624,21 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testGetClientForReturnsInstanceOfSubclass()
+    {
+        $nodes = array('tcp://host1?alias=node01', 'tcp://host2?alias=node02');
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('dummy'))
+            ->setConstructorArgs(array($nodes))
+            ->setMockClassName('SubclassedClient')
+            ->getMock();
+
+        $this->assertInstanceOf('SubclassedClient', $client->getClientFor('node02'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateClientWithConnectionFromAggregateConnection()
     {
         $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('prefix' => 'pfx:'));

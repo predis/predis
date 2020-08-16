@@ -54,6 +54,7 @@ class ConnectionFactoryOptionTest extends PredisTestCase
 
         $factory = $option->filter($options, $value);
         $this->assertSame($default, $factory);
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory);
     }
 
     /**

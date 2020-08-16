@@ -46,7 +46,10 @@ class SentinelReplicationTest extends PredisTestCase
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
         $this->assertArrayHasKey('database', $parameters);
+        $this->assertNull($parameters['database'], 'The "database" parameter is expected to be NULL for sentinels');
+
         $this->assertArrayHasKey('password', $parameters);
+        $this->assertNull($parameters['password'], 'The "password" parameter is expected to be NULL for sentinels');
     }
 
     /**

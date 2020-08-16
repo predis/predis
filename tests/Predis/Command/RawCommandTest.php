@@ -70,6 +70,19 @@ class RawCommandTest extends PredisTestCase
     }
 
     /**
+     * The signature of RawCommand::create() requires one argument which is the
+     * ID of the command (other arguments are fetched dinamically). If the first
+     * argument is missing, PHP 7.1 throw an exception
+     *
+     * @group disconnected
+     */
+    public function testPHPExceptionOnMissingCommandID()
+    {
+        $this->expectException('ArgumentCountError');
+        RawCommand::create();
+    }
+
+    /**
      * @group disconnected
      */
     public function testSetArguments()

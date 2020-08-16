@@ -489,8 +489,7 @@ class MultiExecTest extends PredisTestCase
             // NOOP
         }
 
-        $this->assertNull($responses);
-        $this->assertIsArray($expected);
+        $this->assertNull($responses, 'Transaction is expected to return NULL when an exception is thrown in the callable block');
         $this->assertSame(array('MULTI', 'SET', 'GET', 'DISCARD'), self::commandsToIDs($commands));
     }
 

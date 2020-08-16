@@ -90,9 +90,9 @@ class GeospatialGeoPosTest extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertNotEquals(array(
-            array('13.361389338970184', '38.115556395496299'),
-            array('15.087267458438873', '37.50266842333162'),
+        $this->assertEquals(array(
+            array('13.36138933897018433', '38.11555639549629859'),
+            array('15.08726745843887329', '37.50266842333162032'),
         ), $redis->geopos('Sicily', 'Palermo', 'Catania'));
     }
 
