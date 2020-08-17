@@ -18,7 +18,7 @@ use Predis\Command\Command as RedisCommand;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class OBJECT extends RedisCommand
+class OBJECT_ extends RedisCommand
 {
     /**
      * {@inheritdoc}

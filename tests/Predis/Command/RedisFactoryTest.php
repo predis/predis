@@ -27,7 +27,7 @@ class RedisFactoryTest extends PredisTestCase
         $factory = new RedisFactory();
 
         foreach ($this->getExpectedCommands() as $commandID) {
-            $this->assertTrue($factory->supportsCommand($commandID));
+            $this->assertTrue($factory->supportsCommand($commandID), "Command factory does not support $commandID");
         }
     }
 

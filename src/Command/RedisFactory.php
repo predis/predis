@@ -26,6 +26,7 @@ class RedisFactory extends Factory
         $this->commands = array(
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
+            'OBJECT' => 'Predis\Command\Redis\OBJECT_',
         );
     }
 

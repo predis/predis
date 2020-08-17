@@ -22,7 +22,7 @@ class OBJECT_Test extends PredisCommandTestCase
      */
     protected function getExpectedCommand()
     {
-        return 'Predis\Command\Redis\OBJECT';
+        return 'Predis\Command\Redis\OBJECT_';
     }
 
     /**
