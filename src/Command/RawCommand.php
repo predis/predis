@@ -28,20 +28,13 @@ class RawCommand implements CommandInterface
     private $arguments;
 
     /**
-     * @param array $arguments Command ID and its arguments.
-     *
-     * @throws \InvalidArgumentException
+     * @param string $commandID Command ID.
+     * @param array  $arguments Command arguments.
      */
-    public function __construct(array $arguments)
+    public function __construct($commandID, array $arguments = array())
     {
-        if (!$arguments) {
-            throw new \InvalidArgumentException(
-                'The arguments array must contain at least the command ID.'
-            );
-        }
-
-        $this->commandID = strtoupper(array_shift($arguments));
-        $this->arguments = $arguments;
+        $this->commandID = strtoupper($commandID);
+        $this->setArguments($arguments);
     }
 
     /**
@@ -55,7 +48,7 @@ class RawCommand implements CommandInterface
     public static function create($commandID /* [ $arg, ... */)
     {
         $arguments = func_get_args();
-        $command = new self($arguments);
+        $command = new static(array_shift($arguments), $arguments);
 
         return $command;
     }

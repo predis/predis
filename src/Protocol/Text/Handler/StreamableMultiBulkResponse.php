@@ -38,7 +38,7 @@ class StreamableMultiBulkResponse implements ResponseHandlerInterface
 
         if ("$length" != $payload) {
             CommunicationException::handle(new ProtocolException(
-                $connection, "Cannot parse '$payload' as a valid length for a multi-bulk response."
+                $connection, "Cannot parse '$payload' as a valid length for a multi-bulk response [{$connection->getParameters()}]"
             ));
         }
 

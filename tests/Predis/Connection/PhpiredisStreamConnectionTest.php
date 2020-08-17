@@ -55,16 +55,17 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     {
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
-        $connection = $this->getMockBuilder(static::CONNECTION_CLASS)
-                           ->setMethods(array('executeCommand', 'createResource'))
-                           ->setConstructorArgs(array(new Parameters()))
-                           ->getMock();
-
-        $connection->method('executeCommand')
-                   ->with($cmdSelect)
-                   ->will($this->returnValue(
-                       new ErrorResponse('ERR invalid DB index')
-                   ));
+        $connection = $this
+            ->getMockBuilder(static::CONNECTION_CLASS)
+            ->setMethods(array('executeCommand', 'createResource'))
+            ->setConstructorArgs(array(new Parameters()))
+            ->getMock();
+        $connection
+            ->method('executeCommand')
+            ->with($cmdSelect)
+            ->will($this->returnValue(
+                new ErrorResponse('ERR invalid DB index')
+            ));
 
         $connection->method('createResource');
 
@@ -84,13 +85,13 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {
-        $profile = $this->getCurrentProfile();
-
         $connection = $this->createConnectionWithParams(array(
             'read_write_timeout' => 0.5,
         ), true);
 
-        $connection->executeCommand($profile->createCommand('brpop', array('foo', 3)));
+        $connection->executeCommand(
+            $this->getCommandFactory()->createCommand('brpop', array('foo', 3))
+        );
     }
 
     /**
@@ -103,7 +104,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->createConnection();
         $stream = $connection->getResource();
 
-        $connection->writeRequest($this->getCurrentProfile()->createCommand('ping'));
+        $connection->writeRequest($this->getCommandFactory()->createCommand('ping'));
         stream_socket_recvfrom($stream, 1);
 
         $connection->read();

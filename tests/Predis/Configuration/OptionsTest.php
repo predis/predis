@@ -25,12 +25,13 @@ class OptionsTest extends PredisTestCase
     {
         $options = new Options();
 
-        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $options->replication);
         $this->assertTrue($options->exceptions);
         $this->assertNull($options->prefix);
+        $this->assertNull($options->aggregate);
+        $this->assertInstanceOf('Closure', $options->cluster);
+        $this->assertInstanceOf('Closure', $options->replication);
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
     }
 
     /**
@@ -38,21 +39,39 @@ class OptionsTest extends PredisTestCase
      */
     public function testConstructorWithArrayArgument()
     {
+        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+
+        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable
+            ->expects($this->any())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($connection));
+
         $options = new Options(array(
             'exceptions' => false,
-            'profile' => '2.0',
             'prefix' => 'prefix:',
+            'commands' => $this->getMock('Predis\Command\FactoryInterface'),
             'connections' => $this->getMock('Predis\Connection\FactoryInterface'),
-            'cluster' => $this->getMock('Predis\Connection\Aggregate\ClusterInterface'),
-            'replication' => $this->getMock('Predis\Connection\Aggregate\ReplicationInterface'),
+            'cluster' => $callable,
+            'replication' => $callable,
+            'aggregate' => $callable,
         ));
 
         $this->assertInternalType('bool', $options->exceptions);
-        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->profile);
+
         $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->commands);
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ClusterInterface', $options->cluster);
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $options->replication);
+
+        $this->assertInstanceOf('Closure', $initializer = $options->aggregate);
+        $this->assertSame($connection, $initializer($options, array()));
+
+        $this->assertInstanceOf('Closure', $initializer = $options->cluster);
+        $this->assertSame($connection, $initializer($options, array()));
+
+        $this->assertInstanceOf('Closure', $initializer = $options->replication);
+        $this->assertSame($connection, $initializer($options, array()));
     }
 
     /**
@@ -93,7 +112,7 @@ class OptionsTest extends PredisTestCase
         $this->assertTrue($options->defined('prefix'));
         $this->assertTrue($options->defined('custom'));
         $this->assertTrue($options->defined('void'));
-        $this->assertFalse($options->defined('profile'));
+        $this->assertFalse($options->defined('commands'));
     }
 
     /**
@@ -110,7 +129,7 @@ class OptionsTest extends PredisTestCase
         $this->assertTrue(isset($options->prefix));
         $this->assertTrue(isset($options->custom));
         $this->assertFalse(isset($options->void));
-        $this->assertFalse(isset($options->profile));
+        $this->assertFalse(isset($options->commands));
     }
 
     /**
@@ -120,7 +139,7 @@ class OptionsTest extends PredisTestCase
     {
         $options = new Options();
 
-        $this->assertInstanceOf('Predis\Profile\ProfileInterface', $options->getDefault('profile'));
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $options->getDefault('commands'));
     }
 
     /**
@@ -138,21 +157,22 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesOptionValueUsingObjectWithInvokeMagicMethod()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
+        $commands = $this->getMock('Predis\Command\FactoryInterface');
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'profile')
-                 ->will($this->returnValue($profile));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($commands));
 
         $options = new Options(array(
-            'profile' => $callable,
+            'commands' => $callable,
         ));
 
-        $this->assertSame($profile, $options->profile);
-        $this->assertSame($profile, $options->profile);
+        $this->assertSame($commands, $options->commands);
+        $this->assertSame($commands, $options->commands);
     }
 
     /**
@@ -164,10 +184,11 @@ class OptionsTest extends PredisTestCase
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMock('stdClass', array('__invoke'));
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), 'custom')
-                 ->will($this->returnValue($custom));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
+            ->will($this->returnValue($custom));
 
         $options = new Options(array(
             'custom' => $callable,
@@ -183,14 +204,16 @@ class OptionsTest extends PredisTestCase
     public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
     {
         $trigger = $this->getMock('stdClass', array('autoload'));
-        $trigger->expects($this->never())->method('autoload');
+        $trigger
+            ->expects($this->never())
+            ->method('autoload');
 
         spl_autoload_register($autoload = function ($class) use ($trigger) {
             $trigger->autoload($class);
         }, true, false);
 
         try {
-            $options = new Options(array('prefix' => 'pfx'));
+            $options = new Options(array('custom' => 'value'));
             $pfx = $options->prefix;
         } catch (\Exception $_) {
             spl_autoload_unregister($autoload);

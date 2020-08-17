@@ -43,12 +43,8 @@ The suite performs integration tests against a running instance of Redis (>= 2.4
 correct behavior of the implementation of each command and certain abstractions implemented in the
 library that depend on them. These tests are identified by the __connected__ group.
 
-Integration tests for commands that are not defined in the specified server profile (see the value
-of the `REDIS_SERVER_VERSION` constant in `phpunit.xml`) are marked as __skipped__ automatically.
-
-By default, the test suite is configured to execute integration tests using the server profile for
-Redis 3.2. You can run the suite against a Redis instance built from the `unstable` branch with the
-development profile by changing the `REDIS_SERVER_VERSION` to `dev` in the `phpunit.xml` file.
+Integration tests for commands that are not supported by the running instance of Redis are marked as
+__skipped__ automatically.
 
 If you do not have a Redis instance up and running or available for testing, you can completely
 disable integration tests by excluding the __connected__ group:
@@ -70,13 +66,32 @@ $ phpunit --exclude-group slow
 
 We also provide an helper script in the `bin` directory that can be used to automatically generate a
 file with the skeleton of a test case to test a Redis command by specifying the name of the class
-in the `Predis\Command` namespace (only classes in this namespace are considered valid). For example
- to generate a test case for `SET` (represented by the `Predis\Command\StringSet` class):
+in the `Predis\Command\Redis` namespace (only classes in this namespace are considered valid).
+For example to generate a test case for `SET` (represented by the `Predis\Command\Redis\SET` class):
 
 ```bash
-$ ./bin/create-command-test --class=StringSet
+$ ./bin/create-command-test --class=SET --realm=string
 ```
 
-Each command has its own realm (e.g. commands operating on strings, lists, sets and such) which is
-automatically inferred from the name of the specified class. The realm can be also provided manually
-leveraging the `--realm` option.
+Each command must have a realm specified by the `--realm` command line argument using a value that
+matches its group, as defined by the Redis documentation. Valid realms are:
+
+- `string`
+- `list`
+- `set`
+- `sorted_set`
+- `hash`
+- `geo`
+- `stream`
+- `hyperloglog`
+- `keys`
+- `scripting`
+- `pubsub`
+- `transaction`
+- `cluster`
+- `server`
+- `connection`
+
+When unsure about which value to use for `--realm` for a specific command, you can just infer it by
+searching in [`commands.json`](https://github.com/redis/redis-doc/blob/master/commands.json) for the
+`group` attribute of the corrisponding command as use its value.

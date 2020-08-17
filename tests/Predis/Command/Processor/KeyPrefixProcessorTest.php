@@ -338,13 +338,24 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $this->assertSame(array('key', 'value'), $command->getArguments());
     }
 
+    /**
+     * @group disconnected
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Callback must be a valid callable object or NULL
+     */
+    public function testCannotDefineCommandHandlerWithInvalidType()
+    {
+        $processor = new KeyPrefixProcessor('prefix:');
+        $processor->setCommandHandler('NEWCMD', new \stdClass());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
 
     public function getCommandInstance($commandID, array $arguments)
     {
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
         $command->setRawArguments($arguments);
 
         return $command;

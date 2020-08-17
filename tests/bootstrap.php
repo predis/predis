@@ -22,5 +22,4 @@ require __DIR__.'/PHPUnit/RedisCommandConstraint.php';
 require __DIR__.'/PHPUnit/PredisTestCase.php';
 require __DIR__.'/PHPUnit/PredisCommandTestCase.php';
 require __DIR__.'/PHPUnit/PredisConnectionTestCase.php';
-require __DIR__.'/PHPUnit/PredisProfileTestCase.php';
 require __DIR__.'/PHPUnit/PredisDistributorTestCase.php';

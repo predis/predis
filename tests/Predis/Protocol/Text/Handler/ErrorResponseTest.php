@@ -23,14 +23,17 @@ class ErrorResponseTest extends PredisTestCase
      */
     public function testOk()
     {
-        $handler = new Handler\ErrorResponse();
+        $message = 'ERR Operation against a key holding the wrong kind of value';
 
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
-
-        $message = 'ERR Operation against a key holding the wrong kind of value';
+        $handler = new Handler\ErrorResponse();
         $response = $handler->handle($connection, $message);
 
         $this->assertInstanceOf('Predis\Response\Error', $response);

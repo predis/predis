@@ -18,7 +18,7 @@ require __DIR__.'/shared.php';
 use Predis\Cluster\Distributor\DistributorInterface;
 use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Cluster\PredisStrategy;
-use Predis\Connection\Aggregate\PredisCluster;
+use Predis\Connection\Cluster\PredisCluster;
 
 class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 {
@@ -104,8 +104,8 @@ for ($i = 0; $i < 100; ++$i) {
     $client->get("key:$i");
 }
 
-$server1 = $client->getClientFor('first')->info();
-$server2 = $client->getClientFor('second')->info();
+$server1 = $client->getClientBy('alias', 'first')->info();
+$server2 = $client->getClientBy('alias', 'second')->info();
 
 if (isset($server1['Keyspace'], $server2['Keyspace'])) {
     $server1 = $server1['Keyspace'];

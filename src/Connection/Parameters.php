@@ -33,7 +33,7 @@ class Parameters implements ParametersInterface
      */
     public function __construct(array $parameters = array())
     {
-        $this->parameters = $this->filter($parameters) + $this->getDefaults();
+        $this->parameters = $parameters + $this->getDefaults();
     }
 
     /**
@@ -129,15 +129,11 @@ class Parameters implements ParametersInterface
     }
 
     /**
-     * Validates and converts each value of the connection parameters array.
-     *
-     * @param array $parameters Connection parameters.
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    protected function filter(array $parameters)
+    public function toArray()
     {
-        return $parameters ?: array();
+        return $this->parameters;
     }
 
     /**
@@ -161,9 +157,17 @@ class Parameters implements ParametersInterface
     /**
      * {@inheritdoc}
      */
-    public function toArray()
+    public function __toString()
     {
-        return $this->parameters;
+        if ($this->scheme === 'unix') {
+            return "$this->scheme:$this->path";
+        }
+
+        if (filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            return "$this->scheme://[$this->host]:$this->port";
+        }
+
+        return "$this->scheme://$this->host:$this->port";
     }
 
     /**

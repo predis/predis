@@ -31,9 +31,9 @@ class Atomic extends Pipeline
      */
     public function __construct(ClientInterface $client)
     {
-        if (!$client->getProfile()->supportsCommands(array('multi', 'exec', 'discard'))) {
+        if (!$client->getCommandFactory()->supportsCommands(array('multi', 'exec', 'discard'))) {
             throw new ClientException(
-                "The current profile does not support 'MULTI', 'EXEC' and 'DISCARD'."
+                "'MULTI', 'EXEC' and 'DISCARD' are not supported by the current command factory."
             );
         }
 
@@ -61,8 +61,8 @@ class Atomic extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
-        $profile = $this->getClient()->getProfile();
-        $connection->executeCommand($profile->createCommand('multi'));
+        $commandFactory = $this->getClient()->getCommandFactory();
+        $connection->executeCommand($commandFactory->createCommand('multi'));
 
         foreach ($commands as $command) {
             $connection->writeRequest($command);
@@ -72,12 +72,12 @@ class Atomic extends Pipeline
             $response = $connection->readResponse($command);
 
             if ($response instanceof ErrorResponseInterface) {
-                $connection->executeCommand($profile->createCommand('discard'));
+                $connection->executeCommand($commandFactory->createCommand('discard'));
                 throw new ServerException($response->getMessage());
             }
         }
 
-        $executed = $connection->executeCommand($profile->createCommand('exec'));
+        $executed = $connection->executeCommand($commandFactory->createCommand('exec'));
 
         if (!isset($executed)) {
             // TODO: should be throwing a more appropriate exception.

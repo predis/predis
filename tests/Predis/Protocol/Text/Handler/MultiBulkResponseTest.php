@@ -23,29 +23,29 @@ class MultiBulkResponseTest extends PredisTestCase
      */
     public function testMultiBulk()
     {
-        $handler = new Handler\MultiBulkResponse();
-
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->once())
+            ->method('getProtocol')
+            ->will($this->returnValue(new CompositeProtocolProcessor()));
+        $connection
+            ->expects($this->at(1))
+            ->method('readLine')
+            ->will($this->returnValue('$3'));
+        $connection
+            ->expects($this->at(2))
+            ->method('readBuffer')
+            ->will($this->returnValue("foo\r\n"));
+        $connection
+            ->expects($this->at(3))
+            ->method('readLine')
+            ->will($this->returnValue('$3'));
+        $connection
+            ->expects($this->at(4))
+            ->method('readBuffer')
+            ->will($this->returnValue("bar\r\n"));
 
-        $connection->expects($this->once())
-                   ->method('getProtocol')
-                   ->will($this->returnValue(new CompositeProtocolProcessor()));
-
-        $connection->expects($this->at(1))
-                   ->method('readLine')
-                   ->will($this->returnValue('$3'));
-
-        $connection->expects($this->at(2))
-                   ->method('readBuffer')
-                   ->will($this->returnValue("foo\r\n"));
-
-        $connection->expects($this->at(3))
-                   ->method('readLine')
-                   ->will($this->returnValue('$3'));
-
-        $connection->expects($this->at(4))
-                   ->method('readBuffer')
-                   ->will($this->returnValue("bar\r\n"));
+        $handler = new Handler\MultiBulkResponse();
 
         $this->assertSame(array('foo', 'bar'), $handler->handle($connection, '2'));
     }
@@ -55,12 +55,15 @@ class MultiBulkResponseTest extends PredisTestCase
      */
     public function testNull()
     {
-        $handler = new Handler\MultiBulkResponse();
-
         $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
+        $handler = new Handler\MultiBulkResponse();
 
         $this->assertNull($handler->handle($connection, '-1'));
     }
@@ -68,16 +71,19 @@ class MultiBulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length of a multi-bulk response.
+     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length of a multi-bulk response [tcp://127.0.0.1:6379]
      */
     public function testInvalid()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\MultiBulkResponse();
-
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

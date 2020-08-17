@@ -361,6 +361,7 @@ class StreamConnection extends AbstractConnection
 
             case ':':
                 $integer = (int) $payload;
+
                 return $integer == $payload ? $integer : $payload;
 
             case '-':
