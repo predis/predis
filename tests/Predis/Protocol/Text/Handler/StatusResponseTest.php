@@ -23,7 +23,7 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testOk()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');
@@ -43,7 +43,7 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testQueued()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');
@@ -63,7 +63,7 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testPlainString()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');

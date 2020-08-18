@@ -20,18 +20,21 @@ class ListKeyTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage 'LRANGE' is not supported by the current command factory.
      */
     public function testThrowsExceptionOnMissingCommand()
     {
-        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("'LRANGE' is not supported by the current command factory.");
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->any())
             ->method('supportsCommand')
             ->will($this->returnValue(false));
 
-        $client = $this->getMock('Predis\ClientInterface');
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -45,7 +48,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -69,7 +74,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -108,7 +115,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -123,10 +132,11 @@ class ListKeyTest extends PredisTestCase
                     'item:6', 'item:7', 'item:8', 'item:9', 'item:10',
                 )
             ));
-        $client->expects($this->at(2))
-               ->method('lrange')
-               ->with('key:list', 10, 19)
-               ->will($this->returnValue(array('item:11', 'item:12')));
+        $client
+            ->expects($this->at(2))
+            ->method('lrange')
+            ->with('key:list', 10, 19)
+            ->will($this->returnValue(array('item:11', 'item:12')));
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -141,12 +151,15 @@ class ListKeyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNonIntegerCountParameter()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('The $count argument must be a positive integer');
+
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -157,12 +170,15 @@ class ListKeyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The $count argument must be a positive integer.
      */
     public function testThrowsExceptionOnConstructorWithNegativeCountParameter()
     {
-        $client = $this->getMock('Predis\ClientInterface');
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('The $count argument must be a positive integer');
+
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -176,7 +192,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationWithCountParameter()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -210,7 +228,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationWithCountParameterOnMultipleFetches()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
@@ -256,7 +276,9 @@ class ListKeyTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMock('Predis\Client', array('getCommandFactory', 'lrange'));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')

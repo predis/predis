@@ -70,11 +70,12 @@ class LSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR index out of range
      */
     public function testThrowsExceptionOnIndexOutOfRange()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR index out of range');
+
         $redis = $this->getClient();
 
         $redis->rpush('letters', 'a', 'b', 'c');
@@ -83,11 +84,12 @@ class LSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->set('metavars', 'foo');

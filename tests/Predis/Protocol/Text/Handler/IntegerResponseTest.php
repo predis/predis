@@ -23,7 +23,7 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testInteger()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');
@@ -44,7 +44,7 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testNull()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');
@@ -59,11 +59,12 @@ class IntegerResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid numeric response [tcp://127.0.0.1:6379]
      */
     public function testInvalid()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid numeric response [tcp://127.0.0.1:6379]");
+
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
         $connection
             ->expects($this->never())

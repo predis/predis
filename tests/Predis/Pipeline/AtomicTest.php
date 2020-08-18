@@ -28,7 +28,7 @@ class AtomicTest extends PredisTestCase
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
@@ -52,12 +52,13 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage The underlying transaction has been aborted by the server.
      */
     public function testThrowsExceptionOnAbortedTransaction()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('The underlying transaction has been aborted by the server');
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
@@ -74,15 +75,16 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR Test error
      */
     public function testPipelineWithErrorInTransaction()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR Test error');
+
         $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->at(0))
             ->method('executeCommand')
@@ -107,14 +109,15 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR Test error
      */
     public function testThrowsServerExceptionOnResponseErrorByDefault()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR Test error');
+
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->once())
             ->method('readResponse')
@@ -137,7 +140,7 @@ class AtomicTest extends PredisTestCase
         $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -158,13 +161,13 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage The class 'Predis\Pipeline\Atomic' does not support aggregate connections.
      */
     public function testExecutorWithAggregateConnection()
     {
-        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage("The class 'Predis\Pipeline\Atomic' does not support aggregate connections");
 
+        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
         $pipeline = new Atomic(new Client($connection));
 
         $pipeline->ping();

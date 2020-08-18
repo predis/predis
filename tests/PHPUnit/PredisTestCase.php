@@ -21,6 +21,14 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected $redisServerVersion = null;
 
     /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        $this->checkRequirements();
+    }
+
+    /**
      * Sleep the test case with microseconds resolution.
      *
      * @param float $seconds Seconds to sleep.
@@ -196,7 +204,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnectionOfType($interface, $parameters = null)
     {
-        $connection = $this->getMock($interface);
+        $connection = $this->getMockBuilder($interface)->getMock();
+
+        // TODO: verify that $connection is an instance of \Predis\Connection\NodeConnectionInterface
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);
@@ -331,8 +341,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function checkRequirements()
     {
-        parent::checkRequirements();
-
         $this->checkRequiredRedisServerVersion();
     }
 }

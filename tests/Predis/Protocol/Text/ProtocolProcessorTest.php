@@ -26,7 +26,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $serialized = "*1\r\n$4\r\nPING\r\n";
         $protocol = new ProtocolProcessor();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
             ->method('getId')
@@ -100,11 +100,12 @@ class ProtocolProcessorTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Unknown response prefix: '!' [tcp://127.0.0.1:6379]
      */
     public function testUnknownResponsePrefix()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Unknown response prefix: '!' [tcp://127.0.0.1:6379]");
+
         $protocol = new ProtocolProcessor();
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');

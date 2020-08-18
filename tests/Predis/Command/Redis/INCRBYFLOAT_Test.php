@@ -87,11 +87,12 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnDecrementValueNotFloat()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not a valid float');
+
         $redis = $this->getClient();
 
         $redis->incrbyfloat('foo', 'bar');
@@ -100,11 +101,12 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not a valid float
      */
     public function testThrowsExceptionOnKeyValueNotFloat()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not a valid float');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
@@ -114,11 +116,12 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');

@@ -81,11 +81,12 @@ class BITPOS_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.8.7
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
         $redis->lpush('key', 'list');
         $redis->bitpos('key', 0);

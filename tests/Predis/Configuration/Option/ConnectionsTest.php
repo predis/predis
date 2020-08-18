@@ -25,7 +25,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $option = new Connections();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Connection\Factory', $option->getDefault($options));
     }
@@ -35,18 +35,20 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings()
     {
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $class = get_class($this->getMock('Predis\Connection\NodeConnectionInterface'));
+        $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
         $value = array('tcp' => $class, 'redis' => $class);
 
-        $default = $this->getMock('Predis\Connection\FactoryInterface');
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $default
             ->expects($this->exactly(2))
             ->method('define')
             ->with($this->matchesRegularExpression('/^tcp|redis$/'), $class);
 
-        $option = $this->getMock('Predis\Configuration\Option\Connections', array('getDefault'));
+        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
+            ->setMethods(array('getDefault'))
+            ->getMock();
         $option
             ->expects($this->once())
             ->method('getDefault')
@@ -64,9 +66,9 @@ class ConnectionsTest extends PredisTestCase
     {
         $parameters = array('database' => 5, 'password' => 'mypassword');
 
-        $default = $this->getMock('Predis\Connection\Factory');
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
             ->method('defined')
@@ -89,13 +91,15 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testAcceptsConnectionFactoryInstance()
     {
-        $option = $this->getMock('Predis\Configuration\Option\Connections', array('getDefault'));
+        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
+            ->setMethods(array('getDefault'))
+            ->getMock();
         $option
             ->expects($this->never())
             ->method('getDefault');
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $factory = $this->getMock('Predis\Connection\FactoryInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
         $this->assertSame($factory, $option->filter($options, $factory));
     }
@@ -107,15 +111,17 @@ class ConnectionsTest extends PredisTestCase
     {
         $option = new Connections();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->will($this->returnValue(
-                $factory = $this->getMock('Predis\Connection\FactoryInterface')
+                $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
             ));
 
         $this->assertSame($factory, $option->filter($options, $callable));
@@ -123,13 +129,14 @@ class ConnectionsTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedException Predis\Configuration\Option\Connections expects a valid command factory
      */
     public function testThrowsExceptionOnInvalidArguments()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Connections expects a valid connection factory');
+
         $option = new Connections();
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new \stdClass());
     }

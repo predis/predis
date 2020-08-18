@@ -308,11 +308,12 @@ class ParametersTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */
     public function testParsingURIThrowOnInvalidURI()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid parameters URI: tcp://invalid:uri");
+
         Parameters::parse('tcp://invalid:uri');
     }
 

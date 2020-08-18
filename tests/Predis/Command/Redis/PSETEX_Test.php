@@ -86,33 +86,36 @@ class PSETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not an integer or out of range
      */
     public function testThrowsExceptionOnNonIntegerTTL()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not an integer or out of range');
+
         $this->getClient()->psetex('foo', 2.5, 'bar');
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnZeroTTL()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR invalid expire time');
+
         $this->getClient()->psetex('foo', 0, 'bar');
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR invalid expire time
      */
     public function testThrowsExceptionOnNegativeTTL()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR invalid expire time');
+
         $this->getClient()->psetex('foo', -10000, 'bar');
     }
 }

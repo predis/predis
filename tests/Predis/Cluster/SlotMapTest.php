@@ -139,11 +139,12 @@ class SlotMapTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \OutOfBoundsException
-     * @expectedExceptionMessage Invalid slot range 0-16384 for `127.0.0.1:6379`
      */
     public function testSetSlotsThrowsExceptionOnInvalidSlotRange()
     {
+        $this->expectException('OutOfBoundsException');
+        $this->expectExceptionMessage('Invalid slot range 0-16384 for `127.0.0.1:6379`');
+
         $slotmap = new SlotMap();
 
         $slotmap->setSlots(0, 16384, '127.0.0.1:6379');
@@ -195,11 +196,12 @@ class SlotMapTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \OutOfBoundsException
-     * @expectedExceptionMessage Invalid slot range 0-16384
      */
     public function testGetSlotsThrowsExceptionOnInvalidSlotRange()
     {
+        $this->expectException('OutOfBoundsException');
+        $this->expectExceptionMessage('Invalid slot range 0-16384');
+
         $slotmap = new SlotMap();
 
         $slotmap->getSlots(0, 16384);
@@ -439,11 +441,12 @@ class SlotMapTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \OutOfBoundsException
-     * @expectedExceptionMessage Invalid slot 16384 for `127.0.0.1:6379`
      */
     public function testOffsetSetThrowsExceptionOnInvalidSlot()
     {
+        $this->expectException('OutOfBoundsException');
+        $this->expectExceptionMessage('Invalid slot 16384 for `127.0.0.1:6379`');
+
         $slotmap = new SlotMap();
 
         $slotmap[16384] = '127.0.0.1:6379';

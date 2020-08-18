@@ -101,11 +101,12 @@ class MIGRATE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      * @group slow
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage IOERR
      */
     public function testReturnsErrorOnUnreacheableDestination()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('IOERR');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');

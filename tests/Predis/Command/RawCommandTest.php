@@ -61,29 +61,13 @@ class RawCommandTest extends PredisTestCase
     /**
      * The signature of RawCommand::create() requires one argument which is the
      * ID of the command (other arguments are fetched dinamically). If the first
-     * argument is missing, PHP emits an E_WARNING.
-     *
-     * @group disconnected
-     */
-    public function testPHPWarningOnMissingCommandIDWithStaticCreate()
-    {
-        if (version_compare(PHP_VERSION, "7.1", '>')) {
-            $this->markTestSkipped('only for PHP < 7.1');
-        }
-        $this->setExpectedException('PHPUnit_Framework_Error_Warning');
-        RawCommand::create();
-    }
-
-    /**
-     * The signature of RawCommand::create() requires one argument which is the
-     * ID of the command (other arguments are fetched dinamically). If the first
      * argument is missing a standard PHP exception is thrown on PHP >= 7.1.
      *
      * @group disconnected
      */
     public function testPHPExceptionOnMissingCommandIDWithStaticCreate()
     {
-        $this->setExpectedException('ArgumentCountError');
+        $this->expectException('ArgumentCountError');
 
         RawCommand::create();
     }

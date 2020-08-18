@@ -64,7 +64,7 @@ class OBJECT_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $this->assertInternalType('integer', $redis->object('REFCOUNT', 'foo'));
+        $this->assertIsInt($redis->object('REFCOUNT', 'foo'));
     }
 
     /**
@@ -76,7 +76,7 @@ class OBJECT_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
-        $this->assertInternalType('integer', $redis->object('IDLETIME', 'foo'));
+        $this->assertIsInt($redis->object('IDLETIME', 'foo'));
     }
 
     /**
@@ -107,10 +107,11 @@ class OBJECT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.2.3
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->object('INVALID', 'foo');

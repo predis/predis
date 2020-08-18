@@ -88,7 +88,7 @@ class CONFIG_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertInternalType('array', $configs = $redis->config('GET', '*'));
+        $this->assertIsArray($configs = $redis->config('GET', '*'));
         $this->assertGreaterThan(1, count($configs));
         $this->assertArrayHasKey('loglevel', $configs);
         $this->assertArrayHasKey('appendonly', $configs);
@@ -103,7 +103,7 @@ class CONFIG_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertInternalType('array', $configs = $redis->config('GET', 'dbfilename'));
+        $this->assertIsArray($configs = $redis->config('GET', 'dbfilename'));
         $this->assertEquals(1, count($configs));
         $this->assertArrayHasKey('dbfilename', $configs);
     }
@@ -139,11 +139,12 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR Unsupported CONFIG parameter: foo
      */
     public function testThrowsExceptionWhenSettingUnknownConfiguration()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR Unsupported CONFIG parameter: foo');
+
         $redis = $this->getClient();
 
         $redis->config('SET', 'foo', 'bar');
@@ -163,10 +164,11 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnUnknownSubcommand()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->config('FOO');

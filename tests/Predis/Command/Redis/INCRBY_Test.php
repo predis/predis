@@ -82,11 +82,12 @@ class INCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not an integer or out of range
      */
     public function testThrowsExceptionOnDecrementValueNotInteger()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not an integer or out of range');
+
         $redis = $this->getClient();
 
         $redis->incrby('foo', 'bar');
@@ -94,11 +95,12 @@ class INCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR value is not an integer or out of range
      */
     public function testThrowsExceptionOnKeyValueNotInteger()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR value is not an integer or out of range');
+
         $redis = $this->getClient();
 
         $redis->set('foo', 'bar');
@@ -107,11 +109,12 @@ class INCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');

@@ -100,10 +100,11 @@ class SCRIPT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptionOnInvalidSubcommand()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->script('INVALID');

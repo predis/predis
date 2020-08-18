@@ -67,13 +67,13 @@ class GEOPOS_Test extends PredisCommandTestCase
     public function testParseResponse()
     {
         $raw = array(
-            array('13.361389338970184', '38.115556395496299'),
-            array('15.087267458438873', '37.50266842333162'),
+            array('13.36138933897018433', '38.11555639549629859'),
+            array('15.08726745843887329', '37.50266842333162032'),
         );
 
         $expected = array(
-            array('13.361389338970184', '38.115556395496299'),
-            array('15.087267458438873', '37.50266842333162'),
+            array('13.36138933897018433', '38.11555639549629859'),
+            array('15.08726745843887329', '37.50266842333162032'),
         );
 
         $command = $this->getCommand();
@@ -91,19 +91,20 @@ class GEOPOS_Test extends PredisCommandTestCase
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
         $this->assertEquals(array(
-            array('13.361389338970184', '38.115556395496299'),
-            array('15.087267458438873', '37.50266842333162'),
+            array('13.36138933897018433', '38.11555639549629859'),
+            array('15.08726745843887329', '37.50266842333162032'),
         ), $redis->geopos('Sicily', 'Palermo', 'Catania'));
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnWrongType()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('Sicily', 'Palermo');

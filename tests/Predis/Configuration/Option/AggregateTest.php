@@ -25,7 +25,7 @@ class AggregateTest extends PredisTestCase
     {
         $option = new Aggregate();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertNull($option->getDefault($options));
     }
@@ -37,10 +37,12 @@ class AggregateTest extends PredisTestCase
     {
         $option = new Aggregate();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -53,17 +55,20 @@ class AggregateTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\Aggregate expects a valid connection type returned by callable initializer
      */
     public function testThrowsExceptionOnInvalidReturnTypeOfConnectionInitializer()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Aggregate expects a valid connection type returned by callable initializer');
+
         $option = new Aggregate();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -77,15 +82,16 @@ class AggregateTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\Aggregate expects a valid callable
      */
     public function testThrowsExceptionOnInstanceOfAggregateConnectionInterface()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Aggregate expects a valid callable');
+
         $option = new Aggregate();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $cluster = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $cluster = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $option->filter($options, $cluster);
     }

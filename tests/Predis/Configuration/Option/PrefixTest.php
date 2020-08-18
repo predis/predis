@@ -25,7 +25,7 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertNull($option->getDefault($options));
     }
@@ -37,7 +37,7 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $prefix = $option->filter($options, $value = 'prefix:');
 
@@ -53,8 +53,8 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock();
 
         $prefix = $option->filter($options, $processor);
 
@@ -68,15 +68,17 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->will($this->returnValue(
-                $processor = $this->getMock('Predis\Command\Processor\ProcessorInterface')
+                $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock()
             ));
 
         $prefix = $option->filter($options, $callable);
@@ -91,9 +93,11 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -114,9 +118,11 @@ class PrefixTest extends PredisTestCase
     {
         $option = new Prefix();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $input = $this->getMock('stdClass', array('__toString'));
+        $input = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__toString'))
+            ->getMock();
         $input
             ->expects($this->once())
             ->method('__toString')

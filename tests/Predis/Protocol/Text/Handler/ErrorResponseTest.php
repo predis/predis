@@ -25,7 +25,7 @@ class ErrorResponseTest extends PredisTestCase
     {
         $message = 'ERR Operation against a key holding the wrong kind of value';
 
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
             ->expects($this->never())
             ->method('readLine');

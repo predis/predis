@@ -151,11 +151,12 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessageRegExp /ERR.*only .* allowed in this context/
      */
     public function testCannotSendOtherCommandsAfterSubscribe()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessageMatches('/ERR.*only .* allowed in this context/');
+
         $redis = $this->getClient();
 
         $redis->subscribe('channel:foo');

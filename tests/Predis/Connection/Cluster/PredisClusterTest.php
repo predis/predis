@@ -277,11 +277,12 @@ class PredisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Cannot use 'PING' over clusters of connections.
-     */
+    */
     public function testThrowsExceptionOnNonShardableCommand()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("Cannot use 'PING' over clusters of connections.");
+
         $ping = $this->getCommandFactory()->createCommand('ping');
 
         $cluster = new PredisCluster();

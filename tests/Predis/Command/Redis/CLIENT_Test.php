@@ -130,9 +130,9 @@ BUFFER;
     {
         $redis = $this->getClient();
 
-        $this->assertInternalType('array', $clients = $redis->client('LIST'));
+        $this->assertIsArray($clients = $redis->client('LIST'));
         $this->assertGreaterThanOrEqual(1, count($clients));
-        $this->assertInternalType('array', $clients[0]);
+        $this->assertIsArray($clients[0]);
         $this->assertArrayHasKey('addr', $clients[0]);
         $this->assertArrayHasKey('fd', $clients[0]);
         $this->assertArrayHasKey('idle', $clients[0]);
@@ -187,12 +187,12 @@ BUFFER;
      * @requiresRedisVersion >= 2.6.9
      * @dataProvider invalidConnectionNameProvider
      *
-     * @expectedException \Predis\Response\ServerException
-     *
      * @param string $invalidConnectionName
      */
     public function testInvalidSetNameOfConnection($invalidConnectionName)
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
         $redis->client('SETNAME', $invalidConnectionName);
     }
@@ -200,10 +200,11 @@ BUFFER;
     /**
      * @group connected
      * @requiresRedisVersion >= 2.4.0
-     * @expectedException \Predis\Response\ServerException
      */
     public function testThrowsExceptioOnWrongModifier()
     {
+        $this->expectException('Predis\Response\ServerException');
+
         $redis = $this->getClient();
 
         $redis->client('FOO');
@@ -212,11 +213,12 @@ BUFFER;
     /**
      * @group connected
      * @requiresRedisVersion >= 2.4.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR No such client
      */
     public function testThrowsExceptionWhenKillingUnknownClient()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR No such client');
+
         $redis = $this->getClient();
 
         $redis->client('KILL', '127.0.0.1:65535');

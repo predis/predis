@@ -136,33 +136,36 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR BITOP NOT must be called with a single source key.
      */
     public function testBitwiseNOTAcceptsOnlyOneSourceKey()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR BITOP NOT must be called with a single source key');
+
         $this->getClient()->bitop('NOT', 'key:dst', 'key:src:1', 'key:src:2');
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR syntax error
      */
     public function testThrowsExceptionOnInvalidOperation()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR syntax error');
+
         $this->getClient()->bitop('NOOP', 'key:dst', 'key:src:1', 'key:src:2');
     }
 
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage Operation against a key holding the wrong kind of value
      */
     public function testThrowsExceptionOnInvalidSourceKey()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+
         $redis = $this->getClient();
 
         $redis->lpush('key:src:1', 'list');

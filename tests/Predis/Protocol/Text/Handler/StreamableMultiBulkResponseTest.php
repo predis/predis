@@ -23,7 +23,7 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
      */
     public function testOk()
     {
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
         $connection
             ->expects($this->never())
             ->method('readLine');
@@ -38,11 +38,12 @@ class StreamableMultiBulkResponseTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Protocol\ProtocolException
-     * @expectedExceptionMessage Cannot parse 'invalid' as a valid length for a multi-bulk response [tcp://127.0.0.1:6379]
      */
     public function testInvalid()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid length for a multi-bulk response [tcp://127.0.0.1:6379]");
+
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
         $connection
             ->expects($this->never())

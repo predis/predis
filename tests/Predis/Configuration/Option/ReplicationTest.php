@@ -25,7 +25,7 @@ class ReplicationTest extends PredisTestCase
     {
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Closure', $initializer = $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $initializer($options));
@@ -38,9 +38,9 @@ class ReplicationTest extends PredisTestCase
     {
         $option = new Replication();
 
-        $connectionFactory = $this->getMock('Predis\Connection\FactoryInterface');
+        $connectionFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->at(0))
             ->method('__get')
@@ -69,10 +69,12 @@ class ReplicationTest extends PredisTestCase
     {
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connection = $this->getMock('Predis\Connection\AggregateConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -85,17 +87,20 @@ class ReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\Replication expects a valid connection type returned by callable initializer
      */
     public function testThrowsExceptionOnInvalidReturnTypeOfConnectionInitializer()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Replication expects a valid connection type returned by callable initializer');
+
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -114,7 +119,7 @@ class ReplicationTest extends PredisTestCase
     {
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'predis'));
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $initializer($parameters = array()));
@@ -127,7 +132,7 @@ class ReplicationTest extends PredisTestCase
     {
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->at(0))
             ->method('__get')
@@ -138,11 +143,11 @@ class ReplicationTest extends PredisTestCase
             ->method('__get')
             ->with('connections')
             ->will($this->returnValue(
-                $this->getMock('Predis\Connection\FactoryInterface')
+                $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
             ));
 
         $parameters = array(
-            $this->getMock('Predis\Connection\NodeConnectionInterface'),
+            $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock(),
         );
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'sentinel'));
@@ -153,43 +158,46 @@ class ReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage String value for the replication option must be either `predis` or `sentinel`
      */
     public function testThrowsExceptionOnInvalidShortNameString()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('String value for the replication option must be either `predis` or `sentinel`');
+
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, 'unknown');
     }
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\Replication expects a valid callable
      */
     public function testThrowsExceptionOnBooleanValue()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Replication expects a valid callable');
+
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, true);
     }
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\Replication expects a valid callable
      */
     public function testThrowsExceptionOnInstanceOfReplicationInterface()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\Replication expects a valid callable');
+
         $option = new Replication();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $connection = $this->getMock('Predis\Connection\Cluster\ClusterInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $connection = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
 
         $option->filter($options, $connection);
     }

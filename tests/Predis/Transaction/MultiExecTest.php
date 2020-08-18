@@ -23,19 +23,20 @@ class MultiExecTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage MULTI, EXEC and DISCARD are not supported by the current command factory.
      */
     public function testThrowsExceptionOnUnsupportedMultiExecInCommandFactory()
     {
-        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('MULTI, EXEC and DISCARD are not supported by the current command factory.');
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
             ->method('supportsCommands')
             ->with(array('MULTI', 'EXEC', 'DISCARD'))
             ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));
 
         new MultiExec($client);
@@ -43,12 +44,13 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage WATCH is not supported by the current command factory.
      */
     public function testThrowsExceptionOnUnsupportedWatchInCommandFactory()
     {
-        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('WATCH is not supported by the current command factory.');
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
             ->method('supportsCommands')
@@ -60,7 +62,7 @@ class MultiExecTest extends PredisTestCase
             ->with('WATCH')
             ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));
 
         $tx = new MultiExec($client, array('options' => 'cas'));
@@ -69,12 +71,13 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage UNWATCH is not supported by the current command factory.
      */
     public function testThrowsExceptionOnUnsupportedUnwatchInCommandFactory()
     {
-        $commands = $this->getMock('Predis\Command\FactoryInterface');
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('UNWATCH is not supported by the current command factory.');
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
             ->method('supportsCommands')
@@ -86,7 +89,7 @@ class MultiExecTest extends PredisTestCase
             ->with('UNWATCH')
             ->will($this->returnValue(false));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));
 
         $tx = new MultiExec($client, array('options' => 'cas'));
@@ -174,11 +177,12 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage Cannot invoke "execute" or "exec" inside an active transaction context.
      */
     public function testThrowsExceptionOnExecInsideTransactionBlock()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('Cannot invoke "execute" or "exec" inside an active transaction context');
+
         $commands = array();
 
         $callback = $this->getExecuteCallback(null, $commands);
@@ -252,10 +256,11 @@ class MultiExecTest extends PredisTestCase
     }
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
      */
     public function testThrowsExceptionOnWatchInsideMulti()
     {
+        $this->expectException('Predis\ClientException');
+
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback);
 
@@ -402,11 +407,13 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage Automatic retries are supported only when a callable block is provided.
      */
     public function testThrowsExceptionOnAutomaticRetriesWithFluentInterface()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('Automatic retries are supported only when a callable block is provided');
+
+
         $options = array('retry' => 1);
 
         $callback = $this->getExecuteCallback();
@@ -424,7 +431,9 @@ class MultiExecTest extends PredisTestCase
         $expected = array('bar');
         $options = array('watch' => array('foo', 'bar'), 'retry' => ($attempts = 2) + 1);
 
-        $sentinel = $this->getMock('stdClass', array('signal'));
+        $sentinel = $this->getMockBuilder('stdClass')
+            ->setMethods(array('signal'))
+            ->getMock();
         $sentinel->expects($this->exactly($attempts))->method('signal');
 
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
@@ -449,10 +458,11 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Transaction\AbortedMultiExecException
      */
     public function testThrowsExceptionOnServerSideTransactionAbort()
     {
+        $this->expectException('Predis\Transaction\AbortedMultiExecException');
+
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback);
 
@@ -485,7 +495,8 @@ class MultiExecTest extends PredisTestCase
             // NOOP
         }
 
-        $this->assertNull($responses, $expected);
+        $this->assertNull($responses);
+        $this->assertIsArray($expected);
         $this->assertSame(array('MULTI', 'SET', 'GET', 'DISCARD'), self::commandsToIDs($commands));
     }
 
@@ -595,11 +606,12 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR simulated error
      */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenTrue()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR simulated error');
+
         $expected = array('before', new Response\Error('ERR simulated error'), 'after');
 
         $connection = $this->getMockedConnection(function (CommandInterface $command) use ($expected) {
@@ -623,11 +635,12 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR simulated failure on EXEC
      */
     public function testExceptionsOptionDoesNotAffectTransactionControlCommands()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR simulated failure on EXEC');
+
         $connection = $this->getMockedConnection(function (CommandInterface $command) {
             switch ($command->getId()) {
                 case 'MULTI':
@@ -777,7 +790,7 @@ class MultiExecTest extends PredisTestCase
             $tx->mget('foo', 'foobar');
         });
 
-        $this->assertInternalType('array', $responses);
+        $this->assertIsArray($responses);
         $this->assertSame(array(array('bar', null)), $responses);
 
         $hijack = true;
@@ -800,7 +813,7 @@ class MultiExecTest extends PredisTestCase
             $tx->mget('foo', 'foobar');
         });
 
-        $this->assertInternalType('array', $responses);
+        $this->assertIsArray($responses);
         $this->assertSame(array(array('hijacked!', null)), $responses);
     }
 
@@ -818,7 +831,7 @@ class MultiExecTest extends PredisTestCase
      */
     protected function getMockedConnection($executeCallback)
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->any())
             ->method('executeCommand')

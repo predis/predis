@@ -194,11 +194,12 @@ class ReplicationStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
     public function testUsingDisallowedCommandThrowsException()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The command 'INFO' is not allowed in replication mode");
+
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
@@ -213,7 +214,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
             ->method('getId')
@@ -229,7 +230,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
             ->method('getId')
@@ -246,7 +247,7 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
             ->method('getId')
@@ -309,7 +310,9 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
+            ->setMethods(array('getScript'))
+            ->getMock();
         $command
             ->expects($this->any())
             ->method('getScript')
@@ -333,7 +336,9 @@ class ReplicationStrategyTest extends PredisTestCase
     {
         $strategy = new ReplicationStrategy();
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
+            ->setMethods(array('getScript'))
+            ->getMock(array('getScript'));
         $command
             ->expects($this->any())
             ->method('getScript')

@@ -24,11 +24,12 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage SSL encryption is not supported by this connection backend.
      */
     public function testSupportsSchemeTls()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
+
         $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
@@ -36,11 +37,12 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage SSL encryption is not supported by this connection backend.
      */
     public function testSupportsSchemeRediss()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
+
         $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
@@ -48,11 +50,12 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessage `SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]
      */
     public function testThrowsExceptionOnInitializationCommandFailure()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage("`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]");
+
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
         $connection = $this
@@ -81,10 +84,11 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      * @group connected
      * @group slow
      * @requires PHP 5.4
-     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testThrowsExceptionOnReadWriteTimeout()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+
         $connection = $this->createConnectionWithParams(array(
             'read_write_timeout' => 0.5,
         ), true);
@@ -97,10 +101,11 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @medium
      * @group connected
-     * @expectedException \Predis\Protocol\ProtocolException
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+
         $connection = $this->createConnection();
         $stream = $connection->getResource();
 

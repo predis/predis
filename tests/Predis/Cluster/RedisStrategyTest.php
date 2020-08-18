@@ -239,7 +239,9 @@ class RedisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $arguments = array('key:1', 'value1');
 
-        $command = $this->getMock('Predis\Command\ScriptCommand', array('getScript', 'getKeysCount'));
+        $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
+            ->setMethods(array('getScript', 'getKeysCount'))
+            ->getMock();
         $command
             ->expects($this->once())
             ->method('getScript')
@@ -279,7 +281,9 @@ class RedisStrategyTest extends PredisTestCase
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -294,11 +298,12 @@ class RedisStrategyTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage Predis\Cluster\RedisStrategy does not provide an external distributor
      */
     public function testThrowsExceptionOnGetDistributorMethod()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('Predis\Cluster\RedisStrategy does not provide an external distributor');
+
         $strategy = $this->getClusterStrategy();
         $strategy->getDistributor();
     }

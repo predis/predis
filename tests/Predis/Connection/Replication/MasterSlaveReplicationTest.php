@@ -160,11 +160,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage No available connection for replication
      */
     public function testThrowsExceptionOnEmptyReplication()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('No available connection for replication');
+
         $replication = new MasterSlaveReplication();
         $replication->connect();
     }
@@ -304,11 +305,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorWhenSwitchingToConnectionNotInPool()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid connection or connection not found.');
+
         $replication = new MasterSlaveReplication();
 
         $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
@@ -342,11 +344,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorWhenSwitchingToUnknownConnectionByInstance()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid connection or connection not found.');
+
         $replication = new MasterSlaveReplication();
 
         $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
@@ -380,11 +383,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid connection or connection not found.');
+
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
         $replication = new MasterSlaveReplication();
@@ -417,11 +421,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid connection or connection not found.
      */
     public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid connection or connection not found.');
+
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
@@ -836,11 +841,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Replication\MissingMasterException
-     * @expectedMessage No master server available for replication
      */
     public function testFailsOnWriteCommandAndNoConnectionSetAsMaster()
     {
+        $this->expectException('Predis\Replication\MissingMasterException');
+        $this->expectExceptionMessage('No master server available for replication');
+
         $commands = $this->getCommandFactory();
         $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
@@ -904,10 +910,11 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Connection\ConnectionException
      */
     public function testFailsOnUnreachableMaster()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+
         $commands = $this->getCommandFactory();
         $cmdSet = $commands->createCommand('set', array('key', 'value'));
 
@@ -935,11 +942,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\NotSupportedException
-     * @expectedExceptionMessage The command 'INFO' is not allowed in replication mode.
      */
     public function testThrowsExceptionOnNonSupportedCommand()
     {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage("The command 'INFO' is not allowed in replication mode.");
+
         $cmd = $this->getCommandFactory()->createCommand('info');
 
         $replication = new MasterSlaveReplication();
@@ -1059,11 +1067,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedMessage Discovery requires a connection factory
      */
     public function testDiscoveryRequiresConnectionFactory()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('Discovery requires a connection factory');
+
         $replication = new MasterSlaveReplication();
 
         $replication->add($this->getMockConnection('tcp://127.0.0.1:6379?role=master'));
@@ -1124,7 +1133,7 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
         $connFactory
             ->expects($this->at(0))
             ->method('create')
@@ -1222,7 +1231,7 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
         $connFactory
             ->expects($this->at(0))
             ->method('create')
@@ -1319,11 +1328,12 @@ repl_backlog_histlen:12978
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedMessage Automatic discovery requires a connection factory
      */
     public function testAutomaticDiscoveryRequiresConnectionFactory()
     {
+        $this->expectException('Predis\ClientException');
+        $this->expectExceptionMessage('Automatic discovery requires a connection factory');
+
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
         $replication = new MasterSlaveReplication();
@@ -1345,7 +1355,7 @@ repl_backlog_histlen:12978
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
 
-        $connFactory = $this->getMock('Predis\Connection\Factory');
+        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
         $connFactory
             ->expects($this->once())
             ->method('create')

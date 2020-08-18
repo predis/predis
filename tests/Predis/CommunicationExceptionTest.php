@@ -31,13 +31,14 @@ class CommunicationExceptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\CommunicationException
-     * @expectedExceptionMessage Connection error message
      */
     public function testExceptionMessage()
     {
         $connection = $this->getMockConnection();
-        $exception = $this->createMockException($connection, 'Connection error message');
+        $exception = $this->createMockException($connection, $message = 'Connection error message');
+
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage($message);
 
         throw $exception;
     }
@@ -55,8 +56,6 @@ class CommunicationExceptionTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\CommunicationException
-     * @expectedExceptionMessage Communication error message
      */
     public function testCommunicationExceptionHandling()
     {
@@ -69,15 +68,16 @@ class CommunicationExceptionTest extends PredisTestCase
             ->expects($this->once())
             ->method('disconnect');
 
-        $exception = $this->createMockException($connection, 'Communication error message');
+        $exception = $this->createMockException($connection, $message = 'Communication error message');
+
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage($message);
 
         CommunicationException::handle($exception);
     }
 
     /**
      * @group disconnected
-     * @expectedException \Predis\CommunicationException
-     * @expectedExceptionMessage Communication error message
      */
     public function testCommunicationExceptionHandlingWhenShouldResetConnectionIsFalse()
     {
@@ -97,6 +97,9 @@ class CommunicationExceptionTest extends PredisTestCase
             ->expects($this->once())
             ->method('shouldResetConnection')
             ->will($this->returnValue(false));
+
+        $this->expectException('Predis\CommunicationException');
+        $this->expectExceptionMessage('Communication error message');
 
         CommunicationException::handle($exception);
     }

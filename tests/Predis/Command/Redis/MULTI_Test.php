@@ -78,11 +78,12 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Response\ServerException
-     * @expectedExceptionMessage ERR MULTI calls can not be nested
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction()
     {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR MULTI calls can not be nested');
+
         $redis = $this->getClient();
 
         $redis->multi();

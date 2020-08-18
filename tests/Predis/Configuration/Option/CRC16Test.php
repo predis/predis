@@ -26,7 +26,7 @@ class CRC16Test extends PredisTestCase
     {
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $hashGenerator = $option->getDefault($options);
 
         $this->assertInstanceOf('Predis\Cluster\Hash\HashGeneratorInterface', $hashGenerator);
@@ -45,8 +45,8 @@ class CRC16Test extends PredisTestCase
     {
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $hashGenerator = $this->getMock('Predis\Cluster\Hash\HashGeneratorInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $hashGenerator = $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock();
 
         $this->assertSame($hashGenerator, $option->filter($options, $hashGenerator));
     }
@@ -58,10 +58,12 @@ class CRC16Test extends PredisTestCase
     {
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $hashGenerator = $this->getMock('Predis\Cluster\Hash\HashGeneratorInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $hashGenerator = $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -73,17 +75,20 @@ class CRC16Test extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Predis\Configuration\Option\CRC16 expects a valid hash generator
      */
     public function testThrowsExceptionOnInvalidReturnTypeOfHashGeneratorInitializer()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Predis\Configuration\Option\CRC16 expects a valid hash generator');
+
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
-        $wrongValue = $this->getMock('stdClass');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $wrongValue = $this->getMockBuilder('stdClass')->getMock();
 
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
@@ -100,7 +105,7 @@ class CRC16Test extends PredisTestCase
     {
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Cluster\Hash\CRC16', $option->filter($options, 'predis'));
     }
@@ -115,21 +120,22 @@ class CRC16Test extends PredisTestCase
     {
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Cluster\Hash\PhpiredisCRC16', $option->filter($options, 'phpiredis'));
     }
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage String value for the crc16 option must be either `predis` or `phpiredis`
      */
     public function testThrowsExceptionOnInvalidShortNameString()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('String value for the crc16 option must be either `predis` or `phpiredis`');
+
         $option = new CRC16();
 
-        $options = $this->getMock('Predis\Configuration\OptionsInterface');
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, 'unknown');
     }
