@@ -48,10 +48,10 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertIsArray($parameters);
 
         $this->assertArrayHasKey('database', $parameters, 'Missing expected `database` in connection parameters');
-        $this->assertNull($parameters['database'], 'Expected `database` connection parameter must be a NULL value');
+        $this->assertNull($parameters['database'], 'The `database` parameter is expected to be NULL for sentinels');
 
         $this->assertArrayHasKey('password', $parameters, 'Missing expected `password` in connection parameters');
-        $this->assertNull($parameters['password'], 'Expected `password` connection parameter must be a NULL value');
+        $this->assertNull($parameters['password'], 'The `password` parameter is expected to be NULL for sentinels');
     }
 
     /**
