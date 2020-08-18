@@ -1,3 +1,15 @@
+v1.1.3 (2020-08-18)
+================================================================================
+
+- Ensure compatibility with PHP 8.
+
+- Moved repository from `github.com/nrk/predis` to `github.com/predis/predis`.
+
+- __FIX__: Moved `cweagans/composer-patches` dependency to `require-dev`.
+
+- __FIX__: Include PHPUnit `.patch` files in exports.
+
+
 v1.1.2 (2020-08-11)
 ================================================================================
 
