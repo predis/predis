@@ -46,7 +46,7 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Transaction\AbortedMultiExecException
+     * @expectedException \Predis\ClientException
      * @expectedExceptionMessage The underlying transaction has been aborted by the server.
      */
     public function testThrowsExceptionOnAbortedTransaction()

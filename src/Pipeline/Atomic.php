@@ -64,82 +64,71 @@ class Atomic extends Pipeline
     protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
     {
         $profile = $this->getClient()->getProfile();
-        $multi = $profile->createCommand('MULTI');
-        $exec = $profile->createCommand('EXEC');
+        $multi = $profile->createCommand('multi');
+        $exec = $profile->createCommand('exec');
 
-        // open transaction: MULTI
         $connection->writeRequest($multi);
 
-        // transmit all commands in transaction
         foreach ($commands as $command) {
             $connection->writeRequest($command);
         }
 
-        // execute transaction: EXEC
         $connection->writeRequest($exec);
 
-        // response to MULTI
         $response = $connection->readResponse($multi);
         if ($response instanceof ErrorResponseInterface) {
             $this->exception($connection, $response); // close connection and throw ServerException
         }
 
-        // responses to commands (all should be QUEUED result)
-        $ex = null;
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
 
-            // throw first error as a ServerException
-            if (($response instanceof ErrorResponseInterface) && !$ex) {
-                $ex = new ServerException($response->getMessage());
+            if ($response instanceof ErrorResponseInterface) {
+                $this->exception($connection, $response); // close connection and throw ServerException
             }
         }
 
-        // response to EXEC
-        $responses = $connection->readResponse($exec);
+        $executed = $connection->readResponse($exec);
 
-        // if one of the commands returned an error, only throw after all responses have been received
-        if ($ex) {
-            throw $ex;
-        }
-
-        // if EXEC returned null, the transaction was aborted
-        if (!isset($responses)) {
-            // fake a MultiExec, which is not used in an atomic pipeline
-            $multi_exec = new MultiExec($this->getClient());
-            throw new AbortedMultiExecException($multi_exec, 'The underlying transaction has been aborted by the server.');
+        if (!isset($executed)) {
+            // TODO: should be throwing a more appropriate exception.
+            throw new ClientException(
+                'The underlying transaction has been aborted by the server.'
+            );
         }
 
         // if EXEC returned an error, throw ServerException (but don't close connection, all responses
         // have been read and are accounted for)
-        if ($responses instanceof ErrorResponseInterface) {
-            throw new ServerException($responses->getMessage());
+        if ($executed instanceof ErrorResponseInterface) {
+            throw new ServerException($executed->getMessage());
         }
 
-        if (count($responses) !== count($commands)) {
+        if (count($executed) !== count($commands)) {
             $expected = count($commands);
-            $received = count($responses);
+            $received = count($executed);
 
             throw new ClientException(
                 "Invalid number of responses [expected $expected, received $received]."
             );
         }
 
+        $responses = array();
+        $sizeOfPipe = count($commands);
         $exceptions = $this->throwServerExceptions();
 
-        // parse all unparsed results
-        $i = 0;
-        foreach ($commands as $command) {
-            $response = $responses[$i];
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
+            $command = $commands->dequeue();
+            $response = $executed[$i];
 
             if (!$response instanceof ResponseInterface) {
-                $responses[$i] = $command->parseResponse($response);
+                $responses[] = $command->parseResponse($response);
             } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
+            } else {
+                $responses[] = $response;
             }
 
-
-            $i++;
+            unset($executed[$i]);
         }
 
         return $responses;
