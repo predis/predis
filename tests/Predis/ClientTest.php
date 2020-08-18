@@ -217,7 +217,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
     {
-        $this->expectException('RuntimeException');
+        $this->expectException('UnexpectedValueException');
         $this->expectExceptionMessage('The callable connection initializer returned an invalid type');
 
         $wrongType = $this->getMockBuilder('stdClass')->getMock();
@@ -306,7 +306,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithArrayAndOptionAggregateThrowsExceptionOnInvalidReturnType()
     {
-        $this->expectException('RuntimeException');
+        $this->expectException('UnexpectedValueException');
         $this->expectExceptionMessage('The callable connection initializer returned an invalid type');
 
         $arg1 = array('tcp://host1', 'tcp://host2');

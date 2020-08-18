@@ -1154,7 +1154,7 @@ class SentinelReplicationTest extends PredisTestCase
     }
 
     /**
-     * @group disconnected.
+     * @group disconnected
      */
     public function testMethodExecuteCommandThrowsExceptionOnConnectionFailureAndNoAvailableSentinels()
     {
