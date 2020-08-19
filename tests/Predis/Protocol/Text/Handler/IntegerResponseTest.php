@@ -23,12 +23,15 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testInteger()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\IntegerResponse();
-
-        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertSame(0, $handler->handle($connection, '0'));
         $this->assertSame(1, $handler->handle($connection, '1'));
@@ -41,12 +44,15 @@ class IntegerResponseTest extends PredisTestCase
      */
     public function testNull()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\IntegerResponse();
-
-        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
 
         $this->assertNull($handler->handle($connection, 'nil'));
     }
@@ -57,14 +63,17 @@ class IntegerResponseTest extends PredisTestCase
     public function testInvalid()
     {
         $this->expectException('Predis\Protocol\ProtocolException');
-        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid numeric response");
+        $this->expectExceptionMessage("Cannot parse 'invalid' as a valid numeric response [tcp://127.0.0.1:6379]");
+
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
 
         $handler = new Handler\IntegerResponse();
-
-        $connection = $this->getMockBuilder('Predis\Connection\CompositeConnectionInterface')->getMock();
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
 
         $handler->handle($connection, 'invalid');
     }

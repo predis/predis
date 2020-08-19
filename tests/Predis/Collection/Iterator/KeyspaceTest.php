@@ -11,7 +11,6 @@
 
 namespace Predis\Collection\Iterator;
 
-use Predis\Profile;
 use PredisTestCase;
 
 /**
@@ -22,16 +21,22 @@ class KeyspaceTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidProfile()
+    public function testThrowsExceptionOnMissingCommand()
     {
         $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage("The current profile does not support 'SCAN'");
+        $this->expectExceptionMessage("'SCAN' is not supported by the current command factory.");
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
+        $commands
+            ->expects($this->any())
+            ->method('supportsCommand')
+            ->will($this->returnValue(false));
 
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.0')));
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($commands));
 
         new Keyspace($client);
     }
@@ -41,15 +46,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithNoResults()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->once())
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(0, array())));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->once())
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(0, array())
+            ));
 
         $iterator = new Keyspace($client);
 
@@ -62,15 +72,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnSingleFetch()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->once())
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd', 'key:3rd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->once())
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd', 'key:3rd'))
+            ));
 
         $iterator = new Keyspace($client);
 
@@ -98,19 +113,27 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetches()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(2, array('key:1st', 'key:2nd'))));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(2, array())
-               ->will($this->returnValue(array(0, array('key:3rd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(2, array('key:1st', 'key:2nd'))
+            ));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(2, array())
+            ->will($this->returnValue(
+                array(0, array('key:3rd'))
+            ));
 
         $iterator = new Keyspace($client);
 
@@ -138,19 +161,27 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(4, array())));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(4, array())
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(4, array())
+            ));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(4, array())
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd'))
+            ));
 
         $iterator = new Keyspace($client);
 
@@ -173,23 +204,34 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationOnMultipleFetchesAndHoleInMidFetch()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(2, array('key:1st', 'key:2nd'))));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(2, array())
-               ->will($this->returnValue(array(5, array())));
-        $client->expects($this->at(3))
-               ->method('scan')
-               ->with(5, array())
-               ->will($this->returnValue(array(0, array('key:3rd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(2, array('key:1st', 'key:2nd'))
+            ));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(2, array())
+            ->will($this->returnValue(
+                array(5, array())
+            ));
+        $client
+            ->expects($this->at(3))
+            ->method('scan')
+            ->with(5, array())
+            ->will($this->returnValue(
+                array(0, array('key:3rd'))
+            ));
 
         $iterator = new Keyspace($client);
 
@@ -217,15 +259,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionMatch()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('MATCH' => 'key:*'))
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('MATCH' => 'key:*'))
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, 'key:*');
 
@@ -248,19 +295,27 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionMatchOnMultipleFetches()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('MATCH' => 'key:*'))
-               ->will($this->returnValue(array(1, array('key:1st'))));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(1, array('MATCH' => 'key:*'))
-               ->will($this->returnValue(array(0, array('key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('MATCH' => 'key:*'))
+            ->will($this->returnValue(
+                array(1, array('key:1st'))
+            ));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(1, array('MATCH' => 'key:*'))
+            ->will($this->returnValue(
+                array(0, array('key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, 'key:*');
 
@@ -283,15 +338,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionCount()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('COUNT' => 2))
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('COUNT' => 2))
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, null, 2);
 
@@ -314,19 +374,25 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionCountOnMultipleFetches()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('COUNT' => 1))
-               ->will($this->returnValue(array(1, array('key:1st'))));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(1, array('COUNT' => 1))
-               ->will($this->returnValue(array(0, array('key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('COUNT' => 1))
+            ->will($this->returnValue(array(1, array('key:1st'))));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(1, array('COUNT' => 1))
+            ->will($this->returnValue(
+                array(0, array('key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, null, 1);
 
@@ -349,15 +415,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCount()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('MATCH' => 'key:*', 'COUNT' => 2))
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('MATCH' => 'key:*', 'COUNT' => 2))
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, 'key:*', 2);
 
@@ -380,19 +451,27 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->at(1))
-               ->method('scan')
-               ->with(0, array('MATCH' => 'key:*', 'COUNT' => 1))
-               ->will($this->returnValue(array(1, array('key:1st'))));
-        $client->expects($this->at(2))
-               ->method('scan')
-               ->with(1, array('MATCH' => 'key:*', 'COUNT' => 1))
-               ->will($this->returnValue(array(0, array('key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->at(1))
+            ->method('scan')
+            ->with(0, array('MATCH' => 'key:*', 'COUNT' => 1))
+            ->will($this->returnValue(
+                array(1, array('key:1st'))
+            ));
+        $client
+            ->expects($this->at(2))
+            ->method('scan')
+            ->with(1, array('MATCH' => 'key:*', 'COUNT' => 1))
+            ->will($this->returnValue(
+                array(0, array('key:2nd'))
+            ));
 
         $iterator = new Keyspace($client, 'key:*', 1);
 
@@ -415,15 +494,20 @@ class KeyspaceTest extends PredisTestCase
      */
     public function testIterationRewindable()
     {
-        $client = $this->getMockBuilder('Predis\Client')->setMethods(array('getProfile', 'scan'))->getMock();
-
-        $client->expects($this->any())
-               ->method('getProfile')
-               ->will($this->returnValue(Profile\Factory::get('2.8')));
-        $client->expects($this->exactly(2))
-               ->method('scan')
-               ->with(0, array())
-               ->will($this->returnValue(array(0, array('key:1st', 'key:2nd'))));
+        $client = $this->getMockBuilder('Predis\Client')
+            ->setMethods(array('getCommandFactory', 'scan'))
+            ->getMock();
+        $client
+            ->expects($this->any())
+            ->method('getCommandFactory')
+            ->will($this->returnValue($this->getCommandFactory()));
+        $client
+            ->expects($this->exactly(2))
+            ->method('scan')
+            ->with(0, array())
+            ->will($this->returnValue(
+                array(0, array('key:1st', 'key:2nd'))
+            ));
 
         $iterator = new Keyspace($client);
 

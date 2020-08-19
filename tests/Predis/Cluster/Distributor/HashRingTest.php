@@ -199,10 +199,11 @@ class HashRingTest extends PredisDistributorTestCase
             ->setMethods(array('__invoke'))
             ->getMock();
 
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($node)
-                 ->will($this->returnValue($node));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($node)
+            ->will($this->returnValue($node));
 
         $distributor = new HashRing(HashRing::DEFAULT_REPLICAS, $callable);
         $distributor->add($node);

@@ -25,6 +25,7 @@ class DispatcherLoopTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDispatcherLoopAgainstRedisServer()
     {
@@ -36,12 +37,10 @@ class DispatcherLoopTest extends PredisTestCase
             'read_write_timeout' => 2,
         );
 
-        $options = array('profile' => REDIS_SERVER_VERSION);
-
-        $producer = new Client($parameters, $options);
+        $producer = new Client($parameters);
         $producer->connect();
 
-        $consumer = new Client($parameters, $options);
+        $consumer = new Client($parameters);
         $consumer->connect();
 
         $pubsub = new Consumer($consumer);
@@ -50,30 +49,33 @@ class DispatcherLoopTest extends PredisTestCase
         $function01 = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $function01->expects($this->exactly(2))
-                   ->method('__invoke')
-                   ->with($this->logicalOr(
-                       $this->equalTo('01:argument'),
-                       $this->equalTo('01:quit')
-                   ))
-                   ->will($this->returnCallback(function ($arg) use ($dispatcher) {
-                       if ($arg === '01:quit') {
-                           $dispatcher->stop();
-                       }
-                   }));
+        $function01
+            ->expects($this->exactly(2))
+            ->method('__invoke')
+            ->with($this->logicalOr(
+                $this->equalTo('01:argument'),
+                $this->equalTo('01:quit')
+            ), $dispatcher)
+            ->will($this->returnCallback(function ($arg, $dispatcher) {
+                if ($arg === '01:quit') {
+                    $dispatcher->stop();
+                }
+            }));
 
         $function02 = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $function02->expects($this->once())
-                   ->method('__invoke')
-                   ->with('02:argument');
+        $function02
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with('02:argument');
 
         $function03 = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $function03->expects($this->never())
-                   ->method('__invoke');
+        $function03
+            ->expects($this->never())
+            ->method('__invoke');
 
         $dispatcher->attachCallback('function:01', $function01);
         $dispatcher->attachCallback('function:02', $function02);
@@ -90,6 +92,7 @@ class DispatcherLoopTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.0.0
      */
     public function testDispatcherLoopAgainstRedisServerWithPrefix()
     {
@@ -101,15 +104,13 @@ class DispatcherLoopTest extends PredisTestCase
             'read_write_timeout' => 2,
         );
 
-        $options = array('profile' => REDIS_SERVER_VERSION);
-
-        $producerNonPfx = new Client($parameters, $options);
+        $producerNonPfx = new Client($parameters);
         $producerNonPfx->connect();
 
-        $producerPfx = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $producerPfx = new Client($parameters, array('prefix' => 'foobar'));
         $producerPfx->connect();
 
-        $consumer = new Client($parameters, $options + array('prefix' => 'foobar'));
+        $consumer = new Client($parameters, array('prefix' => 'foobar'));
 
         $pubsub = new Consumer($consumer);
         $dispatcher = new DispatcherLoop($pubsub);
@@ -117,12 +118,13 @@ class DispatcherLoopTest extends PredisTestCase
         $callback = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $callback->expects($this->exactly(1))
-                 ->method('__invoke')
-                 ->with($this->equalTo('arg:prefixed'))
-                 ->will($this->returnCallback(function ($arg) use ($dispatcher) {
-                     $dispatcher->stop();
-                 }));
+        $callback
+            ->expects($this->exactly(1))
+            ->method('__invoke')
+            ->with($this->equalTo('arg:prefixed'), $dispatcher)
+            ->will($this->returnCallback(function ($arg, $dispatcher) {
+                $dispatcher->stop();
+            }));
 
         $dispatcher->attachCallback('callback', $callback);
 

@@ -51,7 +51,7 @@ class EventsListener implements Countable
         return $this->events;
     }
 
-    public function __invoke($payload)
+    public function __invoke($payload, $dispatcher)
     {
         $this->events[] = $payload;
     }
@@ -61,7 +61,7 @@ class EventsListener implements Countable
 $dispatcher->attachCallback('events', ($events = new EventsListener()));
 
 // Attach a function to control the dispatcher loop termination with a message.
-$dispatcher->attachCallback('control', function ($payload) use ($dispatcher) {
+$dispatcher->attachCallback('control', function ($payload, $dispatcher) {
     if ($payload === 'terminate_dispatcher') {
         $dispatcher->stop();
     }

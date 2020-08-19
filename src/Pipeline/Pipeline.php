@@ -15,8 +15,8 @@ use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
-use Predis\Connection\Aggregate\ReplicationInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -112,7 +112,7 @@ class Pipeline implements ClientContextInterface
         $connection = $this->getClient()->getConnection();
 
         if ($connection instanceof ReplicationInterface) {
-            $connection->switchTo('master');
+            $connection->switchToMaster();
         }
 
         return $connection;

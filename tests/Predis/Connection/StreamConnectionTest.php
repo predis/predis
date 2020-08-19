@@ -31,16 +31,17 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
-        $connection = $this->getMockBuilder(static::CONNECTION_CLASS)
-                           ->setMethods(array('executeCommand', 'createResource'))
-                           ->setConstructorArgs(array(new Parameters()))
-                           ->getMock();
-
-        $connection->method('executeCommand')
-                   ->with($cmdSelect)
-                   ->will($this->returnValue(
-                       new ErrorResponse('ERR invalid DB index')
-                   ));
+        $connection = $this
+            ->getMockBuilder(static::CONNECTION_CLASS)
+            ->setMethods(array('executeCommand', 'createResource'))
+            ->setConstructorArgs(array(new Parameters()))
+            ->getMock();
+        $connection
+            ->method('executeCommand')
+            ->with($cmdSelect)
+            ->will($this->returnValue(
+                new ErrorResponse('ERR invalid DB index')
+            ));
 
         $connection->method('createResource');
 

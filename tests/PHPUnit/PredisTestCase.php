@@ -12,7 +12,6 @@
 use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
-use Predis\Profile;
 
 /**
  * Base test case class for the Predis test suite.
@@ -20,6 +19,14 @@ use Predis\Profile;
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        $this->checkRequirements();
+    }
 
     /**
      * Sleep the test case with microseconds resolution.
@@ -112,7 +119,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultOptionsArray()
     {
         return array(
-            'profile' => REDIS_SERVER_VERSION,
+            'commands' => new Command\RedisFactory(),
         );
     }
 
@@ -145,29 +152,13 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Returns a new instance of server profile.
+     * Returns a new instance of command factory.
      *
-     * @param string $version Redis profile.
-     *
-     * @return Profile\ProfileInterface
+     * @return Command\FactoryInterface
      */
-    protected function getProfile($version = null)
+    protected function getCommandFactory()
     {
-        return Profile\Factory::get($version ?: REDIS_SERVER_VERSION);
-    }
-
-    /**
-     * Returns the current server profile in use by the test suite.
-     *
-     * @return Profile\ProfileInterface
-     */
-    protected function getCurrentProfile()
-    {
-        static $profile;
-
-        $profile = $this->getProfile();
-
-        return $profile;
+        return new Command\RedisFactory();
     }
 
     /**
@@ -188,7 +179,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
         $options = array_merge(
             array(
-                'profile' => $this->getProfile(),
+                'commands' => $this->getCommandFactory(),
             ),
             $options ?: array()
         );
@@ -204,29 +195,46 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Returns a base mocked connection from Predis\Connection\NodeConnectionInterface.
+     * Returns a basic mocked connection of the specified type.
      *
-     * @param mixed $parameters Optional parameters.
+     * @param string $interface  Connection type.
+     * @param mixed  $parameters Optional parameters.
      *
-     * @return mixed
+     * @return \Predis\Connection\NodeConnectionInterface
      */
-    protected function getMockConnection($parameters = null)
+    protected function getMockConnectionOfType($interface, $parameters = null)
     {
-        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder($interface)->getMock();
+
+        // TODO: verify that $connection is an instance of \Predis\Connection\NodeConnectionInterface
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);
             $hash = "{$parameters->host}:{$parameters->port}";
 
-            $connection->expects($this->any())
-                       ->method('getParameters')
-                       ->will($this->returnValue($parameters));
-            $connection->expects($this->any())
-                       ->method('__toString')
-                       ->will($this->returnValue($hash));
+            $connection
+                ->expects($this->any())
+                ->method('getParameters')
+                ->will($this->returnValue($parameters));
+            $connection
+                ->expects($this->any())
+                ->method('__toString')
+                ->will($this->returnValue($hash));
         }
 
         return $connection;
+    }
+
+    /**
+     * Returns a basic mocked connection of type Predis\Connection\NodeConnectionInterface.
+     *
+     * @param mixed $parameters Optional parameters.
+     *
+     * @return \Predis\Connection\NodeConnectionInterface
+     */
+    protected function getMockConnection($parameters = null)
+    {
+        return $this->getMockConnectionOfType('Predis\Connection\NodeConnectionInterface', $parameters);
     }
 
     /**
@@ -333,8 +341,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function checkRequirements()
     {
-        parent::checkRequirements();
-
         $this->checkRequiredRedisServerVersion();
     }
 }

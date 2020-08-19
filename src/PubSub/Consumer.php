@@ -70,9 +70,9 @@ class Consumer extends AbstractConsumer
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
 
-        if ($client->getProfile()->supportsCommands($commands) === false) {
+        if ($client->getCommandFactory()->supportsCommands($commands) === false) {
             throw new NotSupportedException(
-                'The current profile does not support PUB/SUB related commands.'
+                'PUB/SUB commands are not supported by the current command factory.'
             );
         }
     }

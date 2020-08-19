@@ -14,12 +14,12 @@ require __DIR__.'/shared.php';
 // Predis allows to set Lua scripts as read-only operations for replication.
 // This works for both EVAL and EVALSHA and also for the client-side abstraction
 // built upon them (Predis\Command\ScriptCommand). This example shows a slightly
-// more complex configuration that injects a new script command in the server
-// profile used by the new client instance and marks it marks it as a read-only
-// operation for replication so that it will be executed on slaves.
+// more complex configuration that injects a new script command in the command
+// factory used by the client and marks it as a read-only operation so that it
+// will be executed on slaves.
 
 use Predis\Command\ScriptCommand;
-use Predis\Connection\Aggregate\MasterSlaveReplication;
+use Predis\Connection\Replication\MasterSlaveReplication;
 use Predis\Replication\ReplicationStrategy;
 
 // ------------------------------------------------------------------------- //
@@ -47,17 +47,14 @@ LUA;
 // ------------------------------------------------------------------------- //
 
 $parameters = array(
-    'tcp://127.0.0.1:6379/?alias=master',
-    'tcp://127.0.0.1:6380/?alias=slave',
+    'tcp://127.0.0.1:6381?role=master&database=15',
+    'tcp://127.0.0.1:6382?role=slave&alias=slave-01&database=15',
 );
 
 $options = array(
-    'profile' => function ($options, $option) {
-        $profile = $options->getDefault($option);
-        $profile->defineCommand('hmgetall', 'HashMultipleGetAll');
-
-        return $profile;
-    },
+    'commands' => array(
+        'hmgetall' => 'HashMultipleGetAll',
+    ),
     'replication' => function () {
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
@@ -79,7 +76,7 @@ $client = new Predis\Client($parameters, $options);
 $hashes = $client->hmgetall('metavars', 'servers');
 
 $replication = $client->getConnection();
-$stillOnSlave = $replication->getCurrent() === $replication->getConnectionById('slave');
+$stillOnSlave = $replication->getCurrent() === $replication->getConnectionByAlias('slave-01');
 
 echo 'Is still on slave? ', $stillOnSlave ? 'YES!' : 'NO!', PHP_EOL;
 var_export($hashes);

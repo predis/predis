@@ -25,8 +25,12 @@ class FireAndForgetTest extends PredisTestCase
     public function testPipelineWithSingleConnection()
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $connection->expects($this->exactly(3))->method('writeRequest');
-        $connection->expects($this->never())->method('readResponse');
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest');
+        $connection
+            ->expects($this->never())
+            ->method('readResponse');
 
         $pipeline = new FireAndForget(new Client($connection));
 
@@ -42,14 +46,17 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection()
     {
-        $connection = $this->getMockBuilder('Predis\Connection\Aggregate\ReplicationInterface')->getMock();
-        $connection->expects($this->once())
-                   ->method('switchTo')
-                   ->with('master');
-        $connection->expects($this->exactly(3))
-                   ->method('writeRequest');
-        $connection->expects($this->never())
-                   ->method('readResponse');
+        $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')
+            ->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('switchToMaster');
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest');
+        $connection
+            ->expects($this->never())
+            ->method('readResponse');
 
         $pipeline = new FireAndForget(new Client($connection));
 

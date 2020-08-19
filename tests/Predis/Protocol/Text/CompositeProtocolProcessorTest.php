@@ -25,12 +25,8 @@ class CompositeProtocolProcessorTest extends PredisTestCase
     {
         $protocol = new CompositeProtocolProcessor();
 
-        $this->assertInstanceOf(
-            'Predis\Protocol\Text\RequestSerializer', $protocol->getRequestSerializer()
-        );
-        $this->assertInstanceOf(
-            'Predis\Protocol\Text\ResponseReader', $protocol->getResponseReader()
-        );
+        $this->assertInstanceOf('Predis\Protocol\Text\RequestSerializer', $protocol->getRequestSerializer());
+        $this->assertInstanceOf('Predis\Protocol\Text\ResponseReader', $protocol->getResponseReader());
     }
 
     /**
@@ -86,14 +82,16 @@ class CompositeProtocolProcessorTest extends PredisTestCase
 
         $protocol = new CompositeProtocolProcessor($serializer);
 
-        $connection->expects($this->once())
-                   ->method('writeBuffer')
-                   ->with($this->equalTo($serialized));
+        $connection
+            ->expects($this->once())
+            ->method('writeBuffer')
+            ->with($this->equalTo($serialized));
 
-        $serializer->expects($this->once())
-                   ->method('serialize')
-                   ->with($command)
-                   ->will($this->returnValue($serialized));
+        $serializer
+            ->expects($this->once())
+            ->method('serialize')
+            ->with($command)
+            ->will($this->returnValue($serialized));
 
         $protocol->write($connection, $command);
     }
@@ -108,10 +106,11 @@ class CompositeProtocolProcessorTest extends PredisTestCase
 
         $protocol = new CompositeProtocolProcessor(null, $reader);
 
-        $reader->expects($this->once())
-                   ->method('read')
-                   ->with($connection)
-                   ->will($this->returnValue('bulk'));
+        $reader
+            ->expects($this->once())
+            ->method('read')
+            ->with($connection)
+            ->will($this->returnValue('bulk'));
 
         $this->assertSame('bulk', $protocol->read($connection));
     }

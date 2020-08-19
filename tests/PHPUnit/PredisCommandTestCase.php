@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command;
+namespace Predis\Command\Redis;
 
 use Predis\Client;
-use Predis\Profile;
+use Predis\Command;
 use PredisTestCase;
 
 /**
@@ -23,7 +23,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns the expected command.
      *
-     * @return CommandInterface|string Instance or FQN of the expected command.
+     * @return Command\CommandInterface|string Instance or FQN of the expected command.
      */
     abstract protected function getExpectedCommand();
 
@@ -37,13 +37,13 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance.
      *
-     * @return CommandInterface
+     * @return Command\CommandInterface
      */
     public function getCommand()
     {
         $command = $this->getExpectedCommand();
 
-        return $command instanceof CommandInterface ? $command : new $command();
+        return $command instanceof Command\CommandInterface ? $command : new $command();
     }
 
     /**
@@ -55,11 +55,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     public function getClient($flushdb = true)
     {
-        $profile = $this->getProfile();
+        $commands = $this->getCommandFactory();
 
-        if (!$profile->supportsCommand($id = $this->getExpectedId())) {
+        if (!$commands->supportsCommand($id = $this->getExpectedId())) {
             $this->markTestSkipped(
-                "The profile {$profile->getVersion()} does not support command {$id}"
+                "The current command factory does not support command $id"
             );
         }
 
@@ -75,7 +75,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     protected function isPrefixable()
     {
-        return $this->getCommand() instanceof PrefixableCommandInterface;
+        return $this->getCommand() instanceof Command\PrefixableCommandInterface;
     }
 
     /**

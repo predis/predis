@@ -54,8 +54,13 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $prefix = 'prefix:';
 
         $command = $this->getMockBuilder('Predis\Command\PrefixableCommandInterface')->getMock();
-        $command->expects($this->never())->method('getId');
-        $command->expects($this->once())->method('prefixKeys')->with($prefix);
+        $command
+            ->expects($this->never())
+            ->method('getId');
+        $command
+            ->expects($this->once())
+            ->method('prefixKeys')
+            ->with($prefix);
 
         $processor = new KeyPrefixProcessor($prefix);
 
@@ -69,10 +74,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->once())
-                ->method('getId')
-                ->will($this->returnValue('unknown'));
-        $command->expects($this->never())
-                ->method('getArguments');
+            ->method('getId')
+            ->will($this->returnValue('unknown'));
+        $command
+            ->expects($this->never())
+            ->method('getArguments');
 
         $processor = new KeyPrefixProcessor('prefix');
 
@@ -290,12 +296,13 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $callable = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($command, 'prefix:')
-                 ->will($this->returnCallback(function ($command, $prefix) {
-                    $command->setRawArguments(array('prefix:key', 'value'));
-                 }));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($command, 'prefix:')
+            ->will($this->returnCallback(function ($command, $prefix) {
+                $command->setRawArguments(array('prefix:key', 'value'));
+            }));
 
         $processor = new KeyPrefixProcessor('prefix:');
         $processor->setCommandHandler('NEWCMD', $callable);
@@ -314,12 +321,13 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $callable = $this->getMockBuilder('stdClass')
             ->setMethods(array('__invoke'))
             ->getMock();
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($command, 'prefix:')
-                 ->will($this->returnCallback(function ($command, $prefix) {
-                    $command->setRawArguments(array('prefix:key', 'value'));
-                 }));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($command, 'prefix:')
+            ->will($this->returnCallback(function ($command, $prefix) {
+                $command->setRawArguments(array('prefix:key', 'value'));
+            }));
 
         $processor = new KeyPrefixProcessor('prefix:');
         $processor->setCommandHandler('SET', $callable);
@@ -342,13 +350,25 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $this->assertSame(array('key', 'value'), $command->getArguments());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testCannotDefineCommandHandlerWithInvalidType()
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Callback must be a valid callable object or NULL');
+
+        $processor = new KeyPrefixProcessor('prefix:');
+        $processor->setCommandHandler('NEWCMD', new \stdClass());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
 
     public function getCommandInstance($commandID, array $arguments)
     {
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
         $command->setRawArguments($arguments);
 
         return $command;
