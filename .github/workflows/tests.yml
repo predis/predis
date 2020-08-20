@@ -33,6 +33,8 @@ jobs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
     - name: Install Composer dependencies
-      run: composer install --no-progress --prefer-dist --optimize-autoloader
+      env:
+        PHP_VERSION: ${{ matrix.php-versions }}
+      run: composer install --no-progress --prefer-dist --optimize-autoloader $(if [ "$PHP_VERSION" == "8.0" ]; then echo "--ignore-platform-reqs"; fi;)
     - name: Test with PHPUnit
       run: vendor/bin/phpunit
