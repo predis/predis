@@ -25,7 +25,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $this->checkRequirements();
+        $this->checkRequiredRedisServerVersion();
     }
 
     /**
@@ -334,13 +334,5 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
                 "This test requires Redis $reqOperator $reqVersion but the current version is $serverVersion."
             );
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function checkRequirements()
-    {
-        $this->checkRequiredRedisServerVersion();
     }
 }
