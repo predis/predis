@@ -204,9 +204,15 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnectionOfType($interface, $parameters = null)
     {
-        $connection = $this->getMockBuilder($interface)->getMock();
+        if (!is_a($interface, '\Predis\Connection\NodeConnectionInterface', true)) {
+            $method = __METHOD__;
 
-        // TODO: verify that $connection is an instance of \Predis\Connection\NodeConnectionInterface
+            throw new \InvalidArgumentException(
+                "Argument `\$interface` for $method() expects a type implementing Predis\Connection\NodeConnectionInterface"
+            );
+        }
+
+        $connection = $this->getMockBuilder($interface)->getMock();
 
         if ($parameters) {
             $parameters = Connection\Parameters::create($parameters);
