@@ -194,24 +194,36 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Creates a new client from the specified .
+     * Creates a new client using a specific underlying connection.
      *
-     * The new client instances inherites the same options of the original one.
-     * When no callable object is supplied, this method returns the new client.
-     * When a callable object is supplied, the new client is passed as its sole
-     * argument and its return value is returned by this method to the caller.
+     * This method allows to create a new client instance by picking a specific
+     * connection out of an aggregate one, with the same options of the original
+     * client instance.
      *
-     * NOTE: This method works against any kind of underlying connection object
-     * as it uses a duck-typing approach and looks for a suitable method that
-     * matches the selector type to extract the correct connection.
+     * The specified selector defines which logic to use to look for a suitable
+     * connection by the specified value. Supported selectors are:
      *
-     * @param string        $selector Type of selector (`id`, `key`, `slot`, `command`)
-     * @param string        $value    Values of selector.
-     * @param callable|null $callable Optional callable object.
+     *   - `id`
+     *   - `key`
+     *   - `slot`
+     *   - `command`
+     *   - `alias`
+     *   - `role`
      *
-     * @return ClientInterface|mixed
+     * Internally the client relies on duck-typing and follows this convention:
+     *
+     *   $selector string => getConnectionBy$selector($value) method
+     *
+     * This means that support for specific selectors may vary depending on the
+     * actual logic implemented by connection classes and there is no interface
+     * binding a connection class to implement any of these.
+     *
+     * @param string $selector Type of selector.
+     * @param mixed  $value    Value to be used by the selector.
+     *
+     * @return ClientInterface
      */
-    public function getClientBy($selector, $value, $callable = null)
+    public function getClientBy($selector, $value)
     {
         $selector = strtolower($selector);
 
@@ -230,11 +242,7 @@ class Client implements ClientInterface, \IteratorAggregate
 
         $client = new static($connection, $this->getOptions());
 
-        if ($callable) {
-            return call_user_func($callable, $client);
-        } else {
-            return $client;
-        }
+        return $client;
     }
 
     /**
