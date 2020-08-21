@@ -702,7 +702,7 @@ class ClientTest extends PredisTestCase
     public function testThrowsExceptionOnNonRegisteredRedisCommand()
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command 'INVALIDCOMMAND' is not a registered Redis command");
+        $this->expectExceptionMessage("Command `INVALIDCOMMAND` is not a registered Redis command");
 
         $client = new Client();
         $client->invalidCommand();
