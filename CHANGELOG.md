@@ -1,3 +1,12 @@
+v1.1.4 (2020-xx-xx)
+================================================================================
+
+- __FIX__: initializing an iteration over a client instance when it is connected
+  to a standalone Redis server will not throw an exception anymore, instead it
+  will return an iterator that will run for just one loop returning a new client
+  instance using the underlying single-node connection (ISSUE #552, PR #556).
+
+
 v1.1.3 (2020-08-18)
 ================================================================================
 
