@@ -535,7 +535,9 @@ class Client implements ClientInterface, \IteratorAggregate
         $connection = $this->getConnection();
 
         if (!$connection instanceof \Traversable) {
-            throw new ClientException('The underlying connection is not traversable');
+            return new \ArrayIterator(array(
+                (string) $connection => new static($connection, $this->getOptions())
+            ));
         }
 
         foreach ($connection as $node) {
