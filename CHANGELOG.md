@@ -6,6 +6,13 @@ v1.1.4 (2020-xx-xx)
   will return an iterator that will run for just one loop returning a new client
   instance using the underlying single-node connection (ISSUE #552, PR #556).
 
+- __FIX__: `Predis\Cluster\Distributor\HashRingaddNodeToRing()` was calculating
+  the hash required for distribution by using `crc32()` directly instead of the
+  method `Predis\Cluster\Hash\HashGeneratorInterface::hash()` implemented by the
+  class itself. This bug fix does not have any impact on existing clusters that
+  use client-side sharding based on this distributor simply because it does not
+  take any external hash generators so distribution is not going to be affected.
+
 
 v1.1.3 (2020-08-18)
 ================================================================================
