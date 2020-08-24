@@ -1,6 +1,10 @@
 v1.1.4 (2020-xx-xx)
 ================================================================================
 
+- Improved @method annotations for methods responding to Redis commands defined
+  by `Predis\ClientInterface` and `Predis\ClientContextInterface`. (PR #456 and
+  PR #497, other fixes applied after further analysys).
+
 - __FIX__: initializing an iteration over a client instance when it is connected
   to a standalone Redis server will not throw an exception anymore, instead it
   will return an iterator that will run for just one loop returning a new client
