@@ -268,14 +268,19 @@ class FactoryTest extends PredisTestCase
      */
     public function testCreateConnectionWithoutInitializationCommands()
     {
-        $profile = $this->getMock('Predis\Profile\ProfileInterface');
-        $profile->expects($this->never())->method('createCommand');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->never())
+            ->method('addConnectCommand');
 
-        $factory = new Factory($profile);
-        $parameters = new Parameters();
-        $connection = $factory->create($parameters);
+        $parameters = new Parameters(array('scheme' => 'test'));
 
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+        $factory = new Factory();
+        $factory->define('test', function ($scheme, $parameters) use ($connection) {
+            return $connection;
+        });
+
+        $this->assertSame($connection, $factory->create($parameters));
     }
 
     /**
@@ -290,18 +295,21 @@ class FactoryTest extends PredisTestCase
             'password' => 'foobar',
         ));
 
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
-        $connection->expects($this->once())
-                   ->method('getParameters')
-                   ->will($this->returnValue($parameters));
-        $connection->expects($this->at(1))
-                   ->method('addConnectCommand')
-                   ->with($this->isRedisCommand('AUTH', array('foobar')));
-        $connection->expects($this->at(2))
-                   ->method('addConnectCommand')
-                   ->with($this->isRedisCommand('SELECT', array(0)));
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters));
+        $connection
+            ->expects($this->at(1))
+            ->method('addConnectCommand')
+            ->with($this->isRedisCommand('AUTH', array('foobar')));
+        $connection
+            ->expects($this->at(2))
+            ->method('addConnectCommand')
+            ->with($this->isRedisCommand('SELECT', array(0)));
 
-        $factory = new Factory();
+            $factory = new Factory();
 
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
@@ -311,11 +319,12 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expecteExceptionMessage Unknown connection scheme: 'unknown'.
      */
     public function testCreateUndefinedConnection()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Unknown connection scheme: 'unknown'");
+
         $factory = new Factory();
         $factory->create(new Parameters(array('scheme' => 'unknown')));
     }
@@ -349,14 +358,18 @@ class FactoryTest extends PredisTestCase
             return new $connectionClass($parameters);
         };
 
-        $initializerMock = $this->getMock('stdClass', array('__invoke'));
-        $initializerMock->expects($this->exactly(2))
-                        ->method('__invoke')
-                        ->with($parameters)
-                        ->will($this->returnCallback($initializer));
+        $initializerMock = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
+        $initializerMock
+            ->expects($this->exactly(2))
+            ->method('__invoke')
+            ->with($parameters)
+            ->will($this->returnCallback($initializer));
 
         $factory = new Factory();
         $factory->define($parameters->scheme, $initializerMock);
+
         $connection1 = $factory->create($parameters);
         $connection2 = $factory->create($parameters);
 
@@ -367,21 +380,23 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
      */
     public function testDefineConnectionWithInvalidArgument()
     {
+        $this->expectException('InvalidArgumentException');
+
         $factory = new Factory();
         $factory->define('foobar', new \stdClass());
     }
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expecteExceptionMessage Unknown connection scheme: 'tcp'.
      */
     public function testUndefineDefinedConnection()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Unknown connection scheme: 'tcp'");
+
         $factory = new Factory();
         $factory->undefine('tcp');
         $factory->create('tcp://127.0.0.1');
@@ -401,11 +416,12 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expecteExceptionMessage Unknown connection scheme: 'test'.
      */
     public function testDefineAndUndefineConnection()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Unknown connection scheme: 'test'");
+
         list(, $connectionClass) = $this->getMockConnectionClass();
 
         $factory = new Factory();
@@ -424,14 +440,18 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
-        $cluster->expects($this->exactly(2))
-                ->method('add')
-                ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
+        $cluster
+            ->expects($this->exactly(2))
+            ->method('add')
+            ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
 
-        $factory = $this->getMock('Predis\Connection\Factory', array('create'));
-        $factory->expects($this->never())
-                ->method('create');
+        $factory = $this->getMockBuilder('Predis\Connection\Factory')
+            ->setMethods(array('create'))
+            ->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
 
         $factory->aggregate($cluster, array(new $connectionClass(), new $connectionClass()));
     }
@@ -443,17 +463,21 @@ class FactoryTest extends PredisTestCase
     {
         list(, $connectionClass) = $this->getMockConnectionClass();
 
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
-        $cluster->expects($this->exactly(4))
-                ->method('add')
-                ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
+        $cluster
+            ->expects($this->exactly(4))
+            ->method('add')
+            ->with($this->isInstanceOf('Predis\Connection\NodeConnectionInterface'));
 
-        $factory = $this->getMock('Predis\Connection\Factory', array('create'));
-        $factory->expects($this->exactly(3))
-                ->method('create')
-                ->will($this->returnCallback(function ($_) use ($connectionClass) {
-                    return new $connectionClass();
-                }));
+        $factory = $this->getMockBuilder('Predis\Connection\Factory')
+            ->setMethods(array('create'))
+            ->getMock();
+        $factory
+            ->expects($this->exactly(3))
+            ->method('create')
+            ->will($this->returnCallback(function ($_) use ($connectionClass) {
+                return new $connectionClass();
+            }));
 
         $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
     }
@@ -463,11 +487,17 @@ class FactoryTest extends PredisTestCase
      */
     public function testAggregateConnectionWithEmptyListOfParameters()
     {
-        $cluster = $this->getMock('Predis\Connection\Aggregate\ClusterInterface');
-        $cluster->expects($this->never())->method('add');
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
+        $cluster
+            ->expects($this->never())
+            ->method('add');
 
-        $factory = $this->getMock('Predis\Connection\Factory', array('create'));
-        $factory->expects($this->never())->method('create');
+        $factory = $this->getMockBuilder('Predis\Connection\Factory')
+            ->setMethods(array('create'))
+            ->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
 
         $factory->aggregate($cluster, array());
     }
@@ -483,7 +513,7 @@ class FactoryTest extends PredisTestCase
      */
     protected function getMockConnectionClass()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         return array($connection, get_class($connection));
     }

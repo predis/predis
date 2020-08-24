@@ -23,23 +23,25 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessage `SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]
      */
     public function testThrowsExceptionOnInitializationCommandFailure()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage("`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]");
+
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
-        $connection = $this->getMockBuilder(static::CONNECTION_CLASS)
-                           ->setMethods(array('executeCommand', 'createResource'))
-                           ->setConstructorArgs(array(new Parameters()))
-                           ->getMock();
-
-        $connection->method('executeCommand')
-                   ->with($cmdSelect)
-                   ->will($this->returnValue(
-                       new ErrorResponse('ERR invalid DB index')
-                   ));
+        $connection = $this
+            ->getMockBuilder(static::CONNECTION_CLASS)
+            ->setMethods(array('executeCommand', 'createResource'))
+            ->setConstructorArgs(array(new Parameters()))
+            ->getMock();
+        $connection
+            ->method('executeCommand')
+            ->with($cmdSelect)
+            ->will($this->returnValue(
+                new ErrorResponse('ERR invalid DB index')
+            ));
 
         $connection->method('createResource');
 
@@ -57,12 +59,12 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     public function testReadsMultibulkResponsesAsIterators()
     {
         $connection = $this->createConnection(true);
-        $profile = $this->getCurrentProfile();
+        $commands = $this->getCommandFactory();
 
         $connection->getProtocol()->useIterableMultibulk(true);
 
-        $connection->executeCommand($profile->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeRequest($profile->createCommand('lrange', array('metavars', 0, -1)));
+        $connection->executeCommand($commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
+        $connection->writeRequest($commands->createCommand('lrange', array('metavars', 0, -1)));
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkIterator', $iterator = $connection->read());
         $this->assertSame(array('foo', 'hoge', 'lol'), iterator_to_array($iterator));

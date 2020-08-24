@@ -24,11 +24,12 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid scheme: 'tls'.
      */
     public function testSupportsSchemeTls()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid scheme: 'tls'");
+
         $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
@@ -36,11 +37,12 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid scheme: 'rediss'.
      */
     public function testSupportsSchemeRediss()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid scheme: 'rediss'");
+
         $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
@@ -48,23 +50,25 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessage `SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]
      */
     public function testThrowsExceptionOnInitializationCommandFailure()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage("`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]");
+
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
-        $connection = $this->getMockBuilder(static::CONNECTION_CLASS)
-                           ->setMethods(array('executeCommand', 'createResource'))
-                           ->setConstructorArgs(array(new Parameters()))
-                           ->getMock();
-
-        $connection->method('executeCommand')
-                   ->with($cmdSelect)
-                   ->will($this->returnValue(
-                       new ErrorResponse('ERR invalid DB index')
-                   ));
+        $connection = $this
+            ->getMockBuilder(static::CONNECTION_CLASS)
+            ->setMethods(array('executeCommand', 'createResource'))
+            ->setConstructorArgs(array(new Parameters()))
+            ->getMock();
+        $connection
+            ->method('executeCommand')
+            ->with($cmdSelect)
+            ->will($this->returnValue(
+                new ErrorResponse('ERR invalid DB index')
+            ));
 
         $connection->method('createResource');
 
@@ -78,11 +82,12 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @expectedException \Predis\Connection\ConnectionException
-     * @expectedExceptionMessage Cannot resolve the address of 'bogus.tld'.
      */
     public function testThrowsExceptionOnUnresolvableHostname()
     {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage("Cannot resolve the address of 'bogus.tld'");
+
         $connection = $this->createConnectionWithParams(array('host' => 'bogus.tld'));
         $connection->connect();
     }
@@ -90,14 +95,15 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
     /**
      * @medium
      * @group connected
-     * @expectedException \Predis\Protocol\ProtocolException
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors()
     {
+        $this->expectException('Predis\Protocol\ProtocolException');
+
         $connection = $this->createConnection();
         $socket = $connection->getResource();
 
-        $connection->writeRequest($this->getCurrentProfile()->createCommand('ping'));
+        $connection->writeRequest($this->getCommandFactory()->createCommand('ping'));
         socket_read($socket, 1);
 
         $connection->read();

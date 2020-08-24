@@ -24,7 +24,7 @@ class RawCommandTest extends PredisTestCase
     public function testConstructorWithCommandID()
     {
         $commandID = 'PING';
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
 
         $this->assertSame($commandID, $command->getId());
         $this->assertEmpty($command->getArguments());
@@ -38,7 +38,7 @@ class RawCommandTest extends PredisTestCase
         $commandID = 'SET';
         $commandArgs = array('foo', 'bar');
 
-        $command = new RawCommand(array_merge((array) $commandID, $commandArgs));
+        $command = new RawCommand($commandID, $commandArgs);
 
         $this->assertSame($commandID, $command->getId());
         $this->assertSame($commandArgs, $command->getArguments());
@@ -59,44 +59,16 @@ class RawCommandTest extends PredisTestCase
     }
 
     /**
-     * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The arguments array must contain at least the command ID.
-     */
-    public function testExceptionOnMissingCommandID()
-    {
-        new RawCommand(array());
-    }
-
-    /**
      * The signature of RawCommand::create() requires one argument which is the
      * ID of the command (other arguments are fetched dinamically). If the first
-     * argument is missing, PHP emits an E_WARNING.
+     * argument is missing a standard PHP exception is thrown on PHP >= 7.1.
      *
      * @group disconnected
      */
-    public function testPHPWarningOnMissingCommandIDWithStaticCreate()
+    public function testPHPExceptionOnMissingCommandIDWithStaticCreate()
     {
-        if (version_compare(PHP_VERSION, "7.1", '>')) {
-            $this->markTestSkipped('only for PHP < 7.1');
-        }
-        $this->setExpectedException('PHPUnit_Framework_Error_Warning');
-        RawCommand::create();
-    }
+        $this->expectException('ArgumentCountError');
 
-    /**
-     * The signature of RawCommand::create() requires one argument which is the
-     * ID of the command (other arguments are fetched dinamically). If the first
-     * argument is missing, PHP 7.1 throw an exception
-     *
-     * @group disconnected
-     */
-    public function testPHPWarningOnMissingCommandIDWithStaticCreate71()
-    {
-        if (version_compare(PHP_VERSION, "7.1", '<')) {
-            $this->markTestSkipped('only for PHP > 7.1');
-        }
-        $this->setExpectedException('ArgumentCountError');
         RawCommand::create();
     }
 
@@ -106,7 +78,7 @@ class RawCommandTest extends PredisTestCase
     public function testSetArguments()
     {
         $commandID = 'SET';
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
 
         $command->setArguments($commandArgs = array('foo', 'bar'));
         $this->assertSame($commandArgs, $command->getArguments());
@@ -121,7 +93,7 @@ class RawCommandTest extends PredisTestCase
     public function testSetRawArguments()
     {
         $commandID = 'SET';
-        $command = new RawCommand(array($commandID));
+        $command = new RawCommand($commandID);
 
         $command->setRawArguments($commandArgs = array('foo', 'bar'));
         $this->assertSame($commandArgs, $command->getArguments());
@@ -133,11 +105,22 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testGetArgumentAtIndex()
+    {
+        $command = new RawCommand('GET', array('key'));
+
+        $this->assertSame('key', $command->getArgument(0));
+        $this->assertNull($command->getArgument(1));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSetAndGetHash()
     {
         $slot = 1024;
-        $arguments = array('SET', 'key', 'value');
-        $command = new RawCommand($arguments);
+        $arguments = array('key', 'value');
+        $command = new RawCommand('SET', $arguments);
 
         $this->assertNull($command->getSlot());
 
@@ -153,7 +136,7 @@ class RawCommandTest extends PredisTestCase
      */
     public function testNormalizesCommandIdentifiersToUppercase()
     {
-        $command = new RawCommand(array('set', 'key', 'value'));
+        $command = new RawCommand('set', array('key', 'value'));
 
         $this->assertSame('SET', $command->getId());
     }

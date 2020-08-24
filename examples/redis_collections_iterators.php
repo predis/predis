@@ -13,7 +13,7 @@ require __DIR__.'/shared.php';
 
 use Predis\Collection\Iterator;
 
-// Starting from Redis 2.8, clients can iterate incrementally over collections
+// Starting with Redis 2.8, clients can iterate incrementally over collections
 // without blocking the server like it happens when a command such as KEYS is
 // executed on a Redis instance storing millions of keys. These commands are:
 //
@@ -29,8 +29,7 @@ use Predis\Collection\Iterator;
 // See http://redis.io/commands/scan for more details.
 //
 
-// Create a client using `2.8` as a server profile (needs Redis 2.8!)
-$client = new Predis\Client($single_server, array('profile' => '2.8'));
+$client = new Predis\Client($single_server);
 
 // Prepare some keys for our example
 $client->del('predis:set', 'predis:zset', 'predis:hash');

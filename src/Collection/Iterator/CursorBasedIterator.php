@@ -65,8 +65,8 @@ abstract class CursorBasedIterator implements \Iterator
      */
     protected function requiredCommand(ClientInterface $client, $commandID)
     {
-        if (!$client->getProfile()->supportsCommand($commandID)) {
-            throw new NotSupportedException("The current profile does not support '$commandID'.");
+        if (!$client->getCommandFactory()->supportsCommand($commandID)) {
+            throw new NotSupportedException("'$commandID' is not supported by the current command factory.");
         }
     }
 

@@ -39,17 +39,17 @@ $client = new Predis\Client($sentinels, array(
 // Read operation.
 $exists = $client->exists('foo') ? 'yes' : 'no';
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Does 'foo' exist on {$current->alias}? $exists.", PHP_EOL;
+echo "Does 'foo' exist on {$current->role}? $exists.", PHP_EOL;
 
 // Write operation.
 $client->set('foo', 'bar');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Now 'foo' has been set to 'bar' on {$current->alias}!", PHP_EOL;
+echo "Now 'foo' has been set to 'bar' on {$current->role}!", PHP_EOL;
 
 // Read operation.
 $bar = $client->get('foo');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "We fetched 'foo' from {$current->alias} and its value is '$bar'.", PHP_EOL;
+echo "We fetched 'foo' from {$current->role} and its value is '$bar'.", PHP_EOL;
 
 /* OUTPUT:
 Does 'foo' exist on slave-127.0.0.1:6381? yes.

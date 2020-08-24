@@ -308,12 +308,56 @@ class ParametersTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid parameters URI: tcp://invalid:uri
      */
     public function testParsingURIThrowOnInvalidURI()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage("Invalid parameters URI: tcp://invalid:uri");
+
         Parameters::parse('tcp://invalid:uri');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithDefaultParameters()
+    {
+        $parameters = new Parameters();
+
+        $this->assertSame('tcp://127.0.0.1:6379', (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithUnixScheme()
+    {
+        $uri = 'unix:/path/to/redis.sock';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithIPv4()
+    {
+        $uri = 'tcp://127.0.0.1:6379';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testToStringWithIPv6()
+    {
+        $uri = 'tcp://[::1]:6379';
+        $parameters = Parameters::create("$uri?foo=bar");
+
+        $this->assertSame($uri, (string) $parameters);
     }
 
     // ******************************************************************** //

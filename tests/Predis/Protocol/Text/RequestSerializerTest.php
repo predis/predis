@@ -25,15 +25,15 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
-
-        $command->expects($this->once())
-                ->method('getId')
-                ->will($this->returnValue('PING'));
-
-        $command->expects($this->once())
-                ->method('getArguments')
-                ->will($this->returnValue(array()));
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
+        $command
+            ->expects($this->once())
+            ->method('getId')
+            ->will($this->returnValue('PING'));
+        $command
+            ->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array()));
 
         $result = $serializer->serialize($command);
 
@@ -47,15 +47,15 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
-
-        $command->expects($this->once())
-                ->method('getId')
-                ->will($this->returnValue('SET'));
-
-        $command->expects($this->once())
-                ->method('getArguments')
-                ->will($this->returnValue(array('key', 'value')));
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
+        $command
+            ->expects($this->once())
+            ->method('getId')
+            ->will($this->returnValue('SET'));
+        $command
+            ->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array('key', 'value')));
 
         $result = $serializer->serialize($command);
 
@@ -69,15 +69,15 @@ class RequestSerializerTest extends PredisTestCase
     {
         $serializer = new RequestSerializer();
 
-        $command = $this->getMock('Predis\Command\CommandInterface');
-
-        $command->expects($this->once())
-                ->method('getId')
-                ->will($this->returnValue('DEL'));
-
-        $command->expects($this->once())
-                ->method('getArguments')
-                ->will($this->returnValue(array(0 => 'key:1', 2 => 'key:2')));
+        $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
+        $command
+            ->expects($this->once())
+            ->method('getId')
+            ->will($this->returnValue('DEL'));
+        $command
+            ->expects($this->once())
+            ->method('getArguments')
+            ->will($this->returnValue(array(0 => 'key:1', 2 => 'key:2')));
 
         $result = $serializer->serialize($command);
 

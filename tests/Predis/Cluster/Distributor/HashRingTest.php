@@ -195,12 +195,15 @@ class HashRingTest extends PredisDistributorTestCase
     public function testCallbackToGetNodeHash()
     {
         $node = '127.0.0.1:7000';
-        $callable = $this->getMock('stdClass', array('__invoke'));
+        $callable = $this->getMockBuilder('stdClass')
+            ->setMethods(array('__invoke'))
+            ->getMock();
 
-        $callable->expects($this->once())
-                 ->method('__invoke')
-                 ->with($node)
-                 ->will($this->returnValue($node));
+        $callable
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($node)
+            ->will($this->returnValue($node));
 
         $distributor = new HashRing(HashRing::DEFAULT_REPLICAS, $callable);
         $distributor->add($node);

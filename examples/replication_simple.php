@@ -22,28 +22,28 @@ require __DIR__.'/shared.php';
 //
 
 $parameters = array(
-    'tcp://127.0.0.1:6379?database=15&alias=master',
-    'tcp://127.0.0.1:6380?database=15&alias=slave',
+    'tcp://127.0.0.1:6381?role=master&database=15',
+    'tcp://127.0.0.1:6382?role=slave&database=15',
 );
 
-$options = array('replication' => true);
+$options = array('replication' => 'predis');
 
 $client = new Predis\Client($parameters, $options);
 
 // Read operation.
 $exists = $client->exists('foo') ? 'yes' : 'no';
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Does 'foo' exist on {$current->alias}? $exists.", PHP_EOL;
+echo "Does 'foo' exist on {$current->role}? $exists.", PHP_EOL;
 
 // Write operation.
 $client->set('foo', 'bar');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "Now 'foo' has been set to 'bar' on {$current->alias}!", PHP_EOL;
+echo "Now 'foo' has been set to 'bar' on {$current->role}!", PHP_EOL;
 
 // Read operation.
 $bar = $client->get('foo');
 $current = $client->getConnection()->getCurrent()->getParameters();
-echo "We fetched 'foo' from {$current->alias} and its value is '$bar'.", PHP_EOL;
+echo "We fetched 'foo' from {$current->role} and its value is '$bar'.", PHP_EOL;
 
 /* OUTPUT:
 Does 'foo' exist on slave? yes.

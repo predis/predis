@@ -41,5 +41,10 @@
         "psr-4": {
             "Predis\\": "src/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.0-dev"
+        }
     }
 }

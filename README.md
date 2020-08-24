@@ -8,6 +8,11 @@
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
+__ATTENTION:__ you are on the README file of an unstable branch of Predis specifically meant for the
+development of future releases. This means that the code on this branch is potentially unstable, and
+breaking change may happen without any prior notice. Do not use it in production environments or use
+it at your own risk!
+
 Predis does not require any additional C extension by default, but it can be optionally paired with
 [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of the serialization and parsing
 of the [Redis RESP Protocol](http://redis.io/topics/protocol).
@@ -17,7 +22,7 @@ More details about this project can be found on the [frequently asked questions]
 
 ## Main features ##
 
-- Support for different versions of Redis (from __2.0__ to __3.2__) using profiles.
+- Support for Redis from __2.0__ to __3.2__.
 - Support for clustering using client-side sharding and pluggable keyspace distributors.
 - Support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication setups and [redis-sentinel](http://redis.io/topics/sentinel).
@@ -30,7 +35,7 @@ More details about this project can be found on the [frequently asked questions]
 - Connections can be established via TCP/IP (also TLS/SSL-encrypted) or UNIX domain sockets.
 - Support for [Webdis](http://webd.is) (requires both `ext-curl` and `ext-phpiredis`).
 - Support for custom connection classes for providing different network or protocol backends.
-- Flexible system for defining custom commands and profiles and override the default ones.
+- Flexible system for defining custom commands and override the default ones.
 
 
 ## How to _install_ and use Predis ##
@@ -118,14 +123,16 @@ the rules described on their respective IANA provisional registration documents.
 The actual list of supported connection parameters can vary depending on each connection backend so
 it is recommended to refer to their specific documentation or implementation for details.
 
-When an array of connection parameters is provided, Predis automatically works in cluster mode using
-client-side sharding. Both named arrays and URI strings can be mixed when providing configurations
+Predis can aggregate multiple connections when providing an array of connection parameters and the
+appropriate option to instruct the client about how to aggregate them (clustering, replication or a
+custom aggregation logic). Named arrays and URI strings can be mixed when providing configurations
 for each node:
 
 ```php
 $client = new Predis\Client([
-    'tcp://10.0.0.1?alias=first-node',
-    ['host' => '10.0.0.2', 'alias' => 'second-node'],
+    'tcp://10.0.0.1?alias=first-node', ['host' => '10.0.0.2', 'alias' => 'second-node'],
+], [
+    'cluster' => 'predis',
 ]);
 ```
 
@@ -144,20 +151,20 @@ Many aspects and behaviors of the client can be configured by passing specific c
 second argument of `Predis\Client::__construct()`:
 
 ```php
-$client = new Predis\Client($parameters, ['profile' => '2.8', 'prefix' => 'sample:']);
+$client = new Predis\Client($parameters, ['prefix' => 'sample:']);
 ```
 
 Options are managed using a mini DI-alike container and their values can be lazily initialized only
 when needed. The client options supported by default in Predis are:
 
-  - `profile`: specifies the profile to use to match a specific version of Redis.
-  - `prefix`: prefix string automatically applied to keys found in commands.
+  - `prefix`: prefix string applied to every key found in commands.
   - `exceptions`: whether the client should throw or return responses upon Redis errors.
   - `connections`: list of connection backends or a connection factory instance.
-  - `cluster`: specifies a cluster backend (`predis`, `redis` or callable object).
-  - `replication`: specifies a replication backend (`TRUE`, `sentinel` or callable object).
-  - `aggregate`: overrides `cluster` and `replication` to provide a custom connections aggregator.
+  - `cluster`: specifies a cluster backend (`predis`, `redis` or callable).
+  - `replication`: specifies a replication backend (`predis`, `sentinel` or callable).
+  - `aggregate`: configures the client with a custom aggregate connection (callable).
   - `parameters`: list of default connection parameters for aggregate connections.
+  - `commands`: specifies a command factory instance to use through the library.
 
 Users can also provide custom options with values or callable objects (for lazy initialization) that
 are stored in the options container for later use through the library.
@@ -168,18 +175,18 @@ are stored in the options container for later use through the library.
 Aggregate connections are the foundation upon which Predis implements clustering and replication and
 they are used to group multiple connections to single Redis nodes and hide the specific logic needed
 to handle them properly depending on the context. Aggregate connections usually require an array of
-connection parameters when creating a new client instance.
+connection parameters along with the appropriate client option when creating a new client instance.
 
 #### Cluster ####
 
-By default, when no specific client options are set and an array of connection parameters is passed
-to the client's constructor, Predis configures itself to work in clustering mode using a traditional
-client-side sharding approach to create a cluster of independent nodes and distribute the keyspace
-among them. This approach needs some form of external health monitoring of nodes and requires manual
-operations to rebalance the keyspace when changing its configuration by adding or removing nodes:
+Predis can be configured to work in clustering mode with a traditional client-side sharding approach
+to create a cluster of independent nodes and distribute the keyspace among them. This approach needs
+some sort of external health monitoring of nodes and requires the keyspace to be rebalanced manually
+when nodes are added or removed:
 
 ```php
 $parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$options    = ['cluster' => 'predis'];
 
 $client = new Predis\Client($parameters);
 ```
@@ -209,12 +216,12 @@ the value of a key. Instead of raising a connection error when a slave fails, th
 fall back to a different slave among the ones provided in the configuration.
 
 The basic configuration needed to use the client in replication mode requires one Redis server to be
-identified as the master (this can be done via connection parameters using the `alias` parameter set
-to `master`) and one or more servers acting as slaves:
+identified as the master (this can be done via connection parameters by setting the `role` parameter
+to `master`) and one or more slaves (in this case setting `role` to `slave` for slaves is optional):
 
 ```php
-$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
-$options    = ['replication' => true];
+$parameters = ['tcp://10.0.0.1?role=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$options    = ['replication' => 'predis'];
 
 $client = new Predis\Client($parameters, $options);
 ```
@@ -255,13 +262,13 @@ when certain Lua scripts do not perform write operations it is possible to provi
 the client to stick with slaves for their execution:
 
 ```php
-$parameters = ['tcp://10.0.0.1?alias=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$parameters = ['tcp://10.0.0.1?role=master', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
 $options    = ['replication' => function () {
     // Set scripts that won't trigger a switch from a slave to the master node.
     $strategy = new Predis\Replication\ReplicationStrategy();
     $strategy->setScriptReadOnly($LUA_SCRIPT);
 
-    return new Predis\Connection\Aggregate\MasterSlaveReplication($strategy);
+    return new Predis\Connection\Replication\MasterSlaveReplication($strategy);
 }];
 
 $client = new Predis\Client($parameters, $options);
@@ -320,7 +327,7 @@ of a transaction using CAS you can see [the following example](examples/transact
 While we try to update Predis to stay up to date with all the commands available in Redis, you might
 prefer to stick with an old version of the library or provide a different way to filter arguments or
 parse responses for specific commands. To achieve that, Predis provides the ability to implement new
-command classes to define or override commands in the default server profiles used by the client:
+command classes to define or override commands in the default command factory used by the client:
 
 ```php
 // Define a new command by extending Predis\Command\Command:
@@ -332,9 +339,12 @@ class BrandNewRedisCommand extends Predis\Command\Command
     }
 }
 
-// Inject your command in the current profile:
-$client = new Predis\Client();
-$client->getProfile()->defineCommand('newcmd', 'BrandNewRedisCommand');
+// Inject your command in the current command factory:
+$client = new Predis\Client($parameters, [
+    'commands' => [
+        'newcmd' => 'BrandNewRedisCommand',
+    ],
+]);
 
 $response = $client->newcmd();
 ```
@@ -353,7 +363,7 @@ $response = $client->executeRaw(['SET', 'foo', 'bar']);
 While it is possible to leverage [Lua scripting](http://redis.io/commands/eval) on Redis 2.6+ using
 directly [`EVAL`](http://redis.io/commands/eval) and [`EVALSHA`](http://redis.io/commands/evalsha),
 Predis offers script commands as an higher level abstraction built upon them to make things simple.
-Script commands can be registered in the server profile used by the client and are accessible as if
+Script commands can be registered in the command factory used by the client and are accessible as if
 they were plain Redis commands, but they define Lua scripts that get transmitted to the server for
 remote execution. Internally they use [`EVALSHA`](http://redis.io/commands/evalsha) by default and
 identify a script by its SHA1 hash to save bandwidth, but [`EVAL`](http://redis.io/commands/eval)
@@ -379,9 +389,12 @@ LUA;
     }
 }
 
-// Inject the script command in the current profile:
-$client = new Predis\Client();
-$client->getProfile()->defineCommand('lpushrand', 'ListPushRandomValue');
+// Inject the script command in the current command factory:
+$client = new Predis\Client($parameters, [
+    'commands' => [
+        'lpushrand' => 'ListPushRandomValue',
+    ],
+]);
 
 $response = $client->lpushrand('random_values', $seed = mt_rand());
 ```
@@ -439,15 +452,11 @@ stay consistent while working on the project.
 __ATTENTION__: Do not ever run the test suite shipped with Predis against instances of Redis running
 in production environments or containing data you are interested in!
 
-Predis has a comprehensive test suite covering every aspect of the library. This test suite performs
-integration tests against a running instance of Redis (>= 2.4.0 is required) to verify the correct
-behavior of the implementation of each command and automatically skips commands not defined in the
-specified Redis profile. If you do not have Redis up and running, integration tests can be disabled.
-By default the test suite is configured to execute integration tests using the profile for Redis 3.2
-(which is the current stable version of Redis) but can optionally target a Redis instance built from
-the `unstable` branch by modifying `phpunit.xml` and setting `REDIS_SERVER_VERSION` to `dev` so that
-the development server profile will be used. You can refer to [the tests README](tests/README.md)
-for more detailed information about testing Predis.
+Predis has a comprehensive test suite covering every aspect of the library and that can optionally
+perform integration tests against a running instance of Redis (required >= 2.4.0 in order to verify
+the correct behavior of the implementation of each command. Integration tests for unsupported Redis
+commands are automatically skipped. If you do not have Redis up and running, integration tests can
+be disabled. See [the tests README](tests/README.md) for more details about testing this library.
 
 Predis uses GitHub Actions for continuous integration and the history for past and current builds can be
 found [on its actions page](https://github.com/predis/predis/actions).

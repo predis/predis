@@ -23,13 +23,15 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testOk()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\StatusResponse();
-
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
-
         $response = $handler->handle($connection, 'OK');
 
         $this->assertInstanceOf('Predis\Response\Status', $response);
@@ -41,13 +43,15 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testQueued()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\StatusResponse();
-
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
-
         $response = $handler->handle($connection, 'QUEUED');
 
         $this->assertInstanceOf('Predis\Response\Status', $response);
@@ -59,13 +63,15 @@ class StatusResponseTest extends PredisTestCase
      */
     public function testPlainString()
     {
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->never())
+            ->method('readLine');
+        $connection
+            ->expects($this->never())
+            ->method('readBuffer');
+
         $handler = new Handler\StatusResponse();
-
-        $connection = $this->getMock('Predis\Connection\CompositeConnectionInterface');
-
-        $connection->expects($this->never())->method('readLine');
-        $connection->expects($this->never())->method('readBuffer');
-
         $response = $handler->handle($connection, 'Background saving started');
 
         $this->assertInstanceOf('Predis\Response\Status', $response);

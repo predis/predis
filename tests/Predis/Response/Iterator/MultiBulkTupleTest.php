@@ -23,12 +23,14 @@ class MultiBulkTupleTest extends PredisTestCase
 {
     /**
      * @group disconnected
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Cannot initialize a tuple iterator using an already initiated iterator.
      */
     public function testInitiatedMultiBulkIteratorsAreNotValid()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Cannot initialize a tuple iterator using an already initiated iterator');
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
         $iterator = new MultiBulk($connection, 2);
         $iterator->next();
 
@@ -37,12 +39,14 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \UnexpectedValueException
-     * @expectedExceptionMessage Invalid response size for a tuple iterator.
      */
     public function testMultiBulkWithOddSizesAreInvalid()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $this->expectException('UnexpectedValueException');
+        $this->expectExceptionMessage('Invalid response size for a tuple iterator');
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
         $iterator = new MultiBulk($connection, 3);
 
         new MultiBulkTuple($iterator);
