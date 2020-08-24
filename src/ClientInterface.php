@@ -83,7 +83,7 @@ use Predis\Profile\ProfileInterface;
  * @method int    hstrlen($key, $field)
  * @method array  blpop(array|string $keys, $timeout)
  * @method array  brpop(array|string $keys, $timeout)
- * @method array  brpoplpush($source, $destination, $timeout)
+ * @method string brpoplpush($source, $destination, $timeout)
  * @method string lindex($key, $index)
  * @method int    linsert($key, $whence, $pivot, $value)
  * @method int    llen($key)
