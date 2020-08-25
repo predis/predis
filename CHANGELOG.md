@@ -105,6 +105,12 @@ v1.1.4 (2020-xx-xx)
   use client-side sharding based on this distributor simply because it does not
   take any external hash generators so distribution is not going to be affected.
 
+- __FIX__: `SORT` now always trigger a switch to the master node in replication
+  configurations instead of just when the `STORE` modifier is specified, this is
+  because `SORT` is always considered to be a write operation and actually fails
+  with a `-READONLY` error response when executed against a replica node. (ISSUE
+  #554).
+
 
 v1.1.3 (2020-08-18)
 ================================================================================
