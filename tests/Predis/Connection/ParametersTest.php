@@ -39,23 +39,29 @@ class ParametersTest extends PredisTestCase
     {
         $parameters = new Parameters();
 
-        $this->assertTrue(isset($parameters->scheme));
-        $this->assertFalse(isset($parameters->unknown));
+        $this->assertTrue(isset($parameters->scheme), 'Parameter `scheme` was expected to be set');
+        $this->assertFalse(isset($parameters->notset), 'Parameter `notset` was expected to be not set');
     }
 
     public function sharedTestsWithArrayParameters(Parameters $parameters)
     {
-        $this->assertTrue(isset($parameters->scheme));
-        $this->assertSame('tcp', $parameters->scheme);
+        $this->assertTrue(isset($parameters->scheme), 'Parameter `scheme` was expected to be set');
+        $this->assertSame('tcp', $parameters->scheme, 'Parameter `scheme` was expected to be set');
 
-        $this->assertTrue(isset($parameters->port));
-        $this->assertSame(7000, $parameters->port);
+        $this->assertTrue(isset($parameters->port), 'Parameter `port` was expected to be set');
+        $this->assertSame(7000, $parameters->port, 'Parameter `port` was expected to return 7000');
 
-        $this->assertTrue(isset($parameters->custom));
-        $this->assertSame('foobar', $parameters->custom);
+        $this->assertTrue(isset($parameters->custom), 'Parameter `custom` was expected to be set');
+        $this->assertSame('foobar', $parameters->custom, 'Parameter `custom` was expected to return "foobar"');
 
-        $this->assertFalse(isset($parameters->unknown));
-        $this->assertNull($parameters->unknown);
+        $this->assertFalse(isset($parameters->setnull), 'Parameter `setnull` was expected to be not set');
+        $this->assertNull($parameters->setnull, 'Parameter `setnull` was expected to return NULL');
+
+        $this->assertFalse(isset($parameters->setemptystring), 'Parameter `setemptystring` was expected to be not set');
+        $this->assertNull($parameters->setemptystring, 'Parameter `setemptystring` was expected to return NULL');
+
+        $this->assertFalse(isset($parameters->notset), 'Parameter `notset` was expected to be not set');
+        $this->assertNull($parameters->notset, 'Parameter `notset` was expected to return NULL');
     }
 
     /**
@@ -66,6 +72,8 @@ class ParametersTest extends PredisTestCase
         $parameters = new Parameters(array(
             'port' => 7000,
             'custom' => 'foobar',
+            'setnull' => null,
+            'setemptystring' => '',
         ));
 
         $this->sharedTestsWithArrayParameters($parameters);
@@ -79,6 +87,8 @@ class ParametersTest extends PredisTestCase
         $parameters = new Parameters(array(
             'port' => 7000,
             'custom' => 'foobar',
+            'setnull' => null,
+            'setemptystring' => '',
         ));
 
         $this->sharedTestsWithArrayParameters($parameters);
@@ -93,6 +103,8 @@ class ParametersTest extends PredisTestCase
             'port' => 7000,
             'database' => 5,
             'custom' => 'foobar',
+            'setnull' => null,
+            'setemptystring' => '',
         );
 
         $uriString = $this->getParametersString($overrides);

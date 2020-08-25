@@ -20,9 +20,7 @@ namespace Predis\Connection;
  */
 class Parameters implements ParametersInterface
 {
-    private $parameters;
-
-    private static $defaults = array(
+    protected static $defaults = array(
         'scheme' => 'tcp',
         'host' => '127.0.0.1',
         'port' => 6379,
@@ -33,17 +31,21 @@ class Parameters implements ParametersInterface
      */
     public function __construct(array $parameters = array())
     {
-        $this->parameters = $parameters + $this->getDefaults();
+        $this->parameters = $this->filter($parameters + static::$defaults);
     }
 
     /**
-     * Returns some default parameters with their values.
+     * Filters parameters removing entries with NULL or 0-length string values.
+     *
+     * @params array $parameters Array of parameters to be filtered
      *
      * @return array
      */
-    protected function getDefaults()
+    protected function filter(array $parameters)
     {
-        return self::$defaults;
+        return array_filter($parameters, function ($value) {
+            return $value !== null && $value !== '';
+        });
     }
 
     /**
