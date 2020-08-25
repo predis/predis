@@ -366,9 +366,13 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($consumer);
         $pubsub->subscribe('channel:foo');
 
+        usleep(250000);
+
         $producer->publish('channel:foo', 'message1');
         $producer->publish('channel:foo', 'message2');
         $producer->publish('channel:foo', 'QUIT');
+
+        usleep(250000);
 
         foreach ($pubsub as $message) {
             if ($message->kind !== 'message') {
