@@ -276,7 +276,10 @@ class FactoryTest extends PredisTestCase
         $parameters = new Parameters(array('scheme' => 'test'));
 
         $factory = new Factory();
-        $factory->define('test', function ($scheme, $parameters) use ($connection) {
+        $factory->define('test', function ($_parameters, $_factory) use ($connection, $parameters, $factory) {
+            $this->assertSame($_parameters, $parameters);
+            $this->assertSame($_factory, $factory);
+
             return $connection;
         });
 
@@ -353,6 +356,7 @@ class FactoryTest extends PredisTestCase
         list(, $connectionClass) = $this->getMockConnectionClass();
 
         $parameters = new Parameters(array('scheme' => 'foobar'));
+        $factory = new Factory();
 
         $initializer = function ($parameters) use ($connectionClass) {
             return new $connectionClass($parameters);
@@ -364,10 +368,9 @@ class FactoryTest extends PredisTestCase
         $initializerMock
             ->expects($this->exactly(2))
             ->method('__invoke')
-            ->with($parameters)
+            ->with($parameters, $factory)
             ->will($this->returnCallback($initializer));
 
-        $factory = new Factory();
         $factory->define($parameters->scheme, $initializerMock);
 
         $connection1 = $factory->create($parameters);
@@ -475,7 +478,7 @@ class FactoryTest extends PredisTestCase
         $factory
             ->expects($this->exactly(3))
             ->method('create')
-            ->will($this->returnCallback(function ($_) use ($connectionClass) {
+            ->will($this->returnCallback(function () use ($connectionClass) {
                 return new $connectionClass();
             }));
 
