@@ -81,15 +81,15 @@ class ReplicationStrategyTest extends PredisTestCase
         $profile = Profile\Factory::getDevelopment();
         $strategy = new ReplicationStrategy();
 
-        $cmdReadSort = $profile->createCommand('SORT', array('key:list'));
-        $this->assertTrue(
-            $strategy->isReadOperation($cmdReadSort),
-            'SORT is expected to be a read operation.'
+        $cmdReturnSort = $profile->createCommand('SORT', array('key:list'));
+        $this->assertFalse(
+            $strategy->isReadOperation($cmdReturnSort),
+            'SORT is expected to be a write operation.'
         );
 
-        $cmdWriteSort = $profile->createCommand('SORT', array('key:list', array('store' => 'key:stored')));
+        $cmdStoreSort = $profile->createCommand('SORT', array('key:list', array('store' => 'key:stored')));
         $this->assertFalse(
-            $strategy->isReadOperation($cmdWriteSort),
+            $strategy->isReadOperation($cmdStoreSort),
             'SORT with STORE is expected to be a write operation.'
         );
     }

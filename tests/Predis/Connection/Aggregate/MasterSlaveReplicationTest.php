@@ -544,29 +544,6 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSortTriggersSwitchToMasterConnectionOnStoreModifier()
-    {
-        $profile = Profile\Factory::get('dev');
-        $cmdSortNormal = $profile->createCommand('sort', array('key'));
-        $cmdSortStore = $profile->createCommand('sort', array('key', array('store' => 'key:store')));
-
-        $master = $this->getMockConnection('tcp://host1?alias=master');
-        $master->expects($this->once())->method('executeCommand')->with($cmdSortStore);
-
-        $slave1 = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave1->expects($this->once())->method('executeCommand')->with($cmdSortNormal);
-
-        $replication = new MasterSlaveReplication();
-        $replication->add($master);
-        $replication->add($slave1);
-
-        $replication->executeCommand($cmdSortNormal);
-        $replication->executeCommand($cmdSortStore);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testDiscardsUnreachableSlaveAndExecutesReadOnlyCommandOnNextSlave()
     {
         $profile = Profile\Factory::getDefault();
