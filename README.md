@@ -59,10 +59,6 @@ require 'Predis/Autoloader.php';
 Predis\Autoloader::register();
 ```
 
-It is also possible to create a [phar](http://www.php.net/manual/en/intro.phar.php) archive directly
-from the repository by launching the `bin/create-phar` script. The generated phar already contains a
-stub defining its own autoloader, so you just need to `require()` it to start using the library.
-
 
 ### Connecting to Redis ###
 
