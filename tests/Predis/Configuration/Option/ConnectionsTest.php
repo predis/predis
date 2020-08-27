@@ -69,9 +69,9 @@ class ConnectionsTest extends PredisTestCase
 
         $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $default
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('define')
-            ->with($this->matchesRegularExpression('/^tcp|unix$/'), $classFQCN);
+            ->with($this->matchesRegularExpression('/^tcp|unix|redis$/'), $classFQCN);
 
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
         ->setMethods(array('getDefault'))

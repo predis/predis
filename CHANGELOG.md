@@ -26,9 +26,9 @@ v2.0.0 (202x-xx-xx)
   based connection backends simply, accepted values are:
 
   - `phpiredis-stream` maps `Phpiredis\Connection\PhpiredisStreamConnection` to
-    `tcp` and `unix` URI schemes.
+    `tcp`, `redis`, `unix` URI schemes.
   - `phpiredis-socket` maps `Phpiredis\Connection\PhpiredisSocketConnection` to
-    `tcp` and `unix` URI schemes.
+    `tcp`, `redis`, `unix` URI schemes.
   - `phpiredis-stream` is simply an alias of `phpiredis-stream`.
 
 - Added the new `Predis\Cluster\Hash\PhpiredisCRC16` class using ext-phpiredis
