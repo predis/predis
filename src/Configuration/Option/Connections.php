@@ -112,6 +112,9 @@ class Connections implements OptionInterface
                 $factory->define('unix', 'Predis\Connection\PhpiredisSocketConnection');
                 break;
 
+            case 'default':
+                return $factory;
+
             default:
                 throw new \InvalidArgumentException(sprintf(
                     '%s does not recognize `%s` as a supported configuration string', static::class, $value

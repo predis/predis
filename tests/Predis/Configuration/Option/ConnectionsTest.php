@@ -91,6 +91,33 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAcceptsStringDefaultToReturnConnectionFactoryWithDefaultConfiguration()
+    {
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $default
+            ->expects($this->never())
+            ->method('define');
+
+        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
+        ->setMethods(array('getDefault'))
+        ->getMock();
+        $option
+            ->expects($this->once())
+            ->method('getDefault')
+            ->with($options)
+            ->will($this->returnValue($default));
+
+        $factory = $option->filter($options, 'default');
+
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory);
+        $this->assertSame($default, $factory);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testThrowsExceptionOnNotSupportedStringValue()
     {
         $this->expectException('InvalidArgumentException');
