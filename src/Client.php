@@ -330,7 +330,7 @@ class Client implements ClientInterface, \IteratorAggregate
      */
     public function createCommand($commandID, $arguments = array())
     {
-        return $this->commands->createCommand($commandID, $arguments);
+        return $this->commands->create($commandID, $arguments);
     }
 
     /**

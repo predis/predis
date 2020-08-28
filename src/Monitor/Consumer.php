@@ -62,7 +62,7 @@ class Consumer implements \Iterator
             );
         }
 
-        if ($client->getCommandFactory()->supportsCommand('MONITOR') === false) {
+        if (!$client->getCommandFactory()->supports('MONITOR')) {
             throw new NotSupportedException("'MONITOR' is not supported by the current command factory.");
         }
     }

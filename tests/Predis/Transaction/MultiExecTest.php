@@ -32,8 +32,8 @@ class MultiExecTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
-            ->method('supportsCommands')
-            ->with(array('MULTI', 'EXEC', 'DISCARD'))
+            ->method('supports')
+            ->with('MULTI', 'EXEC', 'DISCARD')
             ->will($this->returnValue(false));
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
@@ -52,15 +52,16 @@ class MultiExecTest extends PredisTestCase
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
-            ->expects($this->once())
-            ->method('supportsCommands')
-            ->with(array('MULTI', 'EXEC', 'DISCARD'))
-            ->will($this->returnValue(true));
-        $commands
-            ->expects($this->once())
-            ->method('supportsCommand')
-            ->with('WATCH')
-            ->will($this->returnValue(false));
+            ->expects($this->exactly(2))
+            ->method('supports')
+            ->withConsecutive(
+                array('MULTI', 'EXEC', 'DISCARD'),
+                array('WATCH')
+            )
+            ->willReturnOnConsecutiveCalls(
+                true,
+                false
+            );
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));
@@ -78,16 +79,19 @@ class MultiExecTest extends PredisTestCase
         $this->expectExceptionMessage('UNWATCH is not supported by the current command factory.');
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
-            ->expects($this->once())
-            ->method('supportsCommands')
-            ->with(array('MULTI', 'EXEC', 'DISCARD'))
-            ->will($this->returnValue(true));
-        $commands
-            ->expects($this->once())
-            ->method('supportsCommand')
-            ->with('UNWATCH')
-            ->will($this->returnValue(false));
+            ->expects($this->exactly(2))
+            ->method('supports')
+            ->withConsecutive(
+                array('MULTI', 'EXEC', 'DISCARD'),
+                array('UNWATCH')
+            )
+            ->willReturnOnConsecutiveCalls(
+                true,
+                false
+            );
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));

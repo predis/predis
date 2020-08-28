@@ -467,12 +467,12 @@ class ClientTest extends PredisTestCase
      */
     public function testCreatesNewCommandUsingSpecifiedCommandFactory()
     {
-        $ping = $this->getCommandFactory()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->create('ping', array());
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
-            ->method('createCommand')
+            ->method('create')
             ->with('ping', array())
             ->will($this->returnValue($ping));
 
@@ -487,8 +487,8 @@ class ClientTest extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $ping = $commands->createCommand('ping', array());
-        $hgetall = $commands->createCommand('hgetall', array('metavars', 'foo', 'hoge'));
+        $ping = $commands->create('ping', array());
+        $hgetall = $commands->create('hgetall', array('metavars', 'foo', 'hoge'));
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
@@ -516,7 +516,7 @@ class ClientTest extends PredisTestCase
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
 
-        $ping = $this->getCommandFactory()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->create('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
@@ -534,7 +534,7 @@ class ClientTest extends PredisTestCase
      */
     public function testExecuteCommandReturnsErrorResponseOnRedisError()
     {
-        $ping = $this->getCommandFactory()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->create('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
@@ -554,7 +554,7 @@ class ClientTest extends PredisTestCase
      */
     public function testCallingRedisCommandExecutesInstanceOfCommand()
     {
-        $ping = $this->getCommandFactory()->createCommand('ping', array());
+        $ping = $this->getCommandFactory()->create('ping', array());
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
@@ -566,7 +566,7 @@ class ClientTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
-            ->method('createCommand')
+            ->method('create')
             ->with('ping', array())
             ->will($this->returnValue($ping));
 

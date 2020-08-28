@@ -12,7 +12,13 @@
 namespace Predis\Command;
 
 /**
- * Command factory for the mainline Redis server.
+ * Command factory for mainline Redis servers.
+ *
+ * This factory is intended to handle standard commands implemented by mainline
+ * Redis servers. By default it maps a command ID to a specific command handler
+ * class in the Predis\Command\Redis namespace but this can be overridden for
+ * any command ID simply by defining a new command handler class implementing
+ * Predis\Command\CommandInterface.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +39,7 @@ class RedisFactory extends Factory
     /**
      * {@inheritdoc}
      */
-    public function getCommandClass($commandID)
+    public function getCommandClass(string $commandID): ?string
     {
         $commandID = strtoupper($commandID);
 
@@ -42,7 +48,7 @@ class RedisFactory extends Factory
         } elseif (class_exists($commandClass = "Predis\Command\Redis\\$commandID")) {
             $this->commands[$commandID] = $commandClass;
         } else {
-            return;
+            return null;
         }
 
         return $commandClass;
@@ -51,7 +57,7 @@ class RedisFactory extends Factory
     /**
      * {@inheritdoc}
      */
-    public function undefineCommand($commandID)
+    public function undefine(string $commandID): void
     {
         // NOTE: we explicitly associate `NULL` to the command ID in the map
         // instead of the parent's `unset()` because our subclass tries to load

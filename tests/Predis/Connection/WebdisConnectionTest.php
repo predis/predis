@@ -63,7 +63,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::writeRequest() is not supported");
 
         $connection = $this->createConnection();
-        $connection->writeRequest($this->getCommandFactory()->createCommand('ping'));
+        $connection->writeRequest($this->getCommandFactory()->create('ping'));
     }
 
     /**
@@ -75,7 +75,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::readResponse() is not supported");
 
         $connection = $this->createConnection();
-        $connection->readResponse($this->getCommandFactory()->createCommand('ping'));
+        $connection->readResponse($this->getCommandFactory()->create('ping'));
     }
 
     /**
@@ -99,7 +99,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported");
 
         $connection = $this->createConnection();
-        $connection->addConnectCommand($this->getCommandFactory()->createCommand('ping'));
+        $connection->addConnectCommand($this->getCommandFactory()->create('ping'));
     }
 
     /**
@@ -111,7 +111,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("Command 'SELECT' is not allowed by Webdis");
 
         $connection = $this->createConnection();
-        $connection->executeCommand($this->getCommandFactory()->createCommand('select', array(0)));
+        $connection->executeCommand($this->getCommandFactory()->create('select', array(0)));
     }
 
     /**
@@ -123,7 +123,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("Command 'AUTH' is not allowed by Webdis");
 
         $connection = $this->createConnection();
-        $connection->executeCommand($this->getCommandFactory()->createCommand('auth', array('foobar')));
+        $connection->executeCommand($this->getCommandFactory()->create('auth', array('foobar')));
     }
 
     /**
@@ -155,11 +155,11 @@ class WebdisConnectionTest extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $cmdPing = $commands->createCommand('ping');
-        $cmdEcho = $commands->createCommand('echo', array('echoed'));
-        $cmdGet = $commands->createCommand('get', array('foobar'));
-        $cmdRpush = $commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
-        $cmdLrange = $commands->createCommand('lrange', array('metavars', 0, -1));
+        $cmdPing = $commands->create('ping');
+        $cmdEcho = $commands->create('echo', array('echoed'));
+        $cmdGet = $commands->create('get', array('foobar'));
+        $cmdRpush = $commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdLrange = $commands->create('lrange', array('metavars', 0, -1));
 
         $connection = $this->createConnection(true);
 
@@ -180,7 +180,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectException('Predis\Connection\ConnectionException');
 
         $connection = $this->createConnectionWithParams(array('host' => '169.254.10.10'));
-        $connection->executeCommand($this->getCommandFactory()->createCommand('ping'));
+        $connection->executeCommand($this->getCommandFactory()->create('ping'));
     }
 
     // ******************************************************************** //
@@ -219,7 +219,7 @@ class WebdisConnectionTest extends PredisTestCase
         }
 
         $connection = new WebdisConnection($parameters);
-        $connection->executeCommand($this->getCommandFactory()->createCommand('flushdb'));
+        $connection->executeCommand($this->getCommandFactory()->create('flushdb'));
 
         return $connection;
     }

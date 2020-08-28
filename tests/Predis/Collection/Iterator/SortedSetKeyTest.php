@@ -30,7 +30,7 @@ class SortedSetKeyTest extends PredisTestCase
             ->getMock();
         $commands
             ->expects($this->any())
-            ->method('supportsCommand')
+            ->method('supports')
             ->will($this->returnValue(false));
 
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
