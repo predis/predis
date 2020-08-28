@@ -140,13 +140,13 @@ class PredisClusterTest extends PredisTestCase
         $connection1
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
         $connection2
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $cluster = new PredisCluster();
 
@@ -165,13 +165,13 @@ class PredisClusterTest extends PredisTestCase
         $connection1
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
         $connection2
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $cluster = new PredisCluster();
 

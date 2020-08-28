@@ -32,7 +32,7 @@ class ConsumerTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $client = new Client(null, array('commands' => $commands));
 
@@ -92,9 +92,9 @@ class ConsumerTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('createCommand')
             ->with($this->logicalOr($this->equalTo('subscribe'), $this->equalTo('psubscribe')))
-            ->will($this->returnCallback(function ($id, $args) use ($commands) {
+            ->willReturnCallback(function ($id, $args) use ($commands) {
                 return $commands->create($id, $args);
-            }));
+            });
 
         $options = array('subscribe' => 'channel:foo', 'psubscribe' => 'channels:*');
 
@@ -185,7 +185,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
@@ -206,7 +206,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
@@ -227,7 +227,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
@@ -249,7 +249,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('psubscribe' => 'channel:*'));
@@ -272,7 +272,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
@@ -294,7 +294,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));
@@ -316,7 +316,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($rawmessage));
+            ->willReturn($rawmessage);
 
         $client = new Client($connection);
         $pubsub = new PubSubConsumer($client, array('subscribe' => 'channel:foo'));

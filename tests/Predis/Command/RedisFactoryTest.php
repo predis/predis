@@ -245,11 +245,11 @@ class RedisFactoryTest extends PredisTestCase
             ->expects($this->once())
             ->method('process')
             ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-            ->will($this->returnCallback(
+            ->willReturnCallback(
                 function (CommandInterface $cmd) use (&$argsRef) {
                     $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                 }
-            ));
+            );
 
         $factory = new RedisFactory();
         $factory->setProcessor($processor);

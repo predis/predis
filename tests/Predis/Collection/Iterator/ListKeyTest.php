@@ -30,7 +30,7 @@ class ListKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
@@ -40,7 +40,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new ListKey($client, 'key:list');
     }
@@ -58,14 +58,14 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array()
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -86,14 +86,14 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2', 'item:3')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -129,7 +129,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('lrange')
@@ -144,7 +144,7 @@ class ListKeyTest extends PredisTestCase
             ->expects($this->at(2))
             ->method('lrange')
             ->with('key:list', 10, 19)
-            ->will($this->returnValue(array('item:11', 'item:12')));
+            ->willReturn(array('item:11', 'item:12'));
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -172,7 +172,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -192,7 +192,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -210,7 +210,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('lrange')
@@ -248,7 +248,7 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('lrange')
@@ -298,14 +298,14 @@ class ListKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 

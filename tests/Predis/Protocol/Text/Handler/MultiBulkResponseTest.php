@@ -27,23 +27,23 @@ class MultiBulkResponseTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('getProtocol')
-            ->will($this->returnValue(new CompositeProtocolProcessor()));
+            ->willReturn(new CompositeProtocolProcessor());
         $connection
             ->expects($this->at(1))
             ->method('readLine')
-            ->will($this->returnValue('$3'));
+            ->willReturn('$3');
         $connection
             ->expects($this->at(2))
             ->method('readBuffer')
-            ->will($this->returnValue("foo\r\n"));
+            ->willReturn("foo\r\n");
         $connection
             ->expects($this->at(3))
             ->method('readLine')
-            ->will($this->returnValue('$3'));
+            ->willReturn('$3');
         $connection
             ->expects($this->at(4))
             ->method('readBuffer')
-            ->will($this->returnValue("bar\r\n"));
+            ->willReturn("bar\r\n");
 
         $handler = new Handler\MultiBulkResponse();
 

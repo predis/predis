@@ -103,7 +103,7 @@ class CompositeProtocolProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('serialize')
             ->with($command)
-            ->will($this->returnValue($serialized));
+            ->willReturn($serialized);
 
         $protocol->write($connection, $command);
     }
@@ -124,7 +124,7 @@ class CompositeProtocolProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('read')
             ->with($connection)
-            ->will($this->returnValue('bulk'));
+            ->willReturn('bulk');
 
         $this->assertSame('bulk', $protocol->read($connection));
     }

@@ -58,7 +58,7 @@ class ConnectionsTest extends PredisTestCase
             ->expects($this->once())
             ->method('getDefault')
             ->with($options)
-            ->will($this->returnValue($default));
+            ->willReturn($default);
 
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory = $option->filter($options, $value));
         $this->assertSame($default, $factory);
@@ -147,12 +147,12 @@ class ConnectionsTest extends PredisTestCase
             ->expects($this->once())
             ->method('defined')
             ->with('parameters')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $options
             ->expects($this->once())
             ->method('__get')
             ->with('parameters')
-            ->will($this->returnValue($parameters));
+            ->willReturn($parameters);
 
         $option = new Connections();
         $factory = $option->getDefault($options);
@@ -196,9 +196,9 @@ class ConnectionsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue(
+            ->willReturn(
                 $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
-            ));
+            );
 
         $this->assertSame($factory, $option->filter($options, $callable));
     }

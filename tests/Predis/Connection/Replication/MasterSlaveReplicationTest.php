@@ -216,13 +216,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $master
             ->expects($this->never())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -241,13 +241,13 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $master
             ->expects($this->any())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->any())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -714,16 +714,16 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slave1)
-            ));
+            );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave&alias=slave2');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -753,23 +753,23 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(new Connection\ConnectionException($slave1)));
+            ->willThrowException(new Connection\ConnectionException($slave1));
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slave2)
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
 
@@ -799,7 +799,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -849,9 +849,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->with($this->isRedisCommand(
                 'EXISTS', array('key')
             ))
-            ->will($this->returnValue(
+            ->willReturn(
                 new Response\Error('LOADING')
-            ));
+            );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
@@ -860,7 +860,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->with($this->isRedisCommand(
                 'EXISTS', array('key')
             ))
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -894,9 +894,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdSet)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($master)
-            ));
+            );
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
@@ -1114,7 +1114,7 @@ repl_backlog_histlen:12978
                 'port' => '6381',
                 'role' => 'master',
             ))
-            ->will($this->returnValue($master));
+            ->willReturn($master);
         $connFactory
             ->expects($this->at(1))
             ->method('create')
@@ -1123,7 +1123,7 @@ repl_backlog_histlen:12978
                 'port' => '6382',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave1));
+            ->willReturn($slave1);
         $connFactory
             ->expects($this->at(2))
             ->method('create')
@@ -1132,13 +1132,13 @@ repl_backlog_histlen:12978
                 'port' => '6383',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave2));
+            ->willReturn($slave2);
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -1156,13 +1156,13 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
 '
-            ));
+            );
 
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1174,7 +1174,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1213,7 +1213,7 @@ repl_backlog_histlen:12978
                 'port' => '6381',
                 'role' => 'master',
             ))
-            ->will($this->returnValue($master));
+            ->willReturn($master);
         $connFactory
             ->expects($this->at(1))
             ->method('create')
@@ -1222,7 +1222,7 @@ repl_backlog_histlen:12978
                 'port' => '6382',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave1));
+            ->willReturn($slave1);
         $connFactory
             ->expects($this->at(2))
             ->method('create')
@@ -1231,21 +1231,21 @@ repl_backlog_histlen:12978
                 'port' => '6383',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave2));
+            ->willReturn($slave2);
 
         $masterKO
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($masterKO)
-            ));
+            );
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -1263,7 +1263,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
 '
-            ));
+            );
 
         $master
             ->expects($this->once())
@@ -1338,27 +1338,27 @@ repl_backlog_histlen:12978
                 'port' => '6382',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave1));
+            ->willReturn($slave1);
 
         $slaveKO
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slaveKO)
-            ));
+            );
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1369,7 +1369,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);

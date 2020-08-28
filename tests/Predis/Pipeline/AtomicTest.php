@@ -32,14 +32,14 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->will($this->onConsecutiveCalls(true, array($pong, $pong, $pong)));
+            ->willReturnOnConsecutiveCalls(true, array($pong, $pong, $pong));
         $connection
             ->expects($this->exactly(3))
             ->method('writeRequest');
         $connection
             ->expects($this->at(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $queued));
+            ->willReturnOnConsecutiveCalls($queued, $queued, $queued);
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -62,7 +62,7 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->will($this->onConsecutiveCalls(true, null));
+            ->willReturnOnConsecutiveCalls(true, null);
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -88,11 +88,11 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->at(0))
             ->method('executeCommand')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $error));
+            ->willReturnOnConsecutiveCalls($queued, $queued, $error);
         $connection
             ->expects($this->at(7))
             ->method('executeCommand')
@@ -121,7 +121,7 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readResponse')
-            ->will($this->returnValue($error));
+            ->willReturn($error);
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -144,11 +144,11 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $queued));
+            ->willReturnOnConsecutiveCalls($queued, $queued, $queued);
         $connection
             ->expects($this->at(7))
             ->method('executeCommand')
-            ->will($this->returnValue(array($pong, $pong, $error)));
+            ->willReturn(array($pong, $pong, $error));
 
         $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
 

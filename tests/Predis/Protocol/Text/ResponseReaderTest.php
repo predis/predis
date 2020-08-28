@@ -58,23 +58,23 @@ class ResponseReaderTest extends PredisTestCase
         $connection
             ->expects($this->at(0))
             ->method('readLine')
-            ->will($this->returnValue('+OK'));
+            ->willReturn('+OK');
         $connection
             ->expects($this->at(1))
             ->method('readLine')
-            ->will($this->returnValue('-ERR error message'));
+            ->willReturn('-ERR error message');
         $connection
             ->expects($this->at(2))
             ->method('readLine')
-            ->will($this->returnValue(':2'));
+            ->willReturn(':2');
         $connection
             ->expects($this->at(3))
             ->method('readLine')
-            ->will($this->returnValue('$-1'));
+            ->willReturn('$-1');
         $connection
             ->expects($this->at(4))
             ->method('readLine')
-            ->will($this->returnValue('*-1'));
+            ->willReturn('*-1');
 
         $reader = new ResponseReader();
 
@@ -97,7 +97,7 @@ class ResponseReaderTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue(''));
+            ->willReturn('');
 
         $reader = new ResponseReader();
         $reader->read($connection);
@@ -115,7 +115,7 @@ class ResponseReaderTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue('!'));
+            ->willReturn('!');
 
         $reader = new ResponseReader();
         $reader->read($connection);

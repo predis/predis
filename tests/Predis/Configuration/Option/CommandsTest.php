@@ -51,14 +51,14 @@ class CommandsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__isset')
             ->with('prefix')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $options
             ->expects($this->once())
             ->method('__get')
             ->with('prefix')
-            ->will($this->returnValue(
+            ->willReturn(
                 new KeyPrefixProcessor('prefix:')
-            ));
+            );
 
         $commands = $option->getDefault($options);
 
@@ -149,7 +149,7 @@ class CommandsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         $this->assertSame($commands, $option->filter($options, $callable));
     }
@@ -176,7 +176,7 @@ class CommandsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($dictionary));
+            ->willReturn($dictionary);
 
         $commands = $option->filter($options, $callable);
 
@@ -205,9 +205,9 @@ class CommandsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue(
+            ->willReturn(
                 new \stdClass()
-            ));
+            );
 
         $option->filter($options, $callable);
     }

@@ -302,7 +302,7 @@ class FactoryTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('getParameters')
-            ->will($this->returnValue($parameters));
+            ->willReturn($parameters);
         $connection
             ->expects($this->at(1))
             ->method('addConnectCommand')
@@ -474,7 +474,7 @@ class FactoryTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('__invoke')
             ->with($parameters, $factory)
-            ->will($this->returnCallback($initializer));
+            ->willReturnCallback($initializer);
 
         $factory->define($parameters->scheme, $initializerMock);
 
@@ -587,9 +587,9 @@ class FactoryTest extends PredisTestCase
         $factory
             ->expects($this->exactly(3))
             ->method('create')
-            ->will($this->returnCallback(function () use ($connectionClass) {
+            ->willReturnCallback(function () use ($connectionClass) {
                 return new $connectionClass();
-            }));
+            });
 
         $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
     }

@@ -33,11 +33,11 @@ class ProtocolProcessorTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('PING'));
+            ->willReturn('PING');
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array()));
+            ->willReturn(array());
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -59,23 +59,23 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection
             ->expects($this->at(0))
             ->method('readLine')
-            ->will($this->returnValue('+OK'));
+            ->willReturn('+OK');
         $connection
             ->expects($this->at(1))
             ->method('readLine')
-            ->will($this->returnValue('-ERR error message'));
+            ->willReturn('-ERR error message');
         $connection
             ->expects($this->at(2))
             ->method('readLine')
-            ->will($this->returnValue(':2'));
+            ->willReturn(':2');
         $connection
             ->expects($this->at(3))
             ->method('readLine')
-            ->will($this->returnValue('$-1'));
+            ->willReturn('$-1');
         $connection
             ->expects($this->at(4))
             ->method('readLine')
-            ->will($this->returnValue('*-1'));
+            ->willReturn('*-1');
 
         $this->assertEquals('OK', $protocol->read($connection));
         $this->assertEquals('ERR error message', $protocol->read($connection));
@@ -96,7 +96,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection
             ->expects($this->once(4))
             ->method('readLine')
-            ->will($this->returnValue('*1'));
+            ->willReturn('*1');
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $protocol->read($connection));
     }
@@ -115,7 +115,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue('!'));
+            ->willReturn('!');
 
         $protocol->read($connection);
     }

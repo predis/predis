@@ -33,7 +33,7 @@ class ConsumerTest extends PredisTestCase
             ->expects($this->once())
             ->method('supports')
             ->with('MONITOR')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $client = new Client(null, array('commands' => $commands));
 
@@ -71,7 +71,7 @@ class ConsumerTest extends PredisTestCase
             ->expects($this->once())
             ->method('createCommand')
             ->with('MONITOR', array())
-            ->will($this->returnValue($cmdMonitor));
+            ->willReturn($cmdMonitor);
         $client
             ->expects($this->once())
             ->method('executeCommand')
@@ -137,7 +137,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($message));
+            ->willReturn($message);
 
         $client = new Client($connection);
 
@@ -162,7 +162,7 @@ class ConsumerTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue($message));
+            ->willReturn($message);
 
         $client = new Client($connection);
 

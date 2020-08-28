@@ -50,7 +50,7 @@ class AggregateTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -77,7 +77,7 @@ class AggregateTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 

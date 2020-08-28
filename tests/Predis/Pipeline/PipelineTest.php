@@ -84,7 +84,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readResponse')
-            ->will($this->returnValue($object));
+            ->willReturn($object);
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -107,7 +107,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readResponse')
-            ->will($this->returnValue($error));
+            ->willReturn($error);
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -128,7 +128,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->exactly(2))
             ->method('readResponse')
-            ->will($this->returnValue($error));
+            ->willReturn($error);
 
         $client = new Client($connection, array('exceptions' => false));
 
@@ -205,7 +205,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->returnCallback($this->getReadCallback()));
+            ->willReturnCallback($this->getReadCallback());
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -246,7 +246,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
-            ->will($this->returnCallback($this->getReadCallback()));
+            ->willReturnCallback($this->getReadCallback());
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -276,7 +276,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->returnValue($pong));
+            ->willReturn($pong);
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -342,7 +342,7 @@ class PipelineTest extends PredisTestCase
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
-            ->will($this->returnCallback($this->getReadCallback()));
+            ->willReturnCallback($this->getReadCallback());
 
         $pipeline = new Pipeline(new Client($connection));
 

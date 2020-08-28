@@ -360,7 +360,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $cmdPing
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array()));
+            ->willReturn(array());
 
         /** @var CommandInterface|MockObject */
         $cmdEcho = $this->getMockBuilder($commands->getCommandClass('echo'))
@@ -370,7 +370,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $cmdEcho
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array('ECHOED')));
+            ->willReturn(array('ECHOED'));
 
         $connection = $this->createConnection();
         $connection->addConnectCommand($cmdPing);

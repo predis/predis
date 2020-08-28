@@ -49,12 +49,12 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->at(0))
             ->method('__get')
             ->with('autodiscovery')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $options
             ->expects($this->at(1))
             ->method('__get')
             ->with('connections')
-            ->will($this->returnValue($connectionFactory));
+            ->willReturn($connectionFactory);
 
         $this->assertInstanceOf('Closure', $initializer = $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $connection = $initializer($options));
@@ -84,7 +84,7 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -111,7 +111,7 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 
@@ -145,7 +145,7 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->at(0))
             ->method('__get')
             ->with('service')
-            ->will($this->returnValue('mymaster'));
+            ->willReturn('mymaster');
         $options
             ->expects($this->at(1))
             ->method('__get')

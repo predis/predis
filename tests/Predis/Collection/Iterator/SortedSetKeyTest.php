@@ -31,14 +31,14 @@ class SortedSetKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new SortedSetKey($client, 'key:zset');
     }
@@ -56,14 +56,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array())
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -85,14 +85,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array(0 => 0, 101 => 1, 102 => 2))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -128,14 +128,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0, 'member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -171,21 +171,21 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 2, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -221,21 +221,21 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(4, array())
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 4, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -266,28 +266,28 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 2, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(5, array())
-            ));
+            );
         $client
             ->expects($this->at(3))
             ->method('zscan')
             ->with('key:zset', 5, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -323,14 +323,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
@@ -361,21 +361,21 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st' => 1.0))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 1, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
@@ -406,14 +406,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('COUNT' => 2))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 2);
 
@@ -444,21 +444,21 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st' => 1.0))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 1, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 1);
 
@@ -489,14 +489,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 2);
 
@@ -527,21 +527,21 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('zscan')
             ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st' => 1.0))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('zscan')
             ->with('key:zset', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 1);
 
@@ -572,14 +572,14 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 

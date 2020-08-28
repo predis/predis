@@ -47,11 +47,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->exactly(2))
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->once())
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -70,11 +70,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->exactly(2))
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -93,7 +93,7 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
 
         $command->setArguments($arguments = array('value1', 'value2', 'value3'));
 
@@ -112,11 +112,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->exactly(2))
             ->method('getKeysCount')
-            ->will($this->returnValue(-2));
+            ->willReturn(-2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -135,11 +135,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->once())
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -158,7 +158,7 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -177,11 +177,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->once())
             ->method('getKeysCount')
-            ->will($this->returnValue(-2));
+            ->willReturn(-2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -200,11 +200,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->exactly(2))
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->once())
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 
@@ -223,11 +223,11 @@ class ScriptCommandTest extends PredisTestCase
         $command
             ->expects($this->exactly(2))
             ->method('getScript')
-            ->will($this->returnValue(self::LUA_SCRIPT));
+            ->willReturn(self::LUA_SCRIPT);
         $command
             ->expects($this->once())
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
 
         $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
 

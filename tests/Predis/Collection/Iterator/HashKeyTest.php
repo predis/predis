@@ -30,14 +30,14 @@ class HashKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new HashKey($client, 'key:hash');
     }
@@ -55,14 +55,14 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('hscan')
             ->with('key:hash', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array(),
-            )));
+            ));
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -85,14 +85,14 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('hscan')
             ->with('key:hash', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array(1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -133,14 +133,14 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('hscan')
             ->with('key:hash', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd', 'field:3rd' => 'value:3rd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -176,7 +176,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -226,7 +226,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -271,7 +271,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -328,7 +328,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -366,7 +366,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -411,7 +411,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -449,7 +449,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -494,7 +494,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -532,7 +532,7 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('hscan')
@@ -577,14 +577,14 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('hscan')
             ->with('key:hash', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 

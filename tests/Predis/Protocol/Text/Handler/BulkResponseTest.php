@@ -31,7 +31,7 @@ class BulkResponseTest extends PredisTestCase
             ->expects($this->once())
             ->method('readBuffer')
             ->with($this->equalTo(2))
-            ->will($this->returnValue("\r\n"));
+            ->willReturn("\r\n");
 
         $handler = new Handler\BulkResponse();
 
@@ -54,7 +54,7 @@ class BulkResponseTest extends PredisTestCase
             ->expects($this->once())
             ->method('readBuffer')
             ->with($this->equalTo($bulkLengh + 2))
-            ->will($this->returnValue("$bulk\r\n"));
+            ->willReturn("$bulk\r\n");
 
         $handler = new Handler\BulkResponse();
 

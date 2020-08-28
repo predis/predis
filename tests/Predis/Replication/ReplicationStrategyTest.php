@@ -221,7 +221,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $command
             ->expects($this->any())
             ->method('getId')
-            ->will($this->returnValue('CMDTEST'));
+            ->willReturn('CMDTEST');
 
         $this->assertFalse($strategy->isReadOperation($command));
     }
@@ -238,7 +238,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $command
             ->expects($this->any())
             ->method('getId')
-            ->will($this->returnValue('CMDTEST'));
+            ->willReturn('CMDTEST');
 
         $strategy->setCommandReadOnly('CMDTEST', true);
         $this->assertTrue($strategy->isReadOperation($command));
@@ -256,7 +256,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $command
             ->expects($this->any())
             ->method('getId')
-            ->will($this->returnValue('CMDTEST'));
+            ->willReturn('CMDTEST');
 
         $strategy->setCommandReadOnly('CMDTEST', false);
         $this->assertFalse($strategy->isReadOperation($command));
@@ -322,7 +322,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $command
             ->expects($this->any())
             ->method('getScript')
-            ->will($this->returnValue($script = 'return true'));
+            ->willReturn($script = 'return true');
 
         $strategy->setScriptReadOnly($script, function (CommandInterface $command) {
             return $command->getArgument(2) === true;
@@ -349,7 +349,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $command
             ->expects($this->any())
             ->method('getScript')
-            ->will($this->returnValue($script = 'return true'));
+            ->willReturn($script = 'return true');
 
         $command->setArguments(array('trigger', false));
 

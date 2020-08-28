@@ -30,14 +30,14 @@ class SetKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new SetKey($client, 'key:set');
     }
@@ -55,14 +55,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array())
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -83,14 +83,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd', 'member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -126,21 +126,21 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(2, array('member:1st', 'member:2nd'))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 2, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -176,21 +176,21 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(4, array())
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 4, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -221,28 +221,28 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(2, array('member:1st', 'member:2nd'))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 2, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(5, array())
-            ));
+            );
         $client
             ->expects($this->at(3))
             ->method('sscan')
             ->with('key:set', 5, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -278,14 +278,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*');
 
@@ -316,21 +316,21 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st'))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 1, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*');
 
@@ -361,14 +361,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('COUNT' => 2))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', null, 2);
 
@@ -399,21 +399,21 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st'))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 1, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', null, 1);
 
@@ -444,14 +444,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*', 2);
 
@@ -482,21 +482,21 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->at(1))
             ->method('sscan')
             ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(1, array('member:1st'))
-            ));
+            );
         $client
             ->expects($this->at(2))
             ->method('sscan')
             ->with('key:set', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*', 1);
 
@@ -527,14 +527,14 @@ class SetKeyTest extends PredisTestCase
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 

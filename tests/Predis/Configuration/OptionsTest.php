@@ -48,7 +48,7 @@ class OptionsTest extends PredisTestCase
             ->expects($this->any())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $options = new Options(array(
             'exceptions' => false,
@@ -168,7 +168,7 @@ class OptionsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         $options = new Options(array(
             'commands' => $callable,
@@ -193,7 +193,7 @@ class OptionsTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($custom));
+            ->willReturn($custom);
 
         $options = new Options(array(
             'custom' => $callable,

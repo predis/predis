@@ -130,7 +130,7 @@ class SlotMapTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('__toString')
-            ->will($this->returnValue('127.0.0.1:6379'));
+            ->willReturn('127.0.0.1:6379');
 
         $slotmap->setSlots(10, 10, $connection);
 
@@ -433,7 +433,7 @@ class SlotMapTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('__toString')
-            ->will($this->returnValue('127.0.0.1:6379'));
+            ->willReturn('127.0.0.1:6379');
 
         $this->assertSame($connection, $slotmap[0] = $connection);
         $this->assertSame('127.0.0.1:6379', $slotmap[0]);

@@ -71,7 +71,7 @@ class CRC16Test extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($hashGenerator));
+            ->willReturn($hashGenerator);
 
         $this->assertSame($hashGenerator, $option->filter($options, $callable));
     }
@@ -97,7 +97,7 @@ class CRC16Test extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($wrongValue));
+            ->willReturn($wrongValue);
 
         $option->filter($options, $callable);
     }

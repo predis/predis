@@ -64,7 +64,7 @@ class CommunicationExceptionTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $connection
             ->expects($this->once())
             ->method('disconnect');
@@ -98,7 +98,7 @@ class CommunicationExceptionTest extends PredisTestCase
         $exception
             ->expects($this->once())
             ->method('shouldResetConnection')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $this->expectException('Predis\CommunicationException');
         $this->expectExceptionMessage('Communication error message');

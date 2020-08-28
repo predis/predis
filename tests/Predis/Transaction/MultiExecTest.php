@@ -37,7 +37,7 @@ class MultiExecTest extends PredisTestCase
             ->expects($this->once())
             ->method('supports')
             ->with('MULTI', 'EXEC', 'DISCARD')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection, array('commands' => $commands));
@@ -844,7 +844,7 @@ class MultiExecTest extends PredisTestCase
         $connection
             ->expects($this->any())
             ->method('executeCommand')
-            ->will($this->returnCallback($executeCallback));
+            ->willReturnCallback($executeCallback);
 
         return $connection;
     }

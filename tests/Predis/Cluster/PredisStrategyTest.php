@@ -233,11 +233,11 @@ class PredisStrategyTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue('return true'));
+            ->willReturn('return true');
         $command
             ->expects($this->exactly(2))
             ->method('getKeysCount')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
         $command->setArguments($arguments);
 
         $this->assertNotNull($strategy->getSlot($command), "Script Command [{$command->getId()}]");
@@ -274,7 +274,7 @@ class PredisStrategyTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-            ->will($this->returnValue('key'));
+            ->willReturn('key');
 
         /** @var PredisStrategy */
         $strategy = $this->getClusterStrategy();

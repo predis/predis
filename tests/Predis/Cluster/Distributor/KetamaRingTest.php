@@ -205,7 +205,7 @@ class KetamaRingTest extends PredisDistributorTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($node)
-            ->will($this->returnValue($node));
+            ->willReturn($node);
 
         $distributor = new KetamaRing($callable);
         $distributor->add($node);

@@ -56,11 +56,11 @@ class DispatcherLoopTest extends PredisTestCase
                 $this->equalTo('01:argument'),
                 $this->equalTo('01:quit')
             ), $dispatcher)
-            ->will($this->returnCallback(function ($arg, $dispatcher) {
+            ->willReturnCallback(function ($arg, $dispatcher) {
                 if ($arg === '01:quit') {
                     $dispatcher->stop();
                 }
-            }));
+            });
 
         $function02 = $this->getMockBuilder('stdClass')
             ->addMethods(array('__invoke'))
@@ -122,9 +122,9 @@ class DispatcherLoopTest extends PredisTestCase
             ->expects($this->exactly(1))
             ->method('__invoke')
             ->with($this->equalTo('arg:prefixed'), $dispatcher)
-            ->will($this->returnCallback(function ($arg, $dispatcher) {
+            ->willReturnCallback(function ($arg, $dispatcher) {
                 $dispatcher->stop();
-            }));
+            });
 
         $dispatcher->attachCallback('callback', $callback);
 

@@ -74,9 +74,9 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $connection
             ->method('executeCommand')
             ->with($cmdSelect)
-            ->will($this->returnValue(
+            ->willReturn(
                 new ErrorResponse('ERR invalid DB index')
-            ));
+            );
 
         $connection->method('createResource');
 

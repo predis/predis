@@ -82,9 +82,9 @@ class PrefixTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue(
+            ->willReturn(
                 $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')->getMock()
-            ));
+            );
 
         $prefix = $option->filter($options, $callable);
 
@@ -108,7 +108,7 @@ class PrefixTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue('pfx:'));
+            ->willReturn('pfx:');
 
         $prefix = $option->filter($options, $callable);
 
@@ -133,7 +133,7 @@ class PrefixTest extends PredisTestCase
         $input
             ->expects($this->once())
             ->method('__toString')
-            ->will($this->returnValue('pfx:'));
+            ->willReturn('pfx:');
 
         $prefix = $option->filter($options, $input);
 

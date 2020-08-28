@@ -204,7 +204,7 @@ class HashRingTest extends PredisDistributorTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($node)
-            ->will($this->returnValue($node));
+            ->willReturn($node);
 
         $distributor = new HashRing(HashRing::DEFAULT_REPLICAS, $callable);
         $distributor->add($node);

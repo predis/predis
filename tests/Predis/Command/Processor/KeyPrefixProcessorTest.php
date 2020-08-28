@@ -79,7 +79,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('unknown'));
+            ->willReturn('unknown');
         $command
             ->expects($this->never())
             ->method('getArguments');
@@ -304,9 +304,9 @@ class KeyPrefixProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($command, 'prefix:')
-            ->will($this->returnCallback(function ($command, $prefix) {
+            ->willReturnCallback(function ($command, $prefix) {
                 $command->setRawArguments(array('prefix:key', 'value'));
-            }));
+            });
 
         $processor = new KeyPrefixProcessor('prefix:');
         $processor->setCommandHandler('NEWCMD', $callable);
@@ -329,9 +329,9 @@ class KeyPrefixProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($command, 'prefix:')
-            ->will($this->returnCallback(function ($command, $prefix) {
+            ->willReturnCallback(function ($command, $prefix) {
                 $command->setRawArguments(array('prefix:key', 'value'));
-            }));
+            });
 
         $processor = new KeyPrefixProcessor('prefix:');
         $processor->setCommandHandler('SET', $callable);
