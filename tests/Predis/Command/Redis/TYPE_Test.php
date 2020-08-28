@@ -20,7 +20,7 @@ class TYPE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\TYPE';
     }
@@ -28,7 +28,7 @@ class TYPE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'TYPE';
     }
@@ -36,7 +36,7 @@ class TYPE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class TYPE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('none', $this->getCommand()->parseResponse('none'));
     }
@@ -58,7 +58,7 @@ class TYPE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsTypeOfKey()
+    public function testReturnsTypeOfKey(): void
     {
         $redis = $this->getClient();
 

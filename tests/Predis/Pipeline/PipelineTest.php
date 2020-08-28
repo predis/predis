@@ -13,6 +13,8 @@ namespace Predis\Pipeline;
 
 use Predis\Client;
 use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\Command\CommandInterface;
 use Predis\Response;
 use PredisTestCase;
 
@@ -24,7 +26,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $client = new Client();
         $pipeline = new Pipeline($client);
@@ -35,7 +37,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCallDoesNotSendCommandsWithoutExecute()
+    public function testCallDoesNotSendCommandsWithoutExecute(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -55,7 +57,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCallReturnsPipelineForFluentInterface()
+    public function testCallReturnsPipelineForFluentInterface(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -74,7 +76,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDoesNotParseComplexResponseObjects()
+    public function testDoesNotParseComplexResponseObjects(): void
     {
         $object = $this->getMockBuilder('Predis\Response\ResponseInterface')->getMock();
 
@@ -94,7 +96,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsServerExceptionOnResponseErrorByDefault()
+    public function testThrowsServerExceptionOnResponseErrorByDefault(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
@@ -118,7 +120,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
+    public function testReturnsResponseErrorWithClientExceptionsSetToFalse(): void
     {
         $error = $this->getMockBuilder('Predis\Response\ErrorInterface')->getMock();
 
@@ -141,7 +143,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteReturnsPipelineForFluentInterface()
+    public function testExecuteReturnsPipelineForFluentInterface(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $command = $this->getCommandFactory()->create('echo', array('one'));
@@ -154,7 +156,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandDoesNotSendCommandsWithoutExecute()
+    public function testExecuteCommandDoesNotSendCommandsWithoutExecute(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -176,7 +178,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteWithEmptyBuffer()
+    public function testExecuteWithEmptyBuffer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -194,7 +196,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteWithFilledBuffer()
+    public function testExecuteWithFilledBuffer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -219,7 +221,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFlushWithFalseArgumentDiscardsBuffer()
+    public function testFlushWithFalseArgumentDiscardsBuffer(): void
     {
         $pipeline = new Pipeline(new Client());
 
@@ -235,7 +237,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFlushHandlesPartialBuffers()
+    public function testFlushHandlesPartialBuffers(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -260,7 +262,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSwitchesToMasterWithReplicationConnection()
+    public function testSwitchesToMasterWithReplicationConnection(): void
     {
         $pong = new Response\Status('PONG');
 
@@ -288,12 +290,12 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteAcceptsCallableArgument()
+    public function testExecuteAcceptsCallableArgument(): void
     {
         $test = $this;
         $pipeline = new Pipeline(new Client());
 
-        $callable = function ($pipe) use ($test, $pipeline) {
+        $callable = function (Pipeline $pipe) use ($test, $pipeline) {
             $test->assertSame($pipeline, $pipe);
             $pipe->flushPipeline(false);
         };
@@ -304,7 +306,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteDoesNotAcceptNonCallableArgument()
+    public function testExecuteDoesNotAcceptNonCallableArgument(): void
     {
         $this->expectException('InvalidArgumentException');
 
@@ -317,13 +319,13 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteInsideCallableArgumentThrowsException()
+    public function testExecuteInsideCallableArgumentThrowsException(): void
     {
         $this->expectException('Predis\ClientException');
 
         $pipeline = new Pipeline(new Client());
 
-        $pipeline->execute(function ($pipe) {
+        $pipeline->execute(function (Pipeline $pipe) {
             $pipe->execute();
         });
     }
@@ -331,7 +333,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteWithCallableArgumentRunsPipelineInCallable()
+    public function testExecuteWithCallableArgumentRunsPipelineInCallable(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -344,7 +346,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function ($pipe) {
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
             $pipe->echo('one');
             $pipe->echo('two');
             $pipe->echo('three');
@@ -357,7 +359,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteWithCallableArgumentHandlesExceptions()
+    public function testExecuteWithCallableArgumentHandlesExceptions(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -373,7 +375,7 @@ class PipelineTest extends PredisTestCase
         $pipeline = new Pipeline(new Client($connection));
 
         try {
-            $responses = $pipeline->execute(function ($pipe) {
+            $responses = $pipeline->execute(function (Pipeline $pipe) {
                 $pipe->echo('one');
                 $pipe->echo('two');
                 throw new ClientException('TEST');
@@ -394,7 +396,7 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIntegrationWithFluentInterface()
+    public function testIntegrationWithFluentInterface(): void
     {
         $pipeline = $this->getClient()->pipeline();
 
@@ -410,11 +412,11 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIntegrationWithCallableBlock()
+    public function testIntegrationWithCallableBlock(): void
     {
         $client = $this->getClient();
 
-        $results = $client->pipeline(function ($pipe) {
+        $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
             $pipe->get('foo');
         });
@@ -426,12 +428,12 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testOutOfBandMessagesInsidePipeline()
+    public function testOutOfBandMessagesInsidePipeline(): void
     {
         $oob = null;
         $client = $this->getClient();
 
-        $results = $client->pipeline(function ($pipe) use (&$oob) {
+        $results = $client->pipeline(function (Pipeline $pipe) use (&$oob) {
             $pipe->set('foo', 'bar');
             $oob = $pipe->getClient()->echo('oob message');
             $pipe->get('foo');
@@ -445,14 +447,14 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIntegrationWithClientExceptionInCallableBlock()
+    public function testIntegrationWithClientExceptionInCallableBlock(): void
     {
         $exception = null;
 
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function ($pipe) {
+            $client->pipeline(function (Pipeline $pipe) {
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
@@ -468,14 +470,14 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIntegrationWithServerExceptionInCallableBlock()
+    public function testIntegrationWithServerExceptionInCallableBlock(): void
     {
         $exception = null;
 
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function ($pipe) {
+            $client->pipeline(function (Pipeline $pipe) {
                 $pipe->set('foo', 'bar');
                 // LPUSH on a string key fails, but won't stop
                 // the pipeline to send the commands.
@@ -494,11 +496,11 @@ class PipelineTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIntegrationWithServerErrorInCallableBlock()
+    public function testIntegrationWithServerErrorInCallableBlock(): void
     {
         $client = $this->getClient(array(), array('exceptions' => false));
 
-        $results = $client->pipeline(function ($pipe) {
+        $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
             $pipe->lpush('foo', 'bar'); // LPUSH on a string key fails.
             $pipe->get('foo');
@@ -514,28 +516,26 @@ class PipelineTest extends PredisTestCase
     // ******************************************************************** //
 
     /**
-     * Returns a client instance connected to the specified Redis
-     * server instance to perform integration tests.
+     * Returns a client instance connected to the specified Redis server.
      *
-     * @param array $parameters Additional connection parameters.
-     * @param array $options    Additional client options.
+     * @param array $parameters Additional connection parameters
+     * @param array $options    Additional client options
      *
-     * @return Client
+     * @return ClientInterface
      */
-    protected function getClient(array $parameters = array(), array $options = array())
+    protected function getClient(array $parameters = array(), array $options = array()): ClientInterface
     {
         return $this->createClient($parameters, $options);
     }
 
     /**
-     * Helper method that returns a callback used to emulate the response to an
-     * ECHO command.
+     * Helper method returning a callback used to responses to ECHO command.
      *
-     * @return \Closure
+     * @return callable
      */
-    protected function getReadCallback()
+    protected function getReadCallback(): callable
     {
-        return function ($command) {
+        return function (CommandInterface $command) {
             if (($id = $command->getId()) !== 'ECHO') {
                 throw new \InvalidArgumentException("Expected ECHO, got {$id}");
             }

@@ -20,7 +20,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\GEORADIUS';
     }
@@ -28,7 +28,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'GEORADIUS';
     }
@@ -36,7 +36,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array(
             'Sicily', 15, 37, 200, 'km',
@@ -57,7 +57,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithComplexOptions()
+    public function testFilterArgumentsWithComplexOptions(): void
     {
         $arguments = array(
             'Sicily', 15, 37, 200, 'km', array(
@@ -85,7 +85,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithSpecificOptionsSetToFalse()
+    public function testFilterArgumentsWithSpecificOptionsSetToFalse(): void
     {
         $arguments = array(
             'Sicily', 15, 37, 200, 'km', array(
@@ -110,7 +110,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseWithNoOptions()
+    public function testParseResponseWithNoOptions(): void
     {
         $raw = array(
             array('Palermo', '190.4424'),
@@ -131,7 +131,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testCommandReturnsGeoRadiusInfoWithNoOptions()
+    public function testCommandReturnsGeoRadiusInfoWithNoOptions(): void
     {
         $redis = $this->getClient();
 
@@ -143,7 +143,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testCommandReturnsGeoRadiusInfoWithOptions()
+    public function testCommandReturnsGeoRadiusInfoWithOptions(): void
     {
         $redis = $this->getClient();
 
@@ -158,7 +158,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

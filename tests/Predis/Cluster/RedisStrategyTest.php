@@ -12,6 +12,7 @@
 namespace Predis\Cluster;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  *
@@ -21,7 +22,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportsKeyTags()
+    public function testSupportsKeyTags(): void
     {
         $strategy = $this->getClusterStrategy();
 
@@ -41,8 +42,9 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportedCommands()
+    public function testSupportedCommands(): void
     {
+        /** @var RedisStrategy */
         $strategy = $this->getClusterStrategy();
 
         $this->assertSame($this->getExpectedCommands(), $strategy->getSupportedCommands());
@@ -51,7 +53,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsNullOnUnsupportedCommand()
+    public function testReturnsNullOnUnsupportedCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $command = $this->getCommandFactory()->create('ping');
@@ -62,7 +64,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFirstKeyCommands()
+    public function testFirstKeyCommands(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -77,7 +79,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAllKeysCommandsWithOneKey()
+    public function testAllKeysCommandsWithOneKey(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -92,7 +94,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAllKeysCommandsWithMoreKeys()
+    public function testAllKeysCommandsWithMoreKeys(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -107,7 +109,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInterleavedKeysCommandsWithOneKey()
+    public function testInterleavedKeysCommandsWithOneKey(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -122,7 +124,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInterleavedKeysCommandsWithMoreKeys()
+    public function testInterleavedKeysCommandsWithMoreKeys(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -137,7 +139,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForSortCommand()
+    public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -155,7 +157,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForBlockingListCommandsWithOneKey()
+    public function testKeysForBlockingListCommandsWithOneKey(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -170,7 +172,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForBlockingListCommandsWithMoreKeys()
+    public function testKeysForBlockingListCommandsWithMoreKeys(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -185,7 +187,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForGeoradiusCommand()
+    public function testKeysForGeoradiusCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -202,7 +204,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForGeoradiusByMemberCommand()
+    public function testKeysForGeoradiusByMemberCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -219,7 +221,7 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForEvalCommand()
+    public function testKeysForEvalCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
@@ -234,13 +236,14 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testKeysForScriptCommand()
+    public function testKeysForScriptCommand(): void
     {
         $strategy = $this->getClusterStrategy();
         $arguments = array('key:1', 'value1');
 
+        /** @var \Predis\Command\CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -258,14 +261,14 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUnsettingCommandHandler()
+    public function testUnsettingCommandHandler(): void
     {
+        /** @var RedisStrategy */
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-
         $strategy->setCommandHandler('set');
         $strategy->setCommandHandler('get', null);
 
+        $commands = $this->getCommandFactory();
         $command = $commands->create('set', array('key', 'value'));
         $this->assertNull($strategy->getSlot($command));
 
@@ -276,13 +279,10 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSettingCustomCommandHandler()
+    public function testSettingCustomCommandHandler(): void
     {
-        $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -290,16 +290,20 @@ class RedisStrategyTest extends PredisTestCase
             ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
             ->will($this->returnValue('key'));
 
+        /** @var RedisStrategy */
+        $strategy = $this->getClusterStrategy();
         $strategy->setCommandHandler('get', $callable);
 
+        $commands = $this->getCommandFactory();
         $command = $commands->create('get', array('key'));
+
         $this->assertNotNull($strategy->getSlot($command));
     }
 
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnGetDistributorMethod()
+    public function testThrowsExceptionOnGetDistributorMethod(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage('Predis\Cluster\RedisStrategy does not provide an external distributor');
@@ -317,7 +321,7 @@ class RedisStrategyTest extends PredisTestCase
      *
      * @return StrategyInterface
      */
-    protected function getClusterStrategy()
+    protected function getClusterStrategy(): StrategyInterface
     {
         $strategy = new RedisStrategy();
 
@@ -327,11 +331,11 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * Returns the list of expected supported commands.
      *
-     * @param string $type Optional type of command (based on its keys)
+     * @param ?string $type Optional type of command (based on its keys)
      *
      * @return array
      */
-    protected function getExpectedCommands($type = null)
+    protected function getExpectedCommands(?string $type = null): array
     {
         $commands = array(
             /* commands operating on the key space */
@@ -468,7 +472,7 @@ class RedisStrategyTest extends PredisTestCase
         );
 
         if (isset($type)) {
-            $commands = array_filter($commands, function ($expectedType) use ($type) {
+            $commands = array_filter($commands, function (string $expectedType) use ($type) {
                 return $expectedType === $type;
             });
         }

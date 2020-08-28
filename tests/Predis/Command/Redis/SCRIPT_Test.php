@@ -20,7 +20,7 @@ class SCRIPT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SCRIPT';
     }
@@ -28,7 +28,7 @@ class SCRIPT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SCRIPT';
     }
@@ -36,7 +36,7 @@ class SCRIPT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
         $expected = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
@@ -50,7 +50,7 @@ class SCRIPT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -59,7 +59,7 @@ class SCRIPT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testExistsReturnsAnArrayOfValues()
+    public function testExistsReturnsAnArrayOfValues(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class SCRIPT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testLoadReturnsHashOfScripts()
+    public function testLoadReturnsHashOfScripts(): void
     {
         $redis = $this->getClient();
 
@@ -87,7 +87,7 @@ class SCRIPT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testFlushesExistingScripts()
+    public function testFlushesExistingScripts(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class SCRIPT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnInvalidSubcommand()
+    public function testThrowsExceptionOnInvalidSubcommand(): void
     {
         $this->expectException('Predis\Response\ServerException');
 

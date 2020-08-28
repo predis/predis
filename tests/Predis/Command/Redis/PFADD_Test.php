@@ -22,7 +22,7 @@ class PFADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PFADD';
     }
@@ -30,7 +30,7 @@ class PFADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PFADD';
     }
@@ -38,7 +38,7 @@ class PFADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'a', 'b', 'c');
         $expected = array('key', 'a', 'b', 'c');
@@ -52,7 +52,7 @@ class PFADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsFieldsAsSingleArray()
+    public function testFilterArgumentsFieldsAsSingleArray(): void
     {
         $arguments = array('key', array('a', 'b', 'c'));
         $expected = array('key', 'a', 'b', 'c');
@@ -66,7 +66,7 @@ class PFADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -78,7 +78,7 @@ class PFADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

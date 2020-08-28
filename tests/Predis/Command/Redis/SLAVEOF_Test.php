@@ -20,7 +20,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SLAVEOF';
     }
@@ -28,7 +28,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SLAVEOF';
     }
@@ -36,7 +36,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsHostPortArray()
+    public function testFilterArgumentsHostPortArray(): void
     {
         $arguments = array('127.0.0.1', '80');
         $expected = array('127.0.0.1', '80');
@@ -50,7 +50,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsNoOneArray()
+    public function testFilterArgumentsNoOneArray(): void
     {
         $arguments = array('NO', 'ONE');
         $expected = array('NO', 'ONE');
@@ -64,7 +64,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsNoOneString()
+    public function testFilterArgumentsNoOneString(): void
     {
         $arguments = array('NO ONE');
         $expected = array('NO', 'ONE');
@@ -78,7 +78,7 @@ class SLAVEOF_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertTrue($this->getCommand()->parseResponse(true));
     }

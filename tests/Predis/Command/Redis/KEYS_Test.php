@@ -20,7 +20,7 @@ class KEYS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\KEYS';
     }
@@ -28,7 +28,7 @@ class KEYS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'KEYS';
     }
@@ -36,7 +36,7 @@ class KEYS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('pattern:*');
         $expected = array('pattern:*');
@@ -50,7 +50,7 @@ class KEYS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('key1', 'key2', 'key3');
         $parsed = array('key1', 'key2', 'key3');
@@ -61,7 +61,7 @@ class KEYS_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsArrayOfMatchingKeys()
+    public function testReturnsArrayOfMatchingKeys(): void
     {
         $keys = array('aaa' => 1, 'aba' => 2, 'aca' => 3);
         $keysNS = array('metavar:foo' => 'bar', 'metavar:hoge' => 'piyo');

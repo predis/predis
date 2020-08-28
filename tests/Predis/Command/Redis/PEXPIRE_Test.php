@@ -20,7 +20,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PEXPIRE';
     }
@@ -28,7 +28,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PEXPIRE';
     }
@@ -36,7 +36,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 100);
         $expected = array('key', 100);
@@ -50,7 +50,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -62,7 +62,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsZeroOnNonExistingKeys()
+    public function testReturnsZeroOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
 
@@ -75,7 +75,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
      * @requiresRedisVersion >= 2.6.0
      * @group slow
      */
-    public function testCanExpireKeys()
+    public function testCanExpireKeys(): void
     {
         $ttl = 1000;
         $redis = $this->getClient();
@@ -93,7 +93,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
       * @requiresRedisVersion >= 2.6.0
       * @group slow
       */
-     public function testConsistencyWithTTL()
+     public function testConsistencyWithTTL(): void
      {
          $ttl = 1000;
          $redis = $this->getClient();
@@ -111,7 +111,7 @@ class PEXPIRE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testDeletesKeysOnNegativeTTL()
+    public function testDeletesKeysOnNegativeTTL(): void
     {
         $redis = $this->getClient();
 

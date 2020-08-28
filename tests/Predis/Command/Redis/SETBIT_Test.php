@@ -20,7 +20,7 @@ class SETBIT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SETBIT';
     }
@@ -28,7 +28,7 @@ class SETBIT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SETBIT';
     }
@@ -36,7 +36,7 @@ class SETBIT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 7, 1);
         $expected = array('key', 7, 1);
@@ -50,7 +50,7 @@ class SETBIT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
         $this->assertSame(0, $command->parseResponse(0));
@@ -61,7 +61,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testCanSetBitsOfStrings()
+    public function testCanSetBitsOfStrings(): void
     {
         $redis = $this->getClient();
 
@@ -76,7 +76,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testCreatesNewKeyOnNonExistingKey()
+    public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -90,7 +90,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnInvalidBitValue()
+    public function testThrowsExceptionOnInvalidBitValue(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR bit is not an integer or out of range');
@@ -102,7 +102,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnNegativeOffset()
+    public function testThrowsExceptionOnNegativeOffset(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
@@ -114,7 +114,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnInvalidOffset()
+    public function testThrowsExceptionOnInvalidOffset(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
@@ -126,7 +126,7 @@ class SETBIT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

@@ -10,7 +10,7 @@
  */
 
 /**
- * Constraint that accepts arrays with the same elements but different order.
+ * PHPUnit constraint matching arrays with same elemnts even in different order.
  */
 class ArrayHasSameValuesConstraint extends \PHPUnit\Framework\Constraint\Constraint
 {
@@ -19,7 +19,7 @@ class ArrayHasSameValuesConstraint extends \PHPUnit\Framework\Constraint\Constra
     /**
      * @param array $array
      */
-    public function __construct($array)
+    public function __construct(array $array)
     {
         $this->array = $array;
     }

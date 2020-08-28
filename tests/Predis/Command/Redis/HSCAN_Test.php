@@ -20,7 +20,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HSCAN';
     }
@@ -28,7 +28,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HSCAN';
     }
@@ -36,7 +36,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
         $expected = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
@@ -50,7 +50,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsBasicUsage()
+    public function testFilterArgumentsBasicUsage(): void
     {
         $arguments = array('key', 0);
         $expected = array('key', 0);
@@ -64,7 +64,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithOptionsArray()
+    public function testFilterArgumentsWithOptionsArray(): void
     {
         $arguments = array('key', 0, array('match' => 'field:*', 'count' => 10));
         $expected = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
@@ -78,7 +78,7 @@ class HSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('3', array('field:1', '1', 'field:2', '2', 'field:3', '3'));
         $expected = array('3', array('field:1' => '1', 'field:2' => '2', 'field:3' => '3'));
@@ -92,7 +92,7 @@ class HSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithoutMatch()
+    public function testScanWithoutMatch(): void
     {
         $expectedFields = array('field:one', 'field:two', 'field:three', 'field:four');
         $expectedValues = array('one', 'two', 'three', 'four');
@@ -111,7 +111,7 @@ class HSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithMatchingMembers()
+    public function testScanWithMatchingMembers(): void
     {
         $redis = $this->getClient();
         $redis->hmset('key', array('field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four'));
@@ -126,7 +126,7 @@ class HSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithNoMatchingMembers()
+    public function testScanWithNoMatchingMembers(): void
     {
         $redis = $this->getClient();
         $redis->hmset('key', array('field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four'));

@@ -20,7 +20,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZREVRANK';
     }
@@ -28,7 +28,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZREVRANK';
     }
@@ -36,7 +36,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'member');
         $expected = array('key', 'member');
@@ -50,7 +50,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -59,7 +59,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsRank()
+    public function testReturnsRank(): void
     {
         $redis = $this->getClient();
 
@@ -76,7 +76,7 @@ class ZREVRANK_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

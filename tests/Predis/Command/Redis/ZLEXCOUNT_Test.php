@@ -20,7 +20,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZLEXCOUNT';
     }
@@ -28,7 +28,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZLEXCOUNT';
     }
@@ -36,7 +36,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', '+', '-');
         $expected = array('key', '+', '-');
@@ -50,7 +50,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -59,7 +59,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testExclusiveIntervalRange()
+    public function testExclusiveIntervalRange(): void
     {
         $redis = $this->getClient();
 
@@ -75,7 +75,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testInclusiveIntervalRange()
+    public function testInclusiveIntervalRange(): void
     {
         $redis = $this->getClient();
 
@@ -91,7 +91,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testWholeRangeInterval()
+    public function testWholeRangeInterval(): void
     {
         $redis = $this->getClient();
 
@@ -105,7 +105,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnInvalidRangeFormat()
+    public function testThrowsExceptionOnInvalidRangeFormat(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('min or max not valid string range item');
@@ -120,7 +120,7 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

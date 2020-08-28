@@ -21,7 +21,7 @@ class MultiBulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testMultiBulk()
+    public function testMultiBulk(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -53,7 +53,7 @@ class MultiBulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNull()
+    public function testNull(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -71,7 +71,7 @@ class MultiBulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInvalid()
+    public function testInvalid(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Cannot parse 'invalid' as a valid length of a multi-bulk response [tcp://127.0.0.1:6379]");

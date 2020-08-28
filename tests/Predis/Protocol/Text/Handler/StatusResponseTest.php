@@ -21,7 +21,7 @@ class StatusResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOk()
+    public function testOk(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -41,7 +41,7 @@ class StatusResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testQueued()
+    public function testQueued(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -61,7 +61,7 @@ class StatusResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPlainString()
+    public function testPlainString(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection

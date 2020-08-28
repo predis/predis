@@ -20,7 +20,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LSET';
     }
@@ -28,7 +28,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LSET';
     }
@@ -36,7 +36,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 'value');
         $expected = array('key', 0, 'value');
@@ -50,7 +50,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -58,7 +58,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSetsElementAtSpecifiedIndex()
+    public function testSetsElementAtSpecifiedIndex(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnIndexOutOfRange()
+    public function testThrowsExceptionOnIndexOutOfRange(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR index out of range');
@@ -85,7 +85,7 @@ class LSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

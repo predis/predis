@@ -20,7 +20,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LPUSH';
     }
@@ -28,7 +28,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LPUSH';
     }
@@ -36,7 +36,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'value1', 'value2', 'value3');
         $expected = array('key', 'value1', 'value2', 'value3');
@@ -50,7 +50,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsValuesAsSingleArray()
+    public function testFilterArgumentsValuesAsSingleArray(): void
     {
         $arguments = array('key', array('value1', 'value2', 'value3'));
         $expected = array('key', 'value1', 'value2', 'value3');
@@ -64,7 +64,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -72,7 +72,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testPushesElementsToHeadOfList()
+    public function testPushesElementsToHeadOfList(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class LPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

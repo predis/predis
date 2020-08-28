@@ -20,7 +20,7 @@ class HGETALL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HGETALL';
     }
@@ -28,7 +28,7 @@ class HGETALL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HGETALL';
     }
@@ -36,7 +36,7 @@ class HGETALL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class HGETALL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
         $expected = array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut');
@@ -64,7 +64,7 @@ class HGETALL_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsAllTheFieldsAndTheirValues()
+    public function testReturnsAllTheFieldsAndTheirValues(): void
     {
         $redis = $this->getClient();
 
@@ -78,7 +78,7 @@ class HGETALL_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

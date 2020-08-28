@@ -20,7 +20,7 @@ class SETRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SETRANGE';
     }
@@ -28,7 +28,7 @@ class SETRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SETRANGE';
     }
@@ -36,7 +36,7 @@ class SETRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 5, 'range');
         $expected = array('key', 5, 'range');
@@ -50,7 +50,7 @@ class SETRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(10, $this->getCommand()->parseResponse(10));
     }
@@ -59,7 +59,7 @@ class SETRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testCreatesNewKeyOnNonExistingKey()
+    public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class SETRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testOverwritesOrAppendBytesInKeys()
+    public function testOverwritesOrAppendBytesInKeys(): void
     {
         $redis = $this->getClient();
 
@@ -91,7 +91,7 @@ class SETRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testHandlesBinaryData()
+    public function testHandlesBinaryData(): void
     {
         $redis = $this->getClient();
 
@@ -105,7 +105,7 @@ class SETRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnInvalidOffset()
+    public function testThrowsExceptionOnInvalidOffset(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR offset is out of range');
@@ -117,7 +117,7 @@ class SETRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

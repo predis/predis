@@ -20,7 +20,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZSCAN';
     }
@@ -28,7 +28,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZSCAN';
     }
@@ -36,7 +36,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
         $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
@@ -50,7 +50,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsBasicUsage()
+    public function testFilterArgumentsBasicUsage(): void
     {
         $arguments = array('key', 0);
         $expected = array('key', 0);
@@ -64,7 +64,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithOptionsArray()
+    public function testFilterArgumentsWithOptionsArray(): void
     {
         $arguments = array('key', 0, array('match' => 'member:*', 'count' => 10));
         $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
@@ -78,7 +78,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('3', array('member:1', '1', 'member:2', '2', 'member:3', '3'));
         $expected = array('3', array('member:1' => 1.0, 'member:2' => 2.0, 'member:3' => 3.0));
@@ -92,7 +92,7 @@ class ZSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithoutMatch()
+    public function testScanWithoutMatch(): void
     {
         $expectedMembers = array('member:one', 'member:two', 'member:three', 'member:four');
         $expectedScores = array(1.0, 2.0, 3.0, 4.0);
@@ -111,7 +111,7 @@ class ZSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithMatchingMembers()
+    public function testScanWithMatchingMembers(): void
     {
         $redis = $this->getClient();
         $redis->zadd('key', array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));
@@ -126,7 +126,7 @@ class ZSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithNoMatchingMembers()
+    public function testScanWithNoMatchingMembers(): void
     {
         $redis = $this->getClient();
         $redis->zadd('key', $members = array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));

@@ -20,7 +20,7 @@ class EVALSHA_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\EVALSHA';
     }
@@ -28,7 +28,7 @@ class EVALSHA_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'EVALSHA';
     }
@@ -36,7 +36,7 @@ class EVALSHA_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar');
         $expected = array('9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar');
@@ -50,7 +50,7 @@ class EVALSHA_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('bar', $this->getCommand()->parseResponse('bar'));
     }
@@ -58,7 +58,7 @@ class EVALSHA_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testGetScriptHash()
+    public function testGetScriptHash(): void
     {
         $command = $this->getCommandWithArgumentsArray(array($sha1 = sha1('return true')), 0);
         $this->assertSame($sha1, $command->getScriptHash());
@@ -68,7 +68,7 @@ class EVALSHA_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testExecutesSpecifiedLuaScript()
+    public function testExecutesSpecifiedLuaScript(): void
     {
         $redis = $this->getClient();
 
@@ -84,7 +84,7 @@ class EVALSHA_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnWrongNumberOfKeys()
+    public function testThrowsExceptionOnWrongNumberOfKeys(): void
     {
         $this->expectException('Predis\Response\ServerException');
 
@@ -101,7 +101,7 @@ class EVALSHA_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnInvalidScript()
+    public function testThrowsExceptionOnInvalidScript(): void
     {
         $this->expectException('Predis\Response\ServerException');
 

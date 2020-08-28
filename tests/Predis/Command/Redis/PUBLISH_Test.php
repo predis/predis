@@ -20,7 +20,7 @@ class PUBLISH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PUBLISH';
     }
@@ -28,7 +28,7 @@ class PUBLISH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PUBLISH';
     }
@@ -36,7 +36,7 @@ class PUBLISH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('channel', 'message');
         $expected = array('channel', 'message');
@@ -50,7 +50,7 @@ class PUBLISH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -59,7 +59,7 @@ class PUBLISH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testPublishesMessagesToChannel()
+    public function testPublishesMessagesToChannel(): void
     {
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();

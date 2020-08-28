@@ -20,7 +20,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\BITFIELD';
     }
@@ -28,7 +28,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'BITFIELD';
     }
@@ -36,7 +36,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterMultipleArguments()
+    public function testFilterMultipleArguments(): void
     {
         $arguments = array('key', 'incrby', 'u2', '100', '1', 'OVERFLOW', 'SAT', 'incrby', 'u2', '102', '1', 'GET', 'u2', '100');
         $expected = array('key', 'incrby', 'u2', '100', '1', 'OVERFLOW', 'SAT', 'incrby', 'u2', '102', '1', 'GET', 'u2', '100');
@@ -64,7 +64,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array(1);
         $expected = array(1);
@@ -77,7 +77,7 @@ class BITFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseComplex()
+    public function testParseResponseComplex(): void
     {
         $raw = array(1, 0, 3);
         $expected = array(1, 0, 3);
@@ -91,7 +91,7 @@ class BITFIELD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testBitfieldWithGetModifier()
+    public function testBitfieldWithGetModifier(): void
     {
         $redis = $this->getClient();
 
@@ -106,7 +106,7 @@ class BITFIELD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testBitfieldWithSetModifier()
+    public function testBitfieldWithSetModifier(): void
     {
         $redis = $this->getClient();
 
@@ -124,7 +124,7 @@ class BITFIELD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testBitfieldWithIncrbyModifier()
+    public function testBitfieldWithIncrbyModifier(): void
     {
         $redis = $this->getClient();
 
@@ -141,7 +141,7 @@ class BITFIELD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

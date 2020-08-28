@@ -20,7 +20,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LRANGE';
     }
@@ -28,7 +28,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LRANGE';
     }
@@ -36,7 +36,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, -1);
         $expected = array('key', 0, -1);
@@ -50,7 +50,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('value1', 'value2', 'value3');
         $expected = array('value1', 'value2', 'value3');
@@ -63,7 +63,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsListSliceWithPositiveStartAndStop()
+    public function testReturnsListSliceWithPositiveStartAndStop(): void
     {
         $redis = $this->getClient();
 
@@ -78,7 +78,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsListSliceWithPositiveStartAndNegativeStop()
+    public function testReturnsListSliceWithPositiveStartAndNegativeStop(): void
     {
         $redis = $this->getClient();
 
@@ -92,7 +92,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsListSliceWithNegativeStartAndStop()
+    public function testReturnsListSliceWithNegativeStartAndStop(): void
     {
         $redis = $this->getClient();
 
@@ -104,7 +104,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testHandlesStartAndStopOverflow()
+    public function testHandlesStartAndStopOverflow(): void
     {
         $redis = $this->getClient();
 
@@ -116,7 +116,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsEmptyArrayOnNonExistingList()
+    public function testReturnsEmptyArrayOnNonExistingList(): void
     {
         $redis = $this->getClient();
 
@@ -126,7 +126,7 @@ class LRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

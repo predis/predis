@@ -20,7 +20,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\RENAME';
     }
@@ -28,7 +28,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'RENAME';
     }
@@ -36,7 +36,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'newkey');
         $expected = array('key', 'newkey');
@@ -50,7 +50,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -58,7 +58,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRenamesKeys()
+    public function testRenamesKeys(): void
     {
         $redis = $this->getClient();
 
@@ -72,7 +72,7 @@ class RENAME_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnNonExistingKeys()
+    public function testThrowsExceptionOnNonExistingKeys(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR no such key');

@@ -20,7 +20,7 @@ class HMSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HMSET';
     }
@@ -28,7 +28,7 @@ class HMSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HMSET';
     }
@@ -36,7 +36,7 @@ class HMSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'field1', 'value1', 'field2', 'value2');
         $expected = array('key', 'field1', 'value1', 'field2', 'value2');
@@ -50,7 +50,7 @@ class HMSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsFieldsValuesAsSingleArray()
+    public function testFilterArgumentsFieldsValuesAsSingleArray(): void
     {
         $arguments = array('key', array('field1' => 'value1', 'field2' => 'value2'));
         $expected = array('key', 'field1', 'value1', 'field2', 'value2');
@@ -64,7 +64,7 @@ class HMSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -73,7 +73,7 @@ class HMSET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testSetsSpecifiedFieldsOfHash()
+    public function testSetsSpecifiedFieldsOfHash(): void
     {
         $redis = $this->getClient();
 
@@ -88,7 +88,7 @@ class HMSET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testSetsTheSpecifiedField()
+    public function testSetsTheSpecifiedField(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class HMSET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

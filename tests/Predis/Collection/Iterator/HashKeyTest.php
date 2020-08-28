@@ -21,7 +21,7 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnMissingCommand()
+    public function testThrowsExceptionOnMissingCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("'HSCAN' is not supported by the current command factory.");
@@ -32,6 +32,7 @@ class HashKeyTest extends PredisTestCase
             ->method('supports')
             ->will($this->returnValue(false));
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
@@ -44,10 +45,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithNoResults()
+    public function testIterationWithNoResults(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -72,10 +75,12 @@ class HashKeyTest extends PredisTestCase
      * @see https://github.com/predis/predis/issues/331
      * @group disconnected
      */
-    public function testIterationWithIntegerFields()
+    public function testIterationWithIntegerFields(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -118,10 +123,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnSingleFetch()
+    public function testIterationOnSingleFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -159,10 +166,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetches()
+    public function testIterationOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -207,10 +216,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -250,10 +261,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -305,10 +318,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatch()
+    public function testIterationWithOptionMatch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -341,10 +356,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatchOnMultipleFetches()
+    public function testIterationWithOptionMatchOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -384,10 +401,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCount()
+    public function testIterationWithOptionCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -420,10 +439,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCountOnMultipleFetches()
+    public function testIterationWithOptionCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -463,10 +484,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCount()
+    public function testIterationWithOptionsMatchAndCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -499,10 +522,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
+    public function testIterationWithOptionsMatchAndCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -542,10 +567,12 @@ class HashKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationRewindable()
+    public function testIterationRewindable(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'hscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('hscan'))
             ->getMock();
         $client
             ->expects($this->any())

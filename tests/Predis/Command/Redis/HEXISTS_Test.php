@@ -20,7 +20,7 @@ class HEXISTS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HEXISTS';
     }
@@ -28,7 +28,7 @@ class HEXISTS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HEXISTS';
     }
@@ -36,7 +36,7 @@ class HEXISTS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'field');
         $expected = array('key', 'field');
@@ -50,7 +50,7 @@ class HEXISTS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -62,7 +62,7 @@ class HEXISTS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsExistenceOfSpecifiedField()
+    public function testReturnsExistenceOfSpecifiedField(): void
     {
         $redis = $this->getClient();
 
@@ -77,7 +77,7 @@ class HEXISTS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

@@ -21,7 +21,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFlagsValues()
+    public function testFlagsValues(): void
     {
         $this->assertSame(1,  MultiExecState::INITIALIZED);
         $this->assertSame(2,  MultiExecState::INSIDEBLOCK);
@@ -33,7 +33,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStateConstructorStartsWithResetState()
+    public function testStateConstructorStartsWithResetState(): void
     {
         $state = new MultiExecState();
 
@@ -44,7 +44,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanCheckOneOrMoreStateFlags()
+    public function testCanCheckOneOrMoreStateFlags(): void
     {
         $flags = MultiExecState::INITIALIZED | MultiExecState::CAS;
         $state = new MultiExecState();
@@ -63,7 +63,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSettingAndGettingWholeFlags()
+    public function testSettingAndGettingWholeFlags(): void
     {
         $flags = MultiExecState::INITIALIZED | MultiExecState::CAS;
         $state = new MultiExecState();
@@ -78,7 +78,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanFlagSingleStates()
+    public function testCanFlagSingleStates(): void
     {
         $flags = MultiExecState::INITIALIZED | MultiExecState::CAS;
         $state = new MultiExecState();
@@ -97,7 +97,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanUnflagSingleStates()
+    public function testCanUnflagSingleStates(): void
     {
         $state = new MultiExecState();
         $state->set(MultiExecState::INITIALIZED | MultiExecState::CAS);
@@ -119,7 +119,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsInitializedMethod()
+    public function testIsInitializedMethod(): void
     {
         $state = new MultiExecState();
 
@@ -132,7 +132,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsExecuting()
+    public function testIsExecuting(): void
     {
         $state = new MultiExecState();
 
@@ -145,7 +145,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsCAS()
+    public function testIsCAS(): void
     {
         $state = new MultiExecState();
 
@@ -158,7 +158,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsWatchAllowed()
+    public function testIsWatchAllowed(): void
     {
         $state = new MultiExecState();
 
@@ -177,7 +177,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsWatching()
+    public function testIsWatching(): void
     {
         $state = new MultiExecState();
 
@@ -190,7 +190,7 @@ class MultiExecStateTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsDiscarded()
+    public function testIsDiscarded(): void
     {
         $state = new MultiExecState();
 

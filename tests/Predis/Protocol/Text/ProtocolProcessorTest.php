@@ -12,6 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 
 /**
  *
@@ -21,11 +23,12 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectionWrite()
+    public function testConnectionWrite(): void
     {
         $serialized = "*1\r\n$4\r\nPING\r\n";
         $protocol = new ProtocolProcessor();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
@@ -48,7 +51,7 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectionRead()
+    public function testConnectionRead(): void
     {
         $protocol = new ProtocolProcessor();
 
@@ -84,7 +87,7 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterableMultibulkSupport()
+    public function testIterableMultibulkSupport(): void
     {
         $protocol = new ProtocolProcessor();
         $protocol->useIterableMultibulk(true);
@@ -101,7 +104,7 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUnknownResponsePrefix()
+    public function testUnknownResponsePrefix(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Unknown response prefix: '!' [tcp://127.0.0.1:6379]");

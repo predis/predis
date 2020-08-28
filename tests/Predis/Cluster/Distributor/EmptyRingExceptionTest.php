@@ -21,10 +21,11 @@ class EmptyRingExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionMessage()
+    public function testExceptionMessage(): void
     {
         $this->expectException('Predis\Cluster\Distributor\EmptyRingException');
         $this->expectExceptionMessage('Empty Ring');
+
         throw new EmptyRingException('Empty Ring');
     }
 }

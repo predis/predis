@@ -20,7 +20,7 @@ class LLEN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LLEN';
     }
@@ -28,7 +28,7 @@ class LLEN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LLEN';
     }
@@ -36,7 +36,7 @@ class LLEN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class LLEN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -59,7 +59,7 @@ class LLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsLengthOfList()
+    public function testReturnsLengthOfList(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class LLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsZeroLengthOnNonExistingList()
+    public function testReturnsZeroLengthOnNonExistingList(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class LLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

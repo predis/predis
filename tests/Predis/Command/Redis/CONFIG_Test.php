@@ -20,7 +20,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\CONFIG';
     }
@@ -28,7 +28,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'CONFIG';
     }
@@ -36,7 +36,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('GET', 'slowlog');
         $expected = array('GET', 'slowlog');
@@ -50,7 +50,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseOfConfigGet()
+    public function testParseResponseOfConfigGet(): void
     {
         $raw = array('slowlog-log-slower-than', '10000', 'slowlog-max-len', '64', 'loglevel', 'verbose');
         $expected = array(
@@ -67,7 +67,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseOfConfigSet()
+    public function testParseResponseOfConfigSet(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -75,7 +75,7 @@ class CONFIG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseOfConfigResetstat()
+    public function testParseResponseOfConfigResetstat(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -84,7 +84,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsListOfConfigurationValues()
+    public function testReturnsListOfConfigurationValues(): void
     {
         $redis = $this->getClient();
 
@@ -99,7 +99,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsListOfOneConfigurationEntry()
+    public function testReturnsListOfOneConfigurationEntry(): void
     {
         $redis = $this->getClient();
 
@@ -112,7 +112,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsEmptyListOnUnknownConfigurationEntry()
+    public function testReturnsEmptyListOnUnknownConfigurationEntry(): void
     {
         $redis = $this->getClient();
 
@@ -123,7 +123,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsTrueOnSuccessfulConfiguration()
+    public function testReturnsTrueOnSuccessfulConfiguration(): void
     {
         $redis = $this->getClient();
 
@@ -140,7 +140,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionWhenSettingUnknownConfiguration()
+    public function testThrowsExceptionWhenSettingUnknownConfiguration(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Unsupported CONFIG parameter: foo');
@@ -154,7 +154,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsTrueOnResetstat()
+    public function testReturnsTrueOnResetstat(): void
     {
         $redis = $this->getClient();
 
@@ -165,7 +165,7 @@ class CONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnUnknownSubcommand()
+    public function testThrowsExceptionOnUnknownSubcommand(): void
     {
         $this->expectException('Predis\Response\ServerException');
 

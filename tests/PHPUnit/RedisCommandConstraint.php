@@ -13,7 +13,7 @@ use Predis\Command\CommandInterface;
 use SebastianBergmann\Exporter\Exporter;
 
 /**
- * Constraint that verifies a redis command.
+ * PHPUnit constraint to verify that a Redis command matches certain conditions.
  */
 class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
 {
@@ -21,10 +21,10 @@ class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
     protected $arguments;
 
     /**
-     * @param string|CommandInterface $command   Expected command ID or instance.
-     * @param array                   $arguments Expected command arguments.
+     * @param string|CommandInterface $command   Expected command instance or command ID
+     * @param ?array                  $arguments Expected command arguments
      */
-    public function __construct($command = null, array $arguments = null)
+    public function __construct($command, ?array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
             $this->commandID = strtoupper($command->getId());
@@ -68,8 +68,7 @@ class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
     /**
      * {@inheritdoc}
      *
-     * @todo Improve output using diff when expected and actual arguments of a
-     *       command do not match.
+     * @todo Improve output using diff when expected and actual do not match.
      */
     public function toString(): string
     {

@@ -11,8 +11,10 @@
 
 namespace Predis\Command\Processor;
 
-use Predis\Command\RawCommand;
 use PredisTestCase;
+use Predis\Command\RawCommand;
+use Predis\Command\CommandInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  *
@@ -22,7 +24,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithPrefix()
+    public function testConstructorWithPrefix(): void
     {
         $prefix = 'prefix:';
         $processor = new KeyPrefixProcessor($prefix);
@@ -34,7 +36,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testChangePrefix()
+    public function testChangePrefix(): void
     {
         $prefix1 = 'prefix:';
         $prefix2 = 'prefix:new:';
@@ -49,10 +51,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testProcessPrefixableCommandInterface()
+    public function testProcessPrefixableCommandInterface(): void
     {
         $prefix = 'prefix:';
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\PrefixableCommandInterface')->getMock();
         $command
             ->expects($this->never())
@@ -70,8 +73,9 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSkipNotPrefixableCommands()
+    public function testSkipNotPrefixableCommands(): void
     {
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command->expects($this->once())
             ->method('getId')
@@ -88,7 +92,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInstanceCanBeCastedToString()
+    public function testInstanceCanBeCastedToString(): void
     {
         $prefix = 'prefix:';
         $processor = new KeyPrefixProcessor($prefix);
@@ -99,7 +103,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixFirst()
+    public function testPrefixFirst(): void
     {
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', '2nd', '3rd', '4th');
@@ -120,7 +124,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixAll()
+    public function testPrefixAll(): void
     {
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', 'prefix:4th');
@@ -141,7 +145,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixInterleaved()
+    public function testPrefixInterleaved(): void
     {
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', '2nd', 'prefix:3rd', '4th');
@@ -162,7 +166,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixSkipLast()
+    public function testPrefixSkipLast(): void
     {
         $arguments = array('1st', '2nd', '3rd', '4th');
         $expected = array('prefix:1st', 'prefix:2nd', 'prefix:3rd', '4th');
@@ -183,7 +187,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixSort()
+    public function testPrefixSort(): void
     {
         $arguments = array('key', 'BY', 'by_key_*', 'STORE', 'destination_key');
         $expected = array('prefix:key', 'BY', 'prefix:by_key_*', 'STORE', 'prefix:destination_key');
@@ -204,7 +208,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixZSetStore()
+    public function testPrefixZSetStore(): void
     {
         $arguments = array('key:destination', 2, 'key1', 'key2', 'WEIGHTS', 10, 100, 'AGGREGATE', 'sum');
         $expected = array(
@@ -227,7 +231,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixEval()
+    public function testPrefixEval(): void
     {
         $arguments = array('return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'foo', 'hoge', 'bar', 'piyo');
         $expected = array(
@@ -250,7 +254,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPrefixMigrate()
+    public function testPrefixMigrate(): void
     {
         $arguments = array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE');
         $expected = array('127.0.0.1', '6379', 'prefix:key', '0', '10', 'COPY', 'REPLACE');
@@ -276,7 +280,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
      * @param array  $arguments
      * @param array  $expected
      */
-    public function testApplyPrefixToCommand($commandID, array $arguments, array $expected)
+    public function testApplyPrefixToCommand($commandID, array $arguments, array $expected): void
     {
         $processor = new KeyPrefixProcessor('prefix:');
         $command = $this->getCommandInstance($commandID, $arguments);
@@ -289,12 +293,12 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanDefineNewCommandHandlers()
+    public function testCanDefineNewCommandHandlers(): void
     {
         $command = $this->getCommandInstance('NEWCMD', array('key', 'value'));
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -314,12 +318,12 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanOverrideExistingCommandHandlers()
+    public function testCanOverrideExistingCommandHandlers(): void
     {
         $command = $this->getCommandInstance('SET', array('key', 'value'));
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -339,7 +343,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanUndefineCommandHandlers()
+    public function testCanUndefineCommandHandlers(): void
     {
         $command = $this->getCommandInstance('SET', array('key', 'value'));
 
@@ -353,7 +357,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCannotDefineCommandHandlerWithInvalidType()
+    public function testCannotDefineCommandHandlerWithInvalidType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Callback must be a valid callable object or NULL');
@@ -366,7 +370,15 @@ class KeyPrefixProcessorTest extends PredisTestCase
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
 
-    public function getCommandInstance($commandID, array $arguments)
+    /**
+     * Returns a command instance by ID populated with the specified arguments.
+     *
+     * @param string $commandID ID of the Redis command
+     * @param array $arguments  List of arguments for the command
+     *
+     * @return CommandInterface
+     */
+    public function getCommandInstance(string $commandID, array $arguments): CommandInterface
     {
         $command = new RawCommand($commandID);
         $command->setRawArguments($arguments);
@@ -379,7 +391,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
      *
      * @return array
      */
-    public function commandArgumentsDataProvider()
+    public function commandArgumentsDataProvider(): array
     {
         return array(
             /* ---------------- Redis 1.2 ---------------- */

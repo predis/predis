@@ -20,7 +20,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZUNIONSTORE';
     }
@@ -28,7 +28,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZUNIONSTORE';
     }
@@ -36,7 +36,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $modifiers = array(
             'aggregate' => 'sum',
@@ -57,7 +57,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsSourceKeysAsSingleArray()
+    public function testFilterArgumentsSourceKeysAsSingleArray(): void
     {
         $modifiers = array(
             'aggregate' => 'sum',
@@ -78,7 +78,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -87,7 +87,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testStoresUnionInNewSortedSet()
+    public function testStoresUnionInNewSortedSet(): void
     {
         $redis = $this->getClient();
 
@@ -109,7 +109,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testStoresUnionWithAggregateModifier()
+    public function testStoresUnionWithAggregateModifier(): void
     {
         $redis = $this->getClient();
 
@@ -142,7 +142,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testStoresUnionWithWeightsModifier()
+    public function testStoresUnionWithWeightsModifier(): void
     {
         $redis = $this->getClient();
 
@@ -161,7 +161,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testStoresUnionWithCombinedModifiers()
+    public function testStoresUnionWithCombinedModifiers(): void
     {
         $redis = $this->getClient();
 
@@ -180,7 +180,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

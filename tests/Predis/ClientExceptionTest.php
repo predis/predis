@@ -21,7 +21,7 @@ class ClientExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionMessage()
+    public function testExceptionMessage(): void
     {
         $message = 'This is a client exception.';
 
@@ -34,7 +34,7 @@ class ClientExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionClass()
+    public function testExceptionClass(): void
     {
         $exception = new ClientException();
 

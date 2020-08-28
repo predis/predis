@@ -20,7 +20,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\CLIENT';
     }
@@ -28,7 +28,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'CLIENT';
     }
@@ -36,7 +36,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientKill()
+    public function testFilterArgumentsOfClientKill(): void
     {
         $arguments = array('kill', '127.0.0.1:45393');
         $expected = array('kill', '127.0.0.1:45393');
@@ -50,7 +50,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientList()
+    public function testFilterArgumentsOfClientList(): void
     {
         $arguments = array('list');
         $expected = array('list');
@@ -64,7 +64,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientGetname()
+    public function testFilterArgumentsOfClientGetname(): void
     {
         $arguments = $expected = array('getname');
 
@@ -77,7 +77,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientSetname()
+    public function testFilterArgumentsOfClientSetname(): void
     {
         $arguments = $expected = array('setname', 'connection-a');
 
@@ -90,7 +90,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseOfClientKill()
+    public function testParseResponseOfClientKill(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array('kill'));
@@ -101,7 +101,7 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseOfClientList()
+    public function testParseResponseOfClientList(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array('list'));
@@ -126,7 +126,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
-    public function testReturnsListOfConnectedClients()
+    public function testReturnsListOfConnectedClients(): void
     {
         $redis = $this->getClient();
 
@@ -146,7 +146,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.6.9
      */
-    public function testGetsNameOfConnection()
+    public function testGetsNameOfConnection(): void
     {
         $redis = $this->getClient();
         $clientName = $redis->client('GETNAME');
@@ -161,7 +161,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.6.9
      */
-    public function testSetsNameOfConnection()
+    public function testSetsNameOfConnection(): void
     {
         $redis = $this->getClient();
 
@@ -201,7 +201,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
-    public function testThrowsExceptioOnWrongModifier()
+    public function testThrowsExceptioOnWrongModifier(): void
     {
         $this->expectException('Predis\Response\ServerException');
 
@@ -214,7 +214,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
-    public function testThrowsExceptionWhenKillingUnknownClient()
+    public function testThrowsExceptionWhenKillingUnknownClient(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR No such client');

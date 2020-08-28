@@ -20,7 +20,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MSETNX';
     }
@@ -28,7 +28,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MSETNX';
     }
@@ -36,7 +36,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('foo', 'bar', 'hoge', 'piyo');
         $expected = array('foo', 'bar', 'hoge', 'piyo');
@@ -50,7 +50,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleNamedArray()
+    public function testFilterArgumentsAsSingleNamedArray(): void
     {
         $arguments = array(array('foo' => 'bar', 'hoge' => 'piyo'));
         $expected = array('foo', 'bar', 'hoge', 'piyo');
@@ -64,7 +64,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(0, $this->getCommand()->parseResponse(0));
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
@@ -73,7 +73,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testCreatesMultipleKeys()
+    public function testCreatesMultipleKeys(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class MSETNX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testCreatesMultipleKeysAndPreservesExistingOnes()
+    public function testCreatesMultipleKeysAndPreservesExistingOnes(): void
     {
         $redis = $this->getClient();
 

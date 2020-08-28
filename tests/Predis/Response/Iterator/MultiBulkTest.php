@@ -11,10 +11,11 @@
 
 namespace Predis\Response\Iterator;
 
+use PredisTestCase;
 use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
-use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -24,13 +25,15 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIterableMultibulk()
+    public function testIterableMultibulk(): void
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
+        /** @var MultiBulkIterator */
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator);
+
         $iterator->valid();
         $this->assertSame(3, $iterator->count());
 
@@ -52,11 +55,12 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testDropWithFalseConsumesResponseFromUnderlyingConnection()
+    public function testDropWithFalseConsumesResponseFromUnderlyingConnection(): void
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
+        /** @var MultiBulkIterMultiBulkator */
         $iterator = $client->lrange('metavars', 0, -1);
         $iterator->drop(false);
 
@@ -67,11 +71,12 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testDropWithTrueDropsUnderlyingConnection()
+    public function testDropWithTrueDropsUnderlyingConnection(): void
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
+        /** @var MultiBulk */
         $iterator = $client->lrange('metavars', 0, -1);
         $iterator->drop(true);
 
@@ -82,11 +87,12 @@ class MultiBulkTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testGarbageCollectorDropsUnderlyingConnection()
+    public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
+        /** @var MultiBulkIterator */
         $iterator = $client->lrange('metavars', 0, -1);
 
         unset($iterator);
@@ -102,9 +108,9 @@ class MultiBulkTest extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @return Client
+     * @return ClientInterface
      */
-    protected function getClient()
+    protected function getClient(): ClientInterface
     {
         $parameters = $this->getParameters(array('read_write_timeout' => 2));
 

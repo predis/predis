@@ -20,7 +20,7 @@ class ECHO_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ECHO_';
     }
@@ -28,7 +28,7 @@ class ECHO_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ECHO';
     }
@@ -36,7 +36,7 @@ class ECHO_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('message');
         $expected = array('message');
@@ -50,7 +50,7 @@ class ECHO_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = 'message';
         $expected = 'message';
@@ -63,7 +63,7 @@ class ECHO_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testAlwaysReturnsThePassedMessage()
+    public function testAlwaysReturnsThePassedMessage(): void
     {
         $redis = $this->getClient();
 

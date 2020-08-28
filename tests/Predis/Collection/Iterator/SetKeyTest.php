@@ -21,7 +21,7 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnMissingCommand()
+    public function testThrowsExceptionOnMissingCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("'SSCAN' is not supported by the current command factory.");
@@ -32,6 +32,7 @@ class SetKeyTest extends PredisTestCase
             ->method('supports')
             ->will($this->returnValue(false));
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
@@ -44,10 +45,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithNoResults()
+    public function testIterationWithNoResults(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -70,10 +73,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnSingleFetch()
+    public function testIterationOnSingleFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -111,10 +116,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetches()
+    public function testIterationOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -159,10 +166,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -202,10 +211,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -257,10 +268,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatch()
+    public function testIterationWithOptionMatch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -293,10 +306,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatchOnMultipleFetches()
+    public function testIterationWithOptionMatchOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -336,10 +351,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCount()
+    public function testIterationWithOptionCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -372,10 +389,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCountOnMultipleFetches()
+    public function testIterationWithOptionCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -415,10 +434,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCount()
+    public function testIterationWithOptionsMatchAndCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -451,10 +472,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
+    public function testIterationWithOptionsMatchAndCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
@@ -494,10 +517,12 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationRewindable()
+    public function testIterationRewindable(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())

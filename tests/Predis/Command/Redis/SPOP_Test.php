@@ -20,7 +20,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SPOP';
     }
@@ -28,7 +28,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SPOP';
     }
@@ -36,7 +36,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 2);
         $expected = array('key', 2);
@@ -50,7 +50,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('member', $this->getCommand()->parseResponse('member'));
     }
@@ -58,7 +58,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testPopsRandomMemberFromSet()
+    public function testPopsRandomMemberFromSet(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class SPOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testPopsMoreRandomMembersFromSet()
+    public function testPopsMoreRandomMembersFromSet(): void
     {
         $redis = $this->getClient();
 
@@ -89,7 +89,7 @@ class SPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

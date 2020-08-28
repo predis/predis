@@ -20,7 +20,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MIGRATE';
     }
@@ -28,7 +28,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MIGRATE';
     }
@@ -36,7 +36,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('127.0.0.1', '6379', 'key', '0', '10');
         $expected = array('127.0.0.1', '6379', 'key', '0', '10');
@@ -50,7 +50,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsRedis300()
+    public function testFilterArgumentsRedis300(): void
     {
         $arguments = array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE');
         $expected = array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE');
@@ -64,7 +64,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithOptionsArray()
+    public function testFilterArgumentsWithOptionsArray(): void
     {
         $arguments = array('127.0.0.1', '6379', 'key', '0', '10', array('COPY' => true, 'REPLACE' => true));
         $expected = array('127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE');
@@ -78,7 +78,7 @@ class MIGRATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -89,7 +89,7 @@ class MIGRATE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsStatusNOKEYOnNonExistingKey()
+    public function testReturnsStatusNOKEYOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -102,7 +102,7 @@ class MIGRATE_Test extends PredisCommandTestCase
      * @requiresRedisVersion >= 2.6.0
      * @group slow
      */
-    public function testReturnsErrorOnUnreacheableDestination()
+    public function testReturnsErrorOnUnreacheableDestination(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('IOERR');

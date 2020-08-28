@@ -20,7 +20,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZRANGEBYLEX';
     }
@@ -28,7 +28,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZRANGEBYLEX';
     }
@@ -36,7 +36,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $modifiers = array(
             'limit' => array(0, 100),
@@ -54,7 +54,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithNamedLimit()
+    public function testFilterArgumentsWithNamedLimit(): void
     {
         $arguments = array('zset', '[a', '[z', array('limit' => array('offset' => 1, 'count' => 2)));
         $expected = array('zset', '[a', '[z', 'LIMIT', 1, 2);
@@ -68,7 +68,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('a', 'b', 'c');
         $expected = array('a', 'b', 'c');
@@ -82,7 +82,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testReturnsElementsInWholeRange()
+    public function testReturnsElementsInWholeRange(): void
     {
         $redis = $this->getClient();
 
@@ -98,7 +98,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testReturnsElementsInInclusiveRange()
+    public function testReturnsElementsInInclusiveRange(): void
     {
         $redis = $this->getClient();
 
@@ -116,7 +116,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testReturnsElementsInExclusiveRange()
+    public function testReturnsElementsInExclusiveRange(): void
     {
         $redis = $this->getClient();
 
@@ -134,7 +134,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testReturnsElementsInMixedRange()
+    public function testReturnsElementsInMixedRange(): void
     {
         $redis = $this->getClient();
 
@@ -151,7 +151,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testRangeWithLimitModifier()
+    public function testRangeWithLimitModifier(): void
     {
         $redis = $this->getClient();
 
@@ -168,7 +168,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnInvalidRangeFormat()
+    public function testThrowsExceptionOnInvalidRangeFormat(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('min or max not valid string range item');
@@ -183,7 +183,7 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

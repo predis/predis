@@ -12,6 +12,8 @@
 namespace Predis\Replication;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 
 /**
  *
@@ -21,7 +23,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReadCommands()
+    public function testReadCommands(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -39,7 +41,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testWriteRequests()
+    public function testWriteRequests(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -57,7 +59,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDisallowedCommands()
+    public function testDisallowedCommands(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -75,7 +77,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSortCommand()
+    public function testSortCommand(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -96,7 +98,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testBitFieldCommand()
+    public function testBitFieldCommand(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -141,7 +143,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGeoradiusCommand()
+    public function testGeoradiusCommand(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -168,7 +170,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGeoradiusByMemberCommand()
+    public function testGeoradiusByMemberCommand(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -195,7 +197,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsingDisallowedCommandThrowsException()
+    public function testUsingDisallowedCommandThrowsException(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The command 'INFO' is not allowed in replication mode");
@@ -210,10 +212,11 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefaultIsWriteOperation()
+    public function testDefaultIsWriteOperation(): void
     {
         $strategy = new ReplicationStrategy();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
@@ -226,10 +229,11 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSetCommandAsReadOperation()
+    public function testCanSetCommandAsReadOperation(): void
     {
         $strategy = new ReplicationStrategy();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
@@ -243,10 +247,11 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSetCommandAsWriteOperation()
+    public function testCanSetCommandAsWriteOperation(): void
     {
         $strategy = new ReplicationStrategy();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->any())
@@ -263,12 +268,12 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanUseCallableToCheckCommand()
+    public function testCanUseCallableToCheckCommand(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $strategy->setCommandReadOnly('SET', function ($command) {
+        $strategy->setCommandReadOnly('SET', function (CommandInterface $command) {
             return $command->getArgument(1) === true;
         });
 
@@ -282,7 +287,7 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetLuaScriptAsReadOperation()
+    public function testSetLuaScriptAsReadOperation(): void
     {
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
@@ -306,19 +311,20 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetLuaScriptAsReadOperationWorksWithScriptCommand()
+    public function testSetLuaScriptAsReadOperationWorksWithScriptCommand(): void
     {
         $strategy = new ReplicationStrategy();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript'))
+            ->onlyMethods(array('getScript'))
             ->getMock();
         $command
             ->expects($this->any())
             ->method('getScript')
             ->will($this->returnValue($script = 'return true'));
 
-        $strategy->setScriptReadOnly($script, function ($command) {
+        $strategy->setScriptReadOnly($script, function (CommandInterface $command) {
             return $command->getArgument(2) === true;
         });
 
@@ -332,12 +338,13 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetLuaScriptAsReadOperationWorksWithScriptCommandAndCallableCheck()
+    public function testSetLuaScriptAsReadOperationWorksWithScriptCommandAndCallableCheck(): void
     {
         $strategy = new ReplicationStrategy();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript'))
+            ->onlyMethods(array('getScript'))
             ->getMock(array('getScript'));
         $command
             ->expects($this->any())
@@ -358,11 +365,11 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * Returns the list of expected supported commands.
      *
-     * @param string $type Optional type of command (based on its keys)
+     * @param ?string $type Optional type of command (based on its keys)
      *
      * @return array
      */
-    protected function getExpectedCommands($type = null)
+    protected function getExpectedCommands(?string $type = null): array
     {
         $commands = array(
             /* commands operating on the connection */
@@ -512,7 +519,7 @@ class ReplicationStrategyTest extends PredisTestCase
         );
 
         if (isset($type)) {
-            $commands = array_filter($commands, function ($expectedType) use ($type) {
+            $commands = array_filter($commands, function (string $expectedType) use ($type) {
                 return $expectedType === $type;
             });
         }

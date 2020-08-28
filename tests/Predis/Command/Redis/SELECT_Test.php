@@ -20,7 +20,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SELECT';
     }
@@ -28,7 +28,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SELECT';
     }
@@ -36,7 +36,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array(10);
         $expected = array(10);
@@ -50,7 +50,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -58,7 +58,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testCanSelectDifferentDatabase()
+    public function testCanSelectDifferentDatabase(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnUnexpectedDatabaseRange()
+    public function testThrowsExceptionOnUnexpectedDatabaseRange(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessageMatches('/ERR.*DB index/');
@@ -84,7 +84,7 @@ class SELECT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnUnexpectedDatabaseName()
+    public function testThrowsExceptionOnUnexpectedDatabaseName(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR invalid DB index');

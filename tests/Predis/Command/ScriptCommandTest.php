@@ -12,6 +12,7 @@
 namespace Predis\Command;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @group realm-scripting
@@ -24,10 +25,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetId()
+    public function testGetId(): void
     {
+        /** @var CommandInterface */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript'))
+            ->onlyMethods(array('getScript'))
             ->getMock();
 
         $this->assertSame('EVALSHA', $command->getId());
@@ -36,10 +38,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetScriptHash()
+    public function testGetScriptHash(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->exactly(2))
@@ -58,10 +61,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetKeys()
+    public function testGetKeys(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -80,10 +84,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetKeysWithZeroKeysCount()
+    public function testGetKeysWithZeroKeysCount(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript'))
+            ->onlyMethods(array('getScript'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -98,10 +103,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetKeysWithNegativeKeysCount()
+    public function testGetKeysWithNegativeKeysCount(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -120,10 +126,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArguments()
+    public function testGetArguments(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -142,10 +149,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArgumentsWithZeroKeysCount()
+    public function testGetArgumentsWithZeroKeysCount(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -160,10 +168,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArgumentsWithNegativeKeysCount()
+    public function testGetArgumentsWithNegativeKeysCount(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->once())
@@ -182,10 +191,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetEvalArguments()
+    public function testGetEvalArguments(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->exactly(2))
@@ -204,10 +214,11 @@ class ScriptCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetEvalCommand()
+    public function testGetEvalCommand(): void
     {
+        /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->setMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(array('getScript', 'getKeysCount'))
             ->getMock();
         $command
             ->expects($this->exactly(2))

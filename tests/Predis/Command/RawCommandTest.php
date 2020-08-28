@@ -21,7 +21,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithCommandID()
+    public function testConstructorWithCommandID(): void
     {
         $commandID = 'PING';
         $command = new RawCommand($commandID);
@@ -33,7 +33,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithCommandIDAndArguments()
+    public function testConstructorWithCommandIDAndArguments(): void
     {
         $commandID = 'SET';
         $commandArgs = array('foo', 'bar');
@@ -47,7 +47,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStaticCreate()
+    public function testStaticCreate(): void
     {
         $command = RawCommand::create('SET');
         $this->assertSame('SET', $command->getId());
@@ -65,7 +65,7 @@ class RawCommandTest extends PredisTestCase
      *
      * @group disconnected
      */
-    public function testPHPExceptionOnMissingCommandIDWithStaticCreate()
+    public function testPHPExceptionOnMissingCommandIDWithStaticCreate(): void
     {
         $this->expectException('ArgumentCountError');
 
@@ -75,7 +75,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetArguments()
+    public function testSetArguments(): void
     {
         $commandID = 'SET';
         $command = new RawCommand($commandID);
@@ -90,7 +90,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetRawArguments()
+    public function testSetRawArguments(): void
     {
         $commandID = 'SET';
         $command = new RawCommand($commandID);
@@ -105,7 +105,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArgumentAtIndex()
+    public function testGetArgumentAtIndex(): void
     {
         $command = new RawCommand('GET', array('key'));
 
@@ -116,7 +116,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetAndGetHash()
+    public function testSetAndGetHash(): void
     {
         $slot = 1024;
         $arguments = array('key', 'value');
@@ -134,7 +134,7 @@ class RawCommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNormalizesCommandIdentifiersToUppercase()
+    public function testNormalizesCommandIdentifiersToUppercase(): void
     {
         $command = new RawCommand('set', array('key', 'value'));
 

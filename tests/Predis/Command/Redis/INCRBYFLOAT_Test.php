@@ -20,7 +20,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\INCRBYFLOAT';
     }
@@ -28,7 +28,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'INCRBYFLOAT';
     }
@@ -36,7 +36,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 5.0);
         $expected = array('key', 5.0);
@@ -50,7 +50,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(5.0, $this->getCommand()->parseResponse(5.0));
     }
@@ -59,7 +59,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testCreatesNewKeyOnNonExistingKey()
+    public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsTheValueOfTheKeyAfterIncrement()
+    public function testReturnsTheValueOfTheKeyAfterIncrement(): void
     {
         $redis = $this->getClient();
 
@@ -88,7 +88,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnDecrementValueNotFloat()
+    public function testThrowsExceptionOnDecrementValueNotFloat(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR value is not a valid float');
@@ -102,7 +102,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnKeyValueNotFloat()
+    public function testThrowsExceptionOnKeyValueNotFloat(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR value is not a valid float');
@@ -117,7 +117,7 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

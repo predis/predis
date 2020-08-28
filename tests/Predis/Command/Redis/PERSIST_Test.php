@@ -20,7 +20,7 @@ class PERSIST_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PERSIST';
     }
@@ -28,7 +28,7 @@ class PERSIST_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PERSIST';
     }
@@ -36,7 +36,7 @@ class PERSIST_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class PERSIST_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -62,7 +62,7 @@ class PERSIST_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testRemovesExpireFromKey()
+    public function testRemovesExpireFromKey(): void
     {
         $redis = $this->getClient();
 
@@ -77,7 +77,7 @@ class PERSIST_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsZeroOnNonExpiringKeys()
+    public function testReturnsZeroOnNonExpiringKeys(): void
     {
         $redis = $this->getClient();
 
@@ -90,7 +90,7 @@ class PERSIST_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsZeroOnNonExistentKeys()
+    public function testReturnsZeroOnNonExistentKeys(): void
     {
         $redis = $this->getClient();
 

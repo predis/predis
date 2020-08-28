@@ -20,7 +20,7 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\GEOADD';
     }
@@ -28,7 +28,7 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'GEOADD';
     }
@@ -36,7 +36,7 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
         $expected = array('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
@@ -50,7 +50,7 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithMembersAsSingleArray()
+    public function testFilterArgumentsWithMembersAsSingleArray(): void
     {
         $arguments = array('Sicily', array(
             array('13.361389', '38.115556', 'Palermo'),
@@ -68,7 +68,7 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = 1;
         $expected = 1;
@@ -82,7 +82,7 @@ class GEOADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testCommandFillsSortedSet()
+    public function testCommandFillsSortedSet(): void
     {
         $redis = $this->getClient();
 
@@ -94,7 +94,7 @@ class GEOADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

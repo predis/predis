@@ -20,7 +20,7 @@ class WATCH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\WATCH';
     }
@@ -28,7 +28,7 @@ class WATCH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'WATCH';
     }
@@ -36,7 +36,7 @@ class WATCH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key1', 'key2', 'key3');
         $expected = array('key1', 'key2', 'key3');
@@ -50,7 +50,7 @@ class WATCH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleArray()
+    public function testFilterArgumentsAsSingleArray(): void
     {
         $arguments = array(array('key1', 'key2', 'key3'));
         $expected = array('key1', 'key2', 'key3');
@@ -64,7 +64,7 @@ class WATCH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -73,7 +73,7 @@ class WATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testAbortsTransactionOnExternalWriteOperations()
+    public function testAbortsTransactionOnExternalWriteOperations(): void
     {
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();
@@ -92,7 +92,7 @@ class WATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testCanWatchNotYetExistingKeys()
+    public function testCanWatchNotYetExistingKeys(): void
     {
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();
@@ -109,7 +109,7 @@ class WATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionWhenCallingInsideTransaction()
+    public function testThrowsExceptionWhenCallingInsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR WATCH inside MULTI is not allowed');

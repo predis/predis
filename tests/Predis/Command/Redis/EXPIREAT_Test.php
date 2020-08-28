@@ -20,7 +20,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\EXPIREAT';
     }
@@ -28,7 +28,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'EXPIREAT';
     }
@@ -36,7 +36,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'ttl');
         $expected = array('key', 'ttl');
@@ -50,7 +50,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -61,7 +61,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroOnNonExistingKeys()
+    public function testReturnsZeroOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
      * @group connected
      * @group slow
      */
-    public function testCanExpireKeys()
+    public function testCanExpireKeys(): void
     {
         $redis = $this->getClient();
 
@@ -92,7 +92,7 @@ class EXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testDeletesKeysOnPastUnixTime()
+    public function testDeletesKeysOnPastUnixTime(): void
     {
         $redis = $this->getClient();
 

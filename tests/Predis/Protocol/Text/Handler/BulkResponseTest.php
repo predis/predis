@@ -21,7 +21,7 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testZeroLengthBulk()
+    public function testZeroLengthBulk(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -41,7 +41,7 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testBulk()
+    public function testBulk(): void
     {
         $bulk = 'This is a bulk string.';
         $bulkLengh = strlen($bulk);
@@ -64,7 +64,7 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNull()
+    public function testNull(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -82,7 +82,7 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInvalidLengthString()
+    public function testInvalidLengthString(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Cannot parse 'invalid' as a valid length for a bulk response [tcp://127.0.0.1:6379]");
@@ -103,7 +103,7 @@ class BulkResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInvalidLengthInteger()
+    public function testInvalidLengthInteger(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Value '-5' is not a valid length for a bulk response [tcp://127.0.0.1:6379]");

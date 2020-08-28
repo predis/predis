@@ -20,7 +20,7 @@ class EVAL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\EVAL_';
     }
@@ -28,7 +28,7 @@ class EVAL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'EVAL';
     }
@@ -36,7 +36,7 @@ class EVAL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar');
         $expected = array('return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar');
@@ -50,7 +50,7 @@ class EVAL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('bar', $this->getCommand()->parseResponse('bar'));
     }
@@ -58,7 +58,7 @@ class EVAL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testGetScriptHash()
+    public function testGetScriptHash(): void
     {
         $command = $this->getCommandWithArgumentsArray(array($lua = 'return true', 0));
         $this->assertSame(sha1($lua), $command->getScriptHash());
@@ -68,7 +68,7 @@ class EVAL_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testExecutesSpecifiedLuaScript()
+    public function testExecutesSpecifiedLuaScript(): void
     {
         $redis = $this->getClient();
 
@@ -82,7 +82,7 @@ class EVAL_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnWrongNumberOfKeys()
+    public function testThrowsExceptionOnWrongNumberOfKeys(): void
     {
         $this->expectException('Predis\Response\ServerException');
 
@@ -96,7 +96,7 @@ class EVAL_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnInvalidScript()
+    public function testThrowsExceptionOnInvalidScript(): void
     {
         $this->expectException('Predis\Response\ServerException');
 

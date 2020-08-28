@@ -20,7 +20,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LINSERT';
     }
@@ -28,7 +28,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LINSERT';
     }
@@ -36,7 +36,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'before', 'value1', 'value2');
         $expected = array('key', 'before', 'value1', 'value2');
@@ -50,7 +50,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -58,7 +58,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsLengthOfListAfterInser()
+    public function testReturnsLengthOfListAfterInser(): void
     {
         $redis = $this->getClient();
 
@@ -72,7 +72,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNegativeLengthOnFailedInsert()
+    public function testReturnsNegativeLengthOnFailedInsert(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroLengthOnNonExistingList()
+    public function testReturnsZeroLengthOnNonExistingList(): void
     {
         $redis = $this->getClient();
 
@@ -95,7 +95,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

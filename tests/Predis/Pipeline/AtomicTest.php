@@ -23,7 +23,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithSingleConnection()
+    public function testPipelineWithSingleConnection(): void
     {
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
@@ -53,7 +53,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnAbortedTransaction()
+    public function testThrowsExceptionOnAbortedTransaction(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('The underlying transaction has been aborted by the server');
@@ -76,7 +76,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithErrorInTransaction()
+    public function testPipelineWithErrorInTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
@@ -110,7 +110,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsServerExceptionOnResponseErrorByDefault()
+    public function testThrowsServerExceptionOnResponseErrorByDefault(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
@@ -134,7 +134,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
+    public function testReturnsResponseErrorWithClientExceptionsSetToFalse(): void
     {
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
@@ -162,7 +162,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecutorWithAggregateConnection()
+    public function testExecutorWithAggregateConnection(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage("The class 'Predis\Pipeline\Atomic' does not support aggregate connections");

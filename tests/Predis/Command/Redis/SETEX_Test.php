@@ -20,7 +20,7 @@ class SETEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SETEX';
     }
@@ -28,7 +28,7 @@ class SETEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SETEX';
     }
@@ -36,7 +36,7 @@ class SETEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 10, 'hello');
         $expected = array('key', 10, 'hello');
@@ -50,7 +50,7 @@ class SETEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -59,7 +59,7 @@ class SETEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCreatesNewKeyAndSetsTTL()
+    public function testCreatesNewKeyAndSetsTTL(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class SETEX_Test extends PredisCommandTestCase
      * @group slow
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testKeyExpiresAfterTTL()
+    public function testKeyExpiresAfterTTL(): void
     {
         $redis = $this->getClient();
 
@@ -88,7 +88,7 @@ class SETEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnNonIntegerTTL()
+    public function testThrowsExceptionOnNonIntegerTTL(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR value is not an integer or out of range');
@@ -100,7 +100,7 @@ class SETEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnZeroTTL()
+    public function testThrowsExceptionOnZeroTTL(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR invalid expire time');
@@ -112,7 +112,7 @@ class SETEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnNegativeTTL()
+    public function testThrowsExceptionOnNegativeTTL(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR invalid expire time');

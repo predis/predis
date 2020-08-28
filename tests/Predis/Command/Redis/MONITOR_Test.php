@@ -21,7 +21,7 @@ class MONITOR_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MONITOR';
     }
@@ -29,7 +29,7 @@ class MONITOR_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MONITOR';
     }
@@ -37,7 +37,7 @@ class MONITOR_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -48,7 +48,7 @@ class MONITOR_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -56,7 +56,7 @@ class MONITOR_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsStatusResponseAndReadsEventsFromTheConnection()
+    public function testReturnsStatusResponseAndReadsEventsFromTheConnection(): void
     {
         $connection = $this->getClient()->getConnection();
         $command = $this->getCommand();

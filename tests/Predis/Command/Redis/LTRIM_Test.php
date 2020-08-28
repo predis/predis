@@ -20,7 +20,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LTRIM';
     }
@@ -28,7 +28,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LTRIM';
     }
@@ -36,7 +36,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 1);
         $expected = array('key', 0, 1);
@@ -50,7 +50,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -58,7 +58,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testTrimsListWithPositiveStartAndStop()
+    public function testTrimsListWithPositiveStartAndStop(): void
     {
         $redis = $this->getClient();
 
@@ -77,7 +77,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testTrimsListWithPositiveStartAndNegativeStop()
+    public function testTrimsListWithPositiveStartAndNegativeStop(): void
     {
         $redis = $this->getClient();
 
@@ -90,7 +90,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testTrimsListWithNegativeStartAndStop()
+    public function testTrimsListWithNegativeStartAndStop(): void
     {
         $redis = $this->getClient();
 
@@ -103,7 +103,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testHandlesStartAndStopOverflow()
+    public function testHandlesStartAndStopOverflow(): void
     {
         $redis = $this->getClient();
 
@@ -116,7 +116,7 @@ class LTRIM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

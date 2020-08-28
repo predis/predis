@@ -12,6 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 
 /**
  *
@@ -21,10 +23,11 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerIdWithNoArguments()
+    public function testSerializerIdWithNoArguments(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
@@ -43,10 +46,11 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerIdWithArguments()
+    public function testSerializerIdWithArguments(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
@@ -65,10 +69,11 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerDoesNotBreakOnArgumentsWithHoles()
+    public function testSerializerDoesNotBreakOnArgumentsWithHoles(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())

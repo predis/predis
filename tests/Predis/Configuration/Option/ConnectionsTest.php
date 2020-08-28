@@ -12,6 +12,8 @@
 namespace Predis\Configuration\Option;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Configuration\OptionsInterface;
 
 /**
  *
@@ -21,10 +23,11 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefaultOptionValue()
+    public function testDefaultOptionValue(): void
     {
         $option = new Connections();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Predis\Connection\Factory', $option->getDefault($options));
@@ -33,8 +36,9 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings()
+    public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings(): void
     {
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
@@ -46,8 +50,9 @@ class ConnectionsTest extends PredisTestCase
             ->method('define')
             ->with($this->matchesRegularExpression('/^tcp|redis$/'), $class);
 
+        /** @var OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-            ->setMethods(array('getDefault'))
+            ->onlyMethods(array('getDefault'))
             ->getMock();
         $option
             ->expects($this->once())
@@ -132,12 +137,11 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsesParametersOptionToSetDefaultParameters()
+    public function testUsesParametersOptionToSetDefaultParameters(): void
     {
         $parameters = array('database' => 5, 'password' => 'mypassword');
 
-        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
-
+        /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
@@ -159,10 +163,11 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsConnectionFactoryInstance()
+    public function testAcceptsConnectionFactoryInstance(): void
     {
+        /** @var OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-            ->setMethods(array('getDefault'))
+            ->onlyMethods(array('getDefault'))
             ->getMock();
         $option
             ->expects($this->never())
@@ -177,14 +182,15 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCallableReturningConnectionFactoryInstance()
+    public function testAcceptsCallableReturningConnectionFactoryInstance(): void
     {
         $option = new Connections();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -200,12 +206,14 @@ class ConnectionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidArguments()
+    public function testThrowsExceptionOnInvalidArguments(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Predis\Configuration\Option\Connections expects a valid connection factory');
 
         $option = new Connections();
+
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new \stdClass());

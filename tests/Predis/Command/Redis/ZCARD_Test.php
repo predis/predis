@@ -20,7 +20,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZCARD';
     }
@@ -28,7 +28,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZCARD';
     }
@@ -36,7 +36,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -58,7 +58,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsSizeOfSortedSet()
+    public function testReturnsSizeOfSortedSet(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class ZCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

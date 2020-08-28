@@ -26,7 +26,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsConnectedAlwaysReturnsTrue()
+    public function testIsConnectedAlwaysReturnsTrue(): void
     {
         $connection = $this->createConnection();
 
@@ -36,7 +36,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportsSchemeUnix()
+    public function testSupportsSchemeUnix(): void
     {
         $connection = $this->createConnectionWithParams(array('scheme' => 'http'));
 
@@ -46,7 +46,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidScheme()
+    public function testThrowsExceptionOnInvalidScheme(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Invalid scheme: 'tcp'");
@@ -57,7 +57,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testWritingCommandsIsNotSupported()
+    public function testWritingCommandsIsNotSupported(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::writeRequest() is not supported");
@@ -69,7 +69,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReadingResponsesIsNotSupported()
+    public function testReadingResponsesIsNotSupported(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::readResponse() is not supported");
@@ -81,7 +81,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReadingFromConnectionIsNotSupported()
+    public function testReadingFromConnectionIsNotSupported(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::read() is not supported");
@@ -93,7 +93,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAddingConnectCommandsIsNotSupported()
+    public function testAddingConnectCommandsIsNotSupported(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The method Predis\Connection\WebdisConnection::addConnectCommand() is not supported");
@@ -105,7 +105,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRejectCommandSelect()
+    public function testRejectCommandSelect(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("Command 'SELECT' is not allowed by Webdis");
@@ -117,7 +117,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRejectCommandAuth()
+    public function testRejectCommandAuth(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("Command 'AUTH' is not allowed by Webdis");
@@ -129,7 +129,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanBeSerialized()
+    public function testCanBeSerialized(): void
     {
         $parameters = $this->getParameters(array(
             'alias' => 'redis',
@@ -151,7 +151,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testExecutesMultipleCommandsOnServer()
+    public function testExecutesMultipleCommandsOnServer(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -175,7 +175,7 @@ class WebdisConnectionTest extends PredisTestCase
      * @group disconnected
      * @group slow
      */
-    public function testThrowExceptionWhenUnableToConnect()
+    public function testThrowExceptionWhenUnableToConnect(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
 
@@ -190,21 +190,21 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return array Default connection parameters.
+     * @return array Default connection parameters
      */
-    protected function getDefaultParametersArray()
+    protected function getDefaultParametersArray(): array
     {
         return array(
             'scheme' => 'http',
-            'host' => WEBDIS_SERVER_HOST,
-            'port' => WEBDIS_SERVER_PORT,
+            'host' => constant('WEBDIS_SERVER_HOST'),
+            'port' => constant('WEBDIS_SERVER_PORT'),
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function createConnection()
+    protected function createConnection(): NodeConnectionInterface
     {
         return $this->createConnectionWithParams(array());
     }
@@ -212,7 +212,7 @@ class WebdisConnectionTest extends PredisTestCase
     /**
      * {@inheritdoc}
      */
-    protected function createConnectionWithParams($parameters)
+    protected function createConnectionWithParams($parameters): NodeConnectionInterface
     {
         if (!$parameters instanceof ParametersInterface) {
             $parameters = $this->getParameters($parameters);

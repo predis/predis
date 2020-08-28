@@ -20,7 +20,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MSET';
     }
@@ -28,7 +28,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MSET';
     }
@@ -36,7 +36,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('foo', 'bar', 'hoge', 'piyo');
         $expected = array('foo', 'bar', 'hoge', 'piyo');
@@ -50,7 +50,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleNamedArray()
+    public function testFilterArgumentsAsSingleNamedArray(): void
     {
         $arguments = array(array('foo' => 'bar', 'hoge' => 'piyo'));
         $expected = array('foo', 'bar', 'hoge', 'piyo');
@@ -64,7 +64,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -72,7 +72,7 @@ class MSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testCreatesMultipleKeys()
+    public function testCreatesMultipleKeys(): void
     {
         $redis = $this->getClient();
 

@@ -19,7 +19,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * {@inheritdoc}
      */
-    public function getDistributorInstance()
+    public function getDistributorInstance(): DistributorInterface
     {
         return new KetamaRing();
     }
@@ -27,8 +27,9 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testHash()
+    public function testHash(): void
     {
+        /** @var HashGeneratorInterface */
         $ring = $this->getDistributorInstance();
         list(, $hash) = unpack('V', md5('foobar', true));
 
@@ -38,7 +39,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testSingleNodeInRing()
+    public function testSingleNodeInRing(): void
     {
         $node = '127.0.0.1:7000';
 
@@ -54,7 +55,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testMultipleNodesInRing()
+    public function testMultipleNodesInRing(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -93,7 +94,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testSubsequendAddAndRemoveFromRing()
+    public function testSubsequendAddAndRemoveFromRing(): void
     {
         $ring = $this->getDistributorInstance();
 
@@ -129,7 +130,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetByValue()
+    public function testGetByValue(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -148,7 +149,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetByHash()
+    public function testGetByHash(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -167,7 +168,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetBySlot()
+    public function testGetBySlot(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -193,11 +194,11 @@ class KetamaRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testCallbackToGetNodeHash()
+    public function testCallbackToGetNodeHash(): void
     {
         $node = '127.0.0.1:7000';
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
 
         $callable

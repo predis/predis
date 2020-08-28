@@ -20,7 +20,7 @@ class RESTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\RESTORE';
     }
@@ -28,7 +28,7 @@ class RESTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'RESTORE';
     }
@@ -36,7 +36,7 @@ class RESTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
         $expected = array('key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
@@ -50,7 +50,7 @@ class RESTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertTrue($this->getCommand()->parseResponse(true));
     }

@@ -20,7 +20,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LREM';
     }
@@ -28,7 +28,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LREM';
     }
@@ -36,7 +36,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 1, 'value');
         $expected = array('key', 1, 'value');
@@ -50,7 +50,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -58,7 +58,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRemovesMatchingElementsFromHeadToTail()
+    public function testRemovesMatchingElementsFromHeadToTail(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRemovesMatchingElementsFromTailToHead()
+    public function testRemovesMatchingElementsFromTailToHead(): void
     {
         $redis = $this->getClient();
 
@@ -84,7 +84,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRemovesAllMatchingElements()
+    public function testRemovesAllMatchingElements(): void
     {
         $redis = $this->getClient();
 
@@ -97,7 +97,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroOnNonMatchingElementsOrEmptyList()
+    public function testReturnsZeroOnNonMatchingElementsOrEmptyList(): void
     {
         $redis = $this->getClient();
 
@@ -110,7 +110,7 @@ class LREM_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

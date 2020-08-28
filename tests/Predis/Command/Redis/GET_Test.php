@@ -20,7 +20,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\GET';
     }
@@ -28,7 +28,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'GET';
     }
@@ -36,7 +36,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('foo');
         $expected = array('foo');
@@ -50,7 +50,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('bar', $this->getCommand()->parseResponse('bar'));
     }
@@ -58,7 +58,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsStringValue()
+    public function testReturnsStringValue(): void
     {
         $redis = $this->getClient();
 
@@ -69,7 +69,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsEmptyStringOnEmptyStrings()
+    public function testReturnsEmptyStringOnEmptyStrings(): void
     {
         $redis = $this->getClient();
 
@@ -82,7 +82,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNullOnNonExistingKeys()
+    public function testReturnsNullOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
 
@@ -93,7 +93,7 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

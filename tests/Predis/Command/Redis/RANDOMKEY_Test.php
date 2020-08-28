@@ -20,7 +20,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\RANDOMKEY';
     }
@@ -28,7 +28,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'RANDOMKEY';
     }
@@ -36,7 +36,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array();
         $expected = array();
@@ -50,7 +50,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = 'key';
         $expected = 'key';
@@ -63,7 +63,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroOnNonExpiringKeys()
+    public function testReturnsZeroOnNonExpiringKeys(): void
     {
         $keys = array('key:1' => 1, 'key:2' => 2, 'key:3' => 3);
 
@@ -76,7 +76,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNullOnEmptyDatabase()
+    public function testReturnsNullOnEmptyDatabase(): void
     {
         $redis = $this->getClient();
 

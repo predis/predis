@@ -11,8 +11,8 @@
 
 namespace Predis\Transaction;
 
-use Predis\Client;
 use PredisTestCase;
+use Predis\Client;
 
 /**
  *
@@ -22,7 +22,7 @@ class AbortedMultiExecExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionClass()
+    public function testExceptionClass(): void
     {
         $client = new Client();
         $transaction = new MultiExec($client);
