@@ -102,7 +102,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->assertTrue($factory->supportsCommand('PING'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
 
-        $factory->defineCommand('PING', null);
+        $factory->undefineCommand('PING');
 
         $this->assertFalse($factory->supportsCommand('PING'));
         $this->assertNull($factory->getCommandClass('PING'));
@@ -121,7 +121,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->assertTrue($factory->supportsCommand('MOCK'));
         $this->assertSame($commandClass, $factory->getCommandClass('MOCK'));
 
-        $factory->defineCommand('MOCK', null);
+        $factory->undefineCommand('MOCK');
 
         $this->assertFalse($factory->supportsCommand('MOCK'));
         $this->assertNull($factory->getCommandClass('MOCK'));
@@ -133,7 +133,7 @@ class RedisFactoryTest extends PredisTestCase
     public function testDefineInvalidCommand()
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage("The class 'stdClass' is not a valid command class.");
+        $this->expectExceptionMessage("Class stdClass must implement Predis\Command\CommandInterface");
 
         $factory = new RedisFactory();
 
@@ -175,7 +175,7 @@ class RedisFactoryTest extends PredisTestCase
     public function testCreateUndefinedCommand()
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command 'UNKNOWN' is not a registered Redis command.");
+        $this->expectExceptionMessage("Command `UNKNOWN` is not a registered Redis command.");
 
         $factory = new RedisFactory();
 

@@ -104,6 +104,29 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAcceptsDictionaryOfCommandsWithNullsToUndefineCommandsAsValue()
+    {
+        $option = new Commands();
+
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $input = array(
+            'ECHO' => null,
+            'EVAL' => null,
+            'FOO'  => null,
+        );
+
+        $commands = $option->filter($options, $input);
+
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $commands);
+        $this->assertNull($commands->getCommandClass('ECHO'));
+        $this->assertNull($commands->getCommandClass('EVAL'));
+        $this->assertNull($commands->getCommandClass('FOO'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAcceptsCallableReturningCommandFactoryInstance()
     {
         $option = new Commands();

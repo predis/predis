@@ -35,8 +35,12 @@ class Commands implements OptionInterface
         if (is_array($value)) {
             $commands = $this->getDefault($options);
 
-            foreach ($value as $commandID => $classFQN) {
-                $commands->defineCommand($commandID, $classFQN);
+            foreach ($value as $commandID => $commandClass) {
+                if ($commandClass === null) {
+                    $commands->undefineCommand($commandID);
+                } else {
+                    $commands->defineCommand($commandID, $commandClass);
+                }
             }
 
             return $commands;

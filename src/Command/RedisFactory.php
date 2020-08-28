@@ -47,4 +47,18 @@ class RedisFactory extends Factory
 
         return $commandClass;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function undefineCommand($commandID)
+    {
+        // NOTE: we explicitly associate `NULL` to the command ID in the map
+        // instead of the parent's `unset()` because our subclass tries to load
+        // a predefined class from the Predis\Command\Redis namespace when no
+        // explicit mapping is defined, see RedisFactory::getCommandClass() for
+        // details of the implementation of this mechanism.
+        $this->commands[strtoupper($commandID)] = null;
+    }
+
 }
