@@ -518,15 +518,16 @@ class ClientTest extends PredisTestCase
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($ping)
-            ->willReturn(new Response\Status('PONG'));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($hgetall)
-            ->willReturn(array('foo', 'bar', 'hoge', 'piyo'));
+            ->withConsecutive(
+                array($ping),
+                array($hgetall)
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('PONG'),
+                array('foo', 'bar', 'hoge', 'piyo')
+            );
 
         $client = new Client($connection);
 
@@ -655,20 +656,18 @@ class ClientTest extends PredisTestCase
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('executeCommand')
-            ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-            ->willReturn(new Response\Status('OK'));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('GET', array('foo')))
-            ->willReturn('bar');
-        $connection
-            ->expects($this->at(2))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('PING'))
-            ->willReturn('PONG');
+            ->withConsecutive(
+                array($this->isRedisCommand('SET', array('foo', 'bar'))),
+                array($this->isRedisCommand('GET', array('foo'))),
+                array($this->isRedisCommand('PING'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'bar',
+                'PONG'
+            );
 
         $client = new Client($connection);
 
@@ -687,15 +686,16 @@ class ClientTest extends PredisTestCase
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-            ->willReturn(new Response\Status('OK'));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('GET', array('foo')))
-            ->willReturn('bar');
+            ->withConsecutive(
+                array($this->isRedisCommand('SET', array('foo', 'bar'))),
+                array($this->isRedisCommand('GET', array('foo')))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'bar'
+            );
 
         $client = new Client($connection, array('prefix' => 'predis:'));
 
@@ -1037,25 +1037,40 @@ class ClientTest extends PredisTestCase
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->willReturn(array('subscribe', 'channel', 1));
+            ->willReturnOnConsecutiveCalls(
+                array('subscribe', 'channel', 1),
+                array('unsubscribe', 'channel', 0)
+            );
         $connection
-            ->expects($this->at(2))
+            ->expects($this->exactly(2))
             ->method('writeRequest')
-            ->with($this->isRedisCommand('UNSUBSCRIBE'));
-        $connection
-            ->expects($this->at(3))
-            ->method('read')
-            ->willReturn(array('unsubscribe', 'channel', 0));
+            ->withConsecutive(
+                array($this->isRedisCommand('SUBSCRIBE')),
+                array($this->isRedisCommand('UNSUBSCRIBE'))
+            );
 
         $callable = $this->getMockBuilder('stdClass')
             ->addMethods(array('__invoke'))
             ->getMock();
         $callable
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__invoke')
-            ->willReturn(false);
+            ->withConsecutive(
+                array(
+                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    (object) array('kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1)
+                ),
+                array(
+                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    (object) array('kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0)
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                false,
+                null // <-- this value would be ignored as it is the callback to UNSUBSCRIBE
+            );
 
         $client = new Client($connection);
 
@@ -1135,11 +1150,13 @@ class ClientTest extends PredisTestCase
      */
     public function testClientResendScriptCommandUsingEvalOnNoScriptErrors(): void
     {
+        $luaScriptBody = 'return redis.call(\'exists\', KEYS[1])';
+
         $command = $this->getMockForAbstractClass('Predis\Command\ScriptCommand', array(), '', true, true, true, array('parseResponse'));
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->willReturn('return redis.call(\'exists\', KEYS[1])');
+            ->willReturn($luaScriptBody);
         $command
             ->expects($this->once())
             ->method('parseResponse')
@@ -1148,15 +1165,16 @@ class ClientTest extends PredisTestCase
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($command)
-            ->willReturn(new Response\Error('NOSCRIPT'));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('EVAL'))
-            ->willReturn('OK');
+            ->withConsecutive(
+                array($command),
+                array($this->isRedisCommand('EVAL', array($luaScriptBody)))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Error('NOSCRIPT'),
+                'OK'
+            );
 
         $client = new Client($connection);
 

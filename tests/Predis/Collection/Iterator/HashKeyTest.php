@@ -178,19 +178,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array())
-            ->will($this->returnValue(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 2, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array()),
+                array('key:hash', 2, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
                 array(0, array('field:3rd' => 'value:3rd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -228,19 +225,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array())
-            ->will($this->returnValue(
-                array(4, array())
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 4, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array()),
+                array('key:hash', 4, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(4, array()),
                 array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -273,26 +267,18 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(3))
             ->method('hscan')
-            ->with('key:hash', 0, array())
-            ->will($this->returnValue(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 2, array())
-            ->will($this->returnValue(
-                array(5, array())
-            ));
-        $client
-            ->expects($this->at(3))
-            ->method('hscan')
-            ->with('key:hash', 5, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array()),
+                array('key:hash', 2, array()),
+                array('key:hash', 5, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
+                array(5, array()),
                 array(0, array('field:3rd' => 'value:3rd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -330,12 +316,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array('MATCH' => 'field:*'))
-            ->will($this->returnValue(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
+            ->withConsecutive(
+                array('key:hash', 0, array('MATCH' => 'field:*')),
+                array('key:hash', 2, array('MATCH' => 'field:*'))
+            )
+            ->willReturn(
+                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
+                array(0, array())
+            );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*');
 
@@ -368,19 +358,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array('MATCH' => 'field:*'))
-            ->will($this->returnValue(
-                array(1, array('field:1st' => 'value:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 1, array('MATCH' => 'field:*'))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array('MATCH' => 'field:*')),
+                array('key:hash', 1, array('MATCH' => 'field:*'))
+            )
+            ->willReturn(
+                array(1, array('field:1st' => 'value:1st')),
                 array(0, array('field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*');
 
@@ -413,12 +400,14 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('hscan')
-            ->with('key:hash', 0, array('COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array('COUNT' => 2))
+            )
+            ->willReturn(
                 array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash', null, 2);
 
@@ -451,19 +440,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array('COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('field:1st' => 'value:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 1, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array('COUNT' => 1)),
+                array('key:hash', 1, array('COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('field:1st' => 'value:1st')),
                 array(0, array('field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash', null, 1);
 
@@ -496,12 +482,14 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once(1))
             ->method('hscan')
-            ->with('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*', 2);
 
@@ -534,19 +522,16 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('field:1st' => 'value:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('hscan')
-            ->with('key:hash', 1, array('MATCH' => 'field:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 1)),
+                array('key:hash', 1, array('MATCH' => 'field:*', 'COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('field:1st' => 'value:1st')),
                 array(0, array('field:2nd' => 'value:2nd'))
-            ));
+            );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*', 1);
 

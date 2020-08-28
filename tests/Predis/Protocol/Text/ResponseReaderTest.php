@@ -56,25 +56,15 @@ class ResponseReaderTest extends PredisTestCase
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(5))
             ->method('readLine')
-            ->willReturn('+OK');
-        $connection
-            ->expects($this->at(1))
-            ->method('readLine')
-            ->willReturn('-ERR error message');
-        $connection
-            ->expects($this->at(2))
-            ->method('readLine')
-            ->willReturn(':2');
-        $connection
-            ->expects($this->at(3))
-            ->method('readLine')
-            ->willReturn('$-1');
-        $connection
-            ->expects($this->at(4))
-            ->method('readLine')
-            ->willReturn('*-1');
+            ->willReturnOnConsecutiveCalls(
+                '+OK',
+                '-ERR error message',
+                ':2',
+                '$-1',
+                '*-1'
+            );
 
         $reader = new ResponseReader();
 

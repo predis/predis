@@ -1019,8 +1019,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $slave1
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with(
-                $this->logicalOr($cmdEval, $cmdEvalSha)
+            ->withConsecutive(
+                array($this->isRedisCommand($cmdEval)),
+                array($this->isRedisCommand($cmdEvalSha))
             );
 
         $replication = new MasterSlaveReplication();
@@ -1063,8 +1064,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $master
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1076,7 +1079,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1107,32 +1110,41 @@ repl_backlog_histlen:12978
         /** @var Connection\FactoryInterface|MockObject */
         $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connFactory
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6381',
-                'role' => 'master',
-            ))
-            ->willReturn($master);
-        $connFactory
-            ->expects($this->at(1))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6382',
-                'role' => 'slave',
-            ))
-            ->willReturn($slave1);
-        $connFactory
-            ->expects($this->at(2))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6383',
-                'role' => 'slave',
-            ))
-            ->willReturn($slave2);
+            ->withConsecutive(
+                # Connection to master node
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6381',
+                        'role' => 'master',
+                    )
+                ),
+
+                # Connection to first slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6382',
+                        'role' => 'slave',
+                    )
+                ),
+
+                # Connection to second slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6383',
+                        'role' => 'slave',
+                    )
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                $master,
+                $slave1,
+                $slave2
+            );
 
         $slave1
             ->expects($this->once())
@@ -1206,37 +1218,48 @@ repl_backlog_histlen:12978
         /** @var Connection\FactoryInterface|MockObject */
         $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connFactory
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6381',
-                'role' => 'master',
-            ))
-            ->willReturn($master);
-        $connFactory
-            ->expects($this->at(1))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6382',
-                'role' => 'slave',
-            ))
-            ->willReturn($slave1);
-        $connFactory
-            ->expects($this->at(2))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6383',
-                'role' => 'slave',
-            ))
-            ->willReturn($slave2);
+            ->withConsecutive(
+                # Connection to master node
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6381',
+                        'role' => 'master',
+                    )
+                ),
+
+                # Connection to first slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6382',
+                        'role' => 'slave',
+                    )
+                ),
+
+                # Connection to second slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6383',
+                        'role' => 'slave',
+                    )
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                $master,
+                $slave1,
+                $slave2
+            );
 
         $masterKO
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
             ->willThrowException(
                 new Connection\ConnectionException($masterKO)
             );
@@ -1268,8 +1291,10 @@ repl_backlog_histlen:0
         $master
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1281,7 +1306,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);

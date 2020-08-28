@@ -131,20 +131,19 @@ class ListKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('lrange')
-            ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:list', 0, 9),
+                array('key:list', 10, 19)
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(
                     'item:1', 'item:2', 'item:3', 'item:4', 'item:5',
                     'item:6', 'item:7', 'item:8', 'item:9', 'item:10',
-                )
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('lrange')
-            ->with('key:list', 10, 19)
-            ->willReturn(array('item:11', 'item:12'));
+                ),
+                array('item:11', 'item:12')
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -212,12 +211,12 @@ class ListKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 4)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list', 5);
 
@@ -250,19 +249,16 @@ class ListKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('lrange')
-            ->with('key:list', 0, 1)
-            ->will($this->returnValue(
-                array('item:1', 'item:2')
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('lrange')
-            ->with('key:list', 2, 3)
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:list', 0, 1),
+                array('key:list', 2, 3)
+            )
+            ->willReturnOnConsecutiveCalls(
+                array('item:1', 'item:2'),
                 array('item:3')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list', 2);
 

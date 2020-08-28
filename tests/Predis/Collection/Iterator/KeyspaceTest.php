@@ -128,17 +128,14 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array())
-            ->willReturn(
-                array(2, array('key:1st', 'key:2nd'))
-            );
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(2, array())
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array()),
+                array(2, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('key:1st', 'key:2nd')),
                 array(0, array('key:3rd'))
             );
 
@@ -178,17 +175,14 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array())
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array()),
                 array(4, array())
-            );
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(4, array())
-            ->willReturn(
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(4, array()),
                 array(0, array('key:1st', 'key:2nd'))
             );
 
@@ -223,24 +217,16 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(3))
             ->method('scan')
-            ->with(0, array())
-            ->willReturn(
-                array(2, array('key:1st', 'key:2nd'))
-            );
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(2, array())
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array()),
+                array(2, array()),
                 array(5, array())
-            );
-        $client
-            ->expects($this->at(3))
-            ->method('scan')
-            ->with(5, array())
-            ->willReturn(
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('key:1st', 'key:2nd')),
+                array(5, array()),
                 array(0, array('key:3rd'))
             );
 
@@ -280,10 +266,12 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('scan')
-            ->with(0, array('MATCH' => 'key:*'))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('MATCH' => 'key:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('key:1st', 'key:2nd'))
             );
 
@@ -318,17 +306,14 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array('MATCH' => 'key:*'))
-            ->willReturn(
-                array(1, array('key:1st'))
-            );
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(1, array('MATCH' => 'key:*'))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('MATCH' => 'key:*')),
+                array(1, array('MATCH' => 'key:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('key:1st')),
                 array(0, array('key:2nd'))
             );
 
@@ -363,10 +348,12 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('scan')
-            ->with(0, array('COUNT' => 2))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('key:1st', 'key:2nd'))
             );
 
@@ -400,16 +387,17 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->any())
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
+
+
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array('COUNT' => 1))
-            ->willReturn(array(1, array('key:1st')));
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(1, array('COUNT' => 1))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('COUNT' => 1)),
+                array(1, array('COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('key:1st')),
                 array(0, array('key:2nd'))
             );
 
@@ -444,10 +432,12 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('scan')
-            ->with(0, array('MATCH' => 'key:*', 'COUNT' => 2))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('MATCH' => 'key:*', 'COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('key:1st', 'key:2nd'))
             );
 
@@ -481,18 +471,17 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->any())
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
+
+
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array('MATCH' => 'key:*', 'COUNT' => 1))
-            ->willReturn(
-                array(1, array('key:1st'))
-            );
-        $client
-            ->expects($this->at(2))
-            ->method('scan')
-            ->with(1, array('MATCH' => 'key:*', 'COUNT' => 1))
-            ->willReturn(
+            ->withConsecutive(
+                array(0, array('MATCH' => 'key:*', 'COUNT' => 1)),
+                array(1, array('MATCH' => 'key:*', 'COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('key:1st')),
                 array(0, array('key:2nd'))
             );
 

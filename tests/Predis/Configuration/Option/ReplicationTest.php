@@ -46,15 +46,16 @@ class ReplicationTest extends PredisTestCase
         /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__get')
-            ->with('autodiscovery')
-            ->willReturn(true);
-        $options
-            ->expects($this->at(1))
-            ->method('__get')
-            ->with('connections')
-            ->willReturn($connectionFactory);
+            ->withConsecutive(
+                array('autodiscovery'),
+                array('connections')
+            )
+            ->willReturnOnConsecutiveCalls(
+                true,
+                $connectionFactory
+            );
 
         $this->assertInstanceOf('Closure', $initializer = $option->getDefault($options));
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $connection = $initializer($options));
@@ -142,17 +143,16 @@ class ReplicationTest extends PredisTestCase
         /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__get')
-            ->with('service')
-            ->willReturn('mymaster');
-        $options
-            ->expects($this->at(1))
-            ->method('__get')
-            ->with('connections')
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('service'),
+                array('connections')
+            )
+            ->willReturnOnConsecutiveCalls(
+                'mymaster',
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
-            ));
+            );
 
         $parameters = array(
             $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock(),
