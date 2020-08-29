@@ -12,6 +12,7 @@
 namespace Predis\Configuration\Option;
 
 use Predis\Command\FactoryInterface;
+use Predis\Command\RawFactory;
 use Predis\Command\RedisFactory;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
@@ -32,27 +33,100 @@ class Commands implements OptionInterface
             $value = call_user_func($value, $options);
         }
 
-        if (is_array($value)) {
-            $commands = $this->getDefault($options);
+        if ($value instanceof FactoryInterface) {
+            return $value;
+        } elseif (is_array($value)) {
+            return $this->createFactoryByArray($options, $value);
+        } elseif(is_string($value)) {
+            return $this->createFactoryByString($options, $value);
+        } else {
+            throw new \InvalidArgumentException(sprintf(
+                '%s expects a valid command factory',
+                static::class
+            ));
+        }
+    }
 
-            foreach ($value as $commandID => $commandClass) {
-                if ($commandClass === null) {
-                    $commands->undefine($commandID);
-                } else {
-                    $commands->define($commandID, $commandClass);
-                }
+    /**
+     * Creates a new default command factory from a named array.
+     *
+     * The factory instance is configured according to the supplied named array
+     * mapping command IDs (passed as keys) to the FCQN of classes implementing
+     * Predis\Command\CommandInterface.
+     *
+     * @param OptionsInterface $options Client options container
+     * @param array            $value   Named array mapping command IDs to classes
+     *
+     * @return FactoryInterface
+     */
+    protected function createFactoryByArray(OptionsInterface $options, array $value)
+    {
+        /**
+         * @var FactoryInterface
+         */
+        $commands = $this->getDefault($options);
+
+        foreach ($value as $commandID => $commandClass) {
+            if ($commandClass === null) {
+                $commands->undefine($commandID);
+            } else {
+                $commands->define($commandID, $commandClass);
             }
-
-            return $commands;
         }
 
-        if (!$value instanceof FactoryInterface) {
-            $class = get_called_class();
+        return $commands;
+    }
+    /**
+     * Creates a new command factory from a descriptive string.
+     *
+     * The factory instance is configured according to the supplied descriptive
+     * string that identifies specific configurations of schemes and connection
+     * classes. Supported configuration values are:
+     *
+     * - "predis" returns the default command factory used by Predis
+     * - "raw" returns a command factory that creates only raw commands
+     * - "default" is simply an alias of "predis"
+     *
+     * @param OptionsInterface $options Client options container
+     * @param string           $value   Descriptive string identifying the desired configuration
+     *
+     * @return FactoryInterface
+     */
+    protected function createFactoryByString(OptionsInterface $options, string $value)
+    {
+        switch (strtolower($value)) {
+            case 'default':
+            case 'predis':
+                return $this->getDefault($options);
 
-            throw new \InvalidArgumentException("$class expects a valid command factory");
+            case 'raw':
+                return $this->createRawFactory($options);
+
+            default:
+                throw new \InvalidArgumentException(sprintf(
+                    '%s does not recognize `%s` as a supported configuration string',
+                    static::class,
+                    $value
+                ));
+        }
+    }
+
+    /**
+     * Creates a new raw command factory instance.
+     *
+     * @param OptionsInterface $options Client options container
+     */
+    protected function createRawFactory(OptionsInterface $options): FactoryInterface
+    {
+        $commands = new RawFactory();
+
+        if (isset($options->prefix)) {
+            throw new \InvalidArgumentException(sprintf(
+                '%s does not support key prefixing', RawFactory::class
+            ));
         }
 
-        return $value;
+        return $commands;
     }
 
     /**
