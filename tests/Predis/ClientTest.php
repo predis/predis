@@ -728,33 +728,6 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodInvokesCallableInSecondArgumentAndReturnsItsReturnValue()
-    {
-        $test = $this;
-        $client = new Client(array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'), array('cluster' => 'predis'));
-
-        $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
-            ->getMock();
-        $callable
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->callback(function ($clientNode) use ($test, $client) {
-                $test->isInstanceOf('Predis\ClientInterface', $clientNode);
-                $test->assertNotSame($client, $clientNode);
-                $test->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection = $clientNode->getConnection());
-                $test->assertSame('node02', $connection->getParameters()->alias);
-
-                return true;
-            }))
-            ->will($this->returnValue('value'));
-
-        $this->assertSame('value', $client->getClientBy('alias', 'node02', $callable));
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testGetClientByMethodSupportsSelectingConnectionById()
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
