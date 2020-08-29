@@ -1,4 +1,4 @@
-v1.1.4 (2020-xx-xx)
+v1.1.4 (2020-08-31)
 ================================================================================
 
 - Improved @method annotations for methods responding to Redis commands defined
