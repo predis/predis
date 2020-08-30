@@ -86,12 +86,20 @@ v2.0.0 (202x-xx-xx)
   same command against all of the registered connections.
 
 
-v1.1.4 (2020-xx-xx)
+v1.1.4 (2020-08-31)
 ================================================================================
 
 - Improved @method annotations for methods responding to Redis commands defined
   by `Predis\ClientInterface` and `Predis\ClientContextInterface`. (PR #456 and
   PR #497, other fixes applied after further analysys).
+
+- __FIX__: the client can now handle ACL authentication when connecting to Redis
+  6.x simply by passing both `username` and `password` to connection parameters.
+  See [the Redis docs](https://redis.io/topics/acl) for details on this topic.
+
+- __FIX__: NULL or zero-length string values passed to `password` and `database`
+  in the connection parameters list do not trigger spurious `AUTH` and `SELECT`
+  commands anymore when connecting to Redis (ISSUE #436).
 
 - __FIX__: initializing an iteration over a client instance when it is connected
   to a standalone Redis server will not throw an exception anymore, instead it

@@ -87,6 +87,9 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
+Password protected servers can be accessed by adding `password` to the parameters set. When ACLs are
+enabled on Redis >= 6.0, both `username` and `password` are required for user authentication.
+
 It is also possible to connect to local instances of Redis using UNIX domain sockets, in this case
 the parameters must use the `unix` scheme and specify a path for the socket file:
 
