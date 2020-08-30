@@ -301,7 +301,7 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        // TODO: using reflection to make a protected metod accessible :facepalm:
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
@@ -327,7 +327,7 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        // TODO: using reflection to make a protected metod accessible :facepalm:
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
@@ -354,7 +354,7 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        // TODO: using reflection to make a protected metod accessible :facepalm:
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
@@ -379,7 +379,7 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        // TODO: using reflection to make a protected metod accessible :facepalm:
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
@@ -405,7 +405,7 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
-        // TODO: using reflection to make a protected metod accessible :facepalm:
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
