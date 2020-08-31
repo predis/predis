@@ -61,6 +61,76 @@ class ConnectionsTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider provideSupportedStringValuesForOption
+     */
+    public function testAcceptsStringToConfigurePhpiredisStreamBackend($value, $classFQCN)
+    {
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $default
+            ->expects($this->exactly(3))
+            ->method('define')
+            ->with($this->matchesRegularExpression('/^tcp|unix|redis$/'), $classFQCN);
+
+        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
+        ->setMethods(array('getDefault'))
+        ->getMock();
+        $option
+            ->expects($this->once())
+            ->method('getDefault')
+            ->with($options)
+            ->will($this->returnValue($default));
+
+        $factory = $option->filter($options, $value);
+
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory);
+        $this->assertSame($default, $factory);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAcceptsStringDefaultToReturnConnectionFactoryWithDefaultConfiguration()
+    {
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $default
+            ->expects($this->never())
+            ->method('define');
+
+        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
+        ->setMethods(array('getDefault'))
+        ->getMock();
+        $option
+            ->expects($this->once())
+            ->method('getDefault')
+            ->with($options)
+            ->will($this->returnValue($default));
+
+        $factory = $option->filter($options, 'default');
+
+        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory);
+        $this->assertSame($default, $factory);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testThrowsExceptionOnNotSupportedStringValue()
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessageMatches('/^.* does not recognize `unsupported` as a supported configuration string$/');
+
+        $option = new Connections();
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $option->filter($options, 'unsupported');
+    }
+
+    /**
+     * @group disconnected
      */
     public function testUsesParametersOptionToSetDefaultParameters()
     {
@@ -139,5 +209,23 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new \stdClass());
+    }
+
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
+
+    /**
+     * Test provider for string values supported by this client option.
+     *
+     * @return array
+     */
+    public function provideSupportedStringValuesForOption()
+    {
+        return array(
+            array('phpiredis-stream', 'Predis\Connection\PhpiredisStreamConnection'),
+            array('phpiredis-socket', 'Predis\Connection\PhpiredisSocketConnection'),
+            array('phpiredis', 'Predis\Connection\PhpiredisStreamConnection'),
+        );
     }
 }

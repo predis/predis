@@ -11,13 +11,25 @@ v2.0.0 (202x-xx-xx)
      aggregate connection.
   - `commands`: command factory, named array mapping command IDs to PHP classes,
     callable returning a command factory or a named array.
-  - `connections`: connection factory, callable returning a connection factory,
-    named array mapping connection schemes to PHP classes.
+  - `connections`: connection factory, callable object returning a connection
+    factory, named array mapping URI schemes to PHP classes, string identifying
+    a supported combination of configurations for the connection factory.
   - `prefix`: string value, command processor, callable.
   - `exceptions`: boolean.
 
   Note that both the `cluster` and `replication` options now return a closure
   acting as initializer instead of an aggregate connection instance.
+
+- The `connections` client option now accepts certain string values identifying
+  certain combinations of configurations for the connection factory. Currenlty
+  this is used to provide a short way to configure Predis to load our phpiredis
+  based connection backends simply, accepted values are:
+
+  - `phpiredis-stream` maps `Phpiredis\Connection\PhpiredisStreamConnection` to
+    `tcp`, `redis`, `unix` URI schemes.
+  - `phpiredis-socket` maps `Phpiredis\Connection\PhpiredisSocketConnection` to
+    `tcp`, `redis`, `unix` URI schemes.
+  - `phpiredis-stream` is simply an alias of `phpiredis-stream`.
 
 - Added the new `Predis\Cluster\Hash\PhpiredisCRC16` class using ext-phpiredis
   to speed-up the generation of the CRC16 hash of keys for redis-cluster. Predis

@@ -415,6 +415,17 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 ]);
 ```
 
+The client can also be configured to rely on a [phpiredis](https://github.com/nrk/phpiredis)-backend
+by specifying a descriptive string for the `connections` client option. Supported string values are:
+
+- `phpiredis-stream` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisStreamConnection`
+- `phpiredis-socket` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisSocketConnection`
+- `phpiredis` is simply an alias of `phpiredis-stream`
+
+```php
+$client = new Predis\Client('tcp://127.0.0.1', ['connections' => 'phpiredis']);
+```
+
 Developers can create their own connection classes to support whole new network backends, extend
 existing classes or provide completely different implementations. Connection classes must implement
 `Predis\Connection\NodeConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
