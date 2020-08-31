@@ -29,7 +29,7 @@ class KeyspaceTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->any())
-            ->method('supportsCommand')
+            ->method('supports')
             ->will($this->returnValue(false));
 
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();

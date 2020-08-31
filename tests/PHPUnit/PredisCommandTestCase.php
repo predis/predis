@@ -57,7 +57,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        if (!$commands->supportsCommand($id = $this->getExpectedId())) {
+        if (!$commands->supports($id = $this->getExpectedId())) {
             $this->markTestSkipped(
                 "The current command factory does not support command $id"
             );

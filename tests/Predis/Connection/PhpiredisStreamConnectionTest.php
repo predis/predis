@@ -94,7 +94,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         ), true);
 
         $connection->executeCommand(
-            $this->getCommandFactory()->createCommand('brpop', array('foo', 3))
+            $this->getCommandFactory()->create('brpop', array('foo', 3))
         );
     }
 
@@ -109,7 +109,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->createConnection();
         $stream = $connection->getResource();
 
-        $connection->writeRequest($this->getCommandFactory()->createCommand('ping'));
+        $connection->writeRequest($this->getCommandFactory()->create('ping'));
         stream_socket_recvfrom($stream, 1);
 
         $connection->read();

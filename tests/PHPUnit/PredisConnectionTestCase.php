@@ -208,7 +208,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->createConnection();
         $commands = $this->getCommandFactory();
 
-        $cmdPing = $commands->createCommand('ping');
+        $cmdPing = $commands->create('ping');
 
         $this->assertEquals('PONG', $connection->executeCommand($cmdPing));
         $this->assertTrue($connection->isConnected());
@@ -238,7 +238,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     public function testExecutesCommandWithHolesInArguments()
     {
         $commands = $this->getCommandFactory();
-        $cmdDel = $commands->createCommand('mget', array(0 => 'key:0', 2 => 'key:2'));
+        $cmdDel = $commands->create('mget', array(0 => 'key:0', 2 => 'key:2'));
 
         $connection = $this->createConnection();
 
@@ -252,11 +252,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     {
         $commands = $this->getCommandFactory();
 
-        $cmdPing = $commands->createCommand('ping');
-        $cmdEcho = $commands->createCommand('echo', array('echoed'));
-        $cmdGet = $commands->createCommand('get', array('foobar'));
-        $cmdRpush = $commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol'));
-        $cmdLrange = $commands->createCommand('lrange', array('metavars', 0, -1));
+        $cmdPing = $commands->create('ping');
+        $cmdEcho = $commands->create('echo', array('echoed'));
+        $cmdGet = $commands->create('get', array('foobar'));
+        $cmdRpush = $commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol'));
+        $cmdLrange = $commands->create('lrange', array('metavars', 0, -1));
 
         $connection = $this->createConnection(true);
 
@@ -378,14 +378,14 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
         $connection = $this->createConnection(true);
 
-        $connection->writeRequest($commands->createCommand('set', array('foo', 'bar')));
+        $connection->writeRequest($commands->create('set', array('foo', 'bar')));
         $this->assertInstanceOf('Predis\Response\Status', $connection->read());
 
-        $connection->writeRequest($commands->createCommand('ping'));
+        $connection->writeRequest($commands->create('ping'));
         $this->assertInstanceOf('Predis\Response\Status', $connection->read());
 
-        $connection->writeRequest($commands->createCommand('multi'));
-        $connection->writeRequest($commands->createCommand('ping'));
+        $connection->writeRequest($commands->create('multi'));
+        $connection->writeRequest($commands->create('ping'));
         $this->assertInstanceOf('Predis\Response\Status', $connection->read());
         $this->assertInstanceOf('Predis\Response\Status', $connection->read());
     }
@@ -398,12 +398,12 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
         $connection = $this->createConnection(true);
 
-        $connection->executeCommand($commands->createCommand('set', array('foo', 'bar')));
+        $connection->executeCommand($commands->create('set', array('foo', 'bar')));
 
-        $connection->writeRequest($commands->createCommand('get', array('foo')));
+        $connection->writeRequest($commands->create('get', array('foo')));
         $this->assertSame('bar', $connection->read());
 
-        $connection->writeRequest($commands->createCommand('get', array('hoge')));
+        $connection->writeRequest($commands->create('get', array('hoge')));
         $this->assertNull($connection->read());
     }
 
@@ -415,8 +415,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
         $connection = $this->createConnection(true);
 
-        $connection->executeCommand($commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeRequest($commands->createCommand('llen', array('metavars')));
+        $connection->executeCommand($commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol')));
+        $connection->writeRequest($commands->create('llen', array('metavars')));
 
         $this->assertSame(3, $connection->read());
     }
@@ -429,8 +429,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
         $connection = $this->createConnection(true);
 
-        $connection->executeCommand($commands->createCommand('set', array('foo', 'bar')));
-        $connection->writeRequest($commands->createCommand('rpush', array('foo', 'baz')));
+        $connection->executeCommand($commands->create('set', array('foo', 'bar')));
+        $connection->writeRequest($commands->create('rpush', array('foo', 'baz')));
 
         $this->assertInstanceOf('Predis\Response\Error', $error = $connection->read());
         $this->assertRegExp('/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage());
@@ -444,8 +444,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $commands = $this->getCommandFactory();
         $connection = $this->createConnection(true);
 
-        $connection->executeCommand($commands->createCommand('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeRequest($commands->createCommand('lrange', array('metavars', 0, -1)));
+        $connection->executeCommand($commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol')));
+        $connection->writeRequest($commands->create('lrange', array('metavars', 0, -1)));
 
         $this->assertSame(array('foo', 'hoge', 'lol'), $connection->read());
     }
@@ -531,7 +531,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
             'read_write_timeout' => 0.5,
         ), true);
 
-        $connection->executeCommand($commands->createCommand('brpop', array('foo', 3)));
+        $connection->executeCommand($commands->create('brpop', array('foo', 3)));
     }
 
     /**
@@ -545,7 +545,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->createConnection();
         $stream = $connection->getResource();
 
-        $connection->writeRequest($this->getCommandFactory()->createCommand('ping'));
+        $connection->writeRequest($this->getCommandFactory()->create('ping'));
         fread($stream, 1);
 
         $connection->read();
@@ -638,11 +638,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         if ($initialize) {
             $connection->addConnectCommand(
-                $commands->createCommand('select', array($parameters->database))
+                $commands->create('select', array($parameters->database))
             );
 
             $connection->addConnectCommand(
-                $commands->createCommand('flushdb')
+                $commands->create('flushdb')
             );
         }
 

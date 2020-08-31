@@ -144,7 +144,7 @@ class PipelineTest extends PredisTestCase
     public function testExecuteReturnsPipelineForFluentInterface()
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $command = $this->getCommandFactory()->createCommand('echo', array('one'));
+        $command = $this->getCommandFactory()->create('echo', array('one'));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -168,9 +168,9 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $pipeline->executeCommand($commands->createCommand('echo', array('one')));
-        $pipeline->executeCommand($commands->createCommand('echo', array('two')));
-        $pipeline->executeCommand($commands->createCommand('echo', array('three')));
+        $pipeline->executeCommand($commands->create('echo', array('one')));
+        $pipeline->executeCommand($commands->create('echo', array('two')));
+        $pipeline->executeCommand($commands->create('echo', array('three')));
     }
 
     /**

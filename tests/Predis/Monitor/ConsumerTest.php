@@ -31,7 +31,7 @@ class ConsumerTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
-            ->method('supportsCommand')
+            ->method('supports')
             ->with('MONITOR')
             ->will($this->returnValue(false));
 
@@ -59,7 +59,7 @@ class ConsumerTest extends PredisTestCase
      */
     public function testConstructorStartsConsumer()
     {
-        $cmdMonitor = $this->getCommandFactory()->createCommand('monitor');
+        $cmdMonitor = $this->getCommandFactory()->create('monitor');
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $client = $this->getMockBuilder('Predis\Client')

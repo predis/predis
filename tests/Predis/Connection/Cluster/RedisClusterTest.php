@@ -506,18 +506,18 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $set = $commands->createCommand('set', array('node:1001', 'foobar'));
-        $get = $commands->createCommand('get', array('node:1001'));
+        $set = $commands->create('set', array('node:1001', 'foobar'));
+        $get = $commands->create('get', array('node:1001'));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
 
-        $set = $commands->createCommand('set', array('node:1048', 'foobar'));
-        $get = $commands->createCommand('get', array('node:1048'));
+        $set = $commands->create('set', array('node:1048', 'foobar'));
+        $get = $commands->create('get', array('node:1048'));
         $this->assertSame($connection2, $cluster->getConnectionByCommand($set));
         $this->assertSame($connection2, $cluster->getConnectionByCommand($get));
 
-        $set = $commands->createCommand('set', array('node:1082', 'foobar'));
-        $get = $commands->createCommand('get', array('node:1082'));
+        $set = $commands->create('set', array('node:1082', 'foobar'));
+        $get = $commands->create('get', array('node:1082'));
         $this->assertSame($connection3, $cluster->getConnectionByCommand($set));
         $this->assertSame($connection3, $cluster->getConnectionByCommand($get));
     }
@@ -527,7 +527,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testWritesCommandToCorrectConnection()
     {
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -554,7 +554,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testReadsCommandFromCorrectConnection()
     {
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1050'));
+        $command = $this->getCommandFactory()->create('get', array('node:1050'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -910,13 +910,13 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $set = $commands->createCommand('set', array('{node:1001}:foo', 'foobar'));
-        $get = $commands->createCommand('get', array('{node:1001}:foo'));
+        $set = $commands->create('set', array('{node:1001}:foo', 'foobar'));
+        $get = $commands->create('get', array('{node:1001}:foo'));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
 
-        $set = $commands->createCommand('set', array('{node:1001}:bar', 'foobar'));
-        $get = $commands->createCommand('get', array('{node:1001}:bar'));
+        $set = $commands->create('set', array('{node:1001}:bar', 'foobar'));
+        $get = $commands->create('get', array('{node:1001}:bar'));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($set));
         $this->assertSame($connection1, $cluster->getConnectionByCommand($get));
     }
@@ -928,7 +928,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $askResponse = new Response\Error('ASK 1970 127.0.0.1:6380');
 
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -971,7 +971,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
 
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -1026,7 +1026,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');
 
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -1063,7 +1063,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
 
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
@@ -1112,7 +1112,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
 
-        $command = $this->getCommandFactory()->createCommand('get', array('node:1001'));
+        $command = $this->getCommandFactory()->create('get', array('node:1001'));
 
         $connection1 = $this->getMockConnection('tcp://[2001:db8:0:f101::1]:6379');
         $connection1
@@ -1249,7 +1249,7 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("Cannot use 'PING' with redis-cluster");
 
-        $ping = $this->getCommandFactory()->createCommand('ping');
+        $ping = $this->getCommandFactory()->create('ping');
 
         $cluster = new RedisCluster(new Connection\Factory());
 

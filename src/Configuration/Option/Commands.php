@@ -37,9 +37,9 @@ class Commands implements OptionInterface
 
             foreach ($value as $commandID => $commandClass) {
                 if ($commandClass === null) {
-                    $commands->undefineCommand($commandID);
+                    $commands->undefine($commandID);
                 } else {
-                    $commands->defineCommand($commandID, $commandClass);
+                    $commands->define($commandID, $commandClass);
                 }
             }
 

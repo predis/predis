@@ -27,7 +27,7 @@ class RedisFactoryTest extends PredisTestCase
         $factory = new RedisFactory();
 
         foreach ($this->getExpectedCommands() as $commandID) {
-            $this->assertTrue($factory->supportsCommand($commandID), "Command factory does not support $commandID");
+            $this->assertTrue($factory->supports($commandID), "Command factory does not support $commandID");
         }
     }
 
@@ -38,11 +38,11 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $this->assertTrue($factory->supportsCommand('info'));
-        $this->assertTrue($factory->supportsCommand('INFO'));
+        $this->assertTrue($factory->supports('info'));
+        $this->assertTrue($factory->supports('INFO'));
 
-        $this->assertFalse($factory->supportsCommand('unknown'));
-        $this->assertFalse($factory->supportsCommand('UNKNOWN'));
+        $this->assertFalse($factory->supports('unknown'));
+        $this->assertFalse($factory->supports('UNKNOWN'));
     }
 
     /**
@@ -52,12 +52,12 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $this->assertTrue($factory->supportsCommands(array('get', 'set')));
-        $this->assertTrue($factory->supportsCommands(array('GET', 'SET')));
+        $this->assertTrue($factory->supports('get', 'set'));
+        $this->assertTrue($factory->supports('GET', 'SET'));
 
-        $this->assertFalse($factory->supportsCommands(array('get', 'unknown')));
+        $this->assertFalse($factory->supports('get', 'unknown'));
 
-        $this->assertFalse($factory->supportsCommands(array('unknown1', 'unknown2')));
+        $this->assertFalse($factory->supports('unknown1', 'unknown2'));
     }
 
     /**
@@ -84,10 +84,10 @@ class RedisFactoryTest extends PredisTestCase
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')
             ->getMock();
 
-        $factory->defineCommand('mock', get_class($command));
+        $factory->define('mock', get_class($command));
 
-        $this->assertTrue($factory->supportsCommand('mock'));
-        $this->assertTrue($factory->supportsCommand('MOCK'));
+        $this->assertTrue($factory->supports('mock'));
+        $this->assertTrue($factory->supports('MOCK'));
 
         $this->assertSame(get_class($command), $factory->getCommandClass('mock'));
     }
@@ -99,12 +99,12 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $this->assertTrue($factory->supportsCommand('PING'));
+        $this->assertTrue($factory->supports('PING'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
 
-        $factory->undefineCommand('PING');
+        $factory->undefine('PING');
 
-        $this->assertFalse($factory->supportsCommand('PING'));
+        $this->assertFalse($factory->supports('PING'));
         $this->assertNull($factory->getCommandClass('PING'));
     }
 
@@ -116,14 +116,14 @@ class RedisFactoryTest extends PredisTestCase
         $factory = new RedisFactory();
 
         $commandClass = get_class($this->getMockBuilder('Predis\Command\CommandInterface')->getMock());
-        $factory->defineCommand('MOCK', $commandClass);
+        $factory->define('MOCK', $commandClass);
 
-        $this->assertTrue($factory->supportsCommand('MOCK'));
+        $this->assertTrue($factory->supports('MOCK'));
         $this->assertSame($commandClass, $factory->getCommandClass('MOCK'));
 
-        $factory->undefineCommand('MOCK');
+        $factory->undefine('MOCK');
 
-        $this->assertFalse($factory->supportsCommand('MOCK'));
+        $this->assertFalse($factory->supports('MOCK'));
         $this->assertNull($factory->getCommandClass('MOCK'));
     }
 
@@ -137,7 +137,7 @@ class RedisFactoryTest extends PredisTestCase
 
         $factory = new RedisFactory();
 
-        $factory->defineCommand('mock', 'stdClass');
+        $factory->define('mock', 'stdClass');
     }
 
     /**
@@ -147,7 +147,7 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $command = $factory->createCommand('info');
+        $command = $factory->create('info');
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals('INFO', $command->getId());
@@ -162,7 +162,7 @@ class RedisFactoryTest extends PredisTestCase
         $factory = new RedisFactory();
 
         $arguments = array('foo', 'bar');
-        $command = $factory->createCommand('set', $arguments);
+        $command = $factory->create('set', $arguments);
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals('SET', $command->getId());
@@ -179,7 +179,7 @@ class RedisFactoryTest extends PredisTestCase
 
         $factory = new RedisFactory();
 
-        $factory->createCommand('unknown');
+        $factory->create('unknown');
     }
 
     /**
@@ -246,7 +246,7 @@ class RedisFactoryTest extends PredisTestCase
 
         $factory = new RedisFactory();
         $factory->setProcessor($processor);
-        $factory->createCommand('set', array('foo', 'bar'));
+        $factory->create('set', array('foo', 'bar'));
 
         $this->assertSame(array('FOO', 'BAR'), $argsRef);
     }
@@ -269,7 +269,7 @@ class RedisFactoryTest extends PredisTestCase
         $factory = new RedisFactory();
         $factory->setProcessor($chain);
 
-        $factory->createCommand('info');
+        $factory->create('info');
     }
 
     // ******************************************************************** //

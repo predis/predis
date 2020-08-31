@@ -31,7 +31,7 @@ class ConsumerTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->any())
-            ->method('supportsCommands')
+            ->method('supports')
             ->will($this->returnValue(false));
 
         $client = new Client(null, array('commands' => $commands));
@@ -90,7 +90,7 @@ class ConsumerTest extends PredisTestCase
             ->method('createCommand')
             ->with($this->logicalOr($this->equalTo('subscribe'), $this->equalTo('psubscribe')))
             ->will($this->returnCallback(function ($id, $args) use ($commands) {
-                return $commands->createCommand($id, $args);
+                return $commands->create($id, $args);
             }));
 
         $options = array('subscribe' => 'channel:foo', 'psubscribe' => 'channels:*');

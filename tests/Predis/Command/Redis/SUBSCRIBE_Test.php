@@ -142,7 +142,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     public function testCanSendQuitAfterSubscribe()
     {
         $redis = $this->getClient();
-        $quit = $this->getCommandFactory()->createCommand('quit');
+        $quit = $this->getCommandFactory()->create('quit');
 
         $this->assertSame(array('subscribe', 'channel:foo', 1), $redis->subscribe('channel:foo'));
         $this->assertEquals('OK', $redis->executeCommand($quit));
