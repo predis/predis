@@ -58,11 +58,8 @@ class StreamConnection extends AbstractConnection
             case 'tcp':
             case 'redis':
             case 'unix':
-                break;
-
             case 'tls':
             case 'rediss':
-                $this->assertSslSupport($parameters);
                 break;
 
             default:
@@ -70,23 +67,6 @@ class StreamConnection extends AbstractConnection
         }
 
         return $parameters;
-    }
-
-    /**
-     * Checks needed conditions for SSL-encrypted connections.
-     *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function assertSslSupport(ParametersInterface $parameters)
-    {
-        if (
-            filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN) &&
-            version_compare(PHP_VERSION, '7.0.0beta') < 0
-        ) {
-            throw new \InvalidArgumentException('Persistent SSL connections require PHP >= 7.0.0.');
-        }
     }
 
     /**
