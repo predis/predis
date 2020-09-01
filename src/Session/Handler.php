@@ -48,18 +48,7 @@ class Handler implements \SessionHandlerInterface
      */
     public function register()
     {
-        if (PHP_VERSION_ID >= 50400) {
-            session_set_save_handler($this, true);
-        } else {
-            session_set_save_handler(
-                array($this, 'open'),
-                array($this, 'close'),
-                array($this, 'read'),
-                array($this, 'write'),
-                array($this, 'destroy'),
-                array($this, 'gc')
-            );
-        }
+        session_set_save_handler($this, true);
     }
 
     /**
