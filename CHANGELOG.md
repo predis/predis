@@ -1,3 +1,12 @@
+v1.1.5 (2020-09-xx)
+================================================================================
+
+- __FIX__: the username is now correctly retrieved from the userinfo fragment of
+the URI when using the "redis" scheme and a "username:password" pair is present.
+Values retrieved from the userinfo fragment always override the ones specified
+in `username` and `password` if those fields are present in the query string.
+
+
 v1.1.4 (2020-08-31)
 ================================================================================
 
