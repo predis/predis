@@ -12,24 +12,27 @@
 namespace Predis\Command;
 
 /**
- * Class for generic "anonymous" Redis commands.
+ * Class representing a generic Redis command.
  *
- * This command class does not filter input arguments or parse responses, but
- * can be used to leverage the standard Predis API to execute any command simply
- * by providing the needed arguments following the command signature as defined
- * by Redis in its documentation.
+ * Arguments and responses for these commands are not normalized and they follow
+ * what is defined by the Redis documentation.
+ *
+ * Raw commands can be useful when implementing higher level abstractions on top
+ * of Predis\Client or managing internals like Redis Sentinel or Cluster as they
+ * are not potentially subject to hijacking from third party libraries when they
+ * override command handlers for standard Redis commands.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class RawCommand implements CommandInterface
+final class RawCommand implements CommandInterface
 {
     private $slot;
     private $commandID;
     private $arguments;
 
     /**
-     * @param string $commandID Command ID.
-     * @param array  $arguments Command arguments.
+     * @param string $commandID Command ID
+     * @param array  $arguments Command arguments
      */
     public function __construct($commandID, array $arguments = array())
     {
@@ -40,8 +43,8 @@ class RawCommand implements CommandInterface
     /**
      * Creates a new raw command using a variadic method.
      *
-     * @param string $commandID Redis command ID.
-     * @param string ...        Arguments list for the command.
+     * @param string $commandID Redis command ID
+     * @param string ...        Arguments list for the command
      *
      * @return CommandInterface
      */
