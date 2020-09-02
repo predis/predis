@@ -18,7 +18,6 @@ use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\ParametersInterface;
-use Predis\Connection\Replication\SentinelReplication;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
@@ -126,14 +125,12 @@ class Client implements ClientInterface, \IteratorAggregate
         if (is_array($parameters)) {
             if (!isset($parameters[0])) {
                 return $options->connections->create($parameters);
-            }
-
-            if ($options->defined('cluster')) {
-                return $this->createAggregateConnection($parameters, 'cluster');
-            } elseif ($options->defined('replication')) {
-                return $this->createAggregateConnection($parameters, 'replication');
-            } elseif ($options->defined('aggregate')) {
-                return $this->createAggregateConnection($parameters, 'aggregate');
+            } elseif ($options->defined('cluster') && $initializer = $options->cluster) {
+                return $initializer($parameters, true);
+            } elseif ($options->defined('replication') && $initializer = $options->replication) {
+                return $initializer($parameters, true);
+            } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {
+                return $initializer($parameters, false);
             } else {
                 throw new \InvalidArgumentException(
                     'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
@@ -152,29 +149,6 @@ class Client implements ClientInterface, \IteratorAggregate
         }
 
         throw new \InvalidArgumentException('Invalid type for connection parameters');
-    }
-
-    /**
-     * Creates an aggregate connection.
-     *
-     * @param mixed  $parameters Connection parameters.
-     * @param string $option     Option for aggregate connections (`aggregate`, `cluster`, `replication`).
-     *
-     * @return \Closure
-     */
-    protected function createAggregateConnection($parameters, $option)
-    {
-        $options = $this->getOptions();
-
-        $initializer = $options->$option;
-        $connection = $initializer($parameters);
-
-        // TODO: this is dirty but we must skip the redis-sentinel backend for now.
-        if ($option !== 'aggregate' && !$connection instanceof SentinelReplication) {
-            $options->connections->aggregate($connection, $parameters);
-        }
-
-        return $connection;
     }
 
     /**

@@ -11,6 +11,7 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Cluster\RedisStrategy;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
@@ -26,40 +27,64 @@ use Predis\Connection\Cluster\RedisCluster;
 class Cluster extends Aggregate
 {
     /**
-     * Returns a connection initializer from a descriptive name.
-     *
-     * @param OptionsInterface $options     Client options.
-     * @param string           $description Identifier of a cluster backend (`predis`, `redis`)
-     *
-     * @return callable
-     */
-    protected function getConnectionInitializerByDescription(OptionsInterface $options, $description)
-    {
-        if ($description === 'predis') {
-            $callback = $this->getDefault($options);
-        } elseif ($description === 'redis') {
-            $callback = function ($options) {
-                return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
-            };
-        } else {
-            throw new \InvalidArgumentException(
-                'String value for the cluster option must be either `predis` or `redis`'
-            );
-        }
-
-        return $this->getConnectionInitializer($options, $callback);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function filter(OptionsInterface $options, $value)
     {
         if (is_string($value)) {
-            return $this->getConnectionInitializerByDescription($options, $value);
-        } else {
-            return $this->getConnectionInitializer($options, $value);
+            $value = $this->getConnectionInitializerByString($options, $value);
         }
+
+        if (is_callable($value)) {
+            return $this->getConnectionInitializer($options, $value);
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                '%s expects either a string or a callable value, %s given',
+                static::class,
+                is_object($value) ? get_class($value) : gettype($value)
+            ));
+        }
+    }
+
+    /**
+     * Returns a connection initializer from a descriptive name.
+     *
+     * @param OptionsInterface $options     Client options
+     * @param string           $description Identifier of a replication backend (`predis`, `sentinel`)
+     *
+     * @return callable
+     */
+    protected function getConnectionInitializerByString(OptionsInterface $options, string $description)
+    {
+        switch ($description) {
+            case 'redis':
+            case 'redis-cluster':
+                return function ($parameters, $options, $option) {
+                    return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
+                };
+
+            case 'predis':
+                return $this->getDefaultConnectionInitializer();
+
+            default:
+                throw new InvalidArgumentException(sprintf(
+                    '%s expects either `predis`, `redis` or `redis-cluster` as valid string values, `%s` given',
+                    static::class,
+                    $description
+                ));
+        }
+    }
+
+    /**
+     * Returns the default connection initializer.
+     *
+     * @return callable
+     */
+    protected function getDefaultConnectionInitializer()
+    {
+        return function ($parameters, $options, $option) {
+            return new PredisCluster();
+        };
     }
 
     /**
@@ -67,8 +92,9 @@ class Cluster extends Aggregate
      */
     public function getDefault(OptionsInterface $options)
     {
-        return function ($options) {
-            return new PredisCluster();
-        };
+        return $this->getConnectionInitializer(
+            $options,
+            $this->getDefaultConnectionInitializer()
+        );
     }
 }
