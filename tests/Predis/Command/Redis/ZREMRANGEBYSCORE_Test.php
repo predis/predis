@@ -20,7 +20,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZREMRANGEBYSCORE';
     }
@@ -28,7 +28,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZREMRANGEBYSCORE';
     }
@@ -36,7 +36,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 10);
         $expected = array('key', 0, 10);
@@ -50,7 +50,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -58,7 +58,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRemovesRangeByScore()
+    public function testRemovesRangeByScore(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRemovesRangeByExclusiveScore()
+    public function testRemovesRangeByExclusiveScore(): void
     {
         $redis = $this->getClient();
 
@@ -86,7 +86,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

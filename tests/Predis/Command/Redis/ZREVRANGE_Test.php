@@ -20,7 +20,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZREVRANGE';
     }
@@ -28,7 +28,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZREVRANGE';
     }
@@ -36,7 +36,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('zset', 0, 100, array('withscores' => true));
         $expected = array('zset', 0, 100, 'WITHSCORES');
@@ -50,7 +50,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithStringWithscores()
+    public function testFilterArgumentsWithStringWithscores(): void
     {
         $arguments = array('zset', 0, 100, 'withscores');
         $expected = array('zset', 0, 100, 'WITHSCORES');
@@ -64,7 +64,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('element1', 'element2', 'element3');
         $expected = array('element1', 'element2', 'element3');
@@ -77,7 +77,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseWithScores()
+    public function testParseResponseWithScores(): void
     {
         $raw = array('element1', '1', 'element2', '2', 'element3', '3');
         $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
@@ -90,7 +90,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue()
+    public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue(): void
     {
         $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => true));
         $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
@@ -108,7 +108,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsElementsInRange()
+    public function testReturnsElementsInRange(): void
     {
         $redis = $this->getClient();
 
@@ -129,7 +129,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRangeWithWithscoresModifier()
+    public function testRangeWithWithscoresModifier(): void
     {
         $redis = $this->getClient();
 
@@ -143,7 +143,7 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

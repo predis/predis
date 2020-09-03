@@ -21,7 +21,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testImplementsCorrectInterface()
+    public function testImplementsCorrectInterface(): void
     {
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
@@ -31,7 +31,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetEmptyArguments()
+    public function testGetEmptyArguments(): void
     {
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
 
@@ -41,7 +41,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetRawArguments()
+    public function testSetRawArguments(): void
     {
         $arguments = array('1st', '2nd', '3rd');
 
@@ -57,7 +57,7 @@ class CommandTest extends PredisTestCase
      * @todo We cannot set an expectation for Command::filterArguments() when we
      *       invoke Command::setArguments() because it is protected.
      */
-    public function testSetArguments()
+    public function testSetArguments(): void
     {
         $arguments = array('1st', '2nd', '3rd');
 
@@ -70,7 +70,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetArgumentAtIndex()
+    public function testGetArgumentAtIndex(): void
     {
         $arguments = array('1st', '2nd', '3rd');
 
@@ -85,7 +85,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $response = 'response-buffer';
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
@@ -96,7 +96,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetAndGetSlot()
+    public function testSetAndGetSlot(): void
     {
         $slot = 1024;
 
@@ -119,7 +119,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNormalizeArguments()
+    public function testNormalizeArguments(): void
     {
         $arguments = array('arg1', 'arg2', 'arg3', 'arg4');
 
@@ -136,7 +136,7 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNormalizeVariadic()
+    public function testNormalizeVariadic(): void
     {
         $arguments = array('key', 'value1', 'value2', 'value3');
 

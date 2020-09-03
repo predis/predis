@@ -12,6 +12,7 @@
 namespace Predis\Command;
 
 use Predis\Command\Processor\ProcessorChain;
+use Predis\Command\Processor\ProcessorInterface;
 use PredisTestCase;
 
 /**
@@ -22,7 +23,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportedCommands()
+    public function testSupportedCommands(): void
     {
         $factory = new RedisFactory();
 
@@ -34,7 +35,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportCommand()
+    public function testSupportCommand(): void
     {
         $factory = new RedisFactory();
 
@@ -48,7 +49,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportCommands()
+    public function testSupportCommands(): void
     {
         $factory = new RedisFactory();
 
@@ -63,7 +64,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetCommandClass()
+    public function testGetCommandClass(): void
     {
         $factory = new RedisFactory();
 
@@ -77,7 +78,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefineCommand()
+    public function testDefineCommand(): void
     {
         $factory = new RedisFactory();
 
@@ -95,7 +96,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUndefineCommandInClassAutoload()
+    public function testUndefineCommandInClassAutoload(): void
     {
         $factory = new RedisFactory();
 
@@ -111,7 +112,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUndefineCommandInClassMap()
+    public function testUndefineCommandInClassMap(): void
     {
         $factory = new RedisFactory();
 
@@ -130,7 +131,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefineInvalidCommand()
+    public function testDefineInvalidCommand(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Class stdClass must implement Predis\Command\CommandInterface");
@@ -143,7 +144,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateCommandWithoutArguments()
+    public function testCreateCommandWithoutArguments(): void
     {
         $factory = new RedisFactory();
 
@@ -157,7 +158,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateCommandWithArguments()
+    public function testCreateCommandWithArguments(): void
     {
         $factory = new RedisFactory();
 
@@ -172,7 +173,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateUndefinedCommand()
+    public function testCreateUndefinedCommand(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage("Command `UNKNOWN` is not a registered Redis command.");
@@ -185,7 +186,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetDefaultProcessor()
+    public function testGetDefaultProcessor(): void
     {
         $factory = new RedisFactory();
 
@@ -195,9 +196,11 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetProcessor()
+    public function testSetProcessor(): void
     {
-        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
+        /** @var ProcessorInterface */
+        $processor = $this
+            ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
         $factory = new RedisFactory();
@@ -209,9 +212,11 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetAndUnsetProcessor()
+    public function testSetAndUnsetProcessor(): void
     {
-        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
+        /** @var ProcessorInterface */
+        $processor = $this
+            ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
         $factory = new RedisFactory();
@@ -226,23 +231,25 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSingleProcessor()
+    public function testSingleProcessor(): void
     {
         // Could it be that objects passed to the return callback of a mocked
         // method are cloned instead of being passed by reference?
         $argsRef = null;
 
-        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
+        /** @var ProcessorInterface */
+        $processor = $this
+            ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
         $processor
             ->expects($this->once())
             ->method('process')
             ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
-            ->will($this->returnCallback(
+            ->willReturnCallback(
                 function (CommandInterface $cmd) use (&$argsRef) {
                     $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                 }
-            ));
+            );
 
         $factory = new RedisFactory();
         $factory->setProcessor($processor);
@@ -254,9 +261,11 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testChainOfProcessors()
+    public function testChainOfProcessors(): void
     {
-        $processor = $this->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
+        /** @var ProcessorInterface */
+        $processor = $this
+            ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
         $processor
             ->expects($this->exactly(2))
@@ -281,7 +290,7 @@ class RedisFactoryTest extends PredisTestCase
      *
      * @return array List of supported commands.
      */
-    protected function getExpectedCommands()
+    protected function getExpectedCommands(): array
     {
         return array(
             0 => 'EXISTS',

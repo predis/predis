@@ -20,7 +20,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PUNSUBSCRIBE';
     }
@@ -28,7 +28,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PUNSUBSCRIBE';
     }
@@ -36,7 +36,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('channel:foo:*', 'channel:bar:*');
         $expected = array('channel:foo:*', 'channel:bar:*');
@@ -50,7 +50,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleArray()
+    public function testFilterArgumentsAsSingleArray(): void
     {
         $arguments = array(array('channel:foo:*', 'channel:bar:*'));
         $expected = array('channel:foo:*', 'channel:bar:*');
@@ -64,7 +64,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('punsubscribe', 'channel:*', 1);
         $expected = array('punsubscribe', 'channel:*', 1);
@@ -78,7 +78,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testDoesNotSwitchToSubscribeMode()
+    public function testDoesNotSwitchToSubscribeMode(): void
     {
         $redis = $this->getClient();
 
@@ -90,7 +90,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testUnsubscribesFromNotSubscribedChannels()
+    public function testUnsubscribesFromNotSubscribedChannels(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testUnsubscribesFromSubscribedChannels()
+    public function testUnsubscribesFromSubscribedChannels(): void
     {
         $redis = $this->getClient();
 
@@ -114,7 +114,7 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testUnsubscribesFromAllSubscribedChannels()
+    public function testUnsubscribesFromAllSubscribedChannels(): void
     {
         $redis = $this->getClient();
 

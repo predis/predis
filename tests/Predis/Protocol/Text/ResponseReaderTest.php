@@ -12,6 +12,7 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
+use Predis\Protocol\Text\Handler\ResponseHandlerInterface;
 
 /**
  *
@@ -21,7 +22,7 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefaultHandlers()
+    public function testDefaultHandlers(): void
     {
         $reader = new ResponseReader();
 
@@ -37,8 +38,9 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReplaceHandler()
+    public function testReplaceHandler(): void
     {
+        /** @var ResponseHandlerInterface */
         $handler = $this->getMockBuilder('Predis\Protocol\Text\Handler\ResponseHandlerInterface')->getMock();
 
         $reader = new ResponseReader();
@@ -50,29 +52,19 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReadResponse()
+    public function testReadResponse(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(5))
             ->method('readLine')
-            ->will($this->returnValue('+OK'));
-        $connection
-            ->expects($this->at(1))
-            ->method('readLine')
-            ->will($this->returnValue('-ERR error message'));
-        $connection
-            ->expects($this->at(2))
-            ->method('readLine')
-            ->will($this->returnValue(':2'));
-        $connection
-            ->expects($this->at(3))
-            ->method('readLine')
-            ->will($this->returnValue('$-1'));
-        $connection
-            ->expects($this->at(4))
-            ->method('readLine')
-            ->will($this->returnValue('*-1'));
+            ->willReturnOnConsecutiveCalls(
+                '+OK',
+                '-ERR error message',
+                ':2',
+                '$-1',
+                '*-1'
+            );
 
         $reader = new ResponseReader();
 
@@ -86,7 +78,7 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testEmptyResponseHeader()
+    public function testEmptyResponseHeader(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage('Unexpected empty reponse header [tcp://127.0.0.1:6379]');
@@ -95,7 +87,7 @@ class ResponseReaderTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue(''));
+            ->willReturn('');
 
         $reader = new ResponseReader();
         $reader->read($connection);
@@ -104,7 +96,7 @@ class ResponseReaderTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUnknownResponsePrefix()
+    public function testUnknownResponsePrefix(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Unknown response prefix: '!' [tcp://127.0.0.1:6379]");
@@ -113,7 +105,7 @@ class ResponseReaderTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue('!'));
+            ->willReturn('!');
 
         $reader = new ResponseReader();
         $reader->read($connection);

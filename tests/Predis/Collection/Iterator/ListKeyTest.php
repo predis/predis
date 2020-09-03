@@ -21,7 +21,7 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnMissingCommand()
+    public function testThrowsExceptionOnMissingCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("'LRANGE' is not supported by the current command factory.");
@@ -30,15 +30,17 @@ class ListKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new ListKey($client, 'key:list');
     }
@@ -46,22 +48,24 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithNoResults()
+    public function testIterationWithNoResults(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array()
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -72,22 +76,24 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnSingleFetch()
+    public function testIterationOnSingleFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2', 'item:3')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -113,30 +119,31 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetches()
+    public function testIterationOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('lrange')
-            ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:list', 0, 9),
+                array('key:list', 10, 19)
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(
                     'item:1', 'item:2', 'item:3', 'item:4', 'item:5',
                     'item:6', 'item:7', 'item:8', 'item:9', 'item:10',
-                )
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('lrange')
-            ->with('key:list', 10, 19)
-            ->will($this->returnValue(array('item:11', 'item:12')));
+                ),
+                array('item:11', 'item:12')
+            );
 
         $iterator = new ListKey($client, 'key:list');
 
@@ -152,18 +159,19 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnConstructorWithNonIntegerCountParameter()
+    public function testThrowsExceptionOnConstructorWithNonIntegerCountParameter(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('The $count argument must be a positive integer');
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory'))
+            ->onlyMethods(array('getCommandFactory'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -171,18 +179,19 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnConstructorWithNegativeCountParameter()
+    public function testThrowsExceptionOnConstructorWithNegativeCountParameter(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('The $count argument must be a positive integer');
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory'))
+            ->onlyMethods(array('getCommandFactory'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
 
         new ListKey($client, 'key:list', 'wrong');
     }
@@ -190,22 +199,24 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithCountParameter()
+    public function testIterationWithCountParameter(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('lrange')
             ->with('key:list', 0, 4)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list', 5);
 
@@ -226,29 +237,28 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithCountParameterOnMultipleFetches()
+    public function testIterationWithCountParameterOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('lrange')
-            ->with('key:list', 0, 1)
-            ->will($this->returnValue(
-                array('item:1', 'item:2')
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('lrange')
-            ->with('key:list', 2, 3)
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:list', 0, 1),
+                array('key:list', 2, 3)
+            )
+            ->willReturnOnConsecutiveCalls(
+                array('item:1', 'item:2'),
                 array('item:3')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list', 2);
 
@@ -274,22 +284,24 @@ class ListKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationRewindable()
+    public function testIterationRewindable(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'lrange'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('lrange'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('lrange')
             ->with('key:list', 0, 9)
-            ->will($this->returnValue(
+            ->willReturn(
                 array('item:1', 'item:2')
-            ));
+            );
 
         $iterator = new ListKey($client, 'key:list');
 

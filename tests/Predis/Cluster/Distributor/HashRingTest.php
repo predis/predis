@@ -19,7 +19,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * {@inheritdoc}
      */
-    public function getDistributorInstance()
+    public function getDistributorInstance(): DistributorInterface
     {
         return new HashRing();
     }
@@ -27,8 +27,9 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testHash()
+    public function testHash(): void
     {
+        /** @var HashGeneratorInterface */
         $ring = $this->getDistributorInstance();
 
         $this->assertEquals(crc32('foobar'), $ring->hash('foobar'));
@@ -37,7 +38,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testSingleNodeInRing()
+    public function testSingleNodeInRing(): void
     {
         $node = '127.0.0.1:7000';
 
@@ -53,7 +54,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testMultipleNodesInRing()
+    public function testMultipleNodesInRing(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -92,7 +93,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testSubsequendAddAndRemoveFromRing()
+    public function testSubsequendAddAndRemoveFromRing(): void
     {
         $ring = $this->getDistributorInstance();
 
@@ -128,7 +129,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetByValue()
+    public function testGetByValue(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -147,7 +148,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetByHash()
+    public function testGetByHash(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -166,7 +167,7 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testGetBySlot()
+    public function testGetBySlot(): void
     {
         $ring = $this->getSampleDistribution(array(
             '127.0.0.1:7000',
@@ -192,18 +193,18 @@ class HashRingTest extends PredisDistributorTestCase
     /**
      * @group disconnected
      */
-    public function testCallbackToGetNodeHash()
+    public function testCallbackToGetNodeHash(): void
     {
         $node = '127.0.0.1:7000';
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
 
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($node)
-            ->will($this->returnValue($node));
+            ->willReturn($node);
 
         $distributor = new HashRing(HashRing::DEFAULT_REPLICAS, $callable);
         $distributor->add($node);

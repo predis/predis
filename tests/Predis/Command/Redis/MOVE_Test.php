@@ -20,7 +20,7 @@ class MOVE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MOVE';
     }
@@ -28,7 +28,7 @@ class MOVE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MOVE';
     }
@@ -36,7 +36,7 @@ class MOVE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 10);
         $expected = array('key', 10);
@@ -50,7 +50,7 @@ class MOVE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -63,7 +63,7 @@ class MOVE_Test extends PredisCommandTestCase
      *
      * @todo Should be improved, this test fails when REDIS_SERVER_DBNUM is 0.
      */
-    public function testMovesKeysToDifferentDatabases()
+    public function testMovesKeysToDifferentDatabases(): void
     {
         $db = REDIS_SERVER_DBNUM - 1;
         $redis = $this->getClient();
@@ -82,7 +82,7 @@ class MOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnInvalidDatabases()
+    public function testThrowsExceptionOnInvalidDatabases(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR index out of range');

@@ -20,7 +20,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PUBSUB';
     }
@@ -28,7 +28,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PUBSUB';
     }
@@ -36,7 +36,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('channels', 'predis:*');
         $expected = array('channels', 'predis:*');
@@ -50,7 +50,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $response = array('predis:incoming', 'predis:outgoing');
         $expected = array('predis:incoming', 'predis:outgoing');
@@ -63,7 +63,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testPubsubNumsub()
+    public function testPubsubNumsub(): void
     {
         $response = array('predis:incoming', '10', 'predis:outgoing', '8');
         $expected = array('predis:incoming' => '10', 'predis:outgoing' => '8');
@@ -76,7 +76,7 @@ class PUBSUB_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testPubsubNumpat()
+    public function testPubsubNumpat(): void
     {
         $response = 6;
         $expected = 6;

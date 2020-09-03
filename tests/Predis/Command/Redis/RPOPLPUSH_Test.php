@@ -20,7 +20,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\RPOPLPUSH';
     }
@@ -28,7 +28,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'RPOPLPUSH';
     }
@@ -36,7 +36,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key:source', 'key:destination');
         $expected = array('key:source', 'key:destination');
@@ -50,7 +50,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('element', $this->getCommand()->parseResponse('element'));
     }
@@ -58,7 +58,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsElementPoppedFromSourceAndPushesToDestination()
+    public function testReturnsElementPoppedFromSourceAndPushesToDestination(): void
     {
         $redis = $this->getClient();
 
@@ -75,7 +75,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsElementPoppedFromSourceAndPushesToSelf()
+    public function testReturnsElementPoppedFromSourceAndPushesToSelf(): void
     {
         $redis = $this->getClient();
 
@@ -91,7 +91,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNullOnEmptySource()
+    public function testReturnsNullOnEmptySource(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongTypeOfSourceKey()
+    public function testThrowsExceptionOnWrongTypeOfSourceKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
@@ -115,7 +115,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongTypeOfDestinationKey()
+    public function testThrowsExceptionOnWrongTypeOfDestinationKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

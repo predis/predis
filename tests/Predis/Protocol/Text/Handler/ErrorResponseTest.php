@@ -21,7 +21,7 @@ class ErrorResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOk()
+    public function testOk(): void
     {
         $message = 'ERR Operation against a key holding the wrong kind of value';
 

@@ -20,7 +20,7 @@ class TIME_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\TIME';
     }
@@ -28,7 +28,7 @@ class TIME_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'TIME';
     }
@@ -36,7 +36,7 @@ class TIME_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array();
         $expected = array();
@@ -50,7 +50,7 @@ class TIME_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $expected = array(1331114908, 453990);
         $command = $this->getCommand();
@@ -62,7 +62,7 @@ class TIME_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsServerTime()
+    public function testReturnsServerTime(): void
     {
         $redis = $this->getClient();
 

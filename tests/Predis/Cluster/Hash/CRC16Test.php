@@ -21,7 +21,7 @@ class CRC16Test extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testHashGeneration()
+    public function testHashGeneration(): void
     {
         $crc16 = new CRC16();
 
@@ -40,7 +40,7 @@ class CRC16Test extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testHashGenerationWithIntegerValues()
+    public function testHashGenerationWithIntegerValues(): void
     {
         $crc16 = new CRC16();
 

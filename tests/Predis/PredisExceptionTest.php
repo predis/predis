@@ -21,7 +21,7 @@ class PredisExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionMessage()
+    public function testExceptionMessage(): void
     {
         $message = 'Predis exception message';
         $exception = $this->getMockForAbstractClass('Predis\PredisException', array($message));

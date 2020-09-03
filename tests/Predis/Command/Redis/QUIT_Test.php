@@ -20,7 +20,7 @@ class QUIT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\QUIT';
     }
@@ -28,7 +28,7 @@ class QUIT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'QUIT';
     }
@@ -36,7 +36,7 @@ class QUIT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array();
         $expected = array();
@@ -50,7 +50,7 @@ class QUIT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -58,7 +58,7 @@ class QUIT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsStatusResponseWhenClosingConnection()
+    public function testReturnsStatusResponseWhenClosingConnection(): void
     {
         $redis = $this->getClient();
         $command = $this->getCommand();

@@ -20,7 +20,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LPOP';
     }
@@ -28,7 +28,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LPOP';
     }
@@ -36,7 +36,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('element', $this->getCommand()->parseResponse('element'));
     }
@@ -58,7 +58,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testPopsTheFirstElementFromList()
+    public function testPopsTheFirstElementFromList(): void
     {
         $redis = $this->getClient();
 
@@ -72,7 +72,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNullOnEmptyList()
+    public function testReturnsNullOnEmptyList(): void
     {
         $redis = $this->getClient();
 
@@ -82,7 +82,7 @@ class LPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

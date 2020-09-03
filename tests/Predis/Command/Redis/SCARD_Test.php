@@ -20,7 +20,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SCARD';
     }
@@ -28,7 +28,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SCARD';
     }
@@ -36,7 +36,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -58,7 +58,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNumberOfMembers()
+    public function testReturnsNumberOfMembers(): void
     {
         $redis = $this->getClient();
 
@@ -70,7 +70,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroOnEmptySet()
+    public function testReturnsZeroOnEmptySet(): void
     {
         $redis = $this->getClient();
 
@@ -80,7 +80,7 @@ class SCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

@@ -23,7 +23,7 @@ class ErrorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testResponseErrorClass()
+    public function testResponseErrorClass(): void
     {
         $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
@@ -34,7 +34,7 @@ class ErrorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testErrorMessage()
+    public function testErrorMessage(): void
     {
         $error = new Error(self::ERR_WRONG_KEY_TYPE);
 
@@ -44,7 +44,7 @@ class ErrorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testErrorType()
+    public function testErrorType(): void
     {
         $exception = new Error(self::ERR_WRONG_KEY_TYPE);
 
@@ -54,7 +54,7 @@ class ErrorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testToString()
+    public function testToString(): void
     {
         $error = new Error(self::ERR_WRONG_KEY_TYPE);
 

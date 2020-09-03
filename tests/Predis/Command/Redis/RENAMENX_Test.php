@@ -20,7 +20,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\RENAMENX';
     }
@@ -28,7 +28,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'RENAMENX';
     }
@@ -36,7 +36,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'newkey');
         $expected = array('key', 'newkey');
@@ -50,7 +50,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(0, $this->getCommand()->parseResponse(0));
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
@@ -59,7 +59,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testRenamesKeys()
+    public function testRenamesKeys(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class RENAMENX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionWhenRenamingNonExistingKeys()
+    public function testThrowsExceptionWhenRenamingNonExistingKeys(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR no such key');

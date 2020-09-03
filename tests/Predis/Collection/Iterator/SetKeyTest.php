@@ -21,7 +21,7 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnMissingCommand()
+    public function testThrowsExceptionOnMissingCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("'SSCAN' is not supported by the current command factory.");
@@ -30,13 +30,14 @@ class SetKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new SetKey($client, 'key:set');
     }
@@ -44,22 +45,24 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithNoResults()
+    public function testIterationWithNoResults(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array())
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -70,22 +73,24 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnSingleFetch()
+    public function testIterationOnSingleFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd', 'member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -111,29 +116,28 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetches()
+    public function testIterationOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('sscan')
-            ->with('key:set', 0, array())
-            ->will($this->returnValue(
-                array(2, array('member:1st', 'member:2nd'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 2, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array()),
+                array('key:set', 2, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('member:1st', 'member:2nd')),
                 array(0, array('member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -159,29 +163,28 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('sscan')
-            ->with('key:set', 0, array())
-            ->will($this->returnValue(
-                array(4, array())
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 4, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array()),
+                array('key:set', 4, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(4, array()),
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -202,36 +205,30 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(3))
             ->method('sscan')
-            ->with('key:set', 0, array())
-            ->will($this->returnValue(
-                array(2, array('member:1st', 'member:2nd'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 2, array())
-            ->will($this->returnValue(
-                array(5, array())
-            ));
-        $client
-            ->expects($this->at(3))
-            ->method('sscan')
-            ->with('key:set', 5, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array()),
+                array('key:set', 2, array()),
+                array('key:set', 5, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('member:1st', 'member:2nd')),
+                array(5, array()),
                 array(0, array('member:3rd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 
@@ -257,22 +254,26 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatch()
+    public function testIterationWithOptionMatch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('sscan')
-            ->with('key:set', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('MATCH' => 'member:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*');
 
@@ -293,29 +294,28 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatchOnMultipleFetches()
+    public function testIterationWithOptionMatchOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('sscan')
-            ->with('key:set', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
-                array(1, array('member:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 1, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('MATCH' => 'member:*')),
+                array('key:set', 1, array('MATCH' => 'member:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st')),
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*');
 
@@ -336,22 +336,26 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCount()
+    public function testIterationWithOptionCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('sscan')
-            ->with('key:set', 0, array('COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', null, 2);
 
@@ -372,29 +376,28 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCountOnMultipleFetches()
+    public function testIterationWithOptionCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('sscan')
-            ->with('key:set', 0, array('COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('member:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 1, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('COUNT' => 1)),
+                array('key:set', 1, array('COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st')),
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', null, 1);
 
@@ -415,22 +418,26 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCount()
+    public function testIterationWithOptionsMatchAndCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('sscan')
-            ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*', 2);
 
@@ -451,29 +458,28 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
+    public function testIterationWithOptionsMatchAndCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('sscan')
-            ->with('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('member:1st'))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('sscan')
-            ->with('key:set', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:set', 0, array('MATCH' => 'member:*', 'COUNT' => 1)),
+                array('key:set', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st')),
                 array(0, array('member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set', 'member:*', 1);
 
@@ -494,22 +500,24 @@ class SetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationRewindable()
+    public function testIterationRewindable(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'sscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('sscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('sscan')
             ->with('key:set', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st', 'member:2nd'))
-            ));
+            );
 
         $iterator = new SetKey($client, 'key:set');
 

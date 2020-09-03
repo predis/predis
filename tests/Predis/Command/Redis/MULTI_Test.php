@@ -20,7 +20,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MULTI';
     }
@@ -28,7 +28,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MULTI';
     }
@@ -36,7 +36,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -47,7 +47,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -55,7 +55,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testInitializesNewTransaction()
+    public function testInitializesNewTransaction(): void
     {
         $redis = $this->getClient();
 
@@ -67,7 +67,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testActuallyReturnsResponseObjectAbstraction()
+    public function testActuallyReturnsResponseObjectAbstraction(): void
     {
         $redis = $this->getClient();
 
@@ -79,7 +79,7 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionWhenCallingMultiInsideTransaction()
+    public function testThrowsExceptionWhenCallingMultiInsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR MULTI calls can not be nested');

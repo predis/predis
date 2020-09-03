@@ -20,7 +20,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\GETSET';
     }
@@ -28,7 +28,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'GETSET';
     }
@@ -36,7 +36,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'value');
         $expected = array('key', 'value');
@@ -50,7 +50,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('value', $this->getCommand()->parseResponse('value'));
     }
@@ -58,7 +58,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsPreviousValueOfKey()
+    public function testReturnsPreviousValueOfKey(): void
     {
         $redis = $this->getClient();
 
@@ -72,7 +72,7 @@ class GETSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

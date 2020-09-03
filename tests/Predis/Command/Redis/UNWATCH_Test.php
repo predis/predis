@@ -20,7 +20,7 @@ class UNWATCH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\UNWATCH';
     }
@@ -28,7 +28,7 @@ class UNWATCH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'UNWATCH';
     }
@@ -36,7 +36,7 @@ class UNWATCH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -47,7 +47,7 @@ class UNWATCH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -56,7 +56,7 @@ class UNWATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testUnwatchWatchedKeys()
+    public function testUnwatchWatchedKeys(): void
     {
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();
@@ -76,7 +76,7 @@ class UNWATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testCanBeCalledInsideTransaction()
+    public function testCanBeCalledInsideTransaction(): void
     {
         $redis = $this->getClient();
 

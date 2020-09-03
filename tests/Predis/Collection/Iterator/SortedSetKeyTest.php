@@ -21,7 +21,7 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnMissingCommand()
+    public function testThrowsExceptionOnMissingCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("'ZSCAN' is not supported by the current command factory.");
@@ -31,13 +31,14 @@ class SortedSetKeyTest extends PredisTestCase
         $commands
             ->expects($this->any())
             ->method('supports')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\ClientInterface')->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         new SortedSetKey($client, 'key:zset');
     }
@@ -45,22 +46,24 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithNoResults()
+    public function testIterationWithNoResults(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array())
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -72,22 +75,24 @@ class SortedSetKeyTest extends PredisTestCase
      * @see https://github.com/predis/predis/issues/216
      * @group disconnected
      */
-    public function testIterationWithIntegerMembers()
+    public function testIterationWithIntegerMembers(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array(0 => 0, 101 => 1, 102 => 2))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -113,22 +118,24 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnSingleFetch()
+    public function testIterationOnSingleFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->once())
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0, 'member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -154,29 +161,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetches()
+    public function testIterationOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array())
-            ->will($this->returnValue(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 2, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array()),
+                array('key:zset', 2, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
                 array(0, array('member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -202,29 +208,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInFirstFetch()
+    public function testIterationOnMultipleFetchesAndHoleInFirstFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array())
-            ->will($this->returnValue(
-                array(4, array())
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 4, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array()),
+                array('key:zset', 4, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(4, array()),
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -245,36 +250,30 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationOnMultipleFetchesAndHoleInMidFetch()
+    public function testIterationOnMultipleFetchesAndHoleInMidFetch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(3))
             ->method('zscan')
-            ->with('key:zset', 0, array())
-            ->will($this->returnValue(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 2, array())
-            ->will($this->returnValue(
-                array(5, array())
-            ));
-        $client
-            ->expects($this->at(3))
-            ->method('zscan')
-            ->with('key:zset', 5, array())
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array()),
+                array('key:zset', 2, array()),
+                array('key:zset', 5, array())
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
+                array(5, array()),
                 array(0, array('member:3rd' => 3.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 
@@ -300,22 +299,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatch()
+    public function testIterationWithOptionMatch(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            ->withConsecutive(
+                array('key:zset', 0, array('MATCH' => 'member:*')),
+                array('key:zset', 2, array('MATCH' => 'member:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
+                array(0, array())
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
@@ -336,29 +341,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionMatchOnMultipleFetches()
+    public function testIterationWithOptionMatchOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
-                array(1, array('member:1st' => 1.0))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 1, array('MATCH' => 'member:*'))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array('MATCH' => 'member:*')),
+                array('key:zset', 1, array('MATCH' => 'member:*'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st' => 1.0)),
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
 
@@ -379,22 +383,26 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCount()
+    public function testIterationWithOptionCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('zscan')
-            ->with('key:zset', 0, array('COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array('COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 2);
 
@@ -415,29 +423,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionCountOnMultipleFetches()
+    public function testIterationWithOptionCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array('COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('member:1st' => 1.0))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 1, array('COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array('COUNT' => 1)),
+                array('key:zset', 1, array('COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st' => 1.0)),
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 1);
 
@@ -458,22 +465,26 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCount()
+    public function testIterationWithOptionsMatchAndCount(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method('zscan')
-            ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
+            )
+            ->willReturnOnConsecutiveCalls(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 2);
 
@@ -494,29 +505,28 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationWithOptionsMatchAndCountOnMultipleFetches()
+    public function testIterationWithOptionsMatchAndCountOnMultipleFetches(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
-                array(1, array('member:1st' => 1.0))
-            ));
-        $client
-            ->expects($this->at(2))
-            ->method('zscan')
-            ->with('key:zset', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1)),
+                array('key:zset', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
+            )
+            ->willReturnOnConsecutiveCalls(
+                array(1, array('member:1st' => 1.0)),
                 array(0, array('member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 1);
 
@@ -537,22 +547,24 @@ class SortedSetKeyTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterationRewindable()
+    public function testIterationRewindable(): void
     {
+        /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(array('getCommandFactory', 'zscan'))
+            ->onlyMethods(array('getCommandFactory'))
+            ->addMethods(array('zscan'))
             ->getMock();
         $client
             ->expects($this->any())
             ->method('getCommandFactory')
-            ->will($this->returnValue($this->getCommandFactory()));
+            ->willReturn($this->getCommandFactory());
         $client
             ->expects($this->exactly(2))
             ->method('zscan')
             ->with('key:zset', 0, array())
-            ->will($this->returnValue(
+            ->willReturn(
                 array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
-            ));
+            );
 
         $iterator = new SortedSetKey($client, 'key:zset');
 

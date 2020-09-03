@@ -20,7 +20,7 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\BITOP';
     }
@@ -28,7 +28,7 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'BITOP';
     }
@@ -36,7 +36,7 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('AND', 'key:dst', 'key:01', 'key:02');
         $expected = array('AND', 'key:dst', 'key:01', 'key:02');
@@ -50,7 +50,7 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsKeysAsSingleArray()
+    public function testFilterArgumentsKeysAsSingleArray(): void
     {
         $arguments = array('AND', 'key:dst', array('key:01', 'key:02'));
         $expected = array('AND', 'key:dst', 'key:01', 'key:02');
@@ -64,7 +64,7 @@ class BITOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = 10;
         $expected = 10;
@@ -78,7 +78,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testCanPerformBitwiseAND()
+    public function testCanPerformBitwiseAND(): void
     {
         $redis = $this->getClient();
 
@@ -93,7 +93,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testCanPerformBitwiseOR()
+    public function testCanPerformBitwiseOR(): void
     {
         $redis = $this->getClient();
 
@@ -108,7 +108,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testCanPerformBitwiseXOR()
+    public function testCanPerformBitwiseXOR(): void
     {
         $redis = $this->getClient();
 
@@ -123,7 +123,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testCanPerformBitwiseNOT()
+    public function testCanPerformBitwiseNOT(): void
     {
         $redis = $this->getClient();
 
@@ -137,7 +137,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testBitwiseNOTAcceptsOnlyOneSourceKey()
+    public function testBitwiseNOTAcceptsOnlyOneSourceKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR BITOP NOT must be called with a single source key');
@@ -149,7 +149,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnInvalidOperation()
+    public function testThrowsExceptionOnInvalidOperation(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR syntax error');
@@ -161,7 +161,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnInvalidSourceKey()
+    public function testThrowsExceptionOnInvalidSourceKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
@@ -176,7 +176,7 @@ class BITOP_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testDoesNotThrowExceptionOnInvalidDestinationKey()
+    public function testDoesNotThrowExceptionOnInvalidDestinationKey(): void
     {
         $redis = $this->getClient();
 

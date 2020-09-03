@@ -20,7 +20,7 @@ class BRPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\BRPOPLPUSH';
     }
@@ -28,7 +28,7 @@ class BRPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'BRPOPLPUSH';
     }
@@ -36,7 +36,7 @@ class BRPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key:source', 'key:destination', 10);
         $expected = array('key:source', 'key:destination', 10);
@@ -50,7 +50,7 @@ class BRPOPLPUSH_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('element', $this->getCommand()->parseResponse('element'));
     }

@@ -20,7 +20,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SISMEMBER';
     }
@@ -28,7 +28,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SISMEMBER';
     }
@@ -36,7 +36,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'member');
         $expected = array('key', 'member');
@@ -50,7 +50,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -61,7 +61,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsMemberExistenceInSet()
+    public function testReturnsMemberExistenceInSet(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsZeroOnNonExistingSet()
+    public function testReturnsZeroOnNonExistingSet(): void
     {
         $redis = $this->getClient();
 
@@ -84,7 +84,7 @@ class SISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

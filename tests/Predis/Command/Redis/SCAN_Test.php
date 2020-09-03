@@ -20,7 +20,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SCAN';
     }
@@ -28,7 +28,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SCAN';
     }
@@ -36,7 +36,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array(0, 'MATCH', 'key:*', 'COUNT', 5);
         $expected = array(0, 'MATCH', 'key:*', 'COUNT', 5);
@@ -50,7 +50,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsBasicUsage()
+    public function testFilterArgumentsBasicUsage(): void
     {
         $arguments = array(0);
         $expected = array(0);
@@ -64,7 +64,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithOptionsArray()
+    public function testFilterArgumentsWithOptionsArray(): void
     {
         $arguments = array(0, array('match' => 'key:*', 'count' => 5));
         $expected = array(0, 'MATCH', 'key:*', 'COUNT', 5);
@@ -78,7 +78,7 @@ class SCAN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('3', array('key:1', 'key:2', 'key:3'));
         $expected = array('3', array('key:1', 'key:2', 'key:3'));
@@ -92,7 +92,7 @@ class SCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithoutMatch()
+    public function testScanWithoutMatch(): void
     {
         $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
 
@@ -108,7 +108,7 @@ class SCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithMatchingKeys()
+    public function testScanWithMatchingKeys(): void
     {
         $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
 
@@ -124,7 +124,7 @@ class SCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
-    public function testScanWithNoMatchingKeys()
+    public function testScanWithNoMatchingKeys(): void
     {
         $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
 

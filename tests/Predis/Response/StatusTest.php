@@ -21,7 +21,7 @@ class StatusTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStatusResponse()
+    public function testStatusResponse(): void
     {
         $status = new Status('OK');
 
@@ -32,7 +32,7 @@ class StatusTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStatusToString()
+    public function testStatusToString(): void
     {
         $queued = new Status('OK');
 
@@ -43,7 +43,7 @@ class StatusTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStaticGetMethod()
+    public function testStaticGetMethod(): void
     {
         $this->assertInstanceOf('Predis\Response\Status', $response = Status::get('OK'));
         $this->assertEquals('OK', $response);
@@ -58,7 +58,7 @@ class StatusTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testStaticGetMethodCachesOnlyCommonStatuses()
+    public function testStaticGetMethodCachesOnlyCommonStatuses(): void
     {
         $response = Status::get('OK');
         $this->assertSame($response, Status::get('OK'));

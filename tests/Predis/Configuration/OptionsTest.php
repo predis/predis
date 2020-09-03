@@ -21,7 +21,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithoutArguments()
+    public function testConstructorWithoutArguments(): void
     {
         $options = new Options();
 
@@ -37,18 +37,18 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayArgument()
+    public function testConstructorWithArrayArgument(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->any())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $options = new Options(array(
             'exceptions' => false,
@@ -78,7 +78,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSupportsCustomOptions()
+    public function testSupportsCustomOptions(): void
     {
         $options = new Options(array(
             'custom' => 'foobar',
@@ -90,7 +90,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUndefinedOptionsReturnNull()
+    public function testUndefinedOptionsReturnNull(): void
     {
         $options = new Options();
 
@@ -102,7 +102,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanCheckOptionsIfDefinedByUser()
+    public function testCanCheckOptionsIfDefinedByUser(): void
     {
         $options = new Options(array(
             'prefix' => 'prefix:',
@@ -119,7 +119,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsSetReplicatesPHPBehavior()
+    public function testIsSetReplicatesPHPBehavior(): void
     {
         $options = new Options(array(
             'prefix' => 'prefix:',
@@ -136,7 +136,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsDefaultValueOfSpecifiedOption()
+    public function testReturnsDefaultValueOfSpecifiedOption(): void
     {
         $options = new Options();
 
@@ -146,7 +146,7 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsNullAsDefaultValueForUndefinedOption()
+    public function testReturnsNullAsDefaultValueForUndefinedOption(): void
     {
         $options = new Options();
 
@@ -156,19 +156,19 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testLazilyInitializesOptionValueUsingObjectWithInvokeMagicMethod()
+    public function testLazilyInitializesOptionValueUsingObjectWithInvokeMagicMethod(): void
     {
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         $options = new Options(array(
             'commands' => $callable,
@@ -181,19 +181,19 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod()
+    public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod(): void
     {
         $custom = new \stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($custom));
+            ->willReturn($custom);
 
         $options = new Options(array(
             'custom' => $callable,
@@ -206,10 +206,10 @@ class OptionsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader()
+    public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader(): void
     {
         $trigger = $this->getMockBuilder('stdClass')
-            ->setMethods(array('autoload'))
+            ->addMethods(array('autoload'))
             ->getMock();
         $trigger
             ->expects($this->never())

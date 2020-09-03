@@ -20,7 +20,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\LINDEX';
     }
@@ -28,7 +28,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'LINDEX';
     }
@@ -36,7 +36,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 1);
         $expected = array('key', 1);
@@ -50,7 +50,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(0, $this->getCommand()->parseResponse(0));
     }
@@ -58,7 +58,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsElementAtIndex()
+    public function testReturnsElementAtIndex(): void
     {
         $redis = $this->getClient();
 
@@ -72,7 +72,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsElementAtNegativeIndex()
+    public function testReturnsElementAtNegativeIndex(): void
     {
         $redis = $this->getClient();
 
@@ -87,7 +87,7 @@ class LINDEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

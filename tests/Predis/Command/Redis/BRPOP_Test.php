@@ -20,7 +20,7 @@ class BRPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\BRPOP';
     }
@@ -28,7 +28,7 @@ class BRPOP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'BRPOP';
     }
@@ -36,7 +36,7 @@ class BRPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key1', 'key2', 'key3', 10);
         $expected = array('key1', 'key2', 'key3', 10);
@@ -50,7 +50,7 @@ class BRPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsKeysAsSingleArray()
+    public function testFilterArgumentsKeysAsSingleArray(): void
     {
         $arguments = array(array('key1', 'key2', 'key3'), 10);
         $expected = array('key1', 'key2', 'key3', 10);
@@ -64,7 +64,7 @@ class BRPOP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('key', 'value');
         $expected = array('key', 'value');

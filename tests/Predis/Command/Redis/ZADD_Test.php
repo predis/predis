@@ -20,7 +20,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZADD';
     }
@@ -28,7 +28,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZADD';
     }
@@ -36,7 +36,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 1, 'member1', 2, 'member2');
         $expected = array('key', 1, 'member1', 2, 'member2');
@@ -50,7 +50,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsMembersScoresAsSingleArray()
+    public function testFilterArgumentsMembersScoresAsSingleArray(): void
     {
         $arguments = array('key', array('member1' => 1, 'member2' => 2));
         $expected = array('key', 1, 'member1', 2, 'member2');
@@ -64,7 +64,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsMembersScoresAsSingleArrayWithModifiers()
+    public function testFilterArgumentsMembersScoresAsSingleArrayWithModifiers(): void
     {
         $arguments = array('key', 'NX', 'CH', array('member1' => 1, 'member2' => 2));
         $expected = array('key', 'NX', 'CH', 1, 'member1', 2, 'member2');
@@ -78,7 +78,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -86,7 +86,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testAddsOrUpdatesMembersOrderingByScore()
+    public function testAddsOrUpdatesMembersOrderingByScore(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class ZADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.2
      */
-    public function testOnlyAddsNonExistingMembersWithModifierNX()
+    public function testOnlyAddsNonExistingMembersWithModifierNX(): void
     {
         $redis = $this->getClient();
 
@@ -116,7 +116,7 @@ class ZADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.2
      */
-    public function testOnlyUpdatesExistingMembersWithModifierXX()
+    public function testOnlyUpdatesExistingMembersWithModifierXX(): void
     {
         $redis = $this->getClient();
 
@@ -131,7 +131,7 @@ class ZADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.2
      */
-    public function testReturnsNumberOfAddedAndUpdatedElementsWithModifierCH()
+    public function testReturnsNumberOfAddedAndUpdatedElementsWithModifierCH(): void
     {
         $redis = $this->getClient();
 
@@ -149,7 +149,7 @@ class ZADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.2
      */
-    public function testActsLikeZINCRBYWithModifierINCR()
+    public function testActsLikeZINCRBYWithModifierINCR(): void
     {
         $redis = $this->getClient();
 
@@ -163,7 +163,7 @@ class ZADD_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.2
      */
-    public function testDoesNotAcceptMultipleScoreElementPairsWithModifierINCR()
+    public function testDoesNotAcceptMultipleScoreElementPairsWithModifierINCR(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('INCR option supports a single increment-element pair');
@@ -176,7 +176,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testAcceptsFloatValuesAsScore()
+    public function testAcceptsFloatValuesAsScore(): void
     {
         $redis = $this->getClient();
 
@@ -187,7 +187,7 @@ class ZADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

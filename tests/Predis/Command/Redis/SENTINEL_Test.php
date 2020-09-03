@@ -20,7 +20,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SENTINEL';
     }
@@ -28,7 +28,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SENTINEL';
     }
@@ -36,7 +36,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('get-master-addr-by-name', 'predis:master');
         $expected = array('get-master-addr-by-name', 'predis:master');
@@ -49,7 +49,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $expected = array('127.0.0.1', '6379');
         $command = $this->getCommand();
@@ -60,7 +60,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testSentinelMastersResponse()
+    public function testSentinelMastersResponse(): void
     {
         $response = array(
             array(
@@ -104,7 +104,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testSentinelSlavesResponse()
+    public function testSentinelSlavesResponse(): void
     {
         $response = array(
             array(
@@ -152,7 +152,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testSentinelIsMasterDownByAddr()
+    public function testSentinelIsMasterDownByAddr(): void
     {
         $response = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
         $expected = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
@@ -165,7 +165,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testSentinelGetMasterAddrByName()
+    public function testSentinelGetMasterAddrByName(): void
     {
         $response = array('127.0.0.1', '6379');
         $expected = array('127.0.0.1', '6379');
@@ -178,7 +178,7 @@ class SENTINEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testSentinelReset()
+    public function testSentinelReset(): void
     {
         $response = 1;
         $expected = 1;

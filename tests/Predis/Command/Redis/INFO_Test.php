@@ -20,7 +20,7 @@ class INFO_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\INFO';
     }
@@ -28,7 +28,7 @@ class INFO_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'INFO';
     }
@@ -36,7 +36,7 @@ class INFO_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -47,7 +47,7 @@ class INFO_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testCanParseNewResponseFormat()
+    public function testCanParseNewResponseFormat(): void
     {
         $raw = <<<BUFFER
 # Server
@@ -191,7 +191,7 @@ BUFFER;
     /**
      * @group disconnected
      */
-    public function testCanParseOldResponsesFormat()
+    public function testCanParseOldResponsesFormat(): void
     {
         $raw = <<<BUFFER
 redis_version:2.4.4
@@ -294,7 +294,7 @@ BUFFER;
     /**
      * @group disconnected
      */
-    public function testDoesNotEmitPhpNoticeOnEmptyResponse()
+    public function testDoesNotEmitPhpNoticeOnEmptyResponse(): void
     {
         $this->assertSame(array(), $this->getCommand()->parseResponse(''));
     }
@@ -303,7 +303,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsAnArrayOfInfo()
+    public function testReturnsAnArrayOfInfo(): void
     {
         $redis = $this->getClient();
         $command = $this->getCommand();
@@ -315,7 +315,7 @@ BUFFER;
      * @group connected
      * @requiresRedisVersion < 2.6.0
      */
-    public function testReturnsAnArrayOfInfoOnOlderRedisVersions()
+    public function testReturnsAnArrayOfInfoOnOlderRedisVersions(): void
     {
         $redis = $this->getClient();
         $command = $this->getCommand();

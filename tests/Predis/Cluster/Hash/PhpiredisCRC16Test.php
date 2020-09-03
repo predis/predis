@@ -23,7 +23,7 @@ class PhpiredisCRC16Test extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testHashGeneration()
+    public function testHashGeneration(): void
     {
         $crc16 = new PhpiredisCRC16();
 

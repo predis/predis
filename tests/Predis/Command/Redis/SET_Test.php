@@ -20,7 +20,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SET';
     }
@@ -28,7 +28,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SET';
     }
@@ -36,7 +36,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('foo', 'bar');
         $expected = array('foo', 'bar');
@@ -50,7 +50,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsRedisWithModifiers()
+    public function testFilterArgumentsRedisWithModifiers(): void
     {
         $arguments = array('foo', 'bar', 'EX', '10', 'NX');
         $expected = array('foo', 'bar', 'EX', '10', 'NX');
@@ -64,7 +64,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('OK', $this->getCommand()->parseResponse('OK'));
     }
@@ -72,7 +72,7 @@ class SET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSetStringValue()
+    public function testSetStringValue(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class SET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
-    public function testSetStringValueWithModifierEX()
+    public function testSetStringValueWithModifierEX(): void
     {
         $redis = $this->getClient();
 
@@ -97,7 +97,7 @@ class SET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
-    public function testSetStringValueWithModifierPX()
+    public function testSetStringValueWithModifierPX(): void
     {
         $redis = $this->getClient();
 
@@ -112,7 +112,7 @@ class SET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
-    public function testSetStringValueWithModifierNX()
+    public function testSetStringValueWithModifierNX(): void
     {
         $redis = $this->getClient();
 
@@ -124,7 +124,7 @@ class SET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
-    public function testSetStringValueWithModifierXX()
+    public function testSetStringValueWithModifierXX(): void
     {
         $redis = $this->getClient();
 

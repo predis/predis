@@ -20,7 +20,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\TTL';
     }
@@ -28,7 +28,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'TTL';
     }
@@ -36,7 +36,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 10);
         $expected = array('key', 10);
@@ -50,7 +50,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -60,7 +60,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsTTL()
+    public function testReturnsTTL(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsLessThanZeroOnNonExpiringKeys()
+    public function testReturnsLessThanZeroOnNonExpiringKeys(): void
     {
         $redis = $this->getClient();
 
@@ -84,7 +84,7 @@ class TTL_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsLessThanZeroOnNonExistingKeys()
+    public function testReturnsLessThanZeroOnNonExistingKeys(): void
     {
         if ($this->isRedisServerVersion('<', '2.8.0')) {
             $this->assertSame(-1, $this->getClient()->ttl('foo'));

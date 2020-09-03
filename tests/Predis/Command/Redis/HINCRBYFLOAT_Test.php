@@ -20,7 +20,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HINCRBYFLOAT';
     }
@@ -28,7 +28,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HINCRBYFLOAT';
     }
@@ -36,7 +36,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'field', 10.5);
         $expected = array('key', 'field', 10.5);
@@ -50,7 +50,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(10.5, $this->getCommand()->parseResponse(10.5));
     }
@@ -59,7 +59,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testIncrementsValueOfFieldByFloat()
+    public function testIncrementsValueOfFieldByFloat(): void
     {
         $redis = $this->getClient();
 
@@ -75,7 +75,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testDecrementsValueOfFieldByFloat()
+    public function testDecrementsValueOfFieldByFloat(): void
     {
         $redis = $this->getClient();
 
@@ -91,7 +91,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnStringField()
+    public function testThrowsExceptionOnStringField(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessageMatches('/ERR hash value is not a( valid)? float/');
@@ -106,7 +106,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

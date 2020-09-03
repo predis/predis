@@ -11,11 +11,12 @@
 
 namespace Predis\Connection\Replication;
 
+use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
-use PredisTestCase;
 
 /**
  *
@@ -25,7 +26,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAddingConnectionsToReplication()
+    public function testAddingConnectionsToReplication(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -47,7 +48,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAddingConnectionsWithoutRoleParameterDefaultsToSlaveRole()
+    public function testAddingConnectionsWithoutRoleParameterDefaultsToSlaveRole(): void
     {
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381');
@@ -62,7 +63,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRemovingConnectionsFromReplication()
+    public function testRemovingConnectionsFromReplication(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -82,7 +83,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByIdOnEmptyReplication()
+    public function testGetConnectionByIdOnEmptyReplication(): void
     {
         $replication = new MasterSlaveReplication();
 
@@ -92,7 +93,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByAlias()
+    public function testGetConnectionByAlias(): void
     {
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6379?alias=aliased');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6380');
@@ -109,7 +110,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByAliasOnEmptyReplication()
+    public function testGetConnectionByAliasOnEmptyReplication(): void
     {
         $replication = new MasterSlaveReplication();
 
@@ -119,7 +120,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByRole()
+    public function testGetConnectionByRole(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -135,7 +136,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByRoleOnEmptyReplication()
+    public function testGetConnectionByRoleOnEmptyReplication(): void
     {
         $replication = new MasterSlaveReplication();
 
@@ -146,7 +147,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetConnectionByRoleUnknown()
+    public function testGetConnectionByRoleUnknown(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -161,7 +162,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnEmptyReplication()
+    public function testThrowsExceptionOnEmptyReplication(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('No available connection for replication');
@@ -173,7 +174,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectsToOneOfSlaves()
+    public function testConnectsToOneOfSlaves(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
@@ -195,7 +196,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectsToMasterOnMissingSlaves()
+    public function testConnectsToMasterOnMissingSlaves(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
 
@@ -209,19 +210,19 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsConnectedReturnsTrueIfAtLeastOneConnectionIsOpen()
+    public function testIsConnectedReturnsTrueIfAtLeastOneConnectionIsOpen(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->never())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->once())
             ->method('isConnected')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -234,19 +235,19 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsConnectedReturnsFalseIfAllConnectionsAreClosed()
+    public function testIsConnectedReturnsFalseIfAllConnectionsAreClosed(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
             ->expects($this->any())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
             ->expects($this->any())
             ->method('isConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
@@ -263,7 +264,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDisconnectForcesCurrentConnectionToDisconnect()
+    public function testDisconnectForcesCurrentConnectionToDisconnect(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
@@ -285,7 +286,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSwitchConnection()
+    public function testCanSwitchConnection(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -306,7 +307,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsErrorWhenSwitchingToConnectionNotInPool()
+    public function testThrowsErrorWhenSwitchingToConnectionNotInPool(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid connection or connection not found.');
@@ -324,7 +325,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSwitchConnectionByInstance()
+    public function testCanSwitchConnectionByInstance(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -345,7 +346,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsErrorWhenSwitchingToUnknownConnectionByInstance()
+    public function testThrowsErrorWhenSwitchingToUnknownConnectionByInstance(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid connection or connection not found.');
@@ -363,7 +364,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSwitchToMaster()
+    public function testCanSwitchToMaster(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -384,7 +385,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined()
+    public function testThrowsErrorOnSwitchToMasterWithNoMasterDefined(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid connection or connection not found.');
@@ -403,7 +404,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
      *
      * @todo We should find a way to test that the slave is indeed randomly selected.
      */
-    public function testCanSwitchToRandomSlave()
+    public function testCanSwitchToRandomSlave(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
@@ -422,7 +423,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined()
+    public function testThrowsErrorOnSwitchToRandomSlaveWithNoSlavesDefined(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid connection or connection not found.');
@@ -439,7 +440,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsesSlavesOnReadOnlyCommands()
+    public function testUsesSlavesOnReadOnlyCommands(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -461,7 +462,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsesMasterOnWriteRequests()
+    public function testUsesMasterOnWriteRequests(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -483,7 +484,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUsesMasterOnReadRequestsWhenNoSlavesAvailable()
+    public function testUsesMasterOnReadRequestsWhenNoSlavesAvailable(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -503,7 +504,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSwitchesFromSlaveToMasterOnWriteRequests()
+    public function testSwitchesFromSlaveToMasterOnWriteRequests(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -528,7 +529,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testWritesCommandToCorrectConnection()
+    public function testWritesCommandToCorrectConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('foo'));
@@ -557,7 +558,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReadsCommandFromCorrectConnection()
+    public function testReadsCommandFromCorrectConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('foo'));
@@ -587,7 +588,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecutesCommandOnCorrectConnection()
+    public function testExecutesCommandOnCorrectConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('foo'));
@@ -617,7 +618,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testWatchTriggersSwitchToMasterConnection()
+    public function testWatchTriggersSwitchToMasterConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdWatch = $commands->create('watch', array('foo'));
@@ -644,7 +645,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testMultiTriggersSwitchToMasterConnection()
+    public function testMultiTriggersSwitchToMasterConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdMulti = $commands->create('multi');
@@ -671,7 +672,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testEvalTriggersSwitchToMasterConnection()
+    public function testEvalTriggersSwitchToMasterConnection(): void
     {
         $commands = $this->getCommandFactory();
         $cmdEval = $commands->create('eval', array("return redis.call('info')"));
@@ -698,7 +699,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDiscardsUnreachableSlaveAndExecutesReadOnlyCommandOnNextSlave()
+    public function testDiscardsUnreachableSlaveAndExecutesReadOnlyCommandOnNextSlave(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('key'));
@@ -713,16 +714,16 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slave1)
-            ));
+            );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave&alias=slave2');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -742,7 +743,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDiscardsUnreachableSlavesAndExecutesReadOnlyCommandOnMaster()
+    public function testDiscardsUnreachableSlavesAndExecutesReadOnlyCommandOnMaster(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('key'));
@@ -752,23 +753,23 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(new Connection\ConnectionException($slave1)));
+            ->willThrowException(new Connection\ConnectionException($slave1));
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slave2)
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
 
@@ -788,7 +789,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSucceedOnReadOnlyCommandAndNoConnectionSetAsMaster()
+    public function testSucceedOnReadOnlyCommandAndNoConnectionSetAsMaster(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExists = $commands->create('exists', array('key'));
@@ -798,7 +799,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -812,7 +813,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFailsOnWriteCommandAndNoConnectionSetAsMaster()
+    public function testFailsOnWriteCommandAndNoConnectionSetAsMaster(): void
     {
         $this->expectException('Predis\Replication\MissingMasterException');
         $this->expectExceptionMessage('No master server available for replication');
@@ -835,7 +836,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDiscardsSlaveWhenRespondsLOADINGAndExecutesReadOnlyCommandOnNextSlave()
+    public function testDiscardsSlaveWhenRespondsLOADINGAndExecutesReadOnlyCommandOnNextSlave(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master->expects($this->never())
@@ -848,9 +849,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->with($this->isRedisCommand(
                 'EXISTS', array('key')
             ))
-            ->will($this->returnValue(
+            ->willReturn(
                 new Response\Error('LOADING')
-            ));
+            );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6381?role=slave');
         $slave2
@@ -859,7 +860,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->with($this->isRedisCommand(
                 'EXISTS', array('key')
             ))
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $replication = new MasterSlaveReplication();
 
@@ -881,7 +882,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testFailsOnUnreachableMaster()
+    public function testFailsOnUnreachableMaster(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
 
@@ -893,9 +894,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdSet)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($master)
-            ));
+            );
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1
@@ -913,7 +914,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnNonSupportedCommand()
+    public function testThrowsExceptionOnNonSupportedCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');
         $this->expectExceptionMessage("The command 'INFO' is not allowed in replication mode.");
@@ -931,7 +932,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanOverrideReadOnlyFlagForCommands()
+    public function testCanOverrideReadOnlyFlagForCommands(): void
     {
         $commands = $this->getCommandFactory();
         $cmdSet = $commands->create('set', array('foo', 'bar'));
@@ -964,7 +965,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCallableToOverrideReadOnlyFlagForCommands()
+    public function testAcceptsCallableToOverrideReadOnlyFlagForCommands(): void
     {
         $commands = $this->getCommandFactory();
         $cmdExistsFoo = $commands->create('exists', array('foo'));
@@ -1002,7 +1003,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCanSetReadOnlyFlagForEvalScripts()
+    public function testCanSetReadOnlyFlagForEvalScripts(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -1018,8 +1019,9 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $slave1
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with(
-                $this->logicalOr($cmdEval, $cmdEvalSha)
+            ->withConsecutive(
+                array($this->isRedisCommand($cmdEval)),
+                array($this->isRedisCommand($cmdEvalSha))
             );
 
         $replication = new MasterSlaveReplication();
@@ -1038,7 +1040,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDiscoveryRequiresConnectionFactory()
+    public function testDiscoveryRequiresConnectionFactory(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Discovery requires a connection factory');
@@ -1053,7 +1055,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDiscoversReplicationConfigurationFromMaster()
+    public function testDiscoversReplicationConfigurationFromMaster(): void
     {
         $connFactory = new Connection\Factory();
         $cmdInfo = Command\RawCommand::create('INFO', 'REPLICATION');
@@ -1062,8 +1064,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $master
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1075,7 +1079,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1095,7 +1099,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testDiscoversReplicationConfigurationFromSlave()
+    public function testDiscoversReplicationConfigurationFromSlave(): void
     {
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
 
@@ -1103,40 +1107,50 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
-        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
+        /** @var Connection\FactoryInterface|MockObject */
+        $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connFactory
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6381',
-                'role' => 'master',
-            ))
-            ->will($this->returnValue($master));
-        $connFactory
-            ->expects($this->at(1))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6382',
-                'role' => 'slave',
-            ))
-            ->will($this->returnValue($slave1));
-        $connFactory
-            ->expects($this->at(2))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6383',
-                'role' => 'slave',
-            ))
-            ->will($this->returnValue($slave2));
+            ->withConsecutive(
+                # Connection to master node
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6381',
+                        'role' => 'master',
+                    )
+                ),
+
+                # Connection to first slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6382',
+                        'role' => 'slave',
+                    )
+                ),
+
+                # Connection to second slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6383',
+                        'role' => 'slave',
+                    )
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                $master,
+                $slave1,
+                $slave2
+            );
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -1154,13 +1168,13 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
 '
-            ));
+            );
 
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1172,7 +1186,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1192,7 +1206,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testDiscoversReplicationConfigurationFromSlaveIfMasterFails()
+    public function testDiscoversReplicationConfigurationFromSlaveIfMasterFails(): void
     {
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
 
@@ -1201,48 +1215,60 @@ repl_backlog_histlen:12978
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
 
-        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
+        /** @var Connection\FactoryInterface|MockObject */
+        $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connFactory
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6381',
-                'role' => 'master',
-            ))
-            ->will($this->returnValue($master));
-        $connFactory
-            ->expects($this->at(1))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6382',
-                'role' => 'slave',
-            ))
-            ->will($this->returnValue($slave1));
-        $connFactory
-            ->expects($this->at(2))
-            ->method('create')
-            ->with(array(
-                'host' => '127.0.0.1',
-                'port' => '6383',
-                'role' => 'slave',
-            ))
-            ->will($this->returnValue($slave2));
+            ->withConsecutive(
+                # Connection to master node
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6381',
+                        'role' => 'master',
+                    )
+                ),
+
+                # Connection to first slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6382',
+                        'role' => 'slave',
+                    )
+                ),
+
+                # Connection to second slave
+                array(
+                    array(
+                        'host' => '127.0.0.1',
+                        'port' => '6383',
+                        'role' => 'slave',
+                    )
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                $master,
+                $slave1,
+                $slave2
+            );
 
         $masterKO
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
-            ->will($this->throwException(
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
+            ->willThrowException(
                 new Connection\ConnectionException($masterKO)
-            ));
+            );
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:slave
 master_host:127.0.0.1
@@ -1260,13 +1286,15 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:0
 repl_backlog_histlen:0
 '
-            ));
+            );
 
         $master
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->with(
+                $this->isRedisCommand($cmdInfo)
+            )
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1278,7 +1306,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1299,7 +1327,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testAutomaticDiscoveryRequiresConnectionFactory()
+    public function testAutomaticDiscoveryRequiresConnectionFactory(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Automatic discovery requires a connection factory');
@@ -1316,7 +1344,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testAutomaticDiscoveryOnUnreachableServer()
+    public function testAutomaticDiscoveryOnUnreachableServer(): void
     {
         $cmdInfo = $command = Command\RawCommand::create('INFO', 'REPLICATION');
         $cmdExists = $command = Command\RawCommand::create('EXISTS', 'key');
@@ -1325,7 +1353,8 @@ repl_backlog_histlen:12978
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
 
-        $connFactory = $this->getMockBuilder('Predis\Connection\Factory')->getMock();
+        /** @var Connection\FactoryInterface|MockObject */
+        $connFactory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connFactory
             ->expects($this->once())
             ->method('create')
@@ -1334,27 +1363,27 @@ repl_backlog_histlen:12978
                 'port' => '6382',
                 'role' => 'slave',
             ))
-            ->will($this->returnValue($slave1));
+            ->willReturn($slave1);
 
         $slaveKO
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->throwException(
+            ->willThrowException(
                 new Connection\ConnectionException($slaveKO)
-            ));
+            );
 
         $slave1
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdExists)
-            ->will($this->returnValue(1));
+            ->willReturn(1);
 
         $master
             ->expects($this->once())
             ->method('executeCommand')
             ->with($cmdInfo)
-            ->will($this->returnValue('
+            ->willReturn('
 # Replication
 role:master
 connected_slaves:2
@@ -1365,7 +1394,7 @@ repl_backlog_size:1048576
 repl_backlog_first_byte_offset:2
 repl_backlog_histlen:12978
 '
-            ));
+            );
 
         $replication = new MasterSlaveReplication();
         $replication->setConnectionFactory($connFactory);
@@ -1380,7 +1409,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testExposesReplicationStrategy()
+    public function testExposesReplicationStrategy(): void
     {
         $replication = new MasterSlaveReplication();
         $this->assertInstanceOf('Predis\Replication\ReplicationStrategy', $replication->getReplicationStrategy());
@@ -1394,7 +1423,7 @@ repl_backlog_histlen:12978
     /**
      * @group disconnected
      */
-    public function testCanBeSerialized()
+    public function testCanBeSerialized(): void
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');

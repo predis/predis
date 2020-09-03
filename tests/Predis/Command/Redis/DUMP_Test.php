@@ -20,7 +20,7 @@ class DUMP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\DUMP';
     }
@@ -28,7 +28,7 @@ class DUMP_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'DUMP';
     }
@@ -36,7 +36,7 @@ class DUMP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class DUMP_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(";
         $expected = "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(";

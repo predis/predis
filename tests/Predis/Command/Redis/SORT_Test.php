@@ -22,7 +22,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SORT';
     }
@@ -30,7 +30,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SORT';
     }
@@ -54,7 +54,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $modifiers = array(
             'by' => 'by_key_*',
@@ -80,7 +80,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testGetModifierCanBeString()
+    public function testGetModifierCanBeString(): void
     {
         $arguments = array('key', array('get' => '#'));
         $expected = array('key', 'GET', '#');
@@ -94,7 +94,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('value1', 'value2', 'value3');
         $expected = array('value1', 'value2', 'value3');
@@ -107,7 +107,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testBasicSort()
+    public function testBasicSort(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -118,7 +118,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithAscOrDescModifier()
+    public function testSortWithAscOrDescModifier(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -141,7 +141,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithLimitModifier()
+    public function testSortWithLimitModifier(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -164,7 +164,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithAlphaModifier()
+    public function testSortWithAlphaModifier(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -180,7 +180,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithStoreModifier()
+    public function testSortWithStoreModifier(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -198,7 +198,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithCombinedModifiers()
+    public function testSortWithCombinedModifiers(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -216,7 +216,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSortWithGetModifiers()
+    public function testSortWithGetModifiers(): void
     {
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
@@ -233,7 +233,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

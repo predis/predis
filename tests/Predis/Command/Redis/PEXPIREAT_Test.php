@@ -20,7 +20,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PEXPIREAT';
     }
@@ -28,7 +28,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PEXPIREAT';
     }
@@ -36,7 +36,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 100);
         $expected = array('key', 100);
@@ -50,7 +50,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -64,7 +64,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
      * @requiresRedisVersion >= 2.6.0
      * @group slow
      */
-    public function testCanExpireKeys()
+    public function testCanExpireKeys(): void
     {
         $ttl = 1.5;
         $redis = $this->getClient();
@@ -83,7 +83,7 @@ class PEXPIREAT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testDeletesKeysOnPastUnixTime()
+    public function testDeletesKeysOnPastUnixTime(): void
     {
         $redis = $this->getClient();
 

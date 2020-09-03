@@ -11,8 +11,8 @@
 
 namespace Predis\PubSub;
 
-use Predis\Client;
 use PredisTestCase;
+use Predis\Client;
 
 /**
  * @group realm-pubsub
@@ -27,12 +27,12 @@ class DispatcherLoopTest extends PredisTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testDispatcherLoopAgainstRedisServer()
+    public function testDispatcherLoopAgainstRedisServer(): void
     {
         $parameters = array(
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
+            'host' => constant('REDIS_SERVER_HOST'),
+            'port' => constant('REDIS_SERVER_PORT'),
+            'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from hanging on broken test
             'read_write_timeout' => 2,
         );
@@ -47,7 +47,7 @@ class DispatcherLoopTest extends PredisTestCase
         $dispatcher = new DispatcherLoop($pubsub);
 
         $function01 = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $function01
             ->expects($this->exactly(2))
@@ -56,14 +56,14 @@ class DispatcherLoopTest extends PredisTestCase
                 $this->equalTo('01:argument'),
                 $this->equalTo('01:quit')
             ), $dispatcher)
-            ->will($this->returnCallback(function ($arg, $dispatcher) {
+            ->willReturnCallback(function ($arg, $dispatcher) {
                 if ($arg === '01:quit') {
                     $dispatcher->stop();
                 }
-            }));
+            });
 
         $function02 = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $function02
             ->expects($this->once())
@@ -71,7 +71,7 @@ class DispatcherLoopTest extends PredisTestCase
             ->with('02:argument');
 
         $function03 = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $function03
             ->expects($this->never())
@@ -94,12 +94,12 @@ class DispatcherLoopTest extends PredisTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testDispatcherLoopAgainstRedisServerWithPrefix()
+    public function testDispatcherLoopAgainstRedisServerWithPrefix(): void
     {
         $parameters = array(
-            'host' => REDIS_SERVER_HOST,
-            'port' => REDIS_SERVER_PORT,
-            'database' => REDIS_SERVER_DBNUM,
+            'host' => constant('REDIS_SERVER_HOST'),
+            'port' => constant('REDIS_SERVER_PORT'),
+            'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
         );
@@ -116,15 +116,15 @@ class DispatcherLoopTest extends PredisTestCase
         $dispatcher = new DispatcherLoop($pubsub);
 
         $callback = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callback
             ->expects($this->exactly(1))
             ->method('__invoke')
             ->with($this->equalTo('arg:prefixed'), $dispatcher)
-            ->will($this->returnCallback(function ($arg, $dispatcher) {
+            ->willReturnCallback(function ($arg, $dispatcher) {
                 $dispatcher->stop();
-            }));
+            });
 
         $dispatcher->attachCallback('callback', $callback);
 

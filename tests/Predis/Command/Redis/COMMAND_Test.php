@@ -22,7 +22,7 @@ class COMMAND_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\COMMAND';
     }
@@ -30,7 +30,7 @@ class COMMAND_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'COMMAND';
     }
@@ -38,7 +38,7 @@ class COMMAND_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('INFO', 'DEL');
         $expected = array('INFO', 'DEL');
@@ -52,7 +52,7 @@ class COMMAND_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array(
             array('get', 2, array(new Status('readonly'), new Status('fast')), 1, 1, 1),
@@ -72,7 +72,7 @@ class COMMAND_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseEmptyResponse()
+    public function testParseEmptyResponse(): void
     {
         $raw = array(null);
         $expected = array(null);
@@ -86,7 +86,7 @@ class COMMAND_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.13
      */
-    public function testReturnsEmptyCommandInfoOnNonExistingCommand()
+    public function testReturnsEmptyCommandInfoOnNonExistingCommand(): void
     {
         $redis = $this->getClient();
 
@@ -98,7 +98,7 @@ class COMMAND_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.13
      */
-    public function testReturnsCommandInfoOnExistingCommand()
+    public function testReturnsCommandInfoOnExistingCommand(): void
     {
         $redis = $this->getClient();
 
@@ -127,7 +127,7 @@ class COMMAND_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.13
      */
-    public function testReturnsListOfCommandInfoWithNoArguments()
+    public function testReturnsListOfCommandInfoWithNoArguments(): void
     {
         $redis = $this->getClient();
 

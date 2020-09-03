@@ -21,9 +21,9 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a new instance of the tested distributor.
      *
-     * @return \Predis\Cluster\Distributor\DistributorInterface
+     * @return DistributorInterface
      */
-    abstract protected function getDistributorInstance();
+    abstract protected function getDistributorInstance(): DistributorInterface;
 
     /**
      * Returns a list of nodes from the hashring.
@@ -33,7 +33,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
      *
      * @return array Nodes from the hashring.
      */
-    protected function getNodes(DistributorInterface $distributor, $iterations = 10)
+    protected function getNodes(DistributorInterface $distributor, int $iterations = 10): array
     {
         $nodes = array();
 
@@ -52,7 +52,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
      *
      * @return DistributorInterface
      */
-    protected function getSampleDistribution(array $nodes)
+    protected function getSampleDistribution(array $nodes): DistributorInterface
     {
         $distributor = $this->getDistributorInstance();
 
@@ -66,7 +66,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testEmptyRingThrowsException()
+    public function testEmptyRingThrowsException(): void
     {
         $this->expectException('Predis\Cluster\Distributor\EmptyRingException');
 
@@ -77,7 +77,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRemoveOnEmptyRingDoesNotThrowException()
+    public function testRemoveOnEmptyRingDoesNotThrowException(): void
     {
         $distributor = $this->getDistributorInstance();
 

@@ -20,7 +20,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\MGET';
     }
@@ -28,7 +28,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'MGET';
     }
@@ -36,7 +36,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key1', 'key2', 'key3');
         $expected = array('key1', 'key2', 'key3');
@@ -50,7 +50,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleArray()
+    public function testFilterArgumentsAsSingleArray(): void
     {
         $arguments = array(array('key1', 'key2', 'key3'));
         $expected = array('key1', 'key2', 'key3');
@@ -64,7 +64,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('value1', 'value2', 'value3');
         $expected = array('value1', 'value2', 'value3');
@@ -77,7 +77,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsArrayOfValues()
+    public function testReturnsArrayOfValues(): void
     {
         $redis = $this->getClient();
 
@@ -90,7 +90,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsArrayWithNullValuesOnNonExistingKeys()
+    public function testReturnsArrayWithNullValuesOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
 
@@ -100,7 +100,7 @@ class MGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testDoesNotThrowExceptionOnWrongType()
+    public function testDoesNotThrowExceptionOnWrongType(): void
     {
         $redis = $this->getClient();
 

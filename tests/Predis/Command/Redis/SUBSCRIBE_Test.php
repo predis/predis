@@ -20,7 +20,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SUBSCRIBE';
     }
@@ -28,7 +28,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SUBSCRIBE';
     }
@@ -36,7 +36,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('channel:foo', 'channel:bar');
         $expected = array('channel:foo', 'channel:bar');
@@ -50,7 +50,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsAsSingleArray()
+    public function testFilterArgumentsAsSingleArray(): void
     {
         $arguments = array(array('channel:foo', 'channel:bar'));
         $expected = array('channel:foo', 'channel:bar');
@@ -64,7 +64,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('subscribe', 'channel', 1);
         $expected = array('subscribe', 'channel', 1);
@@ -78,7 +78,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsTheFirstSubscribedChannelDetails()
+    public function testReturnsTheFirstSubscribedChannelDetails(): void
     {
         $redis = $this->getClient();
 
@@ -89,7 +89,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCanSendSubscribeAfterSubscribe()
+    public function testCanSendSubscribeAfterSubscribe(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCanSendPsubscribeAfterSubscribe()
+    public function testCanSendPsubscribeAfterSubscribe(): void
     {
         $redis = $this->getClient();
 
@@ -113,7 +113,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCanSendUnsubscribeAfterSubscribe()
+    public function testCanSendUnsubscribeAfterSubscribe(): void
     {
         $redis = $this->getClient();
 
@@ -126,7 +126,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCanSendPunsubscribeAfterSubscribe()
+    public function testCanSendPunsubscribeAfterSubscribe(): void
     {
         $redis = $this->getClient();
 
@@ -139,7 +139,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCanSendQuitAfterSubscribe()
+    public function testCanSendQuitAfterSubscribe(): void
     {
         $redis = $this->getClient();
         $quit = $this->getCommandFactory()->create('quit');
@@ -152,7 +152,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testCannotSendOtherCommandsAfterSubscribe()
+    public function testCannotSendOtherCommandsAfterSubscribe(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessageMatches('/ERR.*only .* allowed in this context/');

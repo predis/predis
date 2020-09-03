@@ -12,6 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 
 /**
  *
@@ -21,19 +23,20 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerIdWithNoArguments()
+    public function testSerializerIdWithNoArguments(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('PING'));
+            ->willReturn('PING');
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array()));
+            ->willReturn(array());
 
         $result = $serializer->serialize($command);
 
@@ -43,19 +46,20 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerIdWithArguments()
+    public function testSerializerIdWithArguments(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('SET'));
+            ->willReturn('SET');
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array('key', 'value')));
+            ->willReturn(array('key', 'value'));
 
         $result = $serializer->serialize($command);
 
@@ -65,19 +69,20 @@ class RequestSerializerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSerializerDoesNotBreakOnArgumentsWithHoles()
+    public function testSerializerDoesNotBreakOnArgumentsWithHoles(): void
     {
         $serializer = new RequestSerializer();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('DEL'));
+            ->willReturn('DEL');
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array(0 => 'key:1', 2 => 'key:2')));
+            ->willReturn(array(0 => 'key:1', 2 => 'key:2'));
 
         $result = $serializer->serialize($command);
 

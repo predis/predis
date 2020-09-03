@@ -20,7 +20,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\BITCOUNT';
     }
@@ -28,7 +28,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'BITCOUNT';
     }
@@ -36,7 +36,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 0, 10);
         $expected = array('key', 0, 10);
@@ -50,7 +50,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = 10;
         $expected = 10;
@@ -64,7 +64,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testReturnsNumberOfBitsSet()
+    public function testReturnsNumberOfBitsSet(): void
     {
         $redis = $this->getClient();
 
@@ -82,7 +82,7 @@ class BITCOUNT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

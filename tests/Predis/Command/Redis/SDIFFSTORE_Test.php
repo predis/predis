@@ -20,7 +20,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SDIFFSTORE';
     }
@@ -28,7 +28,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SDIFFSTORE';
     }
@@ -36,7 +36,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key:destination', 'key:source1', 'key:source:2');
         $expected = array('key:destination', 'key:source1', 'key:source:2');
@@ -50,7 +50,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsSourceKeysAsSingleArray()
+    public function testFilterArgumentsSourceKeysAsSingleArray(): void
     {
         $arguments = array('key:destination', array('key:source1', 'key:source:2'));
         $expected = array('key:destination', 'key:source1', 'key:source:2');
@@ -64,7 +64,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -72,7 +72,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testStoresMembersOfSetOnSingleSet()
+    public function testStoresMembersOfSetOnSingleSet(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testStoresDifferenceOfMultipleSets()
+    public function testStoresDifferenceOfMultipleSets(): void
     {
         $redis = $this->getClient();
 
@@ -103,7 +103,7 @@ class SDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongTypeOfSourceKey()
+    public function testThrowsExceptionOnWrongTypeOfSourceKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

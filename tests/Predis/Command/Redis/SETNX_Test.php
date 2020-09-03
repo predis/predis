@@ -20,7 +20,7 @@ class SETNX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SETNX';
     }
@@ -28,7 +28,7 @@ class SETNX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SETNX';
     }
@@ -36,7 +36,7 @@ class SETNX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('foo', 'bar');
         $expected = array('foo', 'bar');
@@ -50,7 +50,7 @@ class SETNX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(0, $this->getCommand()->parseResponse(0));
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
@@ -59,7 +59,7 @@ class SETNX_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testSetStringValue()
+    public function testSetStringValue(): void
     {
         $redis = $this->getClient();
 

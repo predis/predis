@@ -11,10 +11,12 @@
 
 namespace Predis\Response\Iterator;
 
+use PredisTestCase;
 use Predis\Client;
+use Predis\ClientInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
-use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -24,11 +26,12 @@ class MultiBulkTupleTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInitiatedMultiBulkIteratorsAreNotValid()
+    public function testInitiatedMultiBulkIteratorsAreNotValid(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Cannot initialize a tuple iterator using an already initiated iterator');
 
+        /** @var NodeConnectionInterface */
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $iterator = new MultiBulk($connection, 2);
@@ -40,11 +43,12 @@ class MultiBulkTupleTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testMultiBulkWithOddSizesAreInvalid()
+    public function testMultiBulkWithOddSizesAreInvalid(): void
     {
         $this->expectException('UnexpectedValueException');
         $this->expectExceptionMessage('Invalid response size for a tuple iterator');
 
+        /** @var NodeConnectionInterface */
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $iterator = new MultiBulk($connection, 3);
@@ -55,12 +59,14 @@ class MultiBulkTupleTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testIterableMultibulk()
+    public function testIterableMultibulk(): void
     {
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = new MultiBulkTuple($client->zrange('metavars', '0', '-1', 'withscores'));
+        /** @var MultiBulkIterator */
+        $multibulk = $client->zrange('metavars', '0', '-1', 'withscores');
+        $iterator = new MultiBulkTuple($multibulk);
 
         $this->assertInstanceOf('OuterIterator', $iterator);
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkTuple', $iterator);
@@ -86,12 +92,14 @@ class MultiBulkTupleTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testGarbageCollectorDropsUnderlyingConnection()
+    public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
-        $iterator = new MultiBulkTuple($client->zrange('metavars', '0', '-1', 'withscores'));
+        /** @var MultiBulkIterator */
+        $multibulk = $client->zrange('metavars', '0', '-1', 'withscores');
+        $iterator = new MultiBulkTuple($multibulk);
 
         unset($iterator);
 
@@ -106,9 +114,9 @@ class MultiBulkTupleTest extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @return Client
+     * @return ClientInterface
      */
-    protected function getClient()
+    protected function getClient(): ClientInterface
     {
         $parameters = $this->getParameters(array('read_write_timeout' => 2));
 

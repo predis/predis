@@ -23,7 +23,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithSingleConnection()
+    public function testPipelineWithSingleConnection(): void
     {
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
@@ -32,14 +32,30 @@ class AtomicTest extends PredisTestCase
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->will($this->onConsecutiveCalls(true, array($pong, $pong, $pong)));
+            ->withConsecutive(
+                array($this->isRedisCommand('MULTI')),
+                array($this->isRedisCommand('EXEC'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                array($pong, $pong, $pong)
+            );
         $connection
             ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->method('writeRequest')
+            ->withConsecutive(
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING'))
+            );
         $connection
-            ->expects($this->at(3))
+            ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $queued));
+            ->willReturnOnConsecutiveCalls(
+                $queued,
+                $queued,
+                $queued
+            );
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -53,16 +69,41 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnAbortedTransaction()
+    public function testThrowsExceptionOnAbortedTransaction(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('The underlying transaction has been aborted by the server');
+
+        $queued = new Response\Status('QUEUED');
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->will($this->onConsecutiveCalls(true, null));
+            ->withConsecutive(
+                array($this->isRedisCommand('MULTI')),
+                array($this->isRedisCommand('EXEC'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                null
+            );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest')
+            ->withConsecutive(
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING'))
+            );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('readResponse')
+            ->willReturnOnConsecutiveCalls(
+                $queued,
+                $queued,
+                $queued
+            );
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -76,7 +117,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithErrorInTransaction()
+    public function testPipelineWithErrorInTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
@@ -86,17 +127,32 @@ class AtomicTest extends PredisTestCase
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->will($this->returnValue(true));
+            ->withConsecutive(
+                array($this->isRedisCommand('MULTI')),
+                array($this->isRedisCommand('DISCARD'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                new Response\Status('OK')
+            );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest')
+            ->withConsecutive(
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING'))
+            );
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $error));
-        $connection
-            ->expects($this->at(7))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('DISCARD'));
+            ->willReturnOnConsecutiveCalls(
+                $queued,
+                $queued,
+                $error
+            );
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -110,18 +166,36 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsServerExceptionOnResponseErrorByDefault()
+    public function testThrowsServerExceptionOnResponseErrorByDefault(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
 
-        $error = new Response\Error('ERR Test error');
-
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                array($this->isRedisCommand('MULTI')),
+                array($this->isRedisCommand('DISCARD'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                new Response\Status('OK')
+            );
+        $connection
+            ->expects($this->exactly(2))
+            ->method('writeRequest')
+            ->withConsecutive(
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING'))
+            );
         $connection
             ->expects($this->once())
             ->method('readResponse')
-            ->will($this->returnValue($error));
+            ->willReturn(
+                new Response\Error('ERR Test error')
+            );
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -134,7 +208,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReturnsResponseErrorWithClientExceptionsSetToFalse()
+    public function testReturnsResponseErrorWithClientExceptionsSetToFalse(): void
     {
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
@@ -142,13 +216,32 @@ class AtomicTest extends PredisTestCase
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                array($this->isRedisCommand('MULTI')),
+                array($this->isRedisCommand('EXEC'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                array($pong, $pong, $error)
+            );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest')
+            ->withConsecutive(
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING')),
+                array($this->isRedisCommand('PING'))
+            );
+        $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
-            ->will($this->onConsecutiveCalls($queued, $queued, $queued));
-        $connection
-            ->expects($this->at(7))
-            ->method('executeCommand')
-            ->will($this->returnValue(array($pong, $pong, $error)));
+            ->willReturnOnConsecutiveCalls(
+                $queued,
+                $queued,
+                $queued
+            );
 
         $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
 
@@ -162,7 +255,7 @@ class AtomicTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecutorWithAggregateConnection()
+    public function testExecutorWithAggregateConnection(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage("The class 'Predis\Pipeline\Atomic' does not support aggregate connections");

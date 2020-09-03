@@ -11,9 +11,11 @@
 
 namespace Predis\Configuration\Option;
 
+use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Configuration\OptionsInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\RedisFactory;
-use PredisTestCase;
 
 /**
  *
@@ -23,10 +25,11 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefaultOptionValue()
+    public function testDefaultOptionValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $commands = $option->getDefault($options);
@@ -38,23 +41,24 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAppliesPrefixOnDefaultOptionValue()
+    public function testAppliesPrefixOnDefaultOptionValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
             ->method('__isset')
             ->with('prefix')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $options
             ->expects($this->once())
             ->method('__get')
             ->with('prefix')
-            ->will($this->returnValue(
+            ->willReturn(
                 new KeyPrefixProcessor('prefix:')
-            ));
+            );
 
         $commands = $option->getDefault($options);
 
@@ -66,10 +70,11 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCommandFactoryInstanceAsValue()
+    public function testAcceptsCommandFactoryInstanceAsValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $input = new RedisFactory();
@@ -83,10 +88,11 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsDictionaryOfCommandsAsValue()
+    public function testAcceptsDictionaryOfCommandsAsValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $input = array(
@@ -104,10 +110,11 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsDictionaryOfCommandsWithNullsToUndefineCommandsAsValue()
+    public function testAcceptsDictionaryOfCommandsWithNullsToUndefineCommandsAsValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $input = array(
@@ -127,21 +134,22 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCallableReturningCommandFactoryInstance()
+    public function testAcceptsCallableReturningCommandFactoryInstance(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($commands));
+            ->willReturn($commands);
 
         $this->assertSame($commands, $option->filter($options, $callable));
     }
@@ -149,10 +157,11 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCallableReturningDictionaryOfCommandsAsValue()
+    public function testAcceptsCallableReturningDictionaryOfCommandsAsValue(): void
     {
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $dictionary = array(
@@ -161,13 +170,13 @@ class CommandsTest extends PredisTestCase
         );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($dictionary));
+            ->willReturn($dictionary);
 
         $commands = $option->filter($options, $callable);
 
@@ -179,25 +188,26 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidTypeReturnedByCallable()
+    public function testThrowsExceptionOnInvalidTypeReturnedByCallable(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Predis\Configuration\Option\Commands expects a valid command factory');
 
         $option = new Commands();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue(
+            ->willReturn(
                 new \stdClass()
-            ));
+            );
 
         $option->filter($options, $callable);
     }
@@ -205,12 +215,14 @@ class CommandsTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidValue()
+    public function testThrowsExceptionOnInvalidValue(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Predis\Configuration\Option\Commands expects a valid command factory');
 
         $option = new Commands();
+
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new \stdClass());

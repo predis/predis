@@ -23,7 +23,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SLOWLOG';
     }
@@ -31,7 +31,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SLOWLOG';
     }
@@ -39,7 +39,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('GET', '2');
         $expected = array('GET', '2');
@@ -55,7 +55,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
      *
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array(array(0, 1323163469, 12451, array('SORT', 'list:unordered')));
         $expected = array(
@@ -77,7 +77,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
      *
      * @group disconnected
      */
-    public function testParseResponseInteger()
+    public function testParseResponseInteger(): void
     {
         $command = $this->getCommand();
 
@@ -88,7 +88,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.12
      */
-    public function testReturnsAnArrayOfLoggedCommands()
+    public function testReturnsAnArrayOfLoggedCommands(): void
     {
         $redis = $this->getClient();
 
@@ -114,7 +114,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.12
      */
-    public function testCanResetTheLog()
+    public function testCanResetTheLog(): void
     {
         $redis = $this->getClient();
 
@@ -125,7 +125,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.12
      */
-    public function testThrowsExceptionOnInvalidSubcommand()
+    public function testThrowsExceptionOnInvalidSubcommand(): void
     {
         $this->expectException('Predis\Response\ServerException');
 

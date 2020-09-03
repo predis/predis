@@ -20,7 +20,7 @@ class PING_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\PING';
     }
@@ -28,7 +28,7 @@ class PING_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'PING';
     }
@@ -36,7 +36,7 @@ class PING_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array();
         $expected = array();
@@ -50,7 +50,7 @@ class PING_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('PONG', $this->getCommand()->parseResponse('PONG'));
     }
@@ -58,7 +58,7 @@ class PING_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testAlwaysReturnsStatusResponse()
+    public function testAlwaysReturnsStatusResponse(): void
     {
         $redis = $this->getClient();
         $response = $redis->ping();

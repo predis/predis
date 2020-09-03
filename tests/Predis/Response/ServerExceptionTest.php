@@ -23,7 +23,7 @@ class ServerExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionMessage()
+    public function testExceptionMessage(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage(self::ERR_WRONG_KEY_TYPE);
@@ -34,7 +34,7 @@ class ServerExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExceptionClass()
+    public function testExceptionClass(): void
     {
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
 
@@ -47,7 +47,7 @@ class ServerExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testErrorType()
+    public function testErrorType(): void
     {
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
 
@@ -57,7 +57,7 @@ class ServerExceptionTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testToErrorResponse()
+    public function testToErrorResponse(): void
     {
         $exception = new ServerException(self::ERR_WRONG_KEY_TYPE);
         $error = $exception->toErrorResponse();

@@ -20,7 +20,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\EXEC';
     }
@@ -28,7 +28,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'EXEC';
     }
@@ -36,7 +36,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -47,7 +47,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('tx1', 'tx2');
         $expected = array('tx1', 'tx2');
@@ -60,7 +60,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testExecutesTransactionAndReturnsArrayOfResponses()
+    public function testExecutesTransactionAndReturnsArrayOfResponses(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsEmptyArrayOnEmptyTransactions()
+    public function testReturnsEmptyArrayOnEmptyTransactions(): void
     {
         $redis = $this->getClient();
 
@@ -86,7 +86,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testResponsesOfTransactionsAreNotParsed()
+    public function testResponsesOfTransactionsAreNotParsed(): void
     {
         $redis = $this->getClient();
 
@@ -101,7 +101,7 @@ class EXEC_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionWhenCallingOutsideTransaction()
+    public function testThrowsExceptionWhenCallingOutsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR EXEC without MULTI');

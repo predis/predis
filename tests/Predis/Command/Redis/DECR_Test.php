@@ -20,7 +20,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\DECR';
     }
@@ -28,7 +28,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'DECR';
     }
@@ -36,7 +36,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(5, $this->getCommand()->parseResponse(5));
     }
@@ -58,7 +58,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testCreatesNewKeyOnNonExistingKey()
+    public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -69,7 +69,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsTheValueOfTheKeyAfterDecrement()
+    public function testReturnsTheValueOfTheKeyAfterDecrement(): void
     {
         $redis = $this->getClient();
 
@@ -82,7 +82,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnKeyValueNotInteger()
+    public function testThrowsExceptionOnKeyValueNotInteger(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR value is not an integer or out of range');
@@ -96,7 +96,7 @@ class DECR_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

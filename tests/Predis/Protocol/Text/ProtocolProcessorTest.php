@@ -12,6 +12,8 @@
 namespace Predis\Protocol\Text;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 
 /**
  *
@@ -21,20 +23,21 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectionWrite()
+    public function testConnectionWrite(): void
     {
         $serialized = "*1\r\n$4\r\nPING\r\n";
         $protocol = new ProtocolProcessor();
 
+        /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')->getMock();
         $command
             ->expects($this->once())
             ->method('getId')
-            ->will($this->returnValue('PING'));
+            ->willReturn('PING');
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->will($this->returnValue(array()));
+            ->willReturn(array());
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -48,31 +51,21 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectionRead()
+    public function testConnectionRead(): void
     {
         $protocol = new ProtocolProcessor();
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(5))
             ->method('readLine')
-            ->will($this->returnValue('+OK'));
-        $connection
-            ->expects($this->at(1))
-            ->method('readLine')
-            ->will($this->returnValue('-ERR error message'));
-        $connection
-            ->expects($this->at(2))
-            ->method('readLine')
-            ->will($this->returnValue(':2'));
-        $connection
-            ->expects($this->at(3))
-            ->method('readLine')
-            ->will($this->returnValue('$-1'));
-        $connection
-            ->expects($this->at(4))
-            ->method('readLine')
-            ->will($this->returnValue('*-1'));
+            ->willReturnOnConsecutiveCalls(
+                '+OK',
+                '-ERR error message',
+                ':2',
+                '$-1',
+                '*-1'
+            );
 
         $this->assertEquals('OK', $protocol->read($connection));
         $this->assertEquals('ERR error message', $protocol->read($connection));
@@ -84,7 +77,7 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIterableMultibulkSupport()
+    public function testIterableMultibulkSupport(): void
     {
         $protocol = new ProtocolProcessor();
         $protocol->useIterableMultibulk(true);
@@ -93,7 +86,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection
             ->expects($this->once(4))
             ->method('readLine')
-            ->will($this->returnValue('*1'));
+            ->willReturn('*1');
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $protocol->read($connection));
     }
@@ -101,7 +94,7 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testUnknownResponsePrefix()
+    public function testUnknownResponsePrefix(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Unknown response prefix: '!' [tcp://127.0.0.1:6379]");
@@ -112,7 +105,7 @@ class ProtocolProcessorTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readLine')
-            ->will($this->returnValue('!'));
+            ->willReturn('!');
 
         $protocol->read($connection);
     }

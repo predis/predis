@@ -22,7 +22,7 @@ class FireAndForgetTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithSingleConnection()
+    public function testPipelineWithSingleConnection(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -44,7 +44,7 @@ class FireAndForgetTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSwitchesToMasterWithReplicationConnection()
+    public function testSwitchesToMasterWithReplicationConnection(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')
             ->getMock();

@@ -20,7 +20,7 @@ class DBSIZE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\DBSIZE';
     }
@@ -28,7 +28,7 @@ class DBSIZE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'DBSIZE';
     }
@@ -36,7 +36,7 @@ class DBSIZE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $command = $this->getCommand();
         $command->setArguments(array());
@@ -47,7 +47,7 @@ class DBSIZE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(100, $this->getCommand()->parseResponse(100));
     }
@@ -55,7 +55,7 @@ class DBSIZE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsCurrentSizeOfDatabase()
+    public function testReturnsCurrentSizeOfDatabase(): void
     {
         $redis = $this->getClient();
 

@@ -20,7 +20,7 @@ class HMGET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\HMGET';
     }
@@ -28,7 +28,7 @@ class HMGET_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'HMGET';
     }
@@ -36,7 +36,7 @@ class HMGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 'field1', 'field2', 'field3');
         $expected = array('key', 'field1', 'field2', 'field3');
@@ -50,7 +50,7 @@ class HMGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsFieldsAsSingleArray()
+    public function testFilterArgumentsFieldsAsSingleArray(): void
     {
         $arguments = array('key', array('field1', 'field2', 'field3'));
         $expected = array('key', 'field1', 'field2', 'field3');
@@ -64,7 +64,7 @@ class HMGET_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('bar', 'piyo', 'wut');
         $expected = array('bar', 'piyo', 'wut');
@@ -78,7 +78,7 @@ class HMGET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsValuesOfSpecifiedFields()
+    public function testReturnsValuesOfSpecifiedFields(): void
     {
         $redis = $this->getClient();
 
@@ -94,7 +94,7 @@ class HMGET_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

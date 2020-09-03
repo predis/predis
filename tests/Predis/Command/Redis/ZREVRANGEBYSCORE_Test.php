@@ -20,7 +20,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZREVRANGEBYSCORE';
     }
@@ -28,7 +28,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZREVRANGEBYSCORE';
     }
@@ -36,7 +36,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $modifiers = array(
             'withscores' => true,
@@ -55,7 +55,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithStringWithscores()
+    public function testFilterArgumentsWithStringWithscores(): void
     {
         $arguments = array('zset', 0, 100, 'withscores');
         $expected = array('zset', 0, 100, 'WITHSCORES');
@@ -69,7 +69,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithNamedLimit()
+    public function testFilterArgumentsWithNamedLimit(): void
     {
         $arguments = array('zset', 0, 100, array('limit' => array('offset' => 1, 'count' => 2)));
         $expected = array('zset', 0, 100, 'LIMIT', 1, 2);
@@ -83,7 +83,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('element1', 'element2', 'element3');
         $expected = array('element1', 'element2', 'element3');
@@ -96,7 +96,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponseWithScores()
+    public function testParseResponseWithScores(): void
     {
         $raw = array('element1', '1', 'element2', '2', 'element3', '3');
         $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
@@ -109,7 +109,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue()
+    public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue(): void
     {
         $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => true));
         $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
@@ -128,7 +128,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsElementsInScoreRange()
+    public function testReturnsElementsInScoreRange(): void
     {
         $redis = $this->getClient();
 
@@ -146,7 +146,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testInfinityScoreIntervals()
+    public function testInfinityScoreIntervals(): void
     {
         $redis = $this->getClient();
 
@@ -161,7 +161,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testExclusiveScoreIntervals()
+    public function testExclusiveScoreIntervals(): void
     {
         $redis = $this->getClient();
 
@@ -176,7 +176,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testRangeWithWithscoresModifier()
+    public function testRangeWithWithscoresModifier(): void
     {
         $redis = $this->getClient();
 
@@ -191,7 +191,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testRangeWithLimitModifier()
+    public function testRangeWithLimitModifier(): void
     {
         $redis = $this->getClient();
 
@@ -206,7 +206,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testRangeWithCombinedModifiers()
+    public function testRangeWithCombinedModifiers(): void
     {
         $redis = $this->getClient();
 
@@ -222,7 +222,7 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

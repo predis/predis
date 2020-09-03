@@ -21,7 +21,7 @@ class IntegerResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInteger()
+    public function testInteger(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -42,7 +42,7 @@ class IntegerResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testNull()
+    public function testNull(): void
     {
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -60,7 +60,7 @@ class IntegerResponseTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testInvalid()
+    public function testInvalid(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
         $this->expectExceptionMessage("Cannot parse 'invalid' as a valid numeric response [tcp://127.0.0.1:6379]");

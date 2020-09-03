@@ -187,7 +187,7 @@ class $class extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return '$fqn';
     }
@@ -195,7 +195,7 @@ class $class extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return '$id';
     }
@@ -203,7 +203,7 @@ class $class extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         \$this->markTestIncomplete('This test has not been implemented yet.');
 
@@ -219,7 +219,7 @@ class $class extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         \$this->markTestIncomplete('This test has not been implemented yet.');
 
@@ -239,7 +239,7 @@ PHP;
     /**
      * @group disconnected
      */
-    public function testPrefixKeys()
+    public function testPrefixKeys(): void
     {
         \$this->markTestIncomplete('This test has not been implemented yet.');
 
@@ -255,7 +255,7 @@ PHP;
     /**
      * @group disconnected
      */
-    public function testPrefixKeysIgnoredOnEmptyArguments()
+    public function testPrefixKeysIgnoredOnEmptyArguments(): void
     {
         \$command = \$this->getCommand();
         \$command->prefixKeys('prefix:');

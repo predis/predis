@@ -21,7 +21,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsValidReturnsTrueOnValidSlot()
+    public function testIsValidReturnsTrueOnValidSlot(): void
     {
         $this->assertTrue(SlotMap::isValid(0));
         $this->assertTrue(SlotMap::isValid(16383));
@@ -33,7 +33,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsValidReturnsFalseOnInvalidSlot()
+    public function testIsValidReturnsFalseOnInvalidSlot(): void
     {
         $this->assertFalse(SlotMap::isValid(-1));
         $this->assertFalse(SlotMap::isValid(16384));
@@ -42,7 +42,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsValidRangeReturnsTrueOnValidSlotRange()
+    public function testIsValidRangeReturnsTrueOnValidSlotRange(): void
     {
         $this->assertTrue(SlotMap::isValidRange(0, 16383));
         $this->assertTrue(SlotMap::isValidRange(2000, 2999));
@@ -52,7 +52,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsValidRangeReturnsFalseOnInvalidSlotRange()
+    public function testIsValidRangeReturnsFalseOnInvalidSlotRange(): void
     {
         $this->assertFalse(SlotMap::isValidRange(0, 16384));
         $this->assertFalse(SlotMap::isValidRange(-1, 16383));
@@ -63,7 +63,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testToArrayReturnsEmptyArrayOnEmptySlotMap()
+    public function testToArrayReturnsEmptyArrayOnEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -73,7 +73,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetSlotsAssignsSpecifiedNodeToSlotRange()
+    public function testSetSlotsAssignsSpecifiedNodeToSlotRange(): void
     {
         $slotmap = new SlotMap();
 
@@ -93,7 +93,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetSlotsOverwritesSlotRange()
+    public function testSetSlotsOverwritesSlotRange(): void
     {
         $slotmap = new SlotMap();
 
@@ -110,7 +110,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetSlotsAssignsSingleSlotWhenFirstAndLastSlotMatch()
+    public function testSetSlotsAssignsSingleSlotWhenFirstAndLastSlotMatch(): void
     {
         $slotmap = new SlotMap();
 
@@ -122,7 +122,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetSlotsCastsValueToString()
+    public function testSetSlotsCastsValueToString(): void
     {
         $slotmap = new SlotMap();
 
@@ -130,7 +130,7 @@ class SlotMapTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('__toString')
-            ->will($this->returnValue('127.0.0.1:6379'));
+            ->willReturn('127.0.0.1:6379');
 
         $slotmap->setSlots(10, 10, $connection);
 
@@ -140,7 +140,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testSetSlotsThrowsExceptionOnInvalidSlotRange()
+    public function testSetSlotsThrowsExceptionOnInvalidSlotRange(): void
     {
         $this->expectException('OutOfBoundsException');
         $this->expectExceptionMessage('Invalid slot range 0-16384 for `127.0.0.1:6379`');
@@ -153,7 +153,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetSlotsReturnsEmptyArrayOnEmptySlotMap()
+    public function testGetSlotsReturnsEmptyArrayOnEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -163,7 +163,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetSlotsReturnsDictionaryOfSlotsWithAssignedNodes()
+    public function testGetSlotsReturnsDictionaryOfSlotsWithAssignedNodes(): void
     {
         $slotmap = new SlotMap();
 
@@ -184,7 +184,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetSlotsReturnsEmptyArrayOnEmptySlotRange()
+    public function testGetSlotsReturnsEmptyArrayOnEmptySlotRange(): void
     {
         $slotmap = new SlotMap();
 
@@ -197,7 +197,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetSlotsThrowsExceptionOnInvalidSlotRange()
+    public function testGetSlotsThrowsExceptionOnInvalidSlotRange(): void
     {
         $this->expectException('OutOfBoundsException');
         $this->expectExceptionMessage('Invalid slot range 0-16384');
@@ -210,7 +210,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsEmptyReturnsTrueOnEmptySlotMap()
+    public function testIsEmptyReturnsTrueOnEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -220,7 +220,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsEmptyReturnsFalseOnNonEmptySlotMap()
+    public function testIsEmptyReturnsFalseOnNonEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -232,7 +232,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCountReturnsZeroOnEmptySlotMap()
+    public function testCountReturnsZeroOnEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -242,7 +242,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCountReturnsAssignedSlotsInSlotMap()
+    public function testCountReturnsAssignedSlotsInSlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -259,7 +259,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testResetEmptiesSlotMap()
+    public function testResetEmptiesSlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -277,7 +277,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetNodesReturnsEmptyArrayOnEmptySlotMap()
+    public function testGetNodesReturnsEmptyArrayOnEmptySlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -287,7 +287,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetNodesReturnsArrayOfNodesInSlotMap()
+    public function testGetNodesReturnsArrayOfNodesInSlotMap(): void
     {
         $slotmap = new SlotMap();
 
@@ -301,7 +301,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetExistsReturnsTrueOnAssignedSlot()
+    public function testOffsetExistsReturnsTrueOnAssignedSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -314,7 +314,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetExistsReturnsFalseOnAssignedSlot()
+    public function testOffsetExistsReturnsFalseOnAssignedSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -326,7 +326,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetExistsReturnsFalseOnInvalidSlot()
+    public function testOffsetExistsReturnsFalseOnInvalidSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -339,7 +339,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetGetReturnsNodeOfAssignedSlot()
+    public function testOffsetGetReturnsNodeOfAssignedSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -355,7 +355,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetGetReturnsNullOnUnassignedSlot()
+    public function testOffsetGetReturnsNullOnUnassignedSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -367,7 +367,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetGetReturnsNullOnInvalidSlot()
+    public function testOffsetGetReturnsNullOnInvalidSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -380,7 +380,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetUnsetRemovesSlotAssignment()
+    public function testOffsetUnsetRemovesSlotAssignment(): void
     {
         $slotmap = new SlotMap();
 
@@ -394,7 +394,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetUnsetDoesNotDoAnythingOnUnassignedSlot()
+    public function testOffsetUnsetDoesNotDoAnythingOnUnassignedSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -408,7 +408,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetSetAssignsNodeToSlot()
+    public function testOffsetSetAssignsNodeToSlot(): void
     {
         $slotmap = new SlotMap();
 
@@ -425,7 +425,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetSetCastsValueToString()
+    public function testOffsetSetCastsValueToString(): void
     {
         $slotmap = new SlotMap();
 
@@ -433,7 +433,7 @@ class SlotMapTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('__toString')
-            ->will($this->returnValue('127.0.0.1:6379'));
+            ->willReturn('127.0.0.1:6379');
 
         $this->assertSame($connection, $slotmap[0] = $connection);
         $this->assertSame('127.0.0.1:6379', $slotmap[0]);
@@ -442,7 +442,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testOffsetSetThrowsExceptionOnInvalidSlot()
+    public function testOffsetSetThrowsExceptionOnInvalidSlot(): void
     {
         $this->expectException('OutOfBoundsException');
         $this->expectExceptionMessage('Invalid slot 16384 for `127.0.0.1:6379`');
@@ -455,7 +455,7 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetIteratorReturnsIteratorOverSlotMap()
+    public function testGetIteratorReturnsIteratorOverSlotMap(): void
     {
         $slotmap = new SlotMap();
 

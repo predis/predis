@@ -20,7 +20,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\EXISTS';
     }
@@ -28,7 +28,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'EXISTS';
     }
@@ -36,7 +36,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsMultipleKeys()
+    public function testFilterArgumentsMultipleKeys(): void
     {
         $arguments = array('key:1', 'key:2', 'key:3');
         $expected = array('key:1', 'key:2', 'key:3');
@@ -64,7 +64,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -76,7 +76,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnValueWhenKeyExists()
+    public function testReturnValueWhenKeyExists(): void
     {
         $redis = $this->getClient();
 
@@ -87,7 +87,7 @@ class EXISTS_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnValueWhenKeyDoesNotExist()
+    public function testReturnValueWhenKeyDoesNotExist(): void
     {
         $redis = $this->getClient();
 
@@ -98,7 +98,7 @@ class EXISTS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.3
      */
-    public function testReturnValueWhenKeysExist()
+    public function testReturnValueWhenKeysExist(): void
     {
         $redis = $this->getClient();
 
@@ -110,7 +110,7 @@ class EXISTS_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 3.0.3
      */
-    public function testReturnValueWhenKeyDoNotExist()
+    public function testReturnValueWhenKeyDoNotExist(): void
     {
         $redis = $this->getClient();
 

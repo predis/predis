@@ -12,6 +12,12 @@
 namespace Predis;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Connection\ParametersInterface;
+use Predis\Command\Factory as CommandFactory;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Connection\Replication\MasterSlaveReplication;
 
 /**
  *
@@ -21,10 +27,11 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithoutArguments()
+    public function testConstructorWithoutArguments(): void
     {
         $client = new Client();
 
+        /** @var NodeConnectionInterface */
         $connection = $client->getConnection();
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
@@ -41,10 +48,11 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithNullArgument()
+    public function testConstructorWithNullArgument(): void
     {
         $client = new Client(null);
 
+        /** @var NodeConnectionInterface */
         $connection = $client->getConnection();
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
@@ -61,10 +69,11 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithNullAndNullArguments()
+    public function testConstructorWithNullAndNullArguments(): void
     {
         $client = new Client(null, null);
 
+        /** @var NodeConnectionInterface */
         $connection = $client->getConnection();
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
 
@@ -81,11 +90,14 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayArgument()
+    public function testConstructorWithArrayArgument(): void
     {
         $client = new Client($arg1 = array('host' => 'localhost', 'port' => 7000));
 
-        $parameters = $client->getConnection()->getParameters();
+        /** @var NodeConnectionInterface */
+        $connection = $client->getConnection();
+        $parameters = $connection->getParameters();
+
         $this->assertSame($parameters->host, $arg1['host']);
         $this->assertSame($parameters->port, $arg1['port']);
     }
@@ -93,7 +105,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorThrowsExceptionWithArrayOfParametersArgumentAndMissingOption()
+    public function testConstructorThrowsExceptionWithArrayOfParametersArgumentAndMissingOption(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Array of connection parameters requires `cluster`, `replication` or `aggregate` client option');
@@ -109,7 +121,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayOfArrayArgumentAndClusterOption()
+    public function testConstructorWithArrayOfArrayArgumentAndClusterOption(): void
     {
         $arg1 = array(
             array('host' => 'localhost', 'port' => 7000),
@@ -126,11 +138,14 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithStringArgument()
+    public function testConstructorWithStringArgument(): void
     {
         $client = new Client('tcp://localhost:7000');
 
-        $parameters = $client->getConnection()->getParameters();
+        /** @var NodeConnectionInterface */
+        $connection = $client->getConnection();
+        $parameters = $connection->getParameters();
+
         $this->assertSame($parameters->host, 'localhost');
         $this->assertSame($parameters->port, 7000);
     }
@@ -138,7 +153,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayOfStringArgument()
+    public function testConstructorWithArrayOfStringArgument(): void
     {
         $arg1 = array('tcp://localhost:7000', 'tcp://localhost:7001');
 
@@ -152,7 +167,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayOfConnectionsArgument()
+    public function testConstructorWithArrayOfConnectionsArgument(): void
     {
         $arg1 = array(
             $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock(),
@@ -169,7 +184,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithConnectionArgument()
+    public function testConstructorWithConnectionArgument(): void
     {
         $factory = new Connection\Factory();
         $connection = $factory->create('tcp://localhost:7000');
@@ -179,7 +194,10 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $client->getConnection());
         $this->assertSame($connection, $client->getConnection());
 
-        $parameters = $client->getConnection()->getParameters();
+        /** @var NodeConnectionInterface */
+        $connection = $client->getConnection();
+        $parameters = $connection->getParameters();
+
         $this->assertSame($parameters->host, 'localhost');
         $this->assertSame($parameters->port, 7000);
     }
@@ -187,7 +205,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithClusterArgument()
+    public function testConstructorWithClusterArgument(): void
     {
         $cluster = new Connection\Cluster\PredisCluster();
 
@@ -203,7 +221,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithReplicationArgument()
+    public function testConstructorWithReplicationArgument(): void
     {
         $replication = new Connection\Replication\MasterSlaveReplication();
 
@@ -219,18 +237,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithCallableArgument()
+    public function testConstructorWithCallableArgument(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($callable);
 
@@ -240,7 +258,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType()
+    public function testConstructorWithCallableConnectionInitializerThrowsExceptionOnInvalidReturnType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Callable parameters must return a valid connection');
@@ -248,13 +266,13 @@ class ClientTest extends PredisTestCase
         $wrongType = $this->getMockBuilder('stdClass')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($wrongType));
+            ->willReturn($wrongType);
 
         new Client($callable);
     }
@@ -262,28 +280,36 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithNullAndArrayArgument()
+    public function testConstructorWithNullAndArrayArgument(): void
     {
         $connections = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
         $arg2 = array('prefix' => 'prefix:', 'connections' => $connections);
         $client = new Client(null, $arg2);
 
-        $this->assertInstanceOf('Predis\Command\FactoryInterface', $commands = $client->getCommandFactory());
-        $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $commands->getProcessor());
-        $this->assertSame('prefix:', $commands->getProcessor()->getPrefix());
+        /** @var CommandFactory */
+        $commands = $client->getCommandFactory();
+        $this->assertInstanceOf('Predis\Command\FactoryInterface', $commands);
+
+        /** @var KeyPrefixProcessor */
+        $processor = $commands->getProcessor();
+        $this->assertInstanceOf('Predis\Command\Processor\KeyPrefixProcessor', $processor);
+        $this->assertSame('prefix:', $processor->getPrefix());
     }
 
     /**
      * @group disconnected
      */
-    public function testConstructorWithArrayAndOptionReplication()
+    public function testConstructorWithArrayAndOptionReplication(): void
     {
         $arg1 = array('tcp://127.0.0.1:6379?role=master', 'tcp://127.0.0.1:6380?role=slave');
         $arg2 = array('replication' => 'predis');
         $client = new Client($arg1, $arg2);
 
-        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $connection = $client->getConnection());
+        /** @var MasterSlaveReplication */
+        $connection = $client->getConnection();
+
+        $this->assertInstanceOf('Predis\Connection\Replication\ReplicationInterface', $connection);
         $this->assertSame('127.0.0.1:6379', (string) $connection->getConnectionByRole('master'));
         $this->assertSame('127.0.0.1:6380', (string) $connection->getConnectionByRole('slave'));
     }
@@ -291,30 +317,30 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testClusterOptionHasPrecedenceOverReplicationOptionAndAggregateOption()
+    public function testClusterOptionHasPrecedenceOverReplicationOptionAndAggregateOption(): void
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $fncluster = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fncluster
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $fnreplication = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fnreplication
             ->expects($this->never())
             ->method('__invoke');
 
         $fnaggregate = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fnaggregate
             ->expects($this->never())
@@ -334,23 +360,23 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testReplicationOptionHasPrecedenceOverAggregateOption()
+    public function testReplicationOptionHasPrecedenceOverAggregateOption(): void
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $fnreplication = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fnreplication
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $fnaggregate = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fnaggregate
             ->expects($this->never())
@@ -367,20 +393,20 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAggregateOptionDoesNotTriggerAggregationInClient()
+    public function testAggregateOptionDoesNotTriggerAggregationInClient(): void
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $fnaggregate = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $fnaggregate
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $connections = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $connections
@@ -397,7 +423,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithInvalidArgumentType()
+    public function testConstructorWithInvalidArgumentType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid type for connection parameters');
@@ -408,7 +434,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConstructorWithInvalidOptionType()
+    public function testConstructorWithInvalidOptionType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid type for client options');
@@ -419,7 +445,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectAndDisconnect()
+    public function testConnectAndDisconnect(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
@@ -437,7 +463,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testIsConnectedChecksConnectionState()
+    public function testIsConnectedChecksConnectionState(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
@@ -451,7 +477,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testQuitIsAliasForDisconnect()
+    public function testQuitIsAliasForDisconnect(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
@@ -465,7 +491,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreatesNewCommandUsingSpecifiedCommandFactory()
+    public function testCreatesNewCommandUsingSpecifiedCommandFactory(): void
     {
         $ping = $this->getCommandFactory()->create('ping', array());
 
@@ -474,7 +500,7 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with('ping', array())
-            ->will($this->returnValue($ping));
+            ->willReturn($ping);
 
         $client = new Client(null, array('commands' => $commands));
         $this->assertSame($ping, $client->createCommand('ping', array()));
@@ -483,7 +509,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandReturnsParsedResponses()
+    public function testExecuteCommandReturnsParsedResponses(): void
     {
         $commands = $this->getCommandFactory();
 
@@ -492,15 +518,16 @@ class ClientTest extends PredisTestCase
 
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($ping)
-            ->will($this->returnValue(new Response\Status('PONG')));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($hgetall)
-            ->will($this->returnValue(array('foo', 'bar', 'hoge', 'piyo')));
+            ->withConsecutive(
+                array($ping),
+                array($hgetall)
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('PONG'),
+                array('foo', 'bar', 'hoge', 'piyo')
+            );
 
         $client = new Client($connection);
 
@@ -511,7 +538,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandThrowsExceptionOnRedisError()
+    public function testExecuteCommandThrowsExceptionOnRedisError(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
@@ -523,7 +550,7 @@ class ClientTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('executeCommand')
-            ->will($this->returnValue($expectedResponse));
+            ->willReturn($expectedResponse);
 
         $client = new Client($connection);
         $client->executeCommand($ping);
@@ -532,7 +559,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testExecuteCommandReturnsErrorResponseOnRedisError()
+    public function testExecuteCommandReturnsErrorResponseOnRedisError(): void
     {
         $ping = $this->getCommandFactory()->create('ping', array());
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
@@ -541,7 +568,7 @@ class ClientTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('executeCommand')
-            ->will($this->returnValue($expectedResponse));
+            ->willReturn($expectedResponse);
 
         $client = new Client($connection, array('exceptions' => false));
         $response = $client->executeCommand($ping);
@@ -552,7 +579,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCallingRedisCommandExecutesInstanceOfCommand()
+    public function testCallingRedisCommandExecutesInstanceOfCommand(): void
     {
         $ping = $this->getCommandFactory()->create('ping', array());
 
@@ -561,18 +588,20 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($this->isInstanceOf('Predis\Command\Redis\PING'))
-            ->will($this->returnValue('PONG'));
+            ->willReturn('PONG');
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
             ->expects($this->once())
             ->method('create')
             ->with('ping', array())
-            ->will($this->returnValue($ping));
+            ->willReturn($ping);
 
         $options = array('commands' => $commands);
+
+        /** @var ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(null)
+            ->onlyMethods(array())
             ->setConstructorArgs(array($connection, $options))
             ->getMock();
 
@@ -582,7 +611,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCallingRedisCommandThrowsExceptionOnServerError()
+    public function testCallingRedisCommandThrowsExceptionOnServerError(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
@@ -594,7 +623,7 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($this->isRedisCommand('PING'))
-            ->will($this->returnValue($expectedResponse));
+            ->willReturn($expectedResponse);
 
         $client = new Client($connection);
         $client->ping();
@@ -603,7 +632,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCallingRedisCommandReturnsErrorResponseOnRedisError()
+    public function testCallingRedisCommandReturnsErrorResponseOnRedisError(): void
     {
         $expectedResponse = new Response\Error('ERR Operation against a key holding the wrong kind of value');
 
@@ -612,7 +641,7 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($this->isRedisCommand('PING'))
-            ->will($this->returnValue($expectedResponse));
+            ->willReturn($expectedResponse);
 
         $client = new Client($connection, array('exceptions' => false));
         $response = $client->ping();
@@ -623,24 +652,22 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRawCommand()
+    public function testRawCommand(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('executeCommand')
-            ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-            ->will($this->returnValue(new Response\Status('OK')));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('GET', array('foo')))
-            ->will($this->returnValue('bar'));
-        $connection
-            ->expects($this->at(2))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('PING'))
-            ->will($this->returnValue('PONG'));
+            ->withConsecutive(
+                array($this->isRedisCommand('SET', array('foo', 'bar'))),
+                array($this->isRedisCommand('GET', array('foo'))),
+                array($this->isRedisCommand('PING'))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'bar',
+                'PONG'
+            );
 
         $client = new Client($connection);
 
@@ -655,19 +682,20 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRawCommandNeverAppliesPrefix()
+    public function testRawCommandNeverAppliesPrefix(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($this->isRedisCommand('SET', array('foo', 'bar')))
-            ->will($this->returnValue(new Response\Status('OK')));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('GET', array('foo')))
-            ->will($this->returnValue('bar'));
+            ->withConsecutive(
+                array($this->isRedisCommand('SET', array('foo', 'bar'))),
+                array($this->isRedisCommand('GET', array('foo')))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'bar'
+            );
 
         $client = new Client($connection, array('prefix' => 'predis:'));
 
@@ -678,7 +706,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testRawCommandNeverThrowsExceptions()
+    public function testRawCommandNeverThrowsExceptions(): void
     {
         $message = 'ERR Mock error response';
         $response = new Response\Error($message);
@@ -688,7 +716,7 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->with($this->isRedisCommand('PING'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
 
         $client = new Client($connection, array('exceptions' => true));
 
@@ -699,7 +727,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnNonRegisteredRedisCommand()
+    public function testThrowsExceptionOnNonRegisteredRedisCommand(): void
     {
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage("Command `INVALIDCOMMAND` is not a registered Redis command");
@@ -711,10 +739,11 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodReturnsInstanceOfSubclass()
+    public function testGetClientByMethodReturnsInstanceOfSubclass(): void
     {
+        /** @var Client */
         $client = $this->getMockBuilder('Predis\Client')
-            ->setMethods(null)
+            ->onlyMethods(array())
             ->setConstructorArgs(array(
                 array('tcp://host1?alias=node01', 'tcp://host2?alias=node02'),
                 array('cluster' => 'predis'),
@@ -728,18 +757,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionById()
+    public function testGetClientByMethodSupportsSelectingConnectionById(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionById'))
+            ->onlyMethods(array('getConnectionById'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionById')
             ->with('127.0.0.1:6379')
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('id', '127.0.0.1:6379');
@@ -751,7 +780,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodThrowsExceptionSelectingConnectionByUnknownId()
+    public function testGetClientByMethodThrowsExceptionSelectingConnectionByUnknownId(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Cannot find a connection by id matching `127.0.0.1:7000`');
@@ -761,7 +790,7 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('getConnectionById')
             ->with('127.0.0.1:7000')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
 
         $client = new Client($aggregate);
         $client->getClientBy('id', '127.0.0.1:7000');
@@ -770,18 +799,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionByAlias()
+    public function testGetClientByMethodSupportsSelectingConnectionByAlias(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionByAlias'))
+            ->addMethods(array('getConnectionByAlias'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionByAlias')
             ->with('myalias')
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('alias', 'myalias');
@@ -793,18 +822,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionByKey()
+    public function testGetClientByMethodSupportsSelectingConnectionByKey(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionByKey'))
+            ->addMethods(array('getConnectionByKey'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionByKey')
             ->with('key:1')
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('key', 'key:1');
@@ -816,18 +845,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionBySlot()
+    public function testGetClientByMethodSupportsSelectingConnectionBySlot(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionBySlot'))
+            ->addMethods(array('getConnectionBySlot'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionBySlot')
             ->with(5460)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('slot', 5460);
@@ -839,18 +868,18 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionByRole()
+    public function testGetClientByMethodSupportsSelectingConnectionByRole(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionByRole'))
+            ->addMethods(array('getConnectionByRole'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionByRole')
             ->with('master')
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('role', 'master');
@@ -862,19 +891,19 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodSupportsSelectingConnectionByCommand()
+    public function testGetClientByMethodSupportsSelectingConnectionByCommand(): void
     {
         $command = \Predis\Command\RawCommand::create('GET', 'key');
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
-            ->setMethods(array('getConnectionByCommand'))
+            ->onlyMethods(array('getConnectionByCommand'))
             ->getMockForAbstractClass();
         $aggregate
             ->expects($this->once())
             ->method('getConnectionByCommand')
             ->with($command)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $client = new Client($aggregate);
         $nodeClient = $client->getClientBy('command', $command);
@@ -886,7 +915,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodThrowsExceptionWhenSelectingConnectionByUnknownType()
+    public function testGetClientByMethodThrowsExceptionWhenSelectingConnectionByUnknownType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid selector type: `unknown`');
@@ -899,7 +928,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetClientByMethodThrowsExceptionWhenConnectionDoesNotSupportSelectorType()
+    public function testGetClientByMethodThrowsExceptionWhenConnectionDoesNotSupportSelectorType(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Selecting connection by id is not supported by Predis\Connection\StreamConnection');
@@ -912,7 +941,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithoutArgumentsReturnsPipeline()
+    public function testPipelineWithoutArgumentsReturnsPipeline(): void
     {
         $client = new Client();
 
@@ -922,7 +951,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithArrayReturnsPipeline()
+    public function testPipelineWithArrayReturnsPipeline(): void
     {
         $client = new Client();
 
@@ -934,10 +963,10 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPipelineWithCallableExecutesPipeline()
+    public function testPipelineWithCallableExecutesPipeline(): void
     {
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -951,7 +980,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithoutArgumentsReturnsPubSubConsumer()
+    public function testPubSubLoopWithoutArgumentsReturnsPubSubConsumer(): void
     {
         $client = new Client();
 
@@ -961,7 +990,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithArrayReturnsPubSubConsumerWithOptions()
+    public function testPubSubLoopWithArrayReturnsPubSubConsumerWithOptions(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $options = array('subscribe' => 'channel');
@@ -979,7 +1008,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithArrayAndCallableExecutesPubSub()
+    public function testPubSubLoopWithArrayAndCallableExecutesPubSub(): void
     {
         // NOTE: we use a subscribe count of 0 in the message payload to trick
         //       the context and forcing it to be closed since there are no more
@@ -988,10 +1017,10 @@ class ClientTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('read')
-            ->will($this->returnValue(array('subscribe', 'channel', 0)));
+            ->willReturn(array('subscribe', 'channel', 0));
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
@@ -1004,29 +1033,44 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubLoopWithCallableReturningFalseStopsPubSubConsumer()
+    public function testPubSubLoopWithCallableReturningFalseStopsPubSubConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(1))
+            ->expects($this->exactly(2))
             ->method('read')
-            ->will($this->returnValue(array('subscribe', 'channel', 1)));
+            ->willReturnOnConsecutiveCalls(
+                array('subscribe', 'channel', 1),
+                array('unsubscribe', 'channel', 0)
+            );
         $connection
-            ->expects($this->at(2))
+            ->expects($this->exactly(2))
             ->method('writeRequest')
-            ->with($this->isRedisCommand('UNSUBSCRIBE'));
-        $connection
-            ->expects($this->at(3))
-            ->method('read')
-            ->will($this->returnValue(array('unsubscribe', 'channel', 0)));
+            ->withConsecutive(
+                array($this->isRedisCommand('SUBSCRIBE')),
+                array($this->isRedisCommand('UNSUBSCRIBE'))
+            );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__invoke')
-            ->will($this->returnValue(false));
+            ->withConsecutive(
+                array(
+                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    (object) array('kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1)
+                ),
+                array(
+                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    (object) array('kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0)
+                )
+            )
+            ->willReturnOnConsecutiveCalls(
+                false,
+                null // <-- this value would be ignored as it is the callback to UNSUBSCRIBE
+            );
 
         $client = new Client($connection);
 
@@ -1036,7 +1080,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testTransactionWithoutArgumentsReturnsMultiExec()
+    public function testTransactionWithoutArgumentsReturnsMultiExec(): void
     {
         $client = new Client();
 
@@ -1046,7 +1090,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testTransactionWithArrayReturnsMultiExecTransactionWithOptions()
+    public function testTransactionWithArrayReturnsMultiExecTransactionWithOptions(): void
     {
         $options = array('cas' => true, 'retry' => 3);
 
@@ -1067,7 +1111,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testTransactionWithArrayAndCallableExecutesMultiExec()
+    public function testTransactionWithArrayAndCallableExecutesMultiExec(): void
     {
         // We use CAS here as we don't care about the actual MULTI/EXEC context.
         $options = array('cas' => true, 'retry' => 3);
@@ -1076,15 +1120,15 @@ class ClientTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('executeCommand')
-            ->will($this->returnValue(new Response\Status('QUEUED')));
+            ->willReturn(new Response\Status('QUEUED'));
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
-            ->will($this->returnCallback(function ($tx) { $tx->ping(); }));
+            ->willReturnCallback(function ($tx) { $tx->ping(); });
 
         $client = new Client($connection);
         $client->transaction($options, $callable);
@@ -1093,7 +1137,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testMonitorReturnsMonitorConsumer()
+    public function testMonitorReturnsMonitorConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $client = new Client($connection);
@@ -1104,30 +1148,33 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testClientResendScriptCommandUsingEvalOnNoScriptErrors()
+    public function testClientResendScriptCommandUsingEvalOnNoScriptErrors(): void
     {
+        $luaScriptBody = 'return redis.call(\'exists\', KEYS[1])';
+
         $command = $this->getMockForAbstractClass('Predis\Command\ScriptCommand', array(), '', true, true, true, array('parseResponse'));
         $command
             ->expects($this->once())
             ->method('getScript')
-            ->will($this->returnValue('return redis.call(\'exists\', KEYS[1])'));
+            ->willReturn($luaScriptBody);
         $command
             ->expects($this->once())
             ->method('parseResponse')
             ->with('OK')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->with($command)
-            ->will($this->returnValue(new Response\Error('NOSCRIPT')));
-        $connection
-            ->expects($this->at(1))
-            ->method('executeCommand')
-            ->with($this->isRedisCommand('EVAL'))
-            ->will($this->returnValue('OK'));
+            ->withConsecutive(
+                array($command),
+                array($this->isRedisCommand('EVAL', array($luaScriptBody)))
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Error('NOSCRIPT'),
+                'OK'
+            );
 
         $client = new Client($connection);
 
@@ -1137,7 +1184,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetIteratorWithTraversableConnections()
+    public function testGetIteratorWithTraversableConnections(): void
     {
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
@@ -1151,6 +1198,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($aggregate);
 
+        /** @var \Iterator */
         $iterator = $client->getIterator();
 
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
@@ -1173,11 +1221,12 @@ class ClientTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testGetIteratorWithNonTraversableConnectionNoException()
+    public function testGetIteratorWithNonTraversableConnectionNoException(): void
     {
         $connection = $this->getMockConnection('tcp://127.0.0.1:6381');
         $client = new Client($connection);
 
+        /** @var \Iterator */
         $iterator = $client->getIterator();
 
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
@@ -1196,7 +1245,7 @@ class ClientTest extends PredisTestCase
      *
      * @return string URI string.
      */
-    protected function getParametersString(array $parameters)
+    protected function getParametersString(array $parameters): string
     {
         $defaults = $this->getDefaultParametersArray();
 
@@ -1215,24 +1264,24 @@ class ClientTest extends PredisTestCase
     }
 
     /**
-     * Returns a mock callable simulating an aggregate connection initializer.
+     * Returns a mock object simulating an aggregate connection initializer.
      *
-     * @param mixed $parameters Expected connection parameters
+     * @param ParametersInterface|array|string $parameters Expected connection parameters
      *
-     * @return callable
+     * @return callable|MockObject
      */
     protected function getAggregateInitializer($parameters)
     {
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $parameters)
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         return $callable;
     }

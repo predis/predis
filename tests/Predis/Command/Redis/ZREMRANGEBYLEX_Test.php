@@ -20,7 +20,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\ZREMRANGEBYLEX';
     }
@@ -28,7 +28,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'ZREMRANGEBYLEX';
     }
@@ -36,7 +36,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', '[a', '[b');
         $expected = array('key', '[a', '[b');
@@ -50,7 +50,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
@@ -59,7 +59,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testRemovesRangeByLexWithWholeRange()
+    public function testRemovesRangeByLexWithWholeRange(): void
     {
         $redis = $this->getClient();
 
@@ -75,7 +75,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testRemovesRangeByLexWithInclusiveRange()
+    public function testRemovesRangeByLexWithInclusiveRange(): void
     {
         $redis = $this->getClient();
 
@@ -89,7 +89,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testRemovesRangeByLexWithExclusiveRange()
+    public function testRemovesRangeByLexWithExclusiveRange(): void
     {
         $redis = $this->getClient();
 
@@ -103,7 +103,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testRemovesRangeByLexWithMixedRange()
+    public function testRemovesRangeByLexWithMixedRange(): void
     {
         $redis = $this->getClient();
 
@@ -117,7 +117,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnInvalidRangeFormat()
+    public function testThrowsExceptionOnInvalidRangeFormat(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('min or max not valid string range item');
@@ -132,7 +132,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

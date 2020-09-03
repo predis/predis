@@ -12,6 +12,8 @@
 namespace Predis\Configuration\Option;
 
 use PredisTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Configuration\OptionsInterface;
 
 /**
  *
@@ -21,10 +23,11 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testDefaultOptionValue()
+    public function testDefaultOptionValue(): void
     {
         $option = new Cluster();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('Closure', $initializer = $option->getDefault($options));
@@ -34,21 +37,22 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsCallableAsConnectionInitializer()
+    public function testAcceptsCallableAsConnectionInitializer(): void
     {
         $option = new Cluster();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
         $this->assertSame($connection, $initializer($parameters = array()));
@@ -57,24 +61,25 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidReturnTypeOfConnectionInitializer()
+    public function testThrowsExceptionOnInvalidReturnTypeOfConnectionInitializer(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Predis\Configuration\Option\Cluster expects a valid connection type returned by callable initializer');
 
         $option = new Cluster();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->setMethods(array('__invoke'))
+            ->addMethods(array('__invoke'))
             ->getMock();
         $callable
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
-            ->will($this->returnValue($connection));
+            ->willReturn($connection);
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, $callable));
 
@@ -84,10 +89,11 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsShortNameStringPredis()
+    public function testAcceptsShortNameStringPredis(): void
     {
         $option = new Cluster();
 
+        /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->never())
@@ -101,25 +107,24 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAcceptsShortNameStringRedis()
+    public function testAcceptsShortNameStringRedis(): void
     {
         $option = new Cluster();
 
+        /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
         $options
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('__get')
-            ->with('connections')
-            ->will($this->returnValue(
-                $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
-            ));
-        $options
-            ->expects($this->at(1))
-            ->method('__get')
-            ->with('crc16')
-            ->will($this->returnValue(
+            ->withConsecutive(
+                array('connections'),
+                array('crc16')
+            )
+            ->willReturnOnConsecutiveCalls(
+                $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
                 $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock()
-            ));
+            );
 
         $this->assertInstanceOf('Closure', $initializer = $option->filter($options, 'redis'));
         $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = array()));
@@ -128,13 +133,14 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidShortNameString()
+    public function testThrowsExceptionOnInvalidShortNameString(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('String value for the cluster option must be either `predis` or `redis`');
 
         $option = new Cluster();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, 'unknown');
@@ -143,13 +149,14 @@ class ClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInstanceOfClusterInterface()
+    public function testThrowsExceptionOnInstanceOfClusterInterface(): void
     {
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Predis\Configuration\Option\Cluster expects a valid callable');
 
         $option = new Cluster();
 
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $connection = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
 

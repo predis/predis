@@ -20,7 +20,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SMOVE';
     }
@@ -28,7 +28,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SMOVE';
     }
@@ -36,7 +36,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key:source', 'key:destination', 'member');
         $expected = array('key:source', 'key:destination', 'member');
@@ -50,7 +50,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $command = $this->getCommand();
 
@@ -61,7 +61,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsMemberExistenceInSet()
+    public function testReturnsMemberExistenceInSet(): void
     {
         $redis = $this->getClient();
 
@@ -77,7 +77,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongTypeOfSourceKey()
+    public function testThrowsExceptionOnWrongTypeOfSourceKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
@@ -92,7 +92,7 @@ class SMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongTypeOfDestinationKey()
+    public function testThrowsExceptionOnWrongTypeOfDestinationKey(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

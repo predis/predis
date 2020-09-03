@@ -20,7 +20,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SMEMBERS';
     }
@@ -28,7 +28,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SMEMBERS';
     }
@@ -36,7 +36,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $raw = array('member1', 'member2', 'member3');
         $expected = array('member1', 'member2', 'member3');
@@ -63,7 +63,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsEmptyArrayOnNonExistingSet()
+    public function testReturnsEmptyArrayOnNonExistingSet(): void
     {
         $redis = $this->getClient();
 
@@ -76,7 +76,7 @@ class SMEMBERS_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

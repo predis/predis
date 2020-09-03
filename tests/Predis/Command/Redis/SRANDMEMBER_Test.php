@@ -20,7 +20,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\SRANDMEMBER';
     }
@@ -28,7 +28,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'SRANDMEMBER';
     }
@@ -36,7 +36,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key', 1);
         $expected = array('key', 1);
@@ -50,7 +50,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('member', $this->getCommand()->parseResponse('member'));
     }
@@ -58,7 +58,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsRandomMemberFromSet()
+    public function testReturnsRandomMemberFromSet(): void
     {
         $redis = $this->getClient();
 
@@ -73,7 +73,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsNullOnNonExistingSet()
+    public function testReturnsNullOnNonExistingSet(): void
     {
         $this->assertNull($this->getClient()->srandmember('letters'));
     }
@@ -81,7 +81,7 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

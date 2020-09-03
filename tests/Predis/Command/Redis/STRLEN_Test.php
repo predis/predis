@@ -20,7 +20,7 @@ class STRLEN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\STRLEN';
     }
@@ -28,7 +28,7 @@ class STRLEN_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'STRLEN';
     }
@@ -36,7 +36,7 @@ class STRLEN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('key');
         $expected = array('key');
@@ -50,7 +50,7 @@ class STRLEN_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame(4, $this->getCommand()->parseResponse(4));
     }
@@ -59,7 +59,7 @@ class STRLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsTheLengthOfString()
+    public function testReturnsTheLengthOfString(): void
     {
         $redis = $this->getClient();
 
@@ -74,7 +74,7 @@ class STRLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testReturnsZeroOnNonExistingKeys()
+    public function testReturnsZeroOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
 
@@ -85,7 +85,7 @@ class STRLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testThrowsExceptionOnWrongType()
+    public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');

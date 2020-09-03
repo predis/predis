@@ -20,7 +20,7 @@ class OBJECT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedCommand()
+    protected function getExpectedCommand(): string
     {
         return 'Predis\Command\Redis\OBJECT_';
     }
@@ -28,7 +28,7 @@ class OBJECT_Test extends PredisCommandTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getExpectedId()
+    protected function getExpectedId(): string
     {
         return 'OBJECT';
     }
@@ -36,7 +36,7 @@ class OBJECT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArguments()
+    public function testFilterArguments(): void
     {
         $arguments = array('REFCOUNT', 'key');
         $expected = array('REFCOUNT', 'key');
@@ -50,7 +50,7 @@ class OBJECT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testParseResponse()
+    public function testParseResponse(): void
     {
         $this->assertSame('ziplist', $this->getCommand()->parseResponse('ziplist'));
     }
@@ -59,7 +59,7 @@ class OBJECT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
-    public function testObjectRefcount()
+    public function testObjectRefcount(): void
     {
         $redis = $this->getClient();
 
@@ -71,7 +71,7 @@ class OBJECT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
-    public function testObjectIdletime()
+    public function testObjectIdletime(): void
     {
         $redis = $this->getClient();
 
@@ -83,7 +83,7 @@ class OBJECT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
-    public function testObjectEncoding()
+    public function testObjectEncoding(): void
     {
         $redis = $this->getClient();
 
@@ -95,7 +95,7 @@ class OBJECT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
-    public function testReturnsNullOnNonExistingKey()
+    public function testReturnsNullOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
@@ -108,7 +108,7 @@ class OBJECT_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
-    public function testThrowsExceptionOnInvalidSubcommand()
+    public function testThrowsExceptionOnInvalidSubcommand(): void
     {
         $this->expectException('Predis\Response\ServerException');
 
