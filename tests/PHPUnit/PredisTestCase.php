@@ -372,4 +372,16 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             );
         }
     }
+
+    /**
+     * Marks current test skipped when test suite is running on CI environments.
+     *
+     * @param string $message
+     */
+    protected function markTestSkippedOnCIEnvironment(string $message = 'Test skipped on CI environment'): void
+    {
+        if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
+            $this->markTestSkipped($message);
+        }
+    }
 }
