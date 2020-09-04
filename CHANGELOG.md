@@ -6,6 +6,10 @@ the URI when using the "redis" scheme and a "username:password" pair is present.
 Values retrieved from the userinfo fragment always override the ones specified
 in `username` and `password` if those fields are present in the query string.
 
+- __FIX__: `Predis\Connection\WebdisConnection` was unable to connect to Webdis
+when using an IPv4 address in the URL and this is probably due to some change in
+cURL internals since the last time we tested it.
+
 
 v1.1.4 (2020-08-31)
 ================================================================================
