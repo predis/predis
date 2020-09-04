@@ -88,7 +88,7 @@ class OBJECT_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->lpush('list:metavars', 'foo', 'bar');
-        $this->assertRegExp('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
+        $this->assertMatchesRegularExpression('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
     }
 
     /**

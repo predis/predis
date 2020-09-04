@@ -442,7 +442,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection->writeRequest($commands->create('rpush', array('foo', 'baz')));
 
         $this->assertInstanceOf('Predis\Response\Error', $error = $connection->read());
-        $this->assertRegExp('/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage());
+        $this->assertMatchesRegularExpression(
+            '/[ERR|WRONGTYPE] Operation against a key holding the wrong kind of value/', $error->getMessage()
+        );
     }
 
     /**

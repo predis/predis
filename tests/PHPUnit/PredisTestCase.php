@@ -94,6 +94,21 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Asserts that a string matches a given regular expression.
+     *
+     * @throws ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     */
+    public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
+    {
+        if (is_callable('parent::' . __FUNCTION__)) {
+            call_user_func('parent::' . __FUNCTION__, $pattern, $string, $message);
+        } else {
+            static::assertRegExp($pattern, $string, $message);
+        }
+    }
+
+    /**
      * Returns a named array with default values for connection parameters.
      *
      * @return array Default connection parameters
