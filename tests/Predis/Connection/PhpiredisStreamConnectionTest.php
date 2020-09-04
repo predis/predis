@@ -194,4 +194,46 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
         $this->assertNotSame($connection1->getResource(), $connection2->getResource());
     }
+
+    /**
+     * @group connected
+     */
+    public function testTcpNodelayParameterSetsContextFlagWhenTrue()
+    {
+        $connection = $this->createConnectionWithParams(['tcp_nodelay' => true]);
+        $options = stream_context_get_options($connection->getResource());
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('socket', $options);
+        $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
+        $this->assertTrue($options['socket']['tcp_nodelay']);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testTcpNodelayParameterDoesNotSetContextFlagWhenFalse()
+    {
+        $connection = $this->createConnectionWithParams(['tcp_nodelay' => false]);
+        $options = stream_context_get_options($connection->getResource());
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('socket', $options);
+        $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
+        $this->assertFalse($options['socket']['tcp_nodelay']);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testTcpDelayContextFlagIsNotSetByDefault()
+    {
+        $connection = $this->createConnectionWithParams([]);
+        $options = stream_context_get_options($connection->getResource());
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('socket', $options);
+        $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
+        $this->assertFalse($options['socket']['tcp_nodelay']);
+    }
 }
