@@ -312,11 +312,9 @@ class ConsumerTest extends PredisTestCase
      */
     public function testPubSubAgainstRedisServer()
     {
-        if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
-            $this->markTestSkipped(
-                'Test temporarily skipped on CI environments, see note in the body of the test'
-            );
-        }
+        $this->markTestSkippedOnCIEnvironment(
+            'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
+        );
 
         $parameters = array(
             'host' => REDIS_SERVER_HOST,
@@ -363,11 +361,9 @@ class ConsumerTest extends PredisTestCase
      */
     public function testPubSubAgainstRedisServerBlocking()
     {
-        if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
-            $this->markTestSkipped(
-                'Test temporarily skipped on CI environments, see note in the body of the test'
-            );
-        }
+        $this->markTestSkippedOnCIEnvironment(
+            'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
+        );
 
         $parameters = array(
             'host' => REDIS_SERVER_HOST,
