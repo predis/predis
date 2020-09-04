@@ -119,7 +119,7 @@ class WebdisConnection implements NodeConnectionInterface
         $parameters = $this->getParameters();
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0) * 1000;
 
-        if (filter_var($host = $parameters->host, FILTER_VALIDATE_IP)) {
+        if (filter_var($host = $parameters->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $host = "[$host]";
         }
 
