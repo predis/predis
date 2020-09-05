@@ -10,6 +10,12 @@ in `username` and `password` if those fields are present in the query string.
 when using an IPv4 address in the URL and this is probably due to some change in
 cURL internals since the last time we tested it.
 
+- __FIX__: an exception is thrown whe passing `FALSE` or any value evaluating to
+`FALSE` to the `replication` client option. This was supposed to be unsupported,
+in fact it actually breaks client initialization and raises a PHP warning. Now
+the user is alerted with an `InvalidArgumentException` and a proper message.
+(PR #381).
+
 
 v1.1.4 (2020-08-31)
 ================================================================================
