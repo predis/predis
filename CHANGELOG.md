@@ -3,8 +3,8 @@ v1.1.5 (2020-09-xx)
 
 - __FIX__: authentication for sentinels is now supported, previously it was not
 possible to specify a `password` for sentinels as its value was stripped during
-initialization because Redis Sentinel did not support authentication until Redis
-5. **Please note** that with the current implementation each sentinel must have
+initialization because sentinels did not support authentication until Redis 5.
+**Please note** that with the current implementation each sentinel must have
 its own `password` parameter set in the parameters list despite this password is
 the same for all sentinels (read how `requirepass` works on the Redis docs). In
 this case you should avoid using the global `parameters` client option used to
