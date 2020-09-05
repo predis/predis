@@ -1,6 +1,16 @@
 v1.1.5 (2020-09-xx)
 ================================================================================
 
+- __FIX__: authentication for sentinels is now supported, previously it was not
+possible to specify a `password` for sentinels as its value was stripped during
+initialization because Redis Sentinel did not support authentication until Redis
+5. **Please note** that with the current implementation each sentinel must have
+its own `password` parameter set in the parameters list despite this password is
+the same for all sentinels (read how `requirepass` works on the Redis docs). In
+this case you should avoid using the global `parameters` client option used to
+set default parameters for every connection created by Predis as this would end
+up using the same password even when connecting to actual Redis nodes.
+
 - __FIX__: the username is now correctly retrieved from the userinfo fragment of
 the URI when using the "redis" scheme and a "username:password" pair is present.
 Values retrieved from the userinfo fragment always override the ones specified
