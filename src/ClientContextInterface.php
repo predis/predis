@@ -172,7 +172,7 @@ interface ClientContextInterface
     /**
      * Sends the specified command instance to Redis.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command Command instance
      *
      * @return mixed
      */
@@ -186,14 +186,14 @@ interface ClientContextInterface
      *
      * @return mixed
      */
-    public function __call($method, $arguments);
+    public function __call(string $method, array $arguments);
 
     /**
      * Starts the execution of the context.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param callable $callable Optional callable for execution
      *
-     * @return array
+     * @return ?iterable
      */
-    public function execute($callable = null);
+    public function execute(callable $callable = null): ?iterable;
 }

@@ -21,6 +21,7 @@ use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\SentinelReplication;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
+use Predis\Pipeline\Queue;
 use Predis\PubSub\Consumer as PubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
@@ -423,12 +424,16 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Creates a new pipeline context and returns it, or returns the results of
-     * a pipeline executed inside the optionally provided callable object.
+     * Creates a new pipeline context.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * This method returns the pipeline object unless a callable is provided by
+     * the user. In this case the user-supplied callable receives the pipeline
+     * instance as the only argument and the pipeline will be executed by the
+     * client at the end, returning the responses read back from the server.
      *
-     * @return Pipeline|array
+     * @param mixed ... Array of options, a callable for execution, or both
+     *
+     * @return Pipeline|Traversable|array
      */
     public function pipeline(/* arguments */)
     {
@@ -436,27 +441,27 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * Actual pipeline context initializer method.
+     * Pipeline context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array    $options  Optional configuration for the context
+     * @param callable $callable Optional callable used to execute the context
      *
-     * @return Pipeline|array
+     * @return Pipeline|Traversable|array
      */
-    protected function createPipeline(array $options = null, $callable = null)
+    protected function createPipeline(array $options = null, callable $callable = null)
     {
-        if (isset($options['atomic']) && $options['atomic']) {
-            $class = 'Predis\Pipeline\Atomic';
-        } elseif (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
-            $class = 'Predis\Pipeline\FireAndForget';
-        } else {
-            $class = 'Predis\Pipeline\Pipeline';
+        $traversable = (bool) ($options['traversable'] ?? false);
+        $isFireAndForget = (bool) ($options['fire-and-forget'] ?? false);
+        $isAtomic = (bool) ($options['atomic'] ?? false);
+        $throwExceptions = (bool) ($options['exceptions'] ?? $this->getOptions()->exceptions);
+
+        $queue = $isFireAndForget ? new Queue\FireAndForget() : new Queue\Basic();
+        if ($isAtomic) {
+            $queue = new Queue\Atomic($queue);
         }
 
-        /*
-         * @var ClientContextInterface
-         */
-        $pipeline = new $class($this);
+        $pipeline = new Pipeline($this, $queue, $traversable);
+        $pipeline->setThrowOnErrorResponse($throwExceptions);
 
         if (isset($callable)) {
             return $pipeline->execute($callable);
@@ -471,7 +476,7 @@ class Client implements ClientInterface, \IteratorAggregate
      *
      * @param mixed ... Array of options, a callable for execution, or both.
      *
-     * @return MultiExecTransaction|array
+     * @return MultiExecTransaction|iterable
      */
     public function transaction(/* arguments */)
     {

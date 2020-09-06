@@ -11,95 +11,123 @@
 
 namespace Predis\Pipeline;
 
+use AppendIterator;
+use ArrayIterator;
+use Countable;
+use Exception;
+use IteratorAggregate;
 use Predis\ClientContextInterface;
-use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Replication\ReplicationInterface;
+use Predis\Pipeline\Queue\CommandQueueException;
+use Predis\Pipeline\Queue\CommandQueueInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\Iterator\MultiBulkIterator;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+use Throwable;
+use Traversable;
 
 /**
- * Implementation of a command pipeline in which write and read operations of
- * Redis commands are pipelined to alleviate the effects of network round-trips.
+ * Abstraction for pipelining commands to Redis.
+ *
+ * Pipelines can use different underlying command queue implementations in order
+ * to change the behaviour of how commands are flushed over the connection, for
+ * example by using a fire-and-forget approach or by wrapping the whole pipeline
+ * in a MULTI / EXEC transaction block.
  *
  * {@inheritdoc}
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class Pipeline implements ClientContextInterface
+class Pipeline implements ClientContextInterface, Countable, IteratorAggregate
 {
+    private $executing = false;
+    private $pending = false;
+    private $traversable = false;
+    private $throwOnErrorResponse = false;
+    /** @var ClientInterface */
     private $client;
-    private $pipeline;
-
-    private $responses = array();
-    private $running = false;
+    /** @var CommandQueueInterface */
+    private $queue;
+    /** @var NoRewindIterator|AppendIterator */
+    private $responses;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface       $client     Client instance used by the pipeline
+     * @param CommandQueueInterface $queue      Optional command queue implementation for pipeline execution
+     * @param bool                  $travesable Flag to return responses as a traversable iterator or an array
      */
-    public function __construct(ClientInterface $client)
+    public function __construct(ClientInterface $client, CommandQueueInterface $queue = null, bool $traversable = true)
     {
         $this->client = $client;
-        $this->pipeline = new \SplQueue();
+        $this->queue = $queue ?? new Queue\Basic();
+        $this->traversable = $traversable;
     }
 
     /**
-     * Queues a command into the pipeline buffer.
-     *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
-     *
-     * @return $this
+     * @inheritdoc
      */
-    public function __call($method, $arguments)
+    public function __destruct()
     {
-        $command = $this->client->createCommand($method, $arguments);
-        $this->recordCommand($command);
+        // NOTE: it is safer to force-close the underlying connection on pending
+        // traversable responses to avoid protocol desynchronization issues when
+        // the pipeline goes out of scope and the GC kicks in, especially after
+        // a script terminates and connections are configured to be persistent.
+        if ($this->pending && $this->traversable) {
+            $this->client->disconnect();
+        }
+    }
+
+    /**
+     * Queues the command instance into the pipeline queue.
+     *
+     * @param CommandInterface $command Command to be queued into the pipeline
+     *
+     * @return object
+     */
+    protected function recordCommand(CommandInterface $command): object
+    {
+        if ($this->executing) {
+            $message = 'The pipeline context is still executing';
+            if ($this->traversable) {
+                $message .= ' (iteration over responses may not be concluded yet)';
+            }
+
+            throw new PipelineException($this, $message);
+        }
+
+        $this->queue->enqueue($command);
 
         return $this;
     }
 
     /**
-     * Queues a command instance into the pipeline buffer.
+     * Stores a command into the pipeline for transmission.
      *
-     * @param CommandInterface $command Command to be queued in the buffer.
+     * @param string $method    Command ID
+     * @param array  $arguments Arguments for the command
+     *
+     * @return $this|mixed
      */
-    protected function recordCommand(CommandInterface $command)
+    public function __call(string $method, array $arguments)
     {
-        $this->pipeline->enqueue($command);
+        $command = $this->client->createCommand($method, $arguments);
+        return $this->recordCommand($command);
     }
 
     /**
-     * Queues a command instance into the pipeline buffer.
+     * Stores a command instance into the pipeline for transmission.
      *
-     * @param CommandInterface $command Command instance to be queued in the buffer.
+     * @param CommandInterface $command Command to be queued into the pipeline
      *
-     * @return $this
+     * @return $this|mixed
      */
     public function executeCommand(CommandInterface $command)
     {
-        $this->recordCommand($command);
-
-        return $this;
-    }
-
-    /**
-     * Throws an exception on -ERR responses returned by Redis.
-     *
-     * @param ConnectionInterface    $connection Redis connection that returned the error.
-     * @param ErrorResponseInterface $response   Instance of the error response.
-     *
-     * @throws ServerException
-     */
-    protected function exception(ConnectionInterface $connection, ErrorResponseInterface $response)
-    {
-        $connection->disconnect();
-        $message = $response->getMessage();
-
-        throw new ServerException($message);
+        return $this->recordCommand($command);
     }
 
     /**
@@ -107,7 +135,7 @@ class Pipeline implements ClientContextInterface
      *
      * @return ConnectionInterface
      */
-    protected function getConnection()
+    protected function getConnection(): ConnectionInterface
     {
         $connection = $this->getClient()->getConnection();
 
@@ -119,124 +147,254 @@ class Pipeline implements ClientContextInterface
     }
 
     /**
-     * Implements the logic to flush the queued commands and read the responses
-     * from the current connection.
+     * Flushes the pipeline over the target connection and returns responses.
      *
-     * @param ConnectionInterface $connection Current connection instance.
-     * @param \SplQueue           $commands   Queued commands.
+     * @param ConnectionInterface $connection Target connection
      *
-     * @return array
+     * @return Traversable
      */
-    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection): Traversable
     {
-        foreach ($commands as $command) {
-            $connection->writeRequest($command);
-        }
+        $this->pending = true;
 
-        $responses = array();
-        $exceptions = $this->throwServerExceptions();
+        /** @var Traversable */
+        $responses = null;
+        /** @var CommandInterface */
+        $command = null;
 
-        while (!$commands->isEmpty()) {
-            $command = $commands->dequeue();
-            $response = $connection->readResponse($command);
+        try {
+            $responses = $this->queue->flush($connection);
 
-            if (!$response instanceof ResponseInterface) {
-                $responses[] = $command->parseResponse($response);
-            } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
-                $this->exception($connection, $response);
-            } else {
-                $responses[] = $response;
+            foreach ($responses as $command => $response) {
+                if ($response instanceof ResponseInterface) {
+                    if ($response instanceof ErrorResponseInterface) {
+                        $response = $this->onResponseError($connection, $command, $response);
+                    } elseif ($response instanceof MultiBulkIterator) {
+                        $response = $this->onResponseTraversable($connection, $command, $response);
+                    }
+                } else {
+                    $response = $command->parseResponse($response);
+                }
+
+                yield $command => $response;
             }
+        } catch (CommandQueueException $exception) {
+            $this->onExceptionDuringExecution($exception, $connection, $responses, $command);
+
+            throw new PipelineException($this, $exception->getMessage(), $exception->getCode(), $exception);
+        } catch (Exception $exception) {
+            $this->onExceptionDuringExecution($exception, $connection, $responses, $command);
+
+            throw $exception;
+        } finally {
+            $this->executing = false;
         }
 
-        return $responses;
+        // NOTE: this flag gets set only when the generator properly reaches the
+        // end of the iteration, otherwise this is skipped. This could happen if
+        // the script terminates before the end of an iteration or an unhandled
+        // exception occurs. The flags is used in __destruct() to verify when we
+        // should drop the underlying connection in order to avoid any protocol
+        // desynchronization issue.
+        $this->pending = false;
     }
 
     /**
-     * Flushes the buffer holding all of the commands queued so far.
+     * Performs clean-ups when an exception occurs during pipeline execution.
      *
-     * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
+     * @param Throwable           $exception  Exception thrown during pipeline
+     * @param ConnectionInterface $connection Redis connection that returned the error
+     * @param ?Traversable        $responses  Current reponse set returned by Redis
+     * @param ?CommandInterface   $command    Command affected by the error
+     */
+    protected function onExceptionDuringExecution(
+        Throwable $exception,
+        ConnectionInterface $connection,
+        ?Traversable $responses = null,
+        ?CommandInterface $command = null): void
+    {
+        $connection->disconnect();
+    }
+
+    /**
+     * Handles RESP error (prefix `-`) responses returned by Redis.
+     *
+     * @param ConnectionInterface    $connection Redis connection that returned the error
+     * @param CommandInterface       $command    Command affected by the error
+     * @param ErrorResponseInterface $response   Error response instance
+     *
+     * @return mixed
+     *
+     * @throws ServerException
+     */
+    protected function onResponseError(ConnectionInterface $connection, CommandInterface $command, ErrorResponseInterface $response)
+    {
+        if ($this->throwOnErrorResponse) {
+            throw new ServerException($response->getMessage());
+        }
+
+        return $response;
+    }
+
+    /**
+     * Handles traversable RESP array (prefix `*`) responses returned by Redis.
+     *
+     * @param ConnectionInterface $connection Redis connection that returned the error
+     * @param CommandInterface    $command    Command affected by the error
+     * @param MultiBulkIterator   $response   Traversable response instance
+     *
+     * @return iterable
+     */
+    protected function onResponseTraversable(ConnectionInterface $connection, CommandInterface $command, MultiBulkIterator $response): iterable
+    {
+        if (!$this->traversable) {
+            $response = iterator_to_array($response, false);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Flushes the current pipeline queue.
      *
      * @return $this
      */
-    public function flushPipeline($send = true)
+    public function flushQueued(): self
     {
-        if ($send && !$this->pipeline->isEmpty()) {
-            $responses = $this->executePipeline($this->getConnection(), $this->pipeline);
-            $this->responses = array_merge($this->responses, $responses);
-        } else {
-            $this->pipeline = new \SplQueue();
+        if ($this->traversable) {
+            throw new PipelineException($this, sprintf(
+                '%s does not support intermediate flushes when configured to return Traversable responses',
+                static::class
+            ));
         }
+
+        $this->flushQueuedInternal();
 
         return $this;
     }
 
     /**
-     * Marks the running status of the pipeline.
+     * Flushes the current pipeline queue (internal method).
      *
-     * @param bool $bool Sets the running status of the pipeline.
-     *
-     * @throws ClientException
+     * @return void
      */
-    private function setRunning($bool)
+    protected function flushQueuedInternal(): void
     {
-        if ($bool && $this->running) {
-            throw new ClientException('The current pipeline context is already being executed.');
+        $this->executing = true;
+
+        $responses = $this->executePipeline($this->getConnection());
+
+        if ($this->traversable) {
+            $this->responses = new Iterator\Responses($responses);
+
+            return;
         }
 
-        $this->running = $bool;
+        if ($this->responses === null) {
+            $this->responses = new AppendIterator();
+        }
+
+        $this->responses->append(new ArrayIterator(
+            iterator_to_array($responses, false)
+        ));
     }
 
     /**
-     * Handles the actual execution of the whole pipeline.
+     * Drops the current pipeline queue.
      *
-     * @param mixed $callable Optional callback for execution.
-     *
-     * @throws \Exception
-     * @throws \InvalidArgumentException
-     *
-     * @return array
+     * @return $this
      */
-    public function execute($callable = null)
+    public function dropQueued(): self
     {
-        if ($callable && !is_callable($callable)) {
-            throw new \InvalidArgumentException('The argument must be a callable object.');
-        }
+        $this->queue->reset();
 
-        $exception = null;
-        $this->setRunning(true);
+        return $this;
+    }
+
+    /**
+     * Handles the execution of a pipeline.
+     *
+     * Execution can be wrapped inside a callable provided by the user and that
+     * receives an instance of the pipeline (self) as the only argument. Queued
+     * commands will be automatically flushed when the callable returns.
+     *
+     * @param callable $callable Optional callable for execution
+     *
+     * @throws Exception
+     *
+     * @return ?iterable
+     */
+    public function execute(callable $callable = null): ?iterable
+    {
+        $responses = null;
 
         try {
             if ($callable) {
                 call_user_func($callable, $this);
             }
 
-            $this->flushPipeline();
-        } catch (\Exception $exception) {
-            // NOOP
+            $this->flushQueuedInternal();
+        } finally {
+            [$responses, $this->responses] = [$this->responses, null];
         }
 
-        $this->setRunning(false);
-
-        if ($exception) {
-            throw $exception;
+        if (!$this->traversable) {
+            $responses = iterator_to_array($responses, false);
         }
 
-        return $this->responses;
+        return $responses;
     }
 
     /**
-     * Returns if the pipeline should throw exceptions on server errors.
+     * @inheritdoc
+     */
+    public function count(): int
+    {
+        return count($this->queue);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIterator(): Traversable
+    {
+        return is_array($iterable = $this->execute())
+            ? new ArrayIterator($iterable)
+            : $iterable;
+    }
+
+    /**
+     * Gets if the pipeline is set to return responses as Travesable instances.
      *
      * @return bool
      */
-    protected function throwServerExceptions()
+    public function isTraversable(): bool
     {
-        return (bool) $this->client->getOptions()->exceptions;
+        return $this->traversable;
     }
 
     /**
-     * Returns the underlying client instance used by the pipeline object.
+     * Configures the pipeline to throw an exception on -ERR response.
+     *
+     * @param bool $value
+     */
+    public function setThrowOnErrorResponse(bool $value): void
+    {
+        $this->throwOnErrorResponse = $value;
+    }
+
+    /**
+     * Returns the current configuration for exceptions on -ERR responses.
+     *
+     * @return bool
+     */
+    public function getThrowOnErrorResponse(): bool
+    {
+        return $this->throwOnErrorResponse;
+    }
+
+    /**
+     * Returns the underlying client instance used by the pipeline.
      *
      * @return ClientInterface
      */

@@ -155,7 +155,7 @@ class MultiExec implements ClientContextInterface
      *
      * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         return $this->executeCommand(
             $this->client->createCommand($method, $arguments)
@@ -348,15 +348,15 @@ class MultiExec implements ClientContextInterface
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param callable $callable Optional callable for execution
      *
      * @throws CommunicationException
      * @throws AbortedMultiExecException
      * @throws ServerException
      *
-     * @return array
+     * @return ?iterable
      */
-    public function execute($callable = null)
+    public function execute(callable $callable = null): ?iterable
     {
         $this->checkBeforeExecution($callable);
 
@@ -373,7 +373,7 @@ class MultiExec implements ClientContextInterface
                     $this->discard();
                 }
 
-                return;
+                return null;
             }
 
             $execResponse = $this->call('EXEC');
