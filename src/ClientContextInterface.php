@@ -118,7 +118,7 @@ use Predis\Command\CommandInterface;
  * @method $this zremrangebyrank($key, $start, $stop)
  * @method $this zremrangebyscore($key, $min, $max)
  * @method $this zrevrange($key, $start, $stop, array $options = null)
- * @method $this zrevrangebyscore($key, $min, $max, array $options = null)
+ * @method $this zrevrangebyscore($key, $max, $min, array $options = null)
  * @method $this zrevrank($key, $member)
  * @method $this zunionstore($destination, array|string $keys, array $options = null)
  * @method $this zscore($key, $member)
