@@ -1,4 +1,4 @@
-v1.1.5 (2020-09-xx)
+v1.1.5 (2020-09-10)
 ================================================================================
 
 - __FIX__: authentication for sentinels is now supported, previously it was not
