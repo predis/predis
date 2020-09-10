@@ -110,16 +110,6 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function aggregate(AggregateConnectionInterface $connection, array $parameters)
-    {
-        foreach ($parameters as $node) {
-            $connection->add($node instanceof NodeConnectionInterface ? $node : $this->create($node));
-        }
-    }
-
-    /**
      * Assigns a default set of parameters applied to new connections.
      *
      * The set of parameters passed to create a new connection have precedence

@@ -210,7 +210,8 @@ class ClientTest extends PredisTestCase
         $cluster = new Connection\Cluster\PredisCluster();
 
         $factory = new Connection\Factory();
-        $factory->aggregate($cluster, array('tcp://localhost:7000', 'tcp://localhost:7001'));
+        $cluster->add($factory->create('tcp://localhost:7000'));
+        $cluster->add($factory->create('tcp://localhost:7001'));
 
         $client = new Client($cluster);
 
@@ -226,7 +227,8 @@ class ClientTest extends PredisTestCase
         $replication = new Connection\Replication\MasterSlaveReplication();
 
         $factory = new Connection\Factory();
-        $factory->aggregate($replication, array('tcp://host1?alias=master', 'tcp://host2?alias=slave'));
+        $replication->add($factory->create('tcp://host1?alias=master'));
+        $replication->add($factory->create('tcp://host2?alias=slave'));
 
         $client = new Client($replication);
 
@@ -329,7 +331,11 @@ class ClientTest extends PredisTestCase
         $fncluster
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+            ->with(
+                $arg1,
+                $this->isInstanceOf('Predis\Configuration\OptionsInterface'),
+                $this->isInstanceOf('Predis\Configuration\OptionInterface')
+            )
             ->willReturn($connection);
 
         $fnreplication = $this->getMockBuilder('stdClass')
@@ -372,7 +378,11 @@ class ClientTest extends PredisTestCase
         $fnreplication
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+            ->with(
+                $arg1,
+                $this->isInstanceOf('Predis\Configuration\OptionsInterface'),
+                $this->isInstanceOf('Predis\Configuration\OptionInterface')
+            )
             ->willReturn($connection);
 
         $fnaggregate = $this->getMockBuilder('stdClass')
@@ -397,7 +407,16 @@ class ClientTest extends PredisTestCase
     {
         $arg1 = array('tcp://host1', 'tcp://host2');
 
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $connections = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $connections
+            ->expects($this->never())
+            ->method('create');
+
+        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
+            ->getMock();
+        $connection
+            ->expects($this->never())
+            ->method('add');
 
         $fnaggregate = $this->getMockBuilder('stdClass')
             ->addMethods(array('__invoke'))
@@ -405,13 +424,12 @@ class ClientTest extends PredisTestCase
         $fnaggregate
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $arg1)
+            ->with(
+                $arg1,
+                $this->isInstanceOf('Predis\Configuration\OptionsInterface'),
+                $this->isInstanceOf('Predis\Configuration\OptionInterface')
+            )
             ->willReturn($connection);
-
-        $connections = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
-        $connections
-            ->expects($this->never())
-            ->method('aggregate');
 
         $arg2 = array('aggregate' => $fnaggregate, 'connections' => $connections);
 
@@ -1280,7 +1298,11 @@ class ClientTest extends PredisTestCase
         $callable
             ->expects($this->once())
             ->method('__invoke')
-            ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'), $parameters)
+            ->with(
+                $parameters,
+                $this->isInstanceOf('Predis\Configuration\OptionsInterface'),
+                $this->isInstanceOf('Predis\Configuration\OptionInterface')
+            )
             ->willReturn($connection);
 
         return $callable;
