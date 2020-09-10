@@ -492,11 +492,11 @@ found [on its actions page](https://github.com/predis/predis/actions).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/predis/predis.svg
-[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg
-[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg
-[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg
-[ico-build]: https://img.shields.io/github/workflow/status/predis/predis/Tests/main
+[ico-license]: https://img.shields.io/github/license/predis/predis.svg?style=flat-square
+[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
+[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
+[ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
+[ico-build]: https://img.shields.io/github/workflow/status/predis/predis/Tests/main?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
 [link-actions]: https://github.com/predis/predis/actions
