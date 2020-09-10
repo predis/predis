@@ -17,6 +17,7 @@ use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
@@ -41,19 +42,13 @@ class Client implements ClientInterface, \IteratorAggregate
 {
     const VERSION = '2.0.0-dev';
 
-    /**
-     * @var Predis\Configuration\OptionsInterface
-     */
+    /** @var OptionsInterface */
     private $options;
 
-    /**
-     * @var Predis\Connection\ConnectionInterface
-     */
+    /** @var ConnectionInterface */
     private $connection;
 
-    /**
-     * @var Predis\Command\FactoryInterface
-     */
+    /** @var Command\FactoryInterface */
     private $commands;
 
     /**
@@ -62,58 +57,58 @@ class Client implements ClientInterface, \IteratorAggregate
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options = $this->createOptions($options ?: array());
-        $this->connection = $this->createConnection($parameters ?: array());
+        $this->options = static::createOptions($options ?? new Options);
+        $this->connection = static::createConnection($this->options, $parameters ?? new Parameters);
         $this->commands = $this->options->commands;
     }
 
     /**
-     * Creates a new instance of Predis\Configuration\Options from different
-     * types of arguments or simply returns the passed argument if it is an
-     * instance of Predis\Configuration\OptionsInterface.
+     * Creates a new set of client options for the client.
      *
-     * @param mixed $options Client options.
+     * @param array|OptionsInterface $options Set of client options
      *
      * @throws \InvalidArgumentException
      *
      * @return OptionsInterface
      */
-    protected function createOptions($options)
+    protected static function createOptions($options)
     {
         if (is_array($options)) {
             return new Options($options);
-        }
-
-        if ($options instanceof OptionsInterface) {
+        } elseif ($options instanceof OptionsInterface) {
             return $options;
+        } else {
+            throw new \InvalidArgumentException('Invalid type for client options');
         }
-
-        throw new \InvalidArgumentException('Invalid type for client options');
     }
 
     /**
-     * Creates single or aggregate connections from different types of arguments
-     * (string, array) or returns the passed argument if it is an instance of a
-     * class implementing Predis\Connection\ConnectionInterface.
+     * Creates single or aggregate connections from supplied arguments.
      *
-     * Accepted types for connection parameters are:
+     * This method accepts the following types to create a connection instance:
      *
-     *  - Instance of Predis\Connection\ConnectionInterface.
-     *  - Instance of Predis\Connection\ParametersInterface.
-     *  - Array
-     *  - String
-     *  - Callable
+     *  - Array (dictionary: single connection, indexed: aggregate connections)
+     *  - String (URI for a single connection)
+     *  - Callable (connection initializer callback)
+     *  - Instance of Predis\Connection\ParametersInterface (used as-is)
+     *  - Instance of Predis\Connection\ConnectionInterface (returned as-is)
      *
-     * @param mixed $parameters Connection parameters or connection instance.
+     * When a callable is passed, it receives the original set of client options
+     * and must return an instance of Predis\Connection\ConnectionInterface.
+     *
+     * Connections are created using the connection factory (in case of single
+     * connections) or a specialized aggregate connection initializer (in case
+     * of cluster and replication) retrieved from the supplied client options.
+     *
+     * @param OptionsInterface $options    Client options container
+     * @param mixed            $parameters Connection parameters
      *
      * @throws \InvalidArgumentException
      *
      * @return ConnectionInterface
      */
-    protected function createConnection($parameters)
+    protected static function createConnection(OptionsInterface $options, $parameters)
     {
-        $options = $this->getOptions();
-
         if ($parameters instanceof ConnectionInterface) {
             return $parameters;
         }
