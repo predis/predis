@@ -97,6 +97,34 @@ v2.0.0 (202x-xx-xx)
   connection or, even better, over the client instance in order to execute the
   same command against all of the registered connections.
 
+v1.1.5 (2020-09-10)
+================================================================================
+
+- __FIX__: authentication for sentinels is now supported, previously it was not
+possible to specify a `password` for sentinels as its value was stripped during
+initialization because sentinels did not support authentication until Redis 5.
+**Please note** that with the current implementation each sentinel must have
+its own `password` parameter set in the parameters list despite this password is
+the same for all sentinels (read how `requirepass` works on the Redis docs). In
+this case you should avoid using the global `parameters` client option used to
+set default parameters for every connection created by Predis as this would end
+up using the same password even when connecting to actual Redis nodes.
+
+- __FIX__: the username is now correctly retrieved from the userinfo fragment of
+the URI when using the "redis" scheme and a "username:password" pair is present.
+Values retrieved from the userinfo fragment always override the ones specified
+in `username` and `password` if those fields are present in the query string.
+
+- __FIX__: `Predis\Connection\WebdisConnection` was unable to connect to Webdis
+when using an IPv4 address in the URL and this is probably due to some change in
+cURL internals since the last time we tested it.
+
+- __FIX__: an exception is thrown whe passing `FALSE` or any value evaluating to
+`FALSE` to the `replication` client option. This was supposed to be unsupported,
+in fact it actually breaks client initialization and raises a PHP warning. Now
+the user is alerted with an `InvalidArgumentException` and a proper message.
+(PR #381).
+
 
 v1.1.4 (2020-08-31)
 ================================================================================
