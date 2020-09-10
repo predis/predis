@@ -12,8 +12,10 @@
 namespace Predis\Configuration;
 
 /**
- * Manages Predis options with filtering, conversion and lazy initialization of
- * values using a mini-DI container approach.
+ * Default client options container for Predis\Client.
+ *
+ * Pre-defined options have their specialized handlers that can filter, convert
+ * an lazily initialize values in a mini-DI container approach.
  *
  * {@inheritdoc}
  *
@@ -21,37 +23,30 @@ namespace Predis\Configuration;
  */
 class Options implements OptionsInterface
 {
-    protected $options = array();
+    /** @var array */
+    protected $handlers = [
+        'aggregate' => Option\Aggregate::class,
+        'cluster' => Option\Cluster::class,
+        'replication' => Option\Replication::class,
+        'connections' => Option\Connections::class,
+        'commands' => Option\Commands::class,
+        'exceptions' => Option\Exceptions::class,
+        'prefix' => Option\Prefix::class,
+        'crc16' => Option\CRC16::class,
+    ];
+
+    /** @var array */
+    protected $options = [];
+
+    /** @var array */
     protected $input;
-    protected $handlers;
 
     /**
-     * @param array $options Array of options with their values
+     * @param array $options Named array of client options
      */
-    public function __construct(array $options = array())
+    public function __construct(array $options = null)
     {
-        $this->input = $options;
-        $this->options = array();
-        $this->handlers = $this->getHandlers();
-    }
-
-    /**
-     * Ensures that the default options are initialized.
-     *
-     * @return array
-     */
-    protected function getHandlers()
-    {
-        return array(
-            'aggregate' => 'Predis\Configuration\Option\Aggregate',
-            'cluster' => 'Predis\Configuration\Option\Cluster',
-            'replication' => 'Predis\Configuration\Option\Replication',
-            'connections' => 'Predis\Configuration\Option\Connections',
-            'commands' => 'Predis\Configuration\Option\Commands',
-            'exceptions' => 'Predis\Configuration\Option\Exceptions',
-            'prefix' => 'Predis\Configuration\Option\Prefix',
-            'crc16' => 'Predis\Configuration\Option\CRC16',
-        );
+        $this->input = $options ?? [];
     }
 
     /**
