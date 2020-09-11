@@ -239,12 +239,15 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if (is_array($parameters)) {
-            // Password authentication is fine now that Redis Sentinel supports
-            // password-protected sentinel instances, but we must explicitly set
-            // "database" and "username" to NULL so that no augmented AUTH (ACL)
-            // and SELECT command are sent by accident to the sentinels.
+            // NOTE: sentinels do not accept AUTH and SELECT commands so we must
+            // explicitly set them to NULL to avoid problems when using default
+            // parameters set via client options. Actually AUTH is supported for
+            // sentinels starting with Redis 5 but we have to differentiate from
+            // sentinels passwords and nodes passwords, this will be implemented
+            // in a later release.
             $parameters['database'] = null;
             $parameters['username'] = null;
+            $parameters['password'] = null;
 
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;
