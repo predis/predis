@@ -11,6 +11,7 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\RawCommand;
 
 /**
@@ -119,6 +120,28 @@ class Factory implements FactoryInterface
      */
     public function setDefaultParameters(array $parameters)
     {
+        if (isset($parameters['role.master']) && !is_array($parameters['role.master'])) {
+            throw new InvalidArgumentException('Default parameters for `role.master` must be passed as a named array');
+        }
+
+        if (isset($parameters['role.slave']) && !is_array($parameters['role.slave'])) {
+            throw new InvalidArgumentException('Default parameters for `role.slave` must be passed as a named array');
+        }
+
+        if (isset($parameters['role.sentinel'])) {
+            if (!is_array($parameters['role.sentinel'])) {
+                throw new InvalidArgumentException('Default parameters for `role.sentinel` must be passed as a named array');
+            }
+
+            // NOTE: sentinels do not support "SELECT" and ACL "AUTH" commands
+            // so we must strip "database" and "username" from "role.sentinel"
+            // to prevent spurious commands from being sent to sentinel nodes.
+            unset(
+                $parameters['role.sentinel']['username'],
+                $parameters['role.sentinel']['database']
+            );
+        }
+
         $this->defaults = $parameters;
     }
 
@@ -133,6 +156,37 @@ class Factory implements FactoryInterface
     }
 
     /**
+     * Applies default connection parameters to the user supplied parameters.
+     *
+     * @param array $parameters Input connection parameters
+     *
+     * @return array
+     */
+    protected function applyDefaultParameters(array $parameters)
+    {
+        static $stripInternal = ['role.sentinel' => null, 'role.master' => null, 'role.slave' => null];
+
+        $stripAdditional = [];
+
+        if (isset($parameters['role'])) {
+            switch ($role = $parameters['role']) {
+                case 'sentinel':
+                    // NOTE: we strip these from global defaults when dealing with sentinel nodes.
+                    $stripAdditional = ['username' => null, 'password' => null, 'database' => null];
+                case 'master':
+                case 'slave':
+                    if (isset($this->defaults["role.$role"])) {
+                        $parameters += $this->defaults["role.$role"];
+                    }
+            }
+        }
+
+        $parameters += array_diff_key($this->defaults, $stripInternal, $stripAdditional);
+
+        return $parameters;
+    }
+
+    /**
      * Creates a connection parameters instance from the supplied argument.
      *
      * @param mixed $parameters Original connection parameters.
@@ -144,11 +198,19 @@ class Factory implements FactoryInterface
         if (is_string($parameters)) {
             $parameters = Parameters::parse($parameters);
         } else {
-            $parameters = $parameters ?: array();
+            $parameters = $parameters ?? [];
+        }
+
+        if (isset($parameters['role']) && $parameters['role'] === 'sentinel') {
+            // NOTE: sentinels do not support "SELECT" and ACL "AUTH" commands so we must strip
+            // "database" and "username" from input parameters to prevent spurious commands from
+            // being sent to sentinel nodes but they can still accept "password" when explicitly
+            // set (password-based authentication for sentinels is supported on Redis >= 5.0).
+            unset($parameters['username'], $parameters['database']);
         }
 
         if ($this->defaults) {
-            $parameters += $this->defaults;
+            $parameters = $this->applyDefaultParameters($parameters);
         }
 
         return new Parameters($parameters);

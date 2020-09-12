@@ -241,6 +241,8 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Creates a new connection to a sentinel server.
      *
+     * @param mixed $parameters Connection parameters or connection instance
+     *
      * @return NodeConnectionInterface
      */
     protected function createSentinelConnection($parameters)
@@ -254,12 +256,10 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if (is_array($parameters)) {
-            // Password authentication is fine now that Redis Sentinel supports
-            // password-protected sentinel instances, but we must explicitly set
-            // "database" and "username" to NULL so that no augmented AUTH (ACL)
-            // and SELECT command are sent by accident to the sentinels.
-            $parameters['database'] = null;
-            $parameters['username'] = null;
+            // NOTE: we enforce the "sentinel" role so that appropriate default
+            // parameters are applied when creating the new connection instance
+            // and blacklisted ones are stripped off from input parameters.
+            $parameters['role'] = 'sentinel';
 
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;

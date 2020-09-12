@@ -44,8 +44,108 @@ class FactoryTest extends PredisTestCase
         ));
 
         $this->assertSame($defaults, $factory->getDefaultParameters());
+    }
 
-        $parameters = array('database' => 10, 'persistent' => true);
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForMasterRole(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($expected = array(
+            'role.master' => [
+                'username' => 'myusername',
+                'password' => 'secret',
+                'database' => 10,
+            ]
+        ));
+
+        $this->assertSame($expected, $factory->getDefaultParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForMasterRoleAcceptsArrayOnly(): void
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Default parameters for `role.master` must be passed as a named array');
+
+        $factory = new Factory();
+        $factory->setDefaultParameters(array(
+            'role.master' => 'invalid value',
+        ));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForSlaveRole(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($expected = array(
+            'role.slave' => [
+                'username' => 'myusername',
+                'password' => 'secret',
+                'database' => 10,
+            ]
+        ));
+
+        $this->assertSame($expected, $factory->getDefaultParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForSlaveRoleAcceptsArrayOnly(): void
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Default parameters for `role.slave` must be passed as a named array');
+
+        $factory = new Factory();
+        $factory->setDefaultParameters(array(
+            'role.slave' => 'invalid value',
+        ));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForSentinelRoleIgnoresUsernameAndPassword(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters(array(
+            'role.sentinel' => [
+                'username' => 'myusername',
+                'password' => 'secret',
+                'database' => 10,
+            ]
+        ));
+
+        $expected = array(
+            'role.sentinel' => [
+                'password' => 'secret',
+            ]
+        );
+
+        $this->assertSame($expected, $factory->getDefaultParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSettingDefaultParametersForSentinelRoleAcceptsArrayOnly(): void
+    {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Default parameters for `role.sentinel` must be passed as a named array');
+
+        $factory = new Factory();
+        $factory->setDefaultParameters(array(
+            'role.sentinel' => 'invalid value',
+        ));
     }
 
     /**
@@ -195,7 +295,7 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testCreateConnectionWithArrayParametersAndDefaults(): void
+    public function testCreateConnectionWithDefaultParametersDoNotOverrideExplicitInputParameters(): void
     {
         $factory = new Factory();
 
@@ -221,6 +321,218 @@ class FactoryTest extends PredisTestCase
         $this->assertEquals($defaultParams['custom'], $parameters->custom);
         $this->assertEquals($inputParams['persistent'], $parameters->persistent);
         $this->assertNull($parameters->path);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionForSentinelRoleIgnoresUsernameAndDatabase(): void
+    {
+        $factory = new Factory();
+
+        $connection = $factory->create($inputParams = array(
+            'role' => 'sentinel',
+            'username' => 'myusername',
+            'password' => 'mypassword',
+            'database' => 10,
+        ));
+
+        $parameters = $connection->getParameters();
+
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+
+        $this->assertEquals($inputParams['role'], $parameters->role);
+        $this->assertEquals($inputParams['password'], $parameters->password);
+        $this->assertNull($parameters->username);
+        $this->assertNull($parameters->database);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionForSentinelRoleDoesNotInheritPasswordFromGlobalDefaultParameters(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'password' => 'pwd.default',
+        ));
+
+        $connectionSentinelRole = $factory->create($inputParamsSentinelRole = array(
+            'role' => 'sentinel',
+        ));
+
+        $parameters = $connectionSentinelRole->getParameters();
+        $this->assertNull($parameters->password);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionForSentinelRoleDoesNotInheritUsernameFromGlobalDefaultParameters(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'username' => 'usr.default',
+        ));
+
+        $connectionSentinelRole = $factory->create($inputParamsSentinelRole = array(
+            'role' => 'sentinel',
+        ));
+
+        $parameters = $connectionSentinelRole->getParameters();
+        $this->assertNull($parameters->username);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionForSentinelRoleDoesNotInheritDatabaseFromGlobalDefaultParameters(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'database' => 15,
+        ));
+
+        $connectionSentinelRole = $factory->create($inputParamsSentinelRole = array(
+            'role' => 'sentinel',
+        ));
+
+        $parameters = $connectionSentinelRole->getParameters();
+        $this->assertNull($parameters->database);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithDefaultRoleParametersDoNotOverrideExplicitInputParameters(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'timeout' => 20,
+            'password' => 'pwd.default.norole',
+
+            'role.master' => [
+                'password' => 'pwd.role.master',
+                'timeout' => 10,
+            ],
+            'role.slave' => [
+                'password' => 'pwd.role.slave',
+                'timeout' => 5,
+            ],
+            'role.sentinel' => [
+                'password' => 'pwd.role.sentinel',
+                'timeout' => 1,
+            ],
+        ));
+
+        // NO ROLE
+        $connectionNoRole = $factory->create($inputParamsNoRole = array(
+            'password' => 'pwd.local.norole',
+            'timeout' => 30,
+        ));
+
+        $parameters = $connectionNoRole->getParameters();
+        $this->assertEquals('pwd.local.norole', $parameters->password);
+        $this->assertEquals(30, $parameters->timeout);
+
+        // ROLE MASTER
+        $connectionMasterRole = $factory->create($inputParamsMasterRole = array(
+            'role' => 'master',
+            'password' => 'pwd.local.master',
+            'timeout' => 30,
+        ));
+
+        $parameters = $connectionMasterRole->getParameters();
+        $this->assertEquals('pwd.local.master', $parameters->password);
+        $this->assertEquals(30, $parameters->timeout);
+
+        // ROLE SLAVE
+        $connectionSlaveRole = $factory->create($inputParamsSlaveRole = array(
+            'role' => 'slave',
+            'password' => 'pwd.local.slave',
+            'timeout' => 30,
+        ));
+
+        $parameters = $connectionSlaveRole->getParameters();
+        $this->assertEquals('pwd.local.slave', $parameters->password);
+        $this->assertEquals(30, $parameters->timeout);
+
+        // ROLE SENTINEL
+        $connectionSentinelRole = $factory->create($inputParamsSentinelRole = array(
+            'role' => 'slave',
+            'password' => 'pwd.local.sentinel',
+            'timeout' => 30,
+        ));
+
+        $parameters = $connectionSentinelRole->getParameters();
+        $this->assertEquals('pwd.local.sentinel', $parameters->password);
+        $this->assertEquals(30, $parameters->timeout);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithDefaultRoleParametersOverridesDefaultGlobalParameters(): void
+    {
+        $factory = new Factory();
+
+        $factory->setDefaultParameters($defaultParams = array(
+            'timeout' => 20,
+            'password' => 'pwd.default.norole',
+
+            'role.master' => [
+                'password' => 'pwd.role.master',
+                'timeout' => 10,
+            ],
+            'role.slave' => [
+                'password' => 'pwd.role.slave',
+                'timeout' => 5,
+            ],
+            'role.sentinel' => [
+                'password' => 'pwd.role.sentinel',
+                'timeout' => 1,
+            ],
+        ));
+
+        // NO ROLE
+        $connectionNoRole = $factory->create($inputParamsNoRole = array(
+            // EMPTY
+        ));
+
+        $parameters = $connectionNoRole->getParameters();
+        $this->assertEquals('pwd.default.norole', $parameters->password);
+        $this->assertEquals(20, $parameters->timeout);
+
+        // ROLE MASTER
+        $connectionMasterRole = $factory->create($inputParamsMasterRole = array(
+            'role' => 'master',
+        ));
+
+        $parameters = $connectionMasterRole->getParameters();
+        $this->assertEquals('pwd.role.master', $parameters->password);
+        $this->assertEquals(10, $parameters->timeout);
+
+        // ROLE SLAVE
+        $connectionSlaveRole = $factory->create($inputParamsSlaveRole = array(
+            'role' => 'slave',
+        ));
+
+        $parameters = $connectionSlaveRole->getParameters();
+        $this->assertEquals('pwd.role.slave', $parameters->password);
+        $this->assertEquals(5, $parameters->timeout);
+
+        // ROLE SENTINEL
+        $connectionSentinelRole = $factory->create($inputParamsSentinelRole = array(
+            'role' => 'sentinel',
+        ));
+
+        $parameters = $connectionSentinelRole->getParameters();
+        $this->assertEquals('pwd.role.sentinel', $parameters->password);
+        $this->assertEquals(1, $parameters->timeout);
     }
 
     /**
