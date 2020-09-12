@@ -41,7 +41,7 @@ class SentinelReplicationTest extends PredisTestCase
     public function testParametersForSentinelConnectionShouldUsePasswordForAuthentication(): void
     {
         $replication = $this->getReplicationConnection('svc', array(
-            'tcp://127.0.0.1:5381?alias=sentinel1&password=secret',
+            'tcp://127.0.0.1:5381?password=secret',
         ));
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
@@ -122,9 +122,9 @@ class SentinelReplicationTest extends PredisTestCase
      */
     public function testMethodGetSentinelConnectionReturnsFirstAvailableSentinel(): void
     {
-        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel&alias=sentinel1');
-        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel&alias=sentinel2');
-        $sentinel3 = $this->getMockSentinelConnection('tcp://127.0.0.1:5383?role=sentinel&alias=sentinel3');
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel');
+        $sentinel3 = $this->getMockSentinelConnection('tcp://127.0.0.1:5383?role=sentinel');
 
         $replication = $this->getReplicationConnection('svc', array($sentinel1, $sentinel2, $sentinel3));
 
@@ -305,15 +305,16 @@ class SentinelReplicationTest extends PredisTestCase
         // TODO: sorry for the smell...
         $reflection = new \ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
+        $retrievedSentinels = $reflection->getValue($replication);
 
-        $expected = array(
-            array('host' => '127.0.0.1', 'port' => '5381'),
-            array('host' => '127.0.0.1', 'port' => '5382'),
-            array('host' => '127.0.0.1', 'port' => '5383'),
+        $expectedSentinels = array(
+            array('scheme' => 'tcp', 'host' => '127.0.0.1', 'port' => '5381', 'role' => 'sentinel'),
+            array('host' => '127.0.0.1', 'port' => '5382', 'role' => 'sentinel'),
+            array('host' => '127.0.0.1', 'port' => '5383', 'role' => 'sentinel'),
         );
 
         $this->assertSame($sentinel1, $replication->getSentinelConnection());
-        $this->assertSame($expected, array_intersect_key($expected, $reflection->getValue($replication)));
+        $this->assertEquals($expectedSentinels, $retrievedSentinels);
     }
 
     /**
@@ -321,7 +322,7 @@ class SentinelReplicationTest extends PredisTestCase
      */
     public function testMethodUpdateSentinelsRemovesCurrentSentinelAndRetriesNextOneOnFailure(): void
     {
-        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel&alias=sentinel1');
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
         $sentinel1
             ->expects($this->once())
             ->method('executeCommand')
@@ -332,7 +333,7 @@ class SentinelReplicationTest extends PredisTestCase
                 new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
             );
 
-        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel&alias=sentinel2');
+        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel');
         $sentinel2
             ->expects($this->once())
             ->method('executeCommand')
@@ -357,14 +358,15 @@ class SentinelReplicationTest extends PredisTestCase
         // TODO: sorry for the smell...
         $reflection = new \ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
+        $retrievedSentinels = $reflection->getValue($replication);
 
-        $expected = array(
-            array('host' => '127.0.0.1', 'port' => '5382'),
-            array('host' => '127.0.0.1', 'port' => '5383'),
+        $expectedSentinels = array(
+            array('scheme' => 'tcp', 'host' => '127.0.0.1', 'port' => '5382', 'role' => 'sentinel'),
+            array('host' => '127.0.0.1', 'port' => '5383', 'role' => 'sentinel'),
         );
 
         $this->assertSame($sentinel2, $replication->getSentinelConnection());
-        $this->assertSame($expected, array_intersect_key($expected, $reflection->getValue($replication)));
+        $this->assertEquals($expectedSentinels, $retrievedSentinels);
     }
 
     /**
@@ -395,7 +397,7 @@ class SentinelReplicationTest extends PredisTestCase
      */
     public function testMethodQuerySentinelFetchesMasterNodeSlaveNodesAndSentinelNodes(): void
     {
-        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel&alias=sentinel1');
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
         $sentinel1
             ->expects($this->exactly(3))
             ->method('executeCommand')
@@ -442,7 +444,7 @@ class SentinelReplicationTest extends PredisTestCase
                 )
             );
 
-        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel&alias=sentinel2');
+        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel');
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
@@ -454,14 +456,15 @@ class SentinelReplicationTest extends PredisTestCase
         // TODO: sorry for the smell...
         $reflection = new \ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
+        $retrievedSentinels = $reflection->getValue($replication);
 
-        $sentinels = array(
-            array('host' => '127.0.0.1', 'port' => '5381'),
-            array('host' => '127.0.0.1', 'port' => '5382'),
+        $expectedSentinels = array(
+            array('scheme' => 'tcp', 'host' => '127.0.0.1', 'port' => '5381', 'role' => 'sentinel'),
+            array('host' => '127.0.0.1', 'port' => '5382', 'role' => 'sentinel'),
         );
 
         $this->assertSame($sentinel1, $replication->getSentinelConnection());
-        $this->assertSame($sentinels, array_intersect_key($sentinels, $reflection->getValue($replication)));
+        $this->assertEquals($expectedSentinels, $retrievedSentinels);
 
         $master = $replication->getMaster();
         $slaves = $replication->getSlaves();
