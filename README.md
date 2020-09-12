@@ -169,6 +169,40 @@ Users can also provide custom options with values or callable objects (for lazy 
 are stored in the options container for later use through the library.
 
 
+### Global and role-specific default connection parameters ###
+
+While the `parameters` client option is useful to apply a set of default parameters and their values
+to connections created by the underlying connection factory, sometimes it is useful to set different
+values depending on the actual role of the target node (just to make an example, for sentinel nodes
+it is common to use a lower connect() timeout compared to the default value for normal Redis nodes).
+To make this possible `parameters` allows passing role-specific default values as named arrays using
+three special keys: `role.sentinel`, `role.master` and `role.slave`. These role-specific parameters
+take precedence over global default parameters passed at the root level of `parameters` but they do
+not override parameters explicitly set by the user for each single node just like global defaults.
+
+```php
+$options = [
+    'parameters' => [
+        // Root level is for global default parameters.
+        'database' => 10,
+        'password' => $redisSecretPassword,
+
+        // ...
+
+        'role.master' => [
+            // Sub-key for default parameters targeting master Redis nodes.
+        ],
+        'role.slave' => [
+            // Sub-key for default parameters targeting replica Redis nodes.
+        ],
+        'role.sentinel' => [
+            // Sub-key for default parameters targeting Redis Sentinel nodes.
+        ],
+    ],
+];
+```
+
+
 ### Aggregate connections ###
 
 Aggregate connections are the foundation upon which Predis implements clustering and replication and
@@ -234,22 +268,38 @@ the `service` option set to the name of the service:
 
 ```php
 $sentinels = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
-$options   = ['replication' => 'sentinel', 'service' => 'mymaster'];
+$options   = ['replication' => 'sentinel', 'service' => 'myservice'];
 
 $client = new Predis\Client($sentinels, $options);
 ```
 
-If the master and slave nodes are configured to require an authentication from clients, a password
-must be provided via the global `parameters` client option. This option can also be used to specify
-a different database index. The client options array would then look like this:
+When master and replica nodes are configured to require authentication from clients, users must pass
+`password` (password-based authentication) or `username` and `password` (ACL-based authentication on
+Redis >= 6.0) via the global `parameters` client option.
 
 ```php
 $options = [
     'replication' => 'sentinel',
-    'service' => 'mymaster',
+    'service' => 'myservice',
     'parameters' => [
-        'password' => $secretpassword,
-        'database' => 10,
+        'password' => $secretRedisPassword,
+    ],
+];
+```
+
+For sentinels protected by a password (supported since Redis >= 5.0) its value is not inherited from
+the global `parameters` client option so a `password` must be set using the `role.sentinel` sub-key:
+
+```php
+$options = [
+    'replication' => 'sentinel',
+    'service' => 'myservice',
+    'parameters' => [
+        'password' => $secretRedisPassword,
+
+        'role.sentinel' => [
+            'password' => $secretSentinelPassword
+        ]
     ],
 ];
 ```

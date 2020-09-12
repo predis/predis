@@ -48,6 +48,14 @@ v2.0.0 (202x-xx-xx)
   get a single connection from the pool by using its ID. It is also possible to
   retrive a connection by role using the method getConnectionByRole().
 
+- It is possible to set `role`-specific default parameters via the `parameters`
+  client option by passing named arrays to the following keys: `role.sentinel`,
+  `role.master` and `role.slave`. These parameters take precedence over global
+  default parameters but, as usual, they do not override parameters explicitly
+  set by users for each single node connection. For sentinels, "username" and
+  "database" are always stripped because they are not supported while "password"
+  is never inherited from global default parameters and must be set explicitly.
+
 - The concept of connection ID (ip:port pair) and connection alias (the `alias`
   parameter) in `Predis\Connection\Cluster\PredisCluster` has been separated.
   This change does not affect distribution and it is safe for existing clusters.
