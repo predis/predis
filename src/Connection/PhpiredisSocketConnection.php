@@ -66,9 +66,9 @@ class PhpiredisSocketConnection extends AbstractConnection
      */
     public function __destruct()
     {
-        phpiredis_reader_destroy($this->reader);
-
         parent::__destruct();
+
+        phpiredis_reader_destroy($this->reader);
     }
 
     /**
@@ -342,7 +342,9 @@ class PhpiredisSocketConnection extends AbstractConnection
     public function disconnect()
     {
         if ($this->isConnected()) {
+            phpiredis_reader_reset($this->reader);
             socket_close($this->getResource());
+
             parent::disconnect();
         }
     }

@@ -1,3 +1,12 @@
+v1.1.7 (2020-xx-xx)
+================================================================================
+
+- __FIX__: with the phpiredis-based connection backends, failed pipelines led to
+spurious responses returned after reconnecting to Redis because the underlying
+reader was not properly reset by discarding buffered replies after disconnecting
+(ISSUE #363).
+
+
 v1.1.6 (2020-09-11)
 ================================================================================
 

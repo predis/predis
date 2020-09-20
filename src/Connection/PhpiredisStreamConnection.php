@@ -67,9 +67,19 @@ class PhpiredisStreamConnection extends StreamConnection
      */
     public function __destruct()
     {
-        phpiredis_reader_destroy($this->reader);
-
         parent::__destruct();
+
+        phpiredis_reader_destroy($this->reader);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function disconnect()
+    {
+        phpiredis_reader_reset($this->reader);
+
+        parent::disconnect();
     }
 
     /**
