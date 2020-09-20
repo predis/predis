@@ -84,18 +84,18 @@ class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
         $profile = $this->getCurrentProfile();
         $connection = $this->createConnection();
 
-        $cmdECHO1 = $profile->createCommand('echo', array('BEFORE DISCONNECT 1'));
-        $cmdECHO2 = $profile->createCommand('echo', array('BEFORE DISCONNECT 2'));
-        $cmdECHO3 = $profile->createCommand('echo', array('AFTER DISCONNECT 1'));
+        $cmdECHOBefore = $profile->createCommand('echo', array('BEFORE DISCONNECT'));
+        $cmdECHOAfter = $profile->createCommand('echo', array('AFTER DISCONNECT'));
 
-        $connection->writeRequest($cmdECHO1);
-        $connection->writeRequest($cmdECHO2);
-        $connection->readResponse($cmdECHO1);
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->readResponse($cmdECHOBefore);
         $connection->disconnect();
 
-        $response = $connection->executeCommand($cmdECHO3);
+        $response = $connection->executeCommand($cmdECHOAfter);
 
-        $this->assertSame('AFTER DISCONNECT 1', $response);
+        $this->assertSame('AFTER DISCONNECT', $response);
     }
 
     /**
