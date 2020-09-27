@@ -945,6 +945,12 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 array('key', 'member', '100', 'km', 'WITHDIST', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'),
                 array('prefix:key', 'member', '100', 'km', 'WITHDIST', 'STORE', 'prefix:key:store', 'STOREDIST', 'prefix:key:storedist'),
             ),
+            /* ---------------- Redis 4.0 ---------------- */
+            array('UNLINK',
+                array('key1', 'key2', 'key3'),
+                array('prefix:key1', 'prefix:key2', 'prefix:key3'),
+            ),
+
         );
     }
 }

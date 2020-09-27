@@ -352,6 +352,7 @@ class RedisStrategyTest extends PredisTestCase
             'SORT' => 'keys-first', // TODO
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'UNLINK' => 'keys-all',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',

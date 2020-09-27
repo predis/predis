@@ -329,6 +329,7 @@ class PredisStrategyTest extends PredisTestCase
             'SORT' => 'variable',
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'UNLINK' => 'keys-all',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',

@@ -406,6 +406,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'KEYS' => 'read',
             'SCAN' => 'read',
             'RANDOMKEY' => 'read',
+            'UNLINK' => 'write',
 
             /* commands operating on string values */
             'APPEND' => 'write',

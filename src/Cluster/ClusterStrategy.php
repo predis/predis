@@ -56,6 +56,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'SORT' => array($this, 'getKeyFromSortCommand'),
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
+            'UNLINK' => $getKeyFromAllArguments,
 
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,

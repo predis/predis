@@ -35,6 +35,7 @@ use Predis\Command\CommandInterface;
  * @method $this sort($key, array $options = null)
  * @method $this ttl($key)
  * @method $this type($key)
+ * @method $this unlink(array|string $keys)
  * @method $this append($key, $value)
  * @method $this bitcount($key, $start = null, $end = null)
  * @method $this bitop($operation, $destkey, $key)
