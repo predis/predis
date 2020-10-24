@@ -5,14 +5,12 @@
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-travis]][link-travis]
-[![Gitter room][ico-gitter]][link-gitter]
 
 Flexible and feature-complete [Redis](http://redis.io) client for PHP >= 5.3 and HHVM >= 2.3.0.
 
 Predis does not require any additional C extension by default, but it can be optionally paired with
 [phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of the serialization and parsing
-of the [Redis RESP Protocol](http://redis.io/topics/protocol). For an __experimental__ asynchronous
-implementation of the client you can refer to [Predis\Async](https://github.com/nrk/predis-async).
+of the [Redis RESP Protocol](http://redis.io/topics/protocol).
 
 More details about this project can be found on the [frequently asked questions](FAQ.md).
 
@@ -40,7 +38,7 @@ More details about this project can be found on the [frequently asked questions]
 This library can be found on [Packagist](http://packagist.org/packages/predis/predis) for an easier
 management of projects dependencies using [Composer](http://packagist.org/about-composer) or on our
 [own PEAR channel](http://pear.nrk.io) for a more traditional installation using PEAR. Ultimately,
-compressed archives of each release are [available on GitHub](https://github.com/nrk/predis/releases).
+compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
 
 ### Loading the library ###
@@ -88,6 +86,9 @@ $client = new Predis\Client([
 // Same set of parameters, passed using an URI string:
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
+
+Password protected servers can be accessed by adding `password` to the parameters set. When ACLs are
+enabled on Redis >= 6.0, both `username` and `password` are required for user authentication.
 
 It is also possible to connect to local instances of Redis using UNIX domain sockets, in this case
 the parameters must use the `unix` scheme and specify a path for the socket file:
@@ -453,7 +454,7 @@ the development server profile will be used. You can refer to [the tests README]
 for more detailed information about testing Predis.
 
 Predis uses Travis CI for continuous integration and the history for past and current builds can be
-found [on its project page](http://travis-ci.org/nrk/predis).
+found [on its project page](http://travis-ci.org/predis/predis).
 
 
 ## Other ##
@@ -461,9 +462,9 @@ found [on its project page](http://travis-ci.org/nrk/predis).
 
 ### Project related links ###
 
-- [Source code](https://github.com/nrk/predis)
-- [Wiki](https://wiki.github.com/nrk/predis)
-- [Issue tracker](https://github.com/nrk/predis/issues)
+- [Source code](https://github.com/predis/predis)
+- [Wiki](https://github.com/predis/predis/wiki)
+- [Issue tracker](https://github.com/predis/predis/issues)
 - [PEAR channel](http://pear.nrk.io)
 
 
@@ -476,15 +477,13 @@ found [on its project page](http://travis-ci.org/nrk/predis).
 
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
-[ico-license]: https://img.shields.io/github/license/nrk/predis.svg?style=flat-square
+[ico-license]: https://img.shields.io/github/license/predis/predis.svg?style=flat-square
 [ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
 [ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/nrk/predis.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/predis/predis.svg?style=flat-square
 [ico-hhvm]: https://img.shields.io/hhvm/predis/predis.svg?style=flat-square
-[ico-gitter]: https://img.shields.io/gitter/room/nrk/predis.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
-[link-travis]: https://travis-ci.org/nrk/predis
+[link-travis]: https://travis-ci.org/predis/predis
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
-[link-gitter]: https://gitter.im/nrk/predis

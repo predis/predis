@@ -115,7 +115,7 @@ function addPackageFile($pkg, $fileinfo, $role, $baseDir = '')
 function generatePackageXml($packageINI)
 {
     $XML = <<<XML
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <package packagerversion="1.4.10" version="2.0"
     xmlns="http://pear.php.net/dtd/package-2.0"
     xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
@@ -197,7 +197,7 @@ function rewritePackageInstallAs($pkg)
 
 function savePackageXml($xml)
 {
-    $dom = new DOMDocument("1.0");
+    $dom = new DOMDocument("1.0", "UTF-8");
     $dom->preserveWhiteSpace = false;
     $dom->formatOutput = true;
     $dom->loadXML($xml->asXML());

@@ -78,6 +78,28 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     */
+    public function testClearsPendingResponsesInReaderBufferOnDisconnect()
+    {
+        $profile = $this->getCurrentProfile();
+        $connection = $this->createConnection();
+
+        $cmdECHOBefore = $profile->createCommand('echo', array('BEFORE DISCONNECT'));
+        $cmdECHOAfter = $profile->createCommand('echo', array('AFTER DISCONNECT'));
+
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->writeRequest($cmdECHOBefore);
+        $connection->readResponse($cmdECHOBefore);
+        $connection->disconnect();
+
+        $response = $connection->executeCommand($cmdECHOAfter);
+
+        $this->assertSame('AFTER DISCONNECT', $response);
+    }
+
+    /**
+     * @group connected
      * @group slow
      * @requires PHP 5.4
      * @expectedException \Predis\Connection\ConnectionException

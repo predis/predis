@@ -853,15 +853,17 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @expectedException \Predis\ClientException
-     * @expectedExceptionMessage The underlying connection is not traversable
      */
-    public function testGetIteratorWithNonTraversableConnectionThrowsException()
+    public function testGetIteratorWithNonTraversableConnectionNoException()
     {
-        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection = $this->getMockConnection('tcp://127.0.0.1:6381');
         $client = new Client($connection);
 
-        $client->getIterator();
+        $iterator = $client->getIterator();
+
+        $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
+        $this->assertSame($connection, $nodeClient->getConnection());
+        $this->assertSame('127.0.0.1:6381', $iterator->key());
     }
 
     // ******************************************************************** //

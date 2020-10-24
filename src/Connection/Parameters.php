@@ -109,8 +109,17 @@ class Parameters implements ParametersInterface
         }
 
         if (stripos($uri, 'redis') === 0) {
+            if (isset($parsed['user'])) {
+                if (strlen($parsed['user'])) {
+                    $parsed['username'] = $parsed['user'];
+                }
+                unset($parsed['user']);
+            }
+
             if (isset($parsed['pass'])) {
-                $parsed['password'] = $parsed['pass'];
+                if (strlen($parsed['pass'])) {
+                    $parsed['password'] = $parsed['pass'];
+                }
                 unset($parsed['pass']);
             }
 

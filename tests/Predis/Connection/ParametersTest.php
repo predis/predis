@@ -156,7 +156,7 @@ class ParametersTest extends PredisTestCase
      */
     public function testParsingURIWithRedisScheme()
     {
-        $uri = 'redis://:secret@10.10.10.10:6400/5?timeout=0.5&persistent=1';
+        $uri = 'redis://predis:secret@10.10.10.10:6400/5?timeout=0.5&persistent=1';
 
         $expected = array(
             'scheme' => 'redis',
@@ -164,18 +164,46 @@ class ParametersTest extends PredisTestCase
             'port' => 6400,
             'timeout' => '0.5',
             'persistent' => '1',
+            'username' => 'predis',
             'password' => 'secret',
             'database' => '5',
         );
 
         $parameters = Parameters::parse($uri);
 
-        // TODO: parse_url() in PHP >= 5.6 returns an empty "user" entry in the
-        // dictionary when no username has been provided in the URI string. This
-        // actually makes sense, but let's keep the test ugly & simple for now.
-        unset($parameters['user']);
-
         $this->assertSame($expected, $parameters);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRedisSchemeOverridesUsernameAndPasswordInQueryString()
+    {
+        $parameters = Parameters::parse('redis://predis:secret@10.10.10.10/5?username=ignored&password=ignored');
+
+        $this->assertSame('predis', $parameters['username']);
+        $this->assertSame('secret', $parameters['password']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRedisSchemeDoesNotOverridesUsernameAndPasswordInQueryStringOnEmptyAuthFragment()
+    {
+        $parameters = Parameters::parse('redis://:@10.10.10.10/5?username=predis&password=secret');
+
+        $this->assertSame('predis', $parameters['username']);
+        $this->assertSame('secret', $parameters['password']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRedisSchemeOverridesDatabaseInQueryString()
+    {
+        $parameters = Parameters::parse('redis://10.10.10.10/5?database=10');
+
+        $this->assertSame('5', $parameters['database']);
     }
 
     /**
@@ -195,17 +223,6 @@ class ParametersTest extends PredisTestCase
         $parameters = Parameters::parse($uri);
 
         $this->assertSame($expected, $parameters);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testRedisSchemeOverridesPasswordAndDatabaseInQueryString()
-    {
-        $parameters = Parameters::parse('redis://:secret@10.10.10.10/5?password=ignored&database=4');
-
-        $this->assertSame('secret', $parameters['password']);
-        $this->assertSame('5', $parameters['database']);
     }
 
     /**

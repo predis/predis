@@ -280,8 +280,6 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
-     *
-     * @todo This test smells but there's no other way around it right now.
      */
     public function testCreateConnectionWithInitializationCommands()
     {
@@ -303,6 +301,111 @@ class FactoryTest extends PredisTestCase
 
         $factory = new Factory();
 
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithPasswordAndNoUsernameAddsInitializationCommandAuthWithOneArgument()
+    {
+        $parameters = new Parameters(array(
+            'password' => 'foobar',
+        ));
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters));
+        $connection->expects($this->once(1))
+            ->method('addConnectCommand')
+            ->with($this->isRedisCommand('AUTH', array('foobar')));
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithPasswordAndUsernameAddsInitializationCommandAuthWithTwoArguments()
+    {
+        $parameters = new Parameters(array(
+            'username' => 'myusername',
+            'password' => 'foobar',
+        ));
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters));
+        $connection->expects($this->once(1))
+            ->method('addConnectCommand')
+            ->with($this->isRedisCommand('AUTH', array('myusername', 'foobar')));
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateConnectionWithUsernameAndNoPasswordDoesNotAddInitializationCommands()
+    {
+        $parameters = new Parameters(array(
+            'username' => 'myusername',
+        ));
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters));
+        $connection->expects($this->never())
+            ->method('addConnectCommand');
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new \ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider provideEmptyParametersForInitializationCommands
+     */
+    public function testCreateConnectionWithEmptyParametersDoesNotAddInitializationCommands($parameter, $value)
+    {
+        $parameters = new Parameters(array(
+            $parameter => $value,
+        ));
+
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->once())
+            ->method('getParameters')
+            ->will($this->returnValue($parameters));
+        $connection->expects($this->never())
+            ->method('addConnectCommand');
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
         $reflection = new \ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
@@ -486,5 +589,29 @@ class FactoryTest extends PredisTestCase
         $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
 
         return array($connection, get_class($connection));
+    }
+
+    /**
+     * Provides empty values for specific parameters.
+     *
+     * These parameters usually trigger the addition of initializatin commands
+     * to connection instances like `password` => AUTH and `database` => SELECT,
+     * but they should not be added when their values are NULL or empty strings.
+     *
+     * @return array
+     */
+    public function provideEmptyParametersForInitializationCommands()
+    {
+        return array(
+            // AUTH
+            array('username', ''),
+            array('username', null),
+            array('password', ''),
+            array('password', null),
+
+            // SELECT
+            array('database', ''),
+            array('database', null),
+        );
     }
 }

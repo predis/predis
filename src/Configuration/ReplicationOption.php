@@ -36,10 +36,6 @@ class ReplicationOption implements OptionInterface
             return $value;
         }
 
-        if (is_bool($value) || $value === null) {
-            return $value ? $this->getDefault($options) : null;
-        }
-
         if ($value === 'sentinel') {
             return function ($sentinels, $options) {
                 return new SentinelReplication($options->service, $sentinels, $options->connections);
@@ -50,7 +46,13 @@ class ReplicationOption implements OptionInterface
             !is_object($value) &&
             null !== $asbool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
         ) {
-            return $asbool ? $this->getDefault($options) : null;
+            if (true === $asbool) {
+                return $this->getDefault($options);
+            } else {
+                throw new \InvalidArgumentException(
+                    "Values evaluating to FALSE are not accepted for `replication`"
+                );
+            }
         }
 
         throw new \InvalidArgumentException(

@@ -1,4 +1,96 @@
-v1.1.2 (2017-xx-xx)
+v1.1.7 (2020-xx-xx)
+================================================================================
+
+- __FIX__: with the phpiredis-based connection backends, failed pipelines led to
+spurious responses returned after reconnecting to Redis because the underlying
+reader was not properly reset by discarding buffered replies after disconnecting
+(ISSUE #363).
+
+
+v1.1.6 (2020-09-11)
+================================================================================
+
+- __FIX__: reverted support for sentinels authentication implemented in v1.1.5
+as it was bugged (see ISSUE #658), sorry for the trouble. This is now postponed
+as it requires a more thorough investigation.
+
+
+v1.1.5 (2020-09-10)
+================================================================================
+
+- __FIX__:~~authentication for sentinels is now supported, previously it was not
+possible to specify a `password` for sentinels as its value was stripped during
+initialization because sentinels did not support authentication until Redis 5.
+**Please note** that with the current implementation each sentinel must have
+its own `password` parameter set in the parameters list despite this password is
+the same for all sentinels (read how `requirepass` works on the Redis docs). In
+this case you should avoid using the global `parameters` client option used to
+set default parameters for every connection created by Predis as this would end
+up using the same password even when connecting to actual Redis nodes.~~
+
+- __FIX__: the username is now correctly retrieved from the userinfo fragment of
+the URI when using the "redis" scheme and a "username:password" pair is present.
+Values retrieved from the userinfo fragment always override the ones specified
+in `username` and `password` if those fields are present in the query string.
+
+- __FIX__: `Predis\Connection\WebdisConnection` was unable to connect to Webdis
+when using an IPv4 address in the URL and this is probably due to some change in
+cURL internals since the last time we tested it.
+
+- __FIX__: an exception is thrown whe passing `FALSE` or any value evaluating to
+`FALSE` to the `replication` client option. This was supposed to be unsupported,
+in fact it actually breaks client initialization and raises a PHP warning. Now
+the user is alerted with an `InvalidArgumentException` and a proper message.
+(PR #381).
+
+
+v1.1.4 (2020-08-31)
+================================================================================
+
+- Improved @method annotations for methods responding to Redis commands defined
+  by `Predis\ClientInterface` and `Predis\ClientContextInterface`. (PR #456 and
+  PR #497, other fixes applied after further analysys).
+
+- __FIX__: the client can now handle ACL authentication when connecting to Redis
+  6.x simply by passing both `username` and `password` to connection parameters.
+  See [the Redis docs](https://redis.io/topics/acl) for details on this topic.
+
+- __FIX__: NULL or zero-length string values passed to `password` and `database`
+  in the connection parameters list do not trigger spurious `AUTH` and `SELECT`
+  commands anymore when connecting to Redis (ISSUE #436).
+
+- __FIX__: initializing an iteration over a client instance when it is connected
+  to a standalone Redis server will not throw an exception anymore, instead it
+  will return an iterator that will run for just one loop returning a new client
+  instance using the underlying single-node connection (ISSUE #552, PR #556).
+
+- __FIX__: `Predis\Cluster\Distributor\HashRingaddNodeToRing()` was calculating
+  the hash required for distribution by using `crc32()` directly instead of the
+  method `Predis\Cluster\Hash\HashGeneratorInterface::hash()` implemented by the
+  class itself. This bug fix does not have any impact on existing clusters that
+  use client-side sharding based on this distributor simply because it does not
+  take any external hash generators so distribution is not going to be affected.
+
+- __FIX__: `SORT` now always trigger a switch to the master node in replication
+  configurations instead of just when the `STORE` modifier is specified, this is
+  because `SORT` is always considered to be a write operation and actually fails
+  with a `-READONLY` error response when executed against a replica node. (ISSUE
+  #554).
+
+
+v1.1.3 (2020-08-18)
+================================================================================
+
+- Ensure compatibility with PHP 8.
+
+- Moved repository from `github.com/nrk/predis` to `github.com/predis/predis`.
+
+- __FIX__: Moved `cweagans/composer-patches` dependency to `require-dev`.
+
+- __FIX__: Include PHPUnit `.patch` files in exports.
+
+
+v1.1.2 (2020-08-11)
 ================================================================================
 
 - __FIX__: pure CRC16 implementation failed to calculate the correct hash when

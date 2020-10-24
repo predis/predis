@@ -33,7 +33,7 @@ usually something that developers prefer to customize depending on their needs a
 generalized when using Redis because of the many possible access patterns for your data. This does
 not mean that it is impossible to have such a feature since you can leverage the extensibility of
 this library to define your own serialization-aware commands. You can find more details about how to
-do that [on this issue](http://github.com/nrk/predis/issues/29#issuecomment-1202624).
+do that [on this issue](http://github.com/predis/predis/issues/29#issuecomment-1202624).
 
 ### How can I force Predis to connect to Redis before sending any command? ###
 

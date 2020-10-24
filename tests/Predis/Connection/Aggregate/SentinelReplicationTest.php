@@ -36,15 +36,19 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParametersForSentinelConnectionShouldNotUseDatabaseAndPassword()
+    public function testParametersForSentinelConnectionShouldNotUseDatabaseAndUsernameAndPassword()
     {
         $replication = $this->getReplicationConnection('svc', array(
-            'tcp://127.0.0.1:5381?alias=sentinel1&database=1&password=secret',
+            'tcp://127.0.0.1:5381?alias=sentinel1&database=1&username=myusername&password=secret',
         ));
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
-        $this->assertArraySubset(array('database' => null, 'password' => null), $parameters);
+        $this->assertArraySubset(array(
+            'database' => null,
+            'username' => null,
+            'password' => null
+        ), $parameters);
     }
 
     /**
