@@ -6,20 +6,30 @@ branches:
     - v0.6
     - v0.6-PHP_5.2
     - documentation
-services: redis-server
+before_install:
+  - docker run -d --rm -p 127.0.0.1:6379:6379 redis:3
 before_script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
 script:
-  - vendor/bin/phpunit -c phpunit.xml.travisci
+  - travis_retry vendor/bin/phpunit -c phpunit.xml.travisci
 matrix:
   fast_finish: true
   include:
     - php: 5.3
+      dist: precise
+      services: redis-server
+      before_install: skip
     - php: 5.4
+      dist: trusty
     - php: 5.5
+      dist: trusty
     - php: 5.6
     - php: 7.0
     - php: 7.1
-    - php: hhvm
-      dist: trusty
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4
+    - php: nightly # PHP 8.0.0-dev
+  allow_failures:
+    - php: nightly

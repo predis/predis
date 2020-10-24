@@ -337,4 +337,16 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
 
         $this->checkRequiredRedisServerVersion();
     }
+
+    /**
+     * Marks current test skipped when test suite is running on CI environments.
+     *
+     * @param string $message
+     */
+    protected function markTestSkippedOnCIEnvironment($message = 'Test skipped on CI environment')
+    {
+        if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
+            $this->markTestSkipped($message);
+        }
+    }
 }

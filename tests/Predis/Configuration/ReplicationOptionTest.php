@@ -31,26 +31,45 @@ class ReplicationOptionTest extends PredisTestCase
     }
 
     /**
-     * @group disconnected
+     * @return array
      */
-    public function testAcceptsValuesThatCanBeInterpretedAsBooleans()
+    public function provideValuesEvaluatingTrue()
+    {
+        return array(array(true), array(1), array('true'), array('on'));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider provideValuesEvaluatingTrue
+     */
+    public function testAcceptsValuesThatCanBeInterpretedAsBooleanTrue($value)
     {
         $option = new ReplicationOption();
         $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertNull($option->filter($options, null));
+        $this->assertInstanceOf('Predis\Connection\Aggregate\MasterSlaveReplication', $option->filter($options, $value));
+    }
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, true));
-        $this->assertNull($option->filter($options, false));
+    /**
+     * @return array
+     */
+    public function provideValuesEvaluatingFalse()
+    {
+        return array(array(false), array(0), array('false'), array('off'));
+    }
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 1));
-        $this->assertNull($option->filter($options, 0));
+    /**
+     * @group disconnected
+     * @dataProvider provideValuesEvaluatingFalse
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Values evaluating to FALSE are not accepted for `replication`
+     */
+    public function testDoesNotAcceptValuesThatCanBeInterpretedAsBooleanFalse($value)
+    {
+        $option = new ReplicationOption();
+        $options = $this->getMock('Predis\Configuration\OptionsInterface');
 
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 'true'));
-        $this->assertNull($option->filter($options, 'false'));
-
-        $this->assertInstanceOf('Predis\Connection\Aggregate\ReplicationInterface', $option->filter($options, 'on'));
-        $this->assertNull($option->filter($options, 'off'));
+        $option->filter($options, $value);
     }
 
     /**
