@@ -22,7 +22,7 @@ More details about this project can be found on the [frequently asked questions]
 
 ## Main features ##
 
-- Support for Redis from __2.0__ to __3.2__.
+- Support for Redis from __2.0__ to __6.0__.
 - Support for clustering using client-side sharding and pluggable keyspace distributors.
 - Support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication setups and [redis-sentinel](http://redis.io/topics/sentinel).
