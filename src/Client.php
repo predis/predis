@@ -527,7 +527,7 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * {@inheritdoc}
+     * @return \Traversable<string, static>
      */
     public function getIterator()
     {
