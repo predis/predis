@@ -176,7 +176,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     public function count()
     {
@@ -184,7 +184,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return \Traversable<string|int, NodeConnectionInterface>
      */
     public function getIterator()
     {
