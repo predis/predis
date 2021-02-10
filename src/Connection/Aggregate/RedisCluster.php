@@ -200,7 +200,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             }
         }
 
-        return $this->slotsMap ?? [];
+        return is_array($this->slotsMap) ? $this->slotsMap : array();
     }
 
     /**
