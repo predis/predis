@@ -67,7 +67,7 @@ class ReplicationOptionTest extends PredisTestCase
     public function testDoesNotAcceptValuesThatCanBeInterpretedAsBooleanFalse($value)
     {
         if (version_compare(PHP_VERSION, '5.4', '<')) {
-            $this->markTestSkipped('Skip test, because 🤷');
+            $this->markTestSkipped('Skip test, because.');
         }
 
         $option = new ReplicationOption();
