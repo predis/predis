@@ -70,6 +70,11 @@ class SentinelReplication implements ReplicationInterface
     protected $sentinels = array();
 
     /**
+     * @var int
+     */
+    protected $currentSentinel = 0;
+
+    /**
      * @var NodeConnectionInterface
      */
     protected $sentinelConnection;
@@ -281,11 +286,11 @@ class SentinelReplication implements ReplicationInterface
     public function getSentinelConnection()
     {
         if (!$this->sentinelConnection) {
-            if (!$this->sentinels) {
+            if ($this->currentSentinel >= count($this->sentinels)) {
                 throw new \Predis\ClientException('No sentinel server available for autodiscovery.');
             }
 
-            $sentinel = array_shift($this->sentinels);
+            $sentinel = $this->sentinels[$this->currentSentinel];
             $this->sentinelConnection = $this->createSentinelConnection($sentinel);
         }
 
@@ -297,6 +302,8 @@ class SentinelReplication implements ReplicationInterface
      */
     public function updateSentinels()
     {
+        $firstConnection = true;
+
         SENTINEL_QUERY: {
             $sentinel = $this->getSentinelConnection();
 
@@ -318,6 +325,13 @@ class SentinelReplication implements ReplicationInterface
                 }
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
+
+                if($firstConnection) {
+                    $this->currentSentinel = 0;
+                    $firstConnection = false;
+                } else {
+                    $this->currentSentinel++;
+                }
 
                 goto SENTINEL_QUERY;
             }
@@ -438,6 +452,8 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
+        $firstConnection = true;
+
         SENTINEL_QUERY: {
             $sentinel = $this->getSentinelConnection();
 
@@ -448,6 +464,13 @@ class SentinelReplication implements ReplicationInterface
                 $this->add($masterConnection);
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
+
+                if($firstConnection) {
+                    $this->currentSentinel = 0;
+                    $firstConnection = false;
+                } else {
+                    $this->currentSentinel++;
+                }
 
                 goto SENTINEL_QUERY;
             }
@@ -469,6 +492,8 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
+        $firstConnection = true;
+
         SENTINEL_QUERY: {
             $sentinel = $this->getSentinelConnection();
 
@@ -480,6 +505,13 @@ class SentinelReplication implements ReplicationInterface
                 }
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
+
+                if($firstConnection) {
+                    $this->currentSentinel = 0;
+                    $firstConnection = false;
+                } else {
+                    $this->currentSentinel++;
+                }
 
                 goto SENTINEL_QUERY;
             }
