@@ -71,6 +71,11 @@ class SentinelReplication implements ReplicationInterface
     protected $sentinels = array();
 
     /**
+     * @var int
+     */
+    protected $sentinelIndex = 0;
+
+    /**
      * @var NodeConnectionInterface
      */
     protected $sentinelConnection;
@@ -282,11 +287,13 @@ class SentinelReplication implements ReplicationInterface
     public function getSentinelConnection()
     {
         if (!$this->sentinelConnection) {
-            if (!$this->sentinels) {
+            if ($this->sentinelIndex >= count($this->sentinels)) {
+                $this->sentinelIndex = 0;
                 throw new \Predis\ClientException('No sentinel server available for autodiscovery.');
             }
 
-            $sentinel = array_shift($this->sentinels);
+            $sentinel = $this->sentinels[$this->sentinelIndex];
+            ++$this->sentinelIndex;
             $this->sentinelConnection = $this->createSentinelConnection($sentinel);
         }
 
@@ -307,6 +314,7 @@ class SentinelReplication implements ReplicationInterface
                 );
 
                 $this->sentinels = array();
+                $this->sentinelIndex = 0;
                 // NOTE: sentinel server does not return itself, so we add it back.
                 $this->sentinels[] = $sentinel->getParameters()->toArray();
 
