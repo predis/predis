@@ -52,6 +52,6 @@
         <const name="WEBDIS_SERVER_PORT" value="7379" />
 
         <!-- Travis -->
-        <ini name="xdebug.mode" value="coverage" />
+        <env name="XDEBUG_MODE" value="coverage"/>
     </php>
 </phpunit>
