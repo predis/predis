@@ -10,6 +10,7 @@
  */
 
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
@@ -315,7 +316,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRequiredRedisServerVersion(): ?string
     {
-        $annotations = $this->getAnnotations();
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
 
         if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
             !empty($annotations['method']['requiresRedisVersion']) &&
