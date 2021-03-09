@@ -59,7 +59,7 @@ class Status implements ResponseInterface
      *
      * @param string $payload Status response payload.
      *
-     * @return string
+     * @return self
      */
     public static function get($payload)
     {
