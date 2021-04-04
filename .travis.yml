@@ -33,8 +33,8 @@ matrix:
     - php: 7.4
       env: XDEBUG_MODE=coverage
     - php: 8.0
-      env: XDEBUG_MODE=coverage
+      env: XDEBUG_MODE=off
     - php: nightly
-      env: XDEBUG_MODE=coverage
+      env: XDEBUG_MODE=off
   allow_failures:
     - php: nightly
