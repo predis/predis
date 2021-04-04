@@ -9,6 +9,7 @@ branches:
 before_install:
   - docker run -d --rm -p 127.0.0.1:6379:6379 redis:3
 before_script:
+  - phpenv config-rm xdebug.ini
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
 script:
@@ -30,6 +31,7 @@ matrix:
     - php: 7.2
     - php: 7.3
     - php: 7.4
-    - php: nightly # PHP 8.0.0-dev
+    - php: 8.0
+    - php: nightly
   allow_failures:
     - php: nightly
