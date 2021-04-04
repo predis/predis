@@ -9,7 +9,7 @@ branches:
 before_install:
   - docker run -d --rm -p 127.0.0.1:6379:6379 redis:3
 before_script:
-  - composer self-update --1
+  - composer self-update
   - composer install --no-interaction --prefer-source --dev
 script:
   - travis_retry vendor/bin/phpunit -c phpunit.xml.travisci
