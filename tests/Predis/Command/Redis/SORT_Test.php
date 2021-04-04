@@ -185,11 +185,11 @@ class SORT_Test extends PredisCommandTestCase
         $redis = $this->getClient();
         $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
 
-        $this->assertEquals(
-            count($unordered),
+        $this->assertCount(
             $redis->sort('list:unordered', array(
                 'store' => 'list:ordered',
-            ))
+            )),
+            $unordered
         );
 
         $this->assertEquals(array(1, 2, 3, 10, 30, 100),  $redis->lrange('list:ordered', 0, -1));

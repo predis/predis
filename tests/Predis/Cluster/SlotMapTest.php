@@ -236,7 +236,7 @@ class SlotMapTest extends PredisTestCase
     {
         $slotmap = new SlotMap();
 
-        $this->assertSame(0, count($slotmap));
+        $this->assertCount(0, $slotmap);
     }
 
     /**
@@ -247,13 +247,13 @@ class SlotMapTest extends PredisTestCase
         $slotmap = new SlotMap();
 
         $slotmap->setSlots(0, 5460, '127.0.0.1:6379');
-        $this->assertSame(5461, count($slotmap));
+        $this->assertCount(5461, $slotmap);
 
         $slotmap->setSlots(5461, 10922, '127.0.0.1:6380');
-        $this->assertSame(10923, count($slotmap));
+        $this->assertCount(10923, $slotmap);
 
         $slotmap->setSlots(10923, 16383, '127.0.0.1:6381');
-        $this->assertSame(16384, count($slotmap));
+        $this->assertCount(16384, $slotmap);
     }
 
     /**
