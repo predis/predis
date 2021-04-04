@@ -85,7 +85,7 @@ class MOVE_Test extends PredisCommandTestCase
     public function testThrowsExceptionOnInvalidDatabases(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessageMatches('/ERR.*index out of range/');
+        $this->expectExceptionMessageMatches('/ERR.*out of range/');
 
         $redis = $this->getClient();
 
