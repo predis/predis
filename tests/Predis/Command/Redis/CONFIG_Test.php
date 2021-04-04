@@ -104,7 +104,7 @@ class CONFIG_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertIsArray($configs = $redis->config('GET', 'dbfilename'));
-        $this->assertEquals(1, count($configs));
+        $this->assertCount(1, $configs);
         $this->assertArrayHasKey('dbfilename', $configs);
     }
 

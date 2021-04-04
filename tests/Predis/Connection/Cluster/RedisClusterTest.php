@@ -71,7 +71,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
         $this->assertSame($connection1, $cluster->getConnectionById('127.0.0.1:6379'));
         $this->assertSame($connection2, $cluster->getConnectionById('127.0.0.1:6380'));
     }
@@ -92,7 +92,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertTrue($cluster->remove($connection1));
         $this->assertFalse($cluster->remove($connection3));
-        $this->assertSame(1, count($cluster));
+        $this->assertCount(1, $cluster);
     }
 
     /**
@@ -110,7 +110,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertTrue($cluster->removeById('127.0.0.1:6380'));
         $this->assertFalse($cluster->removeById('127.0.0.1:6390'));
-        $this->assertSame(1, count($cluster));
+        $this->assertCount(1, $cluster);
     }
 
     /**
@@ -128,11 +128,11 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-        $this->assertSame(3, count($cluster));
+        $this->assertCount(3, $cluster);
 
         $cluster->remove($connection3);
 
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
     }
 
     /**
@@ -977,7 +977,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertSame('foobar', $cluster->executeCommand($command));
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
     }
 
     /**
@@ -1033,7 +1033,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertSame('foobar', $cluster->executeCommand($command));
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
     }
 
     /**
@@ -1071,7 +1071,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertSame('foobar', $cluster->executeCommand($command));
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
     }
 
     /**
@@ -1121,7 +1121,7 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertSame('foobar', $cluster->executeCommand($command));
-        $this->assertSame(3, count($cluster));
+        $this->assertCount(3, $cluster);
     }
 
     /**
@@ -1259,7 +1259,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection1);
 
         $this->assertSame('foobar', $cluster->executeCommand($cmdGET));
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
     }
 
     /**

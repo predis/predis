@@ -90,7 +90,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->assertTrue($factory->supports('mock'));
         $this->assertTrue($factory->supports('MOCK'));
 
-        $this->assertSame(get_class($command), $factory->getCommandClass('mock'));
+        $this->assertInstanceOf($factory->getCommandClass('mock'), $command);
     }
 
     /**

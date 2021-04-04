@@ -40,7 +40,7 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
         $this->assertSame($connection1, $cluster->getConnectionById('127.0.0.1:7001'));
         $this->assertSame($connection2, $cluster->getConnectionById('127.0.0.1:7002'));
     }
@@ -58,7 +58,7 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection1);
         $cluster->add($connection2);
 
-        $this->assertSame(2, count($cluster));
+        $this->assertCount(2, $cluster);
         $this->assertSame($connection1, $cluster->getConnectionByAlias('node01'));
         $this->assertSame($connection2, $cluster->getConnectionByAlias('node02'));
     }

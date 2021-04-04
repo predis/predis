@@ -749,7 +749,7 @@ class MultiExecTest extends PredisTestCase
             $tx->set('hoge', 'piyo');
         });
 
-        $this->assertSame(1, count($responses));
+        $this->assertCount(1, $responses);
         $this->assertSame(0, $client->exists('foo'));
         $this->assertSame(1, $client->exists('hoge'));
     }
