@@ -87,7 +87,7 @@ class SELECT_Test extends PredisCommandTestCase
     public function testThrowsExceptionOnUnexpectedDatabaseName(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR invalid DB index');
+        $this->expectExceptionMessageMatches('/ERR.*(invalid DB index|value is not an integer or out of range)/');
 
         $redis = $this->getClient();
 
