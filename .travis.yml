@@ -29,7 +29,10 @@ matrix:
     - php: 7.1
     - php: 7.2
     - php: 7.3
+      env: XDEBUG_MODE=coverage
     - php: 7.4
+      env: XDEBUG_MODE=coverage
     - php: nightly # PHP 8.0.0-dev
+      env: XDEBUG_MODE=coverage
   allow_failures:
     - php: nightly

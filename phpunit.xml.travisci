@@ -50,8 +50,5 @@
         <!-- Webdis -->
         <const name="WEBDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="WEBDIS_SERVER_PORT" value="7379" />
-
-        <!-- Travis -->
-        <env name="XDEBUG_MODE" value="coverage"/>
     </php>
 </phpunit>
