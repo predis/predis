@@ -104,7 +104,7 @@ abstract class Command implements CommandInterface
      */
     public static function normalizeArguments(array $arguments)
     {
-        if (count($arguments) === 1 && is_array($arguments[0])) {
+        if (count($arguments) === 1 && isset($arguments[0]) && is_array($arguments[0])) {
             return $arguments[0];
         }
 
