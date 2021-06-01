@@ -309,11 +309,12 @@ class SentinelReplication implements ReplicationInterface
                 // NOTE: sentinel server does not return itself, so we add it back.
                 $this->sentinels[] = $sentinel->getParameters()->toArray();
 
-                foreach ($payload as $sentinel) {
-                    $this->sentinels[] = array(
-                        'host' => $sentinel[3],
-                        'port' => $sentinel[5],
-                        'role' => 'sentinel',
+                foreach ($payload as $sentinelNode) {
+                    $this->sentinels[] = $this->nodeConnectionDetails(
+                        $sentinelNode[3],
+                        $sentinelNode[5],
+                        'sentinel',
+                        $sentinel->getParameters()
                     );
                 }
             } catch (ConnectionException $exception) {
@@ -373,10 +374,11 @@ class SentinelReplication implements ReplicationInterface
             $this->handleSentinelErrorResponse($sentinel, $payload);
         }
 
-        return array(
-            'host' => $payload[0],
-            'port' => $payload[1],
-            'role' => 'master',
+        return $this->nodeConnectionDetails(
+            $payload[0],
+            $payload[1],
+            'master',
+            $sentinel->getParameters()
         );
     }
 
@@ -407,14 +409,44 @@ class SentinelReplication implements ReplicationInterface
                 continue;
             }
 
-            $slaves[] = array(
-                'host' => $slave[3],
-                'port' => $slave[5],
-                'role' => 'slave',
+            $slaves[] = $this->nodeConnectionDetails(
+                $slave[3],
+                $slave[5],
+                'slave',
+                $sentinel->getParameters()
             );
         }
 
         return $slaves;
+    }
+
+    /**
+     * Maps connection details with redis-sentinel parameters
+     *
+     * @param string     $host       Host of Redis node
+     * @param string     $port       Port of Redis node
+     * @param string     $role       Role of Redis node
+     * @param Parameters $parameters Sentinel configuration parameters
+     *
+     * @return array
+     */
+    protected function nodeConnectionDetails($host, $port, $role, Parameters $parameters)
+    {
+        $node = [
+            'host' => $host,
+            'port' => $port,
+            'role' => $role,
+        ];
+
+        if ($parameters->scheme !== 'tcp') {
+            $node['scheme'] = $parameters->scheme;
+        }
+
+        if (is_array($parameters->ssl)) {
+            $node['ssl'] = $parameters->ssl;
+        }
+
+        return $node;
     }
 
     /**
