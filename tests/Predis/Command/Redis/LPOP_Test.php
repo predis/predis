@@ -92,4 +92,19 @@ class LPOP_Test extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $redis->lpop('foo');
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2
+     */
+    public function testPopsSpecifiedNumberOfElements(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f');
+
+        $this->assertSame(array('a', 'b'), $redis->lpop('letters', 2));
+        $this->assertSame(array('c', 'd'), $redis->lpop('letters', 2));
+        $this->assertSame(array('e', 'f'), $redis->lrange('letters', 0, -1));
+    }
 }
