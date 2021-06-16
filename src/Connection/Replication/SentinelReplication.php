@@ -286,6 +286,7 @@ class SentinelReplication implements ReplicationInterface
             }
 
             $sentinel = array_shift($this->sentinels);
+            $this->sentinels[] = $sentinel;
             $this->sentinelConnection = $this->createSentinelConnection($sentinel);
         }
 
