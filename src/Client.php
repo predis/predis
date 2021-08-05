@@ -529,6 +529,7 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * @return \Traversable<string, static>
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $clients = array();
