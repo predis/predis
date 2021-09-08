@@ -15,6 +15,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Response\Status;
 
 /**
  * Interface defining a client able to execute commands against Redis.
@@ -60,10 +61,10 @@ use Predis\Connection\ConnectionInterface;
  * @method array       mget(array $keys)
  * @method mixed       mset(array $dictionary)
  * @method int         msetnx(array $dictionary)
- * @method mixed       psetex($key, $milliseconds, $value)
- * @method mixed       set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method Status      psetex($key, $milliseconds, $value)
+ * @method Status      set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
  * @method int         setbit($key, $offset, $value)
- * @method int         setex($key, $seconds, $value)
+ * @method Status      setex($key, $seconds, $value)
  * @method int         setnx($key, $value)
  * @method int         setrange($key, $offset, $value)
  * @method int         strlen($key)
