@@ -34,7 +34,7 @@ abstract class CommunicationException extends PredisException
         $code = null,
         \Exception $innerException = null
     ) {
-        parent::__construct($message, $code, $innerException);
+        parent::__construct($message !== null ? $message : '', $code !== null ? $code : 0, $innerException);
         $this->connection = $connection;
     }
 

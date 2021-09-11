@@ -29,7 +29,7 @@ class AbortedMultiExecException extends PredisException
      */
     public function __construct(MultiExec $transaction, $message, $code = null)
     {
-        parent::__construct($message, $code);
+        parent::__construct($message, $code !== null ? $code : 0);
         $this->transaction = $transaction;
     }
 

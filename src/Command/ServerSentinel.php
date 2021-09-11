@@ -31,7 +31,9 @@ class ServerSentinel extends Command
      */
     public function parseResponse($data)
     {
-        switch (strtolower($this->getArgument(0))) {
+        $argument = $this->getArgument(0);
+
+        switch (strtolower($argument !== null ? $argument : '')) {
             case 'masters':
             case 'slaves':
                 return self::processMastersOrSlaves($data);
