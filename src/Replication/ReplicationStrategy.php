@@ -63,7 +63,7 @@ class ReplicationStrategy
 
         if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
             $argument = $command->getArgument(0);
-            $sha1 = $eval ? sha1($argument !== null ? $argument : '') : $argument;
+            $sha1 = $eval ? sha1(strval($argument)) : $argument;
 
             if (isset($this->readonlySHA1[$sha1])) {
                 if (true === $readonly = $this->readonlySHA1[$sha1]) {
