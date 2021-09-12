@@ -602,6 +602,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->pool);
@@ -610,6 +611,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @return \Traversable<int, NodeConnectionInterface>
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         if ($this->useClusterSlots) {

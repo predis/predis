@@ -178,6 +178,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->pool);
@@ -186,6 +187,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @return \Traversable<string|int, NodeConnectionInterface>
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->pool);

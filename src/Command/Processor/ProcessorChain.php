@@ -91,6 +91,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     /**
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($index)
     {
         return isset($this->processors[$index]);
@@ -99,6 +100,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($index)
     {
         return $this->processors[$index];
@@ -107,6 +109,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($index, $processor)
     {
         if (!$processor instanceof ProcessorInterface) {
@@ -122,6 +125,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($index)
     {
         unset($this->processors[$index]);
