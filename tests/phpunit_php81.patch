@@ -1,0 +1,50 @@
+diff --git a/src/Util/Configuration.php b/src/Util/Configuration.php
+index b2f7a7bd0c6..1a1a444d378 100644
+--- a/src/Util/Configuration.php
++++ b/src/Util/Configuration.php
+@@ -514,22 +514,17 @@ public function handlePHPConfiguration()
+ 
+         foreach (array('var', 'post', 'get', 'cookie', 'server', 'files', 'request') as $array) {
+             // See https://github.com/sebastianbergmann/phpunit/issues/277
+-            switch ($array) {
+-                case 'var':
+-                    $target = &$GLOBALS;
+-                    break;
+-
+-                case 'server':
+-                    $target = &$_SERVER;
+-                    break;
+-
+-                default:
+-                    $target = &$GLOBALS['_' . strtoupper($array)];
+-                    break;
+-            }
+-
+             foreach ($configuration[$array] as $name => $value) {
+-                $target[$name] = $value;
++                switch ($array) {
++                    case 'var':
++                        $GLOBALS[$name] = $value;
++                        break;
++                    case 'server':
++                        $_SERVER[$name] = $value;
++                        break;
++                    default:
++                        $GLOBALS['_' . strtoupper($array)][$name] = $value;
++                }
+             }
+         }
+ 
+diff --git a/src/Util/Getopt.php b/src/Util/Getopt.php
+index 370e97d73f8..5bd8553970b 100644
+--- a/src/Util/Getopt.php
++++ b/src/Util/Getopt.php
+@@ -144,7 +144,7 @@ protected static function parseLongOption($arg, $long_options, &$opts, &$args)
+ 
+             if (substr($long_opt, -1) == '=') {
+                 if (substr($long_opt, -2) != '==') {
+-                    if (!strlen($opt_arg)) {
++                    if (null === $opt_arg || strlen($opt_arg) < 1) {
+                         $opt_arg = current($args);
+                         next($args);
+                         if (!($opt_arg)) {
