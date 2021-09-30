@@ -387,7 +387,7 @@ class StreamConnection extends AbstractConnection
         $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
 
         foreach ($arguments as $argument) {
-            $arglen = strlen($argument ?? '');
+            $arglen = strlen(is_null($argument) ? '' : $argument);
             $buffer .= "\${$arglen}\r\n{$argument}\r\n";
         }
 
