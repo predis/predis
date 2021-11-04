@@ -146,6 +146,10 @@ class Factory implements FactoryInterface
         } else {
             $parameters = $parameters ?: array();
         }
+        
+        if (!is_array($parameters)) {
+            throw new \UnexpectedValueException('Invalid type for parameters, expected array but got ' . gettype($parameters));
+        }
 
         if ($this->defaults) {
             $parameters += $this->defaults;
