@@ -20,6 +20,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 
@@ -523,12 +524,16 @@ class SentinelReplication implements ReplicationInterface
      * @param NodeConnectionInterface $connection Connection to a redis server.
      * @param string                  $role       Expected role of the server ("master", "slave" or "sentinel").
      *
-     * @throws RoleException
+     * @throws RoleException|ConnectionException
      */
     protected function assertConnectionRole(NodeConnectionInterface $connection, $role)
     {
         $role = strtolower($role);
         $actualRole = $connection->executeCommand(RawCommand::create('ROLE'));
+
+        if ($actualRole instanceof Error) {
+            throw new ConnectionException($connection, $actualRole->getMessage());
+        }
 
         if ($role !== $actualRole[0]) {
             throw new RoleException($connection, "Expected $role but got $actualRole[0] [$connection]");
