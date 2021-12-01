@@ -515,7 +515,7 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $clients = array();
         $connection = $this->getConnection();
