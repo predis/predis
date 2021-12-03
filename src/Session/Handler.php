@@ -54,7 +54,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function open($save_path, $session_id)
+    #[\ReturnTypeWillChange] public function open($save_path, $session_id)
     {
         // NOOP
         return true;
@@ -63,7 +63,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    #[\ReturnTypeWillChange] public function close()
     {
         // NOOP
         return true;
@@ -72,7 +72,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function gc($maxlifetime)
+    #[\ReturnTypeWillChange] public function gc($maxlifetime)
     {
         // NOOP
         return true;
@@ -81,7 +81,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function read($session_id)
+    #[\ReturnTypeWillChange] public function read($session_id)
     {
         if ($data = $this->client->get($session_id)) {
             return $data;
@@ -92,7 +92,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function write($session_id, $session_data)
+    #[\ReturnTypeWillChange] public function write($session_id, $session_data)
     {
         $this->client->setex($session_id, $this->ttl, $session_data);
 
@@ -102,7 +102,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function destroy($session_id)
+    #[\ReturnTypeWillChange] public function destroy($session_id)
     {
         $this->client->del($session_id);
 
