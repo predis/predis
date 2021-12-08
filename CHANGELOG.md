@@ -1,10 +1,24 @@
-v1.1.7 (2020-xx-xx)
+v1.1.9 (2021-10-05)
+================================================================================
+
+- Fixed PHP 8.1 compatibility in `StreamConnection`
+
+
+v1.1.8 (2021-09-29)
+================================================================================
+
+- Ensure compatibility with PHP 8.1.
+
+
+v1.1.7 (2021-04-04)
 ================================================================================
 
 - __FIX__: with the phpiredis-based connection backends, failed pipelines led to
 spurious responses returned after reconnecting to Redis because the underlying
 reader was not properly reset by discarding buffered replies after disconnecting
 (ISSUE #363).
+- __FIX__: removed `cweagans/composer-patches` dev dependency and apply patches
+using `post-update-cmd` script.
 
 
 v1.1.6 (2020-09-11)
