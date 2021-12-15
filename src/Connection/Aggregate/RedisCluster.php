@@ -289,7 +289,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *
      * @return array
      */
-    public function getSlotsMap()
+    public function &getSlotsMap()
     {
         if (!isset($this->slotsMap)) {
             $this->slotsMap = array();
@@ -319,7 +319,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         }
 
         $slots = array_fill($first, $last - $first + 1, (string) $connection);
-        $this->slotsMap = $this->getSlotsMap() + $slots;
+        $slotsMap = &$this->getSlotsMap();
+        $slotsMap += $slots;
     }
 
     /**
