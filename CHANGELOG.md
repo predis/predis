@@ -1,13 +1,21 @@
+v1.1.10 (2022-01-05)
+================================================================================
+
+- __FIX__: Avoid PHP 8.1 deprecation notices in `Session/Handler`
+- __FIX__: Fixed "Cannot use object of type Predis\Response\Error as array"
+error in `Connection/Aggregate/SentinelReplication`
+
+
 v1.1.9 (2021-10-05)
 ================================================================================
 
-- Fixed PHP 8.1 compatibility in `StreamConnection`
+- __FIX__: Fixed PHP 8.1 compatibility in `StreamConnection`
 
 
 v1.1.8 (2021-09-29)
 ================================================================================
 
-- Ensure compatibility with PHP 8.1.
+- __FIX__: Ensure compatibility with PHP 8.1.
 
 
 v1.1.7 (2021-04-04)
