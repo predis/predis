@@ -39,7 +39,6 @@ jobs:
     - name: Cache Composer dependencies
       uses: actions/cache@v2
       with:
-        php-version: ${{ matrix.php-versions }}
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
