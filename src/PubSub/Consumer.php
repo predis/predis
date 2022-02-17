@@ -118,7 +118,7 @@ class Consumer extends AbstractConsumer
     {
         $response = $this->client->getConnection()->read();
 
-        if($response instanceof Error) {
+        if ($response instanceof Error) {
             throw new ServerException($response->getMessage());
         }
 
