@@ -16,6 +16,8 @@ use Predis\ClientInterface;
 use Predis\Command\Command;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\NotSupportedException;
+use Predis\Response\ServerException;
+use Predis\Response\Error;
 
 /**
  * PUB/SUB consumer abstraction.
@@ -115,6 +117,10 @@ class Consumer extends AbstractConsumer
     protected function getValue()
     {
         $response = $this->client->getConnection()->read();
+
+        if($response instanceof Error) {
+            throw new ServerException($response->getMessage());
+        }
 
         switch ($response[0]) {
             case self::SUBSCRIBE:
