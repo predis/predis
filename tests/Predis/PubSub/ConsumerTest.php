@@ -426,4 +426,32 @@ class ConsumerTest extends PredisTestCase
             exit(0);
         }
     }
+
+    /**
+     * @group connected
+     * @expectedException \Predis\Response\ServerException
+     */
+    public function testInvalidSubscriptionThrowsServerException()
+    {
+        $parameters = array(
+            'host' => REDIS_SERVER_HOST,
+            'port' => REDIS_SERVER_PORT,
+            'database' => REDIS_SERVER_DBNUM,
+            'read_write_timeout' => -1, // -1 to set blocking reads
+        );
+
+        $options = array('profile' => REDIS_SERVER_VERSION);
+
+        $consumer = new Client($parameters, $options);
+        $consumer->connect();
+
+        $pubsub = $consumer->pubSubLoop();
+
+        // calling psubscribe with invalid empty parameter list
+        $pubsub->psubscribe(array());
+
+        foreach ($pubsub as $message) {
+            // should trigger the ServerException
+        }
+    }
 }
