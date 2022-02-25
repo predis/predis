@@ -83,6 +83,7 @@ use Predis\Profile\ProfileInterface;
  * @method array       hvals($key)
  * @method int         hstrlen($key, $field)
  * @method array|null  blpop(array|string $keys, $timeout)
+ * @psalm-method array{0: string, 1: string}|null blpop(array<string>|string $keys, int<0, max> $timeout)
  * @method array|null  brpop(array|string $keys, $timeout)
  * @method string|null brpoplpush($source, $destination, $timeout)
  * @method string|null lindex($key, $index)
