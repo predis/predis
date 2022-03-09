@@ -90,6 +90,7 @@ class Consumer implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function rewind()
@@ -110,6 +111,7 @@ class Consumer implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return int
      */
     #[\ReturnTypeWillChange]
     public function key()
@@ -119,6 +121,7 @@ class Consumer implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function next()

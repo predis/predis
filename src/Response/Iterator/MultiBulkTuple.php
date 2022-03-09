@@ -60,6 +60,7 @@ class MultiBulkTuple extends MultiBulk implements \OuterIterator
 
     /**
      * {@inheritdoc}
+     * @return \Iterator
      */
     #[\ReturnTypeWillChange]
     public function getInnerIterator()

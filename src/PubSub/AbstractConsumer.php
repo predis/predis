@@ -150,6 +150,7 @@ abstract class AbstractConsumer implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function rewind()
@@ -171,6 +172,7 @@ abstract class AbstractConsumer implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return int
      */
     #[\ReturnTypeWillChange]
     public function key()
