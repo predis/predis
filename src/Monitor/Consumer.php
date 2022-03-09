@@ -24,7 +24,7 @@ class Consumer implements \Iterator
 {
     private $client;
     private $valid;
-    private $position;
+    private $position = 0;
 
     /**
      * @param ClientInterface $client Client instance used by the consumer.
