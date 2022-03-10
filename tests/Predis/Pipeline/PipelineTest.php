@@ -237,6 +237,59 @@ class PipelineTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testClearBuffer()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->never())
+            ->method('writeRequest');
+        $connection->expects($this->never())
+            ->method('readResponse')
+            ->will($this->returnCallback($this->getReadCallback()));
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $pipeline->echo('one');
+        $pipeline->echo('two');
+
+        $pipeline->clear();
+
+        $this->assertSame(array(), $pipeline->execute());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClearResponses()
+    {
+        $connection = $this->getMock('Predis\Connection\NodeConnectionInterface');
+        $connection->expects($this->exactly(4))
+            ->method('writeRequest');
+        $connection->expects($this->exactly(4))
+            ->method('readResponse')
+            ->will($this->returnCallback($this->getReadCallback()));
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $pipeline->echo('one');
+        $pipeline->echo('two');
+
+        $this->assertSame(array('one', 'two'), $pipeline->execute());
+
+        $pipeline->clear();
+
+        $pipeline->echo('three');
+        $pipeline->echo('four');
+
+        $this->assertSame(array('three', 'four'), $pipeline->execute());
+
+        $pipeline->clear();
+
+        $this->assertSame(array(), $pipeline->execute());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSwitchesToMasterWithReplicationConnection()
     {
         $pong = new Response\Status('PONG');
