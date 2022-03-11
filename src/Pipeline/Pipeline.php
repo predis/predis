@@ -232,8 +232,9 @@ class Pipeline implements ClientContextInterface
      */
     public function clear()
     {
-        $this->pipeline = new \SplQueue();
         $this->responses = array();
+        $this->pipeline = new \SplQueue();
+
         return $this;
     }
 
