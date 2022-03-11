@@ -226,6 +226,19 @@ class Pipeline implements ClientContextInterface
     }
 
     /**
+     * Clear the buffer holding all of the commands and responses.
+     *
+     * @return $this
+     */
+    public function clear()
+    {
+        $this->responses = array();
+        $this->pipeline = new \SplQueue();
+
+        return $this;
+    }
+
+    /**
      * Returns if the pipeline should throw exceptions on server errors.
      *
      * @return bool
