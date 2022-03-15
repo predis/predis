@@ -99,6 +99,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
 
     /**
      * {@inheritdoc}
+     * @return ProcessorInterface|null
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($index)
@@ -108,6 +109,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function offsetSet($index, $processor)
@@ -124,6 +126,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function offsetUnset($index)

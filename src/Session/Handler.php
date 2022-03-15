@@ -64,6 +64,7 @@ class Handler implements \SessionHandlerInterface
 
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function open($save_path, $session_id)
@@ -74,6 +75,7 @@ class Handler implements \SessionHandlerInterface
 
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function close()
@@ -84,6 +86,7 @@ class Handler implements \SessionHandlerInterface
 
     /**
      * {@inheritdoc}
+     * @return int|bool
      */
     #[\ReturnTypeWillChange]
     public function gc($maxlifetime)
@@ -94,6 +97,7 @@ class Handler implements \SessionHandlerInterface
 
     /**
      * {@inheritdoc}
+     * @return string
      */
     #[\ReturnTypeWillChange]
     public function read($session_id)
@@ -106,6 +110,7 @@ class Handler implements \SessionHandlerInterface
     }
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function write($session_id, $session_data)
@@ -117,6 +122,7 @@ class Handler implements \SessionHandlerInterface
 
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function destroy($session_id)

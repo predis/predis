@@ -33,6 +33,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function rewind()
@@ -42,6 +43,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
 
     /**
      * {@inheritdoc}
+     * @return mixed
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -51,6 +53,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
 
     /**
      * {@inheritdoc}
+     * @return int
      */
     #[\ReturnTypeWillChange]
     public function key()
@@ -60,6 +63,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function next()
@@ -71,6 +75,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
 
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function valid()

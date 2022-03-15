@@ -138,6 +138,7 @@ abstract class CursorBasedIterator implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function rewind()
@@ -148,6 +149,7 @@ abstract class CursorBasedIterator implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return mixed
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -157,6 +159,7 @@ abstract class CursorBasedIterator implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return int
      */
     #[\ReturnTypeWillChange]
     public function key()
@@ -166,6 +169,7 @@ abstract class CursorBasedIterator implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return void
      */
     #[\ReturnTypeWillChange]
     public function next()
@@ -187,6 +191,7 @@ abstract class CursorBasedIterator implements \Iterator
 
     /**
      * {@inheritdoc}
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function valid()
