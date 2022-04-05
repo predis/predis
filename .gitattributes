@@ -11,3 +11,5 @@
 /.travis.yml export-ignore
 /phpunit.xml.dist export-ignore
 /phpunit.xml.travisci export-ignore
+/CHANGELOG.md export-ignore
+/CONTRIBUTING.md export-ignore
