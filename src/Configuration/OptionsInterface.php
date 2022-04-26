@@ -37,7 +37,7 @@ interface OptionsInterface
      *
      * @param string $option Name of the option.
      *
-     * @return mixed|null
+     * @return ProfileInterface|null
      */
     public function getDefault($option);
 
