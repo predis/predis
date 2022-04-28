@@ -23,6 +23,6 @@ class ServerFlushDatabase extends Command
      */
     public function getId()
     {
-        return 'FLUSHDB';
+        return getenv('REDIS_FLUSHDB_COMMAND', true) ? getenv('REDIS_FLUSHDB_COMMAND') : 'FLUSHDB';
     }
 }
