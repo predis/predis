@@ -381,7 +381,7 @@ class SentinelReplication implements ReplicationInterface
         $slaves = array();
 
         $payload = $sentinel->executeCommand(
-            RawCommand::create('SENTINEL', 'slaves', $service)
+            RawCommand::create('SENTINEL', 'replicas', $service)
         );
 
         if ($payload instanceof ErrorResponseInterface) {

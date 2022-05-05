@@ -45,7 +45,7 @@ class ServerSentinel extends Command
     }
 
     /**
-     * Returns a processed response to SENTINEL MASTERS or SENTINEL SLAVES.
+     * Returns a processed response to SENTINEL MASTERS or SENTINEL REPLICAS.
      *
      * @param array $servers List of Redis servers.
      *
