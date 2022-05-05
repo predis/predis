@@ -52,9 +52,7 @@ abstract class Command implements CommandInterface
      */
     public function getArgument($index)
     {
-        if (isset($this->arguments[$index])) {
-            return $this->arguments[$index];
-        }
+        return $this->arguments[$index] ?? "";
     }
 
     /**

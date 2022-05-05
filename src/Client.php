@@ -515,6 +515,7 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $clients = array();
