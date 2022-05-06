@@ -92,7 +92,7 @@ abstract class CursorBasedIterator implements \Iterator
     {
         $options = array();
 
-        if (!empty($this->match)) {
+        if (strlen(strval($this->match)) > 0) {
             $options['MATCH'] = $this->match;
         }
 

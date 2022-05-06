@@ -33,7 +33,10 @@ class SENTINEL extends RedisCommand
      */
     public function parseResponse($data)
     {
-        switch (strtolower($this->getArgument(0))) {
+        $argument = $this->getArgument(0);
+        $argument = is_null($argument) ? null : strtolower($argument);
+
+        switch ($argument) {
             case 'masters':
             case 'slaves':
                 return self::processMastersOrSlaves($data);
