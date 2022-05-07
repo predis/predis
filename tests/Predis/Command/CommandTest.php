@@ -79,7 +79,7 @@ class CommandTest extends PredisTestCase
 
         $this->assertEquals($arguments[0], $command->getArgument(0));
         $this->assertEquals($arguments[2], $command->getArgument(2));
-        $this->assertEmpty($command->getArgument(10));
+        $this->assertNull($command->getArgument(10));
     }
 
     /**
