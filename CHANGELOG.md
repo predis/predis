@@ -119,8 +119,6 @@ v2.0.0 (202x-xx-xx)
   part of `Predis\Command\Redis\SENTINEL` class, is checked to not pass `null`
   to `strtolower()` function.
 
-- __FIX__: tests are now passing when using PHP 8.1.
-
 
 v1.1.5 (2020-09-10)
 ================================================================================
