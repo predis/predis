@@ -151,6 +151,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         // NOOP
@@ -162,6 +163,7 @@ abstract class AbstractConsumer implements \Iterator
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->getValue();
@@ -170,6 +172,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -178,6 +181,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if ($this->valid()) {
@@ -192,6 +196,7 @@ abstract class AbstractConsumer implements \Iterator
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);

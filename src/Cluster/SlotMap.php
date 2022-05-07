@@ -125,6 +125,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($slot)
     {
         return isset($this->slots[$slot]);
@@ -137,6 +138,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($slot)
     {
         if (isset($this->slots[$slot])) {
@@ -152,6 +154,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($slot, $connection)
     {
         if (!static::isValid($slot)) {
@@ -168,6 +171,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($slot)
     {
         unset($this->slots[$slot]);
@@ -178,6 +182,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->slots);
@@ -188,6 +193,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return \ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->slots);

@@ -26,12 +26,12 @@ abstract class CommunicationException extends PredisException
      * @param NodeConnectionInterface $connection     Connection that generated the exception.
      * @param string                  $message        Error message.
      * @param int                     $code           Error code.
-     * @param \Exception              $innerException Inner exception for wrapping the original error.
+     * @param \Exception|null         $innerException Inner exception for wrapping the original error.
      */
     public function __construct(
         NodeConnectionInterface $connection,
-        $message = null,
-        $code = null,
+        $message = "",
+        $code = 0,
         \Exception $innerException = null
     ) {
         $this->connection = $connection;

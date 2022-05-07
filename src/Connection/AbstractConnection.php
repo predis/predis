@@ -126,7 +126,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      * @param string $message Error message.
      * @param int    $code    Error code.
      */
-    protected function onConnectionError($message, $code = null)
+    protected function onConnectionError($message, $code = 0)
     {
         CommunicationException::handle(
             new ConnectionException($this, "$message [{$this->getParameters()}]", $code)
