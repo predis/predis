@@ -106,11 +106,32 @@ class COMMAND_Test extends PredisCommandTestCase
 
         // NOTE: starting with Redis 6.0 and the introduction of Access Control
         // Lists, COMMAND INFO returns an additional array for each specified
-        // command in yhe request with a list of the ACL categories associated
+        // command in the request with a list of the ACL categories associated
         // to a command. We simply append this additional array in the expected
         // response if the test suite is executed against Redis >= 6.0.
         if ($this->isRedisServerVersion('>=', '6.0')) {
             $expected[0][] = array('@read', '@string', '@fast');
+        }
+
+        // NOTE: starting with Redis 7.0 COMMAND INFO returns an additional arrays:
+        // - Command tips: https://redis.io/topics/command-tips.
+        // - Key specifications: https://redis.io/topics/key-specs.
+        // - Subcommands: https://redis.io/commands/command/#subcommands.
+        // We simply append this additional array in the expected response if the
+        // test suite is executed against Redis >= 7.0.
+        if ($this->isRedisServerVersion('>=', '7.0')) {
+            $expected[0][] = array();
+            $expected[0][] = array(
+                array(
+                    'flags',
+                    array('RO','access'),
+                    'begin_search',
+                    array('type','index','spec', array('index',1)),
+                    'find_keys',
+                    array('type','range','spec', array('lastkey',0,'keystep',1,'limit',0))
+                )
+            );
+            $expected[0][] = array();
         }
 
         $this->assertCount(1, $response = $redis->command('INFO', 'GET'));

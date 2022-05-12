@@ -143,7 +143,7 @@ class CONFIG_Test extends PredisCommandTestCase
     public function testThrowsExceptionWhenSettingUnknownConfiguration(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR Unsupported CONFIG parameter: foo');
+        $this->expectExceptionMessageMatches("/ERR|CONFIG|foo|arguments|parameter/");
 
         $redis = $this->getClient();
 
