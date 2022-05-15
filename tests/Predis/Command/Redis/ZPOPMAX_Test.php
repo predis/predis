@@ -17,6 +17,7 @@ namespace Predis\Command\Redis;
  */
 class ZPOPMAX_Test extends PredisCommandTestCase
 {
+
     /**
      * {@inheritdoc}
      */
@@ -34,6 +35,8 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group disconnected
      */
     public function testFilterArguments(): void
@@ -48,6 +51,8 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group disconnected
      */
     public function testParseResponse(): void
@@ -61,6 +66,8 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group connected
      */
     public function testReturnsElements(): void
@@ -78,6 +85,8 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void

@@ -34,6 +34,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group disconnected
      */
     public function testFilterArguments(): void
@@ -48,6 +50,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group disconnected
      */
     public function testParseResponse(): void
@@ -61,6 +65,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group connected
      */
     public function testReturnsElements(): void
@@ -78,6 +84,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 5.0.0
+     *
      * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
