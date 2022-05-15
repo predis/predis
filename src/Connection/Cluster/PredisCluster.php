@@ -138,9 +138,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             );
         }
 
-        $node = $this->distributor->getBySlot($slot);
-
-        return $node;
+        return $this->distributor->getBySlot($slot);
     }
 
     /**
@@ -189,9 +187,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     public function getConnectionByKey($key)
     {
         $hash = $this->strategy->getSlotByKey($key);
-        $node = $this->distributor->getBySlot($hash);
-
-        return $node;
+        return $this->distributor->getBySlot($hash);
     }
 
     /**
