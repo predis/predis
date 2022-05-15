@@ -136,9 +136,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             throw new NotSupportedException("Cannot use '{$command->getId()}' over clusters of connections.");
         }
 
-        $node = $this->distributor->getBySlot($slot);
-
-        return $node;
+        return $this->distributor->getBySlot($slot);
     }
 
     /**
@@ -187,9 +185,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     public function getConnectionByKey($key)
     {
         $hash = $this->strategy->getSlotByKey($key);
-        $node = $this->distributor->getBySlot($hash);
-
-        return $node;
+        return $this->distributor->getBySlot($hash);
     }
 
     /**

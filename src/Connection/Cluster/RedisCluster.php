@@ -439,9 +439,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         }
 
         $this->move($connection, $slot);
-        $response = $this->executeCommand($command);
-
-        return $response;
+        return $this->executeCommand($command);
     }
 
     /**
@@ -462,9 +460,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         }
 
         $connection->executeCommand(RawCommand::create('ASKING'));
-        $response = $connection->executeCommand($command);
-
-        return $response;
+        return $connection->executeCommand($command);
     }
 
     /**

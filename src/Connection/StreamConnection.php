@@ -151,9 +151,7 @@ class StreamConnection extends AbstractConnection
             }
         }
 
-        $resource = $this->createStreamSocket($parameters, $address, $flags);
-
-        return $resource;
+        return $this->createStreamSocket($parameters, $address, $flags);
     }
 
     /**
@@ -181,9 +179,7 @@ class StreamConnection extends AbstractConnection
             }
         }
 
-        $resource = $this->createStreamSocket($parameters, "unix://{$parameters->path}", $flags);
-
-        return $resource;
+        return $this->createStreamSocket($parameters, "unix://{$parameters->path}", $flags);
     }
 
     /**
