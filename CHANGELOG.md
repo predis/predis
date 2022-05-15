@@ -97,6 +97,29 @@ v2.0.0 (202x-xx-xx)
   connection or, even better, over the client instance in order to execute the
   same command against all of the registered connections.
 
+- The class `Predis\CommunicationException` now uses the correct default types
+  for the `$message` (string) and `$code` (integer) parameters.
+
+- The method `onConnectionError()` in `Predis\Connection\AbstractConnection`
+  class now passes the second argument as an integer value `0` as its default
+  value instead of `null`.
+
+- The class `Predis\Transaction\AbortedMultiExecException` now uses the correct 
+  default types for the `$code` (integer) parameter.
+
+- __FIX__: using `strval` in `getScanOptions()` method, part of
+  `Predis\Collection\Iterator\CursorBasedIterator` to make sure we retrieve the
+  string value of `$this->match` and not passing `null` to `strlen()` function.
+
+- __FIX__: the value returned from `getArgument()` in `isReadOperation()` method,
+  part of `Predis\Replication\ReplicationStrategy` class, is checked to not pass 
+  `null` to `sha1` function.
+
+- __FIX__: the value returned from `getArgument()` in `parseResponse()`method,
+  part of `Predis\Command\Redis\SENTINEL` class, is checked to not pass `null`
+  to `strtolower()` function.
+
+
 v1.1.5 (2020-09-10)
 ================================================================================
 
