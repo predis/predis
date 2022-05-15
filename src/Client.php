@@ -209,9 +209,7 @@ class Client implements ClientInterface, \IteratorAggregate
             throw new \InvalidArgumentException("Cannot find a connection by $selector matching `$value`");
         }
 
-        $client = new static($connection, $this->getOptions());
-
-        return $client;
+        return new static($connection, $this->getOptions());
     }
 
     /**

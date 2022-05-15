@@ -266,9 +266,7 @@ class SentinelReplication implements ReplicationInterface
             }
         }
 
-        $connection = $this->connectionFactory->create($parameters);
-
-        return $connection;
+        return $this->connectionFactory->create($parameters);
     }
 
     /**
