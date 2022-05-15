@@ -11,9 +11,9 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\PubSub\Consumer as PubSubConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub
@@ -392,11 +392,11 @@ class ConsumerTest extends PredisTestCase
         $producer->publish('channel:foo', 'QUIT');
 
         foreach ($pubsub as $message) {
-            if ($message->kind !== 'message') {
+            if ('message' !== $message->kind) {
                 continue;
             }
             $messages[] = ($payload = $message->payload);
-            if ($payload === 'QUIT') {
+            if ('QUIT' === $payload) {
                 $pubsub->stop();
             }
         }
@@ -440,11 +440,11 @@ class ConsumerTest extends PredisTestCase
             $pubsub->subscribe('channel:foo');
 
             foreach ($pubsub as $message) {
-                if ($message->kind !== 'message') {
+                if ('message' !== $message->kind) {
                     continue;
                 }
                 $messages[] = ($payload = $message->payload);
-                if ($payload === 'QUIT') {
+                if ('QUIT' === $payload) {
                     $pubsub->stop();
                 }
             }

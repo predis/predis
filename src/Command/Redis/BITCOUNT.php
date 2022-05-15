@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/bitcount
+ * @see http://redis.io/commands/bitcount
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

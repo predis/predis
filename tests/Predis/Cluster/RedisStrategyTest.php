@@ -11,12 +11,9 @@
 
 namespace Predis\Cluster;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
-/**
- *
- */
 class RedisStrategyTest extends PredisTestCase
 {
     /**
@@ -33,9 +30,9 @@ class RedisStrategyTest extends PredisTestCase
         $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
         $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:baz{}'));
-        $this->assertSame(9415,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
+        $this->assertSame(9415, $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(0,     $strategy->getSlotByKey(''));
+        $this->assertSame(0, $strategy->getSlotByKey(''));
         $this->assertSame(15257, $strategy->getSlotByKey('{}'));
     }
 
@@ -318,8 +315,6 @@ class RedisStrategyTest extends PredisTestCase
 
     /**
      * Creates the default cluster strategy object.
-     *
-     * @return StrategyInterface
      */
     protected function getClusterStrategy(): StrategyInterface
     {
@@ -332,8 +327,6 @@ class RedisStrategyTest extends PredisTestCase
      * Returns the list of expected supported commands.
      *
      * @param ?string $type Optional type of command (based on its keys)
-     *
-     * @return array
      */
     protected function getExpectedCommands(?string $type = null): array
     {

@@ -48,7 +48,7 @@ class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
             return false;
         }
 
-        if ($this->arguments !== null) {
+        if (null !== $this->arguments) {
             $otherArguments = $other->getArguments();
 
             if (count($this->arguments) !== count($otherArguments)) {

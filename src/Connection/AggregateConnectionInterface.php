@@ -24,23 +24,23 @@ interface AggregateConnectionInterface extends ConnectionInterface
     /**
      * Adds a connection instance to the aggregate connection.
      *
-     * @param NodeConnectionInterface $connection Connection instance.
+     * @param NodeConnectionInterface $connection connection instance
      */
     public function add(NodeConnectionInterface $connection);
 
     /**
      * Removes the specified connection instance from the aggregate connection.
      *
-     * @param NodeConnectionInterface $connection Connection instance.
+     * @param NodeConnectionInterface $connection connection instance
      *
-     * @return bool Returns true if the connection was in the pool.
+     * @return bool returns true if the connection was in the pool
      */
     public function remove(NodeConnectionInterface $connection);
 
     /**
      * Returns the connection instance in charge for the given command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return NodeConnectionInterface
      */
@@ -49,7 +49,7 @@ interface AggregateConnectionInterface extends ConnectionInterface
     /**
      * Returns a connection instance from the aggregate connection by its alias.
      *
-     * @param string $connectionID Connection alias.
+     * @param string $connectionID connection alias
      *
      * @return NodeConnectionInterface|null
      */

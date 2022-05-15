@@ -11,12 +11,12 @@
 
 namespace Predis\Response\Iterator;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\ClientInterface;
-use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\CompositeStreamConnection;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
+use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -113,8 +113,6 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * Returns a new client instance.
-     *
-     * @return ClientInterface
      */
     protected function getClient(): ClientInterface
     {

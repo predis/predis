@@ -23,9 +23,6 @@ abstract class ClusterStrategy implements StrategyInterface
 {
     protected $commands;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
@@ -195,8 +192,8 @@ abstract class ClusterStrategy implements StrategyInterface
      * When the callback argument is omitted or NULL, the previously associated
      * handler for the specified command ID is removed.
      *
-     * @param string $commandID Command ID.
-     * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
+     * @param string $commandID command ID
+     * @param mixed  $callback  a valid callable object, or NULL to unset the handler
      *
      * @throws \InvalidArgumentException
      */
@@ -211,9 +208,7 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                'The argument must be a callable object or NULL.'
-            );
+            throw new \InvalidArgumentException('The argument must be a callable object or NULL.');
         }
 
         $this->commands[$commandID] = $callback;
@@ -222,7 +217,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from the first argument of a command instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string
      */
@@ -235,7 +230,7 @@ abstract class ClusterStrategy implements StrategyInterface
      * Extracts the key from a command with multiple keys only when all keys in
      * the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -252,7 +247,7 @@ abstract class ClusterStrategy implements StrategyInterface
      * Extracts the key from a command with multiple keys only when all keys in
      * the arguments array produce the same hash.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -273,7 +268,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from SORT command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -289,7 +284,7 @@ abstract class ClusterStrategy implements StrategyInterface
         $keys = array($firstKey);
 
         for ($i = 1; $i < $argc; ++$i) {
-            if (strtoupper($arguments[$i]) === 'STORE') {
+            if ('STORE' === strtoupper($arguments[$i])) {
                 $keys[] = $arguments[++$i];
             }
         }
@@ -302,7 +297,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from BLPOP and BRPOP commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -318,7 +313,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from BITOP command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -334,7 +329,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from GEORADIUS and GEORADIUSBYMEMBER commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -342,14 +337,14 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
         $argc = count($arguments);
-        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
+        $startIndex = 'GEORADIUS' === $command->getId() ? 5 : 4;
 
         if ($argc > $startIndex) {
             $keys = array($arguments[0]);
 
             for ($i = $startIndex; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
-                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                if ('STORE' === $argument || 'STOREDIST' === $argument) {
                     $keys[] = $arguments[++$i];
                 }
             }
@@ -367,7 +362,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from ZINTERSTORE and ZUNIONSTORE commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -384,7 +379,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Extracts the key from EVAL and EVALSHA commands.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return string|null
      */
@@ -423,7 +418,7 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * Checks if the specified array of keys will generate the same hash.
      *
-     * @param array $keys Array of keys.
+     * @param array $keys array of keys
      *
      * @return bool
      */
@@ -452,7 +447,7 @@ abstract class ClusterStrategy implements StrategyInterface
      * Returns only the hashable part of a key (delimited by "{...}"), or the
      * whole key if a key tag is not found in the string.
      *
-     * @param string $key A key.
+     * @param string $key a key
      *
      * @return string
      */

@@ -12,7 +12,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zinterstore
+ * @see http://redis.io/commands/zinterstore
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

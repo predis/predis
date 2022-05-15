@@ -20,16 +20,11 @@ use Predis\NotSupportedException;
  */
 class PhpiredisCRC16 implements HashGeneratorInterface
 {
-    /**
-     *
-     */
     public function __construct()
     {
         if (!function_exists('phpiredis_utils_crc16')) {
             // @codeCoverageIgnoreStart
-            throw new NotSupportedException(
-                'This hash generator requires a compatible version of ext-phpiredis'
-            );
+            throw new NotSupportedException('This hash generator requires a compatible version of ext-phpiredis');
             // @codeCoverageIgnoreEnd
         }
     }

@@ -94,16 +94,16 @@ class StreamConnection extends AbstractConnection
     /**
      * Creates a connected stream socket resource.
      *
-     * @param ParametersInterface $parameters Connection parameters.
-     * @param string              $address    Address for stream_socket_client().
-     * @param int                 $flags      Flags for stream_socket_client().
+     * @param ParametersInterface $parameters connection parameters
+     * @param string              $address    address for stream_socket_client()
+     * @param int                 $flags      flags for stream_socket_client()
      *
      * @return resource
      */
     protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
     {
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
-        $context = stream_context_create(['socket' => ['tcp_nodelay' => (bool) $parameters->tcp_nodelay]]);
+        $context = stream_context_create(array('socket' => array('tcp_nodelay' => (bool) $parameters->tcp_nodelay)));
 
         if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
             $this->onConnectionError(trim($errstr), $errno);
@@ -123,7 +123,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a TCP stream resource.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      *
      * @return resource
      */
@@ -145,7 +145,7 @@ class StreamConnection extends AbstractConnection
             if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
                 $flags |= STREAM_CLIENT_PERSISTENT;
 
-                if ($persistent === null) {
+                if (null === $persistent) {
                     $address = "{$address}/{$parameters->persistent}";
                 }
             }
@@ -159,7 +159,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a UNIX stream resource.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      *
      * @return resource
      */
@@ -175,10 +175,8 @@ class StreamConnection extends AbstractConnection
             if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
                 $flags |= STREAM_CLIENT_PERSISTENT;
 
-                if ($persistent === null) {
-                    throw new \InvalidArgumentException(
-                        'Persistent connection IDs are not supported when using UNIX domain sockets.'
-                    );
+                if (null === $persistent) {
+                    throw new \InvalidArgumentException('Persistent connection IDs are not supported when using UNIX domain sockets.');
                 }
             }
         }
@@ -191,7 +189,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Initializes a SSL-encrypted TCP stream resource.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      *
      * @return resource
      */
@@ -257,7 +255,7 @@ class StreamConnection extends AbstractConnection
      * Performs a write operation over the stream of the buffer containing a
      * command serialized with the Redis wire protocol.
      *
-     * @param string $buffer Representation of a command in the Redis wire protocol.
+     * @param string $buffer representation of a command in the Redis wire protocol
      */
     protected function write($buffer)
     {
@@ -270,7 +268,7 @@ class StreamConnection extends AbstractConnection
                 return;
             }
 
-            if ($written === false || $written === 0) {
+            if (false === $written || 0 === $written) {
                 $this->onConnectionError('Error while writing bytes to the server.');
             }
 
@@ -286,7 +284,7 @@ class StreamConnection extends AbstractConnection
         $socket = $this->getResource();
         $chunk = fgets($socket);
 
-        if ($chunk === false || $chunk === '') {
+        if (false === $chunk || '' === $chunk) {
             $this->onConnectionError('Error while reading line from the server.');
         }
 
@@ -300,7 +298,7 @@ class StreamConnection extends AbstractConnection
             case '$':
                 $size = (int) $payload;
 
-                if ($size === -1) {
+                if (-1 === $size) {
                     return;
                 }
 
@@ -310,7 +308,7 @@ class StreamConnection extends AbstractConnection
                 do {
                     $chunk = fread($socket, min($bytesLeft, 4096));
 
-                    if ($chunk === false || $chunk === '') {
+                    if (false === $chunk || '' === $chunk) {
                         $this->onConnectionError('Error while reading bytes from the server.');
                     }
 
@@ -323,7 +321,7 @@ class StreamConnection extends AbstractConnection
             case '*':
                 $count = (int) $payload;
 
-                if ($count === -1) {
+                if (-1 === $count) {
                     return;
                 }
 

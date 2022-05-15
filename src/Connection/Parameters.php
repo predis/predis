@@ -27,7 +27,7 @@ class Parameters implements ParametersInterface
     );
 
     /**
-     * @param array $parameters Named array of connection parameters.
+     * @param array $parameters named array of connection parameters
      */
     public function __construct(array $parameters = array())
     {
@@ -44,7 +44,7 @@ class Parameters implements ParametersInterface
     protected function filter(array $parameters)
     {
         return array_filter($parameters, function ($value) {
-            return $value !== null && $value !== '';
+            return null !== $value && '' !== $value;
         });
     }
 
@@ -52,7 +52,7 @@ class Parameters implements ParametersInterface
      * Creates a new instance by supplying the initial parameters either in the
      * form of an URI string or a named array.
      *
-     * @param array|string $parameters Set of connection parameters.
+     * @param array|string $parameters set of connection parameters
      *
      * @return Parameters
      */
@@ -74,10 +74,10 @@ class Parameters implements ParametersInterface
      * database number in the "path" part these values override the values of
      * "password" and "database" if they are present in the "query" part.
      *
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     * @link http://www.iana.org/assignments/uri-schemes/prov/rediss
+     * @see http://www.iana.org/assignments/uri-schemes/prov/redis
+     * @see http://www.iana.org/assignments/uri-schemes/prov/rediss
      *
-     * @param string $uri URI string.
+     * @param string $uri URI string
      *
      * @throws \InvalidArgumentException
      *
@@ -85,7 +85,7 @@ class Parameters implements ParametersInterface
      */
     public static function parse($uri)
     {
-        if (stripos($uri, 'unix://') === 0) {
+        if (0 === stripos($uri, 'unix://')) {
             // parse_url() can parse unix:/path/to/sock so we do not need the
             // unix:///path/to/sock hack, we will support it anyway until 2.0.
             $uri = str_ireplace('unix://', 'unix:', $uri);
@@ -110,7 +110,7 @@ class Parameters implements ParametersInterface
             $parsed = array_merge($parsed, $queryarray);
         }
 
-        if (stripos($uri, 'redis') === 0) {
+        if (0 === stripos($uri, 'redis')) {
             if (isset($parsed['user'])) {
                 if (strlen($parsed['user'])) {
                     $parsed['username'] = $parsed['user'];
@@ -170,7 +170,7 @@ class Parameters implements ParametersInterface
      */
     public function __toString()
     {
-        if ($this->scheme === 'unix') {
+        if ('unix' === $this->scheme) {
             return "$this->scheme:$this->path";
         }
 

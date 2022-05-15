@@ -21,22 +21,22 @@ interface FactoryInterface
     /**
      * Defines or overrides the connection class identified by a scheme prefix.
      *
-     * @param string $scheme      Target connection scheme.
-     * @param mixed  $initializer Fully-qualified name of a class or a callable for lazy initialization.
+     * @param string $scheme      target connection scheme
+     * @param mixed  $initializer fully-qualified name of a class or a callable for lazy initialization
      */
     public function define($scheme, $initializer);
 
     /**
      * Undefines the connection identified by a scheme prefix.
      *
-     * @param string $scheme Target connection scheme.
+     * @param string $scheme target connection scheme
      */
     public function undefine($scheme);
 
     /**
      * Creates a new connection object.
      *
-     * @param mixed $parameters Initialization parameters for the connection.
+     * @param mixed $parameters initialization parameters for the connection
      *
      * @return NodeConnectionInterface
      */

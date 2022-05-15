@@ -45,7 +45,7 @@ interface NodeConnectionInterface extends ConnectionInterface
      * Pushes the given command into a queue of commands executed when
      * establishing the actual connection to Redis.
      *
-     * @param CommandInterface $command Instance of a Redis command.
+     * @param CommandInterface $command instance of a Redis command
      */
     public function addConnectCommand(CommandInterface $command);
 

@@ -30,7 +30,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     protected $initCommands = array();
 
     /**
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      */
     public function __construct(ParametersInterface $parameters)
     {
@@ -49,7 +49,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * Checks some of the parameters used to initialize the connection.
      *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      *
      * @throws \InvalidArgumentException
      *
@@ -123,8 +123,8 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * Helper method to handle connection errors.
      *
-     * @param string $message Error message.
-     * @param int    $code    Error code.
+     * @param string $message error message
+     * @param int    $code    error code
      */
     protected function onConnectionError($message, $code = 0)
     {
@@ -136,7 +136,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * Helper method to handle protocol errors.
      *
-     * @param string $message Error message.
+     * @param string $message error message
      */
     protected function onProtocolError($message)
     {
@@ -174,7 +174,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     protected function getIdentifier()
     {
-        if ($this->parameters->scheme === 'unix') {
+        if ('unix' === $this->parameters->scheme) {
             return $this->parameters->path;
         }
 

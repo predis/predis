@@ -24,9 +24,6 @@ namespace Predis\Command;
  */
 class RedisFactory extends Factory
 {
-    /**
-     *
-     */
     public function __construct()
     {
         $this->commands = array(
@@ -66,5 +63,4 @@ class RedisFactory extends Factory
         // details of the implementation of this mechanism.
         $this->commands[strtoupper($commandID)] = null;
     }
-
 }

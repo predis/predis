@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/expireat
+ * @see http://redis.io/commands/expireat
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

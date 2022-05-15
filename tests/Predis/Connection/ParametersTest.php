@@ -13,9 +13,6 @@ namespace Predis\Connection;
 
 use PredisTestCase;
 
-/**
- *
- */
 class ParametersTest extends PredisTestCase
 {
     /**
@@ -340,7 +337,7 @@ class ParametersTest extends PredisTestCase
     public function testParsingURIThrowOnInvalidURI(): void
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage("Invalid parameters URI: tcp://invalid:uri");
+        $this->expectExceptionMessage('Invalid parameters URI: tcp://invalid:uri');
 
         Parameters::parse('tcp://invalid:uri');
     }
@@ -395,7 +392,7 @@ class ParametersTest extends PredisTestCase
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return array Default connection parameters.
+     * @return array default connection parameters
      */
     protected function getDefaultParametersArray(): array
     {
@@ -409,9 +406,9 @@ class ParametersTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param array $parameters array of connection parameters.
+     * @param array $parameters array of connection parameters
      *
-     * @return string URI string.
+     * @return string URI string
      */
     protected function getParametersString(array $parameters): string
     {

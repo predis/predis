@@ -25,9 +25,6 @@ class ReplicationStrategy
     protected $readonly;
     protected $readonlySHA1;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->disallowed = $this->getDisallowedOperations();
@@ -39,7 +36,7 @@ class ReplicationStrategy
      * Returns if the specified command will perform a read-only operation
      * on Redis or not.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @throws NotSupportedException
      *
@@ -48,9 +45,7 @@ class ReplicationStrategy
     public function isReadOperation(CommandInterface $command)
     {
         if (isset($this->disallowed[$id = $command->getId()])) {
-            throw new NotSupportedException(
-                "The command '$id' is not allowed in replication mode."
-            );
+            throw new NotSupportedException("The command '$id' is not allowed in replication mode.");
         }
 
         if (isset($this->readonly[$id])) {
@@ -61,7 +56,7 @@ class ReplicationStrategy
             return call_user_func($readonly, $command);
         }
 
-        if (($eval = $id === 'EVAL') || $id === 'EVALSHA') {
+        if (($eval = 'EVAL' === $id) || 'EVALSHA' === $id) {
             $argument = $command->getArgument(0);
             $sha1 = $eval ? sha1(strval($argument)) : $argument;
 
@@ -81,7 +76,7 @@ class ReplicationStrategy
      * Returns if the specified command is not allowed for execution in a master
      * / slave replication context.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return bool
      */
@@ -94,7 +89,7 @@ class ReplicationStrategy
      * Checks if BITFIELD performs a read-only operation by looking for certain
      * SET and INCRYBY modifiers in the arguments array of the command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return bool
      */
@@ -106,7 +101,7 @@ class ReplicationStrategy
         if ($argc >= 2) {
             for ($i = 1; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
-                if ($argument === 'SET' || $argument === 'INCRBY') {
+                if ('SET' === $argument || 'INCRBY' === $argument) {
                     return false;
                 }
             }
@@ -119,7 +114,7 @@ class ReplicationStrategy
      * Checks if a GEORADIUS command is a readable operation by parsing the
      * arguments array of the specified commad instance.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return bool
      */
@@ -127,12 +122,12 @@ class ReplicationStrategy
     {
         $arguments = $command->getArguments();
         $argc = count($arguments);
-        $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
+        $startIndex = 'GEORADIUS' === $command->getId() ? 5 : 4;
 
         if ($argc > $startIndex) {
             for ($i = $startIndex; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
-                if ($argument === 'STORE' || $argument === 'STOREDIST') {
+                if ('STORE' === $argument || 'STOREDIST' === $argument) {
                     return false;
                 }
             }
@@ -148,8 +143,8 @@ class ReplicationStrategy
      * on its arguments, a callable object can be provided to dynamically check
      * if the specified command performs a read or a write operation.
      *
-     * @param string $commandID Command ID.
-     * @param mixed  $readonly  A boolean value or a callable object.
+     * @param string $commandID command ID
+     * @param mixed  $readonly  a boolean value or a callable object
      */
     public function setCommandReadOnly($commandID, $readonly = true)
     {
@@ -169,8 +164,8 @@ class ReplicationStrategy
      * if the passed instance of EVAL or EVALSHA performs write operations or
      * not.
      *
-     * @param string $script   Body of the Lua script.
-     * @param mixed  $readonly A boolean value or a callable object.
+     * @param string $script   body of the Lua script
+     * @param mixed  $readonly a boolean value or a callable object
      */
     public function setScriptReadOnly($script, $readonly = true)
     {

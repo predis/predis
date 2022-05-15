@@ -14,10 +14,10 @@ namespace Predis\Transaction;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientInterface;
-use PredisTestCase;
-use Predis\Response;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Response;
+use PredisTestCase;
 
 /**
  * @group realm-transaction
@@ -261,6 +261,7 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame($responses, $expected);
         $this->assertSame(array('MULTI', 'ECHO', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'), self::commandsToIDs($commands));
     }
+
     /**
      * @group disconnected
      */
@@ -313,6 +314,7 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame(array('foo', 'hoge'), $casCommands[0]->getArguments());
         $this->assertSame(array('MULTI', 'GET', 'GET', 'EXEC'), self::commandsToIDs($txCommands));
     }
+
     /**
      * @group disconnected
      */
@@ -420,7 +422,6 @@ class MultiExecTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Automatic retries are supported only when a callable block is provided');
 
-
         $options = array('retry' => 1);
 
         $callback = $this->getExecuteCallback();
@@ -452,7 +453,7 @@ class MultiExecTest extends PredisTestCase
             $tx->get('foo');
 
             if ($attempts > 0) {
-                $attempts -= 1;
+                --$attempts;
                 $signal();
 
                 $tx->echo('!!ABORT!!');
@@ -834,8 +835,6 @@ class MultiExecTest extends PredisTestCase
      * Returns a mocked instance of Predis\Connection\NodeConnectionInterface
      * using the specified callback to return values from executeCommand().
      *
-     * @param callable $executeCallback
-     *
      * @return NodeConnectionInterface|MockObject
      */
     protected function getMockedConnection(callable $executeCallback)
@@ -857,8 +856,6 @@ class MultiExecTest extends PredisTestCase
      * @param callable $executeCallback
      * @param array    $txOpts
      * @param array    $clientOpts
-     *
-     * @return MultiExec
      */
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null): MultiExec
     {
@@ -875,8 +872,6 @@ class MultiExecTest extends PredisTestCase
      * @param ?array $expected List of expected responses
      * @param ?array $commands Reference to an array storing the whole flow of commands
      * @param ?array $cas      Reference to an array storing CAS operations performed by the transaction
-     *
-     * @return callable
      */
     protected function getExecuteCallback(
         ?array $expected = array(),
@@ -888,7 +883,7 @@ class MultiExecTest extends PredisTestCase
         return function (CommandInterface $command) use (&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
             $cmd = $command->getId();
 
-            if ($multi || $cmd === 'MULTI') {
+            if ($multi || 'MULTI' === $cmd) {
                 $commands[] = $command;
             } else {
                 $cas[] = $command;
@@ -936,11 +931,11 @@ class MultiExecTest extends PredisTestCase
 
                 case 'ECHO':
                     @list($trigger) = $command->getArguments();
-                    if (strpos($trigger, 'ERR ') === 0) {
+                    if (0 === strpos($trigger, 'ERR ')) {
                         throw new Response\ServerException($trigger);
                     }
 
-                    if ($trigger === '!!ABORT!!' && $multi) {
+                    if ('!!ABORT!!' === $trigger && $multi) {
                         $abort = true;
                     }
 
@@ -960,8 +955,6 @@ class MultiExecTest extends PredisTestCase
      * Converts an array of command instances to an array of command IDs.
      *
      * @param CommandInterface[] $commands List of commands instances
-     *
-     * @return array
      */
     protected static function commandsToIDs(array $commands): array
     {
@@ -974,8 +967,6 @@ class MultiExecTest extends PredisTestCase
      *
      * @param array $parameters Additional connection parameters
      * @param array $options    Additional client options
-     *
-     * @return ClientInterface
      */
     protected function getClient(array $parameters = array(), array $options = array()): ClientInterface
     {

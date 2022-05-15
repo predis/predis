@@ -11,12 +11,9 @@
 
 namespace Predis\Cluster;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
-/**
- *
- */
 class PredisStrategyTest extends PredisTestCase
 {
     /**
@@ -35,9 +32,9 @@ class PredisStrategyTest extends PredisTestCase
         $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
         $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:baz{}'));
-        $this->assertSame(PHP_INT_SIZE == 4 ? -1355751440 : 2939215856,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1355751440 : 2939215856, $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(PHP_INT_SIZE == 4 ?   -18873278 : 4276094018, $strategy->getSlotByKey(''));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -18873278 : 4276094018, $strategy->getSlotByKey(''));
         $this->assertSame(PHP_INT_SIZE == 4 ? -1574052038 : 2720915258, $strategy->getSlotByKey('{}'));
     }
 
@@ -292,8 +289,6 @@ class PredisStrategyTest extends PredisTestCase
 
     /**
      * Creates the default cluster strategy object.
-     *
-     * @return StrategyInterface
      */
     protected function getClusterStrategy(): StrategyInterface
     {
@@ -309,8 +304,6 @@ class PredisStrategyTest extends PredisTestCase
      * Returns the list of expected supported commands.
      *
      * @param ?string $type Optional type of command (based on its keys)
-     *
-     * @return array
      */
     protected function getExpectedCommands(?string $type = null): array
     {

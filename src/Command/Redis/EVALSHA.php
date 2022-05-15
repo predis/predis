@@ -12,7 +12,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/evalsha
+ * @see http://redis.io/commands/evalsha
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -29,7 +29,7 @@ class EVALSHA extends EVAL_
     /**
      * Returns the SHA1 hash of the body of the script.
      *
-     * @return string SHA1 hash.
+     * @return string SHA1 hash
      */
     public function getScriptHash()
     {

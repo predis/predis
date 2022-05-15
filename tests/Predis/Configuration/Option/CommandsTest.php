@@ -11,15 +11,12 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Configuration\OptionsInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\RedisFactory;
+use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class CommandsTest extends PredisTestCase
 {
     /**
@@ -120,7 +117,7 @@ class CommandsTest extends PredisTestCase
         $input = array(
             'ECHO' => null,
             'EVAL' => null,
-            'FOO'  => null,
+            'FOO' => null,
         );
 
         $commands = $option->filter($options, $input);

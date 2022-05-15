@@ -15,8 +15,8 @@ use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
-use Predis\Connection\PhpiredisStreamConnection;
 use Predis\Connection\PhpiredisSocketConnection;
+use Predis\Connection\PhpiredisStreamConnection;
 
 /**
  * Configures a new connection factory instance.
@@ -45,9 +45,7 @@ class Connections implements OptionInterface
         } elseif (is_string($value)) {
             return $this->createFactoryByString($options, $value);
         } else {
-            throw new \InvalidArgumentException(sprintf(
-                '%s expects a valid connection factory', static::class
-            ));
+            throw new \InvalidArgumentException(sprintf('%s expects a valid connection factory', static::class));
         }
     }
 
@@ -102,7 +100,7 @@ class Connections implements OptionInterface
          */
         $factory = $this->getDefault($options);
 
-        switch(strtolower($value)) {
+        switch (strtolower($value)) {
             case 'phpiredis':
             case 'phpiredis-stream':
                 $factory->define('tcp', PhpiredisStreamConnection::class);
@@ -120,9 +118,7 @@ class Connections implements OptionInterface
                 return $factory;
 
             default:
-                throw new \InvalidArgumentException(sprintf(
-                    '%s does not recognize `%s` as a supported configuration string', static::class, $value
-                ));
+                throw new \InvalidArgumentException(sprintf('%s does not recognize `%s` as a supported configuration string', static::class, $value));
         }
 
         return $factory;

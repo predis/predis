@@ -11,16 +11,13 @@
 
 namespace Predis\Protocol\Text;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
 use Predis\Connection\CompositeConnectionInterface;
 use Predis\Protocol\RequestSerializerInterface;
 use Predis\Protocol\ResponseReaderInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class CompositeProtocolProcessorTest extends PredisTestCase
 {
     /**

@@ -11,16 +11,13 @@
 
 namespace Predis\Connection\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
+use PredisTestCase;
 
-/**
- *
- */
 class MasterSlaveReplicationTest extends PredisTestCase
 {
     /**
@@ -993,7 +990,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
             ->setCommandReadOnly('exists', function ($cmd) {
                 list($arg1) = $cmd->getArguments();
 
-                return $arg1 === 'foo';
+                return 'foo' === $arg1;
             });
 
         $replication->executeCommand($cmdExistsFoo);
@@ -1113,31 +1110,31 @@ repl_backlog_histlen:12978
             ->expects($this->exactly(3))
             ->method('create')
             ->withConsecutive(
-                # Connection to master node
+                // Connection to master node
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6381',
                         'role' => 'master',
-                    )
+                    ),
                 ),
 
-                # Connection to first slave
+                // Connection to first slave
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6382',
                         'role' => 'slave',
-                    )
+                    ),
                 ),
 
-                # Connection to second slave
+                // Connection to second slave
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6383',
                         'role' => 'slave',
-                    )
+                    ),
                 )
             )
             ->willReturnOnConsecutiveCalls(
@@ -1221,31 +1218,31 @@ repl_backlog_histlen:12978
             ->expects($this->exactly(3))
             ->method('create')
             ->withConsecutive(
-                # Connection to master node
+                // Connection to master node
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6381',
                         'role' => 'master',
-                    )
+                    ),
                 ),
 
-                # Connection to first slave
+                // Connection to first slave
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6382',
                         'role' => 'slave',
-                    )
+                    ),
                 ),
 
-                # Connection to second slave
+                // Connection to second slave
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6383',
                         'role' => 'slave',
-                    )
+                    ),
                 )
             )
             ->willReturnOnConsecutiveCalls(

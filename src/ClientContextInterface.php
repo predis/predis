@@ -172,7 +172,7 @@ interface ClientContextInterface
     /**
      * Sends the specified command instance to Redis.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return mixed
      */
@@ -181,8 +181,8 @@ interface ClientContextInterface
     /**
      * Sends the specified command with its arguments to Redis.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      *
      * @return mixed
      */
@@ -191,7 +191,7 @@ interface ClientContextInterface
     /**
      * Starts the execution of the context.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param mixed $callable optional callback for execution
      *
      * @return array
      */

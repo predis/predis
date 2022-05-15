@@ -24,7 +24,7 @@ class PredisStrategy extends ClusterStrategy
     protected $distributor;
 
     /**
-     * @param DistributorInterface $distributor Optional distributor instance.
+     * @param DistributorInterface $distributor optional distributor instance
      */
     public function __construct(DistributorInterface $distributor = null)
     {

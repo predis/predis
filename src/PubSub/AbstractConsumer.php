@@ -18,17 +18,17 @@ namespace Predis\PubSub;
  */
 abstract class AbstractConsumer implements \Iterator
 {
-    const SUBSCRIBE = 'subscribe';
-    const UNSUBSCRIBE = 'unsubscribe';
-    const PSUBSCRIBE = 'psubscribe';
-    const PUNSUBSCRIBE = 'punsubscribe';
-    const MESSAGE = 'message';
-    const PMESSAGE = 'pmessage';
-    const PONG = 'pong';
+    public const SUBSCRIBE = 'subscribe';
+    public const UNSUBSCRIBE = 'unsubscribe';
+    public const PSUBSCRIBE = 'psubscribe';
+    public const PUNSUBSCRIBE = 'punsubscribe';
+    public const MESSAGE = 'message';
+    public const PMESSAGE = 'pmessage';
+    public const PONG = 'pong';
 
-    const STATUS_VALID = 1;       // 0b0001
-    const STATUS_SUBSCRIBED = 2;  // 0b0010
-    const STATUS_PSUBSCRIBED = 4; // 0b0100
+    public const STATUS_VALID = 1;       // 0b0001
+    public const STATUS_SUBSCRIBED = 2;  // 0b0010
+    public const STATUS_PSUBSCRIBED = 4; // 0b0100
 
     private $position = null;
     private $statusFlags = self::STATUS_VALID;
@@ -44,7 +44,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * Checks if the specified flag is valid based on the state of the consumer.
      *
-     * @param int $value Flag.
+     * @param int $value flag
      *
      * @return bool
      */
@@ -58,7 +58,7 @@ abstract class AbstractConsumer implements \Iterator
      *
      * @param mixed $channel,... One or more channel names.
      */
-    public function subscribe($channel /*, ... */)
+    public function subscribe($channel /* , ... */)
     {
         $this->writeRequest(self::SUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_SUBSCRIBED;
@@ -99,7 +99,7 @@ abstract class AbstractConsumer implements \Iterator
      * PING the server with an optional payload that will be echoed as a
      * PONG message in the pub/sub loop.
      *
-     * @param string $payload Optional PING payload.
+     * @param string $payload optional PING payload
      */
     public function ping($payload = null)
     {
@@ -110,9 +110,9 @@ abstract class AbstractConsumer implements \Iterator
      * Closes the context by unsubscribing from all the subscribed channels. The
      * context can be forcefully closed by dropping the underlying connection.
      *
-     * @param bool $drop Indicates if the context should be closed by dropping the connection.
+     * @param bool $drop indicates if the context should be closed by dropping the connection
      *
-     * @return bool Returns false when there are no pending messages.
+     * @return bool returns false when there are no pending messages
      */
     public function stop($drop = false)
     {
@@ -143,8 +143,8 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * Writes a Redis command on the underlying connection.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      */
     abstract protected function writeRequest($method, $arguments);
 

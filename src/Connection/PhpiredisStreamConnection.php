@@ -42,7 +42,7 @@ use Predis\Response\Status as StatusResponse;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *
- * @link https://github.com/nrk/phpiredis
+ * @see https://github.com/nrk/phpiredis
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -78,9 +78,7 @@ class PhpiredisStreamConnection extends StreamConnection
     private function assertExtensions()
     {
         if (!extension_loaded('phpiredis')) {
-            throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend.'
-            );
+            throw new NotSupportedException('The "phpiredis" extension is required by this connection backend.');
         }
     }
 
@@ -98,7 +96,6 @@ class PhpiredisStreamConnection extends StreamConnection
             case 'tls':
             case 'rediss':
                 throw new \InvalidArgumentException('SSL encryption is not supported by this connection backend.');
-
             default:
                 throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
@@ -113,7 +110,7 @@ class PhpiredisStreamConnection extends StreamConnection
     {
         $socket = null;
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
-        $context = stream_context_create(['socket' => ['tcp_nodelay' => (bool) $parameters->tcp_nodelay]]);
+        $context = stream_context_create(array('socket' => array('tcp_nodelay' => (bool) $parameters->tcp_nodelay)));
 
         if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
             $this->onConnectionError(trim($errstr), $errno);
@@ -213,14 +210,14 @@ class PhpiredisStreamConnection extends StreamConnection
         while (PHPIREDIS_READER_STATE_INCOMPLETE === $state = phpiredis_reader_get_state($reader)) {
             $buffer = stream_socket_recvfrom($socket, 4096);
 
-            if ($buffer === false || $buffer === '') {
+            if (false === $buffer || '' === $buffer) {
                 $this->onConnectionError('Error while reading bytes from the server.');
             }
 
             phpiredis_reader_feed($reader, $buffer);
         }
 
-        if ($state === PHPIREDIS_READER_STATE_COMPLETE) {
+        if (PHPIREDIS_READER_STATE_COMPLETE === $state) {
             return phpiredis_reader_get_reply($reader);
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));

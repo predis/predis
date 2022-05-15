@@ -11,14 +11,11 @@
 
 namespace Predis\Command\Processor;
 
-use PredisTestCase;
-use Predis\Command\RawCommand;
-use Predis\Command\CommandInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
+use PredisTestCase;
 
-/**
- *
- */
 class KeyPrefixProcessorTest extends PredisTestCase
 {
     /**
@@ -277,8 +274,6 @@ class KeyPrefixProcessorTest extends PredisTestCase
      * @dataProvider commandArgumentsDataProvider
      *
      * @param string $commandID
-     * @param array  $arguments
-     * @param array  $expected
      */
     public function testApplyPrefixToCommand($commandID, array $arguments, array $expected): void
     {
@@ -374,9 +369,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
      * Returns a command instance by ID populated with the specified arguments.
      *
      * @param string $commandID ID of the Redis command
-     * @param array $arguments  List of arguments for the command
-     *
-     * @return CommandInterface
+     * @param array  $arguments List of arguments for the command
      */
     public function getCommandInstance(string $commandID, array $arguments): CommandInterface
     {
@@ -388,8 +381,6 @@ class KeyPrefixProcessorTest extends PredisTestCase
 
     /**
      * Data provider for key prefixing test.
-     *
-     * @return array
      */
     public function commandArgumentsDataProvider(): array
     {

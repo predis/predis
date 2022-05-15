@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/sort
+ * @see http://redis.io/commands/sort
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +33,7 @@ class SORT extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 1) {
+        if (1 === count($arguments)) {
             parent::setArguments($arguments);
 
             return;
@@ -63,7 +63,7 @@ class SORT extends RedisCommand
 
         if (isset($sortParams['LIMIT']) &&
             is_array($sortParams['LIMIT']) &&
-            count($sortParams['LIMIT']) == 2) {
+            2 == count($sortParams['LIMIT'])) {
             $query[] = 'LIMIT';
             $query[] = $sortParams['LIMIT'][0];
             $query[] = $sortParams['LIMIT'][1];
@@ -73,7 +73,7 @@ class SORT extends RedisCommand
             $query[] = strtoupper($sortParams['SORT']);
         }
 
-        if (isset($sortParams['ALPHA']) && $sortParams['ALPHA'] == true) {
+        if (isset($sortParams['ALPHA']) && true == $sortParams['ALPHA']) {
             $query[] = 'ALPHA';
         }
 

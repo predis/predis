@@ -45,8 +45,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param Command\CommandInterface|string $command   Expected command instance or command ID
      * @param ?array                          $arguments Expected command arguments
-     *
-     * @return RedisCommandConstraint
      */
     public function isRedisCommand($command = null, ?array $arguments = null): RedisCommandConstraint
     {
@@ -101,8 +99,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
     {
-        if (is_callable('parent::' . __FUNCTION__)) {
-            call_user_func('parent::' . __FUNCTION__, $pattern, $string, $message);
+        if (is_callable('parent::'.__FUNCTION__)) {
+            call_user_func('parent::'.__FUNCTION__, $pattern, $string, $message);
         } else {
             static::assertRegExp($pattern, $string, $message);
         }
@@ -139,8 +137,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Merges a named array of connection parameters with current defaults.
      *
      * @param array $additional Additional connection parameters
-     *
-     * @return array
      */
     protected function getParametersArray(array $additional): array
     {
@@ -153,8 +149,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Values in the optional $additional named array are merged with defaults.
      *
      * @param array $additional Additional connection parameters
-     *
-     * @return Connection\ParametersInterface
      */
     protected function getParameters($additional = array()): Connection\ParametersInterface
     {
@@ -166,8 +160,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Returns a new instance of command factory.
-     *
-     * @return Command\Factory
      */
     protected function getCommandFactory(): Command\Factory
     {
@@ -183,8 +175,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * @param array $parameters Additional connection parameters
      * @param array $options    Additional client options
      * @param bool  $flushdb    Flush selected database before returning the client
-     *
-     * @return Client
      */
     protected function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
     {
@@ -230,9 +220,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (!is_a($interface, '\Predis\Connection\NodeConnectionInterface', true)) {
             $method = __METHOD__;
 
-            throw new \InvalidArgumentException(
-                "Argument `\$interface` for $method() expects a type implementing Predis\Connection\NodeConnectionInterface"
-            );
+            throw new \InvalidArgumentException("Argument `\$interface` for $method() expects a type implementing Predis\Connection\NodeConnectionInterface");
         }
 
         $connection = $this->getMockBuilder($interface)->getMock();
@@ -277,8 +265,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Returns the server version of the Redis instance used by the test suite.
      *
      * @throws RuntimeException When the client cannot retrieve the current server version
-     *
-     * @return string
      */
     protected function getRedisServerVersion(): string
     {
@@ -333,8 +319,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string $operator Comparison operator
      * @param string $version  Version to compare
-     *
-     * @return bool
      */
     public function isRedisServerVersion(string $operator, string $version): bool
     {
@@ -361,7 +345,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
         $requiredVersion = explode(' ', $requiredVersion, 2);
 
-        if (count($requiredVersion) === 1) {
+        if (1 === count($requiredVersion)) {
             $reqOperator = '>=';
             $reqVersion = $requiredVersion[0];
         } else {
@@ -380,8 +364,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Marks current test skipped when test suite is running on CI environments.
-     *
-     * @param string $message
      */
     protected function markTestSkippedOnCIEnvironment(string $message = 'Test skipped on CI environment'): void
     {

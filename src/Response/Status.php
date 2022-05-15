@@ -24,7 +24,7 @@ class Status implements ResponseInterface
     private $payload;
 
     /**
-     * @param string $payload Payload of the status response as returned by Redis.
+     * @param string $payload payload of the status response as returned by Redis
      */
     public function __construct($payload)
     {
@@ -57,7 +57,7 @@ class Status implements ResponseInterface
      * Common status responses such as OK or QUEUED are cached in order to lower
      * the global memory usage especially when using pipelines.
      *
-     * @param string $payload Status response payload.
+     * @param string $payload status response payload
      *
      * @return self
      */

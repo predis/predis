@@ -18,7 +18,7 @@ use Predis\Response\Error;
  * Handler for the error response type in the standard Redis wire protocol.
  * It translates the payload to a complex response object for Predis.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

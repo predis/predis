@@ -34,8 +34,8 @@ foreach ($pubsub as $message) {
             break;
 
         case 'message':
-            if ($message->channel == 'control_channel') {
-                if ($message->payload == 'quit_loop') {
+            if ('control_channel' == $message->channel) {
+                if ('quit_loop' == $message->payload) {
                     echo 'Aborting pubsub loop...', PHP_EOL;
                     $pubsub->unsubscribe();
                 } else {

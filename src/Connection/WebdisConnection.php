@@ -37,9 +37,9 @@ use Predis\Response\Status as StatusResponse;
  *  - user: username for authentication.
  *  - pass: password for authentication.
  *
- * @link http://webd.is
- * @link http://github.com/nicolasff/webdis
- * @link http://github.com/seppo0010/phpiredis
+ * @see http://webd.is
+ * @see http://github.com/nicolasff/webdis
+ * @see http://github.com/seppo0010/phpiredis
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -50,7 +50,7 @@ class WebdisConnection implements NodeConnectionInterface
     private $reader;
 
     /**
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     * @param ParametersInterface $parameters initialization parameters for the connection
      *
      * @throws \InvalidArgumentException
      */
@@ -58,7 +58,7 @@ class WebdisConnection implements NodeConnectionInterface
     {
         $this->assertExtensions();
 
-        if ($parameters->scheme !== 'http') {
+        if ('http' !== $parameters->scheme) {
             throw new \InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
@@ -81,7 +81,7 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Helper method used to throw on unsupported methods.
      *
-     * @param string $method Name of the unsupported method.
+     * @param string $method name of the unsupported method
      *
      * @throws NotSupportedException
      */
@@ -97,15 +97,11 @@ class WebdisConnection implements NodeConnectionInterface
     private function assertExtensions()
     {
         if (!extension_loaded('curl')) {
-            throw new NotSupportedException(
-                'The "curl" extension is required by this connection backend.'
-            );
+            throw new NotSupportedException('The "curl" extension is required by this connection backend.');
         }
 
         if (!extension_loaded('phpiredis')) {
-            throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend.'
-            );
+            throw new NotSupportedException('The "phpiredis" extension is required by this connection backend.');
         }
     }
 
@@ -195,8 +191,8 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Feeds the phpredis reader resource with the data read from the network.
      *
-     * @param resource $resource Reader resource.
-     * @param string   $buffer   Buffer of data read from a connection.
+     * @param resource $resource reader resource
+     * @param string   $buffer   buffer of data read from a connection
      *
      * @return int
      */
@@ -234,7 +230,7 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Checks if the specified command is supported by this connection class.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @throws NotSupportedException
      *
@@ -252,7 +248,6 @@ class WebdisConnection implements NodeConnectionInterface
             case 'DISCARD':
             case 'MONITOR':
                 throw new NotSupportedException("Command '$commandID' is not allowed by Webdis.");
-
             default:
                 return $commandID;
         }
@@ -291,14 +286,14 @@ class WebdisConnection implements NodeConnectionInterface
 
         curl_setopt($resource, CURLOPT_POSTFIELDS, $serializedCommand);
 
-        if (curl_exec($resource) === false) {
+        if (false === curl_exec($resource)) {
             $error = trim(curl_error($resource));
             $errno = curl_errno($resource);
 
             throw new ConnectionException($this, "$error{$this->getParameters()}]", $errno);
         }
 
-        if (phpiredis_reader_get_state($this->reader) !== PHPIREDIS_READER_STATE_COMPLETE) {
+        if (PHPIREDIS_READER_STATE_COMPLETE !== phpiredis_reader_get_state($this->reader)) {
             throw new ProtocolException($this, phpiredis_reader_get_error($this->reader));
         }
 

@@ -21,7 +21,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Checks if the given slot is valid.
      *
-     * @param int $first Slot index.
+     * @param int $first slot index
      *
      * @return bool
      */
@@ -33,8 +33,8 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Checks if the given slot range is valid.
      *
-     * @param int $first Initial slot of the range.
-     * @param int $last  Last slot of the range.
+     * @param int $first initial slot of the range
+     * @param int $last  last slot of the range
      *
      * @return bool
      */
@@ -86,9 +86,9 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Assigns the specified slot range to a node.
      *
-     * @param int                            $first      Initial slot of the range.
-     * @param int                            $last       Last slot of the range.
-     * @param NodeConnectionInterface|string $connection ID or connection instance.
+     * @param int                            $first      initial slot of the range
+     * @param int                            $last       last slot of the range
+     * @param nodeConnectionInterface|string $connection ID or connection instance
      *
      * @throws \OutOfBoundsException
      */
@@ -104,8 +104,8 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Returns the specified slot range.
      *
-     * @param int $first Initial slot of the range.
-     * @param int $last  Last slot of the range.
+     * @param int $first initial slot of the range
+     * @param int $last  last slot of the range
      *
      * @return array
      */
@@ -121,7 +121,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Checks if the specified slot is assigned.
      *
-     * @param int $slot Slot index.
+     * @param int $slot slot index
      *
      * @return bool
      */
@@ -134,7 +134,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Returns the node assigned to the specified slot.
      *
-     * @param int $slot Slot index.
+     * @param int $slot slot index
      *
      * @return string
      */
@@ -149,8 +149,8 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Assigns the specified slot to a node.
      *
-     * @param int                            $slot       Slot index.
-     * @param NodeConnectionInterface|string $connection ID or connection instance.
+     * @param int                            $slot       slot index
+     * @param nodeConnectionInterface|string $connection ID or connection instance
      *
      * @return string
      */
@@ -167,7 +167,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Returns the node assigned to the specified slot.
      *
-     * @param int $slot Slot index.
+     * @param int $slot slot index
      *
      * @return string
      */

@@ -24,7 +24,7 @@ namespace Predis\Configuration;
 class Options implements OptionsInterface
 {
     /** @var array */
-    protected $handlers = [
+    protected $handlers = array(
         'aggregate' => Option\Aggregate::class,
         'cluster' => Option\Cluster::class,
         'replication' => Option\Replication::class,
@@ -33,10 +33,10 @@ class Options implements OptionsInterface
         'exceptions' => Option\Exceptions::class,
         'prefix' => Option\Prefix::class,
         'crc16' => Option\CRC16::class,
-    ];
+    );
 
     /** @var array */
-    protected $options = [];
+    protected $options = array();
 
     /** @var array */
     protected $input;
@@ -46,7 +46,7 @@ class Options implements OptionsInterface
      */
     public function __construct(array $options = null)
     {
-        $this->input = $options ?? [];
+        $this->input = $options ?? array();
     }
 
     /**
@@ -81,7 +81,7 @@ class Options implements OptionsInterface
         return (
             array_key_exists($option, $this->options) ||
             array_key_exists($option, $this->input)
-        ) && $this->__get($option) !== null;
+        ) && null !== $this->__get($option);
     }
 
     /**

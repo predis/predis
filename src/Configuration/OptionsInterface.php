@@ -12,14 +12,15 @@
 namespace Predis\Configuration;
 
 use Predis\Command\Processor\ProcessorInterface;
+
 /**
- * @property-read callable                    $aggregate   Custom aggregate connection initializer
- * @property-read callable                    $cluster     Aggregate connection initializer for clustering
- * @property-read Connection\FactoryInterface $connections Connection factory for creating new connections
- * @property-read bool                        $exceptions  Toggles exceptions in client for -ERR responses
- * @property-read ProcessorInterface          $prefix      Key prefixing strategy using the supplied string as prefix
- * @property-read Command\FactoryInterface    $commands    Command factory for creating Redis commands
- * @property-read callable                    $replication Aggregate connection initializer for replication
+ * @property callable                    $aggregate   Custom aggregate connection initializer
+ * @property callable                    $cluster     Aggregate connection initializer for clustering
+ * @property Connection\FactoryInterface $connections Connection factory for creating new connections
+ * @property bool                        $exceptions  Toggles exceptions in client for -ERR responses
+ * @property ProcessorInterface          $prefix      Key prefixing strategy using the supplied string as prefix
+ * @property Command\FactoryInterface    $commands    Command factory for creating Redis commands
+ * @property callable                    $replication Aggregate connection initializer for replication
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

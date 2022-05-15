@@ -25,7 +25,7 @@ class Autoloader
     private $prefixLength;
 
     /**
-     * @param string $baseDirectory Base directory where the source files are located.
+     * @param string $baseDirectory base directory where the source files are located
      */
     public function __construct($baseDirectory = __DIR__)
     {
@@ -37,7 +37,7 @@ class Autoloader
     /**
      * Registers the autoloader class with the PHP SPL autoloader.
      *
-     * @param bool $prepend Prepend the autoloader on the stack instead of appending it.
+     * @param bool $prepend prepend the autoloader on the stack instead of appending it
      */
     public static function register($prepend = false)
     {
@@ -47,7 +47,7 @@ class Autoloader
     /**
      * Loads a class from a file using its fully qualified name.
      *
-     * @param string $className Fully qualified name of a class.
+     * @param string $className fully qualified name of a class
      */
     public function autoload($className)
     {

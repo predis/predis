@@ -12,7 +12,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zrangebylex
+ * @see http://redis.io/commands/zrangebylex
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

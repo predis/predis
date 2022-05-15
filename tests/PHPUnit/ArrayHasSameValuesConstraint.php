@@ -16,9 +16,6 @@ class ArrayHasSameValuesConstraint extends \PHPUnit\Framework\Constraint\Constra
 {
     protected $array;
 
-    /**
-     * @param array $array
-     */
     public function __construct(array $array)
     {
         $this->array = $array;

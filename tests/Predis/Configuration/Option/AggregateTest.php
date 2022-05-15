@@ -12,14 +12,9 @@
 namespace Predis\Configuration\Option;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use PredisTestCase;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
-use function PHPSTORM_META\expectedArguments;
-
-/**
- *
- */
 class AggregateTest extends PredisTestCase
 {
     /**
@@ -41,7 +36,7 @@ class AggregateTest extends PredisTestCase
     public function testAcceptsCallableAsConnectionInitializer(): void
     {
         $option = new Aggregate();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -66,7 +61,7 @@ class AggregateTest extends PredisTestCase
     public function testReturnedCallableWrapperDoesNotTriggerAggregationByDefault(): void
     {
         $option = new Aggregate();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var MockObject|OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -99,7 +94,7 @@ class AggregateTest extends PredisTestCase
     public function testReturnedCallableWrapperDoesNotTriggerAggregationWhenSecondArgumentIsFalse(): void
     {
         $option = new Aggregate();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var MockObject|OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -132,15 +127,15 @@ class AggregateTest extends PredisTestCase
     public function testReturnedCallableWrapperTriggersAggregationWhenSecondArgumentIsTrue(): void
     {
         $option = new Aggregate();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
             ->withConsecutive(
-                [$parameters[0]],
-                [$parameters[1]]
+                array($parameters[0]),
+                array($parameters[1])
             )
             ->willReturnOnConsecutiveCalls(
                 $nodeConnection1 = $this->getMockConnection($parameters[0]),
@@ -161,8 +156,8 @@ class AggregateTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('add')
             ->withConsecutive(
-                [$nodeConnection1],
-                [$nodeConnection2]
+                array($nodeConnection1),
+                array($nodeConnection2)
             );
 
         $callable = $this->getMockBuilder('stdClass')
@@ -184,7 +179,7 @@ class AggregateTest extends PredisTestCase
     public function testReturnedCallableWrapperDoesNotTriggerAggregationWhenFirstArgumentIsEmptyAndSecondArgumentIsTrue(): void
     {
         $option = new Aggregate();
-        $parameters = [];
+        $parameters = array();
 
         /** @var MockObject|OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -222,7 +217,7 @@ class AggregateTest extends PredisTestCase
         );
 
         $option = new Aggregate();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();

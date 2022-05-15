@@ -13,9 +13,6 @@ namespace Predis\Cluster\Hash;
 
 use PredisTestCase;
 
-/**
- *
- */
 class CRC16Test extends PredisTestCase
 {
     /**

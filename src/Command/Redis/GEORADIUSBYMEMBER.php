@@ -12,7 +12,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/georadiusbymember
+ * @see http://redis.io/commands/georadiusbymember
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

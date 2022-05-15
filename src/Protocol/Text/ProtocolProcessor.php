@@ -23,7 +23,7 @@ use Predis\Response\Status as StatusResponse;
 /**
  * Protocol processor for the standard Redis wire protocol.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -32,9 +32,6 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     protected $mbiterable;
     protected $serializer;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->mbiterable = false;
@@ -65,7 +62,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
             case '$':
                 $size = (int) $payload;
-                if ($size === -1) {
+                if (-1 === $size) {
                     return;
                 }
 
@@ -74,7 +71,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
             case '*':
                 $count = (int) $payload;
 
-                if ($count === -1) {
+                if (-1 === $count) {
                     return;
                 }
                 if ($this->mbiterable) {
@@ -115,7 +112,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
      * abstractions built-in into Predis, such as transactions or pipelines.
      * Use them with care!
      *
-     * @param bool $value Enable or disable streamable multibulk responses.
+     * @param bool $value enable or disable streamable multibulk responses
      */
     public function useIterableMultibulk($value)
     {

@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/hmset
+ * @see http://redis.io/commands/hmset
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +33,7 @@ class HMSET extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 2 && is_array($arguments[1])) {
+        if (2 === count($arguments) && is_array($arguments[1])) {
             $flattenedKVs = array($arguments[0]);
             $args = $arguments[1];
 

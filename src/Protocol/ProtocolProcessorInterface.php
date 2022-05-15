@@ -25,15 +25,15 @@ interface ProtocolProcessorInterface
     /**
      * Writes a request over a connection to Redis.
      *
-     * @param CompositeConnectionInterface $connection Redis connection.
-     * @param CommandInterface             $command    Command instance.
+     * @param CompositeConnectionInterface $connection redis connection
+     * @param CommandInterface             $command    command instance
      */
     public function write(CompositeConnectionInterface $connection, CommandInterface $command);
 
     /**
      * Reads a response from a connection to Redis.
      *
-     * @param CompositeConnectionInterface $connection Redis connection.
+     * @param CompositeConnectionInterface $connection redis connection
      *
      * @return mixed
      */

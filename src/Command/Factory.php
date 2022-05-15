@@ -25,7 +25,7 @@ use Predis\Command\Processor\ProcessorInterface;
  */
 abstract class Factory implements FactoryInterface
 {
-    protected $commands = [];
+    protected $commands = array();
     protected $processor;
 
     /**
@@ -34,7 +34,7 @@ abstract class Factory implements FactoryInterface
     public function supports(string ...$commandIDs): bool
     {
         foreach ($commandIDs as $commandID) {
-            if ($this->getCommandClass($commandID) === null) {
+            if (null === $this->getCommandClass($commandID)) {
                 return false;
             }
         }
@@ -61,7 +61,7 @@ abstract class Factory implements FactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(string $commandID, array $arguments = []): CommandInterface
+    public function create(string $commandID, array $arguments = array()): CommandInterface
     {
         if (!$commandClass = $this->getCommandClass($commandID)) {
             $commandID = strtoupper($commandID);
@@ -94,9 +94,7 @@ abstract class Factory implements FactoryInterface
     public function define(string $commandID, string $commandClass): void
     {
         if (!is_a($commandClass, 'Predis\Command\CommandInterface', true)) {
-            throw new \InvalidArgumentException(
-                "Class $commandClass must implement Predis\Command\CommandInterface"
-            );
+            throw new \InvalidArgumentException("Class $commandClass must implement Predis\Command\CommandInterface");
         }
 
         $this->commands[strtoupper($commandID)] = $commandClass;
@@ -126,7 +124,7 @@ abstract class Factory implements FactoryInterface
      * A NULL value can be used to effectively unset any processor if previously
      * set for the command factory.
      *
-     * @param ProcessorInterface|null $processor Command processor or NULL value.
+     * @param ProcessorInterface|null $processor command processor or NULL value
      */
     public function setProcessor(?ProcessorInterface $processor): void
     {

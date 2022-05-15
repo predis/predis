@@ -29,7 +29,7 @@ interface CommandInterface
     /**
      * Assign the specified slot to the command for clustering distribution.
      *
-     * @param int $slot Slot ID.
+     * @param int $slot slot ID
      */
     public function setSlot($slot);
 
@@ -43,14 +43,14 @@ interface CommandInterface
     /**
      * Sets the arguments for the command.
      *
-     * @param array $arguments List of arguments.
+     * @param array $arguments list of arguments
      */
     public function setArguments(array $arguments);
 
     /**
      * Sets the raw arguments for the command without processing them.
      *
-     * @param array $arguments List of arguments.
+     * @param array $arguments list of arguments
      */
     public function setRawArguments(array $arguments);
 
@@ -64,7 +64,7 @@ interface CommandInterface
     /**
      * Gets the argument of the command at the specified index.
      *
-     * @param int $index Index of the desired argument.
+     * @param int $index index of the desired argument
      *
      * @return mixed|null
      */
@@ -73,7 +73,7 @@ interface CommandInterface
     /**
      * Parses a raw response and returns a PHP object.
      *
-     * @param string|array|null $data Binary string containing the whole response.
+     * @param string|array|null $data binary string containing the whole response
      *
      * @return mixed
      */

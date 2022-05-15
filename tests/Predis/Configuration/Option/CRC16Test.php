@@ -11,12 +11,9 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class CRC16Test extends PredisTestCase
 {
     /**

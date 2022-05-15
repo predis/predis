@@ -212,8 +212,8 @@ interface ClientInterface
     /**
      * Creates a new instance of the specified Redis command.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      *
      * @return CommandInterface
      */
@@ -222,7 +222,7 @@ interface ClientInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return mixed
      */
@@ -232,8 +232,8 @@ interface ClientInterface
      * Creates a Redis command with the specified arguments and sends a request
      * to the server.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      *
      * @return mixed
      */

@@ -11,13 +11,10 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ConnectionsTest extends PredisTestCase
 {
     /**

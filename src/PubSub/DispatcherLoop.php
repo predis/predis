@@ -26,7 +26,7 @@ class DispatcherLoop
     protected $subscriptionCallback;
 
     /**
-     * @param Consumer $pubsub PubSub consumer instance used by the loop.
+     * @param Consumer $pubsub pubSub consumer instance used by the loop
      */
     public function __construct(Consumer $pubsub)
     {
@@ -37,7 +37,7 @@ class DispatcherLoop
     /**
      * Checks if the passed argument is a valid callback.
      *
-     * @param mixed $callable A callback.
+     * @param mixed $callable a callback
      *
      * @throws \InvalidArgumentException
      */
@@ -61,7 +61,7 @@ class DispatcherLoop
     /**
      * Sets a callback that gets invoked upon new subscriptions.
      *
-     * @param mixed $callable A callback.
+     * @param mixed $callable a callback
      */
     public function subscriptionCallback($callable = null)
     {
@@ -76,7 +76,7 @@ class DispatcherLoop
      * Sets a callback that gets invoked when a message is received on a
      * channel that does not have an associated callback.
      *
-     * @param mixed $callable A callback.
+     * @param mixed $callable a callback
      */
     public function defaultCallback($callable = null)
     {
@@ -90,8 +90,8 @@ class DispatcherLoop
     /**
      * Binds a callback to a channel.
      *
-     * @param string   $channel  Channel name.
-     * @param callable $callback A callback.
+     * @param string   $channel  channel name
+     * @param callable $callback a callback
      */
     public function attachCallback($channel, $callback)
     {
@@ -105,7 +105,7 @@ class DispatcherLoop
     /**
      * Stops listening to a channel and removes the associated callback.
      *
-     * @param string $channel Redis channel.
+     * @param string $channel redis channel
      */
     public function detachCallback($channel)
     {
@@ -125,7 +125,7 @@ class DispatcherLoop
         foreach ($this->pubsub as $message) {
             $kind = $message->kind;
 
-            if ($kind !== Consumer::MESSAGE && $kind !== Consumer::PMESSAGE) {
+            if (Consumer::MESSAGE !== $kind && Consumer::PMESSAGE !== $kind) {
                 if (isset($this->subscriptionCallback)) {
                     $callback = $this->subscriptionCallback;
                     call_user_func($callback, $message, $this);

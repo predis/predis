@@ -23,8 +23,8 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
  */
 class HashRing implements DistributorInterface, HashGeneratorInterface
 {
-    const DEFAULT_REPLICAS = 128;
-    const DEFAULT_WEIGHT = 100;
+    public const DEFAULT_REPLICAS = 128;
+    public const DEFAULT_WEIGHT = 100;
 
     private $ring;
     private $ringKeys;
@@ -34,8 +34,8 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     private $nodes = array();
 
     /**
-     * @param int   $replicas         Number of replicas in the ring.
-     * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
+     * @param int   $replicas         number of replicas in the ring
+     * @param mixed $nodeHashCallback callback returning a string used to calculate the hash of nodes
      */
     public function __construct($replicas = self::DEFAULT_REPLICAS, $nodeHashCallback = null)
     {
@@ -46,8 +46,8 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Adds a node to the ring with an optional weight.
      *
-     * @param mixed $node   Node object.
-     * @param int   $weight Weight for the node.
+     * @param mixed $node   node object
+     * @param int   $weight weight for the node
      */
     public function add($node, $weight = null)
     {
@@ -148,11 +148,11 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     /**
      * Implements the logic needed to add a node to the hashring.
      *
-     * @param array $ring        Source hashring.
-     * @param mixed $node        Node object to be added.
-     * @param int   $totalNodes  Total number of nodes.
-     * @param int   $replicas    Number of replicas in the ring.
-     * @param float $weightRatio Weight ratio for the node.
+     * @param array $ring        source hashring
+     * @param mixed $node        node object to be added
+     * @param int   $totalNodes  total number of nodes
+     * @param int   $replicas    number of replicas in the ring
+     * @param float $weightRatio weight ratio for the node
      */
     protected function addNodeToRing(&$ring, $node, $totalNodes, $replicas, $weightRatio)
     {

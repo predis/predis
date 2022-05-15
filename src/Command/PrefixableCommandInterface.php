@@ -21,7 +21,7 @@ interface PrefixableCommandInterface extends CommandInterface
     /**
      * Prefixes all the keys found in the arguments of the command.
      *
-     * @param string $prefix String used to prefix the keys.
+     * @param string $prefix string used to prefix the keys
      */
     public function prefixKeys($prefix);
 }

@@ -124,12 +124,12 @@ class COMMAND_Test extends PredisCommandTestCase
             $expected[0][] = array(
                 array(
                     'flags',
-                    array('RO','access'),
+                    array('RO', 'access'),
                     'begin_search',
-                    array('type','index','spec', array('index',1)),
+                    array('type', 'index', 'spec', array('index', 1)),
                     'find_keys',
-                    array('type','range','spec', array('lastkey',0,'keystep',1,'limit',0))
-                )
+                    array('type', 'range', 'spec', array('lastkey', 0, 'keystep', 1, 'limit', 0)),
+                ),
             );
             $expected[0][] = array();
         }

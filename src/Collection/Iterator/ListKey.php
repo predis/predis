@@ -26,7 +26,7 @@ use Predis\NotSupportedException;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  *
- * @link http://redis.io/commands/lrange
+ * @see http://redis.io/commands/lrange
  */
 class ListKey implements \Iterator
 {
@@ -41,9 +41,9 @@ class ListKey implements \Iterator
     protected $current;
 
     /**
-     * @param ClientInterface $client Client connected to Redis.
-     * @param string          $key    Redis list key.
-     * @param int             $count  Number of items retrieved on each fetch operation.
+     * @param ClientInterface $client client connected to Redis
+     * @param string          $key    redis list key
+     * @param int             $count  number of items retrieved on each fetch operation
      *
      * @throws \InvalidArgumentException
      */
@@ -66,8 +66,8 @@ class ListKey implements \Iterator
      * Ensures that the client instance supports the specified Redis command
      * required to fetch elements from the server to perform the iteration.
      *
-     * @param ClientInterface $client    Client connected to Redis.
-     * @param string          $commandID Command ID.
+     * @param ClientInterface $client    client connected to Redis
+     * @param string          $commandID command ID
      *
      * @throws NotSupportedException
      */

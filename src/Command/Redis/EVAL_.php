@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/eval
+ * @see http://redis.io/commands/eval
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -31,7 +31,7 @@ class EVAL_ extends RedisCommand
     /**
      * Calculates the SHA1 hash of the body of the script.
      *
-     * @return string SHA1 hash.
+     * @return string SHA1 hash
      */
     public function getScriptHash()
     {

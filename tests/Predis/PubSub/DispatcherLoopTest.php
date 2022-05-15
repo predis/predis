@@ -11,8 +11,8 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub
@@ -71,7 +71,7 @@ class DispatcherLoopTest extends PredisTestCase
                 $this->equalTo('01:quit')
             ), $dispatcher)
             ->willReturnCallback(function ($arg, $dispatcher) {
-                if ($arg === '01:quit') {
+                if ('01:quit' === $arg) {
                     $dispatcher->stop();
                 }
             });

@@ -15,7 +15,7 @@ namespace Predis\Command;
  * Base class used to implement an higher level abstraction for commands based
  * on Lua scripting with EVAL and EVALSHA.
  *
- * @link http://redis.io/commands/eval
+ * @see http://redis.io/commands/eval
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -39,7 +39,7 @@ abstract class ScriptCommand extends Command
     /**
      * Calculates the SHA1 hash of the body of the script.
      *
-     * @return string SHA1 hash.
+     * @return string SHA1 hash
      */
     public function getScriptHash()
     {

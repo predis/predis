@@ -11,14 +11,11 @@
 
 namespace Predis\Command\Redis;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Command;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
-/**
- *
- */
 abstract class PredisCommandTestCase extends PredisTestCase
 {
     /**
@@ -30,15 +27,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
 
     /**
      * Returns the expected command ID for tests.
-     *
-     * @return string
      */
     abstract protected function getExpectedId(): string;
 
     /**
      * Returns a new command instance.
-     *
-     * @return Command\CommandInterface
      */
     public function getCommand(): Command\CommandInterface
     {
@@ -51,8 +44,6 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new client instance.
      *
      * @param bool $flushdb Flush selected database before returning the client
-     *
-     * @return Client
      */
     public function getClient(bool $flushdb = true): Client
     {
@@ -71,8 +62,6 @@ abstract class PredisCommandTestCase extends PredisTestCase
 
     /**
      * Verifies if the command implements the prefixable interface.
-     *
-     * @return bool
      */
     protected function isPrefixable(): bool
     {
@@ -83,8 +72,6 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new command instance with the specified arguments.
      *
      * @param ... List of arguments for the command
-     *
-     * @return CommandInterface
      */
     protected function getCommandWithArguments(...$arguments): CommandInterface
     {
@@ -95,8 +82,6 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new command instance with the specified arguments.
      *
      * @param array $arguments Arguments for the command
-     *
-     * @return CommandInterface
      */
     protected function getCommandWithArgumentsArray(array $arguments): CommandInterface
     {

@@ -15,9 +15,6 @@ use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
 use PredisTestCase;
 
-/**
- *
- */
 class RedisFactoryTest extends PredisTestCase
 {
     /**
@@ -176,7 +173,7 @@ class RedisFactoryTest extends PredisTestCase
     public function testCreateUndefinedCommand(): void
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command `UNKNOWN` is not a registered Redis command.");
+        $this->expectExceptionMessage('Command `UNKNOWN` is not a registered Redis command.');
 
         $factory = new RedisFactory();
 
@@ -288,7 +285,7 @@ class RedisFactoryTest extends PredisTestCase
     /**
      * Returns the expected list of commands supported by the tested factory.
      *
-     * @return array List of supported commands.
+     * @return array list of supported commands
      */
     protected function getExpectedCommands(): array
     {

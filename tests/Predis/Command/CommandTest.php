@@ -13,9 +13,6 @@ namespace Predis\Command;
 
 use PredisTestCase;
 
-/**
- *
- */
 class CommandTest extends PredisTestCase
 {
     /**

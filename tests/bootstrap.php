@@ -14,7 +14,7 @@ if (file_exists(__DIR__.'/../autoload.php')) {
 } elseif (@include('Predis/Autoloader.php')) {
     Predis\Autoloader::register();
 } else {
-    die('ERROR: Unable to find a suitable mean to register Predis\Autoloader.');
+    exit('ERROR: Unable to find a suitable mean to register Predis\Autoloader.');
 }
 
 require __DIR__.'/PHPUnit/ArrayHasSameValuesConstraint.php';

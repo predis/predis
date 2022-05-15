@@ -27,14 +27,14 @@ interface CompositeConnectionInterface extends NodeConnectionInterface
     /**
      * Writes the buffer containing over the connection.
      *
-     * @param string $buffer String buffer to be sent over the connection.
+     * @param string $buffer string buffer to be sent over the connection
      */
     public function writeBuffer($buffer);
 
     /**
      * Reads the given number of bytes from the connection.
      *
-     * @param int $length Number of bytes to read from the connection.
+     * @param int $length number of bytes to read from the connection
      *
      * @return string
      */

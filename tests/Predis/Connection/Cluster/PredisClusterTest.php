@@ -13,9 +13,6 @@ namespace Predis\Connection\Cluster;
 
 use PredisTestCase;
 
-/**
- *
- */
 class PredisClusterTest extends PredisTestCase
 {
     /**
@@ -277,7 +274,7 @@ class PredisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
-    */
+     */
     public function testThrowsExceptionOnNonShardableCommand(): void
     {
         $this->expectException('Predis\NotSupportedException');

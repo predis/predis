@@ -37,7 +37,7 @@ class RawFactory implements FactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(string $commandID, array $arguments = []): CommandInterface
+    public function create(string $commandID, array $arguments = array()): CommandInterface
     {
         return new RawCommand($commandID, $arguments);
     }

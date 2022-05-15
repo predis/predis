@@ -388,7 +388,6 @@ class KeyspaceTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
 
-
         $client
             ->expects($this->exactly(2))
             ->method('scan')
@@ -471,7 +470,6 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->any())
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
-
 
         $client
             ->expects($this->exactly(2))

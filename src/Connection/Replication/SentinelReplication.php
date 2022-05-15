@@ -106,10 +106,10 @@ class SentinelReplication implements ReplicationInterface
     protected $updateSentinels = false;
 
     /**
-     * @param string                     $service           Name of the service for autodiscovery.
-     * @param array                      $sentinels         Sentinel servers connection parameters.
-     * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
-     * @param ReplicationStrategy        $strategy          Replication strategy instance.
+     * @param string                     $service           name of the service for autodiscovery
+     * @param array                      $sentinels         sentinel servers connection parameters
+     * @param ConnectionFactoryInterface $connectionFactory connection factory instance
+     * @param ReplicationStrategy        $strategy          replication strategy instance
      */
     public function __construct(
         $service,
@@ -129,7 +129,7 @@ class SentinelReplication implements ReplicationInterface
      * When "timeout" is present in the connection parameters of sentinels, its
      * value overrides the default sentinel timeout.
      *
-     * @param float $timeout Timeout value.
+     * @param float $timeout timeout value
      */
     public function setSentinelTimeout($timeout)
     {
@@ -143,7 +143,7 @@ class SentinelReplication implements ReplicationInterface
      *  0 = no retry attempts (fails immediatly)
      *  n = fail only after n retry attempts
      *
-     * @param int $retry Number of retry attempts.
+     * @param int $retry number of retry attempts
      */
     public function setRetryLimit($retry)
     {
@@ -154,7 +154,7 @@ class SentinelReplication implements ReplicationInterface
      * Sets the time to wait (in seconds) before fetching a new configuration
      * from one of the sentinels.
      *
-     * @param float $seconds Time to wait before the next attempt.
+     * @param float $seconds time to wait before the next attempt
      */
     public function setRetryWait($seconds)
     {
@@ -164,7 +164,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Set automatic fetching of available sentinels.
      *
-     * @param bool $update Enable or disable automatic updates.
+     * @param bool $update enable or disable automatic updates
      */
     public function setUpdateSentinels($update)
     {
@@ -297,30 +297,29 @@ class SentinelReplication implements ReplicationInterface
      */
     public function updateSentinels()
     {
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $payload = $sentinel->executeCommand(
+        try {
+            $payload = $sentinel->executeCommand(
                     RawCommand::create('SENTINEL', 'sentinels', $this->service)
                 );
 
-                $this->sentinels = array();
-                // NOTE: sentinel server does not return itself, so we add it back.
-                $this->sentinels[] = $sentinel->getParameters()->toArray();
+            $this->sentinels = array();
+            // NOTE: sentinel server does not return itself, so we add it back.
+            $this->sentinels[] = $sentinel->getParameters()->toArray();
 
-                foreach ($payload as $sentinel) {
-                    $this->sentinels[] = array(
+            foreach ($payload as $sentinel) {
+                $this->sentinels[] = array(
                         'host' => $sentinel[3],
                         'port' => $sentinel[5],
                         'role' => 'sentinel',
                     );
-                }
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
-
-                goto SENTINEL_QUERY;
             }
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
+
+            goto SENTINEL_QUERY;
         }
     }
 
@@ -339,12 +338,12 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Handles error responses returned by redis-sentinel.
      *
-     * @param NodeConnectionInterface $sentinel Connection to a sentinel server.
-     * @param ErrorResponseInterface  $error    Error response.
+     * @param NodeConnectionInterface $sentinel connection to a sentinel server
+     * @param ErrorResponseInterface  $error    error response
      */
     private function handleSentinelErrorResponse(NodeConnectionInterface $sentinel, ErrorResponseInterface $error)
     {
-        if ($error->getErrorType() === 'IDONTKNOW') {
+        if ('IDONTKNOW' === $error->getErrorType()) {
             throw new ConnectionException($sentinel, $error->getMessage());
         } else {
             throw new ServerException($error->getMessage());
@@ -354,8 +353,8 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Fetches the details for the master server from a sentinel.
      *
-     * @param NodeConnectionInterface $sentinel Connection to a sentinel server.
-     * @param string                  $service  Name of the service.
+     * @param NodeConnectionInterface $sentinel connection to a sentinel server
+     * @param string                  $service  name of the service
      *
      * @return array
      */
@@ -365,7 +364,7 @@ class SentinelReplication implements ReplicationInterface
             RawCommand::create('SENTINEL', 'get-master-addr-by-name', $service)
         );
 
-        if ($payload === null) {
+        if (null === $payload) {
             throw new ServerException('ERR No such master with that name');
         }
 
@@ -383,8 +382,8 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Fetches the details for the slave servers from a sentinel.
      *
-     * @param NodeConnectionInterface $sentinel Connection to a sentinel server.
-     * @param string                  $service  Name of the service.
+     * @param NodeConnectionInterface $sentinel connection to a sentinel server
+     * @param string                  $service  name of the service
      *
      * @return array
      */
@@ -438,19 +437,18 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $masterParameters = $this->querySentinelForMaster($sentinel, $this->service);
-                $masterConnection = $this->connectionFactory->create($masterParameters);
+        try {
+            $masterParameters = $this->querySentinelForMaster($sentinel, $this->service);
+            $masterConnection = $this->connectionFactory->create($masterParameters);
 
-                $this->add($masterConnection);
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
+            $this->add($masterConnection);
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
 
-                goto SENTINEL_QUERY;
-            }
+            goto SENTINEL_QUERY;
         }
 
         return $masterConnection;
@@ -469,20 +467,19 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $slavesParameters = $this->querySentinelForSlaves($sentinel, $this->service);
+        try {
+            $slavesParameters = $this->querySentinelForSlaves($sentinel, $this->service);
 
-                foreach ($slavesParameters as $slaveParameters) {
-                    $this->add($this->connectionFactory->create($slaveParameters));
-                }
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
-
-                goto SENTINEL_QUERY;
+            foreach ($slavesParameters as $slaveParameters) {
+                $this->add($this->connectionFactory->create($slaveParameters));
             }
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
+
+            goto SENTINEL_QUERY;
         }
 
         return array_values($this->slaves);
@@ -503,7 +500,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Returns the connection instance in charge for the given command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return NodeConnectionInterface
      */
@@ -533,8 +530,8 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Asserts that the specified connection matches an expected role.
      *
-     * @param NodeConnectionInterface $connection Connection to a redis server.
-     * @param string                  $role       Expected role of the server ("master", "slave" or "sentinel").
+     * @param NodeConnectionInterface $connection connection to a redis server
+     * @param string                  $role       expected role of the server ("master", "slave" or "sentinel")
      *
      * @throws RoleException
      */
@@ -584,11 +581,11 @@ class SentinelReplication implements ReplicationInterface
      */
     public function getConnectionByRole($role)
     {
-        if ($role === 'master') {
+        if ('master' === $role) {
             return $this->getMaster();
-        } elseif ($role === 'slave') {
+        } elseif ('slave' === $role) {
             return $this->pickSlave();
-        } elseif ($role === 'sentinel') {
+        } elseif ('sentinel' === $role) {
             return $this->getSentinelConnection();
         }
     }
@@ -599,7 +596,7 @@ class SentinelReplication implements ReplicationInterface
      * Sentinel connections are not considered as part of the pool, meaning that
      * trying to switch to a sentinel will throw an exception.
      *
-     * @param NodeConnectionInterface $connection Connection instance in the pool.
+     * @param NodeConnectionInterface $connection connection instance in the pool
      */
     public function switchTo(NodeConnectionInterface $connection)
     {
@@ -674,8 +671,8 @@ class SentinelReplication implements ReplicationInterface
      * Retries the execution of a command upon server failure after asking a new
      * configuration to one of the sentinels.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $method  Actual method.
+     * @param CommandInterface $command command instance
+     * @param string           $method  actual method
      *
      * @return mixed
      */
@@ -683,7 +680,7 @@ class SentinelReplication implements ReplicationInterface
     {
         $retries = 0;
 
-        SENTINEL_RETRY: {
+        SENTINEL_RETRY:
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
             } catch (CommunicationException $exception) {
@@ -699,7 +696,6 @@ class SentinelReplication implements ReplicationInterface
                 ++$retries;
                 goto SENTINEL_RETRY;
             }
-        }
 
         return $response;
     }

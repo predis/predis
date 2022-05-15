@@ -37,13 +37,10 @@ class Commands implements OptionInterface
             return $value;
         } elseif (is_array($value)) {
             return $this->createFactoryByArray($options, $value);
-        } elseif(is_string($value)) {
+        } elseif (is_string($value)) {
             return $this->createFactoryByString($options, $value);
         } else {
-            throw new \InvalidArgumentException(sprintf(
-                '%s expects a valid command factory',
-                static::class
-            ));
+            throw new \InvalidArgumentException(sprintf('%s expects a valid command factory', static::class));
         }
     }
 
@@ -67,7 +64,7 @@ class Commands implements OptionInterface
         $commands = $this->getDefault($options);
 
         foreach ($value as $commandID => $commandClass) {
-            if ($commandClass === null) {
+            if (null === $commandClass) {
                 $commands->undefine($commandID);
             } else {
                 $commands->define($commandID, $commandClass);
@@ -76,6 +73,7 @@ class Commands implements OptionInterface
 
         return $commands;
     }
+
     /**
      * Creates a new command factory from a descriptive string.
      *
@@ -103,11 +101,7 @@ class Commands implements OptionInterface
                 return $this->createRawFactory($options);
 
             default:
-                throw new \InvalidArgumentException(sprintf(
-                    '%s does not recognize `%s` as a supported configuration string',
-                    static::class,
-                    $value
-                ));
+                throw new \InvalidArgumentException(sprintf('%s does not recognize `%s` as a supported configuration string', static::class, $value));
         }
     }
 
@@ -121,9 +115,7 @@ class Commands implements OptionInterface
         $commands = new RawFactory();
 
         if (isset($options->prefix)) {
-            throw new \InvalidArgumentException(sprintf(
-                '%s does not support key prefixing', RawFactory::class
-            ));
+            throw new \InvalidArgumentException(sprintf('%s does not support key prefixing', RawFactory::class));
         }
 
         return $commands;

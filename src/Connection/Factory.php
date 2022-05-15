@@ -36,7 +36,7 @@ class Factory implements FactoryInterface
      * implementing Predis\Connection\NodeConnectionInterface. Optionally,
      * callable objects are used for lazy initialization of connection objects.
      *
-     * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
+     * @param mixed $initializer FQN of a connection class or a callable for lazy initialization
      *
      * @throws \InvalidArgumentException
      *
@@ -51,9 +51,7 @@ class Factory implements FactoryInterface
         $class = new \ReflectionClass($initializer);
 
         if (!$class->isSubclassOf('Predis\Connection\NodeConnectionInterface')) {
-            throw new \InvalidArgumentException(
-                'A connection initializer must be a valid connection class or a callable object.'
-            );
+            throw new \InvalidArgumentException('A connection initializer must be a valid connection class or a callable object.');
         }
 
         return $initializer;
@@ -100,10 +98,7 @@ class Factory implements FactoryInterface
         }
 
         if (!$connection instanceof NodeConnectionInterface) {
-            throw new \UnexpectedValueException(
-                'Objects returned by connection initializers must implement '.
-                "'Predis\Connection\NodeConnectionInterface'."
-            );
+            throw new \UnexpectedValueException('Objects returned by connection initializers must implement '."'Predis\Connection\NodeConnectionInterface'.");
         }
 
         return $connection;
@@ -115,7 +110,7 @@ class Factory implements FactoryInterface
      * The set of parameters passed to create a new connection have precedence
      * over the default values set for the connection factory.
      *
-     * @param array $parameters Set of connection parameters.
+     * @param array $parameters set of connection parameters
      */
     public function setDefaultParameters(array $parameters)
     {
@@ -135,7 +130,7 @@ class Factory implements FactoryInterface
     /**
      * Creates a connection parameters instance from the supplied argument.
      *
-     * @param mixed $parameters Original connection parameters.
+     * @param mixed $parameters original connection parameters
      *
      * @return ParametersInterface
      */
@@ -157,7 +152,7 @@ class Factory implements FactoryInterface
     /**
      * Prepares a connection instance after its initialization.
      *
-     * @param NodeConnectionInterface $connection Connection instance.
+     * @param NodeConnectionInterface $connection connection instance
      */
     protected function prepareConnection(NodeConnectionInterface $connection)
     {

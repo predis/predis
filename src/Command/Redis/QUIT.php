@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/quit
+ * @see http://redis.io/commands/quit
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

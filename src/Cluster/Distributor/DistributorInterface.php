@@ -24,15 +24,15 @@ interface DistributorInterface
     /**
      * Adds a node to the distributor with an optional weight.
      *
-     * @param mixed $node   Node object.
-     * @param int   $weight Weight for the node.
+     * @param mixed $node   node object
+     * @param int   $weight weight for the node
      */
     public function add($node, $weight = null);
 
     /**
      * Removes a node from the distributor.
      *
-     * @param mixed $node Node object.
+     * @param mixed $node node object
      */
     public function remove($node);
 

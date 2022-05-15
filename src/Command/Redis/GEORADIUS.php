@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/georadius
+ * @see http://redis.io/commands/georadius
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -36,15 +36,15 @@ class GEORADIUS extends RedisCommand
         if ($arguments && is_array(end($arguments))) {
             $options = array_change_key_case(array_pop($arguments), CASE_UPPER);
 
-            if (isset($options['WITHCOORD']) && $options['WITHCOORD'] == true) {
+            if (isset($options['WITHCOORD']) && true == $options['WITHCOORD']) {
                 $arguments[] = 'WITHCOORD';
             }
 
-            if (isset($options['WITHDIST']) && $options['WITHDIST'] == true) {
+            if (isset($options['WITHDIST']) && true == $options['WITHDIST']) {
                 $arguments[] = 'WITHDIST';
             }
 
-            if (isset($options['WITHHASH']) && $options['WITHHASH'] == true) {
+            if (isset($options['WITHHASH']) && true == $options['WITHHASH']) {
                 $arguments[] = 'WITHHASH';
             }
 

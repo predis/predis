@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/slaveof
+ * @see http://redis.io/commands/slaveof
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +33,7 @@ class SLAVEOF extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
+        if (0 === count($arguments) || 'NO ONE' === $arguments[0]) {
             $arguments = array('NO', 'ONE');
         }
 

@@ -48,7 +48,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $distributor;
 
     /**
-     * @param StrategyInterface $strategy Optional cluster strategy.
+     * @param StrategyInterface $strategy optional cluster strategy
      */
     public function __construct(StrategyInterface $strategy = null)
     {
@@ -133,9 +133,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         $slot = $this->strategy->getSlot($command);
 
         if (!isset($slot)) {
-            throw new NotSupportedException(
-                "Cannot use '{$command->getId()}' over clusters of connections."
-            );
+            throw new NotSupportedException("Cannot use '{$command->getId()}' over clusters of connections.");
         }
 
         $node = $this->distributor->getBySlot($slot);
@@ -156,7 +154,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Returns a connection instance by its alias.
      *
-     * @param string $alias Connection alias.
+     * @param string $alias connection alias
      *
      * @return NodeConnectionInterface|null
      */
@@ -170,7 +168,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Retrieves a connection instance by slot.
      *
-     * @param string $key Key string.
+     * @param string $key key string
      *
      * @return NodeConnectionInterface|null
      */
@@ -182,7 +180,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Retrieves a connection instance from the cluster using a key.
      *
-     * @param string $key Key string.
+     * @param string $key key string
      *
      * @return NodeConnectionInterface
      */

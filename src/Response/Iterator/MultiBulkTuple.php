@@ -25,7 +25,7 @@ class MultiBulkTuple extends MultiBulk implements \OuterIterator
     private $iterator;
 
     /**
-     * @param MultiBulk $iterator Inner multibulk response iterator.
+     * @param MultiBulk $iterator inner multibulk response iterator
      */
     public function __construct(MultiBulk $iterator)
     {
@@ -40,17 +40,15 @@ class MultiBulkTuple extends MultiBulk implements \OuterIterator
     /**
      * Checks for valid preconditions.
      *
-     * @param MultiBulk $iterator Inner multibulk response iterator.
+     * @param MultiBulk $iterator inner multibulk response iterator
      *
      * @throws \InvalidArgumentException
      * @throws \UnexpectedValueException
      */
     protected function checkPreconditions(MultiBulk $iterator)
     {
-        if ($iterator->getPosition() !== 0) {
-            throw new \InvalidArgumentException(
-                'Cannot initialize a tuple iterator using an already initiated iterator.'
-            );
+        if (0 !== $iterator->getPosition()) {
+            throw new \InvalidArgumentException('Cannot initialize a tuple iterator using an already initiated iterator.');
         }
 
         if (($size = count($iterator)) % 2 !== 0) {

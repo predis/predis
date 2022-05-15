@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/bgsave
+ * @see http://redis.io/commands/bgsave
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,6 +33,6 @@ class BGSAVE extends RedisCommand
      */
     public function parseResponse($data)
     {
-        return $data === 'Background saving started' ? true : $data;
+        return 'Background saving started' === $data ? true : $data;
     }
 }

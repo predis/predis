@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/zrange
+ * @see http://redis.io/commands/zrange
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,16 +33,16 @@ class ZRANGE extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 4) {
+        if (4 === count($arguments)) {
             $lastType = gettype($arguments[3]);
 
-            if ($lastType === 'string' && strtoupper($arguments[3]) === 'WITHSCORES') {
+            if ('string' === $lastType && 'WITHSCORES' === strtoupper($arguments[3])) {
                 // Used for compatibility with older versions
                 $arguments[3] = array('WITHSCORES' => true);
                 $lastType = 'array';
             }
 
-            if ($lastType === 'array') {
+            if ('array' === $lastType) {
                 $options = $this->prepareOptions(array_pop($arguments));
                 $arguments = array_merge($arguments, $options);
             }
@@ -54,7 +54,7 @@ class ZRANGE extends RedisCommand
     /**
      * Returns a list of options and modifiers compatible with Redis.
      *
-     * @param array $options List of options.
+     * @param array $options list of options
      *
      * @return array
      */
@@ -83,7 +83,7 @@ class ZRANGE extends RedisCommand
             return false;
         }
 
-        return strtoupper($arguments[3]) === 'WITHSCORES';
+        return 'WITHSCORES' === strtoupper($arguments[3]);
     }
 
     /**

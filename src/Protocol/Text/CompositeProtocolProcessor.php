@@ -21,7 +21,7 @@ use Predis\Protocol\ResponseReaderInterface;
  * Composite protocol processor for the standard Redis wire protocol using
  * pluggable handlers to serialize requests and deserialize responses.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -38,8 +38,8 @@ class CompositeProtocolProcessor implements ProtocolProcessorInterface
     protected $reader;
 
     /**
-     * @param RequestSerializerInterface $serializer Request serializer.
-     * @param ResponseReaderInterface    $reader     Response reader.
+     * @param RequestSerializerInterface $serializer request serializer
+     * @param ResponseReaderInterface    $reader     response reader
      */
     public function __construct(
         RequestSerializerInterface $serializer = null,
@@ -68,7 +68,7 @@ class CompositeProtocolProcessor implements ProtocolProcessorInterface
     /**
      * Sets the request serializer used by the protocol processor.
      *
-     * @param RequestSerializerInterface $serializer Request serializer.
+     * @param RequestSerializerInterface $serializer request serializer
      */
     public function setRequestSerializer(RequestSerializerInterface $serializer)
     {
@@ -88,7 +88,7 @@ class CompositeProtocolProcessor implements ProtocolProcessorInterface
     /**
      * Sets the response reader used by the protocol processor.
      *
-     * @param ResponseReaderInterface $reader Response reader.
+     * @param ResponseReaderInterface $reader response reader
      */
     public function setResponseReader(ResponseReaderInterface $reader)
     {

@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/brpop
+ * @see http://redis.io/commands/brpop
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +33,7 @@ class BRPOP extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 2 && is_array($arguments[0])) {
+        if (2 === count($arguments) && is_array($arguments[0])) {
             list($arguments, $timeout) = $arguments;
             array_push($arguments, $timeout);
         }

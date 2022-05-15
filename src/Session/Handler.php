@@ -29,8 +29,8 @@ class Handler implements \SessionHandlerInterface
     protected $ttl;
 
     /**
-     * @param ClientInterface $client  Fully initialized client instance.
-     * @param array           $options Session handler options.
+     * @param ClientInterface $client  fully initialized client instance
+     * @param array           $options session handler options
      */
     public function __construct(ClientInterface $client, array $options = array())
     {
@@ -89,6 +89,7 @@ class Handler implements \SessionHandlerInterface
 
         return '';
     }
+
     /**
      * {@inheritdoc}
      */

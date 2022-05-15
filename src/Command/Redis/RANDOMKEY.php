@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/randomkey
+ * @see http://redis.io/commands/randomkey
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,6 +33,6 @@ class RANDOMKEY extends RedisCommand
      */
     public function parseResponse($data)
     {
-        return $data !== '' ? $data : null;
+        return '' !== $data ? $data : null;
     }
 }

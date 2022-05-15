@@ -24,7 +24,7 @@ interface ResponseReaderInterface
     /**
      * Reads a response from a connection to Redis.
      *
-     * @param CompositeConnectionInterface $connection Redis connection.
+     * @param CompositeConnectionInterface $connection redis connection
      *
      * @return mixed
      */

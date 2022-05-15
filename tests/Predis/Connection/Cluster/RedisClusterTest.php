@@ -11,16 +11,13 @@
 
 namespace Predis\Connection\Cluster;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Response;
+use PredisTestCase;
 
-/**
- *
- */
 class RedisClusterTest extends PredisTestCase
 {
     /**
@@ -322,13 +319,13 @@ class RedisClusterTest extends PredisTestCase
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6383',
-                    )
+                    ),
                 ),
                 array(
                     array(
                         'host' => '127.0.0.1',
                         'port' => '6384',
-                    )
+                    ),
                 )
             )
             ->willReturnOnConsecutiveCalls(
@@ -848,7 +845,7 @@ class RedisClusterTest extends PredisTestCase
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessage("Unknown connection error [127.0.0.1:6382]");
+        $this->expectExceptionMessage('Unknown connection error [127.0.0.1:6382]');
 
         $slotsmap = array(
             array(0, 5460, array('127.0.0.1', 9381), array()),

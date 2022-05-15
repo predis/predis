@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/zunionstore
+ * @see http://redis.io/commands/zunionstore
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -53,7 +53,7 @@ class ZUNIONSTORE extends RedisCommand
     /**
      * Returns a list of options and modifiers compatible with Redis.
      *
-     * @param array $options List of options.
+     * @param array $options list of options
      *
      * @return array
      */

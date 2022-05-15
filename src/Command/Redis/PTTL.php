@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/pttl
+ * @see http://redis.io/commands/pttl
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

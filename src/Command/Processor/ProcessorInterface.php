@@ -23,7 +23,7 @@ interface ProcessorInterface
     /**
      * Processes the given Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      */
     public function process(CommandInterface $command);
 }

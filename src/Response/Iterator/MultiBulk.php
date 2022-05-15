@@ -23,8 +23,8 @@ class MultiBulk extends MultiBulkIterator
     private $connection;
 
     /**
-     * @param NodeConnectionInterface $connection Connection to Redis.
-     * @param int                     $size       Number of elements of the multibulk response.
+     * @param NodeConnectionInterface $connection connection to Redis
+     * @param int                     $size       number of elements of the multibulk response
      */
     public function __construct(NodeConnectionInterface $connection, $size)
     {
@@ -49,7 +49,7 @@ class MultiBulk extends MultiBulkIterator
      * by consuming the rest of the multibulk response or quickly by closing the
      * underlying connection.
      *
-     * @param bool $disconnect Consume the iterator or drop the connection.
+     * @param bool $disconnect consume the iterator or drop the connection
      */
     public function drop($disconnect = false)
     {

@@ -28,8 +28,8 @@ class Consumer extends AbstractConsumer
     private $options;
 
     /**
-     * @param ClientInterface $client  Client instance used by the consumer.
-     * @param array           $options Options for the consumer initialization.
+     * @param ClientInterface $client  client instance used by the consumer
+     * @param array           $options options for the consumer initialization
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
@@ -56,31 +56,27 @@ class Consumer extends AbstractConsumer
      * Checks if the client instance satisfies the required conditions needed to
      * initialize a PUB/SUB consumer.
      *
-     * @param ClientInterface $client Client instance used by the consumer.
+     * @param ClientInterface $client client instance used by the consumer
      *
      * @throws NotSupportedException
      */
     private function checkCapabilities(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer over aggregate connections.'
-            );
+            throw new NotSupportedException('Cannot initialize a PUB/SUB consumer over aggregate connections.');
         }
 
         $commands = array('publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe');
 
         if (!$client->getCommandFactory()->supports(...$commands)) {
-            throw new NotSupportedException(
-                'PUB/SUB commands are not supported by the current command factory.'
-            );
+            throw new NotSupportedException('PUB/SUB commands are not supported by the current command factory.');
         }
     }
 
     /**
      * This method shares the logic to handle both SUBSCRIBE and PSUBSCRIBE.
      *
-     * @param string $subscribeAction Type of subscription.
+     * @param string $subscribeAction type of subscription
      */
     private function genericSubscribeInit($subscribeAction)
     {
@@ -121,7 +117,7 @@ class Consumer extends AbstractConsumer
             case self::UNSUBSCRIBE:
             case self::PSUBSCRIBE:
             case self::PUNSUBSCRIBE:
-                if ($response[2] === 0) {
+                if (0 === $response[2]) {
                     $this->invalidate();
                 }
                 // The missing break here is intentional as we must process
@@ -150,9 +146,7 @@ class Consumer extends AbstractConsumer
                 );
 
             default:
-                throw new ClientException(
-                    "Unknown message type '{$response[0]}' received in the PUB/SUB context."
-                );
+                throw new ClientException("Unknown message type '{$response[0]}' received in the PUB/SUB context.");
         }
     }
 }

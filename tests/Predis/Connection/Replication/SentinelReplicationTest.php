@@ -11,16 +11,13 @@
 
 namespace Predis\Connection\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Replication;
 use Predis\Response;
+use PredisTestCase;
 
-/**
- *
- */
 class SentinelReplicationTest extends PredisTestCase
 {
     /**
@@ -1457,8 +1454,6 @@ class SentinelReplicationTest extends PredisTestCase
      * @param string                          $service   Name of the service
      * @param array                           $sentinels Array of sentinels
      * @param ConnectionFactoryInterface|null $factory   Optional connection factory instance
-     *
-     * @return SentinelReplication
      */
     protected function getReplicationConnection(string $service, array $sentinels, Connection\FactoryInterface $factory = null): SentinelReplication
     {

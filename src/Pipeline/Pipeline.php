@@ -38,7 +38,7 @@ class Pipeline implements ClientContextInterface
     private $running = false;
 
     /**
-     * @param ClientInterface $client Client instance used by the context.
+     * @param ClientInterface $client client instance used by the context
      */
     public function __construct(ClientInterface $client)
     {
@@ -49,8 +49,8 @@ class Pipeline implements ClientContextInterface
     /**
      * Queues a command into the pipeline buffer.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      *
      * @return $this
      */
@@ -65,7 +65,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param CommandInterface $command Command to be queued in the buffer.
+     * @param CommandInterface $command command to be queued in the buffer
      */
     protected function recordCommand(CommandInterface $command)
     {
@@ -75,7 +75,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Queues a command instance into the pipeline buffer.
      *
-     * @param CommandInterface $command Command instance to be queued in the buffer.
+     * @param CommandInterface $command command instance to be queued in the buffer
      *
      * @return $this
      */
@@ -89,8 +89,8 @@ class Pipeline implements ClientContextInterface
     /**
      * Throws an exception on -ERR responses returned by Redis.
      *
-     * @param ConnectionInterface    $connection Redis connection that returned the error.
-     * @param ErrorResponseInterface $response   Instance of the error response.
+     * @param ConnectionInterface    $connection redis connection that returned the error
+     * @param ErrorResponseInterface $response   instance of the error response
      *
      * @throws ServerException
      */
@@ -122,8 +122,8 @@ class Pipeline implements ClientContextInterface
      * Implements the logic to flush the queued commands and read the responses
      * from the current connection.
      *
-     * @param ConnectionInterface $connection Current connection instance.
-     * @param \SplQueue           $commands   Queued commands.
+     * @param ConnectionInterface $connection current connection instance
+     * @param \SplQueue           $commands   queued commands
      *
      * @return array
      */
@@ -155,7 +155,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Flushes the buffer holding all of the commands queued so far.
      *
-     * @param bool $send Specifies if the commands in the buffer should be sent to Redis.
+     * @param bool $send specifies if the commands in the buffer should be sent to Redis
      *
      * @return $this
      */
@@ -174,7 +174,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Marks the running status of the pipeline.
      *
-     * @param bool $bool Sets the running status of the pipeline.
+     * @param bool $bool sets the running status of the pipeline
      *
      * @throws ClientException
      */
@@ -190,7 +190,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Handles the actual execution of the whole pipeline.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param mixed $callable optional callback for execution
      *
      * @throws \Exception
      * @throws \InvalidArgumentException

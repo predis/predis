@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/bgrewriteaof
+ * @see http://redis.io/commands/bgrewriteaof
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,6 +33,6 @@ class BGREWRITEAOF extends RedisCommand
      */
     public function parseResponse($data)
     {
-        return $data == 'Background append only file rewriting started';
+        return 'Background append only file rewriting started' == $data;
     }
 }

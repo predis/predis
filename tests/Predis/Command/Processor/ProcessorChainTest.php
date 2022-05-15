@@ -11,12 +11,9 @@
 
 namespace Predis\Command\Processor;
 
-use PredisTestCase;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ProcessorChainTest extends PredisTestCase
 {
     /**

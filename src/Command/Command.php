@@ -86,13 +86,13 @@ abstract class Command implements CommandInterface
     /**
      * Normalizes the arguments array passed to a Redis command.
      *
-     * @param array $arguments Arguments for a command.
+     * @param array $arguments arguments for a command
      *
      * @return array
      */
     public static function normalizeArguments(array $arguments)
     {
-        if (count($arguments) === 1 && is_array($arguments[0])) {
+        if (1 === count($arguments) && is_array($arguments[0])) {
             return $arguments[0];
         }
 
@@ -102,13 +102,13 @@ abstract class Command implements CommandInterface
     /**
      * Normalizes the arguments array passed to a variadic Redis command.
      *
-     * @param array $arguments Arguments for a command.
+     * @param array $arguments arguments for a command
      *
      * @return array
      */
     public static function normalizeVariadic(array $arguments)
     {
-        if (count($arguments) === 2 && is_array($arguments[1])) {
+        if (2 === count($arguments) && is_array($arguments[1])) {
             return array_merge(array($arguments[0]), $arguments[1]);
         }
 

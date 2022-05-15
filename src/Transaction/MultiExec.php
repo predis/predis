@@ -42,8 +42,8 @@ class MultiExec implements ClientContextInterface
     protected $modeCAS = false;
 
     /**
-     * @param ClientInterface $client  Client instance used by the transaction.
-     * @param array           $options Initialization options.
+     * @param ClientInterface $client  client instance used by the transaction
+     * @param array           $options initialization options
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
@@ -60,30 +60,26 @@ class MultiExec implements ClientContextInterface
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize the transaction object.
      *
-     * @param ClientInterface $client Client instance used by the transaction object.
+     * @param ClientInterface $client client instance used by the transaction object
      *
      * @throws NotSupportedException
      */
     private function assertClient(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a MULTI/EXEC transaction over aggregate connections.'
-            );
+            throw new NotSupportedException('Cannot initialize a MULTI/EXEC transaction over aggregate connections.');
         }
 
         if (!$client->getCommandFactory()->supports('MULTI', 'EXEC', 'DISCARD')) {
-            throw new NotSupportedException(
-                'MULTI, EXEC and DISCARD are not supported by the current command factory.'
-            );
+            throw new NotSupportedException('MULTI, EXEC and DISCARD are not supported by the current command factory.');
         }
     }
 
     /**
      * Configures the transaction using the provided options.
      *
-     * @param ClientInterface $client  Underlying client instance.
-     * @param array           $options Array of options for the transaction.
+     * @param ClientInterface $client  underlying client instance
+     * @param array           $options array of options for the transaction
      **/
     protected function configure(ClientInterface $client, array $options)
     {
@@ -150,8 +146,8 @@ class MultiExec implements ClientContextInterface
     /**
      * Dynamically invokes a Redis command with the specified arguments.
      *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $method    command ID
+     * @param array  $arguments arguments for the command
      *
      * @return mixed
      */
@@ -165,8 +161,8 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes a Redis command bypassing the transaction logic.
      *
-     * @param string $commandID Command ID.
-     * @param array  $arguments Arguments for the command.
+     * @param string $commandID command ID
+     * @param array  $arguments arguments for the command
      *
      * @throws ServerException
      *
@@ -188,7 +184,7 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes the specified Redis command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @throws AbortedMultiExecException
      * @throws CommunicationException
@@ -205,7 +201,7 @@ class MultiExec implements ClientContextInterface
 
         $response = $this->client->getConnection()->executeCommand($command);
 
-        if ($response instanceof StatusResponse && $response == 'QUEUED') {
+        if ($response instanceof StatusResponse && 'QUEUED' == $response) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
             throw new AbortedMultiExecException($this, $response->getMessage());
@@ -219,7 +215,7 @@ class MultiExec implements ClientContextInterface
     /**
      * Executes WATCH against one or more keys.
      *
-     * @param string|array $keys One or more keys.
+     * @param string|array $keys one or more keys
      *
      * @throws NotSupportedException
      * @throws ClientException
@@ -269,9 +265,7 @@ class MultiExec implements ClientContextInterface
     public function unwatch()
     {
         if (!$this->client->getCommandFactory()->supports('UNWATCH')) {
-            throw new NotSupportedException(
-                'UNWATCH is not supported by the current command factory.'
-            );
+            throw new NotSupportedException('UNWATCH is not supported by the current command factory.');
         }
 
         $this->state->unflag(MultiExecState::WATCH);
@@ -311,7 +305,7 @@ class MultiExec implements ClientContextInterface
     /**
      * Checks the state of the transaction before execution.
      *
-     * @param mixed $callable Callback for execution.
+     * @param mixed $callable callback for execution
      *
      * @throws \InvalidArgumentException
      * @throws ClientException
@@ -319,9 +313,7 @@ class MultiExec implements ClientContextInterface
     private function checkBeforeExecution($callable)
     {
         if ($this->state->isExecuting()) {
-            throw new ClientException(
-                'Cannot invoke "execute" or "exec" inside an active transaction context.'
-            );
+            throw new ClientException('Cannot invoke "execute" or "exec" inside an active transaction context.');
         }
 
         if ($callable) {
@@ -332,23 +324,19 @@ class MultiExec implements ClientContextInterface
             if (!$this->commands->isEmpty()) {
                 $this->discard();
 
-                throw new ClientException(
-                    'Cannot execute a transaction block after using fluent interface.'
-                );
+                throw new ClientException('Cannot execute a transaction block after using fluent interface.');
             }
         } elseif ($this->attempts) {
             $this->discard();
 
-            throw new ClientException(
-                'Automatic retries are supported only when a callable block is provided.'
-            );
+            throw new ClientException('Automatic retries are supported only when a callable block is provided.');
         }
     }
 
     /**
      * Handles the actual execution of the whole transaction.
      *
-     * @param mixed $callable Optional callback for execution.
+     * @param mixed $callable optional callback for execution
      *
      * @throws CommunicationException
      * @throws AbortedMultiExecException
@@ -378,11 +366,9 @@ class MultiExec implements ClientContextInterface
 
             $execResponse = $this->call('EXEC');
 
-            if ($execResponse === null) {
-                if ($attempts === 0) {
-                    throw new AbortedMultiExecException(
-                        $this, 'The current transaction has been aborted by the server.'
-                    );
+            if (null === $execResponse) {
+                if (0 === $attempts) {
+                    throw new AbortedMultiExecException($this, 'The current transaction has been aborted by the server.');
                 }
 
                 $this->reset();
@@ -417,7 +403,7 @@ class MultiExec implements ClientContextInterface
     /**
      * Passes the current transaction object to a callable block for execution.
      *
-     * @param mixed $callable Callback.
+     * @param mixed $callable callback
      *
      * @throws CommunicationException
      * @throws ServerException
@@ -447,7 +433,7 @@ class MultiExec implements ClientContextInterface
     /**
      * Helper method for protocol errors encountered inside the transaction.
      *
-     * @param string $message Error message.
+     * @param string $message error message
      */
     private function onProtocolError($message)
     {

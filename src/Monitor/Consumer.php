@@ -27,7 +27,7 @@ class Consumer implements \Iterator
     private $position;
 
     /**
-     * @param ClientInterface $client Client instance used by the consumer.
+     * @param ClientInterface $client client instance used by the consumer
      */
     public function __construct(ClientInterface $client)
     {
@@ -50,16 +50,14 @@ class Consumer implements \Iterator
      * Checks if the passed client instance satisfies the required conditions
      * needed to initialize a monitor consumer.
      *
-     * @param ClientInterface $client Client instance used by the consumer.
+     * @param ClientInterface $client client instance used by the consumer
      *
      * @throws NotSupportedException
      */
     private function assertClient(ClientInterface $client)
     {
         if ($client->getConnection() instanceof AggregateConnectionInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a monitor consumer over aggregate connections.'
-            );
+            throw new NotSupportedException('Cannot initialize a monitor consumer over aggregate connections.');
         }
 
         if (!$client->getCommandFactory()->supports('MONITOR')) {

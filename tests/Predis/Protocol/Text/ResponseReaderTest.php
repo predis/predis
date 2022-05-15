@@ -11,12 +11,9 @@
 
 namespace Predis\Protocol\Text;
 
-use PredisTestCase;
 use Predis\Protocol\Text\Handler\ResponseHandlerInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ResponseReaderTest extends PredisTestCase
 {
     /**

@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/info
+ * @see http://redis.io/commands/info
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -37,7 +37,7 @@ class INFO extends RedisCommand
             return array();
         }
 
-        if (strpos($lines[0], '#') === 0) {
+        if (0 === strpos($lines[0], '#')) {
             return $this->parseNewResponseFormat($lines);
         } else {
             return $this->parseOldResponseFormat($lines);
@@ -53,7 +53,7 @@ class INFO extends RedisCommand
         $current = null;
 
         foreach ($lines as $row) {
-            if ($row === '') {
+            if ('' === $row) {
                 continue;
             }
 
@@ -78,7 +78,7 @@ class INFO extends RedisCommand
         $info = array();
 
         foreach ($lines as $row) {
-            if (strpos($row, ':') === false) {
+            if (false === strpos($row, ':')) {
                 continue;
             }
 
@@ -92,7 +92,7 @@ class INFO extends RedisCommand
     /**
      * Parses a single row of the response and returns the key-value pair.
      *
-     * @param string $row Single row of the response.
+     * @param string $row single row of the response
      *
      * @return array
      */
@@ -110,7 +110,7 @@ class INFO extends RedisCommand
     /**
      * Extracts the statistics of each logical DB from the string buffer.
      *
-     * @param string $str Response buffer.
+     * @param string $str response buffer
      *
      * @return array
      */

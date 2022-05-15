@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/watch
+ * @see http://redis.io/commands/watch
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

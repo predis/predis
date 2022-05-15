@@ -17,9 +17,6 @@ use Predis\CommunicationException;
 use Predis\CommunicationExceptionTest;
 use Predis\Connection\NodeConnectionInterface;
 
-/**
- *
- */
 class ProtocolExceptionTest extends CommunicationExceptionTest
 {
     /**

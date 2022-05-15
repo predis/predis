@@ -21,10 +21,10 @@ namespace Predis\Cluster\Distributor;
  */
 class KetamaRing extends HashRing
 {
-    const DEFAULT_REPLICAS = 160;
+    public const DEFAULT_REPLICAS = 160;
 
     /**
-     * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
+     * @param mixed $nodeHashCallback callback returning a string used to calculate the hash of nodes
      */
     public function __construct($nodeHashCallback = null)
     {

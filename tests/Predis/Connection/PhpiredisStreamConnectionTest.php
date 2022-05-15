@@ -22,7 +22,7 @@ use Predis\Response\Error as ErrorResponse;
 class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getConnectionClass(): string
     {
@@ -61,7 +61,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInitializationCommandFailure(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessage("`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]");
+        $this->expectExceptionMessage('`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
@@ -200,7 +200,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testTcpNodelayParameterSetsContextFlagWhenTrue()
     {
-        $connection = $this->createConnectionWithParams(['tcp_nodelay' => true]);
+        $connection = $this->createConnectionWithParams(array('tcp_nodelay' => true));
         $options = stream_context_get_options($connection->getResource());
 
         $this->assertIsArray($options);
@@ -214,7 +214,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testTcpNodelayParameterDoesNotSetContextFlagWhenFalse()
     {
-        $connection = $this->createConnectionWithParams(['tcp_nodelay' => false]);
+        $connection = $this->createConnectionWithParams(array('tcp_nodelay' => false));
         $options = stream_context_get_options($connection->getResource());
 
         $this->assertIsArray($options);
@@ -228,7 +228,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testTcpDelayContextFlagIsNotSetByDefault()
     {
-        $connection = $this->createConnectionWithParams([]);
+        $connection = $this->createConnectionWithParams(array());
         $options = stream_context_get_options($connection->getResource());
 
         $this->assertIsArray($options);

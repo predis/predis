@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/pubsub
+ * @see http://redis.io/commands/pubsub
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

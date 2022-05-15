@@ -37,11 +37,7 @@ class Replication extends Aggregate
         if (is_callable($value)) {
             return $this->getConnectionInitializer($options, $value);
         } else {
-            throw new InvalidArgumentException(sprintf(
-                '%s expects either a string or a callable value, %s given',
-                static::class,
-                is_object($value) ? get_class($value) : gettype($value)
-            ));
+            throw new InvalidArgumentException(sprintf('%s expects either a string or a callable value, %s given', static::class, is_object($value) ? get_class($value) : gettype($value)));
         }
     }
 
@@ -77,11 +73,7 @@ class Replication extends Aggregate
                 return $this->getDefaultConnectionInitializer($options);
 
             default:
-                throw new InvalidArgumentException(sprintf(
-                    '%s expects either `predis`, `sentinel` or `redis-sentinel` as valid string values, `%s` given',
-                    static::class,
-                    $description
-                ));
+                throw new InvalidArgumentException(sprintf('%s expects either `predis`, `sentinel` or `redis-sentinel` as valid string values, `%s` given', static::class, $description));
         }
     }
 

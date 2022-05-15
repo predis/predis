@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/topics/sentinel
+ * @see http://redis.io/topics/sentinel
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -49,7 +49,7 @@ class SENTINEL extends RedisCommand
     /**
      * Returns a processed response to SENTINEL MASTERS or SENTINEL SLAVES.
      *
-     * @param array $servers List of Redis servers.
+     * @param array $servers list of Redis servers
      *
      * @return array
      */

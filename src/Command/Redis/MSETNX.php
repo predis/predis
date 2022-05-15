@@ -12,7 +12,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/msetnx
+ * @see http://redis.io/commands/msetnx
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

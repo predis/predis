@@ -13,25 +13,20 @@ namespace Predis\Cluster\Distributor;
 
 use PredisTestCase;
 
-/**
- *
- */
 abstract class PredisDistributorTestCase extends PredisTestCase
 {
     /**
      * Returns a new instance of the tested distributor.
-     *
-     * @return DistributorInterface
      */
     abstract protected function getDistributorInstance(): DistributorInterface;
 
     /**
      * Returns a list of nodes from the hashring.
      *
-     * @param DistributorInterface $distributor Distributor instance.
-     * @param int                  $iterations  Number of nodes to fetch.
+     * @param DistributorInterface $distributor distributor instance
+     * @param int                  $iterations  number of nodes to fetch
      *
-     * @return array Nodes from the hashring.
+     * @return array nodes from the hashring
      */
     protected function getNodes(DistributorInterface $distributor, int $iterations = 10): array
     {
@@ -48,9 +43,7 @@ abstract class PredisDistributorTestCase extends PredisTestCase
     /**
      * Returns a distributor instance with the specified nodes added.
      *
-     * @param array $nodes Nodes to add to the distributor.
-     *
-     * @return DistributorInterface
+     * @param array $nodes nodes to add to the distributor
      */
     protected function getSampleDistribution(array $nodes): DistributorInterface
     {

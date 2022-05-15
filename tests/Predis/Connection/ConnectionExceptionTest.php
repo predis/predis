@@ -15,9 +15,6 @@ require_once __DIR__.'/../CommunicationExceptionTest.php';
 
 use Predis\CommunicationExceptionTest;
 
-/**
- *
- */
 class ConnectionExceptionTest extends CommunicationExceptionTest
 {
     /**

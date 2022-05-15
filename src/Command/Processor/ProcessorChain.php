@@ -23,7 +23,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     private $processors = array();
 
     /**
-     * @param array $processors List of instances of ProcessorInterface.
+     * @param array $processors list of instances of ProcessorInterface
      */
     public function __construct($processors = array())
     {
@@ -113,9 +113,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     public function offsetSet($index, $processor)
     {
         if (!$processor instanceof ProcessorInterface) {
-            throw new \InvalidArgumentException(
-                'Processor chain accepts only instances of `Predis\Command\Processor\ProcessorInterface`'
-            );
+            throw new \InvalidArgumentException('Processor chain accepts only instances of `Predis\Command\Processor\ProcessorInterface`');
         }
 
         $this->processors[$index] = $processor;

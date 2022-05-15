@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/migrate
+ * @see http://redis.io/commands/migrate
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -37,11 +37,11 @@ class MIGRATE extends RedisCommand
             foreach (array_pop($arguments) as $modifier => $value) {
                 $modifier = strtoupper($modifier);
 
-                if ($modifier === 'COPY' && $value == true) {
+                if ('COPY' === $modifier && true == $value) {
                     $arguments[] = $modifier;
                 }
 
-                if ($modifier === 'REPLACE' && $value == true) {
+                if ('REPLACE' === $modifier && true == $value) {
                     $arguments[] = $modifier;
                 }
             }

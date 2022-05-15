@@ -26,7 +26,7 @@ class KeyPrefixProcessor implements ProcessorInterface
     private $commands;
 
     /**
-     * @param string $prefix Prefix for the keys.
+     * @param string $prefix prefix for the keys
      */
     public function __construct($prefix)
     {
@@ -172,7 +172,7 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Sets a prefix that is applied to all the keys.
      *
-     * @param string $prefix Prefix for the keys.
+     * @param string $prefix prefix for the keys
      */
     public function setPrefix($prefix)
     {
@@ -212,8 +212,8 @@ class KeyPrefixProcessor implements ProcessorInterface
      * When the callback argument is omitted or NULL, the previously
      * associated handler for the specified command ID is removed.
      *
-     * @param string $commandID The ID of the command to be handled.
-     * @param mixed  $callback  A valid callable object or NULL.
+     * @param string $commandID the ID of the command to be handled
+     * @param mixed  $callback  a valid callable object or NULL
      *
      * @throws \InvalidArgumentException
      */
@@ -228,9 +228,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
-                'Callback must be a valid callable object or NULL'
-            );
+            throw new \InvalidArgumentException('Callback must be a valid callable object or NULL');
         }
 
         $this->commands[$commandID] = $callback;
@@ -247,8 +245,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix only the first argument.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function first(CommandInterface $command, $prefix)
     {
@@ -261,8 +259,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to all the arguments.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function all(CommandInterface $command, $prefix)
     {
@@ -278,8 +276,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix only to even arguments in the list.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function interleaved(CommandInterface $command, $prefix)
     {
@@ -297,8 +295,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to all the arguments but the first one.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function skipFirst(CommandInterface $command, $prefix)
     {
@@ -316,8 +314,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to all the arguments but the last one.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function skipLast(CommandInterface $command, $prefix)
     {
@@ -335,8 +333,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to the keys of a SORT command.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function sort(CommandInterface $command, $prefix)
     {
@@ -353,12 +351,12 @@ class KeyPrefixProcessor implements ProcessorInterface
 
                         case 'GET':
                             $value = $arguments[++$i];
-                            if ($value !== '#') {
+                            if ('#' !== $value) {
                                 $arguments[$i] = "$prefix$value";
                             }
                             break;
 
-                        case 'LIMIT';
+                        case 'LIMIT':
                             $i += 2;
                             break;
                     }
@@ -372,8 +370,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to the keys of an EVAL-based command.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function evalKeys(CommandInterface $command, $prefix)
     {
@@ -389,8 +387,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to the keys of Z[INTERSECTION|UNION]STORE.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function zsetStore(CommandInterface $command, $prefix)
     {
@@ -409,8 +407,8 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to the key of a MIGRATE command.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function migrate(CommandInterface $command, $prefix)
     {
@@ -423,14 +421,14 @@ class KeyPrefixProcessor implements ProcessorInterface
     /**
      * Applies the specified prefix to the key of a GEORADIUS command.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $prefix  Prefix string.
+     * @param CommandInterface $command command instance
+     * @param string           $prefix  prefix string
      */
     public static function georadius(CommandInterface $command, $prefix)
     {
         if ($arguments = $command->getArguments()) {
             $arguments[0] = "$prefix{$arguments[0]}";
-            $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
+            $startIndex = 'GEORADIUS' === $command->getId() ? 5 : 4;
 
             if (($count = count($arguments)) > $startIndex) {
                 for ($i = $startIndex; $i < $count; ++$i) {
@@ -439,7 +437,6 @@ class KeyPrefixProcessor implements ProcessorInterface
                         case 'STOREDIST':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";
                             break;
-
                     }
                 }
             }

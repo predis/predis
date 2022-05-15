@@ -19,7 +19,7 @@ use Predis\Protocol\ProtocolException;
  * Handler for the integer response type in the standard Redis wire protocol.
  * It translates the payload an integer or NULL.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -36,7 +36,7 @@ class IntegerResponse implements ResponseHandlerInterface
             return $integer == $payload ? $integer : $payload;
         }
 
-        if ($payload !== 'nil') {
+        if ('nil' !== $payload) {
             CommunicationException::handle(new ProtocolException(
                 $connection, "Cannot parse '$payload' as a valid numeric response [{$connection->getParameters()}]"
             ));

@@ -11,9 +11,9 @@
 
 namespace Predis\Connection;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
 /**
  * @group realm-connection
@@ -552,15 +552,13 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * Returns the fully-qualified class name of the connection used for tests.
-     *
-     * @return string
      */
-    protected abstract function getConnectionClass(): string;
+    abstract protected function getConnectionClass(): string;
 
     /**
      * Returns a named array with the default connection parameters and their values.
      *
-     * @return array Default connection parameters.
+     * @return array default connection parameters
      */
     protected function getDefaultParametersArray(): array
     {
@@ -603,8 +601,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * Creates a new connection instance.
      *
      * @param bool $initialize Push default initialization commands (SELECT and FLUSHDB)
-     *
-     * @return NodeConnectionInterface
      */
     protected function createConnection(bool $initialize = false): NodeConnectionInterface
     {
@@ -616,8 +612,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @param string|array|ParametersInterface $parameters Additional connection parameters
      * @param bool                             $initialize Push default initialization commands (SELECT and FLUSHDB)
-     *
-     * @return NodeConnectionInterface
      */
     protected function createConnectionWithParams($parameters, $initialize = false): NodeConnectionInterface
     {

@@ -19,7 +19,7 @@ use Predis\ClientInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  *
- * @link http://redis.io/commands/scan
+ * @see http://redis.io/commands/scan
  */
 class SortedSetKey extends CursorBasedIterator
 {

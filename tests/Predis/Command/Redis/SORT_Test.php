@@ -38,7 +38,7 @@ class SORT_Test extends PredisCommandTestCase
     /**
      * Utility method to to an LPUSH of some unordered values on a key.
      *
-     * @param Client $redis Redis client instance.
+     * @param Client $redis redis client instance
      * @param string $key   Target key
      *
      * @return array
@@ -192,7 +192,7 @@ class SORT_Test extends PredisCommandTestCase
             $unordered
         );
 
-        $this->assertEquals(array(1, 2, 3, 10, 30, 100),  $redis->lrange('list:ordered', 0, -1));
+        $this->assertEquals(array(1, 2, 3, 10, 30, 100), $redis->lrange('list:ordered', 0, -1));
     }
 
     /**

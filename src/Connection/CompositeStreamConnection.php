@@ -26,8 +26,8 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
     protected $protocol;
 
     /**
-     * @param ParametersInterface        $parameters Initialization parameters for the connection.
-     * @param ProtocolProcessorInterface $protocol   Protocol processor.
+     * @param ParametersInterface        $parameters initialization parameters for the connection
+     * @param ProtocolProcessorInterface $protocol   protocol processor
      */
     public function __construct(
         ParametersInterface $parameters,
@@ -68,7 +68,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
         do {
             $chunk = fread($socket, $length);
 
-            if ($chunk === false || $chunk === '') {
+            if (false === $chunk || '' === $chunk) {
                 $this->onConnectionError('Error while reading bytes from the server.');
             }
 
@@ -89,12 +89,12 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
         do {
             $chunk = fgets($socket);
 
-            if ($chunk === false || $chunk === '') {
+            if (false === $chunk || '' === $chunk) {
                 $this->onConnectionError('Error while reading line from the server.');
             }
 
             $value .= $chunk;
-        } while (substr($value, -2) !== "\r\n");
+        } while ("\r\n" !== substr($value, -2));
 
         return substr($value, 0, -2);
     }

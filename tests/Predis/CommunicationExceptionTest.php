@@ -11,12 +11,9 @@
 
 namespace Predis;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
-/**
- *
- */
 class CommunicationExceptionTest extends PredisTestCase
 {
     /**
@@ -113,10 +110,10 @@ class CommunicationExceptionTest extends PredisTestCase
     /**
      * Returns a connection exception instance.
      *
-     * @param Connection\NodeConnectionInterface $connection Connection instance.
-     * @param string                             $message    Exception message.
-     * @param int                                $code       Exception code.
-     * @param \Exception                         $inner      Inner exception.
+     * @param Connection\NodeConnectionInterface $connection connection instance
+     * @param string                             $message    exception message
+     * @param int                                $code       exception code
+     * @param \Exception                         $inner      inner exception
      *
      * @return \Predis\CommunicationException
      */

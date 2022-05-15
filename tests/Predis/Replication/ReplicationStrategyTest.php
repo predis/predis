@@ -11,13 +11,10 @@
 
 namespace Predis\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ReplicationStrategyTest extends PredisTestCase
 {
     /**
@@ -274,7 +271,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $strategy = new ReplicationStrategy();
 
         $strategy->setCommandReadOnly('SET', function (CommandInterface $command) {
-            return $command->getArgument(1) === true;
+            return true === $command->getArgument(1);
         });
 
         $command = $commands->create('SET', array('trigger', false));
@@ -325,7 +322,7 @@ class ReplicationStrategyTest extends PredisTestCase
             ->willReturn($script = 'return true');
 
         $strategy->setScriptReadOnly($script, function (CommandInterface $command) {
-            return $command->getArgument(2) === true;
+            return true === $command->getArgument(2);
         });
 
         $command->setArguments(array(false));
@@ -366,8 +363,6 @@ class ReplicationStrategyTest extends PredisTestCase
      * Returns the list of expected supported commands.
      *
      * @param ?string $type Optional type of command (based on its keys)
-     *
-     * @return array
      */
     protected function getExpectedCommands(?string $type = null): array
     {

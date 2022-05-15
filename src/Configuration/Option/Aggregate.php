@@ -36,10 +36,7 @@ class Aggregate implements OptionInterface
     public function filter(OptionsInterface $options, $value)
     {
         if (!is_callable($value)) {
-            throw new InvalidArgumentException(sprintf(
-                '%s expects a callable object acting as an aggregate connection initializer',
-                static::class
-            ));
+            throw new InvalidArgumentException(sprintf('%s expects a callable object acting as an aggregate connection initializer', static::class));
         }
 
         return $this->getConnectionInitializer($options, $value);
@@ -71,15 +68,10 @@ class Aggregate implements OptionInterface
     protected function getConnectionInitializer(OptionsInterface $options, callable $callable)
     {
         return function ($parameters = null, $autoaggregate = false) use ($callable, $options) {
-            $connection = call_user_func_array($callable, [&$parameters, $options, $this]);
+            $connection = call_user_func_array($callable, array(&$parameters, $options, $this));
 
             if (!$connection instanceof AggregateConnectionInterface) {
-                throw new InvalidArgumentException(sprintf(
-                    '%s expects the supplied callable to return an instance of %s, but %s was returned',
-                    static::class,
-                    AggregateConnectionInterface::class,
-                    is_object($connection) ? get_class($connection) : gettype($connection)
-                ));
+                throw new InvalidArgumentException(sprintf('%s expects the supplied callable to return an instance of %s, but %s was returned', static::class, AggregateConnectionInterface::class, is_object($connection) ? get_class($connection) : gettype($connection)));
             }
 
             if ($parameters && $autoaggregate) {

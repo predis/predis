@@ -11,11 +11,11 @@
 
 namespace Predis\Response\Iterator;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
+use PredisTestCase;
 
 /**
  * @group realm-iterators
@@ -30,7 +30,7 @@ class MultiBulkTest extends PredisTestCase
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-        /** @var MultiBulkIterator */
+        /* @var MultiBulkIterator */
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator);
 
@@ -107,8 +107,6 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * Returns a new client instance.
-     *
-     * @return ClientInterface
      */
     protected function getClient(): ClientInterface
     {

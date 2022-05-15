@@ -41,9 +41,9 @@ abstract class CursorBasedIterator implements \Iterator
     protected $current;
 
     /**
-     * @param ClientInterface $client Client connected to Redis.
-     * @param string          $match  Pattern to match during the server-side iteration.
-     * @param int             $count  Hint used by Redis to compute the number of results per iteration.
+     * @param ClientInterface $client client connected to Redis
+     * @param string          $match  pattern to match during the server-side iteration
+     * @param int             $count  hint used by Redis to compute the number of results per iteration
      */
     public function __construct(ClientInterface $client, $match = null, $count = null)
     {
@@ -58,8 +58,8 @@ abstract class CursorBasedIterator implements \Iterator
      * Ensures that the client supports the specified Redis command required to
      * fetch elements from the server to perform the iteration.
      *
-     * @param ClientInterface $client    Client connected to Redis.
-     * @param string          $commandID Command ID.
+     * @param ClientInterface $client    client connected to Redis
+     * @param string          $commandID command ID
      *
      * @throws NotSupportedException
      */
@@ -170,18 +170,17 @@ abstract class CursorBasedIterator implements \Iterator
     #[\ReturnTypeWillChange]
     public function next()
     {
-        tryFetch: {
+        tryFetch:
             if (!$this->elements && $this->fetchmore) {
                 $this->fetch();
             }
 
-            if ($this->elements) {
-                $this->extractNext();
-            } elseif ($this->cursor) {
-                goto tryFetch;
-            } else {
-                $this->valid = false;
-            }
+        if ($this->elements) {
+            $this->extractNext();
+        } elseif ($this->cursor) {
+            goto tryFetch;
+        } else {
+            $this->valid = false;
         }
     }
 

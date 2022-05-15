@@ -18,9 +18,6 @@ use Predis\Command\CommandInterface;
 use Predis\Response;
 use PredisTestCase;
 
-/**
- *
- */
 class PipelineTest extends PredisTestCase
 {
     /**
@@ -520,8 +517,6 @@ class PipelineTest extends PredisTestCase
      *
      * @param array $parameters Additional connection parameters
      * @param array $options    Additional client options
-     *
-     * @return ClientInterface
      */
     protected function getClient(array $parameters = array(), array $options = array()): ClientInterface
     {
@@ -530,8 +525,6 @@ class PipelineTest extends PredisTestCase
 
     /**
      * Helper method returning a callback used to responses to ECHO command.
-     *
-     * @return callable
      */
     protected function getReadCallback(): callable
     {

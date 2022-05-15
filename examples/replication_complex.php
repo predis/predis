@@ -29,7 +29,7 @@ use Predis\Replication\ReplicationStrategy;
 
 class HashMultipleGetAll extends ScriptCommand
 {
-    const BODY = <<<LUA
+    public const BODY = <<<LUA
 local hashes = {}
 for _, key in pairs(KEYS) do
     table.insert(hashes, key)

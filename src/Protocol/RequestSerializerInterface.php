@@ -23,7 +23,7 @@ interface RequestSerializerInterface
     /**
      * Serializes a Redis command.
      *
-     * @param CommandInterface $command Redis command.
+     * @param CommandInterface $command redis command
      *
      * @return string
      */

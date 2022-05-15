@@ -11,13 +11,10 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ClusterTest extends PredisTestCase
 {
     /**
@@ -31,7 +28,7 @@ class ClusterTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('closure', $initializer = $option->getDefault($options));
-        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = []));
+        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = array()));
     }
 
     /**
@@ -40,7 +37,7 @@ class ClusterTest extends PredisTestCase
     public function testAcceptsCallableAsConnectionInitializer(): void
     {
         $option = new Cluster();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -65,15 +62,15 @@ class ClusterTest extends PredisTestCase
     public function testReturnedCallableWrapperTriggersAggregationByDefault(): void
     {
         $option = new Cluster();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
             ->withConsecutive(
-                [$parameters[0]],
-                [$parameters[1]]
+                array($parameters[0]),
+                array($parameters[1])
             )
             ->willReturnOnConsecutiveCalls(
                 $nodeConnection1 = $this->getMockConnection($parameters[0]),
@@ -93,8 +90,8 @@ class ClusterTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('add')
             ->withConsecutive(
-                [$nodeConnection1],
-                [$nodeConnection2]
+                array($nodeConnection1),
+                array($nodeConnection2)
             );
 
         $callable = $this->getMockBuilder('stdClass')
@@ -116,7 +113,7 @@ class ClusterTest extends PredisTestCase
     public function testReturnedCallableWrapperDoesNotTriggerAggregationWhenSecondArgumentIsFalse(): void
     {
         $option = new Cluster();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var MockObject|OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -149,15 +146,15 @@ class ClusterTest extends PredisTestCase
     public function testReturnedCallableWrapperTriggersAggregationWhenSecondArgumentIsTrue(): void
     {
         $option = new Cluster();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
             ->withConsecutive(
-                [$parameters[0]],
-                [$parameters[1]]
+                array($parameters[0]),
+                array($parameters[1])
             )
             ->willReturnOnConsecutiveCalls(
                 $nodeConnection1 = $this->getMockConnection($parameters[0]),
@@ -177,8 +174,8 @@ class ClusterTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('add')
             ->withConsecutive(
-                [$nodeConnection1],
-                [$nodeConnection2]
+                array($nodeConnection1),
+                array($nodeConnection2)
             );
 
         $callable = $this->getMockBuilder('stdClass')
@@ -200,7 +197,7 @@ class ClusterTest extends PredisTestCase
     public function testReturnedCallableWrapperDoesNotTriggerAggregationWhenFirstArgumentIsEmptyAndSecondArgumentIsTrue(): void
     {
         $option = new Cluster();
-        $parameters = [];
+        $parameters = array();
 
         /** @var MockObject|OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -238,7 +235,7 @@ class ClusterTest extends PredisTestCase
         );
 
         $option = new Cluster();
-        $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
+        $parameters = array('127.0.0.1:6379', '127.0.0.1:6380');
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();

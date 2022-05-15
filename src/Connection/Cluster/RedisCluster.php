@@ -56,8 +56,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $retryLimit = 5;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @param FactoryInterface  $connections optional connection factory
+     * @param StrategyInterface $strategy    optional cluster strategy
      */
     public function __construct(
         FactoryInterface $connections,
@@ -75,7 +75,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *  0 = no retry attempts (fails immediatly)
      *  n = fail only after n retry attempts
      *
-     * @param int $retry Number of retry attempts.
+     * @param int $retry number of retry attempts
      */
     public function setRetryLimit($retry)
     {
@@ -144,9 +144,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Removes a connection instance by using its identifier.
      *
-     * @param string $connectionID Connection identifier.
+     * @param string $connectionID connection identifier
      *
-     * @return bool True if the connection was in the pool.
+     * @return bool true if the connection was in the pool
      */
     public function removeById($connectionID)
     {
@@ -200,7 +200,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * on a different connection picked at random from the pool of known nodes,
      * up until the retry limit is reached.
      *
-     * @param NodeConnectionInterface $connection Connection to a node of the cluster.
+     * @param NodeConnectionInterface $connection connection to a node of the cluster
      *
      * @return mixed
      */
@@ -209,7 +209,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         $retries = 0;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $response = $connection->executeCommand($command);
             } catch (ConnectionException $exception) {
@@ -229,7 +229,6 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 ++$retries;
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }
@@ -239,7 +238,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * the CLUSTER SLOTS command against the specified node or a random one from
      * the pool.
      *
-     * @param NodeConnectionInterface $connection Optional connection instance.
+     * @param NodeConnectionInterface $connection optional connection instance
      */
     public function askSlotMap(NodeConnectionInterface $connection = null)
     {
@@ -256,7 +255,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             // elements in the $slots array identifying slaves.
             list($start, $end, $master) = $slots;
 
-            if ($master[0] === '') {
+            if ('' === $master[0]) {
                 $this->slotmap->setSlots($start, $end, (string) $connection);
             } else {
                 $this->slotmap->setSlots($start, $end, "{$master[0]}:{$master[1]}");
@@ -269,9 +268,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * slots map, falling back to the same logic used by Redis to initialize a
      * cluster (best-effort).
      *
-     * @param int $slot Slot index.
+     * @param int $slot slot index
      *
-     * @return string Connection ID.
+     * @return string connection ID
      */
     protected function guessNode($slot)
     {
@@ -297,7 +296,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Creates a new connection instance from the given connection ID.
      *
-     * @param string $connectionID Identifier for the connection.
+     * @param string $connectionID identifier for the connection
      *
      * @return NodeConnectionInterface
      */
@@ -319,9 +318,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
         $slot = $this->strategy->getSlot($command);
 
         if (!isset($slot)) {
-            throw new NotSupportedException(
-                "Cannot use '{$command->getId()}' with redis-cluster."
-            );
+            throw new NotSupportedException("Cannot use '{$command->getId()}' with redis-cluster.");
         }
 
         if (isset($this->slots[$slot])) {
@@ -334,7 +331,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Returns the connection currently associated to a given slot.
      *
-     * @param int $slot Slot index.
+     * @param int $slot slot index
      *
      * @throws \OutOfBoundsException
      *
@@ -386,8 +383,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * Permanently associates the connection instance to a new slot.
      * The connection is added to the connections pool if not yet included.
      *
-     * @param NodeConnectionInterface $connection Connection instance.
-     * @param int                     $slot       Target slot index.
+     * @param NodeConnectionInterface $connection connection instance
+     * @param int                     $slot       target slot index
      */
     protected function move(NodeConnectionInterface $connection, $slot)
     {
@@ -399,8 +396,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param CommandInterface       $command Command that generated the -ERR response.
-     * @param ErrorResponseInterface $error   Redis error response object.
+     * @param CommandInterface       $command command that generated the -ERR response
+     * @param ErrorResponseInterface $error   redis error response object
      *
      * @return mixed
      */
@@ -424,8 +421,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * Handles -MOVED responses by executing again the command against the node
      * indicated by the Redis response.
      *
-     * @param CommandInterface $command Command that generated the -MOVED response.
-     * @param string           $details Parameters of the -MOVED response.
+     * @param CommandInterface $command command that generated the -MOVED response
+     * @param string           $details parameters of the -MOVED response
      *
      * @return mixed
      */
@@ -451,8 +448,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * Handles -ASK responses by executing again the command against the node
      * indicated by the Redis response.
      *
-     * @param CommandInterface $command Command that generated the -ASK response.
-     * @param string           $details Parameters of the -ASK response.
+     * @param CommandInterface $command command that generated the -ASK response
+     * @param string           $details parameters of the -ASK response
      *
      * @return mixed
      */
@@ -479,8 +476,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * throws the exception as the nodes participating in the cluster may still
      * have to agree that something changed in the configuration of the cluster.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $method  Actual method.
+     * @param CommandInterface $command command instance
+     * @param string           $method  actual method
      *
      * @return mixed
      */
@@ -488,7 +485,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $failure = false;
 
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
             } catch (ConnectionException $exception) {
@@ -507,7 +504,6 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }
@@ -617,7 +613,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      * The slots map can still be manually fetched using the askSlotMap()
      * method whether or not this option is enabled.
      *
-     * @param bool $value Enable or disable the use of CLUSTER SLOTS.
+     * @param bool $value enable or disable the use of CLUSTER SLOTS
      */
     public function useClusterSlots($value)
     {

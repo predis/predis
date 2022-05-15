@@ -11,9 +11,9 @@
 
 namespace Predis\Monitor;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-monitor
@@ -208,9 +208,9 @@ class ConsumerTest extends PredisTestCase
         $producer->echo('QUIT');
 
         foreach ($monitor as $message) {
-            if ($message->command == 'ECHO') {
+            if ('ECHO' == $message->command) {
                 $echoed[] = $arguments = trim($message->arguments, '"');
-                if ($arguments == 'QUIT') {
+                if ('QUIT' == $arguments) {
                     $monitor->stop();
                 }
             }

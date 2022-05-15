@@ -40,7 +40,7 @@ use Predis\Response\Status as StatusResponse;
  *  - timeout: timeout to perform the connection (default is 5 seconds).
  *  - read_write_timeout: timeout of read / write operations.
  *
- * @link http://github.com/nrk/phpiredis
+ * @see http://github.com/nrk/phpiredis
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -77,15 +77,11 @@ class PhpiredisSocketConnection extends AbstractConnection
     protected function assertExtensions()
     {
         if (!extension_loaded('sockets')) {
-            throw new NotSupportedException(
-                'The "sockets" extension is required by this connection backend.'
-            );
+            throw new NotSupportedException('The "sockets" extension is required by this connection backend.');
         }
 
         if (!extension_loaded('phpiredis')) {
-            throw new NotSupportedException(
-                'The "phpiredis" extension is required by this connection backend.'
-            );
+            throw new NotSupportedException('The "phpiredis" extension is required by this connection backend.');
         }
     }
 
@@ -105,9 +101,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         }
 
         if (isset($parameters->persistent)) {
-            throw new NotSupportedException(
-                'Persistent connections are not supported by this connection backend.'
-            );
+            throw new NotSupportedException('Persistent connections are not supported by this connection backend.');
         }
 
         return $parameters;
@@ -190,7 +184,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Gets the address of an host from connection parameters.
      *
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters parameters used to initialize the connection
      *
      * @return string
      */
@@ -214,7 +208,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     {
         $parameters = $this->parameters;
 
-        if ($parameters->scheme === 'unix') {
+        if ('unix' === $parameters->scheme) {
             $address = $parameters->path;
             $domain = AF_UNIX;
             $protocol = 0;
@@ -240,12 +234,12 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Sets options on the socket resource from the connection parameters.
      *
-     * @param resource            $socket     Socket resource.
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param resource            $socket     socket resource
+     * @param ParametersInterface $parameters parameters used to initialize the connection
      */
     private function setSocketOptions($socket, ParametersInterface $parameters)
     {
-        if ($parameters->scheme !== 'unix') {
+        if ('unix' !== $parameters->scheme) {
             if (!socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1)) {
                 $this->emitSocketError();
             }
@@ -278,9 +272,9 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Opens the actual connection to the server with a timeout.
      *
-     * @param resource            $socket     Socket resource.
+     * @param resource            $socket     socket resource
      * @param string              $address    IP address (DNS-resolved from hostname)
-     * @param ParametersInterface $parameters Parameters used to initialize the connection.
+     * @param ParametersInterface $parameters parameters used to initialize the connection
      *
      * @return string
      */
@@ -288,10 +282,10 @@ class PhpiredisSocketConnection extends AbstractConnection
     {
         socket_set_nonblock($socket);
 
-        if (@socket_connect($socket, $address, (int) $parameters->port) === false) {
+        if (false === @socket_connect($socket, $address, (int) $parameters->port)) {
             $error = socket_last_error();
 
-            if ($error != SOCKET_EINPROGRESS && $error != SOCKET_EALREADY) {
+            if (SOCKET_EINPROGRESS != $error && SOCKET_EALREADY != $error) {
                 $this->emitSocketError();
             }
         }
@@ -307,15 +301,15 @@ class PhpiredisSocketConnection extends AbstractConnection
 
         $selected = socket_select($selectable, $selectable, $null, $timeoutSecs, $timeoutUSecs);
 
-        if ($selected === 2) {
+        if (2 === $selected) {
             $this->onConnectionError('Connection refused.', SOCKET_ECONNREFUSED);
         }
 
-        if ($selected === 0) {
+        if (0 === $selected) {
             $this->onConnectionError('Connection timed out.', SOCKET_ETIMEDOUT);
         }
 
-        if ($selected === false) {
+        if (false === $selected) {
             $this->emitSocketError();
         }
     }
@@ -361,7 +355,7 @@ class PhpiredisSocketConnection extends AbstractConnection
                 return;
             }
 
-            if ($written === false) {
+            if (false === $written) {
                 $this->onConnectionError('Error while writing bytes to the server.');
             }
 
@@ -378,14 +372,14 @@ class PhpiredisSocketConnection extends AbstractConnection
         $reader = $this->reader;
 
         while (PHPIREDIS_READER_STATE_INCOMPLETE === $state = phpiredis_reader_get_state($reader)) {
-            if (@socket_recv($socket, $buffer, 4096, 0) === false || $buffer === '' || $buffer === null) {
+            if (false === @socket_recv($socket, $buffer, 4096, 0) || '' === $buffer || null === $buffer) {
                 $this->emitSocketError();
             }
 
             phpiredis_reader_feed($reader, $buffer);
         }
 
-        if ($state === PHPIREDIS_READER_STATE_COMPLETE) {
+        if (PHPIREDIS_READER_STATE_COMPLETE === $state) {
             return phpiredis_reader_get_reply($reader);
         } else {
             $this->onProtocolError(phpiredis_reader_get_error($reader));

@@ -28,7 +28,7 @@ interface StrategyInterface
      * Returns a slot for the given command used for clustering distribution or
      * NULL when this is not possible.
      *
-     * @param CommandInterface $command Command instance.
+     * @param CommandInterface $command command instance
      *
      * @return int
      */
@@ -38,7 +38,7 @@ interface StrategyInterface
      * Returns a slot for the given key used for clustering distribution or NULL
      * when this is not possible.
      *
-     * @param string $key Key string.
+     * @param string $key key string
      *
      * @return int
      */

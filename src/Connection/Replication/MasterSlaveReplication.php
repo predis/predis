@@ -80,7 +80,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Configures the automatic discovery of the replication configuration on failure.
      *
-     * @param bool $value Enable or disable auto discovery.
+     * @param bool $value enable or disable auto discovery
      */
     public function setAutoDiscovery($value)
     {
@@ -95,7 +95,7 @@ class MasterSlaveReplication implements ReplicationInterface
      * Sets the connection factory used to create the connections by the auto
      * discovery procedure.
      *
-     * @param FactoryInterface $connectionFactory Connection factory instance.
+     * @param FactoryInterface $connectionFactory connection factory instance
      */
     public function setConnectionFactory(FactoryInterface $connectionFactory)
     {
@@ -196,7 +196,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Returns a connection instance by its alias.
      *
-     * @param string $alias Connection alias.
+     * @param string $alias connection alias
      *
      * @return NodeConnectionInterface|null
      */
@@ -216,9 +216,9 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnectionByRole($role)
     {
-        if ($role === 'master') {
+        if ('master' === $role) {
             return $this->getMaster();
-        } elseif ($role === 'slave') {
+        } elseif ('slave' === $role) {
             return $this->pickSlave();
         }
     }
@@ -226,7 +226,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Switches the internal connection in use by the backend.
      *
-     * @param NodeConnectionInterface $connection Connection instance in the pool.
+     * @param NodeConnectionInterface $connection connection instance in the pool
      */
     public function switchTo(NodeConnectionInterface $connection)
     {
@@ -371,7 +371,7 @@ class MasterSlaveReplication implements ReplicationInterface
         $info = array();
 
         foreach (preg_split('/\r?\n/', $response) as $row) {
-            if (strpos($row, ':') === false) {
+            if (false === strpos($row, ':')) {
                 continue;
             }
 
@@ -391,7 +391,7 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException('Discovery requires a connection factory');
         }
 
-        RETRY_FETCH: {
+        RETRY_FETCH:
             try {
                 if ($connection = $this->getMaster()) {
                     $this->discoverFromMaster($connection, $this->connectionFactory);
@@ -404,21 +404,20 @@ class MasterSlaveReplication implements ReplicationInterface
                 $this->remove($connection);
                 goto RETRY_FETCH;
             }
-        }
     }
 
     /**
      * Discovers the replication configuration by contacting the master node.
      *
-     * @param NodeConnectionInterface $connection        Connection to the master node.
-     * @param FactoryInterface        $connectionFactory Connection factory instance.
+     * @param NodeConnectionInterface $connection        connection to the master node
+     * @param FactoryInterface        $connectionFactory connection factory instance
      */
     protected function discoverFromMaster(NodeConnectionInterface $connection, FactoryInterface $connectionFactory)
     {
         $response = $connection->executeCommand(RawCommand::create('INFO', 'REPLICATION'));
         $replication = $this->handleInfoResponse($response);
 
-        if ($replication['role'] !== 'master') {
+        if ('master' !== $replication['role']) {
             throw new ClientException("Role mismatch (expected master, got slave) [$connection]");
         }
 
@@ -427,7 +426,7 @@ class MasterSlaveReplication implements ReplicationInterface
         foreach ($replication as $k => $v) {
             $parameters = null;
 
-            if (strpos($k, 'slave') === 0 && preg_match('/ip=(?P<host>.*),port=(?P<port>\d+)/', $v, $parameters)) {
+            if (0 === strpos($k, 'slave') && preg_match('/ip=(?P<host>.*),port=(?P<port>\d+)/', $v, $parameters)) {
                 $slaveConnection = $connectionFactory->create(array(
                     'host' => $parameters['host'],
                     'port' => $parameters['port'],
@@ -442,15 +441,15 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Discovers the replication configuration by contacting one of the slaves.
      *
-     * @param NodeConnectionInterface $connection        Connection to one of the slaves.
-     * @param FactoryInterface        $connectionFactory Connection factory instance.
+     * @param NodeConnectionInterface $connection        connection to one of the slaves
+     * @param FactoryInterface        $connectionFactory connection factory instance
      */
     protected function discoverFromSlave(NodeConnectionInterface $connection, FactoryInterface $connectionFactory)
     {
         $response = $connection->executeCommand(RawCommand::create('INFO', 'REPLICATION'));
         $replication = $this->handleInfoResponse($response);
 
-        if ($replication['role'] !== 'slave') {
+        if ('slave' !== $replication['role']) {
             throw new ClientException("Role mismatch (expected slave, got master) [$connection]");
         }
 
@@ -468,19 +467,19 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Retries the execution of a command upon slave failure.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $method  Actual method.
+     * @param CommandInterface $command command instance
+     * @param string           $method  actual method
      *
      * @return mixed
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $connection = $this->getConnectionByCommand($command);
                 $response = $connection->$method($command);
 
-                if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
+                if ($response instanceof ResponseErrorInterface && 'LOADING' === $response->getErrorType()) {
                     throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
                 }
             } catch (ConnectionException $exception) {
@@ -515,7 +514,6 @@ class MasterSlaveReplication implements ReplicationInterface
 
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }

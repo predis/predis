@@ -19,7 +19,7 @@ use Predis\Protocol\ResponseReaderInterface;
 /**
  * Response reader for the standard Redis wire protocol.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -27,9 +27,6 @@ class ResponseReader implements ResponseReaderInterface
 {
     protected $handlers;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->handlers = $this->getDefaultHandlers();
@@ -54,8 +51,8 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * Sets the handler for the specified prefix identifying the response type.
      *
-     * @param string                           $prefix  Identifier of the type of response.
-     * @param Handler\ResponseHandlerInterface $handler Response handler.
+     * @param string                           $prefix  identifier of the type of response
+     * @param Handler\ResponseHandlerInterface $handler response handler
      */
     public function setHandler($prefix, Handler\ResponseHandlerInterface $handler)
     {
@@ -65,7 +62,7 @@ class ResponseReader implements ResponseReaderInterface
     /**
      * Returns the response handler associated to a certain type of response.
      *
-     * @param string $prefix Identifier of the type of response.
+     * @param string $prefix identifier of the type of response
      *
      * @return Handler\ResponseHandlerInterface
      */
@@ -85,7 +82,7 @@ class ResponseReader implements ResponseReaderInterface
     {
         $header = $connection->readLine();
 
-        if ($header === '') {
+        if ('' === $header) {
             $this->onProtocolError($connection, 'Unexpected empty reponse header');
         }
 
@@ -104,8 +101,8 @@ class ResponseReader implements ResponseReaderInterface
      * Handles protocol errors generated while reading responses from a
      * connection.
      *
-     * @param CompositeConnectionInterface $connection Redis connection that generated the error.
-     * @param string                       $message    Error message.
+     * @param CompositeConnectionInterface $connection redis connection that generated the error
+     * @param string                       $message    error message
      */
     protected function onProtocolError(CompositeConnectionInterface $connection, $message)
     {

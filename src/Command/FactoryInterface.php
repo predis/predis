@@ -26,8 +26,6 @@ interface FactoryInterface
      * Checks if the command factory supports the specified list of commands.
      *
      * @param array $commandIDs List of command IDs
-     *
-     * @return bool
      */
     public function supports(string ...$commandIDs): bool;
 
@@ -36,8 +34,6 @@ interface FactoryInterface
      *
      * @param string $commandID Command ID
      * @param array  $arguments Arguments for the command
-     *
-     * @return CommandInterface
      */
     public function create(string $commandID, array $arguments = array()): CommandInterface;
 }

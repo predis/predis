@@ -11,17 +11,14 @@
 
 namespace Predis;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Connection\ParametersInterface;
 use Predis\Command\Factory as CommandFactory;
-use Predis\Connection\NodeConnectionInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
+use PredisTestCase;
 
-/**
- *
- */
 class ClientTest extends PredisTestCase
 {
     /**
@@ -748,7 +745,7 @@ class ClientTest extends PredisTestCase
     public function testThrowsExceptionOnNonRegisteredRedisCommand(): void
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command `INVALIDCOMMAND` is not a registered Redis command");
+        $this->expectExceptionMessage('Command `INVALIDCOMMAND` is not a registered Redis command');
 
         $client = new Client();
         $client->invalidCommand();
@@ -1078,11 +1075,11 @@ class ClientTest extends PredisTestCase
             ->withConsecutive(
                 array(
                     $this->isInstanceOf('Predis\PubSub\Consumer'),
-                    (object) array('kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1)
+                    (object) array('kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1),
                 ),
                 array(
                     $this->isInstanceOf('Predis\PubSub\Consumer'),
-                    (object) array('kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0)
+                    (object) array('kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0),
                 )
             )
             ->willReturnOnConsecutiveCalls(
@@ -1259,9 +1256,9 @@ class ClientTest extends PredisTestCase
     /**
      * Returns an URI string representation of the specified connection parameters.
      *
-     * @param array $parameters Array of connection parameters.
+     * @param array $parameters array of connection parameters
      *
-     * @return string URI string.
+     * @return string URI string
      */
     protected function getParametersString(array $parameters): string
     {

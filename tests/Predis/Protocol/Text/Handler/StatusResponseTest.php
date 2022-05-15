@@ -13,9 +13,6 @@ namespace Predis\Protocol\Text;
 
 use PredisTestCase;
 
-/**
- *
- */
 class StatusResponseTest extends PredisTestCase
 {
     /**

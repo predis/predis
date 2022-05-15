@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/bitop
+ * @see http://redis.io/commands/bitop
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -33,7 +33,7 @@ class BITOP extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        if (count($arguments) === 3 && is_array($arguments[2])) {
+        if (3 === count($arguments) && is_array($arguments[2])) {
             list($operation, $destination) = $arguments;
             $arguments = $arguments[2];
             array_unshift($arguments, $operation, $destination);

@@ -40,7 +40,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  */
 class Client implements ClientInterface, \IteratorAggregate
 {
-    const VERSION = '2.0.0-dev';
+    public const VERSION = '2.0.0-dev';
 
     /** @var OptionsInterface */
     private $options;
@@ -52,13 +52,13 @@ class Client implements ClientInterface, \IteratorAggregate
     private $commands;
 
     /**
-     * @param mixed $parameters Connection parameters for one or more servers.
-     * @param mixed $options    Options to configure some behaviours of the client.
+     * @param mixed $parameters connection parameters for one or more servers
+     * @param mixed $options    options to configure some behaviours of the client
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options = static::createOptions($options ?? new Options);
-        $this->connection = static::createConnection($this->options, $parameters ?? new Parameters);
+        $this->options = static::createOptions($options ?? new Options());
+        $this->connection = static::createConnection($this->options, $parameters ?? new Parameters());
         $this->commands = $this->options->commands;
     }
 
@@ -127,9 +127,7 @@ class Client implements ClientInterface, \IteratorAggregate
             } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {
                 return $initializer($parameters, false);
             } else {
-                throw new \InvalidArgumentException(
-                    'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
-                );
+                throw new \InvalidArgumentException('Array of connection parameters requires `cluster`, `replication` or `aggregate` client option');
             }
         }
 
@@ -187,8 +185,8 @@ class Client implements ClientInterface, \IteratorAggregate
      * actual logic implemented by connection classes and there is no interface
      * binding a connection class to implement any of these.
      *
-     * @param string $selector Type of selector.
-     * @param mixed  $value    Value to be used by the selector.
+     * @param string $selector type of selector
+     * @param mixed  $value    value to be used by the selector
      *
      * @return ClientInterface
      */
@@ -267,8 +265,8 @@ class Client implements ClientInterface, \IteratorAggregate
      * It is possible to identify Redis error responses from normal responses
      * using the second optional argument which is populated by reference.
      *
-     * @param array $arguments Command arguments as defined by the command signature.
-     * @param bool  $error     Set to TRUE when Redis returned an error response.
+     * @param array $arguments command arguments as defined by the command signature
+     * @param bool  $error     set to TRUE when Redis returned an error response
      *
      * @return mixed
      */
@@ -331,8 +329,8 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * Handles -ERR responses returned by Redis.
      *
-     * @param CommandInterface       $command  Redis command that generated the error.
-     * @param ErrorResponseInterface $response Instance of the error response.
+     * @param CommandInterface       $command  redis command that generated the error
+     * @param ErrorResponseInterface $response instance of the error response
      *
      * @throws ServerException
      *
@@ -340,7 +338,7 @@ class Client implements ClientInterface, \IteratorAggregate
      */
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
-        if ($command instanceof ScriptCommand && $response->getErrorType() === 'NOSCRIPT') {
+        if ($command instanceof ScriptCommand && 'NOSCRIPT' === $response->getErrorType()) {
             $response = $this->executeCommand($command->getEvalCommand());
 
             if (!$response instanceof ResponseInterface) {
@@ -363,8 +361,8 @@ class Client implements ClientInterface, \IteratorAggregate
      * simply an utility method to create Redis contexts instances since they
      * follow a common initialization path.
      *
-     * @param string $initializer Method name.
-     * @param array  $argv        Arguments for the method.
+     * @param string $initializer method name
+     * @param array  $argv        arguments for the method
      *
      * @return mixed
      */
@@ -407,8 +405,8 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * Actual pipeline context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array $options  options for the context
+     * @param mixed $callable optional callable used to execute the context
      *
      * @return Pipeline|array
      */
@@ -450,8 +448,8 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * Actual transaction context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array $options  options for the context
+     * @param mixed $callable optional callable used to execute the context
      *
      * @return MultiExecTransaction|array
      */
@@ -482,8 +480,8 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * Actual publish/subscribe context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array $options  options for the context
+     * @param mixed $callable optional callable used to execute the context
      *
      * @return PubSubConsumer|null
      */
@@ -496,7 +494,7 @@ class Client implements ClientInterface, \IteratorAggregate
         }
 
         foreach ($pubsub as $message) {
-            if (call_user_func($callable, $pubsub, $message) === false) {
+            if (false === call_user_func($callable, $pubsub, $message)) {
                 $pubsub->stop();
             }
         }
@@ -523,7 +521,7 @@ class Client implements ClientInterface, \IteratorAggregate
 
         if (!$connection instanceof \Traversable) {
             return new \ArrayIterator(array(
-                (string) $connection => new static($connection, $this->getOptions())
+                (string) $connection => new static($connection, $this->getOptions()),
             ));
         }
 

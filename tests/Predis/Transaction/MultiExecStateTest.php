@@ -23,10 +23,10 @@ class MultiExecStateTest extends PredisTestCase
      */
     public function testFlagsValues(): void
     {
-        $this->assertSame(1,  MultiExecState::INITIALIZED);
-        $this->assertSame(2,  MultiExecState::INSIDEBLOCK);
-        $this->assertSame(4,  MultiExecState::DISCARDED);
-        $this->assertSame(8,  MultiExecState::CAS);
+        $this->assertSame(1, MultiExecState::INITIALIZED);
+        $this->assertSame(2, MultiExecState::INSIDEBLOCK);
+        $this->assertSame(4, MultiExecState::DISCARDED);
+        $this->assertSame(8, MultiExecState::CAS);
         $this->assertSame(16, MultiExecState::WATCH);
     }
 

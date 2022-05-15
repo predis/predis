@@ -32,9 +32,7 @@ class Atomic extends Pipeline
     public function __construct(ClientInterface $client)
     {
         if (!$client->getCommandFactory()->supports('multi', 'exec', 'discard')) {
-            throw new ClientException(
-                "'MULTI', 'EXEC' and 'DISCARD' are not supported by the current command factory."
-            );
+            throw new ClientException("'MULTI', 'EXEC' and 'DISCARD' are not supported by the current command factory.");
         }
 
         parent::__construct($client);
@@ -81,18 +79,14 @@ class Atomic extends Pipeline
 
         if (!isset($executed)) {
             // TODO: should be throwing a more appropriate exception.
-            throw new ClientException(
-                'The underlying transaction has been aborted by the server.'
-            );
+            throw new ClientException('The underlying transaction has been aborted by the server.');
         }
 
         if (count($executed) !== count($commands)) {
             $expected = count($commands);
             $received = count($executed);
 
-            throw new ClientException(
-                "Invalid number of responses [expected $expected, received $received]."
-            );
+            throw new ClientException("Invalid number of responses [expected $expected, received $received].");
         }
 
         $responses = array();
