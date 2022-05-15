@@ -43,4 +43,4 @@ jobs:
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
     - name: Check code style
-      run: composer run sytle:fix
+      run: composer run style:fix
