@@ -115,6 +115,7 @@ use Predis\Response\Status;
  * @method array       sscan(string $key, int $cursor, array $options = null)
  * @method string[]    sunion(array|string $keys)
  * @method int         sunionstore(string $destination, array|string $keys)
+ * @method int         touch(string[]|string $keyOrKeys, string ...$keys = null)
  * @method int         zadd(string $key, array $membersAndScoresDictionary)
  * @method int         zcard(string $key)
  * @method string      zcount(string $key, int|string $min, int|string $max)
