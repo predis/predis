@@ -93,6 +93,18 @@ class GET_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
+    public function testReturnsStatusInTransaction(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->exists('foo'));
+        $this->assertInstanceOf('Predis\Response\Status', $redis->multi());
+        $this->assertInstanceOf('Predis\Response\Status', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     */
     public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
