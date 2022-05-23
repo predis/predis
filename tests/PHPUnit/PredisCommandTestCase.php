@@ -51,10 +51,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
      * Returns a new client instance.
      *
      * @param bool $flushdb Flush selected database before returning the client
+     * @param array|null $options Options for the client
      *
      * @return Client
      */
-    public function getClient(bool $flushdb = true): Client
+    public function getClient(bool $flushdb = true, ?array $options = null): Client
     {
         $commands = $this->getCommandFactory();
 
@@ -64,7 +65,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
             );
         }
 
-        $client = $this->createClient(null, null, $flushdb);
+        $client = $this->createClient(null, $options, $flushdb);
 
         return $client;
     }

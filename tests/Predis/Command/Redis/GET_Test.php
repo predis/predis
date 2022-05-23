@@ -115,4 +115,16 @@ class GET_Test extends PredisCommandTestCase
         $redis->rpush('metavars', 'foo');
         $redis->get('metavars');
     }
+
+    /**
+     * @group connected
+     */
+    public function testReturnsErrorOnWrongTypeWhenConfigured(): void
+    {
+
+        $redis = $this->getClient(true, ['exceptions' => false]);
+
+        $redis->rpush('metavars', 'foo');
+        $this->assertInstanceOf('Predis\Response\Error', $redis->get('metavars'));
+    }
 }
