@@ -20,6 +20,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 
@@ -151,14 +152,14 @@ class SentinelReplication implements ReplicationInterface
     }
 
     /**
-     * Sets the time to wait (in seconds) before fetching a new configuration
+     * Sets the time to wait (in milliseconds) before fetching a new configuration
      * from one of the sentinels.
      *
-     * @param float $seconds Time to wait before the next attempt.
+     * @param float $milliseconds Time to wait before the next attempt.
      */
-    public function setRetryWait($seconds)
+    public function setRetryWait($milliseconds)
     {
-        $this->retryWait = (float) $seconds;
+        $this->retryWait = (float) $milliseconds;
     }
 
     /**
@@ -254,12 +255,15 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if (is_array($parameters)) {
-            // Password authentication is fine now that Redis Sentinel supports
-            // password-protected sentinel instances, but we must explicitly set
-            // "database" and "username" to NULL so that no augmented AUTH (ACL)
-            // and SELECT command are sent by accident to the sentinels.
+            // NOTE: sentinels do not accept AUTH and SELECT commands so we must
+            // explicitly set them to NULL to avoid problems when using default
+            // parameters set via client options. Actually AUTH is supported for
+            // sentinels starting with Redis 5 but we have to differentiate from
+            // sentinels passwords and nodes passwords, this will be implemented
+            // in a later release.
             $parameters['database'] = null;
             $parameters['username'] = null;
+            $parameters['password'] = null;
 
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;
@@ -534,12 +538,16 @@ class SentinelReplication implements ReplicationInterface
      * @param NodeConnectionInterface $connection Connection to a redis server.
      * @param string                  $role       Expected role of the server ("master", "slave" or "sentinel").
      *
-     * @throws RoleException
+     * @throws RoleException|ConnectionException
      */
     protected function assertConnectionRole(NodeConnectionInterface $connection, $role)
     {
         $role = strtolower($role);
         $actualRole = $connection->executeCommand(RawCommand::create('ROLE'));
+
+        if ($actualRole instanceof Error) {
+            throw new ConnectionException($connection, $actualRole->getMessage());
+        }
 
         if ($role !== $actualRole[0]) {
             throw new RoleException($connection, "Expected $role but got $actualRole[0] [$connection]");

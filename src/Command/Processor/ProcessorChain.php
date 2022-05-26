@@ -71,7 +71,7 @@ class ProcessorChain implements \ArrayAccess, ProcessorInterface
     /**
      * Returns an iterator over the list of command processor in the chain.
      *
-     * @return \ArrayIterator
+     * @return \Traversable<int, ProcessorInterface>
      */
     public function getIterator()
     {
