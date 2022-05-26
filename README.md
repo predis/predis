@@ -8,21 +8,12 @@
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
-__ATTENTION:__ you are on the README file of an unstable branch of Predis specifically meant for the
-development of future releases. This means that the code on this branch is potentially unstable, and
-breaking change may happen without any prior notice. Do not use it in production environments or use
-it at your own risk!
-
-Predis does not require any additional C extension by default, but it can be optionally paired with
-[phpiredis](https://github.com/nrk/phpiredis) to lower the overhead of the serialization and parsing
-of the [Redis RESP Protocol](http://redis.io/topics/protocol).
-
 More details about this project can be found on the [frequently asked questions](FAQ.md).
 
 
 ## Main features ##
 
-- Support for Redis from __2.0__ to __6.0__.
+- Support for Redis from __3.0__ to __7.0__.
 - Support for clustering using client-side sharding and pluggable keyspace distributors.
 - Support for [redis-cluster](http://redis.io/topics/cluster-tutorial) (Redis >= 3.0).
 - Support for master-slave replication setups and [redis-sentinel](http://redis.io/topics/sentinel).
