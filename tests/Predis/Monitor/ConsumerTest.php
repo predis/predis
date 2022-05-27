@@ -46,9 +46,9 @@ class ConsumerTest extends PredisTestCase
     public function testMonitorConsumerDoesNotWorkOnClusters(): void
     {
         $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Cannot initialize a monitor consumer over aggregate connections');
+        $this->expectExceptionMessage('Cannot initialize a monitor consumer over cluster connections');
 
-        $cluster = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
         $client = new Client($cluster);
 
         new MonitorConsumer($client);
