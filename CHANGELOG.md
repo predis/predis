@@ -1,5 +1,6 @@
-v2.0.0 (2022-06-08)
-================================================================================
+## Changelog
+
+## v2.0.0 (2022-06-08)
 
 - Dropped support for PHP 7.1 and older
 
@@ -106,6 +107,8 @@ v2.0.0 (2022-06-08)
   class now passes the second argument as an integer value `0` as its default
   value instead of `null`.
 
+- Support Pub/Sub and Pipelines when using replication
+
 - The class `Predis\Transaction\AbortedMultiExecException` now uses the correct 
   default types for the `$code` (integer) parameter.
 
@@ -121,7 +124,6 @@ v2.0.0 (2022-06-08)
   part of `Predis\Command\Redis\SENTINEL` class, is checked to not pass `null`
   to `strtolower()` function.
 
-v2.0.0-beta.1 (2022-05-26)
-================================================================================
+## v2.0.0-beta.1 (2022-05-26)
 
 Same as v2.0.0
