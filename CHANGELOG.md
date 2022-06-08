@@ -1,4 +1,4 @@
-v2.0.0-beta.1 (2022-05-26)
+v2.0.0 (2022-06-08)
 ================================================================================
 
 - Dropped support for PHP 7.1 and older
@@ -120,3 +120,8 @@ v2.0.0-beta.1 (2022-05-26)
 - __FIX__: the value returned from `getArgument()` in `parseResponse()`method,
   part of `Predis\Command\Redis\SENTINEL` class, is checked to not pass `null`
   to `strtolower()` function.
+
+v2.0.0-beta.1 (2022-05-26)
+================================================================================
+
+Same as v2.0.0
