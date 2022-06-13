@@ -36,7 +36,7 @@ management of projects dependencies using [Composer](http://packagist.org/about-
 Compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
 ```shell
-$ composer require predis/predis
+composer require predis/predis
 ```
 
 
