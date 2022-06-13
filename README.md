@@ -35,6 +35,10 @@ This library can be found on [Packagist](http://packagist.org/packages/predis/pr
 management of projects dependencies using [Composer](http://packagist.org/about-composer).
 Compressed archives of each release are [available on GitHub](https://github.com/predis/predis/releases).
 
+```shell
+composer require predis/predis
+```
+
 
 ### Loading the library ###
 
