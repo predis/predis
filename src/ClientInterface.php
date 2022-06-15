@@ -109,7 +109,7 @@ use Predis\Response\Status;
  * @method int               sismember(string $key, string $member)
  * @method string[]          smembers(string $key)
  * @method int               smove(string $source, string $destination, string $member)
- * @method string|null|array spop(string $key, int $count = null)
+ * @method string|array|null spop(string $key, int $count = null)
  * @method string|null       srandmember(string $key, int $count = null)
  * @method int               srem(string $key, string $member)
  * @method array             sscan(string $key, int $cursor, array $options = null)
