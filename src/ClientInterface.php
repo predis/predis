@@ -111,7 +111,7 @@ use Predis\Response\Status;
  * @method int               smove(string $source, string $destination, string $member)
  * @method string|array|null spop(string $key, int $count = null)
  * @method string|null       srandmember(string $key, int $count = null)
- * @method int               srem(string $key, string $member)
+ * @method int               srem(string $key, array|string $member)
  * @method array             sscan(string $key, int $cursor, array $options = null)
  * @method string[]          sunion(array|string $keys)
  * @method int               sunionstore(string $destination, array|string $keys)
