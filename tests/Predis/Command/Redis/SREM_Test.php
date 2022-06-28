@@ -103,6 +103,22 @@ class SREM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.4.0
+     */
+    public function testRemovesMembersInArrayTypeFromSetVariadic(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->sadd('letters', 'a', 'b', 'c', 'd');
+
+        $this->assertSame(2, $redis->srem('letters', ['b', 'd', 'z']));
+        $this->assertSameValues(array('a', 'c'), $redis->smembers('letters'));
+
+        $this->assertSame(0, $redis->srem('digits', [1]));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {
