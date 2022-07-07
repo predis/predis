@@ -263,6 +263,7 @@ class SentinelReplication implements ReplicationInterface
             // in a later release.
             $parameters['database'] = null;
             $parameters['username'] = null;
+            $parameters['password'] = null;
 
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;
