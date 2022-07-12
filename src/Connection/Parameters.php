@@ -27,6 +27,14 @@ class Parameters implements ParametersInterface
     );
 
     /**
+     * Set of connection paramaters already filtered
+     * for NULL or 0-length string values.
+     * 
+     * @var array
+     */
+    protected $parameters;
+
+    /**
      * @param array $parameters Named array of connection parameters.
      */
     public function __construct(array $parameters = array())

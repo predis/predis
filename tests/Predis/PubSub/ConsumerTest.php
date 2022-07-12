@@ -45,7 +45,7 @@ class ConsumerTest extends PredisTestCase
     public function testPubSubConsumerDoesNotWorkOnClusters(): void
     {
         $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Cannot initialize a PUB/SUB consumer over aggregate connections');
+        $this->expectExceptionMessage('Cannot initialize a PUB/SUB consumer over cluster connections');
 
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
         $client = new Client($cluster);
