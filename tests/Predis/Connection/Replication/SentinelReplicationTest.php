@@ -1447,6 +1447,52 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertEquals($strategy, $unserialized->getReplicationStrategy());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testMethodGetSentinelConnectionAfterSentinelRestart(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel&alias=sentinel1');
+        $sentinel1
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')),
+                array(
+                    array(
+                        'name', '127.0.0.1:5382',
+                        'ip', '127.0.0.1',
+                        'port', '5382',
+                        'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
+                        'flags', 'sentinel',
+                    )
+                )
+            );
+
+        $sentinel2 = $this->getMockSentinelConnection('tcp://127.0.0.1:5382?role=sentinel&alias=sentinel2');
+        $sentinel2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', array('sentinels', 'svc')
+            ))
+            ->willThrowException(
+                new Connection\ConnectionException($sentinel2, 'Unknown connection error [127.0.0.1:5382]')
+            );
+
+        $replication = $this->getReplicationConnection('svc', array($sentinel1, $sentinel2));
+        try {
+            $replication->updateSentinels();
+        } catch (\Predis\ClientException $exception){
+            $this->assertEquals('No sentinel server available for autodiscovery.', $exception->getMessage());
+        }
+
+        $replication->updateSentinels();
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
