@@ -495,18 +495,20 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
 
-                if ($response instanceof \Predis\Response\Error){
-                    $message = $response->getMessage() ;
-                    if (strpos($message, "CLUSTERDOWN") === 0 ) {
-                        sleep (2**($retries+1)); 
-                        throw new ServerException($message) ;
+                if ($response instanceof \Predis\Response\Error) {
+                    $message = $response->getMessage();
+
+                    if (strpos($message, "CLUSTERDOWN") === 0) {
+                        sleep (2**($retries+1));
+
+                        throw new ServerException($message);
                     }
                 }
             } catch (\Throwable $exception) {
-                if ($exception instanceof \Predis\Connection\ConnectionException){
+                if ($exception instanceof \Predis\Connection\ConnectionException) {
                     $connection = $exception->getConnection();
                     
-                    if ($connection){
+                    if ($connection) {
                         $connection->disconnect();
                         $this->remove($connection);
                     }
@@ -518,8 +520,12 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     $this->askSlotMap();
                 }
 
-                ++$retries ;
-                if ($retries === $this->retryLimit ) $failure = true;
+                ++$retries;
+
+                if ($retries === $this->retryLimit) {
+                    $failure = true;
+                }
+
                 sleep(2**$retries);
 
                 goto RETRY_COMMAND;
