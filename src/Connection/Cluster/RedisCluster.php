@@ -22,6 +22,8 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ServerException;
+
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -227,6 +229,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 }
 
                 ++$retries;
+                
+                sleep(2**$retries);
+
                 goto RETRY_COMMAND;
             }
         }
@@ -484,14 +489,28 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $failure = false;
 
+        $retries = 0 ;
+
         RETRY_COMMAND: {
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
-            } catch (ConnectionException $exception) {
-                $connection = $exception->getConnection();
-                $connection->disconnect();
 
-                $this->remove($connection);
+                if ($response instanceof \Predis\Response\Error){
+                    $message = $response->getMessage() ;
+                    if (strpos($message, "CLUSTERDOWN") === 0 ) {
+                        sleep (2**($retries+1)); 
+                        throw new ServerException($message) ;
+                    }
+                }
+            } catch (\Throwable $exception) {
+                if ($exception instanceof \Predis\Connection\ConnectionException){
+                    $connection = $exception->getConnection();
+                    
+                    if ($connection){
+                        $connection->disconnect();
+                        $this->remove($connection);
+                    }
+                }
 
                 if ($failure) {
                     throw $exception;
@@ -499,7 +518,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     $this->askSlotMap();
                 }
 
-                $failure = true;
+                ++$retries ;
+                if ($retries === $this->retryLimit ) $failure = true;
+                sleep(2**$retries);
 
                 goto RETRY_COMMAND;
             }
