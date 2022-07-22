@@ -56,6 +56,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $strategy;
     private $connections;
     private $retryLimit = 5;
+    private $minRetryAfter = 1; // seconds
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -82,6 +83,26 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     public function setRetryLimit($retry)
     {
         $this->retryLimit = (int) $retry;
+    }
+
+    /**
+     * Sets the first minimal retry time duration upon server failure.
+     * 
+     * @param float $retryAfter Retry time (second).
+     *
+     */
+    public function setMinRetryAfter($retryAfter)
+    {
+        $this->minRetryAfter = (float) $retryAfter;
+    }
+
+    /**
+     * gets the first minimal retry time duration upon server failure.
+     *
+     */
+    public function getMinRetryAfter()
+    {
+        return (float) $this->minRetryAfter;
     }
 
     /**
@@ -210,6 +231,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $retries = 0;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
+        $retryAfter = $this->minRetryAfter;
 
         RETRY_COMMAND: {
             try {
@@ -230,7 +252,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 
                 ++$retries;
                 
-                sleep(2**$retries);
+                usleep($retryAfter * 1000000);
+
+                $retryAfter = $retryAfter * 2;
 
                 goto RETRY_COMMAND;
             }
@@ -487,9 +511,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        $failure = false;
-
         $retries = 0 ;
+
+        $retryAfter = $this->minRetryAfter;
 
         RETRY_COMMAND: {
             try {
@@ -499,12 +523,14 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     $message = $response->getMessage();
 
                     if (strpos($message, "CLUSTERDOWN") === 0) {
-                        sleep (2**($retries+1));
-
                         throw new ServerException($message);
                     }
                 }
             } catch (\Throwable $exception) {
+
+                usleep($retryAfter * 1000000);
+                $retryAfter = $retryAfter * 2;
+
                 if ($exception instanceof \Predis\Connection\ConnectionException) {
                     $connection = $exception->getConnection();
                     
@@ -514,19 +540,13 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     }
                 }
 
-                if ($failure) {
+                if ($retries === $this->retryLimit) {
                     throw $exception;
                 } elseif ($this->useClusterSlots) {
                     $this->askSlotMap();
                 }
 
                 ++$retries;
-
-                if ($retries === $this->retryLimit) {
-                    $failure = true;
-                }
-
-                sleep(2**$retries);
 
                 goto RETRY_COMMAND;
             }
