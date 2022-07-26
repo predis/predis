@@ -24,7 +24,6 @@ use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 
-
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
  *
