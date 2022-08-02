@@ -80,7 +80,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *
      * @param int $retry Number of retry attempts.
      */
-    public function setRetryInterval($retry)
+    public function setRetryLimit($retry)
     {
         $this->retryLimit = (int) $retry;
     }
@@ -88,7 +88,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * Sets the initial retry interval (milliseconds).
      * 
-     * @param float $retry After Retry time (second).
+     * @param float $retryInterval Milliseconds between retries.
      */
     public function setRetryInterval($retryInterval)
     {
