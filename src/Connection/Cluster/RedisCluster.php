@@ -12,6 +12,7 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\ClientException;
+use Predis\NotSupportedException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
@@ -20,7 +21,6 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
-use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Error as ErrorResponse;
@@ -56,7 +56,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $strategy;
     private $connections;
     private $retryLimit = 5;
-    private $minRetryAfter = 1; // seconds
+    private $retryInterval = 50;
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -80,29 +80,29 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *
      * @param int $retry Number of retry attempts.
      */
-    public function setRetryLimit($retry)
+    public function setRetryInterval($retry)
     {
         $this->retryLimit = (int) $retry;
     }
 
     /**
-     * Sets the first retry time upon server failure.
+     * Sets the initial retry interval (milliseconds).
      * 
      * @param float $retry After Retry time (second).
      */
-    public function setMinRetryAfter($retryAfter)
+    public function setRetryInterval($retryInterval)
     {
-        $this->minRetryAfter = (float) $retryAfter;
+        $this->retryInterval = (float) $retryInterval;
     }
 
     /**
-     * Returns the initial retry time.
+     * Returns the retry interval (milliseconds).
      *
      * @return float
      */
-    public function getMinRetryAfter()
+    public function getRetryInterval()
     {
-        return (float) $this->minRetryAfter;
+        return (float) $this->retryInterval;
     }
 
     /**
@@ -230,8 +230,8 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private function queryClusterNodeForSlotMap(NodeConnectionInterface $connection)
     {
         $retries = 0;
+        $retryAfter = $this->retryInterval;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
-        $retryAfter = $this->minRetryAfter;
 
         RETRY_COMMAND: {
             try {
@@ -250,11 +250,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
                 }
 
-                ++$retries;
-                
-                usleep($retryAfter * 1000000);
-
+                usleep($retryAfter * 1000);
                 $retryAfter = $retryAfter * 2;
+                ++$retries;
 
                 goto RETRY_COMMAND;
             }
@@ -512,8 +510,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         $retries = 0;
-
-        $retryAfter = $this->minRetryAfter;
+        $retryAfter = $this->retryInterval;
 
         RETRY_COMMAND: {
             try {
@@ -527,7 +524,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     }
                 }
             } catch (\Throwable $exception) {
-                usleep($retryAfter * 1000000);
+                usleep($retryAfter * 1000);
                 $retryAfter = $retryAfter * 2;
 
                 if ($exception instanceof ConnectionException) {
