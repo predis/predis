@@ -23,6 +23,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use Predis\Response\Error as ErrorResponse;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -510,7 +511,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        $retries = 0 ;
+        $retries = 0;
 
         $retryAfter = $this->minRetryAfter;
 
@@ -518,7 +519,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
 
-                if ($response instanceof \Predis\Response\Error) {
+                if ($response instanceof ErrorResponse) {
                     $message = $response->getMessage();
 
                     if (strpos($message, "CLUSTERDOWN") === 0) {
@@ -530,7 +531,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 usleep($retryAfter * 1000000);
                 $retryAfter = $retryAfter * 2;
 
-                if ($exception instanceof \Predis\Connection\ConnectionException) {
+                if ($exception instanceof ConnectionException) {
                     $connection = $exception->getConnection();
                     
                     if ($connection) {
