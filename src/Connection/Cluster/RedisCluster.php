@@ -527,7 +527,6 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     }
                 }
             } catch (\Throwable $exception) {
-
                 usleep($retryAfter * 1000000);
                 $retryAfter = $retryAfter * 2;
 
