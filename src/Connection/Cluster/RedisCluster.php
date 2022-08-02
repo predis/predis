@@ -86,10 +86,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * Sets the first minimal retry time duration upon server failure.
+     * Sets the first retry time upon server failure.
      * 
-     * @param float $retryAfter Retry time (second).
-     *
+     * @param float $retry After Retry time (second).
      */
     public function setMinRetryAfter($retryAfter)
     {
@@ -97,8 +96,9 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     }
 
     /**
-     * gets the first minimal retry time duration upon server failure.
+     * Returns the initial retry time.
      *
+     * @return float
      */
     public function getMinRetryAfter()
     {
@@ -522,7 +522,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                 if ($response instanceof ErrorResponse) {
                     $message = $response->getMessage();
 
-                    if (strpos($message, "CLUSTERDOWN") === 0) {
+                    if (strpos($message, 'CLUSTERDOWN') !== false) {
                         throw new ServerException($message);
                     }
                 }
