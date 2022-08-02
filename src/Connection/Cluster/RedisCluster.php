@@ -12,7 +12,6 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\ClientException;
-use Predis\NotSupportedException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
@@ -21,6 +20,7 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Error as ErrorResponse;
@@ -56,7 +56,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $strategy;
     private $connections;
     private $retryLimit = 5;
-    private $retryInterval = 50;
+    private $retryInterval = 10;
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
