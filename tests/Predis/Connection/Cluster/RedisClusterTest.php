@@ -1427,14 +1427,16 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
+	$cluster->setRetryInterval(2000);
+
         $startTime = time() ;
         $cluster->askSlotMap();
         $endTime = time();
         $totalTime=$endTime-$startTime;
-        $t1 = $cluster->getMinRetryAfter()  ;
+        $t1 = $cluster->getRetryInterval()  ;
         $t2 = $t1 * 2;
 
-        $expectedTime = ($t1 + $t2 )  ; // expected time for 2 retries (fail 1=wait 2s, fail 2=wait 4s , OK)
+        $expectedTime = ($t1 + $t2 )/1000  ; // expected time for 2 retries (fail 1=wait 2s, fail 2=wait 4s , OK)
         $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, "Unexpected execution time") ;
 
         $this->assertCount(16384, $cluster->getSlotMap());
