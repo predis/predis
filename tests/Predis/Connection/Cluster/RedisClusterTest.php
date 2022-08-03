@@ -1427,7 +1427,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection2);
         $cluster->add($connection3);
 
-	$cluster->setRetryInterval(2000);
+        $cluster->setRetryInterval(2000);
 
         $startTime = time() ;
         $cluster->askSlotMap();
