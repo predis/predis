@@ -22,6 +22,8 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ServerException;
+use Predis\Response\Error as ErrorResponse;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -54,6 +56,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private $strategy;
     private $connections;
     private $retryLimit = 5;
+    private $retryInterval = 10;
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -80,6 +83,26 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     public function setRetryLimit($retry)
     {
         $this->retryLimit = (int) $retry;
+    }
+
+    /**
+     * Sets the initial retry interval (milliseconds).
+     * 
+     * @param int $retryInterval Milliseconds between retries.
+     */
+    public function setRetryInterval($retryInterval)
+    {
+        $this->retryInterval = (int) $retryInterval;
+    }
+
+    /**
+     * Returns the retry interval (milliseconds).
+     *
+     * @return int Milliseconds between retries.
+     */
+    public function getRetryInterval()
+    {
+        return (int) $this->retryInterval;
     }
 
     /**
@@ -207,6 +230,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     private function queryClusterNodeForSlotMap(NodeConnectionInterface $connection)
     {
         $retries = 0;
+        $retryAfter = $this->retryInterval;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
         RETRY_COMMAND: {
@@ -226,7 +250,10 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                     throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
                 }
 
+                usleep($retryAfter * 1000);
+                $retryAfter = $retryAfter * 2;
                 ++$retries;
+
                 goto RETRY_COMMAND;
             }
         }
@@ -482,24 +509,40 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        $failure = false;
+        $retries = 0;
+        $retryAfter = $this->retryInterval;
 
         RETRY_COMMAND: {
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
-            } catch (ConnectionException $exception) {
-                $connection = $exception->getConnection();
-                $connection->disconnect();
 
-                $this->remove($connection);
+                if ($response instanceof ErrorResponse) {
+                    $message = $response->getMessage();
 
-                if ($failure) {
+                    if (strpos($message, 'CLUSTERDOWN') !== false) {
+                        throw new ServerException($message);
+                    }
+                }
+            } catch (\Throwable $exception) {
+                usleep($retryAfter * 1000);
+                $retryAfter = $retryAfter * 2;
+
+                if ($exception instanceof ConnectionException) {
+                    $connection = $exception->getConnection();
+                    
+                    if ($connection) {
+                        $connection->disconnect();
+                        $this->remove($connection);
+                    }
+                }
+
+                if ($retries === $this->retryLimit) {
                     throw $exception;
                 } elseif ($this->useClusterSlots) {
                     $this->askSlotMap();
                 }
 
-                $failure = true;
+                ++$retries;
 
                 goto RETRY_COMMAND;
             }
