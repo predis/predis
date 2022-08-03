@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+
+- Added retry interval to `RedisCluster` with a default of `10ms`
+
 ## v2.0.0 (2022-06-08)
 
 - Dropped support for PHP 7.1 and older
