@@ -3,6 +3,8 @@
 ## Unreleased
 
 - Added retry interval to `RedisCluster` with a default of `10ms`
+- Avoid PHP 8.2 warning in `Connection\Parameters`
+- Fixed Sentinel reconnect issue in long-running PHP processes
 
 ## v2.0.0 (2022-06-08)
 
