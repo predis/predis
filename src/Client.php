@@ -40,7 +40,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  */
 class Client implements ClientInterface, \IteratorAggregate
 {
-    const VERSION = '1.1.11-dev';
+    const VERSION = '1.2.0';
 
     protected $connection;
     protected $options;
@@ -55,6 +55,11 @@ class Client implements ClientInterface, \IteratorAggregate
         $this->options = $this->createOptions($options ?: array());
         $this->connection = $this->createConnection($parameters ?: array());
         $this->profile = $this->options->profile;
+    }
+
+    public function __destruct()
+    {
+        $this->quit();
     }
 
     /**
