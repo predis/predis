@@ -1,6 +1,6 @@
 ## Changelog
 
-## Unreleased
+## v2.0.1 (2022-09-04)
 
 - Added retry interval to `RedisCluster` with a default of `10ms`
 - Avoid PHP 8.2 warning in `Connection\Parameters`
