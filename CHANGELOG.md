@@ -2,7 +2,7 @@
 
 ## v2.0.2 (2022-09-06)
 
-- Fixed deprecation notice: Use of "static" in callables
+- Fixed PHP 8.2 deprecation notice: Use of "static" in callables
 
 ## v2.0.1 (2022-09-04)
 
