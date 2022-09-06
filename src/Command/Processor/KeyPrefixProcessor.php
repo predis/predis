@@ -198,9 +198,9 @@ class KeyPrefixProcessor implements ProcessorInterface
             $command->prefixKeys($this->prefix);
         } elseif (isset($this->commands[$commandID = strtoupper($command->getId())])) {
             $callable = explode('::', $this->commands[$commandID]);
-            $callable[0] = $command;
+            $callable[0] = $this;
 
-            call_user_func_array($callable,[$this->prefix]);
+            call_user_func($callable, $command, $this->prefix);
         }
     }
 
