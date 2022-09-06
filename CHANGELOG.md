@@ -1,5 +1,9 @@
 ## Changelog
 
+## v2.0.2 (2022-09-06)
+
+- Fixed deprecation notice: Use of "static" in callables
+
 ## v2.0.1 (2022-09-04)
 
 - Added retry interval to `RedisCluster` with a default of `10ms`
