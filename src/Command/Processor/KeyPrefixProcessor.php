@@ -200,7 +200,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             $callable = explode('::', $this->commands[$commandID]);
             $callable[0] = $command;
 
-            call_user_func($callable, $command, $this->prefix);
+            call_user_func_array($callable,[$this->prefix]);
         }
     }
 
