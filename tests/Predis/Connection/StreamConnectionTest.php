@@ -57,6 +57,30 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection->connect();
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testDoesntThrowExceptionOnInvalidResource(): void
+    {
+        var_dump('PHP v' . PHP_VERSION);
+        $this->expectException('Predis\Connection\ConnectionException');
+
+        $cmdSelect = RawCommand::create('SELECT', '1000');
+        $invalidResource = null;
+
+        /** @var NodeConnectionInterface|MockObject */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(array('getResource'))
+            ->setConstructorArgs(array(new Parameters()))
+            ->getMock();
+        $connection
+            ->method('getResource')
+            ->willReturn($invalidResource);
+
+        $connection->writeRequest($cmdSelect);
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
