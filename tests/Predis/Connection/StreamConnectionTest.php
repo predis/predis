@@ -60,7 +60,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      */
-    public function testDoesntThrowExceptionOnInvalidResource(): void
+    public function testDoesntThrowErrorOnInvalidResource(): void
     {
         var_dump('PHP v' . PHP_VERSION);
         $this->expectException('Predis\Connection\ConnectionException');
