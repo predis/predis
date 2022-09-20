@@ -333,7 +333,7 @@ class StreamConnection extends AbstractConnection
                 $bytesLeft = ($size += 2);
 
                 do {
-                    $chunk = fread($socket, min($bytesLeft, 4096));
+                    $chunk = is_resource($socket) ? fread($socket, min($bytesLeft, 4096)) : false;
 
                     if ($chunk === false || $chunk === '') {
                         $this->onConnectionError('Error while reading bytes from the server.');
