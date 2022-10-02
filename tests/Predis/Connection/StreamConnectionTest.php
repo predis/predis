@@ -62,7 +62,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
      */
     public function testDoesntThrowErrorOnInvalidResource(): void
     {
-        var_dump('PHP v' . PHP_VERSION);
         $this->expectException('Predis\Connection\ConnectionException');
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
