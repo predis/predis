@@ -268,7 +268,10 @@ class SentinelReplication implements ReplicationInterface
             // in a later release.
             $parameters['database'] = null;
             $parameters['username'] = null;
-            if (!isset($parameters['password'])) {
+
+            // don't leak password from between configurations
+            // https://github.com/predis/predis/pull/807/#discussion_r985764770
+            if (! isset($parameters['password'])) {
                 $parameters['password'] = null;
             }
 
