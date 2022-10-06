@@ -62,6 +62,7 @@ class SentinelReplicationTest extends PredisTestCase
 
         $this->assertArrayNotHasKey('database', $parameters, 'Parameter `database` was expected to not exist in connection parameters');
         $this->assertArrayNotHasKey('username', $parameters, 'Parameter `username` was expected to not exist in connection parameters');
+        $this->assertArrayNotHasKey('password', $parameters, 'Parameter `password` was expected to not exist in connection parameters');
     }
 
     /**
@@ -115,6 +116,30 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertSame($originalParameters, $parameters);
         $this->assertNotNull($parameters->password);
         $this->assertNotNull($parameters->database);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConnectionParametersInstanceForSentinelConnectionIsNotModifiedEmptyPassword(): void
+    {
+        $sentinel1 = Connection\Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1&password=');
+        $sentinel2 = Connection\Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1');
+
+        $replication1 = $this->getReplicationConnection('svc', array($sentinel1));
+        $replication2 = $this->getReplicationConnection('svc', array($sentinel2));
+
+        $parameters1 = $replication1->getSentinelConnection()->getParameters();
+        $parameters2 = $replication2->getSentinelConnection()->getParameters();
+
+        $this->assertSame($sentinel1, $parameters1);
+        $this->assertSame($sentinel2, $parameters2);
+
+        $this->assertNull($parameters1->password);
+        $this->assertNull($parameters2->password);
+
+        $this->assertNotNull($parameters1->database);
+        $this->assertNotNull($parameters2->database);
     }
 
     /**

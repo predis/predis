@@ -269,6 +269,12 @@ class SentinelReplication implements ReplicationInterface
             $parameters['database'] = null;
             $parameters['username'] = null;
 
+            // don't leak password from between configurations
+            // https://github.com/predis/predis/pull/807/#discussion_r985764770
+            if (! isset($parameters['password'])) {
+                $parameters['password'] = null;
+            }
+
             if (!isset($parameters['timeout'])) {
                 $parameters['timeout'] = $this->sentinelTimeout;
             }
