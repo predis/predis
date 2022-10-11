@@ -1,5 +1,12 @@
 ## Changelog
 
+## v2.0.3 (2022-10-11)
+
+- Improved PHP 8.2 support
+- Call `is_resource()` before reading/writing
+- Added partial support for Redis Stream commands
+- Fixed Sentinel authentication issue
+
 ## v2.0.2 (2022-09-06)
 
 - Fixed PHP 8.2 deprecation notice: Use of "static" in callables
