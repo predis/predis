@@ -111,6 +111,7 @@ use Predis\Command\CommandInterface;
  * @method $this zcount($key, $min, $max)
  * @method $this zincrby($key, $increment, $member)
  * @method $this zinterstore($destination, array|string $keys, array $options = null)
+ * @method $this zmscore(string $key, string ...$member)
  * @method $this zrange($key, $start, $stop, array $options = null)
  * @method $this zrangebyscore($key, $min, $max, array $options = null)
  * @method $this zrank($key, $member)
