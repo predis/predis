@@ -18,6 +18,7 @@ use Predis\Command\Command as RedisCommand;
  * @link https://redis.io/commands/zmscore/
  *
  * @author Vladyslav Vildanov <vladyslav.vildanov@redis.com>
+ * @version >= 6.2.0
  */
 class ZMSCORE extends RedisCommand
 {

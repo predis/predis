@@ -60,6 +60,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider membersProvider
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testReturnsScoresAssociatedWithMembers(
         string $key,
@@ -82,6 +83,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {
