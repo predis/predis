@@ -90,6 +90,6 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
     public function membersProvider(): array
     {
-        return [['test-zscore', [1, 'member1', 2 , 'member2', 3, 'member3'], ['1', '2', '3']]];
+        return [['test-zscore', [1, 'member1', 2, 'member2', 3, 'member3'], ['1', '2', '3']]];
     }
 }
