@@ -4,4 +4,3 @@
 .phpunit.result.cache
 composer.lock
 phpunit.xml
-.idea/
