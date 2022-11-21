@@ -130,6 +130,7 @@ use Predis\Response\Status;
  * @method array             zmscore(string $key, string ...$member)
  * @method array             zpopmin(string $key, int $count = 1)
  * @method array             zpopmax(string $key, int $count = 1)
+ * @method mixed             zrandmember(string $key, int $count = 1, bool $withScores = false)
  * @method array             zrange(string $key, int|string $start, int|string $stop, array $options = null)
  * @method array             zrangebyscore(string $key, int|string $min, int|string $max, array $options = null)
  * @method int|null          zrank(string $key, string $member)
