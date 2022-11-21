@@ -80,8 +80,8 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar');
-        $redis->zrandmember('foo', 1, true);
+        $redis->set('zrandmember_foo', 'bar');
+        $redis->zrandmember('zrandmember_foo', 1, true);
     }
 
     public function argumentsProvider(): array
