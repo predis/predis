@@ -5,6 +5,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\WithScores;
+use Predis\Command\Traits\Keys;
 
 /**
  * @link https://redis.io/commands/zdiff/
@@ -20,6 +21,7 @@ class ZDIFF extends RedisCommand
     use WithScores {
         WithScores::setArguments as setWithScore;
     }
+    use Keys;
 
     public function getId()
     {
@@ -30,15 +32,7 @@ class ZDIFF extends RedisCommand
     {
         $this->setNumkeys($arguments);
         $arguments = $this->getArguments();
-
-        foreach ($arguments as $i => $value) {
-            if (is_array($value)) {
-                $argumentsBefore = array_slice($arguments, 0, $i);
-                $argumentsAfter = array_slice($arguments,  ++$i);
-                $arguments = array_merge($argumentsBefore, $value, $argumentsAfter);
-            }
-        }
-
+        $this->unpackKeysArray(++$this->keysArgumentPositionOffset, $arguments);
         $this->setWithScore($arguments);
     }
 }
