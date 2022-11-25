@@ -3,6 +3,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\WithScores;
 
 /**
@@ -13,8 +14,11 @@ use Predis\Command\Traits\WithScores;
  */
 class ZDIFF extends RedisCommand
 {
+    use Numkeys {
+        Numkeys::setArguments as setNumkeys;
+    }
     use WithScores {
-        setArguments as setWithScore;
+        WithScores::setArguments as setWithScore;
     }
 
     public function getId()
@@ -24,11 +28,14 @@ class ZDIFF extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        for ($i = 0; $i < count($arguments) - 1; $i++) {
-            if (is_array($arguments[$i])) {
+        $this->setNumkeys($arguments);
+        $arguments = $this->getArguments();
+
+        foreach ($arguments as $i => $value) {
+            if (is_array($value)) {
                 $argumentsBefore = array_slice($arguments, 0, $i);
-                $argumentsAfter = array_slice($arguments, -1, $i);
-                $arguments = array_merge($argumentsBefore, $arguments[$i], $argumentsAfter);
+                $argumentsAfter = array_slice($arguments,  ++$i);
+                $arguments = array_merge($argumentsBefore, $value, $argumentsAfter);
             }
         }
 

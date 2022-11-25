@@ -64,7 +64,7 @@ class ZDIFF_test extends PredisCommandTestCase
         $redis->zadd('test-zset-1', ...$firstSetDictionary);
         $redis->zadd('test-zset-2', ...$secondSetDictionary);
 
-        $this->assertSame($expectedResponse, $redis->zdiff(2, ['test-zset-1', 'test-zset-2'], $withScores));
+        $this->assertSame($expectedResponse, $redis->zdiff(['test-zset-1', 'test-zset-2'], $withScores));
     }
 
     /**
@@ -79,7 +79,7 @@ class ZDIFF_test extends PredisCommandTestCase
         $expectedResponse = ['member1', '1', 'member2', '2', 'member3', '3'];
 
         $redis->zadd('test-zset-1', ...$membersDictionary);
-        $this->assertSame($expectedResponse, $redis->zdiff(2, ['test-zset-1', 'test-zset-2'], true));
+        $this->assertSame($expectedResponse, $redis->zdiff(['test-zset-1', 'test-zset-2'], true));
     }
 
     /**
@@ -94,7 +94,7 @@ class ZDIFF_test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('zdiff_foo', 'bar');
-        $redis->zdiff(1, ['zdiff_foo'],true);
+        $redis->zdiff(['zdiff_foo'],true);
     }
 
     public function argumentsProvider(): array
