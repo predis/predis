@@ -23,6 +23,8 @@ class ZDIFF extends RedisCommand
     }
     use Keys;
 
+    public static $keysArgumentPositionOffset = 0;
+
     public function getId()
     {
         return 'ZDIFF';
@@ -32,7 +34,7 @@ class ZDIFF extends RedisCommand
     {
         $this->setNumkeys($arguments);
         $arguments = $this->getArguments();
-        $this->unpackKeysArray(++$this->keysArgumentPositionOffset, $arguments);
+        $this->unpackKeysArray(self::$keysArgumentPositionOffset + 1, $arguments);
         $this->setWithScore($arguments);
     }
 }

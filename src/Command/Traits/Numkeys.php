@@ -9,23 +9,21 @@ use UnexpectedValueException;
  */
 trait Numkeys
 {
-    public $keysArgumentPositionOffset = 0;
-
     public function setArguments(array $arguments)
     {
         $argumentsLength = count($arguments);
 
         if (
-            $this->keysArgumentPositionOffset > $argumentsLength ||
-            !is_array($arguments[$this->keysArgumentPositionOffset])
+            static::$keysArgumentPositionOffset > $argumentsLength ||
+            !is_array($arguments[static::$keysArgumentPositionOffset])
         ) {
             throw new UnexpectedValueException('Wrong keys argument type or position offset');
         }
 
-        $keysArgument = $arguments[$this->keysArgumentPositionOffset];
+        $keysArgument = $arguments[static::$keysArgumentPositionOffset];
         $numkeys = count($keysArgument);
-        $argumentsBeforeKeys = array_slice($arguments, 0, $this->keysArgumentPositionOffset);
-        $argumentsAfterKeys = array_slice($arguments, $this->keysArgumentPositionOffset + 1);
+        $argumentsBeforeKeys = array_slice($arguments, 0, static::$keysArgumentPositionOffset);
+        $argumentsAfterKeys = array_slice($arguments, static::$keysArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBeforeKeys, [$numkeys], [$keysArgument], $argumentsAfterKeys));
     }

@@ -17,6 +17,8 @@ class NumkeysTest extends PredisTestCase
         $this->testClass = new class extends RedisCommand {
             use Numkeys;
 
+            public static $keysArgumentPositionOffset = 0;
+
             public function getId()
             {
                 return 'test';
@@ -33,7 +35,8 @@ class NumkeysTest extends PredisTestCase
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
     {
-        $this->testClass->keysArgumentPositionOffset = $offset;
+        $this->testClass::$keysArgumentPositionOffset = $offset;
+
         $this->testClass->setArguments($actualArguments);
 
         $this->assertSame($expectedArguments, $this->testClass->getArguments());
@@ -45,8 +48,9 @@ class NumkeysTest extends PredisTestCase
      * @param array $actualArguments
      * @return void
      */
-    public function testThrowsExceptionOnUnexpectedValueGiven(int $offset, array $actualArguments): void {
-        $this->testClass->keysArgumentPositionOffset = $offset;
+    public function testThrowsExceptionOnUnexpectedValueGiven(int $offset, array $actualArguments): void
+    {
+        $this->testClass::$keysArgumentPositionOffset = $offset;
 
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong keys argument type or position offset');
