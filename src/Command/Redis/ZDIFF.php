@@ -23,7 +23,7 @@ class ZDIFF extends RedisCommand
     }
     use Keys;
 
-    public static $keysArgumentPositionOffset = 0;
+    protected static $keysArgumentPositionOffset = 0;
 
     public function getId()
     {
