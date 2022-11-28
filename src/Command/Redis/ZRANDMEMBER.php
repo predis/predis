@@ -3,6 +3,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\WithScores;
 
 /**
  * @link https://redis.io/commands/zrandmember/
@@ -18,22 +19,10 @@ use Predis\Command\Command as RedisCommand;
  */
 class ZRANDMEMBER extends RedisCommand
 {
+    use WithScores;
 
     public function getId()
     {
         return 'ZRANDMEMBER';
-    }
-
-    public function setArguments(array $arguments)
-    {
-        $withScores = (count($arguments) === 3)
-            ? array_pop($arguments)
-            : false;
-
-        if (is_bool($withScores) && $withScores) {
-            $arguments[] = 'WITHSCORES';
-        }
-
-        parent::setArguments($arguments);
     }
 }

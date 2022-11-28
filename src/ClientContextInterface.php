@@ -109,6 +109,7 @@ use Predis\Command\CommandInterface;
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
+ * @method $this zdiff(array $keys, bool $withScores = false)
  * @method $this zincrby($key, $increment, $member)
  * @method $this zinterstore($destination, array|string $keys, array $options = null)
  * @method $this zmscore(string $key, string ...$member)
