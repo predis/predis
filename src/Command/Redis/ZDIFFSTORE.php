@@ -6,6 +6,18 @@ use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\Keys;
 
+/**
+ * @link https://redis.io/commands/zdiffstore/
+ *
+ * Computes the difference between the first and all successive input sorted sets
+ * and stores the result in destination. The total number of input keys is specified by numkeys.
+ *
+ * Keys that do not exist are considered to be empty sets.
+ *
+ * If destination already exists, it is overwritten.
+ *
+ * @version >= 6.2.0
+ */
 class ZDIFFSTORE extends RedisCommand
 {
     use Numkeys {
