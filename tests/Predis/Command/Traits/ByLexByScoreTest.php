@@ -84,8 +84,8 @@ class ByLexByScoreTest extends PredisTestCase
     public function unexpectedValuesProvider(): array
     {
         return [
-            'true argument' => [[true]],
-            'string argument, not BYLEX/BYSCORE' => [['wrong argument']]
+            'true argument' => [0, [true]],
+            'string argument, not BYLEX/BYSCORE' => [0, ['wrong argument']]
         ];
     }
 }
