@@ -49,6 +49,8 @@ class ByLexByScoreTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnexpectedValue(array $actualArguments): void
     {
+        $this->testClass::$byLexByScoreArgumentPositionOffset = 0;
+
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage("By argument accepts only \"bylex\" and \"byscore\" values");
 
@@ -84,8 +86,8 @@ class ByLexByScoreTest extends PredisTestCase
     public function unexpectedValuesProvider(): array
     {
         return [
-            'true argument' => [0, [true]],
-            'string argument, not BYLEX/BYSCORE' => [0, ['wrong argument']]
+            'true argument' => [[true]],
+            'string argument, not BYLEX/BYSCORE' => [['wrong argument']]
         ];
     }
 }
