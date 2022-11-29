@@ -12,6 +12,8 @@ use Predis\Command\Traits\Keys;
  *
  * This command is similar to ZDIFFSTORE, but instead of
  * storing the resulting sorted set, it is returned to the client.
+ *
+ * @version >= 6.2.0
  */
 class ZDIFF extends RedisCommand
 {

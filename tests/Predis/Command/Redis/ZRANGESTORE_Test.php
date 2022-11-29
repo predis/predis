@@ -2,6 +2,8 @@
 
 namespace Predis\Command\Redis;
 
+use UnexpectedValueException;
+
 class ZRANGESTORE_Test extends PredisCommandTestCase
 {
     /**
@@ -29,7 +31,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
 
-        $this->assertSame($expectedArguments, $command->getArguments());
+        $this->assertSameValues($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -87,28 +89,70 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->zrange('destination', 0, -1));
     }
 
+    /**
+     * @group connected
+     * @dataProvider unexpectedValuesProvider
+     * @param int|string $min
+     * @param int|string $max
+     * @param string|bool $by
+     * @param $rev
+     * @param $limit
+     * @param int $offset
+     * @param int $count
+     * @param string $expectedExceptionMessage
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testThrowsExceptionOnUnexpectedValuesGiven(
+        $min,
+        $max,
+        $by,
+        $rev,
+        $limit,
+        int $offset,
+        int $count,
+        string $expectedExceptionMessage
+    ): void {
+        $redis = $this->getClient();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
+        $redis->zrangestore(
+            'destination',
+            'source',
+            $min,
+            $max,
+            $by,
+            $rev,
+            $limit,
+            $offset,
+            $count
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [
             'without optional arguments' => [
                 ['destination', 'source', 0, -1, false, false, false, 0, 0],
-                ['destination', 'source', 0, -1, false, false],
+                ['destination', 'source', 0, -1],
             ],
             'with BYLEX argument' => [
                 ['destination', 'source', 0, -1, 'bylex', false, false, 0, 0],
-                ['destination', 'source', 0, -1, 'BYLEX', false],
+                ['destination', 'source', 0, -1, 'BYLEX'],
             ],
             'with BYSCORE argument' => [
                 ['destination', 'source', 0, -1, 'byscore', false, false, 0, 0],
-                ['destination', 'source', 0, -1, 'BYSCORE', false],
+                ['destination', 'source', 0, -1, 'BYSCORE'],
             ],
             'with REV argument' => [
                 ['destination', 'source', 0, -1, false, true, false, 0, 0],
-                ['destination', 'source', 0, -1, false, 'REV'],
+                ['destination', 'source', 0, -1, 'REV'],
             ],
-            'with LIMIT argument' => [
-                ['destination', 'source', 0, -1, false, false, true, 0, 1],
-                ['destination', 'source', 0, -1, false, false, 'LIMIT', 0, 1],
+            'with BYSCORE/BYLEX and LIMIT argument' => [
+                ['destination', 'source', 0, -1, 'byscore', false, true, 0, 1],
+                ['destination', 'source', 0, -1, 'BYSCORE', 'LIMIT', 0, 1],
             ],
             'with BYSCORE/BYLEX argument and REV argument' => [
                 ['destination', 'source', 0, -1, 'byscore', true, false, 0, 0],
@@ -171,6 +215,57 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
                 0,
                 3,
                 ['member3', 'member2', 'member1'],
+            ],
+            'with BYSCORE/BYLEX and LIMIT argument' => [
+                [1, 'member1', 2, 'member2', 3, 'member3'],
+                '1',
+                '(4',
+                'byscore',
+                false,
+                true,
+                0,
+                1,
+                1,
+                ['member1'],
+            ],
+            'with BYSCORE/BYLEX argument and REV argument' => [
+                [3, 'member1', 2, 'member2', 1, 'member3'],
+                3,
+                0,
+                'byscore',
+                true,
+                false,
+                0,
+                0,
+                3,
+                ['member3', 'member2', 'member1'],
+            ],
+            'with BYSCORE/BYLEX argument, REV argument and LIMIT' => [
+                [3, 'member1', 2, 'member2', 1, 'member3'],
+                3,
+                0,
+                'byscore',
+                true,
+                true,
+                0,
+                2,
+                2,
+                ['member2', 'member1'],
+            ],
+        ];
+    }
+
+    public function unexpectedValuesProvider(): array
+    {
+        return [
+            'wrong BY argument value' => [
+                 0, -1, 'wrong value', false, false, 0, 0, "By argument accepts only \"bylex\" and \"byscore\" values",
+            ],
+            'wrong REV argument type' => [
+                0, -1, false, 'wrong value', false, 0, 0, 'Wrong rev argument type',
+            ],
+            'wrong LIMIT argument type' => [
+                0, -1, false, false, 'wrong value', 0, 0, 'Wrong limit argument type'
             ]
         ];
     }

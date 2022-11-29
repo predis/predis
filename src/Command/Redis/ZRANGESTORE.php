@@ -44,11 +44,6 @@ class ZRANGESTORE extends RedisCommand
         $arguments = $this->getArguments();
 
         $this->setLimitArguments($arguments);
-
-        $filteredArguments = array_filter($this->getArguments(), static function ($argument) {
-            return $argument !== false;
-        });
-
-        parent::setArguments($filteredArguments);
+        $this->filterArguments();
     }
 }
