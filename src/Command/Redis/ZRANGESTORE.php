@@ -12,7 +12,6 @@ use Predis\Command\Traits\Rev;
  *
  * This command is like ZRANGE, but stores the result in the destination key.
  *
- * @version >= 6.2.0
  */
 class ZRANGESTORE extends RedisCommand
 {
