@@ -16,7 +16,6 @@ use Predis\Command\Traits\Keys;
  *
  * If destination already exists, it is overwritten.
  *
- * @version >= 6.2.0
  */
 class ZDIFFSTORE extends RedisCommand
 {
