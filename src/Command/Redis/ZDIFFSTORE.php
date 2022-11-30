@@ -15,14 +15,13 @@ use Predis\Command\Traits\Keys;
  * Keys that do not exist are considered to be empty sets.
  *
  * If destination already exists, it is overwritten.
- *
  */
 class ZDIFFSTORE extends RedisCommand
 {
+    use Keys;
     use Numkeys {
         setArguments as setNumkeys;
     }
-    use Keys;
 
     public static $keysArgumentPositionOffset = 1;
 
