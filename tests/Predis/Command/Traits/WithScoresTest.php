@@ -39,12 +39,42 @@ class WithScoresTest extends PredisTestCase
         $this->assertSame($expectedArguments, $this->testClass->getArguments());
     }
 
+    /**
+     * @dataProvider dataProvider
+     * @param array $actualData
+     * @param array $expectedResponse
+     * @return void
+     */
+    public function testParseDataReturnsCorrectResponse(array $actualData, array $expectedResponse): void
+    {
+        $this->testClass->setArguments($actualData);
+
+        $arguments = $this->testClass->getArguments();
+
+        $this->assertSame($expectedResponse, $this->testClass->parseResponse($arguments));
+    }
+
     public function valuesProvider(): array
     {
         return [
             'with last argument boolean - true' => [['test', 'test1', true], ['test', 'test1', 'WITHSCORES']],
             'with last argument boolean - false' => [['test', 'test1', false], ['test', 'test1']],
             'with last argument non boolean' => [['test', 'test1', 1], ['test', 'test1', 1]],
+        ];
+    }
+
+    public function dataProvider(): array
+    {
+        return [
+            'without modifier' => [['member1', '1', 'member2', '2'], ['member1', '1', 'member2', '2']],
+            'with wrong modifier' => [
+                ['member1', '1', 'member2', '2', 'WITHSCOREE'],
+                ['member1', '1', 'member2', '2', 'WITHSCOREE'],
+            ],
+            'with modifier' => [
+                ['member1', '1', 'member2', '2', 'WITHSCORES'],
+                ['member1' => '1', 'member2' => '2'],
+            ]
         ];
     }
 }
