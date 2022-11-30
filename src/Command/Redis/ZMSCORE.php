@@ -12,7 +12,6 @@ use Predis\Command\Command as RedisCommand;
  *
  * For every member that does not exist in the sorted set, a null value is returned.
  *
- * @version >= 6.2.0
  */
 class ZMSCORE extends RedisCommand
 {

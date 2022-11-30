@@ -15,7 +15,6 @@ use Predis\Command\Traits\WithScores;
  * If called with a negative count, the behavior changes and the command
  * is allowed to return the same element multiple times.
  *
- * @version >= 6.2.0
  */
 class ZRANDMEMBER extends RedisCommand
 {
