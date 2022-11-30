@@ -76,7 +76,7 @@ class ZDIFF_test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
         $membersDictionary = [1, 'member1', 2, 'member2', 3, 'member3'];
-        $expectedResponse = ['member1', '1', 'member2', '2', 'member3', '3'];
+        $expectedResponse = ['member1' => '1', 'member2' => '2', 'member3' => '3'];
 
         $redis->zadd('test-zset-1', ...$membersDictionary);
         $this->assertSame($expectedResponse, $redis->zdiff(['test-zset-1', 'test-zset-2'], true));
@@ -130,13 +130,13 @@ class ZDIFF_test extends PredisCommandTestCase
             'no intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
-                ['member1', '1', 'member2', '2', 'member3', '3'],
+                ['member1' => '1', 'member2' => '2', 'member3' => '3'],
                 true
             ],
             'partial intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
-                ['member3', '3'],
+                ['member3' => '3'],
                 true
             ],
         ];

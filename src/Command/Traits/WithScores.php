@@ -19,4 +19,32 @@ trait WithScores
 
         parent::setArguments($arguments);
     }
+
+    /**
+     * Checks for the presence of the WITHSCORES modifier.
+     *
+     * @return bool
+     */
+    private function isWithScoreModifier(): bool
+    {
+        $arguments = parent::getArguments();
+        $lastArgument = $arguments[count($arguments) - 1];
+
+        return is_string($lastArgument) && strtoupper($lastArgument) === 'WITHSCORES';
+    }
+
+    public function parseResponse($data)
+    {
+        if ($this->isWithScoreModifier()) {
+            $result = [];
+
+            for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
+                $result[$data[$i]] = $data[++$i];
+            }
+
+            return $result;
+        }
+
+        return $data;
+    }
 }
