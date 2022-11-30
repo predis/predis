@@ -39,7 +39,9 @@ trait WithScores
             $result = [];
 
             for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
-                $result[$data[$i]] = $data[++$i];
+                if ($data[$i + 1] ?? false) {
+                    $result[$data[$i]] = $data[++$i];
+                }
             }
 
             return $result;
