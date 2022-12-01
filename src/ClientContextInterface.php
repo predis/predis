@@ -113,6 +113,7 @@ use Predis\Command\CommandInterface;
  * @method $this zdiffstore(string $destination, array $keys)
  * @method $this zincrby($key, $increment, $member)
  * @method $this zinterstore($destination, array|string $keys, array $options = null)
+ * @method $this zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method $this zmscore(string $key, string ...$member)
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
  * @method $this zrange($key, $start, $stop, array $options = null)
