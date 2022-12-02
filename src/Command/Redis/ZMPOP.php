@@ -8,6 +8,12 @@ use Predis\Command\Traits\MinMaxModifier;
 use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\Keys;
 
+/**
+ * @link https://redis.io/commands/zmpop/
+ *
+ * Pops one or more elements, that are member-score pairs,
+ * from the first non-empty sorted set in the provided list of key names.
+ */
 class ZMPOP extends RedisCommand
 {
     use Numkeys {
@@ -21,6 +27,7 @@ class ZMPOP extends RedisCommand
 
     protected static $keysArgumentPositionOffset = 0;
     protected static $countArgumentPositionOffset = 2;
+    protected static $modifierArgumentPositionOffset = 1;
 
     public function getId()
     {
@@ -35,8 +42,8 @@ class ZMPOP extends RedisCommand
         $this->setNumkeys($arguments);
         $arguments = $this->getArguments();
 
-        $this->resolveModifier(2, $arguments);
-        $this->unpackKeysArray(self::$keysArgumentPositionOffset + 1, $arguments);
+        $this->resolveModifier(static::$modifierArgumentPositionOffset + 1, $arguments);
+        $this->unpackKeysArray(static::$keysArgumentPositionOffset + 1, $arguments);
 
         parent::setArguments($arguments);
     }
