@@ -137,6 +137,7 @@ use Predis\Response\Status;
  * @method mixed             zrandmember(string $key, int $count = 1, bool $withScores = false)
  * @method array             zrange(string $key, int|string $start, int|string $stop, array $options = null)
  * @method array             zrangebyscore(string $key, int|string $min, int|string $max, array $options = null)
+ * @method int               zrangestore(string $destination, string $source, int|string $min, int|string $max, string|bool $by = false, bool $reversed = false, bool $limit = false, int $offset = 0, int $count = 0)
  * @method int|null          zrank(string $key, string $member)
  * @method int               zrem(string $key, string ...$member)
  * @method int               zremrangebyrank(string $key, int|string $start, int|string $stop)

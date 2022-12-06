@@ -119,6 +119,7 @@ use Predis\Command\CommandInterface;
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
  * @method $this zrange($key, $start, $stop, array $options = null)
  * @method $this zrangebyscore($key, $min, $max, array $options = null)
+ * @method $this zrangestore(string $destination, string $source, int|string $min, string|int $max, string|bool $by = false, bool $reversed = false, bool $limit = false, int $offset = 0, int $count = 0)
  * @method $this zrank($key, $member)
  * @method $this zrem($key, $member)
  * @method $this zremrangebyrank($key, $start, $stop)

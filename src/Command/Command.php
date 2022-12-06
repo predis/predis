@@ -114,4 +114,16 @@ abstract class Command implements CommandInterface
 
         return $arguments;
     }
+
+    /**
+     * Remove all false values from arguments.
+     *
+     * @return void
+     */
+    public function filterArguments(): void
+    {
+        $this->arguments = array_filter($this->arguments, static function ($argument) {
+            return $argument !== false;
+        });
+    }
 }
