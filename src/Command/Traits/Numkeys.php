@@ -2,10 +2,13 @@
 
 namespace Predis\Command\Traits;
 
+use Predis\Command\Command;
 use UnexpectedValueException;
 
 /**
  * Resolves numkeys argument from keys and attach it to arguments
+ *
+ * @mixin Command
  */
 trait Numkeys
 {
