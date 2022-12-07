@@ -2,8 +2,12 @@
 
 namespace Predis\Command\Traits;
 
+use Predis\Command\Command;
 use UnexpectedValueException;
 
+/**
+ * @mixin Command
+ */
 trait Rev
 {
     public function setArguments(array $arguments)

@@ -2,8 +2,12 @@
 
 namespace Predis\Command\Traits;
 
+use Predis\Command\Command;
 use UnexpectedValueException;
 
+/**
+ * @mixin Command
+ */
 trait Keys
 {
     public function unpackKeysArray(int $keysArgumentOffset, array &$arguments): void
