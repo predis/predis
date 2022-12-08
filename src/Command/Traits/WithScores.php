@@ -2,8 +2,12 @@
 
 namespace Predis\Command\Traits;
 
+use Predis\Command\Command;
+
 /**
  * Handles last argument passed into command as WITHSCORES
+ *
+ * @mixin Command
  */
 trait WithScores
 {
