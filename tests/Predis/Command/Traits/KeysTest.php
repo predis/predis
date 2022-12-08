@@ -2,6 +2,7 @@
 
 namespace Predis\Command\Traits;
 
+use Predis\Command\Command as RedisCommand;
 use PredisTestCase;
 use UnexpectedValueException;
 
@@ -13,26 +14,32 @@ class KeysTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class {
+        $this->testClass = new class extends RedisCommand {
             use Keys;
+
+            public static $keysArgumentPositionOffset = 0;
+
+            public function getId()
+            {
+                return 'test';
+            }
         };
     }
 
     /**
-     * @dataProvider keysProvider
+     * @dataProvider argumentsProvider
      * @param int $offset
      * @param array $actualArguments
-     * @param array $unpackedArguments
+     * @param array $expectedArguments
      * @return void
      */
-    public function testUnpackKeysArrayTransformArrayCorrectly(
-        int $offset,
-        array $actualArguments,
-        array $unpackedArguments
-    ): void {
-        $this->testClass->unpackKeysArray($offset, $actualArguments);
+    public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
+    {
+        $this->testClass::$keysArgumentPositionOffset = $offset;
 
-        $this->assertSame($unpackedArguments, $actualArguments);
+        $this->testClass->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $this->testClass->getArguments());
     }
 
     /**
@@ -41,36 +48,38 @@ class KeysTest extends PredisTestCase
      * @param array $actualArguments
      * @return void
      */
-    public function testUnpackKeysArrayThrowsExceptionOnUnexpectedValueGiven(int $offset, array $actualArguments): void
+    public function testThrowsExceptionOnUnexpectedValueGiven(int $offset, array $actualArguments): void
     {
+        $this->testClass::$keysArgumentPositionOffset = $offset;
+
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong keys argument type or position offset');
 
-        $this->testClass->unpackKeysArray($offset, $actualArguments);
+        $this->testClass->setArguments($actualArguments);
     }
 
-    public function keysProvider(): array
+    public function argumentsProvider(): array
     {
         return [
             'keys argument first and there is arguments after' => [
                 0,
                 [['key1', 'key2'], 'second argument', 'third argument'],
-                ['key1', 'key2', 'second argument', 'third argument'],
+                [2, 'key1', 'key2', 'second argument', 'third argument']
             ],
             'keys argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', ['key1', 'key2']],
-                ['first argument', 'second argument', 'key1', 'key2'],
+                ['first argument', 'second argument', 2, 'key1', 'key2']
             ],
             'keys argument not the first and not the last' => [
                 1,
                 ['first argument', ['key1', 'key2'], 'third argument'],
-                ['first argument', 'key1', 'key2', 'third argument'],
+                ['first argument', 2, 'key1', 'key2', 'third argument']
             ],
             'keys argument the only argument' => [
                 0,
                 [['key1', 'key2']],
-                ['key1', 'key2'],
+                [2, 'key1', 'key2']
             ]
         ];
     }

@@ -66,6 +66,7 @@ class WithScoresTest extends PredisTestCase
     public function dataProvider(): array
     {
         return [
+            'with empty arguments' => [[], [null]],
             'without modifier' => [['member1', '1', 'member2', '2'], ['member1', '1', 'member2', '2']],
             'with wrong modifier' => [
                 ['member1', '1', 'member2', '2', 'WITHSCOREE'],

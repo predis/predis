@@ -3,7 +3,6 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\WithScores;
 use Predis\Command\Traits\Keys;
 
@@ -15,13 +14,12 @@ use Predis\Command\Traits\Keys;
  */
 class ZDIFF extends RedisCommand
 {
-    use Numkeys {
-        Numkeys::setArguments as setNumkeys;
-    }
     use WithScores {
         WithScores::setArguments as setWithScore;
     }
-    use Keys;
+    use Keys {
+        Keys::setArguments as setKeys;
+    }
 
     protected static $keysArgumentPositionOffset = 0;
 
@@ -32,9 +30,9 @@ class ZDIFF extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $this->setNumkeys($arguments);
+        $this->setKeys($arguments);
         $arguments = $this->getArguments();
-        $this->unpackKeysArray(self::$keysArgumentPositionOffset + 1, $arguments);
+
         $this->setWithScore($arguments);
     }
 }
