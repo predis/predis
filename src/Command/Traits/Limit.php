@@ -10,6 +10,8 @@ use UnexpectedValueException;
  */
 trait Limit
 {
+    private static $limitModifier = 'LIMIT';
+
     public function setArguments(array $arguments)
     {
         $argument = $arguments[static::$limitArgumentPositionOffset];
@@ -20,14 +22,17 @@ trait Limit
             return;
         }
 
+        $argumentsAfter = array_slice($arguments,  static::$limitArgumentPositionOffset + 1);
+
         if (true === $argument) {
-            $argument = 'LIMIT';
-        } else {
+            parent::setArguments(array_merge($argumentsBefore, [self::$limitModifier], $argumentsAfter));
+            return;
+        }
+
+        if (!is_int($argument)) {
             throw new UnexpectedValueException('Wrong limit argument type');
         }
 
-        $argumentsAfter = array_slice($arguments,  static::$limitArgumentPositionOffset + 1);
-
-        parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
+        parent::setArguments(array_merge($argumentsBefore, [self::$limitModifier], [$argument], $argumentsAfter));
     }
 }
