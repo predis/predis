@@ -32,7 +32,7 @@ trait WithScores
     private function isWithScoreModifier(): bool
     {
         $arguments = parent::getArguments();
-        $lastArgument = $arguments[count($arguments) - 1];
+        $lastArgument = (!empty($arguments)) ? $arguments[count($arguments) - 1] : null;
 
         return is_string($lastArgument) && strtoupper($lastArgument) === 'WITHSCORES';
     }

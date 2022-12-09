@@ -5,7 +5,6 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Count;
 use Predis\Command\Traits\MinMaxModifier;
-use Predis\Command\Traits\Numkeys;
 use Predis\Command\Traits\Keys;
 
 /**
@@ -16,14 +15,13 @@ use Predis\Command\Traits\Keys;
  */
 class ZMPOP extends RedisCommand
 {
-    use Numkeys {
-        Numkeys::setArguments as setNumkeys;
+    use Keys {
+        Keys::setArguments as setKeys;
     }
     use Count {
         Count::setArguments as setCount;
     }
     use MinMaxModifier;
-    use Keys;
 
     protected static $keysArgumentPositionOffset = 0;
     protected static $countArgumentPositionOffset = 2;
@@ -39,11 +37,10 @@ class ZMPOP extends RedisCommand
         $this->setCount($arguments);
         $arguments = $this->getArguments();
 
-        $this->setNumkeys($arguments);
-        $arguments = $this->getArguments();
+        $this->resolveModifier(static::$modifierArgumentPositionOffset, $arguments);
 
-        $this->resolveModifier(static::$modifierArgumentPositionOffset + 1, $arguments);
-        $this->unpackKeysArray(static::$keysArgumentPositionOffset + 1, $arguments);
+        $this->setKeys($arguments);
+        $arguments = $this->getArguments();
 
         parent::setArguments($arguments);
     }

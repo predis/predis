@@ -12,6 +12,9 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\Aggregate;
+use Predis\Command\Traits\Keys;
+use Predis\Command\Traits\Weights;
 
 /**
  * @link http://redis.io/commands/zunionstore
@@ -20,6 +23,20 @@ use Predis\Command\Command as RedisCommand;
  */
 class ZUNIONSTORE extends RedisCommand
 {
+    use Keys {
+        Keys::setArguments as setKeys;
+    }
+    use Weights {
+        Weights::setArguments as setWeights;
+    }
+    use Aggregate{
+        Aggregate::setArguments as setAggregate;
+    }
+
+    protected static $keysArgumentPositionOffset = 1;
+    protected static $weightsArgumentPositionOffset = 2;
+    protected static $aggregateArgumentPositionOffset = 3;
+
     /**
      * {@inheritdoc}
      */
@@ -33,48 +50,12 @@ class ZUNIONSTORE extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        $options = array();
-        $argc = count($arguments);
+        $this->setAggregate($arguments);
+        $arguments = $this->getArguments();
 
-        if ($argc > 2 && is_array($arguments[$argc - 1])) {
-            $options = $this->prepareOptions(array_pop($arguments));
-        }
+        $this->setWeights($arguments);
+        $arguments = $this->getArguments();
 
-        if (is_array($arguments[1])) {
-            $arguments = array_merge(
-                array($arguments[0], count($arguments[1])),
-                $arguments[1]
-            );
-        }
-
-        parent::setArguments(array_merge($arguments, $options));
-    }
-
-    /**
-     * Returns a list of options and modifiers compatible with Redis.
-     *
-     * @param array $options List of options.
-     *
-     * @return array
-     */
-    private function prepareOptions($options)
-    {
-        $opts = array_change_key_case($options, CASE_UPPER);
-        $finalizedOpts = array();
-
-        if (isset($opts['WEIGHTS']) && is_array($opts['WEIGHTS'])) {
-            $finalizedOpts[] = 'WEIGHTS';
-
-            foreach ($opts['WEIGHTS'] as $weight) {
-                $finalizedOpts[] = $weight;
-            }
-        }
-
-        if (isset($opts['AGGREGATE'])) {
-            $finalizedOpts[] = 'AGGREGATE';
-            $finalizedOpts[] = $opts['AGGREGATE'];
-        }
-
-        return $finalizedOpts;
+        $this->setKeys($arguments);
     }
 }

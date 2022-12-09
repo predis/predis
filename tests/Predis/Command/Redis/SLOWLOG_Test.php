@@ -104,7 +104,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
         $this->assertIsArray($slowlog[0]);
         $this->assertGreaterThan(0, $slowlog[0]['id']);
         $this->assertGreaterThan(0, $slowlog[0]['timestamp']);
-        $this->assertGreaterThan(0, $slowlog[0]['duration']);
+        $this->assertGreaterThanOrEqual(0, $slowlog[0]['duration']);
         $this->assertIsArray($slowlog[0]['command']);
 
         $redis->config('set', 'slowlog-log-slower-than', $threshold);

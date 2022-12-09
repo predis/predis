@@ -6,7 +6,6 @@ use Predis\Response\ServerException;
 
 class ZDIFF_test extends PredisCommandTestCase
 {
-
     /**
      * @inheritDoc
      */
@@ -100,9 +99,9 @@ class ZDIFF_test extends PredisCommandTestCase
     public function argumentsProvider(): array
     {
         return [
-            'with scores' => [['zset', 5, 'withScores' => true], ['zset', 5, 'WITHSCORES']],
-            'without scores' => [['zset', 5], ['zset', 5]],
-            'without scores - false value' => [['zset', 5, 'withScores' => false], ['zset', 5]],
+            'with scores' => [[['zset'], 5, 'withScores' => true], [1, 'zset', 5, 'WITHSCORES']],
+            'without scores' => [[['zset'], 5], [1, 'zset', 5]],
+            'without scores - false value' => [[['zset'], 5, 'withScores' => false], [1, 'zset', 5]],
         ];
     }
 

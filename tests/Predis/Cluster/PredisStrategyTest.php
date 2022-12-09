@@ -148,7 +148,7 @@ class PredisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
-        $arguments = array('{key}:destination', 2, '{key}:1', '{key}:1', array('aggregate' => 'SUM'));
+        $arguments = array('{key}:destination', ['{key}:1', '{key}:1'], [], 'sum');
 
         foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
             $command = $commands->create($commandID, $arguments);
