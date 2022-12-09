@@ -145,6 +145,7 @@ use Predis\Response\Status;
  * @method array             zrevrange(string $key, int|string $start, int|string $stop, array $options = null)
  * @method array             zrevrangebyscore(string $key, int|string $max, int|string $min, array $options = null)
  * @method int|null          zrevrank(string $key, string $member)
+ * @method array             zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method int               zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method string|null       zscore(string $key, string $member)
  * @method array             zscan(string $key, int $cursor, array $options = null)
