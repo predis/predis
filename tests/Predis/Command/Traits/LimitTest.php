@@ -92,7 +92,12 @@ class LimitTest extends PredisTestCase
                 0,
                 [1],
                 ['LIMIT', 1]
-            ]
+            ],
+            'limit argument with wrong offset' => [
+                2,
+                [1],
+                [1],
+            ],
         ];
     }
 }

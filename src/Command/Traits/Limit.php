@@ -14,14 +14,18 @@ trait Limit
 
     public function setArguments(array $arguments)
     {
-        $argument = $arguments[static::$limitArgumentPositionOffset];
+        $argumentsLength = count($arguments);
         $argumentsBefore = array_slice($arguments, 0, static::$limitArgumentPositionOffset);
 
-        if (false === $argument) {
+        if (
+            static::$limitArgumentPositionOffset >= $argumentsLength
+            || false === $arguments[static::$limitArgumentPositionOffset]
+        ) {
             parent::setArguments($argumentsBefore);
             return;
         }
 
+        $argument = $arguments[static::$limitArgumentPositionOffset];
         $argumentsAfter = array_slice($arguments,  static::$limitArgumentPositionOffset + 1);
 
         if (true === $argument) {
