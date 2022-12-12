@@ -4,6 +4,12 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Traits\WithScores;
 
+/**
+ * @link https://redis.io/commands/zunion/
+ *
+ * This command is similar to ZUNIONSTORE, but instead of
+ * storing the resulting sorted set, it is returned to the client.
+ */
 class ZUNION extends ZUNIONSTORE
 {
     use WithScores;
