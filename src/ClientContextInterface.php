@@ -81,6 +81,7 @@ use Predis\Command\CommandInterface;
  * @method $this lindex($key, $index)
  * @method $this linsert($key, $whence, $pivot, $value)
  * @method $this llen($key)
+ * @method $this lmove(string $source, string $destination, string $where, string $to)
  * @method $this lpop($key)
  * @method $this lpush($key, array $values)
  * @method $this lpushx($key, array $values)
