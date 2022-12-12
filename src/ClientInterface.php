@@ -130,6 +130,7 @@ use Predis\Response\Status;
  * @method array             zdiff(array $keys, bool $withScores = false)
  * @method int               zdiffstore(string $destination, array $keys)
  * @method string            zincrby(string $key, int $increment, string $member)
+ * @method int               zintercard(array $keys, int $limit = 0)
  * @method int               zinterstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method array             zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method array             zmscore(string $key, string ...$member)
