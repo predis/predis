@@ -88,6 +88,16 @@ class LimitTest extends PredisTestCase
                 ['first argument', true, 'third argument'],
                 ['first argument', 'LIMIT', 'third argument']
             ],
+            'limit argument is integer' => [
+                0,
+                [1],
+                ['LIMIT', 1]
+            ],
+            'limit argument with wrong offset' => [
+                2,
+                [1],
+                [1],
+            ],
         ];
     }
 }
