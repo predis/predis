@@ -131,6 +131,7 @@ use Predis\Command\CommandInterface;
  * @method $this zrevrange($key, $start, $stop, array $options = null)
  * @method $this zrevrangebyscore($key, $max, $min, array $options = null)
  * @method $this zrevrank($key, $member)
+ * @method $this zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method $this zscore($key, $member)
  * @method $this zscan($key, $cursor, array $options = null)
