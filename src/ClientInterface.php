@@ -85,6 +85,7 @@ use Predis\Response\Status;
  * @method int               hsetnx(string $key, string $field, string $value)
  * @method array             hvals(string $key)
  * @method int               hstrlen(string $key, string $field)
+ * @method string            blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method array|null        blpop(array|string $keys, int|float $timeout)
  * @method array|null        brpop(array|string $keys, int|float $timeout)
  * @method string|null       brpoplpush(string $source, string $destination, int|float $timeout)
