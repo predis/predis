@@ -25,6 +25,7 @@ use Predis\Response\Status;
  * and more friendly interface to ease programming which is described in the
  * following list of methods:
  *
+ * @method int               copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method int               del(string[]|string $keyOrKeys, string ...$keys = null)
  * @method string|null       dump(string $key)
  * @method int               exists(string $key)

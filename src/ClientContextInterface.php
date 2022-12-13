@@ -16,6 +16,7 @@ use Predis\Command\CommandInterface;
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
  *
+ * @method $this copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method $this del(array|string $keys)
  * @method $this dump($key)
  * @method $this exists($key)
