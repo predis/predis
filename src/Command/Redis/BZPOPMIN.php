@@ -2,8 +2,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Traits\Keys;
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\Redis\AbstractCommand\BZPOPBase;
 
 /**
  * @link https://redis.io/commands/bzpopmin/
@@ -15,32 +14,10 @@ use Predis\Command\Command as RedisCommand;
  * A member with the lowest score is popped from first sorted set that is non-empty,
  * with the given keys being checked in the order that they are given.
  */
-class BZPOPMIN extends RedisCommand
+class BZPOPMIN extends BZPOPBase
 {
-    use Keys {
-        Keys::setArguments as setKeys;
-    }
-
-    protected static $keysArgumentPositionOffset = 0;
-
-    public function getId()
+    public function getId(): string
     {
         return 'BZPOPMIN';
-    }
-
-    public function setArguments(array $arguments)
-    {
-        $this->setKeys($arguments, false);
-    }
-
-    public function parseResponse($data)
-    {
-        $key = array_shift($data);
-
-        if (null === $key) {
-            return [$key];
-        }
-
-        return array_combine([$key], [[$data[0] => $data[1]]]);
     }
 }

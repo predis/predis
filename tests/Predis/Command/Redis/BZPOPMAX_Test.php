@@ -24,27 +24,6 @@ class BZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group disconnected
-     * @dataProvider argumentsProvider
-     */
-    public function testFilterArguments(array $actualArguments, array $expectedArguments): void
-    {
-        $command = $this->getCommand();
-        $command->setArguments($actualArguments);
-
-        $this->assertSame($expectedArguments, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     * @dataProvider responsesProvider
-     */
-    public function testParseResponse(array $actualResponse, array $expectedResponse): void
-    {
-        $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
-    }
-
-    /**
      * @group connected
      * @return void
      * @requiresRedisVersion >= 5.0.0
@@ -90,33 +69,5 @@ class BZPOPMAX_Test extends PredisCommandTestCase
 
         $redis->set('bzpopmax_foo', 'bar');
         $redis->bzpopmax(['bzpopmax_foo'], 0);
-    }
-
-    public function argumentsProvider(): array
-    {
-        return [
-            'with one key' => [
-                [['key1'], 1],
-                ['key1', 1]
-            ],
-            'with multiple keys' => [
-                [['key1', 'key2', 'key3'], 1],
-                ['key1', 'key2', 'key3', 1]
-            ],
-        ];
-    }
-
-    public function responsesProvider(): array
-    {
-        return [
-            'null-element array' => [
-                [null],
-                [null]
-            ],
-            'three-element array' => [
-                ['key', 'member', 'score'],
-                ['key' => ['member' => 'score']]
-            ],
-        ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Redis\AbstractCommand\BZPOPBase;
+
 /**
  * @link https://redis.io/commands/bzpopmax/
  *
@@ -12,9 +14,9 @@ namespace Predis\Command\Redis;
  * A member with the highest score is popped from first sorted set that is non-empty,
  * with the given keys being checked in the order that they are given.
  */
-class BZPOPMAX extends BZPOPMIN
+class BZPOPMAX extends BZPOPBase
 {
-    public function getId()
+    public function getId(): string
     {
         return 'BZPOPMAX';
     }
