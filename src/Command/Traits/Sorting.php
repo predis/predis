@@ -4,7 +4,7 @@ namespace Predis\Command\Traits;
 
 use UnexpectedValueException;
 
-class Sorting
+trait Sorting
 {
     private static $sortingEnum = [
         'asc' => 'ASC',
