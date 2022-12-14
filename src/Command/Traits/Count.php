@@ -22,6 +22,12 @@ trait Count
             return;
         }
 
+        if ($arguments[static::$countArgumentPositionOffset] === -1) {
+            array_splice($arguments, static::$countArgumentPositionOffset, 1, [false]);
+            parent::setArguments($arguments);
+            return;
+        }
+
         if ($arguments[static::$countArgumentPositionOffset] < 1) {
             throw new UnexpectedValueException('Wrong count argument value or position offset');
         }
