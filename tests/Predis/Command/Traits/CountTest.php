@@ -30,14 +30,15 @@ class CountTest extends PredisTestCase
      * @dataProvider argumentsProvider
      * @param int $offset
      * @param array $arguments
+     * @param bool $any
      * @param array $expectedResponse
      * @return void
      */
-    public function testReturnsCorrectArguments(int $offset, array $arguments, array $expectedResponse): void
+    public function testReturnsCorrectArguments(int $offset, bool $any, array $arguments, array $expectedResponse): void
     {
         $this->testClass::$countArgumentPositionOffset = $offset;
 
-        $this->testClass->setArguments($arguments);
+        $this->testClass->setArguments($arguments, $any);
 
         $this->assertSameValues($expectedResponse, $this->testClass->getArguments());
     }
@@ -57,14 +58,22 @@ class CountTest extends PredisTestCase
         return [
             'with count argument' => [
                 0,
+                false,
                 [2],
                 ['COUNT', 2]
             ],
             'without count argument' => [
                 2,
+                false,
                 ['argument1', 'argument2'],
                 ['argument1', 'argument2']
-            ]
+            ],
+            'with any modifier' => [
+                0,
+                true,
+                [2],
+                ['COUNT', 2, 'ANY'],
+            ],
         ];
     }
 }

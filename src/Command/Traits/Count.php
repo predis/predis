@@ -11,8 +11,9 @@ use UnexpectedValueException;
 trait Count
 {
     private $countModifier = 'COUNT';
+    private $anyModifier = 'ANY';
 
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments, bool $any = false)
     {
         $argumentsLength = count($arguments);
 
@@ -29,10 +30,21 @@ trait Count
         $argumentsBefore = array_slice($arguments, 0, static::$countArgumentPositionOffset);
         $argumentsAfter = array_slice($arguments, static::$countArgumentPositionOffset + 1);
 
+        if (!$any) {
+            parent::setArguments(array_merge(
+                $argumentsBefore,
+                [$this->countModifier],
+                [$countArgument],
+                $argumentsAfter
+            ));
+            return;
+        }
+
         parent::setArguments(array_merge(
             $argumentsBefore,
             [$this->countModifier],
             [$countArgument],
+            [$this->anyModifier],
             $argumentsAfter
         ));
     }
