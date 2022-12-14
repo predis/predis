@@ -5,7 +5,7 @@ namespace Predis\Command\Traits\By;
 use Predis\Command\Argument\Geospatial\ByInterface;
 use UnexpectedValueException;
 
-class GeoBy
+trait GeoBy
 {
     public function setArguments(array $arguments)
     {

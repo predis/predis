@@ -2,17 +2,33 @@
 
 namespace Predis\Command\Traits\With;
 
+use UnexpectedValueException;
+
 trait WithDist
 {
-    use BaseWith;
-
-    private function getKeyword(): string
+    public function setArguments(array $arguments)
     {
-        return 'WITHDIST';
-    }
+        $argumentsLength = count($arguments);
 
-    private function getArgumentPositionOffset(): int
-    {
-        return static::$withDistArgumentPositionOffset;
+        if (
+            $arguments[static::$withDistArgumentPositionOffset] >= $argumentsLength
+            || false === $arguments[static::$withDistArgumentPositionOffset]
+        ) {
+            parent::setArguments($arguments);
+            return;
+        }
+
+        $argument = $arguments[static::$withDistArgumentPositionOffset];
+
+        if (true === $argument) {
+            $argument = 'WITHDIST';
+        } else {
+            throw new UnexpectedValueException("Wrong WITHDIST argument type");
+        }
+
+        $argumentsBefore = array_slice($arguments, 0, static::$withDistArgumentPositionOffset);
+        $argumentsAfter = array_slice($arguments,  static::$withDistArgumentPositionOffset + 1);
+
+        parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }
 }
