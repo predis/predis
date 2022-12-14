@@ -11,7 +11,7 @@ trait WithHash
         $argumentsLength = count($arguments);
 
         if (
-            $arguments[static::$withHashArgumentPositionOffset] >= $argumentsLength
+            static::$withCoordArgumentPositionOffset >= $argumentsLength
             || false === $arguments[static::$withHashArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);

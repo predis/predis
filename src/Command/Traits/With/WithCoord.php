@@ -3,21 +3,36 @@
 namespace Predis\Command\Traits\With;
 
 use Predis\Command\Command;
+use UnexpectedValueException;
 
 /**
  * @mixin Command
  */
 trait WithCoord
 {
-    use BaseWith;
-
-    private function getKeyword(): string
+    public function setArguments(array $arguments)
     {
-        return 'WITHCOORD';
-    }
+        $argumentsLength = count($arguments);
 
-    private function getArgumentPositionOffset(): int
-    {
-        return static::$withCoordArgumentPositionOffset;
+        if (
+            static::$withCoordArgumentPositionOffset >= $argumentsLength
+            || false === $arguments[static::$withDistArgumentPositionOffset]
+        ) {
+            parent::setArguments($arguments);
+            return;
+        }
+
+        $argument = $arguments[static::$withCoordArgumentPositionOffset];
+
+        if (true === $argument) {
+            $argument = 'WITHCOORD';
+        } else {
+            throw new UnexpectedValueException("Wrong WITHCOORD argument type");
+        }
+
+        $argumentsBefore = array_slice($arguments, 0, static::$withCoordArgumentPositionOffset);
+        $argumentsAfter = array_slice($arguments,  static::$withCoordArgumentPositionOffset + 1);
+
+        parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }
 }
