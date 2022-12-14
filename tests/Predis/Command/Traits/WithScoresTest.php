@@ -2,8 +2,9 @@
 
 namespace Predis\Command\Traits;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\With\WithScores;
+use PredisTestCase;
 
 class WithScoresTest extends PredisTestCase
 {
