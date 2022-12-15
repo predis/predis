@@ -16,7 +16,7 @@ trait WithCoord
 
         if (
             static::$withCoordArgumentPositionOffset >= $argumentsLength
-            || false === $arguments[static::$withDistArgumentPositionOffset]
+            || false === $arguments[static::$withCoordArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
             return;

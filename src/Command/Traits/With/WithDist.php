@@ -11,7 +11,7 @@ trait WithDist
         $argumentsLength = count($arguments);
 
         if (
-            static::$withCoordArgumentPositionOffset >= $argumentsLength
+            static::$withDistArgumentPositionOffset >= $argumentsLength
             || false === $arguments[static::$withDistArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
