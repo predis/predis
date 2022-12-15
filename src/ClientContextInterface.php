@@ -121,6 +121,7 @@ use Predis\Command\CommandInterface;
  * @method $this zincrby($key, $increment, $member)
  * @method $this zintercard(array $keys, int $limit = 0)
  * @method $this zinterstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
+ * @method $this zinter(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method $this zmscore(string $key, string ...$member)
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
