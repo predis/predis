@@ -9,7 +9,7 @@ abstract class AbstractBy implements ByInterface
     /**
      * @var string[]
      */
-    private static $unitEnum = ['M', 'KM', 'FT', 'MI'];
+    private static $unitEnum = ['m', 'km', 'ft', 'mi'];
 
     /**
      * @var string
@@ -27,7 +27,7 @@ abstract class AbstractBy implements ByInterface
      */
     protected function setUnit(string $unit): void
     {
-        if (!in_array(strtoupper($unit), self::$unitEnum, true)) {
+        if (!in_array($unit, self::$unitEnum, true)) {
             throw new UnexpectedValueException('Wrong value given for unit');
         }
 
