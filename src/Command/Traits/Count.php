@@ -34,9 +34,10 @@ trait Count
 
         $countArgument = $arguments[static::$countArgumentPositionOffset];
         $argumentsBefore = array_slice($arguments, 0, static::$countArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments, static::$countArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$countArgumentPositionOffset + 2);
 
         if (!$any) {
+            $argumentsAfter = array_slice($arguments, static::$countArgumentPositionOffset + 1);
             parent::setArguments(array_merge(
                 $argumentsBefore,
                 [$this->countModifier],

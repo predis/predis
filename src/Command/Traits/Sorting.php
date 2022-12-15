@@ -23,7 +23,7 @@ trait Sorting
         $argument = $arguments[static::$sortArgumentPositionOffset];
 
         if (null === $argument) {
-            array_splice($arguments, static::$sortArgumentPositionOffset, 1);
+            array_splice($arguments, static::$sortArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
             return;
         }
