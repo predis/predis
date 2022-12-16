@@ -11,6 +11,8 @@
 
 namespace Predis\Configuration\Option;
 
+use Predis\ClientConfiguration;
+use Predis\Command\Resolver\CommandResolver;
 use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
@@ -77,7 +79,7 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $input = new RedisFactory();
+        $input = new RedisFactory(new CommandResolver(ClientConfiguration::getModules()));
 
         $commands = $option->filter($options, $input);
 
