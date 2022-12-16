@@ -13,6 +13,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
+use Predis\ClientConfiguration;
 use Predis\Command;
 use Predis\Connection;
 
@@ -146,7 +147,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultOptionsArray(): array
     {
         return array(
-            'commands' => new Command\RedisFactory(),
+            'commands' => new Command\RedisFactory(
+                new Command\Resolver\CommandResolver(ClientConfiguration::getModules())
+            ),
         );
     }
 
@@ -186,7 +189,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getCommandFactory(): Command\Factory
     {
-        return new Command\RedisFactory();
+        return new Command\RedisFactory(new Command\Resolver\CommandResolver(ClientConfiguration::getModules()));
     }
 
     /**
