@@ -11,6 +11,8 @@
 
 namespace Predis\Command;
 
+use Predis\Command\Resolver\CommandResolverInterface;
+
 /**
  * Command factory for mainline Redis servers.
  *
@@ -25,15 +27,18 @@ namespace Predis\Command;
 class RedisFactory extends Factory
 {
     /**
-     *
+     * @var CommandResolverInterface
      */
-    public function __construct()
+    private $commandResolver;
+
+    public function __construct(CommandResolverInterface $commandResolver)
     {
         $this->commands = array(
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
         );
+        $this->commandResolver = $commandResolver;
     }
 
     /**
@@ -44,14 +49,10 @@ class RedisFactory extends Factory
         $commandID = strtoupper($commandID);
 
         if (isset($this->commands[$commandID]) || array_key_exists($commandID, $this->commands)) {
-            $commandClass = $this->commands[$commandID];
-        } elseif (class_exists($commandClass = "Predis\Command\Redis\\$commandID")) {
-            $this->commands[$commandID] = $commandClass;
-        } else {
-            return null;
+            return $this->commands[$commandID];
         }
 
-        return $commandClass;
+        return $this->commandResolver->resolve($commandID);
     }
 
     /**
