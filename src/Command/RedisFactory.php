@@ -52,7 +52,14 @@ class RedisFactory extends Factory
             return $this->commands[$commandID];
         }
 
-        return $this->commandResolver->resolve($commandID);
+        $commandClass = $this->commandResolver->resolve($commandID);
+
+        if (null === $commandClass) {
+            return null;
+        }
+
+        $this->commands[$commandID] = $commandClass;
+        return $commandClass;
     }
 
     /**
