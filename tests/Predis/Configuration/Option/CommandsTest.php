@@ -79,7 +79,7 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $input = new RedisFactory(new CommandResolver(ClientConfiguration::getModules()));
+        $input = new RedisFactory(new CommandResolver());
 
         $commands = $option->filter($options, $input);
 
