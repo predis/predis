@@ -148,7 +148,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     {
         return array(
             'commands' => new Command\RedisFactory(
-                new Command\Resolver\CommandResolver(ClientConfiguration::getModules())
+                new Command\Resolver\CommandResolver()
             ),
         );
     }
@@ -189,7 +189,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getCommandFactory(): Command\Factory
     {
-        return new Command\RedisFactory(new Command\Resolver\CommandResolver(ClientConfiguration::getModules()));
+        return new Command\RedisFactory(new Command\Resolver\CommandResolver());
     }
 
     /**

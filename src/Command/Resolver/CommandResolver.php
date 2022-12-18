@@ -2,6 +2,8 @@
 
 namespace Predis\Command\Resolver;
 
+use Predis\ClientConfiguration;
+
 class CommandResolver implements CommandResolverInterface
 {
     private const COMMANDS_NAMESPACE = "Predis\Command\Redis";
@@ -11,9 +13,9 @@ class CommandResolver implements CommandResolverInterface
      */
     private $modules;
 
-    public function __construct(array $modules)
+    public function __construct()
     {
-        $this->modules = $modules;
+        $this->modules = ClientConfiguration::getModules();
     }
 
     /**
