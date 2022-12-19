@@ -23,6 +23,22 @@ use Predis\Connection;
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
+    protected $redisJsonVersion;
+
+    /**
+     * @var string[]
+     */
+    private $annotationsMapping = [
+        'redis' => 'requiresRedisVersion',
+        'json' => 'requiresRedisJsonVersion',
+    ];
+
+    /**
+     * Info of current Redis instance.
+     *
+     * @var array
+     */
+    private $info;
 
     /**
      * {@inheritdoc}
@@ -30,6 +46,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->checkRequiredRedisServerVersion();
+        $this->checkRequiredRedisJsonModuleVersion();
     }
 
     /**
@@ -304,8 +321,12 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             return $this->redisServerVersion;
         }
 
-        $client = $this->createClient(null, null, true);
-        $info = array_change_key_case($client->info());
+        if (isset($this->info)) {
+            $info = $this->info;
+        } else {
+            $client = $this->createClient(null, null, true);
+            $info = array_change_key_case($client->info());
+        }
 
         if (isset($info['server']['redis_version'])) {
             // Redis >= 2.6
@@ -314,6 +335,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             // Redis < 2.6
             $version = $info['redis_version'];
         } else {
+            $client = $this->createClient(null, null, true);
             $connection = $client->getConnection();
             throw new RuntimeException("Unable to retrieve a valid server info payload from $connection");
         }
@@ -333,19 +355,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRequiredRedisServerVersion(): ?string
     {
-        $annotations = TestUtil::parseTestMethodAnnotations(
-            get_class($this),
-            $this->getName(false)
-        );
-
-        if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
-            !empty($annotations['method']['requiresRedisVersion']) &&
-            in_array('connected', $annotations['method']['group'])
-        ) {
-            return $annotations['method']['requiresRedisVersion'][0];
-        }
-
-        return null;
+        return $this->getRequiredModuleVersion($this->annotationsMapping['redis']);
     }
 
     /**
@@ -397,6 +407,111 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
                 "Test requires a Redis server instance $reqOperator $reqVersion but target server is $serverVersion"
             );
         }
+    }
+
+    /**
+     * Ensures the current Redis JSON module matches version requirements for tests.
+     *
+     * @return void
+     */
+    protected function checkRequiredRedisJsonModuleVersion(): void
+    {
+        if (version_compare($this->getRedisServerVersion(), '6.0.0', '<')) {
+            $this->markTestSkipped(
+                "Test skipped because Redis JSON module available since Redis 6.x"
+            );
+        }
+
+        if (null === $requiredVersion = $this->getRequiredRedisJsonVersion()) {
+            return;
+        }
+
+        $requiredVersion = explode(' ', $requiredVersion, 2);
+
+        if (count($requiredVersion) === 1) {
+            $reqVersion = $requiredVersion[0];
+        } else {
+            $reqVersion = $requiredVersion[1];
+        }
+
+        if(!$this->isSatisfiedRedisJsonVersion($reqVersion)) {
+            $redisJsonVersion = $this->getRedisJsonVersion();
+
+            $this->markTestSkipped(
+                "Test requires a Redis JSON module >= $reqVersion but target module is $redisJsonVersion"
+            );
+        }
+    }
+
+    /**
+     * @param string $versionToCheck
+     * @return bool
+     */
+    protected function isSatisfiedRedisJsonVersion(string $versionToCheck): bool
+    {
+        $currentVersion = $this->getRedisJsonVersion();
+        $versionToCheck = str_replace('.', '0', $versionToCheck);
+
+        return (int)$currentVersion >= (int)$versionToCheck;
+    }
+
+    /**
+     * Returns version of Redis JSON module if it's available.
+     *
+     * @return string
+     */
+    protected function getRedisJsonVersion(): string
+    {
+        if (isset($this->redisJsonVersion)) {
+            return $this->redisJsonVersion;
+        }
+
+        if (isset($this->info)) {
+            $info = $this->info;
+        } else {
+            $client = $this->createClient(null, null, true);
+            $info = array_change_key_case($client->info());
+        }
+
+        if (isset($info['modules']['ReJSON']['ver'])) {
+            $this->redisJsonVersion = $info['modules']['ReJSON']['ver'];
+            return $info['modules']['ReJSON']['ver'];
+        }
+
+        throw new RuntimeException('Redis JSON module is not available at your Redis server instance.');
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getRequiredRedisJsonVersion(): ?string
+    {
+        return $this->getRequiredModuleVersion($this->annotationsMapping['json']);
+    }
+
+    /**
+     * Returns version of given module by its annotation.
+     * Runs if command belong to one of modules and marked with appropriate annotation
+     * Runs on @connected tests
+     *
+     * @param string $moduleAnnotation
+     * @return string
+     */
+    protected function getRequiredModuleVersion(string $moduleAnnotation): ?string
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group']) &&
+            !empty($annotations['method'][$moduleAnnotation]) &&
+            in_array('connected', $annotations['method']['group'], true)
+        ) {
+            return $annotations['method'][$moduleAnnotation][0];
+        }
+
+        return null;
     }
 
     /**
