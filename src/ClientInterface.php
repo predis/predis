@@ -57,6 +57,7 @@ use Predis\Response\Status;
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method string            getrange(string $key, $start, $end)
+ * @method string            getdel(string $key)
  * @method string|null       getset(string $key, $value)
  * @method int               incr(string $key)
  * @method int               incrby(string $key, int $increment)
