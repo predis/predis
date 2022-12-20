@@ -35,13 +35,13 @@ class JSONGET extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $this->setIndent($arguments);
+        $this->setSpace($arguments);
         $arguments = $this->getArguments();
 
         $this->setNewline($arguments);
         $arguments = $this->getArguments();
 
-        $this->setSpace($arguments);
+        $this->setIndent($arguments);
         $this->filterArguments();
     }
 }
