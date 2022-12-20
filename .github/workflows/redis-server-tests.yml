@@ -1,4 +1,4 @@
-name: Tests
+name: Redis server tests
 
 on:
   - push
@@ -12,7 +12,7 @@ jobs:
 
     services:
       redis:
-        image: redis-stack-server:${{ matrix.redis-versions }}
+        image: redis:${{ matrix.redis-versions }}
         ports:
         - 6379:6379
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
-        redis-versions: ['3', '4', '5', '6', '7']
+        redis-versions: ['3', '4', '5']
 
     steps:
     - name: Checkout
