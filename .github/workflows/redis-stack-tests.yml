@@ -7,12 +7,12 @@ on:
 jobs:
 
   predis:
-    name: PHP ${{ matrix.php-versions }} (Redis ${{ matrix.redis-versions }})
+    name: PHP ${{ matrix.php-versions }} (Redis stack ${{ matrix.redis-stack-versions }})
     runs-on: ubuntu-latest
 
     services:
       redis:
-        image: redis-stack-server:${{ matrix.redis-stack-versions }}
+        image: redis/redis-stack-server:${{ matrix.redis-stack-versions }}
         ports:
         - 6379:6379
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
