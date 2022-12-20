@@ -434,7 +434,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $reqVersion = $requiredVersion[1];
         }
 
-        if(!$this->isSatisfiedRedisJsonVersion($reqVersion)) {
+        if (!$this->isSatisfiedRedisJsonVersion($reqVersion)) {
             $redisJsonVersion = $this->getRedisJsonVersion();
 
             $this->markTestSkipped(
