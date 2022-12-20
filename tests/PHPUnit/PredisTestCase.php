@@ -13,7 +13,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
-use Predis\ClientConfiguration;
 use Predis\Command;
 use Predis\Connection;
 
@@ -29,7 +28,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * @var string[]
      */
     private $annotationsMapping = [
-        'redis' => 'requiresRedisVersion',
+        'server' => 'requiresRedisVersion',
         'json' => 'requiresRedisJsonVersion',
     ];
 
@@ -355,7 +354,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRequiredRedisServerVersion(): ?string
     {
-        return $this->getRequiredModuleVersion($this->annotationsMapping['redis']);
+        return $this->getRequiredModuleVersion('server');
     }
 
     /**
@@ -486,19 +485,24 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRequiredRedisJsonVersion(): ?string
     {
-        return $this->getRequiredModuleVersion($this->annotationsMapping['json']);
+        return $this->getRequiredModuleVersion('json');
     }
 
     /**
-     * Returns version of given module by its annotation.
+     * Returns version of given module for current Redis instance.
      * Runs if command belong to one of modules and marked with appropriate annotation
      * Runs on @connected tests
      *
-     * @param string $moduleAnnotation
+     * @param string $module
      * @return string
      */
-    protected function getRequiredModuleVersion(string $moduleAnnotation): ?string
+    protected function getRequiredModuleVersion(string $module): ?string
     {
+        if (!isset($this->annotationsMapping[$module])) {
+            throw new InvalidArgumentException('No existing annotation for given module');
+        }
+
+        $moduleAnnotation = $this->annotationsMapping[$module];
         $annotations = TestUtil::parseTestMethodAnnotations(
             get_class($this),
             $this->getName(false)
