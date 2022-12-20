@@ -10,7 +10,7 @@ use UnexpectedValueException;
  */
 trait Keys
 {
-    public function setArguments(array $arguments)
+    public function setArguments(array $arguments, bool $withNumkeys = true)
     {
         $argumentsLength = count($arguments);
 
@@ -22,10 +22,15 @@ trait Keys
         }
 
         $keysArgument = $arguments[static::$keysArgumentPositionOffset];
-        $numkeys = count($keysArgument);
         $argumentsBeforeKeys = array_slice($arguments, 0, static::$keysArgumentPositionOffset);
         $argumentsAfterKeys = array_slice($arguments, static::$keysArgumentPositionOffset + 1);
 
-        parent::setArguments(array_merge($argumentsBeforeKeys, [$numkeys], $keysArgument, $argumentsAfterKeys));
+        if ($withNumkeys) {
+            $numkeys = count($keysArgument);
+            parent::setArguments(array_merge($argumentsBeforeKeys, [$numkeys], $keysArgument, $argumentsAfterKeys));
+            return;
+        }
+
+        parent::setArguments(array_merge($argumentsBeforeKeys, $keysArgument, $argumentsAfterKeys));
     }
 }
