@@ -40,6 +40,15 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     * @dataProvider responsesProvider
+     */
+    public function testParseResponse(array $actualResponse, array $expectedResponse): void
+    {
+        $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
+    }
+
+    /**
      * @group connected
      * @dataProvider coordinatesProvider
      * @param array $firstCoordinates
@@ -131,10 +140,70 @@ class GEOSEARCH_Test extends PredisCommandTestCase
         ];
     }
 
+    public function responsesProvider(): array
+    {
+        return [
+            'without WITH modifiers' => [
+                ['member1', 'member2', 'member3'],
+                ['member1', 'member2', 'member3'],
+            ],
+            'with WITHCOORD modifier' => [
+                [['member1', [1.1, 2.2]], ['member2', [2.2, 3.3]], ['member3', [3.3, 4.4]]],
+                [
+                    'member1' => ['lng' => 1.1, 'lat' => 2.2],
+                    'member2' => ['lng' => 2.2, 'lat' => 3.3],
+                    'member3' => ['lng' => 3.3, 'lat' => 4.4]]
+            ],
+            'with WITHDIST modifier' => [
+                [['member1', '111.111'], ['member2', '222.222'], ['member3', '333.333']],
+                [
+                    'member1' => ['dist' => 111.111],
+                    'member2' => ['dist' => 222.222],
+                    'member3' => ['dist' => 333.333],
+                ],
+            ],
+            'with WITHHASH modifier' => [
+                [['member1', 1111], ['member2', 2222], ['member3', 3333]],
+                [
+                    'member1' => ['hash' => 1111],
+                    'member2' => ['hash' => 2222],
+                    'member3' => ['hash' => 3333],
+                ],
+            ],
+            'with all WITH modifiers' => [
+                [
+                    ['member1', '111.111', 1111, [1.1, 2.2]],
+                    ['member2', '222.222', 2222, [2.2, 3.3]],
+                    ['member3', '333.333', 3333, [3.3, 4.4]],
+                ],
+                [
+                    'member1' => [
+                        'dist' => 111.111,
+                        'hash' => 1111,
+                        'lng' => 1.1,
+                        'lat' => 2.2,
+                    ],
+                    'member2' => [
+                        'dist' => 222.222,
+                        'hash' => 2222,
+                        'lng' => 2.2,
+                        'lat' => 3.3,
+                    ],
+                    'member3' => [
+                        'dist' => 333.333,
+                        'hash' => 3333,
+                        'lng' => 3.3,
+                        'lat' => 4.4,
+                    ],
+                ],
+            ]
+        ];
+    }
+
     public function coordinatesProvider(): array
     {
         return [
-            'with default arguments - FROMLONLAT, BYRADIUS - all member' => [
+            'with default arguments - FROMLONLAT, BYRADIUS - all members' => [
                 ['key', 1.1, 2, 'member1'],
                 ['key', 2.1, 3, 'member2'],
                 ['key', 3.1, 4, 'member3'],
@@ -163,7 +232,176 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 ['member2', 'member1']
-            ]
+            ],
+            'with default arguments - FROMMEMBER, BYBOX - all members' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromMember('member2'),
+                new ByBox(999, 999, 'km'),
+                null,
+                -1,
+                false,
+                false,
+                false,
+                false,
+                ['member1', 'member2', 'member3']
+            ],
+            'with default arguments - FROMMEMBER, BYBOX - closest members' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromMember('member1'),
+                new ByBox(300, 300, 'km'),
+                null,
+                -1,
+                false,
+                false,
+                false,
+                false,
+                ['member1', 'member2']
+            ],
+            'with ASC modifier' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                'asc',
+                -1,
+                false,
+                false,
+                false,
+                false,
+                ['member2', 'member1', 'member3']
+            ],
+            'with DESC modifier' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                'desc',
+                -1,
+                false,
+                false,
+                false,
+                false,
+                ['member3', 'member1', 'member2']
+            ],
+            'with COUNT modifier - without ANY option' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                null,
+                1,
+                false,
+                false,
+                false,
+                false,
+                ['member2']
+            ],
+            'with COUNT modifier - with ANY option' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                null,
+                2,
+                true,
+                false,
+                false,
+                false,
+                ['member1', 'member2']
+            ],
+            'with WITHCOORD modifier' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                null,
+                -1,
+                false,
+                true,
+                false,
+                false,
+                [
+                    'member1' => ['lng' => 1.1, 'lat' => 2.0],
+                    'member2' => ['lng' => 2.1, 'lat' => 3.0],
+                    'member3' => ['lng' => 3.1, 'lat' => 4.0],
+                ]
+            ],
+            'with WITHDIST modifier' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                null,
+                -1,
+                false,
+                false,
+                true,
+                false,
+                [
+                    'member1' => ['dist' => 222.7297],
+                    'member2' => ['dist' => 165.1798],
+                    'member3' => ['dist' => 233.006],
+                ]
+            ],
+            'with WITHHASH modifier' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                null,
+                -1,
+                false,
+                false,
+                false,
+                true,
+                [
+                    'member1' => ['hash' => 3378086406303657],
+                    'member2' => ['hash' => 3378965307136228],
+                    'member3' => ['hash' => 3379626601756294],
+                ]
+            ],
+            'with all arguments' => [
+                ['key', 1.1, 2, 'member1'],
+                ['key', 2.1, 3, 'member2'],
+                ['key', 3.1, 4, 'member3'],
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km'),
+                'asc',
+                1,
+                true,
+                true,
+                true,
+                true,
+                [
+                    'member1' => [
+                        'dist' => 222.7297,
+                        'hash' => 3378086406303657,
+                        'lng' => 1.1,
+                        'lat' => 2.0,
+                    ],
+                ],
+            ],
         ];
     }
 }

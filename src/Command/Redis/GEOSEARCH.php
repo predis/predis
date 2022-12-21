@@ -78,4 +78,35 @@ class GEOSEARCH extends RedisCommand
         $this->setBy($arguments);
         $this->filterArguments();
     }
+
+    public function parseResponse($data)
+    {
+        $parsedData = [];
+        $itemKey = '';
+
+        foreach ($data as $item) {
+            if (!is_array($item)) {
+                $parsedData[] = $item;
+                continue;
+            }
+
+            foreach ($item as $key => $itemRow) {
+                if ($key === 0) {
+                    $itemKey = $itemRow;
+                    continue;
+                }
+
+                if (is_string($itemRow)) {
+                    $parsedData[$itemKey]['dist'] = round((float)$itemRow, 5);
+                } elseif (is_int($itemRow)) {
+                    $parsedData[$itemKey]['hash'] = $itemRow;
+                } else {
+                    $parsedData[$itemKey]['lng'] = round($itemRow[0], 5);
+                    $parsedData[$itemKey]['lat'] = round($itemRow[1], 5);
+                }
+            }
+        }
+
+        return $parsedData;
+    }
 }
