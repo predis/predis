@@ -114,6 +114,7 @@ use Predis\Response\Status;
  * @method int               sinterstore(string $destination, array|string $keys)
  * @method int               sismember(string $key, string $member)
  * @method string[]          smembers(string $key)
+ * @method array             smismember(string $key, string ...$members)
  * @method int               smove(string $source, string $destination, string $member)
  * @method string|array|null spop(string $key, int $count = null)
  * @method string|null       srandmember(string $key, int $count = null)

@@ -105,6 +105,7 @@ use Predis\Command\CommandInterface;
  * @method $this sinterstore($destination, array|string $keys)
  * @method $this sismember($key, $member)
  * @method $this smembers($key)
+ * @method $this smismember(string $key, string ...$members)
  * @method $this smove($source, $destination, $member)
  * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
