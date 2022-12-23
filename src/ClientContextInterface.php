@@ -47,6 +47,7 @@ use Predis\Command\CommandInterface;
  * @method $this decrby($key, $decrement)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
+ * @method $this getex(string $key, $modifier = '', $value = false)
  * @method $this getrange($key, $start, $end)
  * @method $this getdel(string $key)
  * @method $this getset($key, $value)
