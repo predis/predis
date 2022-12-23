@@ -82,6 +82,7 @@ use Predis\Response\Status;
  * @method int               hlen(string $key)
  * @method array             hmget(string $key, array $fields)
  * @method mixed             hmset(string $key, array $dictionary)
+ * @method array             hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method array             hscan(string $key, $cursor, array $options = null)
  * @method int               hset(string $key, string $field, string $value)
  * @method int               hsetnx(string $key, string $field, string $value)

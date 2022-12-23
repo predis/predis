@@ -73,6 +73,7 @@ use Predis\Command\CommandInterface;
  * @method $this hlen($key)
  * @method $this hmget($key, array $fields)
  * @method $this hmset($key, array $dictionary)
+ * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method $this hscan($key, $cursor, array $options = null)
  * @method $this hset($key, $field, $value)
  * @method $this hsetnx($key, $field, $value)
