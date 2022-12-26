@@ -10,6 +10,7 @@
  */
 
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
 use Predis\Command;
@@ -92,6 +93,19 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function assertSameValues(array $expected, array $actual, $message = ''): void
     {
         $this->assertThat($actual, new ArrayHasSameValuesConstraint($expected), $message);
+    }
+
+    /**
+     * Asserts that actual value is one of the values from expected array.
+     *
+     * @param mixed $expected Expected array.
+     * @param mixed $actual  Actual value. If array given searching for any matching value between two arrays.
+     * @param string $message Optional assertion message
+     * @return void
+     */
+    public function assertOneOf(array $expected, $actual, string $message = ''): void
+    {
+        $this->assertThat($actual, new OneOfConstraint($expected), $message);
     }
 
     /**
