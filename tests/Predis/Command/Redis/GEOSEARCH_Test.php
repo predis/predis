@@ -2,12 +2,14 @@
 
 namespace Predis\Command\Redis;
 
+use InvalidArgumentException;
 use Predis\Command\Argument\Geospatial\ByBox;
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\ByRadius;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Geospatial\FromLonLat;
 use Predis\Command\Argument\Geospatial\FromMember;
+use UnexpectedValueException;
 
 class GEOSEARCH_Test extends PredisCommandTestCase
 {
@@ -92,6 +94,28 @@ class GEOSEARCH_Test extends PredisCommandTestCase
             $expectedResponse,
             $redis->geosearch($key, $from, $by, $sorting, $count, $any, $withCoord, $withDist, $withHash)
         );
+    }
+
+    /**
+     * @group connected
+     * @dataProvider unexpectedValuesProvider
+     * @param array $arguments
+     * @param string $expectedException
+     * @param string $expectedExceptionMessage
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testThrowsExceptionOnUnexpectedValueProvided(
+        array $arguments,
+        string $expectedException,
+        string $expectedExceptionMessage
+    ): void {
+        $redis = $this->getClient();
+
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
+        $redis->geosearch(...$arguments);
     }
 
     public function argumentsProvider(): array
@@ -401,6 +425,47 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                         'lat' => 2.0,
                     ],
                 ],
+            ],
+        ];
+    }
+
+    public function unexpectedValuesProvider(): array
+    {
+        return [
+            'with wrong FROM argument' => [
+                ['key', false, new ByRadius(9999, 'km'), null, -1, false, false],
+                InvalidArgumentException::class,
+                'Invalid FROM argument value given'
+            ],
+            'with wrong BY argument' => [
+                ['key', new FromLonLat(1, 4), false, null, -1, false, false],
+                InvalidArgumentException::class,
+                'Invalid BY argument value given'
+            ],
+            'with wrong sorting argument' => [
+                ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), 'wrong', -1, false, false],
+                UnexpectedValueException::class,
+                'Sorting argument accepts only: asc, desc values'
+            ],
+            'with wrong COUNT argument' => [
+                ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false],
+                UnexpectedValueException::class,
+                'Wrong count argument value or position offset'
+            ],
+            'with wrong WITHCOORD argument' => [
+                ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, 'wrong'],
+                UnexpectedValueException::class,
+                'Wrong WITHCOORD argument type'
+            ],
+            'with wrong WITHDIST argument' => [
+                ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false, 'wrong'],
+                UnexpectedValueException::class,
+                'Wrong WITHDIST argument type'
+            ],
+            'with wrong WITHHASH argument' => [
+                ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false, false, 'wrong'],
+                UnexpectedValueException::class,
+                'Wrong WITHHASH argument type'
             ],
         ];
     }
