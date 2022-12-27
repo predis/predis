@@ -21,13 +21,13 @@ use Predis\Connection;
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
-    protected $redisJsonVersion;
 
     /**
      * @var string[]
      */
     private $modulesMapping = [
         'json' => ['annotation' => 'requiresRedisJsonVersion', 'name' => 'ReJSON'],
+        'bloomFilters' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
     ];
 
     /**
@@ -44,6 +44,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->checkRequiredRedisServerVersion();
         $this->checkRequiredRedisModuleVersion('json');
+        $this->checkRequiredRedisModuleVersion('bloomFilters');
     }
 
     /**

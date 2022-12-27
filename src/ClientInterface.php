@@ -45,6 +45,8 @@ use Predis\Response\Status;
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
+ * @method int               bfadd(string $key, $item)
+ * @method int               bfexists(string $key, $item)
  * @method int               bitcount(string $key, $start = null, $end = null)
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
