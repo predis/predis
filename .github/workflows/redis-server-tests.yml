@@ -1,4 +1,4 @@
-name: Redis server tests
+name: Redis_server_tests
 
 on:
   - push

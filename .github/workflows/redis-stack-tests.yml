@@ -1,4 +1,4 @@
-name: Redis stack tests
+name: Redis_stack_tests
 
 on:
   - push
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
-        redis-stack-versions: ['6.2.6-v0', '7.0.6-RC2']
+        redis-stack-versions: ['latest']
 
     steps:
     - name: Checkout
@@ -37,7 +37,7 @@ jobs:
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
     - name: Cache Composer dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
