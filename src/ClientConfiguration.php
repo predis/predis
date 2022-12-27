@@ -10,9 +10,6 @@ class ClientConfiguration
     private static $config = [
         'modules' => [
             ['name' => 'Json', 'commandPrefix' => 'JSON'],
-            ['name' => 'Graph', 'commandPrefix' => 'GRAPH'],
-            ['name' => 'Search', 'commandPrefix' => 'FT'],
-            ['name' => 'TimeSeries', 'commandPrefix' => 'TS'],
         ]
     ];
 
