@@ -18,6 +18,7 @@ if (file_exists(__DIR__.'/../autoload.php')) {
 }
 
 require __DIR__.'/PHPUnit/ArrayHasSameValuesConstraint.php';
+require __DIR__.'/PHPUnit/OneOfConstraint.php';
 require __DIR__.'/PHPUnit/RedisCommandConstraint.php';
 require __DIR__.'/PHPUnit/PredisTestCase.php';
 require __DIR__.'/PHPUnit/PredisCommandTestCase.php';
