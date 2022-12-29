@@ -11,6 +11,8 @@
 
 namespace Predis;
 
+use Predis\Command\Argument\Geospatial\ByInterface;
+use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\CommandInterface;
 
 /**
@@ -186,6 +188,7 @@ use Predis\Command\CommandInterface;
  * @method $this geodist($key, $member1, $member2, $unit = null)
  * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

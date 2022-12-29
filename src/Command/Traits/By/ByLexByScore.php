@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Command\Traits;
+namespace Predis\Command\Traits\By;
 
 use Predis\Command\Command;
 use UnexpectedValueException;
