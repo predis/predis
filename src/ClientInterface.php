@@ -203,6 +203,7 @@ use Predis\Response\Status;
  * @method array             georadius(string $key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
+ * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
