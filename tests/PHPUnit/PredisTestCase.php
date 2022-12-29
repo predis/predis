@@ -428,14 +428,14 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function checkRequiredRedisModuleVersion(string $module): void
     {
+        if (null === $requiredVersion = $this->getRequiredModuleVersion($module)) {
+            return;
+        }
+
         if (version_compare($this->getRedisServerVersion(), '6.0.0', '<')) {
             $this->markTestSkipped(
                 "Test skipped because Redis JSON module available since Redis 6.x"
             );
-        }
-
-        if (null === $requiredVersion = $this->getRequiredModuleVersion($module)) {
-            return;
         }
 
         $requiredVersion = explode(' ', $requiredVersion, 2);
