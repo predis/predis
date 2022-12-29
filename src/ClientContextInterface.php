@@ -40,6 +40,7 @@ use Predis\Command\CommandInterface;
  * @method $this append($key, $value)
  * @method $this bfadd(string $key, $item)
  * @method $this bfexists(string $key, $item)
+ * @method $this bfinfo(string $key, string $modifier = '')
  * @method $this bitcount($key, $start = null, $end = null)
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
