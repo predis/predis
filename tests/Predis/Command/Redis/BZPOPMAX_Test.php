@@ -5,14 +5,14 @@ namespace Predis\Command\Redis;
 use Predis\Response\ServerException;
 use UnexpectedValueException;
 
-class BZPOPMIN_Test extends PredisCommandTestCase
+class BZPOPMAX_Test extends PredisCommandTestCase
 {
     /**
      * @inheritDoc
      */
     protected function getExpectedCommand(): string
     {
-        return BZPOPMIN::class;
+        return BZPOPMAX::class;
     }
 
     /**
@@ -20,7 +20,7 @@ class BZPOPMIN_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'BZPOPMIN';
+        return 'BZPOPMAX';
     }
 
     /**
@@ -28,17 +28,17 @@ class BZPOPMIN_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
-    public function testReturnsPoppedMinElementFromGivenNonEmptySortedSet(): void
+    public function testReturnsPoppedMaxElementFromGivenNonEmptySortedSet(): void
     {
         $redis = $this->getClient();
         $sortedSetDictionary = [1, 'member1', 2, 'member2', 3, 'member3'];
-        $expectedResponse = ['test-bzpopmin' => ['member1' => '1']];
-        $expectedModifiedSortedSet = ['member2', 'member3'];
+        $expectedResponse = ['test-bzpopmax' => ['member3' => '3']];
+        $expectedModifiedSortedSet = ['member1', 'member2'];
 
-        $redis->zadd('test-bzpopmin', ...$sortedSetDictionary);
+        $redis->zadd('test-bzpopmax', ...$sortedSetDictionary);
 
-        $this->assertSame($expectedResponse, $redis->bzpopmin(['empty sorted set','test-bzpopmin'], 0));
-        $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmin', 0, -1));
+        $this->assertSame($expectedResponse, $redis->bzpopmax(['empty sorted set','test-bzpopmax'], 0));
+        $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmax', 0, -1));
     }
 
     /**
@@ -53,7 +53,7 @@ class BZPOPMIN_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong keys argument type or position offset');
 
-        $redis->bzpopmin(1, 0);
+        $redis->bzpopmax(1, 0);
     }
 
     /**
@@ -67,7 +67,7 @@ class BZPOPMIN_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('bzpopmin_foo', 'bar');
-        $redis->bzpopmin(['bzpopmin_foo'], 0);
+        $redis->set('bzpopmax_foo', 'bar');
+        $redis->bzpopmax(['bzpopmax_foo'], 0);
     }
 }

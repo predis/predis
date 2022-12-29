@@ -11,6 +11,8 @@
 
 namespace Predis;
 
+use Predis\Command\Argument\Geospatial\ByInterface;
+use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
@@ -50,13 +52,16 @@ use Predis\Response\Status;
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null)
+ * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
+ * @method int|null          getex(string $key, $modifier = '', $value = false)
  * @method string            getrange(string $key, $start, $end)
+ * @method string            getdel(string $key)
  * @method string|null       getset(string $key, $value)
  * @method int               incr(string $key)
  * @method int               incrby(string $key, int $increment)
@@ -81,11 +86,13 @@ use Predis\Response\Status;
  * @method int               hlen(string $key)
  * @method array             hmget(string $key, array $fields)
  * @method mixed             hmset(string $key, array $dictionary)
+ * @method array             hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method array             hscan(string $key, $cursor, array $options = null)
  * @method int               hset(string $key, string $field, string $value)
  * @method int               hsetnx(string $key, string $field, string $value)
  * @method array             hvals(string $key)
  * @method int               hstrlen(string $key, string $field)
+ * @method string            blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method array|null        blpop(array|string $keys, int|float $timeout)
  * @method array|null        brpop(array|string $keys, int|float $timeout)
  * @method string|null       brpoplpush(string $source, string $destination, int|float $timeout)
@@ -112,6 +119,7 @@ use Predis\Response\Status;
  * @method int               sinterstore(string $destination, array|string $keys)
  * @method int               sismember(string $key, string $member)
  * @method string[]          smembers(string $key)
+ * @method array             smismember(string $key, string ...$members)
  * @method int               smove(string $source, string $destination, string $member)
  * @method string|array|null spop(string $key, int $count = null)
  * @method string|null       srandmember(string $key, int $count = null)
@@ -134,6 +142,7 @@ use Predis\Response\Status;
  * @method string            zincrby(string $key, int $increment, string $member)
  * @method int               zintercard(array $keys, int $limit = 0)
  * @method int               zinterstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
+ * @method array             zinter(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method array             zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method array             zmscore(string $key, string ...$member)
  * @method array             zpopmin(string $key, int $count = 1)
@@ -149,6 +158,7 @@ use Predis\Response\Status;
  * @method array             zrevrange(string $key, int|string $start, int|string $stop, array $options = null)
  * @method array             zrevrangebyscore(string $key, int|string $max, int|string $min, array $options = null)
  * @method int|null          zrevrank(string $key, string $member)
+ * @method array             zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method int               zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method string|null       zscore(string $key, string $member)
  * @method array             zscan(string $key, int $cursor, array $options = null)
@@ -193,6 +203,7 @@ use Predis\Response\Status;
  * @method string|null       geodist(string $key, $member1, $member2, $unit = null)
  * @method array             georadius(string $key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
+ * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

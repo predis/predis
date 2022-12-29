@@ -3,7 +3,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\WithScores;
+use Predis\Command\Traits\With\WithScores;
 
 /**
  * @link https://redis.io/commands/zrandmember/

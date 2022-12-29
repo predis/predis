@@ -11,6 +11,8 @@
 
 namespace Predis;
 
+use Predis\Command\Argument\Geospatial\ByInterface;
+use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\CommandInterface;
 
 /**
@@ -41,13 +43,16 @@ use Predis\Command\CommandInterface;
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this bitpos($key, $bit, $start = null, $end = null)
+ * @method $this bzpopmax(array $keys, int $timeout)
  * @method $this bzpopmin(array $keys, int $timeout)
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
+ * @method $this getex(string $key, $modifier = '', $value = false)
  * @method $this getrange($key, $start, $end)
+ * @method $this getdel(string $key)
  * @method $this getset($key, $value)
  * @method $this incr($key)
  * @method $this incrby($key, $increment)
@@ -72,11 +77,13 @@ use Predis\Command\CommandInterface;
  * @method $this hlen($key)
  * @method $this hmget($key, array $fields)
  * @method $this hmset($key, array $dictionary)
+ * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method $this hscan($key, $cursor, array $options = null)
  * @method $this hset($key, $field, $value)
  * @method $this hsetnx($key, $field, $value)
  * @method $this hvals($key)
  * @method $this hstrlen($key, $field)
+ * @method $this blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method $this blpop(array|string $keys, $timeout)
  * @method $this brpop(array|string $keys, $timeout)
  * @method $this brpoplpush($source, $destination, $timeout)
@@ -103,6 +110,7 @@ use Predis\Command\CommandInterface;
  * @method $this sinterstore($destination, array|string $keys)
  * @method $this sismember($key, $member)
  * @method $this smembers($key)
+ * @method $this smismember(string $key, string ...$members)
  * @method $this smove($source, $destination, $member)
  * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
@@ -118,6 +126,7 @@ use Predis\Command\CommandInterface;
  * @method $this zincrby($key, $increment, $member)
  * @method $this zintercard(array $keys, int $limit = 0)
  * @method $this zinterstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
+ * @method $this zinter(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method $this zmscore(string $key, string ...$member)
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
@@ -131,6 +140,7 @@ use Predis\Command\CommandInterface;
  * @method $this zrevrange($key, $start, $stop, array $options = null)
  * @method $this zrevrangebyscore($key, $max, $min, array $options = null)
  * @method $this zrevrank($key, $member)
+ * @method $this zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method $this zscore($key, $member)
  * @method $this zscan($key, $cursor, array $options = null)
@@ -175,6 +185,7 @@ use Predis\Command\CommandInterface;
  * @method $this geodist($key, $member1, $member2, $unit = null)
  * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
