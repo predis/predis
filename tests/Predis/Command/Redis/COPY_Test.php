@@ -68,7 +68,7 @@ class COPY_Test extends PredisCommandTestCase
 
         $copyResponse = $defaultDatabaseIndexClient->copy('key', 'new_key', 14);
 
-        $anotherDatabaseIndexClient = $this->getClient(false, ['database' => 14]);
+        $anotherDatabaseIndexClient = $this->createClient(['database' => 14], null, false);
         $actualValue = $anotherDatabaseIndexClient->get('new_key');
         $anotherDatabaseIndexClient->flushdb();
 
