@@ -109,28 +109,28 @@ class BFINFO_Test extends PredisCommandTestCase
                 []
             ],
             'with default modifier value' => [
-                [''],
-                []
+                ['key', ''],
+                ['key']
             ],
             'with CAPACITY modifier' => [
-                ['capacity'],
-                ['CAPACITY'],
+                ['key', 'capacity'],
+                ['key', 'CAPACITY'],
             ],
             'with SIZE modifier' => [
-                ['size'],
-                ['SIZE'],
+                ['key', 'size'],
+                ['key', 'SIZE'],
             ],
             'with FILTERS modifier' => [
-                ['filters'],
-                ['FILTERS'],
+                ['key', 'filters'],
+                ['key', 'FILTERS'],
             ],
             'with ITEMS modifier' => [
-                ['items'],
-                ['ITEMS'],
+                ['key', 'items'],
+                ['key', 'ITEMS'],
             ],
             'with EXPANSION modifier' => [
-                ['expansion'],
-                ['EXPANSION']
+                ['key', 'expansion'],
+                ['key', 'EXPANSION']
             ],
         ];
     }
