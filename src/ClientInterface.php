@@ -13,6 +13,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
@@ -57,6 +58,7 @@ use Predis\Response\Status;
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
+ * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
