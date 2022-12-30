@@ -13,11 +13,13 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
  *
+ * @method $this copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method $this del(array|string $keys)
  * @method $this dump($key)
  * @method $this exists($key)
@@ -49,6 +51,7 @@ use Predis\Command\CommandInterface;
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
+ * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
@@ -189,6 +192,7 @@ use Predis\Command\CommandInterface;
  * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
+ * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

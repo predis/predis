@@ -14,6 +14,11 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
+ * @deprecated As of Redis version 6.2.0, this command is regarded as deprecated.
+ *
+ * It can be replaced by GEOSEARCH and GEOSEARCHSTORE with the BYRADIUS argument
+ * when migrating or writing new code.
+ *
  * @link http://redis.io/commands/georadius
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
