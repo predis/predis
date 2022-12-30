@@ -49,7 +49,7 @@ class NxXxArgumentTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValueGiven(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Subcommand argument accepts only: nx, xx values");
+        $this->expectExceptionMessage("Argument accepts only: nx, xx values");
 
         $this->testClass->setArguments(['wrong']);
     }
