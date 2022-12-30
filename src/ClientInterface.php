@@ -13,6 +13,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
@@ -27,6 +28,7 @@ use Predis\Response\Status;
  * and more friendly interface to ease programming which is described in the
  * following list of methods:
  *
+ * @method int               copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method int               del(string[]|string $keyOrKeys, string ...$keys = null)
  * @method string|null       dump(string $key)
  * @method int               exists(string $key)
@@ -59,6 +61,7 @@ use Predis\Response\Status;
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
+ * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
@@ -208,6 +211,7 @@ use Predis\Response\Status;
  * @method array             georadius(string $key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
+ * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
