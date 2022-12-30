@@ -6,6 +6,11 @@ use Predis\Command\Command as RedisCommand;
 use Predis\Response\Status;
 use UnexpectedValueException;
 
+/**
+ * @link https://redis.io/commands/bf.info/
+ *
+ * Return information about key filter.
+ */
 class BFINFO extends RedisCommand
 {
     /**
