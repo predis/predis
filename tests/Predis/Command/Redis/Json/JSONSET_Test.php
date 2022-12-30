@@ -50,7 +50,7 @@ class JSONSET_Test extends PredisCommandTestCase
      * @param string $defaultJson
      * @param string $appendedJson
      * @param string $path
-     * @param string|null $subcommand
+     * @param string|null $nxXxArgument
      * @param string|null $expectedResponse
      * @param string $expectedJson
      * @return void
@@ -61,14 +61,14 @@ class JSONSET_Test extends PredisCommandTestCase
         string $defaultJson,
         string $appendedJson,
         string $path,
-        ?string $subcommand,
+        ?string $nxXxArgument,
         ?string $expectedResponse,
         string $expectedJson
     ): void {
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->jsonset($key, '$', $defaultJson));
-        $this->assertEquals($expectedResponse, $redis->jsonset($key, $path, $appendedJson, $subcommand));
+        $this->assertEquals($expectedResponse, $redis->jsonset($key, $path, $appendedJson, $nxXxArgument));
         $this->assertSame($expectedJson, $redis->jsonget($key));
     }
 
@@ -82,7 +82,7 @@ class JSONSET_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Subcommand argument accepts only: nx, xx values');
+        $this->expectExceptionMessage('Argument accepts only: nx, xx values');
 
         $redis->jsonset('key', '$', 'value', 'wrong');
     }
@@ -94,11 +94,11 @@ class JSONSET_Test extends PredisCommandTestCase
                 ['key', 'path', 'value'],
                 ['key', 'path', 'value']
             ],
-            'with NX subcommand' => [
+            'with NX argument' => [
                 ['key', 'path', 'value', 'nx'],
                 ['key', 'path', 'value', 'NX'],
             ],
-            'with XX subcommand' => [
+            'with XX argument' => [
                 ['key', 'path', 'value', 'xx'],
                 ['key', 'path', 'value', 'XX'],
             ],
@@ -117,7 +117,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 'OK',
                 '{"key3":"value3"}'
             ],
-            'override certain key - without subcommands' => [
+            'override certain key - without nxXx argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
@@ -126,7 +126,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 'OK',
                 '{"key1":"value1","key2":"value3"}'
             ],
-            'append to json - without subcommands' => [
+            'append to json - without nxXx argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
@@ -135,7 +135,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 'OK',
                 '{"key1":"value1","key2":"value2","key3":"value3"}'
             ],
-            'override certain key - with XX subcommand' => [
+            'override certain key - with XX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
@@ -144,7 +144,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 'OK',
                 '{"key1":"value1","key2":"value3"}'
             ],
-            'append to json - with NX subcommand' => [
+            'append to json - with NX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
@@ -153,7 +153,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 'OK',
                 '{"key1":"value1","key2":"value2","key3":"value3"}'
             ],
-            'override failed with XX subcommand' => [
+            'override failed with XX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
@@ -162,7 +162,7 @@ class JSONSET_Test extends PredisCommandTestCase
                 null,
                 '{"key1":"value1","key2":"value2"}'
             ],
-            'append failed with NX subcommand' => [
+            'append failed with NX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value2"',

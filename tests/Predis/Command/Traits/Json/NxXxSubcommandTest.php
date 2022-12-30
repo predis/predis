@@ -13,7 +13,7 @@ class NxXxSubcommandTest extends PredisTestCase
     protected function setUp(): void
     {
         $this->testClass = new class extends RedisCommand {
-            use NxXxSubcommand;
+            use NxXxArgument;
 
             public static $nxXxArgumentPositionOffset = 0;
 

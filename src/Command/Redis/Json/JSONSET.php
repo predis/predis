@@ -3,7 +3,7 @@
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\Json\NxXxSubcommand;
+use Predis\Command\Traits\Json\NxXxArgument;
 
 /**
  * @link https://redis.io/commands/json.set/
@@ -12,7 +12,7 @@ use Predis\Command\Traits\Json\NxXxSubcommand;
  */
 class JSONSET extends RedisCommand
 {
-    use NxXxSubcommand {
+    use NxXxArgument {
         setArguments as setSubcommand;
     }
 
