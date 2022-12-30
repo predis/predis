@@ -2,8 +2,9 @@
 
 namespace Predis\Command\Traits;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\By\ByLexByScore;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class ByLexByScoreTest extends PredisTestCase

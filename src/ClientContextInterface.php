@@ -11,11 +11,15 @@
 
 namespace Predis;
 
+use Predis\Command\Argument\Geospatial\ByInterface;
+use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
  *
+ * @method $this copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method $this del(array|string $keys)
  * @method $this dump($key)
  * @method $this exists($key)
@@ -45,8 +49,10 @@ use Predis\Command\CommandInterface;
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
+ * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
+ * @method $this getex(string $key, $modifier = '', $value = false)
  * @method $this getrange($key, $start, $end)
  * @method $this getdel(string $key)
  * @method $this getset($key, $value)
@@ -73,6 +79,7 @@ use Predis\Command\CommandInterface;
  * @method $this hlen($key)
  * @method $this hmget($key, array $fields)
  * @method $this hmset($key, array $dictionary)
+ * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method $this hscan($key, $cursor, array $options = null)
  * @method $this hset($key, $field, $value)
  * @method $this hsetnx($key, $field, $value)
@@ -107,6 +114,7 @@ use Predis\Command\CommandInterface;
  * @method $this sinterstore($destination, array|string $keys)
  * @method $this sismember($key, $member)
  * @method $this smembers($key)
+ * @method $this smismember(string $key, string ...$members)
  * @method $this smove($source, $destination, $member)
  * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
@@ -181,6 +189,8 @@ use Predis\Command\CommandInterface;
  * @method $this geodist($key, $member1, $member2, $unit = null)
  * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
+ * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

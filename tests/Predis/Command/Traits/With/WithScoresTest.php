@@ -1,9 +1,9 @@
 <?php
 
-namespace Predis\Command\Traits;
+namespace Predis\Command\Traits\With;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 
 class WithScoresTest extends PredisTestCase
 {

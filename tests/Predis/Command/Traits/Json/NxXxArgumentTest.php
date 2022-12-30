@@ -6,7 +6,7 @@ use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
 use UnexpectedValueException;
 
-class NxXxSubcommandTest extends PredisTestCase
+class NxXxArgumentTest extends PredisTestCase
 {
     private $testClass;
 

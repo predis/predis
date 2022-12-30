@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Command\Traits;
+namespace Predis\Command\Traits\With;
 
 use Predis\Command\Command;
 
