@@ -52,6 +52,7 @@ use Predis\Response\Status;
  * @method int               bfadd(string $key, $item)
  * @method int               bfexists(string $key, $item)
  * @method array             bfinfo(string $key, string $modifier = '')
+ * @method array             bfinsert(string $key, int $capacity = -1, float $error = -1, int $expansion = -1, bool $noCreate = false, bool $nonScaling = false, string ...$item)
  * @method Status            bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method int               bitcount(string $key, $start = null, $end = null)
  * @method int               bitop($operation, $destkey, $key)
