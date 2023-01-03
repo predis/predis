@@ -86,6 +86,7 @@ use Predis\Command\CommandInterface;
  * @method $this hvals($key)
  * @method $this hstrlen($key, $field)
  * @method $this jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
+ * @method $this jsonmget(array $keys, string $path)
  * @method $this jsonset(string $key, string $path, string $value, ?string $subcommand = null)
  * @method $this blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method $this blpop(array|string $keys, $timeout)
