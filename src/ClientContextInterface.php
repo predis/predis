@@ -49,6 +49,8 @@ use Predis\Command\CommandInterface;
  * @method $this bzpopmax(array $keys, int $timeout)
  * @method $this bzpopmin(array $keys, int $timeout)
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
+ * @method $this cfadd(string $key, $item)
+ * @method $this cfexists(string $key, $item)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
