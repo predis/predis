@@ -28,7 +28,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     private $modulesMapping = [
         'json' => ['annotation' => 'requiresRedisJsonVersion', 'name' => 'ReJSON'],
-        'bloomFilters' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
+        'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
     ];
 
     /**
@@ -45,7 +45,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->checkRequiredRedisServerVersion();
         $this->checkRequiredRedisModuleVersion('json');
-        $this->checkRequiredRedisModuleVersion('bloomFilters');
+        $this->checkRequiredRedisModuleVersion('bloomFilter');
     }
 
     /**
