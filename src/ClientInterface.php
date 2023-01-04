@@ -48,6 +48,7 @@ use Predis\Response\Status;
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
  * @method int               bfadd(string $key, $item)
+ * @method int               bfcard(string $key)
  * @method int               bfexists(string $key, $item)
  * @method array             bfmadd(string $key, ...$item)
  * @method array             bfmexists(string $key, ...$item)
