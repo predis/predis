@@ -172,10 +172,10 @@ class MasterSlaveReplicationTest extends PredisTestCase
     public function testDisconnectForcesCurrentConnectionToDisconnect()
     {
         $master = $this->getMockConnection('tcp://host1?alias=master');
-        $master->expects($this->once())->method('disconnect');
+        $master->expects($this->exactly(2))->method('disconnect');
 
         $slave = $this->getMockConnection('tcp://host2?alias=slave1');
-        $slave->expects($this->once())->method('disconnect');
+        $slave->expects($this->exactly(2))->method('disconnect');
 
         $replication = new MasterSlaveReplication();
         $replication->add($master);
