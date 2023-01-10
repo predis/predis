@@ -141,7 +141,7 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($client);
 
         $this->assertFalse($pubsub->valid());
-        $this->assertNull($pubsub->next());
+        $this->assertEquals(0, $pubsub->next());
     }
 
     /**
