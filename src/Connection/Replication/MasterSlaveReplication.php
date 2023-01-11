@@ -14,9 +14,11 @@ namespace Predis\Connection\Replication;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\AbstractConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
@@ -27,7 +29,7 @@ use Predis\Response\ErrorInterface as ResponseErrorInterface;
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
-class MasterSlaveReplication implements ReplicationInterface
+class MasterSlaveReplication extends AbstractConnection implements ReplicationInterface
 {
     /**
      * @var ReplicationStrategy
@@ -75,6 +77,34 @@ class MasterSlaveReplication implements ReplicationInterface
     public function __construct(ReplicationStrategy $strategy = null)
     {
         $this->strategy = $strategy ?: new ReplicationStrategy();
+    }
+
+    protected function assertParameters(ParametersInterface $parameters)
+    {
+        return $parameters;
+    }
+
+    protected function createResource()
+    {
+        throw new \RuntimeException('Not implemented.');
+    }
+
+    public function read()
+    {
+        throw new \RuntimeException('Not implemented.');
+    }
+
+    protected function getIdentifier()
+    {
+        return implode('.', array_merge(
+            [(string)$this->master],
+            array_map(
+                function (NodeConnectionInterface $slave) {
+                    return (string)$slave;
+                },
+                $this->slaves
+            )
+        ));
     }
 
     /**
@@ -375,7 +405,7 @@ class MasterSlaveReplication implements ReplicationInterface
                 continue;
             }
 
-            list($k, $v) = explode(':', $row, 2);
+            [$k, $v] = explode(':', $row, 2);
             $info[$k] = $v;
         }
 

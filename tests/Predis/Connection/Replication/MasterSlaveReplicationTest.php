@@ -268,12 +268,12 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('disconnect');
 
         $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('disconnect');
 
         $replication = new MasterSlaveReplication();
