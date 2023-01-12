@@ -15,6 +15,7 @@ use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\Container\Json\JSONDEBUG;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -191,6 +192,9 @@ use Predis\Command\CommandInterface;
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ *
+ * Container commands
+ * @property-read JSONDEBUG $jsondebug
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */

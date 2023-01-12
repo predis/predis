@@ -11,8 +11,10 @@
 
 namespace Predis;
 
+use Predis\Command\Redis\Container\ContainerFactory;
+use Predis\Command\Redis\Container\ContainerInterface;
+use RuntimeException;
 use Traversable;
-
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
@@ -303,6 +305,34 @@ class Client implements ClientInterface, \IteratorAggregate
         return $this->executeCommand(
             $this->createCommand($commandID, $arguments)
         );
+    }
+
+    /**
+     * @param $name
+     * @return ContainerInterface
+     */
+    public function __get($name)
+    {
+        return ContainerFactory::create($this, $name);
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     */
+    public function __set($name, $value)
+    {
+        throw new RuntimeException('Not allowed');
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __isset($name)
+    {
+        throw new RuntimeException('Not allowed');
     }
 
     /**

@@ -16,6 +16,7 @@ use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
+use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -209,6 +210,10 @@ use Predis\Response\Status;
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ *
+ *
+ * Container commands
+ * @property-read JSONDEBUG $jsondebug
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
