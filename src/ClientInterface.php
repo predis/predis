@@ -96,6 +96,7 @@ use Predis\Response\Status;
  * @method int               hstrlen(string $key, string $field)
  * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method string            jsonset(string $key, string $path, string $value, ?string $subcommand = null)
+ * @method array             jsontoggle(string $key, string $path)
  * @method string            blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method array|null        blpop(array|string $keys, int|float $timeout)
  * @method array|null        brpop(array|string $keys, int|float $timeout)
