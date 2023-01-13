@@ -65,8 +65,6 @@ class JSONRESP_Test extends PredisCommandTestCase
 
         $redis->jsonset(...$jsonArguments);
 
-        var_dump($redis->jsonresp($key, $path));
-
         $this->assertEquals($expectedResponse, $redis->jsonresp($key, $path));
     }
 
