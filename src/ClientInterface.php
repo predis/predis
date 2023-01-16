@@ -102,6 +102,7 @@ use Predis\Response\Status;
  * @method int               linsert(string $key, $whence, $pivot, $value)
  * @method int               llen(string $key)
  * @method string            lmove(string $source, string $destination, string $where, string $to)
+ * @method array|null        lmpop(array $keys, string $modifier = 'left', int $count = 1)
  * @method string|null       lpop(string $key)
  * @method int               lpush(string $key, array $values)
  * @method int               lpushx(string $key, array $values)
