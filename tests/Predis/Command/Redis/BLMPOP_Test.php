@@ -15,14 +15,14 @@ namespace Predis\Command\Redis;
  * @group commands
  * @group realm-list
  */
-class LMPOP_Test extends PredisCommandTestCase
+class BLMPOP_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritdoc}
      */
     protected function getExpectedCommand(): string
     {
-        return LMPOP::class;
+        return BLMPOP::class;
     }
 
     /**
@@ -30,7 +30,7 @@ class LMPOP_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'LMPOP';
+        return 'BLMPOP';
     }
 
     /**
@@ -61,27 +61,29 @@ class LMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider listProvider
+     * @param int $timeout
      * @param array $listArguments
      * @param string $key
      * @param string $modifier
      * @param int $count
-     * @param array|null $expectedResponse
+     * @param array $expectedResponse
      * @param array $expectedModifiedList
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
     public function testPopElementsFromGivenList(
+        int $timeout,
         array $listArguments,
         string $key,
         string $modifier,
         int $count,
-        ?array $expectedResponse,
+        array $expectedResponse,
         array $expectedModifiedList
     ): void {
         $redis = $this->getClient();
 
         $redis->lpush(...$listArguments);
-        $actualResponse = $redis->lmpop(['key1', $key], $modifier, $count);
+        $actualResponse = $redis->blmpop($timeout, ['key1', $key], $modifier, $count);
 
         $this->assertSame($expectedResponse, $actualResponse);
         $this->assertSame($expectedModifiedList, $redis->lrange($key, 0, -1));
@@ -91,20 +93,20 @@ class LMPOP_Test extends PredisCommandTestCase
     {
         return [
             'with default arguments' => [
-                [['key']],
-                [1, 'key', 'LEFT']
+                [1, ['key']],
+                [1, 1, 'key', 'LEFT']
             ],
             'with LEFT/RIGHT argument' => [
-                [['key'], 'right'],
-                [1, 'key', 'RIGHT']
+                [1, ['key'], 'right'],
+                [1, 1, 'key', 'RIGHT']
             ],
             'with COUNT argument' => [
-                [['key'], 'left', 2],
-                [1, 'key', 'LEFT', 'COUNT', 2]
+                [1, ['key'], 'left', 2],
+                [1, 1, 'key', 'LEFT', 'COUNT', 2]
             ],
             'with all arguments' => [
-                [['key1', 'key2'], 'right', 2],
-                [2, 'key1', 'key2', 'RIGHT', 'COUNT', 2]
+                [1, ['key1', 'key2'], 'right', 2],
+                [1, 2, 'key1', 'key2', 'RIGHT', 'COUNT', 2]
             ]
         ];
     }
@@ -113,6 +115,7 @@ class LMPOP_Test extends PredisCommandTestCase
     {
         return [
             'pops single element - left' => [
+                1,
                 ['key', 'elem1', 'elem2', 'elem3'],
                 'key',
                 'left',
@@ -121,6 +124,7 @@ class LMPOP_Test extends PredisCommandTestCase
                 ['elem2', 'elem1']
             ],
             'pops single element - right' => [
+                1,
                 ['key', 'elem1', 'elem2', 'elem3'],
                 'key',
                 'right',
@@ -129,20 +133,13 @@ class LMPOP_Test extends PredisCommandTestCase
                 ['elem3', 'elem2']
             ],
             'pops multiple elements' => [
+                1,
                 ['key', 'elem1', 'elem2', 'elem3'],
                 'key',
                 'right',
                 2,
                 ['key' => ['elem1', 'elem2']],
                 ['elem3'],
-            ],
-            'with empty list' => [
-                ['key', 'elem1', 'elem2', 'elem3'],
-                'key2',
-                'right',
-                2,
-                null,
-                [],
             ],
         ];
     }
