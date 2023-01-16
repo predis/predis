@@ -45,7 +45,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  */
 class Client implements ClientInterface, \IteratorAggregate
 {
-    const VERSION = '2.0.3-dev';
+    const VERSION = '2.1.0';
 
     /** @var OptionsInterface */
     private $options;

@@ -1,5 +1,40 @@
 ## Changelog
 
+## v2.1.0 (2023-01-16)
+
+## New Features
+
+- Implemented `GETEX` command (#872)
+- Implemented `GETDEL` command (#869)
+- Implemented `COPY` command (#866)
+- Implemented `FAILOVER` command (#875)
+- Implemented `LMOVE` command (#863)
+- Implemented `LMPOP` command (#1013)
+- Implemented `HRANDFIELD` command (#870)
+- Implemented `SMISMEMBER` command (#871)
+- Implemented `ZMPOP` command (#831)
+- Implemented `BLMOVE` command (#865)
+- Implemented `BLMPOP` command (#1015)
+- Implemented `BZMPOP` command (#833)
+- Implemented `BZPOPMIN` command (#862)
+- Implemented `BZPOPMAX` command (#864)
+- Implemented `ZUNION` command (#860)
+- Implemented `ZINTER` command (#859)
+- Implemented `ZINTERCARD` command (#861)
+- Implemented `ZRANGESTORE` command (#829)
+- Implemented `ZDIFFSTORE` command (#828)
+- Implemented `ZDIFF` command (#826)
+- Implemented `ZRANDMEMBER` command (#825)
+- Implemented `ZMSCORE` (#823)
+- Implemented `GEOSEARCH` command (#867)
+- Implemented `GEOSEARCHSTORE` command (#873)
+
+## Bug Fixes
+- Added annotations to suppress PHP 8.1 return type deprecation warning (#810)
+
+## Maintenance
+- Added mixin annotations for traits (#835)
+
 ## v2.0.3 (2022-10-11)
 
 - Improved PHP 8.2 support
