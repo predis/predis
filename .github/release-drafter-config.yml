@@ -1,6 +1,6 @@
-name-template: '$NEXT_MINOR_VERSION'
-
+name-template: 'v$NEXT_MINOR_VERSION'
 tag-template: 'v$NEXT_MINOR_VERSION'
+change-template: '- $TITLE (#$NUMBER)'
 
 autolabeler:
   - label: 'maintenance'
@@ -36,8 +36,6 @@ categories:
       - 'BUG'
   - title: 'Maintenance'
     label: 'maintenance'
-
-change-template: '- $TITLE (#$NUMBER)'
 
 exclude-labels:
   - 'skip-changelog'
