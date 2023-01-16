@@ -53,6 +53,7 @@ use Predis\Response\Status;
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null)
+ * @method array             blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
