@@ -1,5 +1,11 @@
 ## Changelog
 
+## v2.1.1 (2023-01-17)
+
+## Bug Fixes
+- Fix `@template` in `Predis\Client` (#1017)
+- Fix support options array in `ZINTERSTORE` and `ZUNIONSTORE` (#1018)
+
 ## v2.1.0 (2023-01-16)
 
 ## New Features
@@ -161,7 +167,7 @@
 
 - Support Pub/Sub and Pipelines when using replication
 
-- The class `Predis\Transaction\AbortedMultiExecException` now uses the correct 
+- The class `Predis\Transaction\AbortedMultiExecException` now uses the correct
   default types for the `$code` (integer) parameter.
 
 - __FIX__: using `strval` in `getScanOptions()` method, part of
@@ -169,7 +175,7 @@
   string value of `$this->match` and not passing `null` to `strlen()` function.
 
 - __FIX__: the value returned from `getArgument()` in `isReadOperation()` method,
-  part of `Predis\Replication\ReplicationStrategy` class, is checked to not pass 
+  part of `Predis\Replication\ReplicationStrategy` class, is checked to not pass
   `null` to `sha1` function.
 
 - __FIX__: the value returned from `getArgument()` in `parseResponse()`method,
