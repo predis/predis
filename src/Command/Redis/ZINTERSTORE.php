@@ -25,24 +25,4 @@ class ZINTERSTORE extends ZUNIONSTORE
     {
         return 'ZINTERSTORE';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setArguments(array $arguments)
-    {
-        if (! isset($arguments[3]) && (isset($arguments[2]['weights']) || isset($arguments[2]['aggregate']))) {
-            $options = array_pop($arguments);
-            array_push($arguments, $options['weights'] ?? []);
-            array_push($arguments, $options['aggregate'] ?? 'sum');
-        }
-
-        $this->setAggregate($arguments);
-        $arguments = $this->getArguments();
-
-        $this->setWeights($arguments);
-        $arguments = $this->getArguments();
-
-        $this->setKeys($arguments);
-    }
 }
