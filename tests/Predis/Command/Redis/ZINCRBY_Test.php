@@ -39,8 +39,8 @@ class ZINCRBY_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 1.0, 'member');
-        $expected = array('key', 1.0, 'member');
+        $arguments = ['key', 1.0, 'member'];
+        $expected = ['key', 1.0, 'member'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -33,7 +33,7 @@ class Pipeline implements ClientContextInterface
     private $client;
     private $pipeline;
 
-    private $responses = array();
+    private $responses = [];
     private $running = false;
 
     /**
@@ -132,7 +132,7 @@ class Pipeline implements ClientContextInterface
             $connection->writeRequest($command);
         }
 
-        $responses = array();
+        $responses = [];
         $exceptions = $this->throwServerExceptions();
 
         while (!$commands->isEmpty()) {

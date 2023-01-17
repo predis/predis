@@ -122,7 +122,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     public function testRawArguments(): void
     {
-        $expected = array('1st', '2nd', '3rd', '4th');
+        $expected = ['1st', '2nd', '3rd', '4th'];
 
         $command = $this->getCommand();
         $command->setRawArguments($expected);

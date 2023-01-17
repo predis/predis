@@ -33,7 +33,7 @@ class INFO extends RedisCommand
     public function parseResponse($data)
     {
         if (empty($data) || !$lines = preg_split('/\r?\n/', $data)) {
-            return array();
+            return [];
         }
 
         if (strpos($lines[0], '#') === 0) {
@@ -48,7 +48,7 @@ class INFO extends RedisCommand
      */
     public function parseNewResponseFormat($lines)
     {
-        $info = array();
+        $info = [];
         $current = null;
 
         foreach ($lines as $row) {
@@ -57,7 +57,7 @@ class INFO extends RedisCommand
             }
 
             if (preg_match('/^# (\w+)$/', $row, $matches)) {
-                $info[$matches[1]] = array();
+                $info[$matches[1]] = [];
                 $current = &$info[$matches[1]];
                 continue;
             }
@@ -74,7 +74,7 @@ class INFO extends RedisCommand
      */
     public function parseOldResponseFormat($lines)
     {
-        $info = array();
+        $info = [];
 
         foreach ($lines as $row) {
             if (strpos($row, ':') === false) {
@@ -103,7 +103,7 @@ class INFO extends RedisCommand
             $v = $this->parseDatabaseStats($v);
         }
 
-        return array($k, $v);
+        return [$k, $v];
     }
 
     /**
@@ -115,7 +115,7 @@ class INFO extends RedisCommand
      */
     protected function parseDatabaseStats($str)
     {
-        $db = array();
+        $db = [];
 
         foreach (explode(',', $str) as $dbvar) {
             list($dbvk, $dbvv) = explode('=', $dbvar);

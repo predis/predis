@@ -75,7 +75,7 @@ class RawFactoryTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Command\RawCommand', $command);
         $this->assertEquals('INFO', $command->getId());
-        $this->assertEquals(array(), $command->getArguments());
+        $this->assertEquals([], $command->getArguments());
     }
 
     /**
@@ -85,7 +85,7 @@ class RawFactoryTest extends PredisTestCase
     {
         $factory = new RawFactory();
 
-        $arguments = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
 
         $this->assertInstanceOf('Predis\Command\RawCommand', $command);

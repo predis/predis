@@ -39,8 +39,8 @@ class SETNX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('foo', 'bar');
-        $expected = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
+        $expected = ['foo', 'bar'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

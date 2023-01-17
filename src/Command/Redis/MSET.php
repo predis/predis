@@ -33,7 +33,7 @@ class MSET extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 1 && is_array($arguments[0])) {
-            $flattenedKVs = array();
+            $flattenedKVs = [];
             $args = $arguments[0];
 
             foreach ($args as $k => $v) {

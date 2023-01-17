@@ -33,7 +33,7 @@ final class RawCommand implements CommandInterface
      * @param string $commandID Command ID
      * @param array  $arguments Command arguments
      */
-    public function __construct($commandID, array $arguments = array())
+    public function __construct($commandID, array $arguments = [])
     {
         $this->commandID = strtoupper($commandID);
         $this->setArguments($arguments);

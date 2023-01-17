@@ -33,7 +33,7 @@ class SLAVEOF extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 0 || $arguments[0] === 'NO ONE') {
-            $arguments = array('NO', 'ONE');
+            $arguments = ['NO', 'ONE'];
         }
 
         parent::setArguments($arguments);

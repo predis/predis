@@ -39,8 +39,8 @@ class RPOP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,7 +67,7 @@ class RPOP_Test extends PredisCommandTestCase
 
         $this->assertSame('d', $redis->rpop('letters'));
         $this->assertSame('c', $redis->rpop('letters'));
-        $this->assertSame(array('a', 'b'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b'], $redis->lrange('letters', 0, -1));
     }
 
     /**

@@ -39,8 +39,8 @@ class BITOP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('AND', 'key:dst', 'key:01', 'key:02');
-        $expected = array('AND', 'key:dst', 'key:01', 'key:02');
+        $arguments = ['AND', 'key:dst', 'key:01', 'key:02'];
+        $expected = ['AND', 'key:dst', 'key:01', 'key:02'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class BITOP_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsKeysAsSingleArray(): void
     {
-        $arguments = array('AND', 'key:dst', array('key:01', 'key:02'));
-        $expected = array('AND', 'key:dst', 'key:01', 'key:02');
+        $arguments = ['AND', 'key:dst', ['key:01', 'key:02']];
+        $expected = ['AND', 'key:dst', 'key:01', 'key:02'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -252,7 +252,7 @@ interface ClientInterface
      *
      * @return CommandInterface
      */
-    public function createCommand($method, $arguments = array());
+    public function createCommand($method, $arguments = []);
 
     /**
      * Executes the specified Redis command.

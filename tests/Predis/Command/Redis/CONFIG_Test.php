@@ -39,8 +39,8 @@ class CONFIG_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('GET', 'slowlog');
-        $expected = array('GET', 'slowlog');
+        $arguments = ['GET', 'slowlog'];
+        $expected = ['GET', 'slowlog'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,12 +53,12 @@ class CONFIG_Test extends PredisCommandTestCase
      */
     public function testParseResponseOfConfigGet(): void
     {
-        $raw = array('slowlog-log-slower-than', '10000', 'slowlog-max-len', '64', 'loglevel', 'verbose');
-        $expected = array(
+        $raw = ['slowlog-log-slower-than', '10000', 'slowlog-max-len', '64', 'loglevel', 'verbose'];
+        $expected = [
             'slowlog-log-slower-than' => '10000',
             'slowlog-max-len' => '64',
             'loglevel' => 'verbose',
-        );
+        ];
 
         $command = $this->getCommand();
 
@@ -117,7 +117,7 @@ class CONFIG_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array(), $redis->config('GET', 'foobar'));
+        $this->assertSame([], $redis->config('GET', 'foobar'));
     }
 
     /**
@@ -131,7 +131,7 @@ class CONFIG_Test extends PredisCommandTestCase
         $previous = $redis->config('GET', 'loglevel');
 
         $this->assertEquals('OK', $redis->config('SET', 'loglevel', 'notice'));
-        $this->assertSame(array('loglevel' => 'notice'), $redis->config('GET', 'loglevel'));
+        $this->assertSame(['loglevel' => 'notice'], $redis->config('GET', 'loglevel'));
 
         // We set the loglevel configuration to the previous value.
         $redis->config('SET', 'loglevel', $previous['loglevel']);

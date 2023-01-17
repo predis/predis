@@ -33,7 +33,7 @@ class SUNIONSTORE extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
-            $arguments = array_merge(array($arguments[0]), $arguments[1]);
+            $arguments = array_merge([$arguments[0]], $arguments[1]);
         }
 
         parent::setArguments($arguments);

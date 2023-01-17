@@ -39,8 +39,8 @@ class HVALS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class HVALS_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('foo', 'hoge', 'lol');
-        $expected = array('foo', 'hoge', 'lol');
+        $raw = ['foo', 'hoge', 'lol'];
+        $expected = ['foo', 'hoge', 'lol'];
 
         $command = $this->getCommand();
 
@@ -71,8 +71,8 @@ class HVALS_Test extends PredisCommandTestCase
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
-        $this->assertSame(array('bar', 'piyo', 'wut'), $redis->hvals('metavars'));
-        $this->assertSame(array(), $redis->hvals('unknown'));
+        $this->assertSame(['bar', 'piyo', 'wut'], $redis->hvals('metavars'));
+        $this->assertSame([], $redis->hvals('unknown'));
     }
 
     /**

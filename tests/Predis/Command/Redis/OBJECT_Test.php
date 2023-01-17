@@ -39,8 +39,8 @@ class OBJECT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('REFCOUNT', 'key');
-        $expected = array('REFCOUNT', 'key');
+        $arguments = ['REFCOUNT', 'key'];
+        $expected = ['REFCOUNT', 'key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -50,8 +50,8 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('__get')
             ->withConsecutive(
-                array('autodiscovery'),
-                array('connections')
+                ['autodiscovery'],
+                ['connections']
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -81,7 +81,7 @@ class ReplicationTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -132,7 +132,7 @@ class ReplicationTest extends PredisTestCase
             );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -165,7 +165,7 @@ class ReplicationTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -216,7 +216,7 @@ class ReplicationTest extends PredisTestCase
             );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -249,7 +249,7 @@ class ReplicationTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -279,7 +279,7 @@ class ReplicationTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -303,7 +303,7 @@ class ReplicationTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'predis'));
-        $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $initializer($parameters = array()));
+        $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $initializer($parameters = []));
     }
 
     /**
@@ -319,17 +319,17 @@ class ReplicationTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('__get')
             ->withConsecutive(
-                array('service'),
-                array('connections')
+                ['service'],
+                ['connections']
             )
             ->willReturnOnConsecutiveCalls(
                 'mymaster',
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock()
             );
 
-        $parameters = array(
+        $parameters = [
             $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock(),
-        );
+        ];
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'sentinel'));
         $this->assertInstanceOf('Predis\Connection\Replication\SentinelReplication', $connection = $initializer($parameters));

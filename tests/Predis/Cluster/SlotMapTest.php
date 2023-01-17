@@ -117,7 +117,7 @@ class SlotMapTest extends PredisTestCase
 
         $slotmap->setSlots(10, 10, '127.0.0.1:6379');
 
-        $this->assertSame(array(10 => '127.0.0.1:6379'), $slotmap->toArray());
+        $this->assertSame([10 => '127.0.0.1:6379'], $slotmap->toArray());
     }
 
     /**
@@ -135,7 +135,7 @@ class SlotMapTest extends PredisTestCase
 
         $slotmap->setSlots(10, 10, $connection);
 
-        $this->assertSame(array(10 => '127.0.0.1:6379'), $slotmap->toArray());
+        $this->assertSame([10 => '127.0.0.1:6379'], $slotmap->toArray());
     }
 
     /**
@@ -171,13 +171,13 @@ class SlotMapTest extends PredisTestCase
         $slotmap->setSlots(0, 5, '127.0.0.1:6379');
         $slotmap->setSlots(10, 13, '127.0.0.1:6380');
 
-        $expectedMap = array(
+        $expectedMap = [
             3 => '127.0.0.1:6379',
             4 => '127.0.0.1:6379',
             5 => '127.0.0.1:6379',
             10 => '127.0.0.1:6380',
             11 => '127.0.0.1:6380',
-        );
+        ];
 
         $this->assertSame($expectedMap, $slotmap->getSlots(3, 11));
     }
@@ -296,7 +296,7 @@ class SlotMapTest extends PredisTestCase
         $slotmap->setSlots(5461, 10922, '127.0.0.1:6380');
         $slotmap->setSlots(10923, 16383, '127.0.0.1:6381');
 
-        $this->assertSame(array('127.0.0.1:6379', '127.0.0.1:6380', '127.0.0.1:6381'), $slotmap->getNodes());
+        $this->assertSame(['127.0.0.1:6379', '127.0.0.1:6380', '127.0.0.1:6381'], $slotmap->getNodes());
     }
 
     /**

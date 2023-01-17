@@ -50,8 +50,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -60,10 +60,10 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('hscan')
-            ->with('key:hash', 0, array())
+            ->with('key:hash', 0, [])
             ->willReturn(
-                array(0, array(),
-            ));
+                [0, [],
+            ]);
 
         $iterator = new HashKey($client, 'key:hash');
 
@@ -80,8 +80,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -90,9 +90,9 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('hscan')
-            ->with('key:hash', 0, array())
+            ->with('key:hash', 0, [])
             ->willReturn(
-                array(0, array(1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar'))
+                [0, [1 => 'a', 2 => 'b', 3 => 100, 'foo' => 'bar']]
             );
 
         $iterator = new HashKey($client, 'key:hash');
@@ -128,8 +128,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -138,9 +138,9 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('hscan')
-            ->with('key:hash', 0, array())
+            ->with('key:hash', 0, [])
             ->willReturn(
-                array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd', 'field:3rd' => 'value:3rd'))
+                [0, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd', 'field:3rd' => 'value:3rd']]
             );
 
         $iterator = new HashKey($client, 'key:hash');
@@ -171,8 +171,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -182,12 +182,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array()),
-                array('key:hash', 2, array())
+                ['key:hash', 0, []],
+                ['key:hash', 2, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
-                array(0, array('field:3rd' => 'value:3rd'))
+                [2, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']],
+                [0, ['field:3rd' => 'value:3rd']]
             );
 
         $iterator = new HashKey($client, 'key:hash');
@@ -218,8 +218,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -229,12 +229,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array()),
-                array('key:hash', 4, array())
+                ['key:hash', 0, []],
+                ['key:hash', 4, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(4, array()),
-                array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
+                [4, []],
+                [0, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash');
@@ -260,8 +260,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -271,14 +271,14 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array()),
-                array('key:hash', 2, array()),
-                array('key:hash', 5, array())
+                ['key:hash', 0, []],
+                ['key:hash', 2, []],
+                ['key:hash', 5, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
-                array(5, array()),
-                array(0, array('field:3rd' => 'value:3rd'))
+                [2, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']],
+                [5, []],
+                [0, ['field:3rd' => 'value:3rd']]
             );
 
         $iterator = new HashKey($client, 'key:hash');
@@ -309,8 +309,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -320,12 +320,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('MATCH' => 'field:*')),
-                array('key:hash', 2, array('MATCH' => 'field:*'))
+                ['key:hash', 0, ['MATCH' => 'field:*']],
+                ['key:hash', 2, ['MATCH' => 'field:*']]
             )
             ->willReturn(
-                array(2, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd')),
-                array(0, array())
+                [2, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']],
+                [0, []]
             );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*');
@@ -351,8 +351,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -362,12 +362,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('MATCH' => 'field:*')),
-                array('key:hash', 1, array('MATCH' => 'field:*'))
+                ['key:hash', 0, ['MATCH' => 'field:*']],
+                ['key:hash', 1, ['MATCH' => 'field:*']]
             )
             ->willReturn(
-                array(1, array('field:1st' => 'value:1st')),
-                array(0, array('field:2nd' => 'value:2nd'))
+                [1, ['field:1st' => 'value:1st']],
+                [0, ['field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*');
@@ -393,8 +393,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -404,10 +404,10 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->once())
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('COUNT' => 2))
+                ['key:hash', 0, ['COUNT' => 2]]
             )
             ->willReturn(
-                array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
+                [0, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash', null, 2);
@@ -433,8 +433,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -444,12 +444,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('COUNT' => 1)),
-                array('key:hash', 1, array('COUNT' => 1))
+                ['key:hash', 0, ['COUNT' => 1]],
+                ['key:hash', 1, ['COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('field:1st' => 'value:1st')),
-                array(0, array('field:2nd' => 'value:2nd'))
+                [1, ['field:1st' => 'value:1st']],
+                [0, ['field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash', null, 1);
@@ -475,8 +475,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -486,10 +486,10 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->once(1))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 2))
+                ['key:hash', 0, ['MATCH' => 'field:*', 'COUNT' => 2]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
+                [0, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*', 2);
@@ -515,8 +515,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -526,12 +526,12 @@ class HashKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('hscan')
             ->withConsecutive(
-                array('key:hash', 0, array('MATCH' => 'field:*', 'COUNT' => 1)),
-                array('key:hash', 1, array('MATCH' => 'field:*', 'COUNT' => 1))
+                ['key:hash', 0, ['MATCH' => 'field:*', 'COUNT' => 1]],
+                ['key:hash', 1, ['MATCH' => 'field:*', 'COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('field:1st' => 'value:1st')),
-                array(0, array('field:2nd' => 'value:2nd'))
+                [1, ['field:1st' => 'value:1st']],
+                [0, ['field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash', 'field:*', 1);
@@ -557,8 +557,8 @@ class HashKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('hscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['hscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -567,9 +567,9 @@ class HashKeyTest extends PredisTestCase
         $client
             ->expects($this->exactly(2))
             ->method('hscan')
-            ->with('key:hash', 0, array())
+            ->with('key:hash', 0, [])
             ->willReturn(
-                array(0, array('field:1st' => 'value:1st', 'field:2nd' => 'value:2nd'))
+                [0, ['field:1st' => 'value:1st', 'field:2nd' => 'value:2nd']]
             );
 
         $iterator = new HashKey($client, 'key:hash');

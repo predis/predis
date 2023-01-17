@@ -57,10 +57,10 @@ class CLIENT extends RedisCommand
      */
     protected function parseClientList($data)
     {
-        $clients = array();
+        $clients = [];
 
         foreach (explode("\n", $data, -1) as $clientData) {
-            $client = array();
+            $client = [];
 
             foreach (explode(' ', $clientData) as $kv) {
                 @list($k, $v) = explode('=', $kv);

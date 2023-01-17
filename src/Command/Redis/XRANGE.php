@@ -45,9 +45,9 @@ class XRANGE extends RedisCommand
      */
     public function parseResponse($data)
     {
-        $result = array();
+        $result = [];
         foreach ($data as $entry) {
-            $processed = array();
+            $processed = [];
             $count = count($entry[1]);
 
             for ($i = 0; $i < $count; ++$i) {

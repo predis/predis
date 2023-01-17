@@ -29,12 +29,12 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @var NodeConnectionInterface[]
      */
-    private $pool = array();
+    private $pool = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    private $aliases = array();
+    private $aliases = [];
 
     /**
      * @var StrategyInterface

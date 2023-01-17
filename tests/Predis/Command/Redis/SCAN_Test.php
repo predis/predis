@@ -39,8 +39,8 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array(0, 'MATCH', 'key:*', 'COUNT', 5);
-        $expected = array(0, 'MATCH', 'key:*', 'COUNT', 5);
+        $arguments = [0, 'MATCH', 'key:*', 'COUNT', 5];
+        $expected = [0, 'MATCH', 'key:*', 'COUNT', 5];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsBasicUsage(): void
     {
-        $arguments = array(0);
-        $expected = array(0);
+        $arguments = [0];
+        $expected = [0];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithOptionsArray(): void
     {
-        $arguments = array(0, array('match' => 'key:*', 'count' => 5));
-        $expected = array(0, 'MATCH', 'key:*', 'COUNT', 5);
+        $arguments = [0, ['match' => 'key:*', 'count' => 5]];
+        $expected = [0, 'MATCH', 'key:*', 'COUNT', 5];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -81,8 +81,8 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('3', array('key:1', 'key:2', 'key:3'));
-        $expected = array('3', array('key:1', 'key:2', 'key:3'));
+        $raw = ['3', ['key:1', 'key:2', 'key:3']];
+        $expected = ['3', ['key:1', 'key:2', 'key:3']];
 
         $command = $this->getCommand();
 
@@ -95,7 +95,7 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testScanWithoutMatch(): void
     {
-        $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
+        $kvs = ['key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four'];
 
         $redis = $this->getClient();
         $redis->mset($kvs);
@@ -111,14 +111,14 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testScanWithMatchingKeys(): void
     {
-        $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
+        $kvs = ['key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four'];
 
         $redis = $this->getClient();
         $redis->mset($kvs);
 
         $response = $redis->scan('0', 'MATCH', 'key:t*');
 
-        $this->assertSameValues(array('key:two', 'key:three'), $response[1]);
+        $this->assertSameValues(['key:two', 'key:three'], $response[1]);
     }
 
     /**
@@ -127,7 +127,7 @@ class SCAN_Test extends PredisCommandTestCase
      */
     public function testScanWithNoMatchingKeys(): void
     {
-        $kvs = array('key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four');
+        $kvs = ['key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four'];
 
         $redis = $this->getClient();
         $redis->mset($kvs);

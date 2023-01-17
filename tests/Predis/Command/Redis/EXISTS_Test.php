@@ -39,8 +39,8 @@ class EXISTS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class EXISTS_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsMultipleKeys(): void
     {
-        $arguments = array('key:1', 'key:2', 'key:3');
-        $expected = array('key:1', 'key:2', 'key:3');
+        $arguments = ['key:1', 'key:2', 'key:3'];
+        $expected = ['key:1', 'key:2', 'key:3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

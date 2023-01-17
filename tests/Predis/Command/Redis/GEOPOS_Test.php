@@ -39,8 +39,8 @@ class GEOPOS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'member:1', 'member:2');
-        $expected = array('key', 'member:1', 'member:2');
+        $arguments = ['key', 'member:1', 'member:2'];
+        $expected = ['key', 'member:1', 'member:2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class GEOPOS_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithMembersAsSingleArray(): void
     {
-        $arguments = array('key', array('member:1', 'member:2'));
-        $expected = array('key', 'member:1', 'member:2');
+        $arguments = ['key', ['member:1', 'member:2']];
+        $expected = ['key', 'member:1', 'member:2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,15 +67,15 @@ class GEOPOS_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array(
-            array('13.36138933897018433', '38.11555639549629859'),
-            array('15.08726745843887329', '37.50266842333162032'),
-        );
+        $raw = [
+            ['13.36138933897018433', '38.11555639549629859'],
+            ['15.08726745843887329', '37.50266842333162032'],
+        ];
 
-        $expected = array(
-            array('13.36138933897018433', '38.11555639549629859'),
-            array('15.08726745843887329', '37.50266842333162032'),
-        );
+        $expected = [
+            ['13.36138933897018433', '38.11555639549629859'],
+            ['15.08726745843887329', '37.50266842333162032'],
+        ];
 
         $command = $this->getCommand();
 
@@ -91,10 +91,10 @@ class GEOPOS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals(array(
-            array('13.36138933897018433', '38.11555639549629859'),
-            array('15.08726745843887329', '37.50266842333162032'),
-        ), $redis->geopos('Sicily', 'Palermo', 'Catania'));
+        $this->assertEquals([
+            ['13.36138933897018433', '38.11555639549629859'],
+            ['15.08726745843887329', '37.50266842333162032'],
+        ], $redis->geopos('Sicily', 'Palermo', 'Catania'));
     }
 
     /**

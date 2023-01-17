@@ -39,8 +39,8 @@ class SET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('foo', 'bar');
-        $expected = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
+        $expected = ['foo', 'bar'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SET_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsRedisWithModifiers(): void
     {
-        $arguments = array('foo', 'bar', 'EX', '10', 'NX');
-        $expected = array('foo', 'bar', 'EX', '10', 'NX');
+        $arguments = ['foo', 'bar', 'EX', '10', 'NX'];
+        $expected = ['foo', 'bar', 'EX', '10', 'NX'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -25,7 +25,7 @@ class PredisExceptionTest extends PredisTestCase
     public function testExceptionMessage(): void
     {
         $message = 'Predis exception message';
-        $exception = $this->getMockForAbstractClass('Predis\PredisException', array($message));
+        $exception = $this->getMockForAbstractClass('Predis\PredisException', [$message]);
 
         $this->expectException('Predis\PredisException');
         $this->expectExceptionMessage($message);

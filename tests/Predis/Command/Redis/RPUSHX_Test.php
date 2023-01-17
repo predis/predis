@@ -39,8 +39,8 @@ class RPUSHX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'value');
-        $expected = array('key', 'value');
+        $arguments = ['key', 'value'];
+        $expected = ['key', 'value'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,7 +67,7 @@ class RPUSHX_Test extends PredisCommandTestCase
         $redis->rpush('metavars', 'foo');
 
         $this->assertSame(2, $redis->rpushx('metavars', 'hoge'));
-        $this->assertSame(array('foo', 'hoge'), $redis->lrange('metavars', 0, -1));
+        $this->assertSame(['foo', 'hoge'], $redis->lrange('metavars', 0, -1));
     }
 
     /**

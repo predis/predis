@@ -39,8 +39,8 @@ class MGET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key1', 'key2', 'key3');
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = ['key1', 'key2', 'key3'];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class MGET_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('key1', 'key2', 'key3'));
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = [['key1', 'key2', 'key3']];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class MGET_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('value1', 'value2', 'value3');
-        $expected = array('value1', 'value2', 'value3');
+        $raw = ['value1', 'value2', 'value3'];
+        $expected = ['value1', 'value2', 'value3'];
 
         $command = $this->getCommand();
 
@@ -85,7 +85,7 @@ class MGET_Test extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $redis->set('hoge', 'piyo');
 
-        $this->assertSame(array('bar', 'piyo'), $redis->mget('foo', 'hoge'));
+        $this->assertSame(['bar', 'piyo'], $redis->mget('foo', 'hoge'));
     }
 
     /**
@@ -95,7 +95,7 @@ class MGET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array(null, null), $redis->mget('foo', 'hoge'));
+        $this->assertSame([null, null], $redis->mget('foo', 'hoge'));
     }
 
     /**
@@ -106,6 +106,6 @@ class MGET_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->lpush('metavars', 'foo');
-        $this->assertSame(array(null), $redis->mget('metavars'));
+        $this->assertSame([null], $redis->mget('metavars'));
     }
 }

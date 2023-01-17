@@ -39,8 +39,8 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('get-master-addr-by-name', 'predis:master');
-        $expected = array('get-master-addr-by-name', 'predis:master');
+        $arguments = ['get-master-addr-by-name', 'predis:master'];
+        $expected = ['get-master-addr-by-name', 'predis:master'];
 
         $command = $this->getCommandWithArgumentsArray($arguments);
 
@@ -52,7 +52,7 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $expected = array('127.0.0.1', '6379');
+        $expected = ['127.0.0.1', '6379'];
         $command = $this->getCommand();
 
         $this->assertSame($expected, $command->parseResponse($expected));
@@ -63,8 +63,8 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testSentinelMastersResponse(): void
     {
-        $response = array(
-            array(
+        $response = [
+            [
                 'name', 'predis:master',
                 'ip', '127.0.0.1',
                 'port', '6379',
@@ -77,11 +77,11 @@ class SENTINEL_Test extends PredisCommandTestCase
                 'num-slaves', '1',
                 'num-other-sentinels', '0',
                 'quorum', '2',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'name' => 'predis:master',
                 'ip' => '127.0.0.1',
                 'port' => '6379',
@@ -94,8 +94,8 @@ class SENTINEL_Test extends PredisCommandTestCase
                 'num-slaves' => '1',
                 'num-other-sentinels' => '0',
                 'quorum' => '2',
-            ),
-        );
+            ],
+        ];
 
         $command = $this->getCommandWithArguments('masters');
 
@@ -107,8 +107,8 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testSentinelSlavesResponse(): void
     {
-        $response = array(
-            array(
+        $response = [
+            [
                 'name', '127.0.0.1:6380',
                 'ip', '127.0.0.1',
                 'port', '6380',
@@ -123,11 +123,11 @@ class SENTINEL_Test extends PredisCommandTestCase
                 'master-host', '127.0.0.1',
                 'master-port', '6379',
                 'slave-priority', '100',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array(
-            array(
+        $expected = [
+            [
                 'name' => '127.0.0.1:6380',
                 'ip' => '127.0.0.1',
                 'port' => '6380',
@@ -142,8 +142,8 @@ class SENTINEL_Test extends PredisCommandTestCase
                 'master-host' => '127.0.0.1',
                 'master-port' => '6379',
                 'slave-priority' => '100',
-            ),
-        );
+            ],
+        ];
 
         $command = $this->getCommandWithArguments('slaves', 'predis:master');
 
@@ -155,8 +155,8 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testSentinelIsMasterDownByAddr(): void
     {
-        $response = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
-        $expected = array('0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c');
+        $response = ['0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c'];
+        $expected = ['0', '7388832d5fdee6a2e301d6bbc5052bd1526d741c'];
 
         $command = $this->getCommandWithArguments('is-master-down-by-addr', '127.0.0.1', '6379');
 
@@ -168,8 +168,8 @@ class SENTINEL_Test extends PredisCommandTestCase
      */
     public function testSentinelGetMasterAddrByName(): void
     {
-        $response = array('127.0.0.1', '6379');
-        $expected = array('127.0.0.1', '6379');
+        $response = ['127.0.0.1', '6379'];
+        $expected = ['127.0.0.1', '6379'];
 
         $command = $this->getCommandWithArguments('get-master-addr-by-name', 'predis:master');
 

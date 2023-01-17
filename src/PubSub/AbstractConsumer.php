@@ -102,7 +102,7 @@ abstract class AbstractConsumer implements \Iterator
      */
     public function ping($payload = null)
     {
-        $this->writeRequest('PING', array($payload));
+        $this->writeRequest('PING', [$payload]);
     }
 
     /**

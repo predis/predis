@@ -28,7 +28,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 
     public function __construct()
     {
-        $this->nodes = array();
+        $this->nodes = [];
         $this->nodesCount = 0;
     }
 
@@ -88,7 +88,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
     }
 }
 
-$options = array(
+$options = [
     'cluster' => function () {
         $distributor = new NaiveDistributor();
         $strategy = new PredisStrategy($distributor);
@@ -96,7 +96,7 @@ $options = array(
 
         return $cluster;
     },
-);
+];
 
 $client = new Predis\Client($multiple_servers, $options);
 

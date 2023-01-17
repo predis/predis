@@ -39,8 +39,8 @@ class HDEL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field1', 'field2', 'field3');
-        $expected = array('key', 'field1', 'field2', 'field3');
+        $arguments = ['key', 'field1', 'field2', 'field3'];
+        $expected = ['key', 'field1', 'field2', 'field3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class HDEL_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsFieldsAsSingleArray(): void
     {
-        $arguments = array('key', array('field1', 'field2', 'field3'));
-        $expected = array('key', 'field1', 'field2', 'field3');
+        $arguments = ['key', ['field1', 'field2', 'field3']];
+        $expected = ['key', 'field1', 'field2', 'field3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

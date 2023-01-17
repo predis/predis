@@ -29,7 +29,7 @@ class DispatcherLoop
      */
     public function __construct(Consumer $pubsub)
     {
-        $this->callbacks = array();
+        $this->callbacks = [];
         $this->pubsub = $pubsub;
     }
 

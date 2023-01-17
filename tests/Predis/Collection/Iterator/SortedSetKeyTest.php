@@ -51,8 +51,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -61,9 +61,9 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('zscan')
-            ->with('key:zset', 0, array())
+            ->with('key:zset', 0, [])
             ->willReturn(
-                array(0, array())
+                [0, []]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -80,8 +80,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -90,9 +90,9 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('zscan')
-            ->with('key:zset', 0, array())
+            ->with('key:zset', 0, [])
             ->willReturn(
-                array(0, array(0 => 0, 101 => 1, 102 => 2))
+                [0, [0 => 0, 101 => 1, 102 => 2]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -123,8 +123,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -133,9 +133,9 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('zscan')
-            ->with('key:zset', 0, array())
+            ->with('key:zset', 0, [])
             ->willReturn(
-                array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0, 'member:3rd' => 3.0))
+                [0, ['member:1st' => 1.0, 'member:2nd' => 2.0, 'member:3rd' => 3.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -166,8 +166,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -177,12 +177,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array()),
-                array('key:zset', 2, array())
+                ['key:zset', 0, []],
+                ['key:zset', 2, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
-                array(0, array('member:3rd' => 3.0))
+                [2, ['member:1st' => 1.0, 'member:2nd' => 2.0]],
+                [0, ['member:3rd' => 3.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -213,8 +213,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -224,12 +224,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array()),
-                array('key:zset', 4, array())
+                ['key:zset', 0, []],
+                ['key:zset', 4, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(4, array()),
-                array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
+                [4, []],
+                [0, ['member:1st' => 1.0, 'member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -255,8 +255,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -266,14 +266,14 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array()),
-                array('key:zset', 2, array()),
-                array('key:zset', 5, array())
+                ['key:zset', 0, []],
+                ['key:zset', 2, []],
+                ['key:zset', 5, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
-                array(5, array()),
-                array(0, array('member:3rd' => 3.0))
+                [2, ['member:1st' => 1.0, 'member:2nd' => 2.0]],
+                [5, []],
+                [0, ['member:3rd' => 3.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');
@@ -304,8 +304,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -315,12 +315,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('MATCH' => 'member:*')),
-                array('key:zset', 2, array('MATCH' => 'member:*'))
+                ['key:zset', 0, ['MATCH' => 'member:*']],
+                ['key:zset', 2, ['MATCH' => 'member:*']]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('member:1st' => 1.0, 'member:2nd' => 2.0)),
-                array(0, array())
+                [2, ['member:1st' => 1.0, 'member:2nd' => 2.0]],
+                [0, []]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
@@ -346,8 +346,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -357,12 +357,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('MATCH' => 'member:*')),
-                array('key:zset', 1, array('MATCH' => 'member:*'))
+                ['key:zset', 0, ['MATCH' => 'member:*']],
+                ['key:zset', 1, ['MATCH' => 'member:*']]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('member:1st' => 1.0)),
-                array(0, array('member:2nd' => 2.0))
+                [1, ['member:1st' => 1.0]],
+                [0, ['member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*');
@@ -388,8 +388,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -399,10 +399,10 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->once())
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('COUNT' => 2))
+                ['key:zset', 0, ['COUNT' => 2]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
+                [0, ['member:1st' => 1.0, 'member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 2);
@@ -428,8 +428,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -439,12 +439,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('COUNT' => 1)),
-                array('key:zset', 1, array('COUNT' => 1))
+                ['key:zset', 0, ['COUNT' => 1]],
+                ['key:zset', 1, ['COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('member:1st' => 1.0)),
-                array(0, array('member:2nd' => 2.0))
+                [1, ['member:1st' => 1.0]],
+                [0, ['member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', null, 1);
@@ -470,8 +470,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -481,10 +481,10 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->once())
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 2))
+                ['key:zset', 0, ['MATCH' => 'member:*', 'COUNT' => 2]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
+                [0, ['member:1st' => 1.0, 'member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 2);
@@ -510,8 +510,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -521,12 +521,12 @@ class SortedSetKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('zscan')
             ->withConsecutive(
-                array('key:zset', 0, array('MATCH' => 'member:*', 'COUNT' => 1)),
-                array('key:zset', 1, array('MATCH' => 'member:*', 'COUNT' => 1))
+                ['key:zset', 0, ['MATCH' => 'member:*', 'COUNT' => 1]],
+                ['key:zset', 1, ['MATCH' => 'member:*', 'COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('member:1st' => 1.0)),
-                array(0, array('member:2nd' => 2.0))
+                [1, ['member:1st' => 1.0]],
+                [0, ['member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset', 'member:*', 1);
@@ -552,8 +552,8 @@ class SortedSetKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('zscan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['zscan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -562,9 +562,9 @@ class SortedSetKeyTest extends PredisTestCase
         $client
             ->expects($this->exactly(2))
             ->method('zscan')
-            ->with('key:zset', 0, array())
+            ->with('key:zset', 0, [])
             ->willReturn(
-                array(0, array('member:1st' => 1.0, 'member:2nd' => 2.0))
+                [0, ['member:1st' => 1.0, 'member:2nd' => 2.0]]
             );
 
         $iterator = new SortedSetKey($client, 'key:zset');

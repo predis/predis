@@ -80,7 +80,7 @@ class ProtocolProcessor implements ProtocolProcessorInterface
                     return new MultiBulkIterator($connection, $count);
                 }
 
-                $multibulk = array();
+                $multibulk = [];
 
                 for ($i = 0; $i < $count; ++$i) {
                     $multibulk[$i] = $this->read($connection);

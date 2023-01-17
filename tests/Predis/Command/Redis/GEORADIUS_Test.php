@@ -39,15 +39,15 @@ class GEORADIUS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array(
+        $arguments = [
             'Sicily', 15, 37, 200, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
-        $expected = array(
+        $expected = [
             'Sicily', 15, 37, 200, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -60,8 +60,8 @@ class GEORADIUS_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithComplexOptions(): void
     {
-        $arguments = array(
-            'Sicily', 15, 37, 200, 'km', array(
+        $arguments = [
+            'Sicily', 15, 37, 200, 'km', [
                 'store' => 'key:store',
                 'storedist' => 'key:storedist',
                 'withdist' => true,
@@ -69,13 +69,13 @@ class GEORADIUS_Test extends PredisCommandTestCase
                 'withhash' => true,
                 'count' => 1,
                 'sort' => 'asc',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array(
+        $expected = [
             'Sicily', 15, 37, 200, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -88,8 +88,8 @@ class GEORADIUS_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithSpecificOptionsSetToFalse(): void
     {
-        $arguments = array(
-            'Sicily', 15, 37, 200, 'km', array(
+        $arguments = [
+            'Sicily', 15, 37, 200, 'km', [
                 'store' => 'key:store',
                 'storedist' => 'key:storedist',
                 'withdist' => false,
@@ -97,10 +97,10 @@ class GEORADIUS_Test extends PredisCommandTestCase
                 'withhash' => false,
                 'count' => 1,
                 'sort' => 'asc',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array('Sicily', 15, 37, 200, 'km', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist');
+        $expected = ['Sicily', 15, 37, 200, 'km', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -113,15 +113,15 @@ class GEORADIUS_Test extends PredisCommandTestCase
      */
     public function testParseResponseWithNoOptions(): void
     {
-        $raw = array(
-            array('Palermo', '190.4424'),
-            array('Catania', '56.4413'),
-        );
+        $raw = [
+            ['Palermo', '190.4424'],
+            ['Catania', '56.4413'],
+        ];
 
-        $expected = array(
-            array('Palermo', '190.4424'),
-            array('Catania', '56.4413'),
-        );
+        $expected = [
+            ['Palermo', '190.4424'],
+            ['Catania', '56.4413'],
+        ];
 
         $command = $this->getCommand();
 
@@ -137,7 +137,7 @@ class GEORADIUS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals(array('Palermo', 'Catania'), $redis->georadius('Sicily', 15, 37, 200, 'km'));
+        $this->assertEquals(['Palermo', 'Catania'], $redis->georadius('Sicily', 15, 37, 200, 'km'));
     }
 
     /**
@@ -149,10 +149,10 @@ class GEORADIUS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals(array(
-            array('Palermo', '190.4424', array('13.36138933897018433', '38.11555639549629859')),
-            array('Catania', '56.4413', array('15.08726745843887329', '37.50266842333162032')),
-        ), $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'));
+        $this->assertEquals([
+            ['Palermo', '190.4424', ['13.36138933897018433', '38.11555639549629859']],
+            ['Catania', '56.4413', ['15.08726745843887329', '37.50266842333162032']],
+        ], $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'));
     }
 
     /**

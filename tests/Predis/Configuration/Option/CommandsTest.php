@@ -96,10 +96,10 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $input = array(
+        $input = [
             'FOO' => 'Predis\Command\RawCommand',
             'BAR' => 'Predis\Command\RawCommand',
-        );
+        ];
 
         $commands = $option->filter($options, $input);
 
@@ -118,11 +118,11 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $input = array(
+        $input = [
             'ECHO' => null,
             'EVAL' => null,
             'FOO'  => null,
-        );
+        ];
 
         $commands = $option->filter($options, $input);
 
@@ -144,7 +144,7 @@ class CommandsTest extends PredisTestCase
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -165,13 +165,13 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $dictionary = array(
+        $dictionary = [
             'FOO' => 'Predis\Command\RawCommand',
             'BAR' => 'Predis\Command\RawCommand',
-        );
+        ];
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -264,7 +264,7 @@ class CommandsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())

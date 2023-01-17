@@ -39,8 +39,8 @@ class LRANGE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, -1);
-        $expected = array('key', 0, -1);
+        $arguments = ['key', 0, -1];
+        $expected = ['key', 0, -1];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class LRANGE_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('value1', 'value2', 'value3');
-        $expected = array('value1', 'value2', 'value3');
+        $raw = ['value1', 'value2', 'value3'];
+        $expected = ['value1', 'value2', 'value3'];
 
         $command = $this->getCommand();
 
@@ -70,10 +70,10 @@ class LRANGE_Test extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
-        $this->assertSame(array('a', 'b', 'c', 'd'), $redis->lrange('letters', 0, 3));
-        $this->assertSame(array('e', 'f', 'g', 'h'), $redis->lrange('letters', 4, 7));
-        $this->assertSame(array('a', 'b'), $redis->lrange('letters', 0, 1));
-        $this->assertSame(array('a'), $redis->lrange('letters', 0, 0));
+        $this->assertSame(['a', 'b', 'c', 'd'], $redis->lrange('letters', 0, 3));
+        $this->assertSame(['e', 'f', 'g', 'h'], $redis->lrange('letters', 4, 7));
+        $this->assertSame(['a', 'b'], $redis->lrange('letters', 0, 1));
+        $this->assertSame(['a'], $redis->lrange('letters', 0, 0));
     }
 
     /**
@@ -85,9 +85,9 @@ class LRANGE_Test extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'), $redis->lrange('letters', 0, -1));
-        $this->assertSame(array('f'), $redis->lrange('letters', 5, -5));
-        $this->assertSame(array(), $redis->lrange('letters', 7, -5));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', 0, -1));
+        $this->assertSame(['f'], $redis->lrange('letters', 5, -5));
+        $this->assertSame([], $redis->lrange('letters', 7, -5));
     }
 
     /**
@@ -99,7 +99,7 @@ class LRANGE_Test extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
-        $this->assertSame(array('f'), $redis->lrange('letters', -5, -5));
+        $this->assertSame(['f'], $redis->lrange('letters', -5, -5));
     }
 
     /**
@@ -111,7 +111,7 @@ class LRANGE_Test extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'), $redis->lrange('letters', -100, 100));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', -100, 100));
     }
 
     /**
@@ -121,7 +121,7 @@ class LRANGE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array(), $redis->lrange('letters', 0, -1));
+        $this->assertSame([], $redis->lrange('letters', 0, -1));
     }
 
     /**

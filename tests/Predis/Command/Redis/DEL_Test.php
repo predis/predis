@@ -39,8 +39,8 @@ class DEL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key1', 'key2', 'key3');
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = ['key1', 'key2', 'key3'];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +52,8 @@ class DEL_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('key1', 'key2', 'key3'));
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = [['key1', 'key2', 'key3']];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

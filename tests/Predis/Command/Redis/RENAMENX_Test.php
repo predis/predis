@@ -39,8 +39,8 @@ class RENAMENX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'newkey');
-        $expected = array('key', 'newkey');
+        $arguments = ['key', 'newkey'];
+        $expected = ['key', 'newkey'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

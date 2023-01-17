@@ -39,8 +39,8 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 10);
-        $expected = array('key', 0, 10);
+        $arguments = ['key', 0, 10];
+        $expected = ['key', 0, 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +66,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
         $this->assertSame(3, $redis->zremrangebyscore('letters', 5, 20));
-        $this->assertSame(array('a', 'b', 'f'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'f'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(0, $redis->zremrangebyscore('unknown', 0, 30));
     }
@@ -81,7 +81,7 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
         $this->assertSame(2, $redis->zremrangebyscore('letters', '(10', '(30'));
-        $this->assertSame(array('a', 'b', 'c', 'f'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'f'], $redis->zrange('letters', 0, -1));
     }
 
     /**

@@ -39,8 +39,8 @@ class RESTORE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
-        $expected = array('key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_(");
+        $arguments = ['key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_("];
+        $expected = ['key', 0, "\x00\xC0\n\x06\x00\xF8r?\xC5\xFB\xFB_("];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

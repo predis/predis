@@ -39,8 +39,8 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientKill(): void
     {
-        $arguments = array('kill', '127.0.0.1:45393');
-        $expected = array('kill', '127.0.0.1:45393');
+        $arguments = ['kill', '127.0.0.1:45393'];
+        $expected = ['kill', '127.0.0.1:45393'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientList(): void
     {
-        $arguments = array('list');
-        $expected = array('list');
+        $arguments = ['list'];
+        $expected = ['list'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,7 +67,7 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientGetname(): void
     {
-        $arguments = $expected = array('getname');
+        $arguments = $expected = ['getname'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,7 +80,7 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientSetname(): void
     {
-        $arguments = $expected = array('setname', 'connection-a');
+        $arguments = $expected = ['setname', 'connection-a'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -94,7 +94,7 @@ class CLIENT_Test extends PredisCommandTestCase
     public function testParseResponseOfClientKill(): void
     {
         $command = $this->getCommand();
-        $command->setArguments(array('kill'));
+        $command->setArguments(['kill']);
 
         $this->assertSame(true, $command->parseResponse(true));
     }
@@ -105,7 +105,7 @@ class CLIENT_Test extends PredisCommandTestCase
     public function testParseResponseOfClientList(): void
     {
         $command = $this->getCommand();
-        $command->setArguments(array('list'));
+        $command->setArguments(['list']);
 
         $raw = <<<BUFFER
 addr=127.0.0.1:45393 fd=6 idle=0 flags=N db=0 sub=0 psub=0
@@ -114,11 +114,11 @@ addr=127.0.0.1:45395 fd=8 idle=0 flags=N db=0 sub=0 psub=0
 
 BUFFER;
 
-        $parsed = array(
-            array('addr' => '127.0.0.1:45393', 'fd' => '6', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
-            array('addr' => '127.0.0.1:45394', 'fd' => '7', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
-            array('addr' => '127.0.0.1:45395', 'fd' => '8', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'),
-        );
+        $parsed = [
+            ['addr' => '127.0.0.1:45393', 'fd' => '6', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'],
+            ['addr' => '127.0.0.1:45394', 'fd' => '7', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'],
+            ['addr' => '127.0.0.1:45395', 'fd' => '8', 'idle' => '0', 'flags' => 'N', 'db' => '0', 'sub' => '0', 'psub' => '0'],
+        ];
 
         $this->assertSame($parsed, $command->parseResponse($raw));
     }
@@ -176,11 +176,11 @@ BUFFER;
      */
     public function invalidConnectionNameProvider()
     {
-        return array(
-            array('foo space'),
-            array('foo \n'),
-            array('foo $'),
-        );
+        return [
+            ['foo space'],
+            ['foo \n'],
+            ['foo $'],
+        ];
     }
 
     /**

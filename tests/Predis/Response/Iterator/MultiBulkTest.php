@@ -113,7 +113,7 @@ class MultiBulkTest extends PredisTestCase
      */
     protected function getClient(): ClientInterface
     {
-        $parameters = $this->getParameters(array('read_write_timeout' => 2));
+        $parameters = $this->getParameters(['read_write_timeout' => 2]);
 
         $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);

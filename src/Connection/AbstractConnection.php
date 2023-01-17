@@ -26,7 +26,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     private $cachedId;
 
     protected $parameters;
-    protected $initCommands = array();
+    protected $initCommands = [];
 
     /**
      * @param ParametersInterface $parameters Initialization parameters for the connection.
@@ -197,6 +197,6 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     public function __sleep()
     {
-        return array('parameters', 'initCommands');
+        return ['parameters', 'initCommands'];
     }
 }

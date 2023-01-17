@@ -39,8 +39,8 @@ class EXPIREAT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'ttl');
-        $expected = array('key', 'ttl');
+        $arguments = ['key', 'ttl'];
+        $expected = ['key', 'ttl'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

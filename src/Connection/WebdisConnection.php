@@ -122,14 +122,14 @@ class WebdisConnection implements NodeConnectionInterface
             $host = "[$host]";
         }
 
-        $options = array(
+        $options = [
             CURLOPT_FAILONERROR => true,
             CURLOPT_CONNECTTIMEOUT_MS => $timeout,
             CURLOPT_URL => "$parameters->scheme://$host:$parameters->port",
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,
-            CURLOPT_WRITEFUNCTION => array($this, 'feedReader'),
-        );
+            CURLOPT_WRITEFUNCTION => [$this, 'feedReader'],
+        ];
 
         if (isset($parameters->user, $parameters->pass)) {
             $options[CURLOPT_USERPWD] = "{$parameters->user}:{$parameters->pass}";
@@ -349,7 +349,7 @@ class WebdisConnection implements NodeConnectionInterface
      */
     public function __sleep()
     {
-        return array('parameters');
+        return ['parameters'];
     }
 
     /**

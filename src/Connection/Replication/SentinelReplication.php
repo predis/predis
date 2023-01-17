@@ -39,12 +39,12 @@ class SentinelReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $slaves = array();
+    protected $slaves = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $pool = array();
+    protected $pool = [];
 
     /**
      * @var NodeConnectionInterface
@@ -69,7 +69,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $sentinels = array();
+    protected $sentinels = [];
 
     /**
      * @var int
@@ -194,8 +194,8 @@ class SentinelReplication implements ReplicationInterface
         $this->reset();
 
         $this->master = null;
-        $this->slaves = array();
-        $this->pool = array();
+        $this->slaves = [];
+        $this->pool = [];
     }
 
     /**
@@ -320,17 +320,17 @@ class SentinelReplication implements ReplicationInterface
                     RawCommand::create('SENTINEL', 'sentinels', $this->service)
                 );
 
-                $this->sentinels = array();
+                $this->sentinels = [];
                 $this->sentinelIndex = 0;
                 // NOTE: sentinel server does not return itself, so we add it back.
                 $this->sentinels[] = $sentinel->getParameters()->toArray();
 
                 foreach ($payload as $sentinel) {
-                    $this->sentinels[] = array(
+                    $this->sentinels[] = [
                         'host' => $sentinel[3],
                         'port' => $sentinel[5],
                         'role' => 'sentinel',
-                    );
+                    ];
                 }
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
@@ -389,11 +389,11 @@ class SentinelReplication implements ReplicationInterface
             $this->handleSentinelErrorResponse($sentinel, $payload);
         }
 
-        return array(
+        return [
             'host' => $payload[0],
             'port' => $payload[1],
             'role' => 'master',
-        );
+        ];
     }
 
     /**
@@ -406,7 +406,7 @@ class SentinelReplication implements ReplicationInterface
      */
     protected function querySentinelForSlaves(NodeConnectionInterface $sentinel, $service)
     {
-        $slaves = array();
+        $slaves = [];
 
         $payload = $sentinel->executeCommand(
             RawCommand::create('SENTINEL', 'slaves', $service)
@@ -419,15 +419,15 @@ class SentinelReplication implements ReplicationInterface
         foreach ($payload as $slave) {
             $flags = explode(',', $slave[9]);
 
-            if (array_intersect($flags, array('s_down', 'o_down', 'disconnected'))) {
+            if (array_intersect($flags, ['s_down', 'o_down', 'disconnected'])) {
                 continue;
             }
 
-            $slaves[] = array(
+            $slaves[] = [
                 'host' => $slave[3],
                 'port' => $slave[5],
                 'role' => 'slave',
-            );
+            ];
         }
 
         return $slaves;
@@ -763,8 +763,8 @@ class SentinelReplication implements ReplicationInterface
      */
     public function __sleep()
     {
-        return array(
+        return [
             'master', 'slaves', 'pool', 'service', 'sentinels', 'connectionFactory', 'strategy',
-        );
+        ];
     }
 }

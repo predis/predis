@@ -48,7 +48,7 @@ class MultiBulkResponseTest extends PredisTestCase
 
         $handler = new Handler\MultiBulkResponse();
 
-        $this->assertSame(array('foo', 'bar'), $handler->handle($connection, '2'));
+        $this->assertSame(['foo', 'bar'], $handler->handle($connection, '2'));
     }
 
     /**

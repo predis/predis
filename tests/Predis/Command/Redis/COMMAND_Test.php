@@ -41,8 +41,8 @@ class COMMAND_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('INFO', 'DEL');
-        $expected = array('INFO', 'DEL');
+        $arguments = ['INFO', 'DEL'];
+        $expected = ['INFO', 'DEL'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -55,13 +55,13 @@ class COMMAND_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array(
-            array('get', 2, array(new Status('readonly'), new Status('fast')), 1, 1, 1),
-            array('set', -3, array(new Status('write'), new Status('denyoom')), 1, 1, 1),
-            array('watch', -2, array(new Status('readonly'), new Status('noscript'), new Status('fast')), 1, -1, 1),
-            array('unwatch', 1, array(new Status('readonly'), new Status('noscript'), new Status('fast')), 0, 0, 0),
-            array('info', -1, array(new Status('readonly'), new Status('loading'), new Status('stale')), 0, 0, 0),
-        );
+        $raw = [
+            ['get', 2, [new Status('readonly'), new Status('fast')], 1, 1, 1],
+            ['set', -3, [new Status('write'), new Status('denyoom')], 1, 1, 1],
+            ['watch', -2, [new Status('readonly'), new Status('noscript'), new Status('fast')], 1, -1, 1],
+            ['unwatch', 1, [new Status('readonly'), new Status('noscript'), new Status('fast')], 0, 0, 0],
+            ['info', -1, [new Status('readonly'), new Status('loading'), new Status('stale')], 0, 0, 0],
+        ];
 
         $expected = $raw;
 
@@ -75,8 +75,8 @@ class COMMAND_Test extends PredisCommandTestCase
      */
     public function testParseEmptyResponse(): void
     {
-        $raw = array(null);
-        $expected = array(null);
+        $raw = [null];
+        $expected = [null];
 
         $command = $this->getCommand();
 
@@ -92,7 +92,7 @@ class COMMAND_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertCount(1, $response = $redis->command('INFO', 'FOOBAR'));
-        $this->assertSame(array(null), $response);
+        $this->assertSame([null], $response);
     }
 
     /**
@@ -103,7 +103,7 @@ class COMMAND_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $expected = array(array('get', 2, array('readonly', 'fast'), 1, 1, 1));
+        $expected = [['get', 2, ['readonly', 'fast'], 1, 1, 1]];
 
         // NOTE: starting with Redis 6.0 and the introduction of Access Control
         // Lists, COMMAND INFO returns an additional array for each specified
@@ -111,7 +111,7 @@ class COMMAND_Test extends PredisCommandTestCase
         // to a command. We simply append this additional array in the expected
         // response if the test suite is executed against Redis >= 6.0.
         if ($this->isRedisServerVersion('>=', '6.0')) {
-            $expected[0][] = array('@read', '@string', '@fast');
+            $expected[0][] = ['@read', '@string', '@fast'];
         }
 
         // NOTE: starting with Redis 7.0 COMMAND INFO returns an additional arrays:
@@ -121,18 +121,18 @@ class COMMAND_Test extends PredisCommandTestCase
         // We simply append this additional array in the expected response if the
         // test suite is executed against Redis >= 7.0.
         if ($this->isRedisServerVersion('>=', '7.0')) {
-            $expected[0][] = array();
-            $expected[0][] = array(
-                array(
+            $expected[0][] = [];
+            $expected[0][] = [
+                [
                     'flags',
-                    array('RO','access'),
+                    ['RO','access'],
                     'begin_search',
-                    array('type','index','spec', array('index',1)),
+                    ['type','index','spec', ['index',1]],
                     'find_keys',
-                    array('type','range','spec', array('lastkey',0,'keystep',1,'limit',0))
-                )
-            );
-            $expected[0][] = array();
+                    ['type','range','spec', ['lastkey',0,'keystep',1,'limit',0]]
+                ]
+            ];
+            $expected[0][] = [];
         }
 
         $this->assertCount(1, $response = $redis->command('INFO', 'GET'));

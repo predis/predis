@@ -50,8 +50,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -60,9 +60,9 @@ class KeyspaceTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('scan')
-            ->with(0, array())
+            ->with(0, [])
             ->willReturn(
-                array(0, array())
+                [0, []]
             );
 
         $iterator = new Keyspace($client);
@@ -78,8 +78,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -88,9 +88,9 @@ class KeyspaceTest extends PredisTestCase
         $client
             ->expects($this->once())
             ->method('scan')
-            ->with(0, array())
+            ->with(0, [])
             ->willReturn(
-                array(0, array('key:1st', 'key:2nd', 'key:3rd'))
+                [0, ['key:1st', 'key:2nd', 'key:3rd']]
             );
 
         $iterator = new Keyspace($client);
@@ -121,8 +121,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -132,12 +132,12 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('scan')
             ->withConsecutive(
-                array(0, array()),
-                array(2, array())
+                [0, []],
+                [2, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('key:1st', 'key:2nd')),
-                array(0, array('key:3rd'))
+                [2, ['key:1st', 'key:2nd']],
+                [0, ['key:3rd']]
             );
 
         $iterator = new Keyspace($client);
@@ -168,8 +168,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -179,12 +179,12 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('scan')
             ->withConsecutive(
-                array(0, array()),
-                array(4, array())
+                [0, []],
+                [4, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(4, array()),
-                array(0, array('key:1st', 'key:2nd'))
+                [4, []],
+                [0, ['key:1st', 'key:2nd']]
             );
 
         $iterator = new Keyspace($client);
@@ -210,8 +210,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -221,14 +221,14 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('scan')
             ->withConsecutive(
-                array(0, array()),
-                array(2, array()),
-                array(5, array())
+                [0, []],
+                [2, []],
+                [5, []]
             )
             ->willReturnOnConsecutiveCalls(
-                array(2, array('key:1st', 'key:2nd')),
-                array(5, array()),
-                array(0, array('key:3rd'))
+                [2, ['key:1st', 'key:2nd']],
+                [5, []],
+                [0, ['key:3rd']]
             );
 
         $iterator = new Keyspace($client);
@@ -259,8 +259,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -270,10 +270,10 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->once())
             ->method('scan')
             ->withConsecutive(
-                array(0, array('MATCH' => 'key:*'))
+                [0, ['MATCH' => 'key:*']]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('key:1st', 'key:2nd'))
+                [0, ['key:1st', 'key:2nd']]
             );
 
         $iterator = new Keyspace($client, 'key:*');
@@ -299,8 +299,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -310,12 +310,12 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('scan')
             ->withConsecutive(
-                array(0, array('MATCH' => 'key:*')),
-                array(1, array('MATCH' => 'key:*'))
+                [0, ['MATCH' => 'key:*']],
+                [1, ['MATCH' => 'key:*']]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('key:1st')),
-                array(0, array('key:2nd'))
+                [1, ['key:1st']],
+                [0, ['key:2nd']]
             );
 
         $iterator = new Keyspace($client, 'key:*');
@@ -341,8 +341,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -352,10 +352,10 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->once())
             ->method('scan')
             ->withConsecutive(
-                array(0, array('COUNT' => 2))
+                [0, ['COUNT' => 2]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('key:1st', 'key:2nd'))
+                [0, ['key:1st', 'key:2nd']]
             );
 
         $iterator = new Keyspace($client, null, 2);
@@ -381,8 +381,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -394,12 +394,12 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('scan')
             ->withConsecutive(
-                array(0, array('COUNT' => 1)),
-                array(1, array('COUNT' => 1))
+                [0, ['COUNT' => 1]],
+                [1, ['COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('key:1st')),
-                array(0, array('key:2nd'))
+                [1, ['key:1st']],
+                [0, ['key:2nd']]
             );
 
         $iterator = new Keyspace($client, null, 1);
@@ -425,8 +425,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -436,10 +436,10 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->once())
             ->method('scan')
             ->withConsecutive(
-                array(0, array('MATCH' => 'key:*', 'COUNT' => 2))
+                [0, ['MATCH' => 'key:*', 'COUNT' => 2]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(0, array('key:1st', 'key:2nd'))
+                [0, ['key:1st', 'key:2nd']]
             );
 
         $iterator = new Keyspace($client, 'key:*', 2);
@@ -465,8 +465,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -478,12 +478,12 @@ class KeyspaceTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('scan')
             ->withConsecutive(
-                array(0, array('MATCH' => 'key:*', 'COUNT' => 1)),
-                array(1, array('MATCH' => 'key:*', 'COUNT' => 1))
+                [0, ['MATCH' => 'key:*', 'COUNT' => 1]],
+                [1, ['MATCH' => 'key:*', 'COUNT' => 1]]
             )
             ->willReturnOnConsecutiveCalls(
-                array(1, array('key:1st')),
-                array(0, array('key:2nd'))
+                [1, ['key:1st']],
+                [0, ['key:2nd']]
             );
 
         $iterator = new Keyspace($client, 'key:*', 1);
@@ -509,8 +509,8 @@ class KeyspaceTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('scan'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['scan'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -519,9 +519,9 @@ class KeyspaceTest extends PredisTestCase
         $client
             ->expects($this->exactly(2))
             ->method('scan')
-            ->with(0, array())
+            ->with(0, [])
             ->willReturn(
-                array(0, array('key:1st', 'key:2nd'))
+                [0, ['key:1st', 'key:2nd']]
             );
 
         $iterator = new Keyspace($client);

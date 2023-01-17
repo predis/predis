@@ -39,8 +39,8 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', '[a', '[b');
-        $expected = array('key', '[a', '[b');
+        $arguments = ['key', '[a', '[b'];
+        $expected = ['key', '[a', '[b'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -69,7 +69,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
         $this->assertSame(0, $redis->zremrangebylex('letters', '+', '-'));
         $this->assertSame(7, $redis->zremrangebylex('letters', '-', '+'));
 
-        $this->assertSame(array(), $redis->zrange('letters', 0, -1));
+        $this->assertSame([], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -83,7 +83,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
         $this->assertSame(3, $redis->zremrangebylex('letters', '[b', '[d'));
-        $this->assertSame(array('a', 'e', 'f', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'e', 'f', 'g'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -97,7 +97,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
         $this->assertSame(3, $redis->zremrangebylex('letters', '(a', '(e'));
-        $this->assertSame(array('a', 'e', 'f', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'e', 'f', 'g'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -111,7 +111,7 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
         $this->assertSame(3, $redis->zremrangebylex('letters', '[b', '(e'));
-        $this->assertSame(array('a', 'e', 'f', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'e', 'f', 'g'], $redis->zrange('letters', 0, -1));
     }
 
     /**

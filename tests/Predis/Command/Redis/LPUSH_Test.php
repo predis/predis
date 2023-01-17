@@ -39,8 +39,8 @@ class LPUSH_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'value1', 'value2', 'value3');
-        $expected = array('key', 'value1', 'value2', 'value3');
+        $arguments = ['key', 'value1', 'value2', 'value3'];
+        $expected = ['key', 'value1', 'value2', 'value3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class LPUSH_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsValuesAsSingleArray(): void
     {
-        $arguments = array('key', array('value1', 'value2', 'value3'));
-        $expected = array('key', 'value1', 'value2', 'value3');
+        $arguments = ['key', ['value1', 'value2', 'value3']];
+        $expected = ['key', 'value1', 'value2', 'value3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,7 +80,7 @@ class LPUSH_Test extends PredisCommandTestCase
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertSame(1, $redis->lpush('metavars', 'foo'));
         $this->assertSame(2, $redis->lpush('metavars', 'hoge'));
-        $this->assertSame(array('hoge', 'foo'), $redis->lrange('metavars', 0, -1));
+        $this->assertSame(['hoge', 'foo'], $redis->lrange('metavars', 0, -1));
     }
 
     /**

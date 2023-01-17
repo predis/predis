@@ -75,15 +75,15 @@ class MultiBulkTupleTest extends PredisTestCase
         $this->assertTrue($iterator->valid());
         $this->assertSame(3, $iterator->count());
 
-        $this->assertSame(array('foo', '1'), $iterator->current());
+        $this->assertSame(['foo', '1'], $iterator->current());
         $iterator->next();
         $this->assertTrue($iterator->valid());
 
-        $this->assertSame(array('hoge', '2'), $iterator->current());
+        $this->assertSame(['hoge', '2'], $iterator->current());
         $iterator->next();
         $this->assertTrue($iterator->valid());
 
-        $this->assertSame(array('lol', '3'), $iterator->current());
+        $this->assertSame(['lol', '3'], $iterator->current());
         $iterator->next();
         $this->assertFalse($iterator->valid());
 
@@ -119,7 +119,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     protected function getClient(): ClientInterface
     {
-        $parameters = $this->getParameters(array('read_write_timeout' => 2));
+        $parameters = $this->getParameters(['read_write_timeout' => 2]);
 
         $protocol = new TextProtocolProcessor();
         $protocol->useIterableMultibulk(true);

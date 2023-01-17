@@ -49,8 +49,8 @@ use Predis\Response\Error as ErrorResponse;
 class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
     private $useClusterSlots = true;
-    private $pool = array();
-    private $slots = array();
+    private $pool = [];
+    private $slots = [];
     private $slotmap;
     private $strategy;
     private $connections;
@@ -154,7 +154,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         if (false !== $id = array_search($connection, $this->pool, true)) {
             $this->slotmap->reset();
-            $this->slots = array_diff($this->slots, array($connection));
+            $this->slots = array_diff($this->slots, [$connection]);
             unset($this->pool[$id]);
 
             return true;
@@ -174,7 +174,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         if (isset($this->pool[$connectionID])) {
             $this->slotmap->reset();
-            $this->slots = array_diff($this->slots, array($connectionID));
+            $this->slots = array_diff($this->slots, [$connectionID]);
             unset($this->pool[$connectionID]);
 
             return true;
@@ -331,10 +331,10 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $separator = strrpos($connectionID, ':');
 
-        return $this->connections->create(array(
+        return $this->connections->create([
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
-        ));
+        ]);
     }
 
     /**
@@ -599,7 +599,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             $this->useClusterSlots ? $this->askSlotMap() : $this->buildSlotMap();
         }
 
-        $connections = array();
+        $connections = [];
 
         foreach ($this->slotmap->getNodes() as $node) {
             if (!$connection = $this->getConnectionById($node)) {

@@ -43,7 +43,7 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
-        $value = array('tcp' => $class, 'redis' => $class);
+        $value = ['tcp' => $class, 'redis' => $class];
 
         $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $default
@@ -53,7 +53,7 @@ class ConnectionsTest extends PredisTestCase
 
         /** @var OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-            ->onlyMethods(array('getDefault'))
+            ->onlyMethods(['getDefault'])
             ->getMock();
         $option
             ->expects($this->once())
@@ -80,7 +80,7 @@ class ConnectionsTest extends PredisTestCase
             ->with($this->matchesRegularExpression('/^tcp|unix|redis$/'), $classFQCN);
 
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-        ->setMethods(array('getDefault'))
+        ->setMethods(['getDefault'])
         ->getMock();
         $option
             ->expects($this->once())
@@ -107,7 +107,7 @@ class ConnectionsTest extends PredisTestCase
             ->method('define');
 
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-        ->setMethods(array('getDefault'))
+        ->setMethods(['getDefault'])
         ->getMock();
         $option
             ->expects($this->once())
@@ -140,7 +140,7 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testUsesParametersOptionToSetDefaultParameters(): void
     {
-        $parameters = array('database' => 5, 'password' => 'mypassword');
+        $parameters = ['database' => 5, 'password' => 'mypassword'];
 
         /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -168,7 +168,7 @@ class ConnectionsTest extends PredisTestCase
     {
         /** @var OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-            ->onlyMethods(array('getDefault'))
+            ->onlyMethods(['getDefault'])
             ->getMock();
         $option
             ->expects($this->never())
@@ -191,7 +191,7 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -231,10 +231,10 @@ class ConnectionsTest extends PredisTestCase
      */
     public function provideSupportedStringValuesForOption()
     {
-        return array(
-            array('phpiredis-stream', 'Predis\Connection\PhpiredisStreamConnection'),
-            array('phpiredis-socket', 'Predis\Connection\PhpiredisSocketConnection'),
-            array('phpiredis', 'Predis\Connection\PhpiredisStreamConnection'),
-        );
+        return [
+            ['phpiredis-stream', 'Predis\Connection\PhpiredisStreamConnection'],
+            ['phpiredis-socket', 'Predis\Connection\PhpiredisSocketConnection'],
+            ['phpiredis', 'Predis\Connection\PhpiredisStreamConnection'],
+        ];
     }
 }

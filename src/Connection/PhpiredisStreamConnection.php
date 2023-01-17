@@ -132,10 +132,10 @@ class PhpiredisStreamConnection extends StreamConnection
             $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
 
-            $timeout = array(
+            $timeout = [
                 'sec' => $timeoutSeconds = floor($rwtimeout),
                 'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
-            );
+            ];
 
             $socket = $socket ?: socket_import_stream($resource);
             @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);

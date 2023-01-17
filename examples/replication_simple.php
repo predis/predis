@@ -22,12 +22,12 @@ require __DIR__.'/shared.php';
 // slave of the first one (see the "SLAVEOF" command).
 //
 
-$parameters = array(
+$parameters = [
     'tcp://127.0.0.1:6381?role=master&database=15',
     'tcp://127.0.0.1:6382?role=slave&database=15',
-);
+];
 
-$options = array('replication' => 'predis');
+$options = ['replication' => 'predis'];
 
 $client = new Predis\Client($parameters, $options);
 

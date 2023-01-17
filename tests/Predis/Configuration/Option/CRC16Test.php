@@ -66,7 +66,7 @@ class CRC16Test extends PredisTestCase
         $hashGenerator = $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -92,7 +92,7 @@ class CRC16Test extends PredisTestCase
         $wrongValue = $this->getMockBuilder('stdClass')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())

@@ -39,8 +39,8 @@ class TIME_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array();
-        $expected = array();
+        $arguments = [];
+        $expected = [];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,7 +53,7 @@ class TIME_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $expected = array(1331114908, 453990);
+        $expected = [1331114908, 453990];
         $command = $this->getCommand();
 
         $this->assertSame($expected, $command->parseResponse($expected));

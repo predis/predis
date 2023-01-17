@@ -39,8 +39,8 @@ class SELECT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array(10);
-        $expected = array(10);
+        $arguments = [10];
+        $expected = [10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

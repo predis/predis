@@ -50,7 +50,7 @@ class SSCAN extends RedisCommand
     protected function prepareOptions($options)
     {
         $options = array_change_key_case($options, CASE_UPPER);
-        $normalized = array();
+        $normalized = [];
 
         if (!empty($options['MATCH'])) {
             $normalized[] = 'MATCH';

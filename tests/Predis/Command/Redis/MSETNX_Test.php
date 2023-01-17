@@ -39,8 +39,8 @@ class MSETNX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('foo', 'bar', 'hoge', 'piyo');
-        $expected = array('foo', 'bar', 'hoge', 'piyo');
+        $arguments = ['foo', 'bar', 'hoge', 'piyo'];
+        $expected = ['foo', 'bar', 'hoge', 'piyo'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class MSETNX_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleNamedArray(): void
     {
-        $arguments = array(array('foo' => 'bar', 'hoge' => 'piyo'));
-        $expected = array('foo', 'bar', 'hoge', 'piyo');
+        $arguments = [['foo' => 'bar', 'hoge' => 'piyo']];
+        $expected = ['foo', 'bar', 'hoge', 'piyo'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

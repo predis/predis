@@ -259,10 +259,10 @@ class PhpiredisSocketConnection extends AbstractConnection
             $timeoutSec = floor($rwtimeout);
             $timeoutUsec = ($rwtimeout - $timeoutSec) * 1000000;
 
-            $timeout = array(
+            $timeout = [
                 'sec' => $timeoutSec,
                 'usec' => $timeoutUsec,
-            );
+            ];
 
             if (!socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout)) {
                 $this->emitSocketError();
@@ -298,7 +298,7 @@ class PhpiredisSocketConnection extends AbstractConnection
         socket_set_block($socket);
 
         $null = null;
-        $selectable = array($socket);
+        $selectable = [$socket];
 
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
         $timeoutSecs = floor($timeout);

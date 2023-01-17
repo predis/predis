@@ -28,12 +28,12 @@ require __DIR__.'/shared.php';
 function zpop($client, $key)
 {
     $element = null;
-    $options = array(
+    $options = [
         'cas' => true,      // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
         'retry' => 3,       // Number of retries on aborted transactions, after
                             // which the client bails out with an exception.
-    );
+    ];
 
     $client->transaction($options, function ($tx) use ($key, &$element) {
         @list($element) = $tx->zrange($key, 0, 0);

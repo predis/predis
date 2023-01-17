@@ -39,8 +39,8 @@ class HGETALL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class HGETALL_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
-        $expected = array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut');
+        $raw = ['foo', 'bar', 'hoge', 'piyo', 'lol', 'wut'];
+        $expected = ['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'];
 
         $command = $this->getCommand();
 
@@ -71,8 +71,8 @@ class HGETALL_Test extends PredisCommandTestCase
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
-        $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'), $redis->hgetall('metavars'));
-        $this->assertSame(array(), $redis->hgetall('unknown'));
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
+        $this->assertSame([], $redis->hgetall('unknown'));
     }
 
     /**

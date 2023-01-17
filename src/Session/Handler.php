@@ -31,7 +31,7 @@ class Handler implements \SessionHandlerInterface
      * @param ClientInterface $client  Fully initialized client instance.
      * @param array           $options Session handler options.
      */
-    public function __construct(ClientInterface $client, array $options = array())
+    public function __construct(ClientInterface $client, array $options = [])
     {
         $this->client = $client;
 

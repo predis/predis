@@ -38,7 +38,7 @@ class SORT extends RedisCommand
             return;
         }
 
-        $query = array($arguments[0]);
+        $query = [$arguments[0]];
         $sortParams = array_change_key_case($arguments[1], CASE_UPPER);
 
         if (isset($sortParams['BY'])) {

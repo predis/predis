@@ -84,7 +84,7 @@ class ListKey implements \Iterator
     {
         $this->valid = true;
         $this->fetchmore = true;
-        $this->elements = array();
+        $this->elements = [];
         $this->position = -1;
         $this->current = null;
     }

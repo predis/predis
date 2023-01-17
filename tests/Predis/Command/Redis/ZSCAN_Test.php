@@ -39,8 +39,8 @@ class ZSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
-        $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
+        $arguments = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
+        $expected = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class ZSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsBasicUsage(): void
     {
-        $arguments = array('key', 0);
-        $expected = array('key', 0);
+        $arguments = ['key', 0];
+        $expected = ['key', 0];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class ZSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithOptionsArray(): void
     {
-        $arguments = array('key', 0, array('match' => 'member:*', 'count' => 10));
-        $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
+        $arguments = ['key', 0, ['match' => 'member:*', 'count' => 10]];
+        $expected = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -81,8 +81,8 @@ class ZSCAN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('3', array('member:1', '1', 'member:2', '2', 'member:3', '3'));
-        $expected = array('3', array('member:1' => 1.0, 'member:2' => 2.0, 'member:3' => 3.0));
+        $raw = ['3', ['member:1', '1', 'member:2', '2', 'member:3', '3']];
+        $expected = ['3', ['member:1' => 1.0, 'member:2' => 2.0, 'member:3' => 3.0]];
 
         $command = $this->getCommand();
 
@@ -95,8 +95,8 @@ class ZSCAN_Test extends PredisCommandTestCase
      */
     public function testScanWithoutMatch(): void
     {
-        $expectedMembers = array('member:one', 'member:two', 'member:three', 'member:four');
-        $expectedScores = array(1.0, 2.0, 3.0, 4.0);
+        $expectedMembers = ['member:one', 'member:two', 'member:three', 'member:four'];
+        $expectedScores = [1.0, 2.0, 3.0, 4.0];
 
         $redis = $this->getClient();
         $redis->zadd('key', array_combine($expectedMembers, $expectedScores));
@@ -115,12 +115,12 @@ class ZSCAN_Test extends PredisCommandTestCase
     public function testScanWithMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->zadd('key', array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));
+        $redis->zadd('key', ['member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0]);
 
         $response = $redis->zscan('key', 0, 'MATCH', 'member:t*');
 
-        $this->assertSame(array('member:two', 'member:three'), array_keys($response[1]));
-        $this->assertSame(array(2.0, 3.0), array_values($response[1]));
+        $this->assertSame(['member:two', 'member:three'], array_keys($response[1]));
+        $this->assertSame([2.0, 3.0], array_values($response[1]));
     }
 
     /**
@@ -130,7 +130,7 @@ class ZSCAN_Test extends PredisCommandTestCase
     public function testScanWithNoMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->zadd('key', $members = array('member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0));
+        $redis->zadd('key', $members = ['member:one' => 1.0, 'member:two' => 2.0, 'member:three' => 3.0, 'member:four' => 4.0]);
 
         $response = $redis->zscan('key', 0, 'MATCH', 'nomember:*');
 

@@ -131,12 +131,12 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultParametersArray(): array
     {
-        return array(
+        return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
-        );
+        ];
     }
 
     /**
@@ -146,9 +146,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultOptionsArray(): array
     {
-        return array(
+        return [
             'commands' => new Command\RedisFactory(),
-        );
+        ];
     }
 
     /**
@@ -172,7 +172,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Connection\ParametersInterface
      */
-    protected function getParameters($additional = array()): Connection\ParametersInterface
+    protected function getParameters($additional = []): Connection\ParametersInterface
     {
         $parameters = array_merge($this->getDefaultParametersArray(), $additional);
         $parameters = new Connection\Parameters($parameters);
@@ -206,14 +206,14 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
-            $parameters ?: array()
+            $parameters ?: []
         );
 
         $options = array_merge(
-            array(
+            [
                 'commands' => $this->getCommandFactory(),
-            ),
-            $options ?: array()
+            ],
+            $options ?: []
         );
 
         $client = new Client($parameters, $options);

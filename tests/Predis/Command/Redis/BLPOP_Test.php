@@ -39,8 +39,8 @@ class BLPOP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key1', 'key2', 'key3', 10);
-        $expected = array('key1', 'key2', 'key3', 10);
+        $arguments = ['key1', 'key2', 'key3', 10];
+        $expected = ['key1', 'key2', 'key3', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class BLPOP_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsKeysAsSingleArray(): void
     {
-        $arguments = array(array('key1', 'key2', 'key3'), 10);
-        $expected = array('key1', 'key2', 'key3', 10);
+        $arguments = [['key1', 'key2', 'key3'], 10];
+        $expected = ['key1', 'key2', 'key3', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class BLPOP_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('key', 'value');
-        $expected = array('key', 'value');
+        $raw = ['key', 'value'];
+        $expected = ['key', 'value'];
 
         $command = $this->getCommand();
 

@@ -39,8 +39,8 @@ class APPEND_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'value');
-        $expected = array('key', 'value');
+        $arguments = ['key', 'value'];
+        $expected = ['key', 'value'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

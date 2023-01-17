@@ -41,17 +41,17 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $slaves = array();
+    protected $slaves = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $pool = array();
+    protected $pool = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $aliases = array();
+    protected $aliases = [];
 
     /**
      * @var NodeConnectionInterface
@@ -367,7 +367,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     private function handleInfoResponse($response)
     {
-        $info = array();
+        $info = [];
 
         foreach (preg_split('/\r?\n/', $response) as $row) {
             if (strpos($row, ':') === false) {
@@ -421,17 +421,17 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException("Role mismatch (expected master, got slave) [$connection]");
         }
 
-        $this->slaves = array();
+        $this->slaves = [];
 
         foreach ($replication as $k => $v) {
             $parameters = null;
 
             if (strpos($k, 'slave') === 0 && preg_match('/ip=(?P<host>.*),port=(?P<port>\d+)/', $v, $parameters)) {
-                $slaveConnection = $connectionFactory->create(array(
+                $slaveConnection = $connectionFactory->create([
                     'host' => $parameters['host'],
                     'port' => $parameters['port'],
                     'role' => 'slave',
-                ));
+                ]);
 
                 $this->add($slaveConnection);
             }
@@ -453,11 +453,11 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException("Role mismatch (expected slave, got master) [$connection]");
         }
 
-        $masterConnection = $connectionFactory->create(array(
+        $masterConnection = $connectionFactory->create([
             'host' => $replication['master_host'],
             'port' => $replication['master_port'],
             'role' => 'master',
-        ));
+        ]);
 
         $this->add($masterConnection);
 
@@ -548,6 +548,6 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function __sleep()
     {
-        return array('master', 'slaves', 'pool', 'aliases', 'strategy');
+        return ['master', 'slaves', 'pool', 'aliases', 'strategy'];
     }
 }

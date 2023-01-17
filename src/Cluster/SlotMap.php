@@ -17,7 +17,7 @@ namespace Predis\Cluster;
  */
 class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-    private $slots = array();
+    private $slots = [];
 
     /**
      * Checks if the given slot is valid.
@@ -49,7 +49,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function reset()
     {
-        $this->slots = array();
+        $this->slots = [];
     }
 
     /**

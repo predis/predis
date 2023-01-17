@@ -42,8 +42,8 @@ class SLOWLOG_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('GET', '2');
-        $expected = array('GET', '2');
+        $arguments = ['GET', '2'];
+        $expected = ['GET', '2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -58,15 +58,15 @@ class SLOWLOG_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array(array(0, 1323163469, 12451, array('SORT', 'list:unordered')));
-        $expected = array(
-            array(
+        $raw = [[0, 1323163469, 12451, ['SORT', 'list:unordered']]];
+        $expected = [
+            [
                 'id' => 0,
                 'timestamp' => 1323163469,
                 'duration' => 12451,
-                'command' => array('SORT', 'list:unordered'),
-            ),
-        );
+                'command' => ['SORT', 'list:unordered'],
+            ],
+        ];
 
         $command = $this->getCommand();
 

@@ -39,8 +39,8 @@ class MOVE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 10);
-        $expected = array('key', 10);
+        $arguments = ['key', 10];
+        $expected = ['key', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

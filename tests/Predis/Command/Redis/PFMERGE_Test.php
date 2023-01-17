@@ -41,8 +41,8 @@ class PFMERGE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key:1', 'key:2', 'key:3');
-        $expected = array('key:1', 'key:2', 'key:3');
+        $arguments = ['key:1', 'key:2', 'key:3'];
+        $expected = ['key:1', 'key:2', 'key:3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -55,8 +55,8 @@ class PFMERGE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsFieldsAsSingleArray(): void
     {
-        $arguments = array(array('key:1', 'key:2', 'key:3'));
-        $expected = array('key:1', 'key:2', 'key:3');
+        $arguments = [['key:1', 'key:2', 'key:3']];
+        $expected = ['key:1', 'key:2', 'key:3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

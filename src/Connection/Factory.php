@@ -19,16 +19,16 @@ use Predis\Command\RawCommand;
  */
 class Factory implements FactoryInterface
 {
-    private $defaults = array();
+    private $defaults = [];
 
-    protected $schemes = array(
+    protected $schemes = [
         'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
         'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
         'rediss' => 'Predis\Connection\StreamConnection',
         'http' => 'Predis\Connection\WebdisConnection',
-    );
+    ];
 
     /**
      * Checks if the provided argument represents a valid connection class
@@ -143,7 +143,7 @@ class Factory implements FactoryInterface
         if (is_string($parameters)) {
             $parameters = Parameters::parse($parameters);
         } else {
-            $parameters = $parameters ?: array();
+            $parameters = $parameters ?: [];
         }
 
         if ($this->defaults) {
@@ -164,8 +164,8 @@ class Factory implements FactoryInterface
 
         if (isset($parameters->password) && strlen($parameters->password)) {
             $cmdAuthArgs = isset($parameters->username) && strlen($parameters->username)
-                ? array($parameters->username, $parameters->password)
-                : array($parameters->password);
+                ? [$parameters->username, $parameters->password]
+                : [$parameters->password];
 
             $connection->addConnectCommand(
                 new RawCommand('AUTH', $cmdAuthArgs)
@@ -174,7 +174,7 @@ class Factory implements FactoryInterface
 
         if (isset($parameters->database) && strlen($parameters->database)) {
             $connection->addConnectCommand(
-                new RawCommand('SELECT', array($parameters->database))
+                new RawCommand('SELECT', [$parameters->database])
             );
         }
     }

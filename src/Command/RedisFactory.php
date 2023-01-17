@@ -28,11 +28,11 @@ class RedisFactory extends Factory
      */
     public function __construct()
     {
-        $this->commands = array(
+        $this->commands = [
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
-        );
+        ];
     }
 
     /**

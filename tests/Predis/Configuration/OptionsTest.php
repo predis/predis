@@ -43,7 +43,7 @@ class OptionsTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->any())
@@ -51,7 +51,7 @@ class OptionsTest extends PredisTestCase
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->willReturn($connection);
 
-        $options = new Options(array(
+        $options = new Options([
             'exceptions' => false,
             'prefix' => 'prefix:',
             'commands' => $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock(),
@@ -59,7 +59,7 @@ class OptionsTest extends PredisTestCase
             'cluster' => $callable,
             'replication' => $callable,
             'aggregate' => $callable,
-        ));
+        ]);
 
         $this->assertIsBool($options->exceptions);
         $this->assertInstanceOf('Predis\Command\Processor\ProcessorInterface', $options->prefix);
@@ -67,13 +67,13 @@ class OptionsTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Connection\FactoryInterface', $options->connections);
 
         $this->assertInstanceOf('Closure', $initializer = $options->aggregate);
-        $this->assertSame($connection, $initializer($options, array()));
+        $this->assertSame($connection, $initializer($options, []));
 
         $this->assertInstanceOf('Closure', $initializer = $options->cluster);
-        $this->assertSame($connection, $initializer($options, array()));
+        $this->assertSame($connection, $initializer($options, []));
 
         $this->assertInstanceOf('Closure', $initializer = $options->replication);
-        $this->assertSame($connection, $initializer($options, array()));
+        $this->assertSame($connection, $initializer($options, []));
     }
 
     /**
@@ -81,9 +81,9 @@ class OptionsTest extends PredisTestCase
      */
     public function testSupportsCustomOptions(): void
     {
-        $options = new Options(array(
+        $options = new Options([
             'custom' => 'foobar',
-        ));
+        ]);
 
         $this->assertSame('foobar', $options->custom);
     }
@@ -105,11 +105,11 @@ class OptionsTest extends PredisTestCase
      */
     public function testCanCheckOptionsIfDefinedByUser(): void
     {
-        $options = new Options(array(
+        $options = new Options([
             'prefix' => 'prefix:',
             'custom' => 'foobar',
             'void' => null,
-        ));
+        ]);
 
         $this->assertTrue($options->defined('prefix'));
         $this->assertTrue($options->defined('custom'));
@@ -122,11 +122,11 @@ class OptionsTest extends PredisTestCase
      */
     public function testIsSetReplicatesPHPBehavior(): void
     {
-        $options = new Options(array(
+        $options = new Options([
             'prefix' => 'prefix:',
             'custom' => 'foobar',
             'void' => null,
-        ));
+        ]);
 
         $this->assertTrue(isset($options->prefix));
         $this->assertTrue(isset($options->custom));
@@ -163,7 +163,7 @@ class OptionsTest extends PredisTestCase
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -171,9 +171,9 @@ class OptionsTest extends PredisTestCase
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->willReturn($commands);
 
-        $options = new Options(array(
+        $options = new Options([
             'commands' => $callable,
-        ));
+        ]);
 
         $this->assertSame($commands, $options->commands);
         $this->assertSame($commands, $options->commands);
@@ -188,7 +188,7 @@ class OptionsTest extends PredisTestCase
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -196,9 +196,9 @@ class OptionsTest extends PredisTestCase
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->willReturn($custom);
 
-        $options = new Options(array(
+        $options = new Options([
             'custom' => $callable,
-        ));
+        ]);
 
         $this->assertSame($custom, $options->custom);
         $this->assertSame($custom, $options->custom);
@@ -210,7 +210,7 @@ class OptionsTest extends PredisTestCase
     public function testChecksForInvokeMagicMethodDoesNotTriggerAutoloader(): void
     {
         $trigger = $this->getMockBuilder('stdClass')
-            ->addMethods(array('autoload'))
+            ->addMethods(['autoload'])
             ->getMock();
         $trigger
             ->expects($this->never())
@@ -221,7 +221,7 @@ class OptionsTest extends PredisTestCase
         }, true, false);
 
         try {
-            $options = new Options(array('custom' => 'value'));
+            $options = new Options(['custom' => 'value']);
             $pfx = $options->prefix;
         } catch (\Exception $_) {
             spl_autoload_unregister($autoload);

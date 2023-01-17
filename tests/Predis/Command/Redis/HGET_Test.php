@@ -39,8 +39,8 @@ class HGET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field');
-        $expected = array('key', 'field');
+        $arguments = ['key', 'field'];
+        $expected = ['key', 'field'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

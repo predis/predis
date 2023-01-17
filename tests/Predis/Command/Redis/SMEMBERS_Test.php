@@ -39,8 +39,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('member1', 'member2', 'member3');
-        $expected = array('member1', 'member2', 'member3');
+        $raw = ['member1', 'member2', 'member3'];
+        $expected = ['member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
 
@@ -70,8 +70,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b', 'c', 'd', 'e');
 
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e'), $redis->smembers('letters'));
-        $this->assertSame(array(), $redis->smembers('digits'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e'], $redis->smembers('letters'));
+        $this->assertSame([], $redis->smembers('digits'));
     }
 
     /**

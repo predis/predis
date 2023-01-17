@@ -39,8 +39,8 @@ class PEXPIRE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 100);
-        $expected = array('key', 100);
+        $arguments = ['key', 100];
+        $expected = ['key', 100];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
