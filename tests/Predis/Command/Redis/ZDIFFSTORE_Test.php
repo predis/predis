@@ -55,10 +55,10 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSetDictionary
-     * @param array $secondSetDictionary
-     * @param array $expectedResponse
-     * @param int $expectedResultingElements
+     * @param  array $firstSetDictionary
+     * @param  array $secondSetDictionary
+     * @param  array $expectedResponse
+     * @param  int   $expectedResultingElements
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

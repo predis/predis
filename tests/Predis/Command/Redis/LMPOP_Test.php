@@ -62,12 +62,12 @@ class LMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider listProvider
-     * @param array $listArguments
-     * @param string $key
-     * @param string $modifier
-     * @param int $count
-     * @param array|null $expectedResponse
-     * @param array $expectedModifiedList
+     * @param  array      $listArguments
+     * @param  string     $key
+     * @param  string     $modifier
+     * @param  int        $count
+     * @param  array|null $expectedResponse
+     * @param  array      $expectedModifiedList
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

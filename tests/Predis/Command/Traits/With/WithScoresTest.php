@@ -38,8 +38,8 @@ class WithScoresTest extends PredisTestCase
 
     /**
      * @dataProvider valuesProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(array $actualArguments, array $expectedArguments): void
@@ -51,8 +51,8 @@ class WithScoresTest extends PredisTestCase
 
     /**
      * @dataProvider dataProvider
-     * @param array $actualData
-     * @param array $expectedResponse
+     * @param  array $actualData
+     * @param  array $expectedResponse
      * @return void
      */
     public function testParseDataReturnsCorrectResponse(array $actualData, array $expectedResponse): void

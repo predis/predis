@@ -35,8 +35,8 @@ class ReplaceTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $arguments
-     * @param array $expectedResponse
+     * @param  array $arguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(array $arguments, array $expectedResponse): void

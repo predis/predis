@@ -60,13 +60,13 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param string $destination
-     * @param array $weights
-     * @param string $aggregate
-     * @param int $expectedResponse
-     * @param array $expectedResultSortedSet
+     * @param  array  $firstSortedSet
+     * @param  array  $secondSortedSet
+     * @param  string $destination
+     * @param  array  $weights
+     * @param  string $aggregate
+     * @param  int    $expectedResponse
+     * @param  array  $expectedResultSortedSet
      * @return void
      * @requiresRedisVersion >= 2.0.0
      */
@@ -118,8 +118,8 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
      * @param string $destination
      * @param $keys
      * @param $weights
-     * @param string $aggregate
-     * @param string $expectedExceptionMessage
+     * @param  string $aggregate
+     * @param  string $expectedExceptionMessage
      * @return void
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(

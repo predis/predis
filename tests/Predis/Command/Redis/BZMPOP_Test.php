@@ -57,13 +57,13 @@ class BZMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param int $timeout
-     * @param array $sortedSetDictionary
-     * @param string $key
-     * @param string $modifier
-     * @param int $count
-     * @param array $expectedResponse
-     * @param array $expectedModifiedSortedSet
+     * @param  int    $timeout
+     * @param  array  $sortedSetDictionary
+     * @param  string $key
+     * @param  string $modifier
+     * @param  int    $count
+     * @param  array  $expectedResponse
+     * @param  array  $expectedModifiedSortedSet
      * @return void
      * @requiresRedisVersion >= 7.0
      */
@@ -88,11 +88,11 @@ class BZMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param int $timeout
-     * @param array $keys
-     * @param string $modifier
-     * @param int $count
-     * @param string $expectedExceptionMessage
+     * @param  int    $timeout
+     * @param  array  $keys
+     * @param  string $modifier
+     * @param  int    $count
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0
      */

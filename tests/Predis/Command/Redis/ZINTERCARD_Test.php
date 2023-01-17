@@ -56,10 +56,10 @@ class ZINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param int $limit
-     * @param int $expectedResponse
+     * @param  array $firstSortedSet
+     * @param  array $secondSortedSet
+     * @param  int   $limit
+     * @param  int   $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -112,7 +112,7 @@ class ZINTERCARD_Test extends PredisCommandTestCase
      * @dataProvider unexpectedValuesProvider
      * @param $keys
      * @param $limit
-     * @param string $expectedExceptionMessage
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

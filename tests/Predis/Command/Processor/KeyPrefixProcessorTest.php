@@ -375,7 +375,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
      * Returns a command instance by ID populated with the specified arguments.
      *
      * @param string $commandID ID of the Redis command
-     * @param array $arguments  List of arguments for the command
+     * @param array  $arguments List of arguments for the command
      *
      * @return CommandInterface
      */

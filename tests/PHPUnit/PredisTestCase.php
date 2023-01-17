@@ -99,9 +99,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Asserts that actual value is one of the values from expected array.
      *
-     * @param mixed $expected Expected array.
-     * @param mixed $actual  Actual value. If array given searching for any matching value between two arrays.
-     * @param string $message Optional assertion message
+     * @param  mixed  $expected Expected array.
+     * @param  mixed  $actual   Actual value. If array given searching for any matching value between two arrays.
+     * @param  string $message  Optional assertion message
      * @return void
      */
     public function assertOneOf(array $expected, $actual, string $message = ''): void

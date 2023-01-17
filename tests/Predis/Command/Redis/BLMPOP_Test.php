@@ -62,13 +62,13 @@ class BLMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider listProvider
-     * @param int $timeout
-     * @param array $listArguments
-     * @param string $key
-     * @param string $modifier
-     * @param int $count
-     * @param array $expectedResponse
-     * @param array $expectedModifiedList
+     * @param  int    $timeout
+     * @param  array  $listArguments
+     * @param  string $key
+     * @param  string $modifier
+     * @param  int    $count
+     * @param  array  $expectedResponse
+     * @param  array  $expectedModifiedList
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

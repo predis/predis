@@ -55,16 +55,16 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider rangesProvider
-     * @param array $actualSortedSet
-     * @param int|string $min
-     * @param int|string $max
+     * @param array       $actualSortedSet
+     * @param int|string  $min
+     * @param int|string  $max
      * @param string|bool $by
-     * @param bool $rev
-     * @param bool $limit
-     * @param int $offset
-     * @param int $count
-     * @param int $expectedResultingElements
-     * @param array $expectedResponse
+     * @param bool        $rev
+     * @param bool        $limit
+     * @param int         $offset
+     * @param int         $count
+     * @param int         $expectedResultingElements
+     * @param array       $expectedResponse
      * @requiresRedisVersion >= 6.2.0
      * @return void
      */
@@ -102,14 +102,14 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param int|string $min
-     * @param int|string $max
+     * @param int|string  $min
+     * @param int|string  $max
      * @param string|bool $by
      * @param $rev
      * @param $limit
-     * @param int $offset
-     * @param int $count
-     * @param string $expectedExceptionMessage
+     * @param  int    $offset
+     * @param  int    $count
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

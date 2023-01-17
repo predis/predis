@@ -27,7 +27,7 @@ class OneOfConstraint extends Constraint
     }
 
     /**
-     * @param mixed $other
+     * @param  mixed $other
      * @return bool
      */
     protected function matches($other): bool

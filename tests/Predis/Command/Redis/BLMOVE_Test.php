@@ -57,13 +57,13 @@ class BLMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider listsProvider
-     * @param array $firstList
-     * @param array $secondList
-     * @param string $where
-     * @param string $to
-     * @param string $expectedResponse
-     * @param array $expectedModifiedFirstList
-     * @param array $expectedModifiedSecondList
+     * @param  array  $firstList
+     * @param  array  $secondList
+     * @param  string $where
+     * @param  string $to
+     * @param  string $expectedResponse
+     * @param  array  $expectedModifiedFirstList
+     * @param  array  $expectedModifiedSecondList
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -91,11 +91,11 @@ class BLMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sameListProvider
-     * @param array $list
-     * @param string $where
-     * @param string $to
-     * @param string $expectedResponse
-     * @param array $expectedModifiedList
+     * @param  array  $list
+     * @param  string $where
+     * @param  string $to
+     * @param  string $expectedResponse
+     * @param  array  $expectedModifiedList
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

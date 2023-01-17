@@ -38,9 +38,9 @@ class ServerToTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $arguments
-     * @param array $expectedResponse
+     * @param  int   $offset
+     * @param  array $arguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $arguments, array $expectedResponse): void
