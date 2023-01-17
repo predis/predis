@@ -1,8 +1,11 @@
 name: Stack
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - main
+      - v2.**
+  pull_request:
 
 jobs:
 
