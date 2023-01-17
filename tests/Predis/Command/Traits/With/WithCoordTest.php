@@ -60,7 +60,7 @@ class WithCoordTest extends PredisTestCase
         $this->testClass::$withCoordArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong WITHCOORD argument type");
+        $this->expectExceptionMessage('Wrong WITHCOORD argument type');
 
         $this->testClass->setArguments(['test']);
     }

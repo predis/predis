@@ -37,7 +37,7 @@ trait ByLexByScore
         if (is_string($argument) && in_array(strtoupper($argument), self::$argumentsEnum)) {
             $argument = self::$argumentsEnum[$argument];
         } else {
-            throw new UnexpectedValueException("By argument accepts only \"bylex\" and \"byscore\" values");
+            throw new UnexpectedValueException('By argument accepts only "bylex" and "byscore" values');
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$byLexByScoreArgumentPositionOffset);

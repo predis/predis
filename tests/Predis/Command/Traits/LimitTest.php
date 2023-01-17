@@ -60,7 +60,7 @@ class LimitTest extends PredisTestCase
         $this->testClass::$limitArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong limit argument type");
+        $this->expectExceptionMessage('Wrong limit argument type');
 
         $this->testClass->setArguments(['test']);
     }

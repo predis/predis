@@ -37,7 +37,7 @@ trait WithCoord
         if (true === $argument) {
             $argument = 'WITHCOORD';
         } else {
-            throw new UnexpectedValueException("Wrong WITHCOORD argument type");
+            throw new UnexpectedValueException('Wrong WITHCOORD argument type');
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withCoordArgumentPositionOffset);

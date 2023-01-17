@@ -60,7 +60,7 @@ class RevTest extends PredisTestCase
         $this->testClass::$revArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong rev argument type");
+        $this->expectExceptionMessage('Wrong rev argument type');
 
         $this->testClass->setArguments(['test']);
     }

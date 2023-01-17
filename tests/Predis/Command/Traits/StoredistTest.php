@@ -60,7 +60,7 @@ class StoredistTest extends PredisTestCase
         $this->testClass::$storeDistArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong STOREDIST argument type");
+        $this->expectExceptionMessage('Wrong STOREDIST argument type');
 
         $this->testClass->setArguments(['test']);
     }

@@ -177,7 +177,7 @@ class RedisFactoryTest extends PredisTestCase
     public function testCreateUndefinedCommand(): void
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command `UNKNOWN` is not a registered Redis command.");
+        $this->expectExceptionMessage('Command `UNKNOWN` is not a registered Redis command.');
 
         $factory = new RedisFactory();
 
