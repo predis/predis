@@ -37,6 +37,12 @@ class ZINTERSTORE extends ZUNIONSTORE
             array_push($arguments, $options['aggregate'] ?? 'sum');
         }
 
-        parent::setArguments($arguments);
+        $this->setAggregate($arguments);
+        $arguments = $this->getArguments();
+
+        $this->setWeights($arguments);
+        $arguments = $this->getArguments();
+
+        $this->setKeys($arguments);
     }
 }

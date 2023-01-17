@@ -157,9 +157,9 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
             'with options array' => [
                 ['destination', ['key1', 'key2'], [
                     'weights' => [1, 2],
-                    'aggregate' => 'sum',
+                    'aggregate' => 'MIN',
                 ]],
-                ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'SUM'],
+                ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN'],
             ],
         ];
     }
