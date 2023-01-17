@@ -85,7 +85,7 @@ class WithScoresTest extends PredisTestCase
             'with modifier' => [
                 ['member1', '1', 'member2', '2', 'WITHSCORES'],
                 ['member1' => '1', 'member2' => '2'],
-            ]
+            ],
         ];
     }
 }

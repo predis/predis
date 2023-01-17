@@ -122,31 +122,31 @@ class ZDIFF_test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1', 'member2', 'member3'],
-                false
+                false,
             ],
             'partial intersection - without score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3'],
-                false
+                false,
             ],
             'full intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [],
-                false
+                false,
             ],
             'no intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1' => '1', 'member2' => '2', 'member3' => '3'],
-                true
+                true,
             ],
             'partial intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3' => '3'],
-                true
+                true,
             ],
         ];
     }

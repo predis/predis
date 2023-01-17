@@ -171,7 +171,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
             'with BYSCORE/BYLEX argument, REV argument and LIMIT' => [
                 ['destination', 'source', 0, -1, 'bylex', true, true, 0, 1],
                 ['destination', 'source', 0, -1, 'BYLEX', 'REV', 'LIMIT', 0, 1],
-            ]
+            ],
         ];
     }
 
@@ -275,8 +275,8 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
                 0, -1, false, 'wrong value', false, 0, 0, 'Wrong rev argument type',
             ],
             'wrong LIMIT argument type' => [
-                0, -1, false, false, 'wrong value', 0, 0, 'Wrong limit argument type'
-            ]
+                0, -1, false, false, 'wrong value', 0, 0, 'Wrong limit argument type',
+            ],
         ];
     }
 }

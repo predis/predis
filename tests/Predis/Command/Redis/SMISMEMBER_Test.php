@@ -105,13 +105,13 @@ class SMISMEMBER_Test extends PredisCommandTestCase
                 ['key', 'member1'],
                 'key',
                 ['member1'],
-                [1]
+                [1],
             ],
             'with one member - does not belongs to set' => [
                 ['key', 'member1'],
                 'key',
                 ['member2'],
-                [0]
+                [0],
             ],
             'with multiple members - belongs to set' => [
                 ['key', 'member1', 'member2'],

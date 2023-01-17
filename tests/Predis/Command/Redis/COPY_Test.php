@@ -126,20 +126,20 @@ class COPY_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['source', 'destination'],
-                ['source', 'destination']
+                ['source', 'destination'],
             ],
             'with DB argument' => [
                 ['source', 'destination', 1],
-                ['source', 'destination', 'DB', 1]
+                ['source', 'destination', 'DB', 1],
             ],
             'with replace argument' => [
                 ['source', 'destination', -1, true],
-                ['source', 'destination', 'REPLACE']
+                ['source', 'destination', 'REPLACE'],
             ],
             'with all arguments' => [
                 ['source', 'destination', 1, true],
-                ['source', 'destination', 'DB', 1, 'REPLACE']
-            ]
+                ['source', 'destination', 'DB', 1, 'REPLACE'],
+            ],
         ];
     }
 }

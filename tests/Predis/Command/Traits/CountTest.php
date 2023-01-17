@@ -70,19 +70,19 @@ class CountTest extends PredisTestCase
                 0,
                 false,
                 [2],
-                ['COUNT', 2]
+                ['COUNT', 2],
             ],
             'without count argument' => [
                 2,
                 false,
                 ['argument1', 'argument2'],
-                ['argument1', 'argument2']
+                ['argument1', 'argument2'],
             ],
             'with count argument equal -1' => [
                 0,
                 false,
                 [-1],
-                [false]
+                [false],
             ],
             'with any modifier' => [
                 0,

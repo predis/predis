@@ -86,19 +86,19 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1', 'member2', 'member3'],
-                3
+                3,
             ],
             'partial intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3'],
-                1
+                1,
             ],
             'full intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [],
-                0
+                0,
             ],
         ];
     }

@@ -65,11 +65,11 @@ class GeoByTest extends PredisTestCase
         return [
             'BYRADIUS argument' => [
                 ['first argument', new ByRadius(1, 'km'), 'third argument'],
-                ['first argument', 'BYRADIUS', 1, 'km', 'third argument']
+                ['first argument', 'BYRADIUS', 1, 'km', 'third argument'],
             ],
             'BYBOX argument' => [
                 ['first argument', new ByBox(1, 1, 'km'), 'third argument'],
-                ['first argument', 'BYBOX', 1, 1, 'km', 'third argument']
+                ['first argument', 'BYBOX', 1, 1, 'km', 'third argument'],
             ],
         ];
     }

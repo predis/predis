@@ -66,13 +66,13 @@ class MinMaxModifierTest extends PredisTestCase
             'with modifier' => [
                 0,
                 ['max'],
-                ['MAX']
+                ['MAX'],
             ],
             'without modifier' => [
                 2,
                 ['argument1', 'argument2'],
-                ['argument1', 'argument2', 'MIN']
-            ]
+                ['argument1', 'argument2', 'MIN'],
+            ],
         ];
     }
 }

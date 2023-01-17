@@ -215,21 +215,21 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
                 1,
                 [],
                 'sum',
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with unexpected weights argument' => [
                 'destination',
                 ['key1'],
                 1,
                 'sum',
-                'Wrong weights argument type'
+                'Wrong weights argument type',
             ],
             'with unexpected aggregate argument' => [
                 'destination',
                 ['key1'],
                 [],
                 'wrong',
-                'Aggregate argument accepts only: min, max, sum values'
+                'Aggregate argument accepts only: min, max, sum values',
             ],
         ];
     }

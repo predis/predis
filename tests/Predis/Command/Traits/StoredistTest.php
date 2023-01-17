@@ -71,22 +71,22 @@ class StoredistTest extends PredisTestCase
             'STOREDIST false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'STOREDIST argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['STOREDIST', 'second argument', 'third argument']
+                ['STOREDIST', 'second argument', 'third argument'],
             ],
             'STOREDIST argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'STOREDIST']
+                ['first argument', 'second argument', 'STOREDIST'],
             ],
             'STOREDIST argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'STOREDIST', 'third argument']
+                ['first argument', 'STOREDIST', 'third argument'],
             ],
         ];
     }

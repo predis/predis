@@ -80,25 +80,25 @@ class KeysTest extends PredisTestCase
                 0,
                 true,
                 [['key1', 'key2'], 'second argument', 'third argument'],
-                [2, 'key1', 'key2', 'second argument', 'third argument']
+                [2, 'key1', 'key2', 'second argument', 'third argument'],
             ],
             'keys argument last and there is arguments before' => [
                 2,
                 true,
                 ['first argument', 'second argument', ['key1', 'key2']],
-                ['first argument', 'second argument', 2, 'key1', 'key2']
+                ['first argument', 'second argument', 2, 'key1', 'key2'],
             ],
             'keys argument not the first and not the last' => [
                 1,
                 true,
                 ['first argument', ['key1', 'key2'], 'third argument'],
-                ['first argument', 2, 'key1', 'key2', 'third argument']
+                ['first argument', 2, 'key1', 'key2', 'third argument'],
             ],
             'keys argument the only argument' => [
                 0,
                 true,
                 [['key1', 'key2']],
-                [2, 'key1', 'key2']
+                [2, 'key1', 'key2'],
             ],
             'without numkeys modifier' => [
                 0,
@@ -119,7 +119,7 @@ class KeysTest extends PredisTestCase
             'keys argument position offset higher then arguments quantity' => [
                 2,
                 [['key1', 'key2']],
-            ]
+            ],
         ];
     }
 }

@@ -69,18 +69,18 @@ class TimeoutTest extends PredisTestCase
             'with TIMEOUT argument' => [
                 0,
                 [10],
-                ['TIMEOUT', 10]
+                ['TIMEOUT', 10],
             ],
             'with wrong offset given' => [
                 1,
                 [],
-                []
+                [],
             ],
             'with default value' => [
                 0,
                 [-1],
-                [false]
-            ]
+                [false],
+            ],
         ];
     }
 }

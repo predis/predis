@@ -65,11 +65,11 @@ class GeoFromTest extends PredisTestCase
         return [
             'FROMLONLAT argument' => [
                 ['first argument', new FromLonLat(1.1, 2.2), 'third argument'],
-                ['first argument', 'FROMLONLAT', 1.1, 2.2, 'third argument']
+                ['first argument', 'FROMLONLAT', 1.1, 2.2, 'third argument'],
             ],
             'FROMMEMBER argument' => [
                 ['first argument', new FromMember('member1'), 'third argument'],
-                ['first argument', 'FROMMEMBER', 'member1', 'third argument']
+                ['first argument', 'FROMMEMBER', 'member1', 'third argument'],
             ],
         ];
     }

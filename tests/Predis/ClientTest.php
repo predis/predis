@@ -1082,11 +1082,11 @@ class ClientTest extends PredisTestCase
             ->withConsecutive(
                 [
                     $this->isInstanceOf('Predis\PubSub\Consumer'),
-                    (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1]
+                    (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1],
                 ],
                 [
                     $this->isInstanceOf('Predis\PubSub\Consumer'),
-                    (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0]
+                    (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0],
                 ]
             )
             ->willReturnOnConsecutiveCalls(

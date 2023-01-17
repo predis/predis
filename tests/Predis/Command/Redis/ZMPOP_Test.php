@@ -146,11 +146,11 @@ class ZMPOP_Test extends PredisCommandTestCase
         return [
             'with one key' => [
                 [['key1'], 'min', 1],
-                [1, 'key1', 'MIN', 'COUNT', 1]
+                [1, 'key1', 'MIN', 'COUNT', 1],
             ],
             'with multiple keys' => [
                 [['key1', 'key2', 'key3'], 'max', 1],
-                [3, 'key1', 'key2', 'key3', 'MAX', 'COUNT', 1]
+                [3, 'key1', 'key2', 'key3', 'MAX', 'COUNT', 1],
             ],
         ];
     }
@@ -160,11 +160,11 @@ class ZMPOP_Test extends PredisCommandTestCase
         return [
             'null-element array' => [
                 [null],
-                [null]
+                [null],
             ],
             'two-element array' => [
                 ['key', [['member1', 1, 'member2', 2, 'member3', 3]]],
-                ['key' => ['member1' => 1, 'member2' => 2, 'member3' => 3]]
+                ['key' => ['member1' => 1, 'member2' => 2, 'member3' => 3]],
             ],
         ];
     }
@@ -195,7 +195,7 @@ class ZMPOP_Test extends PredisCommandTestCase
                 2,
                 ['test-zmpop' => ['member3' => '3', 'member2' => '2']],
                 ['member1'],
-            ]
+            ],
         ];
     }
 
@@ -206,13 +206,13 @@ class ZMPOP_Test extends PredisCommandTestCase
                 ['key1', 'key2'],
                 'wrong modifier',
                 1,
-                'Wrong type of modifier given'
+                'Wrong type of modifier given',
             ],
             'wrong count' => [
                 ['key1', 'key2'],
                 'min',
                 0,
-                'Wrong count argument value or position offset'
+                'Wrong count argument value or position offset',
             ],
         ];
     }

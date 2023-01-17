@@ -86,32 +86,32 @@ class FAILOVER_Test extends PredisCommandTestCase
         return [
             'without optional arguments - no arguments' => [
                 [],
-                []
+                [],
             ],
             'without optional arguments - default arguments' => [
                 [null, false, -1],
-                []
+                [],
             ],
             'with TO argument - no FORCE' => [
                 [new To('test', 9999)],
-                ['TO', 'test', 9999]
+                ['TO', 'test', 9999],
             ],
             'with TO argument - with FORCE' => [
                 [new To('test', 9999, true)],
-                ['TO', 'test', 9999, 'FORCE']
+                ['TO', 'test', 9999, 'FORCE'],
             ],
             'with ABORT modifier' => [
                 [null, true],
-                ['ABORT']
+                ['ABORT'],
             ],
             'with TIMEOUT argument' => [
                 [null, false, 10],
-                ['TIMEOUT', 10]
+                ['TIMEOUT', 10],
             ],
             'with all arguments' => [
                 [new To('test', 9999, true), true, 10],
-                ['TO', 'test', 9999, 'FORCE', 'ABORT', 'TIMEOUT', 10]
-            ]
+                ['TO', 'test', 9999, 'FORCE', 'ABORT', 'TIMEOUT', 10],
+            ],
         ];
     }
 }

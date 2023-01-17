@@ -104,7 +104,7 @@ class GETEX_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key'],
-                ['key']
+                ['key'],
             ],
             'with EX modifier' => [
                 ['key', 'ex', 1],
@@ -124,8 +124,8 @@ class GETEX_Test extends PredisCommandTestCase
             ],
             'with PERSIST modifier' => [
                 ['key', 'persist'],
-                ['key', 'PERSIST']
-            ]
+                ['key', 'PERSIST'],
+            ],
         ];
     }
 
@@ -140,27 +140,27 @@ class GETEX_Test extends PredisCommandTestCase
             'with expiration - EX modifier' => [
                 ['key', 'value'],
                 ['key', 'ex', 10],
-                'value'
+                'value',
             ],
             'with expiration - PX modifier' => [
                 ['key', 'value'],
                 ['key', 'px', 10],
-                'value'
+                'value',
             ],
             'with expiration - EXAT modifier' => [
                 ['key', 'value'],
                 ['key', 'exat', 10],
-                'value'
+                'value',
             ],
             'with expiration - PXAT modifier' => [
                 ['key', 'value'],
                 ['key', 'pxat', 10],
-                'value'
+                'value',
             ],
             'with expiration - PERSIST modifier' => [
                 ['key', 'value'],
                 ['key', 'persist'],
-                'value'
+                'value',
             ],
         ];
     }
@@ -170,12 +170,12 @@ class GETEX_Test extends PredisCommandTestCase
         return [
             'with wrong modifier' => [
                 ['key', 'wrong', 1],
-                'Modifier argument accepts only: ex, px, exat, pxat, persist values'
+                'Modifier argument accepts only: ex, px, exat, pxat, persist values',
             ],
             'without value provided' => [
                 ['key', 'ex'],
-                'You should provide value for current modifier'
-            ]
+                'You should provide value for current modifier',
+            ],
         ];
     }
 }

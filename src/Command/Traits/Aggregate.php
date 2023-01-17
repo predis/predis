@@ -26,7 +26,7 @@ trait Aggregate
     private static $aggregateValuesEnum = [
         'min' => 'MIN',
         'max' => 'MAX',
-        'sum' => 'SUM'
+        'sum' => 'SUM',
     ];
 
     /**
