@@ -849,7 +849,7 @@ class RedisClusterTest extends PredisTestCase
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessage("Unknown connection error [127.0.0.1:6382]");
+        $this->expectExceptionMessage('Unknown connection error [127.0.0.1:6382]');
 
         $slotsmap = [
             [0, 5460, ['127.0.0.1', 9381], []],
@@ -1310,7 +1310,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testRetryCommandSuccessOnClusterDownErrors()
     {
-        $clusterDownError= new Response\Error("CLUSTERDOWN") ;
+        $clusterDownError= new Response\Error('CLUSTERDOWN') ;
 
 	    $command = Command\RawCommand::create('get', 'node:1001');
 
@@ -1341,7 +1341,7 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('CLUSTERDOWN');
 
-        $clusterDownError= new Response\Error("CLUSTERDOWN") ;
+        $clusterDownError= new Response\Error('CLUSTERDOWN') ;
 
         $command = Command\RawCommand::create('get', 'node:1001');
 
@@ -1438,7 +1438,7 @@ class RedisClusterTest extends PredisTestCase
         $t2 = $t1 * 2;
 
         $expectedTime = ($t1 + $t2 )/1000  ; // expected time for 2 retries (fail 1=wait 2s, fail 2=wait 4s , OK)
-        $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, "Unexpected execution time") ;
+        $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, 'Unexpected execution time') ;
 
         $this->assertCount(16384, $cluster->getSlotMap());
     }

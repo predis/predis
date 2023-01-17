@@ -341,7 +341,7 @@ class ParametersTest extends PredisTestCase
     public function testParsingURIThrowOnInvalidURI(): void
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage("Invalid parameters URI: tcp://invalid:uri");
+        $this->expectExceptionMessage('Invalid parameters URI: tcp://invalid:uri');
 
         Parameters::parse('tcp://invalid:uri');
     }

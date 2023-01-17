@@ -33,7 +33,7 @@ trait WithHash
         if (true === $argument) {
             $argument = 'WITHHASH';
         } else {
-            throw new UnexpectedValueException("Wrong WITHHASH argument type");
+            throw new UnexpectedValueException('Wrong WITHHASH argument type');
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withHashArgumentPositionOffset);

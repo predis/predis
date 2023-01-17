@@ -63,7 +63,7 @@ class ByLexByScoreTest extends PredisTestCase
         $this->testClass::$byLexByScoreArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("By argument accepts only \"bylex\" and \"byscore\" values");
+        $this->expectExceptionMessage('By argument accepts only "bylex" and "byscore" values');
 
         $this->testClass->setArguments($actualArguments);
     }

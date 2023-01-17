@@ -33,7 +33,7 @@ trait WithDist
         if (true === $argument) {
             $argument = 'WITHDIST';
         } else {
-            throw new UnexpectedValueException("Wrong WITHDIST argument type");
+            throw new UnexpectedValueException('Wrong WITHDIST argument type');
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withDistArgumentPositionOffset);

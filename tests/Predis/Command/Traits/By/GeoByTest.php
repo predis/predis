@@ -55,7 +55,7 @@ class GeoByTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValue(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid BY argument value given");
+        $this->expectExceptionMessage('Invalid BY argument value given');
 
         $this->testClass->setArguments(['test']);
     }

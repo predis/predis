@@ -37,7 +37,7 @@ trait Storedist
         if (true === $argument) {
             $argument = 'STOREDIST';
         } else {
-            throw new UnexpectedValueException("Wrong STOREDIST argument type");
+            throw new UnexpectedValueException('Wrong STOREDIST argument type');
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$storeDistArgumentPositionOffset);

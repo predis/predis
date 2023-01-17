@@ -60,7 +60,7 @@ class WithHashTest extends PredisTestCase
         $this->testClass::$withHashArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong WITHHASH argument type");
+        $this->expectExceptionMessage('Wrong WITHHASH argument type');
 
         $this->testClass->setArguments(['test']);
     }

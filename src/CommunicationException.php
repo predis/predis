@@ -30,7 +30,7 @@ abstract class CommunicationException extends PredisException
      */
     public function __construct(
         NodeConnectionInterface $connection,
-        $message = "",
+        $message = '',
         $code = 0,
         Exception $innerException = null
     ) {

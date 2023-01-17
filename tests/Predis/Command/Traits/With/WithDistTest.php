@@ -60,7 +60,7 @@ class WithDistTest extends PredisTestCase
         $this->testClass::$withDistArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong WITHDIST argument type");
+        $this->expectExceptionMessage('Wrong WITHDIST argument type');
 
         $this->testClass->setArguments(['test']);
     }
