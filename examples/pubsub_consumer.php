@@ -44,7 +44,7 @@ foreach ($pubsub as $message) {
                 }
             } else {
                 echo "Received the following message from {$message->channel}:",
-                     PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
+                PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
             }
             break;
     }
