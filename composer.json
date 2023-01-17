@@ -10,15 +10,15 @@
     },
     "authors": [
         {
-            "name": "Daniele Alessandri",
-            "email": "suppakilla@gmail.com",
-            "homepage": "http://clorophilla.net",
-            "role": "Creator & Maintainer"
-        },
-        {
             "name": "Till Krüss",
             "homepage": "https://till.im",
             "role": "Maintainer"
+        },
+        {
+            "name": "Daniele Alessandri",
+            "email": "suppakilla@gmail.com",
+            "homepage": "http://clorophilla.net",
+            "role": "Creator"
         }
     ],
     "funding": [
@@ -34,7 +34,6 @@
         "phpunit/phpunit": "^8.0 || ~9.4.4"
     },
     "suggest": {
-        "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol",
         "ext-curl": "Allows access to Webdis when paired with phpiredis"
     },
     "autoload": {
