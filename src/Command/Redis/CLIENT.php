@@ -15,10 +15,10 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/client-list
- * @link http://redis.io/commands/client-kill
- * @link http://redis.io/commands/client-getname
- * @link http://redis.io/commands/client-setname
+ * @see http://redis.io/commands/client-list
+ * @see http://redis.io/commands/client-kill
+ * @see http://redis.io/commands/client-getname
+ * @see http://redis.io/commands/client-setname
  */
 class CLIENT extends RedisCommand
 {

@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Redis\AbstractCommand\BZPOPBase;
 
 /**
- * @link https://redis.io/commands/bzpopmax/
+ * @see https://redis.io/commands/bzpopmax/
  *
  * BZPOPMAX is the blocking variant of the sorted set ZPOPMAX primitive.
  *

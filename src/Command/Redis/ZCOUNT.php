@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/zcount
+ * @see http://redis.io/commands/zcount
  */
 class ZCOUNT extends RedisCommand
 {

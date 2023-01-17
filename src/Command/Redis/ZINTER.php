@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Traits\With\WithScores;
 
 /**
- * @link https://redis.io/commands/zinter/
+ * @see https://redis.io/commands/zinter/
  *
  * This command is similar to ZINTERSTORE, but instead of
  * storing the resulting sorted set, it is returned to the client.

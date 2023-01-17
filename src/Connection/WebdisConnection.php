@@ -38,9 +38,9 @@ use Predis\Response\Status as StatusResponse;
  *  - user: username for authentication.
  *  - pass: password for authentication.
  *
- * @link http://webd.is
- * @link http://github.com/nicolasff/webdis
- * @link http://github.com/seppo0010/phpiredis
+ * @see http://webd.is
+ * @see http://github.com/nicolasff/webdis
+ * @see http://github.com/seppo0010/phpiredis
  */
 class WebdisConnection implements NodeConnectionInterface
 {

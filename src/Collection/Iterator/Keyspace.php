@@ -18,7 +18,7 @@ use Predis\ClientInterface;
  * Abstracts the iteration of the keyspace on a Redis instance by leveraging the
  * SCAN command (Redis >= 2.8) wrapped in a fully-rewindable PHP iterator.
  *
- * @link http://redis.io/commands/scan
+ * @see http://redis.io/commands/scan
  */
 class Keyspace extends CursorBasedIterator
 {

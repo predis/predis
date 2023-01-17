@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link https://redis.io/commands/zmscore/
+ * @see https://redis.io/commands/zmscore/
  *
  * Returns the scores associated with the specified members
  * in the sorted set stored at key.

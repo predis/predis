@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zrevrange
+ * @see http://redis.io/commands/zrevrange
  */
 class ZREVRANGE extends ZRANGE
 {

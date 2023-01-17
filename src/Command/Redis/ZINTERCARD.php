@@ -17,7 +17,7 @@ use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\Limit;
 
 /**
- * @link https://redis.io/commands/zintercard/
+ * @see https://redis.io/commands/zintercard/
  *
  * This command is similar to ZINTER, but instead of returning the result set,
  * it returns just the cardinality of the result.

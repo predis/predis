@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/zpopmin
+ * @see http://redis.io/commands/zpopmin
  */
 class ZPOPMIN extends RedisCommand
 {

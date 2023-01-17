@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/incrbyfloat
+ * @see http://redis.io/commands/incrbyfloat
  */
 class INCRBYFLOAT extends RedisCommand
 {

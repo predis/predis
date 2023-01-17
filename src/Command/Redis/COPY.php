@@ -16,7 +16,7 @@ use Predis\Command\Traits\DB;
 use Predis\Command\Traits\Replace;
 
 /**
- * @link https://redis.io/commands/copy/
+ * @see https://redis.io/commands/copy/
  *
  * This command copies the value stored at the source key to the destination key.
  */

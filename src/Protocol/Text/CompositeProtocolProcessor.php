@@ -22,7 +22,7 @@ use Predis\Protocol\ResponseReaderInterface;
  * Composite protocol processor for the standard Redis wire protocol using
  * pluggable handlers to serialize requests and deserialize responses.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class CompositeProtocolProcessor implements ProtocolProcessorInterface
 {

@@ -16,7 +16,7 @@ use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\With\WithValues;
 
 /**
- * @link https://redis.io/commands/hrandfield/
+ * @see https://redis.io/commands/hrandfield/
  *
  * When called with just the key argument, return a random field from the hash value stored at key.
  *

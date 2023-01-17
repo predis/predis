@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Traits\With\WithScores;
 
 /**
- * @link https://redis.io/commands/zunion/
+ * @see https://redis.io/commands/zunion/
  *
  * This command is similar to ZUNIONSTORE, but instead of
  * storing the resulting sorted set, it is returned to the client.

@@ -18,7 +18,7 @@ use Predis\Command\Traits\MinMaxModifier;
 use Predis\Command\Traits\Keys;
 
 /**
- * @link https://redis.io/commands/zmpop/
+ * @see https://redis.io/commands/zmpop/
  *
  * Pops one or more elements, that are member-score pairs,
  * from the first non-empty sorted set in the provided list of key names.

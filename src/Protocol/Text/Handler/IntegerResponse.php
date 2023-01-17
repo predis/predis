@@ -20,7 +20,7 @@ use Predis\Protocol\ProtocolException;
  * Handler for the integer response type in the standard Redis wire protocol.
  * It translates the payload an integer or NULL.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class IntegerResponse implements ResponseHandlerInterface
 {

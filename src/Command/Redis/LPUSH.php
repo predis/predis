@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/lpush
+ * @see http://redis.io/commands/lpush
  */
 class LPUSH extends RedisCommand
 {

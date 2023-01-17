@@ -18,7 +18,7 @@ use Predis\ClientInterface;
  * Abstracts the iteration of members stored in a sorted set by leveraging the
  * ZSCAN command (Redis >= 2.8) wrapped in a fully-rewindable PHP iterator.
  *
- * @link http://redis.io/commands/scan
+ * @see http://redis.io/commands/scan
  */
 class SortedSetKey extends CursorBasedIterator
 {

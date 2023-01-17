@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zrevrangebyscore
+ * @see http://redis.io/commands/zrevrangebyscore
  */
 class ZREVRANGEBYSCORE extends ZRANGEBYSCORE
 {

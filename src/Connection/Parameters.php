@@ -81,8 +81,8 @@ class Parameters implements ParametersInterface
      * database number in the "path" part these values override the values of
      * "password" and "database" if they are present in the "query" part.
      *
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     * @link http://www.iana.org/assignments/uri-schemes/prov/rediss
+     * @see http://www.iana.org/assignments/uri-schemes/prov/redis
+     * @see http://www.iana.org/assignments/uri-schemes/prov/rediss
      *
      * @param string $uri URI string.
      *

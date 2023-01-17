@@ -18,7 +18,7 @@ use Predis\Command\Traits\Limit;
 use Predis\Command\Traits\Rev;
 
 /**
- * @link https://redis.io/commands/zrangestore/
+ * @see https://redis.io/commands/zrangestore/
  *
  * This command is like ZRANGE, but stores the result in the destination key.
  */

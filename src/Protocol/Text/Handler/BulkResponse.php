@@ -20,7 +20,7 @@ use Predis\Protocol\ProtocolException;
  * Handler for the bulk response type in the standard Redis wire protocol.
  * It translates the payload to a string or a NULL.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class BulkResponse implements ResponseHandlerInterface
 {

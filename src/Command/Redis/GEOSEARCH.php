@@ -22,7 +22,7 @@ use Predis\Command\Traits\With\WithDist;
 use Predis\Command\Traits\With\WithHash;
 
 /**
- * @link https://redis.io/commands/geosearch/
+ * @see https://redis.io/commands/geosearch/
  *
  * Return the members of a sorted set populated with geospatial information using GEOADD,
  * which are within the borders of the area specified by a given shape.

@@ -43,7 +43,7 @@ use Predis\Response\Status as StatusResponse;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *
- * @link https://github.com/nrk/phpiredis
+ * @see https://github.com/nrk/phpiredis
  */
 class PhpiredisStreamConnection extends StreamConnection
 {

@@ -20,7 +20,7 @@ use Predis\Response\Status;
  * translates certain classes of status response to PHP objects or just returns
  * the payload as a string.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class StatusResponse implements ResponseHandlerInterface
 {

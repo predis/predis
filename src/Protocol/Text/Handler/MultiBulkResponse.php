@@ -20,7 +20,7 @@ use Predis\Protocol\ProtocolException;
  * Handler for the multibulk response type in the standard Redis wire protocol.
  * It returns multibulk responses as PHP arrays.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class MultiBulkResponse implements ResponseHandlerInterface
 {
