@@ -13,6 +13,8 @@
 namespace Predis\Configuration;
 
 use PredisTestCase;
+use stdClass;
+use Exception;
 
 /**
  * @todo Use mock objects to test the inner workings of the Options class.
@@ -184,7 +186,7 @@ class OptionsTest extends PredisTestCase
      */
     public function testLazilyInitializesCustomOptionValueUsingObjectWithInvokeMagicMethod(): void
     {
-        $custom = new \stdClass();
+        $custom = new stdClass();
 
         // NOTE: closure values are covered by this test since they define __invoke().
         $callable = $this->getMockBuilder('stdClass')
@@ -223,7 +225,7 @@ class OptionsTest extends PredisTestCase
         try {
             $options = new Options(['custom' => 'value']);
             $pfx = $options->prefix;
-        } catch (\Exception $_) {
+        } catch (Exception $_) {
             spl_autoload_unregister($autoload);
         }
     }

@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\RedisFactory;
+use stdClass;
 
 /**
  *
@@ -271,7 +272,7 @@ class CommandsTest extends PredisTestCase
             ->method('__invoke')
             ->with($this->isInstanceOf('Predis\Configuration\OptionsInterface'))
             ->willReturn(
-                new \stdClass()
+                new stdClass()
             );
 
         $option->filter($options, $callable);
@@ -290,7 +291,7 @@ class CommandsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $option->filter($options, new \stdClass());
+        $option->filter($options, new stdClass());
     }
 
     /**

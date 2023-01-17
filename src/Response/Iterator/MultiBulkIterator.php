@@ -13,6 +13,9 @@
 namespace Predis\Response\Iterator;
 
 use Predis\Response\ResponseInterface;
+use Iterator;
+use Countable;
+use ReturnTypeWillChange;
 
 /**
  * Iterator that abstracts the access to multibulk responses allowing them to be
@@ -24,7 +27,7 @@ use Predis\Response\ResponseInterface;
  * Always make sure that the whole iteration is consumed (or dropped) to prevent
  * protocol desynchronization issues.
  */
-abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInterface
+abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterface
 {
     protected $current;
     protected $position;
@@ -33,7 +36,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         // NOOP
@@ -42,7 +45,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
@@ -51,7 +54,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -60,7 +63,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function next()
     {
         if (++$this->position < $this->size) {
@@ -71,7 +74,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return $this->position < $this->size;
@@ -86,7 +89,7 @@ abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInter
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function count()
     {
         return $this->size;

@@ -17,6 +17,7 @@ use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
+use SplQueue;
 
 /**
  * Command pipeline that does not throw exceptions on connection errors, but
@@ -37,7 +38,7 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         if ($connection instanceof NodeConnectionInterface) {
             return $this->executeSingleNode($connection, $commands);
@@ -53,7 +54,7 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executeSingleNode(NodeConnectionInterface $connection, \SplQueue $commands)
+    protected function executeSingleNode(NodeConnectionInterface $connection, SplQueue $commands)
     {
         $responses = [];
         $sizeOfPipe = count($commands);
@@ -85,7 +86,7 @@ class ConnectionErrorProof extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executeCluster(ClusterInterface $connection, \SplQueue $commands)
+    protected function executeCluster(ClusterInterface $connection, SplQueue $commands)
     {
         $responses = [];
         $sizeOfPipe = count($commands);

@@ -19,6 +19,8 @@ use PredisTestCase;
 use Predis\Response;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use RuntimeException;
+use Exception;
 
 /**
  * @group realm-transaction
@@ -157,7 +159,7 @@ class MultiExecTest extends PredisTestCase
             $tx->echo('foo')->execute(function ($tx) {
                 $tx->echo('bar');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exception = $ex;
         }
 
@@ -499,9 +501,9 @@ class MultiExecTest extends PredisTestCase
                 $tx->set('foo', 'bar');
                 $tx->get('foo');
 
-                throw new \RuntimeException('TEST');
+                throw new RuntimeException('TEST');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             // NOOP
         }
 
@@ -565,7 +567,7 @@ class MultiExecTest extends PredisTestCase
 
         try {
             $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
             $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
         }
@@ -575,7 +577,7 @@ class MultiExecTest extends PredisTestCase
 
         try {
             $tx->multi()->set('foo', 'bar')->echo('simulated failure')->exec();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
             $this->assertSame('ERR simulated failure on ECHO', $exception->getMessage());
         }
@@ -685,9 +687,9 @@ class MultiExecTest extends PredisTestCase
         try {
             $client->transaction(function (MultiExec $tx) {
                 $tx->set('foo', 'bar');
-                throw new \RuntimeException('TEST');
+                throw new RuntimeException('TEST');
             });
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exception = $ex;
         }
 

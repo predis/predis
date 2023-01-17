@@ -11,10 +11,11 @@
  */
 
 namespace Predis\Cluster\Distributor;
+use Exception;
 
 /**
  * Exception class that identifies empty rings.
  */
-class EmptyRingException extends \Exception
+class EmptyRingException extends Exception
 {
 }

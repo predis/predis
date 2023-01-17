@@ -29,6 +29,10 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Transaction\MultiExec as MultiExecTransaction;
+use IteratorAggregate;
+use ReturnTypeWillChange;
+use ArrayIterator;
+use InvalidArgumentException;
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -39,7 +43,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  *
  * @template-implements \IteratorAggregate<string, static>
  */
-class Client implements ClientInterface, \IteratorAggregate
+class Client implements ClientInterface, IteratorAggregate
 {
     const VERSION = '2.1.1';
 
@@ -68,7 +72,7 @@ class Client implements ClientInterface, \IteratorAggregate
      *
      * @param array|OptionsInterface $options Set of client options
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return OptionsInterface
      */
@@ -79,7 +83,7 @@ class Client implements ClientInterface, \IteratorAggregate
         } elseif ($options instanceof OptionsInterface) {
             return $options;
         } else {
-            throw new \InvalidArgumentException('Invalid type for client options');
+            throw new InvalidArgumentException('Invalid type for client options');
         }
     }
 
@@ -104,7 +108,7 @@ class Client implements ClientInterface, \IteratorAggregate
      * @param OptionsInterface $options    Client options container
      * @param mixed            $parameters Connection parameters
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return ConnectionInterface
      */
@@ -128,7 +132,7 @@ class Client implements ClientInterface, \IteratorAggregate
             } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {
                 return $initializer($parameters, false);
             } else {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
                 );
             }
@@ -138,13 +142,13 @@ class Client implements ClientInterface, \IteratorAggregate
             $connection = call_user_func($parameters, $options);
 
             if (!$connection instanceof ConnectionInterface) {
-                throw new \InvalidArgumentException('Callable parameters must return a valid connection');
+                throw new InvalidArgumentException('Callable parameters must return a valid connection');
             }
 
             return $connection;
         }
 
-        throw new \InvalidArgumentException('Invalid type for connection parameters');
+        throw new InvalidArgumentException('Invalid type for connection parameters');
     }
 
     /**
@@ -198,16 +202,16 @@ class Client implements ClientInterface, \IteratorAggregate
         $selector = strtolower($selector);
 
         if (!in_array($selector, ['id', 'key', 'slot', 'role', 'alias', 'command'])) {
-            throw new \InvalidArgumentException("Invalid selector type: `$selector`");
+            throw new InvalidArgumentException("Invalid selector type: `$selector`");
         }
 
         if (!method_exists($this->connection, $method = "getConnectionBy$selector")) {
             $class = get_class($this->connection);
-            throw new \InvalidArgumentException("Selecting connection by $selector is not supported by $class");
+            throw new InvalidArgumentException("Selecting connection by $selector is not supported by $class");
         }
 
         if (!$connection = $this->connection->$method($value)) {
-            throw new \InvalidArgumentException("Cannot find a connection by $selector matching `$value`");
+            throw new InvalidArgumentException("Cannot find a connection by $selector matching `$value`");
         }
 
         return new static($connection, $this->getOptions());
@@ -514,14 +518,14 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * @return Traversable<string, static>
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         $clients = [];
         $connection = $this->getConnection();
 
         if (!$connection instanceof Traversable) {
-            return new \ArrayIterator([
+            return new ArrayIterator([
                 (string) $connection => new static($connection, $this->getOptions())
             ]);
         }
@@ -530,6 +534,6 @@ class Client implements ClientInterface, \IteratorAggregate
             $clients[(string) $node] = new static($node, $this->getOptions());
         }
 
-        return new \ArrayIterator($clients);
+        return new ArrayIterator($clients);
     }
 }

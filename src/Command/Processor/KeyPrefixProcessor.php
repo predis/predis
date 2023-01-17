@@ -14,6 +14,7 @@ namespace Predis\Command\Processor;
 
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
+use InvalidArgumentException;
 
 /**
  * Command processor capable of prefixing keys stored in the arguments of Redis
@@ -226,7 +227,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * @param string $commandID The ID of the command to be handled.
      * @param mixed  $callback  A valid callable object or NULL.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -239,7 +240,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Callback must be a valid callable object or NULL'
             );
         }

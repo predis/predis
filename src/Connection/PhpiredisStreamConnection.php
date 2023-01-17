@@ -16,6 +16,8 @@ use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
+use InvalidArgumentException;
+use Closure;
 
 /**
  * This class provides the implementation of a Predis connection that uses PHP's
@@ -106,10 +108,10 @@ class PhpiredisStreamConnection extends StreamConnection
 
             case 'tls':
             case 'rediss':
-                throw new \InvalidArgumentException('SSL encryption is not supported by this connection backend.');
+                throw new InvalidArgumentException('SSL encryption is not supported by this connection backend.');
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;
@@ -178,7 +180,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Returns the handler used by the protocol reader for inline responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getStatusHandler()
     {
@@ -196,7 +198,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Returns the handler used by the protocol reader for error responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getErrorHandler()
     {

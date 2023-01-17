@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
+use InvalidArgumentException;
 
 /**
  * Base class with the common logic used by connection classes to communicate
@@ -50,7 +51,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      *
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return ParametersInterface
      */

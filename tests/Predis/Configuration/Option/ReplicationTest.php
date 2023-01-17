@@ -15,6 +15,7 @@ namespace Predis\Configuration\Option;
 use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
+use ReflectionProperty;
 
 /**
  *
@@ -62,7 +63,7 @@ class ReplicationTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Connection\Replication\MasterSlaveReplication', $connection = $initializer([]));
 
         // TODO: I know, I know...
-        $reflection = new \ReflectionProperty($connection, 'autoDiscovery');
+        $reflection = new ReflectionProperty($connection, 'autoDiscovery');
         $reflection->setAccessible(true);
 
         $this->assertTrue($reflection->getValue($connection));

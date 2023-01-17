@@ -14,6 +14,7 @@ namespace Predis\Command;
 
 use Predis\ClientException;
 use Predis\Command\Processor\ProcessorInterface;
+use InvalidArgumentException;
 
 /**
  * Base command factory class.
@@ -88,12 +89,12 @@ abstract class Factory implements FactoryInterface
      * @param string $commandID    Command ID
      * @param string $commandClass FQCN of a class implementing Predis\Command\CommandInterface
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function define(string $commandID, string $commandClass): void
     {
         if (!is_a($commandClass, 'Predis\Command\CommandInterface', true)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Class $commandClass must implement Predis\Command\CommandInterface"
             );
         }

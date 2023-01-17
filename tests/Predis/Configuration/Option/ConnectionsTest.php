@@ -15,6 +15,7 @@ namespace Predis\Configuration\Option;
 use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
+use stdClass;
 
 /**
  *
@@ -217,7 +218,7 @@ class ConnectionsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $option->filter($options, new \stdClass());
+        $option->filter($options, new stdClass());
     }
 
     // ******************************************************************** //

@@ -18,6 +18,9 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Response;
 use PredisTestCase;
+use stdClass;
+use Exception;
+use InvalidArgumentException;
 
 /**
  *
@@ -311,7 +314,7 @@ class PipelineTest extends PredisTestCase
     {
         $this->expectException('InvalidArgumentException');
 
-        $noncallable = new \stdClass();
+        $noncallable = new stdClass();
 
         $pipeline = new Pipeline(new Client());
         $pipeline->execute($noncallable);
@@ -381,7 +384,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->echo('two');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -459,7 +462,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -485,7 +488,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -538,7 +541,7 @@ class PipelineTest extends PredisTestCase
     {
         return function (CommandInterface $command) {
             if (($id = $command->getId()) !== 'ECHO') {
-                throw new \InvalidArgumentException("Expected ECHO, got {$id}");
+                throw new InvalidArgumentException("Expected ECHO, got {$id}");
             }
 
             list($echoed) = $command->getArguments();

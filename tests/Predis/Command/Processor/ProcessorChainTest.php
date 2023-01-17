@@ -14,6 +14,7 @@ namespace Predis\Command\Processor;
 
 use PredisTestCase;
 use Predis\Command\CommandInterface;
+use stdClass;
 
 /**
  *
@@ -212,7 +213,7 @@ class ProcessorChainTest extends PredisTestCase
         $this->expectExceptionMessage('Processor chain accepts only instances of `Predis\Command\Processor\ProcessorInterface`');
 
         $chain = new ProcessorChain();
-        $chain[0] = new \stdClass();
+        $chain[0] = new stdClass();
     }
 
     /**

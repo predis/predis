@@ -14,6 +14,8 @@ namespace Predis\Collection\Iterator;
 
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
+use Iterator;
+use ReturnTypeWillChange;
 
 /**
  * Provides the base implementation for a fully-rewindable PHP iterator that can
@@ -26,7 +28,7 @@ use Predis\NotSupportedException;
  *
  * @see http://redis.io/commands/scan
  */
-abstract class CursorBasedIterator implements \Iterator
+abstract class CursorBasedIterator implements Iterator
 {
     protected $client;
     protected $match;
@@ -138,7 +140,7 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         $this->reset();
@@ -148,7 +150,7 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
@@ -157,7 +159,7 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -166,7 +168,7 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function next()
     {
         tryFetch: {
@@ -187,7 +189,7 @@ abstract class CursorBasedIterator implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return $this->valid;

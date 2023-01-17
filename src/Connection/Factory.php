@@ -13,6 +13,9 @@
 namespace Predis\Connection;
 
 use Predis\Command\RawCommand;
+use ReflectionClass;
+use UnexpectedValueException;
+use InvalidArgumentException;
 
 /**
  * Standard connection factory for creating connections to Redis nodes.
@@ -37,7 +40,7 @@ class Factory implements FactoryInterface
      *
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return mixed
      */
@@ -47,10 +50,10 @@ class Factory implements FactoryInterface
             return $initializer;
         }
 
-        $class = new \ReflectionClass($initializer);
+        $class = new ReflectionClass($initializer);
 
         if (!$class->isSubclassOf('Predis\Connection\NodeConnectionInterface')) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object.'
             );
         }
@@ -86,7 +89,7 @@ class Factory implements FactoryInterface
         $scheme = $parameters->scheme;
 
         if (!isset($this->schemes[$scheme])) {
-            throw new \InvalidArgumentException("Unknown connection scheme: '$scheme'.");
+            throw new InvalidArgumentException("Unknown connection scheme: '$scheme'.");
         }
 
         $initializer = $this->schemes[$scheme];
@@ -99,7 +102,7 @@ class Factory implements FactoryInterface
         }
 
         if (!$connection instanceof NodeConnectionInterface) {
-            throw new \UnexpectedValueException(
+            throw new UnexpectedValueException(
                 'Objects returned by connection initializers must implement '.
                 "'Predis\Connection\NodeConnectionInterface'."
             );

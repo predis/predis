@@ -11,11 +11,13 @@
  */
 
 namespace Predis\PubSub;
+use Iterator;
+use ReturnTypeWillChange;
 
 /**
  * Base implementation of a PUB/SUB consumer abstraction based on PHP iterators.
  */
-abstract class AbstractConsumer implements \Iterator
+abstract class AbstractConsumer implements Iterator
 {
     const SUBSCRIBE = 'subscribe';
     const UNSUBSCRIBE = 'unsubscribe';
@@ -150,7 +152,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         // NOOP
@@ -162,7 +164,7 @@ abstract class AbstractConsumer implements \Iterator
      *
      * @return array
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getValue();
@@ -171,7 +173,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -180,7 +182,7 @@ abstract class AbstractConsumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function next()
     {
         if ($this->valid()) {
@@ -195,7 +197,7 @@ abstract class AbstractConsumer implements \Iterator
      *
      * @return bool
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function valid()
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);

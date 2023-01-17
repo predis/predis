@@ -11,6 +11,10 @@
  */
 
 namespace Predis\Response\Iterator;
+use OuterIterator;
+use ReturnTypeWillChange;
+use UnexpectedValueException;
+use InvalidArgumentException;
 
 /**
  * Outer iterator consuming streamable multibulk responses by yielding tuples of
@@ -19,7 +23,7 @@ namespace Predis\Response\Iterator;
  * This wrapper is useful for responses to commands such as `HGETALL` that can
  * be iterater as $key => $value pairs.
  */
-class MultiBulkTuple extends MultiBulk implements \OuterIterator
+class MultiBulkTuple extends MultiBulk implements OuterIterator
 {
     private $iterator;
 
@@ -41,26 +45,26 @@ class MultiBulkTuple extends MultiBulk implements \OuterIterator
      *
      * @param MultiBulk $iterator Inner multibulk response iterator.
      *
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
+     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     protected function checkPreconditions(MultiBulk $iterator)
     {
         if ($iterator->getPosition() !== 0) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Cannot initialize a tuple iterator using an already initiated iterator.'
             );
         }
 
         if (($size = count($iterator)) % 2 !== 0) {
-            throw new \UnexpectedValueException('Invalid response size for a tuple iterator.');
+            throw new UnexpectedValueException('Invalid response size for a tuple iterator.');
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getInnerIterator()
     {
         return $this->iterator;

@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
+use InvalidArgumentException;
 
 /**
  * Connection abstraction to Redis servers based on PHP's stream that uses an
@@ -58,7 +59,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
     public function readBuffer($length)
     {
         if ($length <= 0) {
-            throw new \InvalidArgumentException('Length parameter must be greater than 0.');
+            throw new InvalidArgumentException('Length parameter must be greater than 0.');
         }
 
         $value = '';
