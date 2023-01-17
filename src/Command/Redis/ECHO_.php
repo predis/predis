@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/echo
+ * @see http://redis.io/commands/echo
  */
 class ECHO_ extends RedisCommand
 {

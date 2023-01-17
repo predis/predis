@@ -16,7 +16,7 @@ use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Keys;
 
 /**
- * @link https://redis.io/commands/zdiffstore/
+ * @see https://redis.io/commands/zdiffstore/
  *
  * Computes the difference between the first and all successive input sorted sets
  * and stores the result in destination. The total number of input keys is specified by numkeys.

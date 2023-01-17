@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/xdel
+ * @see http://redis.io/commands/xdel
  */
 class XDEL extends RedisCommand
 {

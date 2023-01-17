@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zrangebylex
+ * @see http://redis.io/commands/zrangebylex
  */
 class ZRANGEBYLEX extends ZRANGE
 {

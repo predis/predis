@@ -20,7 +20,7 @@ use Predis\Command\Traits\Sorting;
 use Predis\Command\Traits\Storedist;
 
 /**
- * @link https://redis.io/commands/geosearchstore/
+ * @see https://redis.io/commands/geosearchstore/
  *
  * This command is like GEOSEARCH, but stores the result in destination key.
  */

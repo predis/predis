@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/msetnx
+ * @see http://redis.io/commands/msetnx
  */
 class MSETNX extends MSET
 {

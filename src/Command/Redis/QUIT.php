@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/quit
+ * @see http://redis.io/commands/quit
  */
 class QUIT extends RedisCommand
 {

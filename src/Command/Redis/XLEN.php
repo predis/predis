@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/xlen
+ * @see http://redis.io/commands/xlen
  */
 class XLEN extends RedisCommand
 {

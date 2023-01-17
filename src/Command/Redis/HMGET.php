@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/hmget
+ * @see http://redis.io/commands/hmget
  */
 class HMGET extends RedisCommand
 {

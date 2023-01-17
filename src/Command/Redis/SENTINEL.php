@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/topics/sentinel
+ * @see http://redis.io/topics/sentinel
  */
 class SENTINEL extends RedisCommand
 {

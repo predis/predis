@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/zincrby
+ * @see http://redis.io/commands/zincrby
  */
 class ZINCRBY extends RedisCommand
 {

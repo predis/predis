@@ -20,7 +20,7 @@ use Predis\Command\Command as RedisCommand;
  * It can be replaced by GEOSEARCH and GEOSEARCHSTORE with the BYRADIUS argument
  * when migrating or writing new code.
  *
- * @link http://redis.io/commands/georadius
+ * @see http://redis.io/commands/georadius
  */
 class GEORADIUS extends RedisCommand
 {

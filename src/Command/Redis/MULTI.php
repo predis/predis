@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/multi
+ * @see http://redis.io/commands/multi
  */
 class MULTI extends RedisCommand
 {

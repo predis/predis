@@ -20,7 +20,7 @@ use Predis\Protocol\ResponseReaderInterface;
 /**
  * Response reader for the standard Redis wire protocol.
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class ResponseReader implements ResponseReaderInterface
 {

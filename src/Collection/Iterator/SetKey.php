@@ -18,7 +18,7 @@ use Predis\ClientInterface;
  * Abstracts the iteration of members stored in a set by leveraging the SSCAN
  * command (Redis >= 2.8) wrapped in a fully-rewindable PHP iterator.
  *
- * @link http://redis.io/commands/scan
+ * @see http://redis.io/commands/scan
  */
 class SetKey extends CursorBasedIterator
 {

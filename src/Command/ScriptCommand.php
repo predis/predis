@@ -16,7 +16,7 @@ namespace Predis\Command;
  * Base class used to implement an higher level abstraction for commands based
  * on Lua scripting with EVAL and EVALSHA.
  *
- * @link http://redis.io/commands/eval
+ * @see http://redis.io/commands/eval
  */
 abstract class ScriptCommand extends Command
 {

@@ -18,7 +18,7 @@ use Predis\ClientInterface;
  * Abstracts the iteration of fields and values of an hash by leveraging the
  * HSCAN command (Redis >= 2.8) wrapped in a fully-rewindable PHP iterator.
  *
- * @link http://redis.io/commands/scan
+ * @see http://redis.io/commands/scan
  */
 class HashKey extends CursorBasedIterator
 {

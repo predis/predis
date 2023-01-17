@@ -18,7 +18,7 @@ namespace Predis\Command\Redis;
  * It can be replaced by GEOSEARCH and GEOSEARCHSTORE with the FROMMEMBER arguments
  * when migrating or writing new code.
  *
- * @link http://redis.io/commands/georadiusbymember
+ * @see http://redis.io/commands/georadiusbymember
  */
 class GEORADIUSBYMEMBER extends GEORADIUS
 {

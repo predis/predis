@@ -16,7 +16,7 @@ use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\With\WithScores;
 
 /**
- * @link https://redis.io/commands/zrandmember/
+ * @see https://redis.io/commands/zrandmember/
  *
  * Return a random element from the sorted set value stored at key.
  *

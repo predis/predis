@@ -17,7 +17,7 @@ use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\With\WithScores;
 
 /**
- * @link https://redis.io/commands/zdiff/
+ * @see https://redis.io/commands/zdiff/
  *
  * This command is similar to ZDIFFSTORE, but instead of
  * storing the resulting sorted set, it is returned to the client.

@@ -41,7 +41,7 @@ use Predis\Response\Status as StatusResponse;
  *  - timeout: timeout to perform the connection (default is 5 seconds).
  *  - read_write_timeout: timeout of read / write operations.
  *
- * @link http://github.com/nrk/phpiredis
+ * @see http://github.com/nrk/phpiredis
  */
 class PhpiredisSocketConnection extends AbstractConnection
 {

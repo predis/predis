@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link https://redis.io/commands/bzmpop/
+ * @see https://redis.io/commands/bzmpop/
  *
  * BZMPOP is the blocking variant of ZMPOP.
  */

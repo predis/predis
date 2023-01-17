@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/lastsave
+ * @see http://redis.io/commands/lastsave
  */
 class LASTSAVE extends RedisCommand
 {

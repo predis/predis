@@ -24,7 +24,7 @@ use Predis\Response\Iterator\MultiBulk as MultiBulkIterator;
  * Streamable multibulk responses are not globally supported by the abstractions
  * built-in into Predis, such as transactions or pipelines. Use them with care!
  *
- * @link http://redis.io/topics/protocol
+ * @see http://redis.io/topics/protocol
  */
 class StreamableMultiBulkResponse implements ResponseHandlerInterface
 {

@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/setbit
+ * @see http://redis.io/commands/setbit
  */
 class SETBIT extends RedisCommand
 {

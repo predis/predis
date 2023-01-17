@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/publish
+ * @see http://redis.io/commands/publish
  */
 class PUBLISH extends RedisCommand
 {

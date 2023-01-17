@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/evalsha
+ * @see http://redis.io/commands/evalsha
  */
 class EVALSHA extends EVAL_
 {
