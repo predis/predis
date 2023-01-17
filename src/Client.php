@@ -36,10 +36,7 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  * abstractions are built. Internally it aggregates various other classes each
  * one with its own responsibility and scope.
  *
- * {@inheritdoc}
- * @template TKey
- * @template TValue
- * @template-implements Traversable<TKey, TValue>
+ * @template-implements \IteratorAggregate<string, static>
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -516,8 +513,7 @@ class Client implements ClientInterface, \IteratorAggregate
     }
 
     /**
-     * {@inheritdoc}
-     * @return Traversable<TKey, TValue>|TValue[]
+     * @return Traversable<string, static>
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
