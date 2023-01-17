@@ -17,9 +17,6 @@ use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class ConnectionsTest extends PredisTestCase
 {
     /**

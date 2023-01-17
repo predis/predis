@@ -22,7 +22,7 @@ class WeightsTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Weights;
 
             public static $weightsArgumentPositionOffset = 0;
@@ -61,7 +61,6 @@ class WeightsTest extends PredisTestCase
 
         $this->testClass->setArguments($actualArguments);
     }
-
 
     public function argumentsProvider(): array
     {

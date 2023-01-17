@@ -193,7 +193,7 @@ class SORT_Test extends PredisCommandTestCase
             $unordered
         );
 
-        $this->assertEquals([1, 2, 3, 10, 30, 100],  $redis->lrange('list:ordered', 0, -1));
+        $this->assertEquals([1, 2, 3, 10, 30, 100], $redis->lrange('list:ordered', 0, -1));
     }
 
     /**

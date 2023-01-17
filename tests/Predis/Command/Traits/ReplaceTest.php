@@ -23,7 +23,7 @@ class ReplaceTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Replace;
 
             public function getId()
@@ -49,7 +49,7 @@ class ReplaceTest extends PredisTestCase
     public function argumentsProvider(): array
     {
         return [
-            'with boolean - true' => [[true],['REPLACE']],
+            'with boolean - true' => [[true], ['REPLACE']],
             'with boolean - false' => [[false], []],
             'with non boolean' => [['string'], ['string']],
         ];

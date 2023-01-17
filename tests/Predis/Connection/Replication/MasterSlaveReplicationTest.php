@@ -19,9 +19,6 @@ use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
 use PredisTestCase;
 
-/**
- *
- */
 class MasterSlaveReplicationTest extends PredisTestCase
 {
     /**
@@ -1114,7 +1111,7 @@ repl_backlog_histlen:12978
             ->expects($this->exactly(3))
             ->method('create')
             ->withConsecutive(
-                # Connection to master node
+                // Connection to master node
                 [
                     [
                         'host' => '127.0.0.1',
@@ -1123,7 +1120,7 @@ repl_backlog_histlen:12978
                     ],
                 ],
 
-                # Connection to first slave
+                // Connection to first slave
                 [
                     [
                         'host' => '127.0.0.1',
@@ -1132,7 +1129,7 @@ repl_backlog_histlen:12978
                     ],
                 ],
 
-                # Connection to second slave
+                // Connection to second slave
                 [
                     [
                         'host' => '127.0.0.1',
@@ -1222,7 +1219,7 @@ repl_backlog_histlen:12978
             ->expects($this->exactly(3))
             ->method('create')
             ->withConsecutive(
-                # Connection to master node
+                // Connection to master node
                 [
                     [
                         'host' => '127.0.0.1',
@@ -1231,7 +1228,7 @@ repl_backlog_histlen:12978
                     ],
                 ],
 
-                # Connection to first slave
+                // Connection to first slave
                 [
                     [
                         'host' => '127.0.0.1',
@@ -1240,7 +1237,7 @@ repl_backlog_histlen:12978
                     ],
                 ],
 
-                # Connection to second slave
+                // Connection to second slave
                 [
                     [
                         'host' => '127.0.0.1',

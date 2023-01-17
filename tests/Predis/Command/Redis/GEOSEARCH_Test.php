@@ -24,7 +24,7 @@ use UnexpectedValueException;
 class GEOSEARCH_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -32,7 +32,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -136,7 +136,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km'],
             ],
             'with default arguments - FROMMEMBER, BYBOX' => [
-                ['key', new FromMember('member'), new ByBox(1,1, 'km')],
+                ['key', new FromMember('member'), new ByBox(1, 1, 'km')],
                 ['key', 'FROMMEMBER', 'member', 'BYBOX', 1, 1, 'km'],
             ],
             'with ASC sorting' => [

@@ -53,7 +53,7 @@ class OneOfConstraint extends Constraint
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toString(): string
     {

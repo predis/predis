@@ -15,9 +15,6 @@ namespace Predis\Transaction;
 use Predis\Client;
 use PredisTestCase;
 
-/**
- *
- */
 class AbortedMultiExecExceptionTest extends PredisTestCase
 {
     /**

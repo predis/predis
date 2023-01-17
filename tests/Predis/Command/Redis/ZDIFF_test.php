@@ -17,7 +17,7 @@ use Predis\Response\ServerException;
 class ZDIFF_test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -25,7 +25,7 @@ class ZDIFF_test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -103,7 +103,7 @@ class ZDIFF_test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('zdiff_foo', 'bar');
-        $redis->zdiff(['zdiff_foo'],true);
+        $redis->zdiff(['zdiff_foo'], true);
     }
 
     public function argumentsProvider(): array

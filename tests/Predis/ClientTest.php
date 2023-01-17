@@ -23,9 +23,6 @@ use PredisTestCase;
 use ReflectionProperty;
 use stdClass;
 
-/**
- *
- */
 class ClientTest extends PredisTestCase
 {
     /**

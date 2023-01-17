@@ -14,12 +14,9 @@ namespace Predis\Response;
 
 use PredisTestCase;
 
-/**
- *
- */
 class ServerExceptionTest extends PredisTestCase
 {
-    const ERR_WRONG_KEY_TYPE = 'ERR Operation against a key holding the wrong kind of value';
+    public const ERR_WRONG_KEY_TYPE = 'ERR Operation against a key holding the wrong kind of value';
 
     /**
      * @group disconnected

@@ -15,9 +15,6 @@ namespace Predis\Cluster;
 use PHPUnit\Framework\MockObject\MockObject;
 use PredisTestCase;
 
-/**
- *
- */
 class RedisStrategyTest extends PredisTestCase
 {
     /**
@@ -34,9 +31,9 @@ class RedisStrategyTest extends PredisTestCase
         $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
         $this->assertSame(12182, $strategy->getSlotByKey('bar:{foo}:baz{}'));
-        $this->assertSame(9415,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
+        $this->assertSame(9415, $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(0,     $strategy->getSlotByKey(''));
+        $this->assertSame(0, $strategy->getSlotByKey(''));
         $this->assertSame(15257, $strategy->getSlotByKey('{}'));
     }
 

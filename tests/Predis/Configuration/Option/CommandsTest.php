@@ -19,9 +19,6 @@ use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class CommandsTest extends PredisTestCase
 {
     /**
@@ -122,7 +119,7 @@ class CommandsTest extends PredisTestCase
         $input = [
             'ECHO' => null,
             'EVAL' => null,
-            'FOO'  => null,
+            'FOO' => null,
         ];
 
         $commands = $option->filter($options, $input);

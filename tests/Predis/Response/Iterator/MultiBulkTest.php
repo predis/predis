@@ -31,7 +31,7 @@ class MultiBulkTest extends PredisTestCase
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
-        /** @var MultiBulkIterator */
+        /* @var MultiBulkIterator */
         $this->assertInstanceOf('Iterator', $iterator = $client->lrange('metavars', 0, -1));
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulk', $iterator);
 

@@ -556,7 +556,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return string
      */
-    protected abstract function getConnectionClass(): string;
+    abstract protected function getConnectionClass(): string;
 
     /**
      * Returns a named array with the default connection parameters and their values.

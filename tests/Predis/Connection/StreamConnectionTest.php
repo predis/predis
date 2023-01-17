@@ -16,13 +16,10 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 
-/**
- *
- */
 class StreamConnectionTest extends PredisConnectionTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getConnectionClass(): string
     {

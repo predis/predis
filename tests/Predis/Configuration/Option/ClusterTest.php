@@ -16,9 +16,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 
-/**
- *
- */
 class ClusterTest extends PredisTestCase
 {
     /**

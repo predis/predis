@@ -26,7 +26,7 @@ class WithScoresTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use WithScores;
 
             public function getId()

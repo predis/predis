@@ -14,9 +14,6 @@ namespace Predis\Connection;
 
 use PredisTestCase;
 
-/**
- *
- */
 class ParametersTest extends PredisTestCase
 {
     /**

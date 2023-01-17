@@ -20,9 +20,8 @@ use Predis\Response\ServerException;
  */
 class ZMSCORE_Test extends PredisCommandTestCase
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -30,7 +29,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -73,7 +72,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
         $notExpectedMember = 'not_expected';
 
         /** @var string[] $members */
-        $members = array_filter($membersDictionary, static function($item) {
+        $members = array_filter($membersDictionary, static function ($item) {
             return is_string($item);
         });
 

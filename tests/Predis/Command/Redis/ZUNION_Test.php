@@ -22,7 +22,7 @@ use UnexpectedValueException;
 class ZUNION_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -30,7 +30,7 @@ class ZUNION_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -83,7 +83,6 @@ class ZUNION_Test extends PredisCommandTestCase
 
         $this->assertSame($expectedResponse, $actualResponse);
     }
-
 
     /**
      * @group connected
@@ -145,7 +144,7 @@ class ZUNION_Test extends PredisCommandTestCase
             ],
             'with all arguments' => [
                 [['key1', 'key2'], [1, 2], 'min', true],
-                [ 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
+                [2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
             ],
         ];
     }

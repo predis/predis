@@ -16,9 +16,6 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PredisTestCase;
 
-/**
- *
- */
 class CommunicationExceptionTest extends PredisTestCase
 {
     /**
@@ -118,7 +115,7 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param Connection\NodeConnectionInterface $connection Connection instance.
      * @param string                             $message    Exception message.
      * @param int                                $code       Exception code.
-     * @param Exception                         $inner      Inner exception.
+     * @param Exception                          $inner      Inner exception.
      *
      * @return \Predis\CommunicationException
      */

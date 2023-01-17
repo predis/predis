@@ -16,9 +16,8 @@ use Predis\Response\ServerException;
 
 class ZRANDMEMBER_test extends PredisCommandTestCase
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -26,11 +25,11 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-       return 'ZRANDMEMBER';
+        return 'ZRANDMEMBER';
     }
 
     /**

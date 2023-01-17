@@ -12,15 +12,10 @@
 
 namespace Predis\Connection;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Connection\Cluster\ClusterInterface;
 use PredisTestCase;
 use ReflectionObject;
 use stdClass;
 
-/**
- *
- */
 class FactoryTest extends PredisTestCase
 {
     /**

@@ -16,9 +16,6 @@ use Predis\Client;
 use Predis\Response;
 use PredisTestCase;
 
-/**
- *
- */
 class AtomicTest extends PredisTestCase
 {
     /**

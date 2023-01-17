@@ -20,8 +20,8 @@ use PredisTestCase;
  */
 class ScriptCommandTest extends PredisTestCase
 {
-    const LUA_SCRIPT = 'return { KEYS[1], KEYS[2], ARGV[1], ARGV[2] }';
-    const LUA_SCRIPT_SHA1 = '6e07f61f502e36d123fe28523076af588f5c315e';
+    public const LUA_SCRIPT = 'return { KEYS[1], KEYS[2], ARGV[1], ARGV[2] }';
+    public const LUA_SCRIPT_SHA1 = '6e07f61f502e36d123fe28523076af588f5c315e';
 
     /**
      * @group disconnected
