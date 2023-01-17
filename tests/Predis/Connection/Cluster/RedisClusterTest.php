@@ -19,9 +19,6 @@ use Predis\Connection;
 use Predis\Response;
 use PredisTestCase;
 
-/**
- *
- */
 class RedisClusterTest extends PredisTestCase
 {
     /**
@@ -1306,22 +1303,22 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @medium
      * @group disconnected
-     * @group slow 
+     * @group slow
      */
     public function testRetryCommandSuccessOnClusterDownErrors()
     {
-        $clusterDownError= new Response\Error('CLUSTERDOWN') ;
+        $clusterDownError = new Response\Error('CLUSTERDOWN');
 
-	    $command = Command\RawCommand::create('get', 'node:1001');
+        $command = Command\RawCommand::create('get', 'node:1001');
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(3))
                     ->method('executeCommand')
                     ->with($command)
                     ->will($this->onConsecutiveCalls(
-                            $clusterDownError,
-                            $clusterDownError,
-                            'foobar'));
+                        $clusterDownError,
+                        $clusterDownError,
+                        'foobar'));
 
         $cluster = new RedisCluster(new Connection\Factory());
         $cluster->useClusterSlots(false);
@@ -1334,14 +1331,14 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @medium
      * @group disconnected
-     * @group slow 
+     * @group slow
      */
     public function testRetryCommandFailureOnClusterDownErrors()
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('CLUSTERDOWN');
 
-        $clusterDownError= new Response\Error('CLUSTERDOWN') ;
+        $clusterDownError = new Response\Error('CLUSTERDOWN');
 
         $command = Command\RawCommand::create('get', 'node:1001');
 
@@ -1350,11 +1347,10 @@ class RedisClusterTest extends PredisTestCase
                     ->method('executeCommand')
                     ->with($command)
                     ->will($this->onConsecutiveCalls(
-                            $clusterDownError,
-                            $clusterDownError,
-                            $clusterDownError
-                            ));
-
+                        $clusterDownError,
+                        $clusterDownError,
+                        $clusterDownError
+                    ));
 
         $cluster = new RedisCluster(new Connection\Factory());
         $cluster->useClusterSlots(false);
@@ -1367,7 +1363,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @medium
      * @group disconnected
-     * @group slow 
+     * @group slow
      */
     public function testQueryClusterNodeForSlotMapPauseDurationOnRetry()
     {
@@ -1430,15 +1426,15 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->setRetryInterval(2000);
 
-        $startTime = time() ;
+        $startTime = time();
         $cluster->askSlotMap();
         $endTime = time();
-        $totalTime=$endTime-$startTime;
-        $t1 = $cluster->getRetryInterval()  ;
+        $totalTime = $endTime - $startTime;
+        $t1 = $cluster->getRetryInterval();
         $t2 = $t1 * 2;
 
-        $expectedTime = ($t1 + $t2 )/1000  ; // expected time for 2 retries (fail 1=wait 2s, fail 2=wait 4s , OK)
-        $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, 'Unexpected execution time') ;
+        $expectedTime = ($t1 + $t2) / 1000; // expected time for 2 retries (fail 1=wait 2s, fail 2=wait 4s , OK)
+        $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, 'Unexpected execution time');
 
         $this->assertCount(16384, $cluster->getSlotMap());
     }

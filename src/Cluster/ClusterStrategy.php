@@ -23,9 +23,6 @@ abstract class ClusterStrategy implements StrategyInterface
 {
     protected $commands;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
