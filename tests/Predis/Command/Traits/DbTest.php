@@ -71,18 +71,18 @@ class DbTest extends PredisTestCase
             'with positive integer db argument' => [
                 0,
                 [1],
-                ['DB', 1]
+                ['DB', 1],
             ],
             'with wrong offset' => [
                 1,
                 [1],
-                [1]
+                [1],
             ],
             'with negative integer db argument' => [
                 1,
                 ['argument1', -1],
-                ['argument1']
-            ]
+                ['argument1'],
+            ],
         ];
     }
 }

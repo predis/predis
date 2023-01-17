@@ -101,16 +101,16 @@ class HRANDFIELD_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key'],
-                ['key']
+                ['key'],
             ],
             'with count argument' => [
                 ['key', 1],
-                ['key', 1]
+                ['key', 1],
             ],
             'with WITHVALUES argument' => [
                 ['key', 1, true],
-                ['key', 1, 'WITHVALUES']
-            ]
+                ['key', 1, 'WITHVALUES'],
+            ],
         ];
     }
 
@@ -122,14 +122,14 @@ class HRANDFIELD_Test extends PredisCommandTestCase
                 'key',
                 1,
                 false,
-                ['key1', 'key2', 'key3']
+                ['key1', 'key2', 'key3'],
             ],
             'one field - with values' => [
                 ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],
                 'key',
                 1,
                 true,
-                ['key1', 'value1', 'key2', 'value2', 'key3', 'value3']
+                ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],
             ],
             'multiple fields - without values' => [
                 ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],

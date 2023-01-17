@@ -71,22 +71,22 @@ class WithDistTest extends PredisTestCase
             'WITHDIST false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'WITHDIST argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['WITHDIST', 'second argument', 'third argument']
+                ['WITHDIST', 'second argument', 'third argument'],
             ],
             'WITHDIST argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'WITHDIST']
+                ['first argument', 'second argument', 'WITHDIST'],
             ],
             'WITHDIST argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'WITHDIST', 'third argument']
+                ['first argument', 'WITHDIST', 'third argument'],
             ],
         ];
     }

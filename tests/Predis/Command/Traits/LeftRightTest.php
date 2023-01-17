@@ -70,23 +70,23 @@ class LeftRightTest extends PredisTestCase
             'left/right argument first and there is arguments after' => [
                 0,
                 ['left', 'second argument', 'third argument'],
-                ['LEFT', 'second argument', 'third argument']
+                ['LEFT', 'second argument', 'third argument'],
             ],
             'left/right argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', 'right'],
-                ['first argument', 'second argument', 'RIGHT']
+                ['first argument', 'second argument', 'RIGHT'],
             ],
             'left/right argument not the first and not the last' => [
                 1,
                 ['first argument', 'left', 'third argument'],
-                ['first argument', 'LEFT','third argument']
+                ['first argument', 'LEFT','third argument'],
             ],
             'aggregate argument the only argument' => [
                 0,
                 ['right'],
-                ['RIGHT']
-            ]
+                ['RIGHT'],
+            ],
         ];
     }
 

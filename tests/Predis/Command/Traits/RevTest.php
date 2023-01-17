@@ -71,22 +71,22 @@ class RevTest extends PredisTestCase
             'rev false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'rev argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['REV', 'second argument', 'third argument']
+                ['REV', 'second argument', 'third argument'],
             ],
             'rev argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'REV']
+                ['first argument', 'second argument', 'REV'],
             ],
             'rev argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'REV', 'third argument']
+                ['first argument', 'REV', 'third argument'],
             ],
         ];
     }

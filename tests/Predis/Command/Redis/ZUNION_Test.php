@@ -146,7 +146,7 @@ class ZUNION_Test extends PredisCommandTestCase
             'with all arguments' => [
                 [['key1', 'key2'], [1, 2], 'min', true],
                 [ 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
-            ]
+            ],
         ];
     }
 
@@ -196,21 +196,21 @@ class ZUNION_Test extends PredisCommandTestCase
                 [],
                 'sum',
                 false,
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with unexpected weights argument' => [
                 ['key1'],
                 1,
                 'sum',
                 false,
-                'Wrong weights argument type'
+                'Wrong weights argument type',
             ],
             'with unexpected aggregate argument' => [
                 ['key1'],
                 [],
                 'wrong',
                 false,
-                'Aggregate argument accepts only: min, max, sum values'
+                'Aggregate argument accepts only: min, max, sum values',
             ],
         ];
     }

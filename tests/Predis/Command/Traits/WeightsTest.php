@@ -70,23 +70,23 @@ class WeightsTest extends PredisTestCase
             'weights argument first and there is arguments after' => [
                 0,
                 [[1, 2], 'second argument', 'third argument'],
-                ['WEIGHTS', 1, 2, 'second argument', 'third argument']
+                ['WEIGHTS', 1, 2, 'second argument', 'third argument'],
             ],
             'weights argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', [1, 2]],
-                ['first argument', 'second argument', 'WEIGHTS', 1, 2]
+                ['first argument', 'second argument', 'WEIGHTS', 1, 2],
             ],
             'weights argument not the first and not the last' => [
                 1,
                 ['first argument', [1, 2], 'third argument'],
-                ['first argument', 'WEIGHTS', 1, 2, 'third argument']
+                ['first argument', 'WEIGHTS', 1, 2, 'third argument'],
             ],
             'weights argument the only argument' => [
                 0,
                 [[1, 2]],
-                ['WEIGHTS', 1, 2]
-            ]
+                ['WEIGHTS', 1, 2],
+            ],
         ];
     }
 }

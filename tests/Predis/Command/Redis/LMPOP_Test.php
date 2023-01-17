@@ -93,20 +93,20 @@ class LMPOP_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 [['key']],
-                [1, 'key', 'LEFT']
+                [1, 'key', 'LEFT'],
             ],
             'with LEFT/RIGHT argument' => [
                 [['key'], 'right'],
-                [1, 'key', 'RIGHT']
+                [1, 'key', 'RIGHT'],
             ],
             'with COUNT argument' => [
                 [['key'], 'left', 2],
-                [1, 'key', 'LEFT', 'COUNT', 2]
+                [1, 'key', 'LEFT', 'COUNT', 2],
             ],
             'with all arguments' => [
                 [['key1', 'key2'], 'right', 2],
-                [2, 'key1', 'key2', 'RIGHT', 'COUNT', 2]
-            ]
+                [2, 'key1', 'key2', 'RIGHT', 'COUNT', 2],
+            ],
         ];
     }
 
@@ -119,7 +119,7 @@ class LMPOP_Test extends PredisCommandTestCase
                 'left',
                 1,
                 ['key' => ['elem3']],
-                ['elem2', 'elem1']
+                ['elem2', 'elem1'],
             ],
             'pops single element - right' => [
                 ['key', 'elem1', 'elem2', 'elem3'],
@@ -127,7 +127,7 @@ class LMPOP_Test extends PredisCommandTestCase
                 'right',
                 1,
                 ['key' => ['elem1']],
-                ['elem3', 'elem2']
+                ['elem3', 'elem2'],
             ],
             'pops multiple elements' => [
                 ['key', 'elem1', 'elem2', 'elem3'],

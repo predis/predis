@@ -166,36 +166,36 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
         return [
             'with default arguments - FROMLONLAT, BYRADIUS' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km')],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km']
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km'],
             ],
             'with default arguments - FROMMEMBER, BYBOX' => [
                 ['destination', 'source', new FromMember('member'), new ByBox(1,1, 'km')],
-                ['destination', 'source', 'FROMMEMBER', 'member', 'BYBOX', 1, 1, 'km']
+                ['destination', 'source', 'FROMMEMBER', 'member', 'BYBOX', 1, 1, 'km'],
             ],
             'with ASC sorting' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'asc'],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC']
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC'],
             ],
             'with DESC sorting' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'desc'],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'DESC']
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'DESC'],
             ],
             'with COUNT argument - without ANY option' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, 20],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20]
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20],
             ],
             'with COUNT argument - with ANY option' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, 20, true],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20, 'ANY']
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20, 'ANY'],
             ],
             'with STOREDIST argument' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, -1, false, true],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'STOREDIST']
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'STOREDIST'],
             ],
             'with all arguments' => [
                 ['destination', 'source', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'asc', 20, true, true],
-                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC', 'COUNT', 20, 'ANY', 'STOREDIST']
-            ]
+                ['destination', 'source', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC', 'COUNT', 20, 'ANY', 'STOREDIST'],
+            ],
         ];
     }
 
@@ -214,7 +214,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 3,
-                ['member1', 'member2', 'member3']
+                ['member1', 'member2', 'member3'],
             ],
             'with default arguments - FROMLONLAT, BYRADIUS - closest members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -228,7 +228,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 2,
-                ['member2', 'member1']
+                ['member2', 'member1'],
             ],
             'with default arguments - FROMMEMBER, BYBOX - all members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -242,7 +242,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 3,
-                ['member1', 'member2', 'member3']
+                ['member1', 'member2', 'member3'],
             ],
             'with default arguments - FROMMEMBER, BYBOX - closest members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -256,7 +256,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 2,
-                ['member1', 'member2']
+                ['member1', 'member2'],
             ],
             'with ASC modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -270,7 +270,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 3,
-                ['member2', 'member1', 'member3']
+                ['member2', 'member1', 'member3'],
             ],
             'with DESC modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -284,7 +284,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 -1,
                 false,
                 3,
-                ['member3', 'member1', 'member2']
+                ['member3', 'member1', 'member2'],
             ],
             'with COUNT modifier - without ANY option' => [
                 ['key', 1.1, 2, 'member1'],
@@ -298,7 +298,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 1,
                 false,
                 1,
-                ['member2']
+                ['member2'],
             ],
             'with COUNT modifier - with ANY option' => [
                 ['key', 1.1, 2, 'member1'],
@@ -312,7 +312,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 2,
                 true,
                 2,
-                ['member1', 'member2']
+                ['member1', 'member2'],
             ],
             'with all arguments' => [
                 ['key', 1.1, 2, 'member1'],
@@ -326,7 +326,7 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
                 2,
                 true,
                 2,
-                ['member2', 'member1']
+                ['member2', 'member1'],
             ],
         ];
     }
@@ -337,27 +337,27 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
             'with wrong FROM argument' => [
                 ['destination', 'source', false, new ByRadius(9999, 'km'), null, -1, false, false],
                 InvalidArgumentException::class,
-                'Invalid FROM argument value given'
+                'Invalid FROM argument value given',
             ],
             'with wrong BY argument' => [
                 ['destination', 'source', new FromLonLat(1, 4), false, null, -1, false, false],
                 InvalidArgumentException::class,
-                'Invalid BY argument value given'
+                'Invalid BY argument value given',
             ],
             'with wrong sorting argument' => [
                 ['destination', 'source', new FromLonLat(1, 4), new ByRadius(9999, 'km'), 'wrong', -1, false, false],
                 UnexpectedValueException::class,
-                'Sorting argument accepts only: asc, desc values'
+                'Sorting argument accepts only: asc, desc values',
             ],
             'with wrong COUNT argument' => [
                 ['destination', 'source', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false],
                 UnexpectedValueException::class,
-                'Wrong count argument value or position offset'
+                'Wrong count argument value or position offset',
             ],
             'with wrong STOREDIST argument' => [
                 ['destination', 'source', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, 'wrong'],
                 UnexpectedValueException::class,
-                'Wrong STOREDIST argument type'
+                'Wrong STOREDIST argument type',
             ],
         ];
     }

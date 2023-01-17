@@ -71,22 +71,22 @@ class WithHashTest extends PredisTestCase
             'WITHHASH false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'WITHHASH argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['WITHHASH', 'second argument', 'third argument']
+                ['WITHHASH', 'second argument', 'third argument'],
             ],
             'WITHHASH argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'WITHHASH']
+                ['first argument', 'second argument', 'WITHHASH'],
             ],
             'WITHHASH argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'WITHHASH', 'third argument']
+                ['first argument', 'WITHHASH', 'third argument'],
             ],
         ];
     }

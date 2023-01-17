@@ -71,7 +71,7 @@ class LimitTest extends PredisTestCase
             'limit false argument first and there is arguments after' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                []
+                [],
             ],
             'limit false argument last and there is arguments before' => [
                 2,
@@ -86,22 +86,22 @@ class LimitTest extends PredisTestCase
             'limit argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['LIMIT', 'second argument', 'third argument']
+                ['LIMIT', 'second argument', 'third argument'],
             ],
             'limit argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'LIMIT']
+                ['first argument', 'second argument', 'LIMIT'],
             ],
             'limit argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'LIMIT', 'third argument']
+                ['first argument', 'LIMIT', 'third argument'],
             ],
             'limit argument is integer' => [
                 0,
                 [1],
-                ['LIMIT', 1]
+                ['LIMIT', 1],
             ],
             'limit argument with wrong offset' => [
                 2,

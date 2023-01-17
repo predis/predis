@@ -149,26 +149,26 @@ class ZINTERCARD_Test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 0,
-                3
+                3,
             ],
             'with partial intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 4, 'member4'],
                 0,
-                2
+                2,
             ],
             'with no intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [4, 'member4', 5, 'member5', 6, 'member6'],
                 0,
-                0
+                0,
             ],
             'with full intersection and limit' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 1,
-                1
-            ]
+                1,
+            ],
         ];
     }
 
@@ -178,13 +178,13 @@ class ZINTERCARD_Test extends PredisCommandTestCase
             'with wrong type keys argument' => [
                 'wrong',
                 0,
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with wrong type limit argument' => [
                 ['key1', 'key'],
                 [1],
-                'Wrong limit argument type'
-            ]
+                'Wrong limit argument type',
+            ],
         ];
     }
 }

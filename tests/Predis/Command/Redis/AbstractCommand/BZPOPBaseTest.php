@@ -60,11 +60,11 @@ class BZPOPBaseTest extends PredisTestCase
         return [
             'with one key' => [
                 [['key1'], 1],
-                ['key1', 1]
+                ['key1', 1],
             ],
             'with multiple keys' => [
                 [['key1', 'key2', 'key3'], 1],
-                ['key1', 'key2', 'key3', 1]
+                ['key1', 'key2', 'key3', 1],
             ],
         ];
     }
@@ -74,11 +74,11 @@ class BZPOPBaseTest extends PredisTestCase
         return [
             'null-element array' => [
                 [null],
-                [null]
+                [null],
             ],
             'three-element array' => [
                 ['key', 'member', 'score'],
-                ['key' => ['member' => 'score']]
+                ['key' => ['member' => 'score']],
             ],
         ];
     }

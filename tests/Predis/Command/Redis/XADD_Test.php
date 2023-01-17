@@ -38,7 +38,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true],
             ],
             ['stream', 'NOMKSTREAM', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key', 'val'],
         ];
@@ -48,7 +48,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key1' => 'val1', 'key2' => 'val2'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true],
             ],
             ['stream', 'NOMKSTREAM', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key1', 'val1', 'key2', 'val2'],
         ];
@@ -58,7 +58,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5],
             ],
             ['stream', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key', 'val'],
         ];
@@ -68,7 +68,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1']]
+                ['trim' => ['MINID', '~', '0-1']],
             ],
             ['stream', 'MINID', '~', '0-1', '*', 'key', 'val'],
         ];
@@ -78,7 +78,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '0-1']]
+                ['trim' => ['MINID', '0-1']],
             ],
             ['stream', 'MINID', '0-1', '*', 'key', 'val'],
         ];

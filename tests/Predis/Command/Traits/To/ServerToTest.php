@@ -58,23 +58,23 @@ class ServerToTest extends PredisTestCase
             'with TO argument - no FORCE' => [
                 0,
                 [new To('host', 9999)],
-                ['TO', 'host', 9999]
+                ['TO', 'host', 9999],
             ],
             'with TO argument - with FORCE' => [
                 0,
                 [new To('host', 9999, true)],
-                ['TO', 'host', 9999, 'FORCE']
+                ['TO', 'host', 9999, 'FORCE'],
             ],
             'with wrong offset given' => [
                 1,
                 [],
-                []
+                [],
             ],
             'with default value' => [
                 0,
                 [null],
-                [false]
-            ]
+                [false],
+            ],
         ];
     }
 }

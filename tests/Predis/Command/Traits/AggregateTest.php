@@ -70,23 +70,23 @@ class AggregateTest extends PredisTestCase
             'aggregate argument first and there is arguments after' => [
                 0,
                 ['sum', 'second argument', 'third argument'],
-                ['AGGREGATE', 'SUM', 'second argument', 'third argument']
+                ['AGGREGATE', 'SUM', 'second argument', 'third argument'],
             ],
             'aggregate argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', 'min'],
-                ['first argument', 'second argument', 'AGGREGATE', 'MIN']
+                ['first argument', 'second argument', 'AGGREGATE', 'MIN'],
             ],
             'aggregate argument not the first and not the last' => [
                 1,
                 ['first argument', 'max', 'third argument'],
-                ['first argument', 'AGGREGATE', 'MAX', 'third argument']
+                ['first argument', 'AGGREGATE', 'MAX', 'third argument'],
             ],
             'aggregate argument the only argument' => [
                 0,
                 ['sum'],
-                ['AGGREGATE', 'SUM']
-            ]
+                ['AGGREGATE', 'SUM'],
+            ],
         ];
     }
 

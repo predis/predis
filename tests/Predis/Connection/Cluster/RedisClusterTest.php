@@ -323,13 +323,13 @@ class RedisClusterTest extends PredisTestCase
                     [
                         'host' => '127.0.0.1',
                         'port' => '6383',
-                    ]
+                    ],
                 ],
                 [
                     [
                         'host' => '127.0.0.1',
                         'port' => '6384',
-                    ]
+                    ],
                 ]
             )
             ->willReturnOnConsecutiveCalls(

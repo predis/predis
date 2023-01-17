@@ -526,7 +526,7 @@ class Client implements ClientInterface, IteratorAggregate
 
         if (!$connection instanceof Traversable) {
             return new ArrayIterator([
-                (string) $connection => new static($connection, $this->getOptions())
+                (string) $connection => new static($connection, $this->getOptions()),
             ]);
         }
 

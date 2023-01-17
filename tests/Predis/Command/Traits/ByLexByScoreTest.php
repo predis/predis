@@ -74,22 +74,22 @@ class ByLexByScoreTest extends PredisTestCase
             'by false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'by argument first and there is arguments after' => [
                 0,
                 ['bylex', 'second argument', 'third argument'],
-                ['BYLEX', 'second argument', 'third argument']
+                ['BYLEX', 'second argument', 'third argument'],
             ],
             'by argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', 'byscore'],
-                ['first argument', 'second argument', 'BYSCORE']
+                ['first argument', 'second argument', 'BYSCORE'],
             ],
             'by argument not the first and not the last' => [
                 1,
                 ['first argument', 'byscore', 'third argument'],
-                ['first argument', 'BYSCORE', 'third argument']
+                ['first argument', 'BYSCORE', 'third argument'],
             ],
         ];
     }
@@ -98,7 +98,7 @@ class ByLexByScoreTest extends PredisTestCase
     {
         return [
             'true argument' => [[true]],
-            'string argument, not BYLEX/BYSCORE' => [['wrong argument']]
+            'string argument, not BYLEX/BYSCORE' => [['wrong argument']],
         ];
     }
 }

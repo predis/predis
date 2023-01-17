@@ -1495,7 +1495,7 @@ class SentinelReplicationTest extends PredisTestCase
                         'port', '5382',
                         'runid', 'f53b52d281be5cdd4873700c94846af8dbe47209',
                         'flags', 'sentinel',
-                    ]
+                    ],
                 ]
             );
 

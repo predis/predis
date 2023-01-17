@@ -1120,7 +1120,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6381',
                         'role' => 'master',
-                    ]
+                    ],
                 ],
 
                 # Connection to first slave
@@ -1129,7 +1129,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6382',
                         'role' => 'slave',
-                    ]
+                    ],
                 ],
 
                 # Connection to second slave
@@ -1138,7 +1138,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6383',
                         'role' => 'slave',
-                    ]
+                    ],
                 ]
             )
             ->willReturnOnConsecutiveCalls(
@@ -1228,7 +1228,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6381',
                         'role' => 'master',
-                    ]
+                    ],
                 ],
 
                 # Connection to first slave
@@ -1237,7 +1237,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6382',
                         'role' => 'slave',
-                    ]
+                    ],
                 ],
 
                 # Connection to second slave
@@ -1246,7 +1246,7 @@ repl_backlog_histlen:12978
                         'host' => '127.0.0.1',
                         'port' => '6383',
                         'role' => 'slave',
-                    ]
+                    ],
                 ]
             )
             ->willReturnOnConsecutiveCalls(
