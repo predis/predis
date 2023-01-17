@@ -42,7 +42,7 @@ class To implements ArrayableArgument
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {

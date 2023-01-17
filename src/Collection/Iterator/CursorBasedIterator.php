@@ -171,7 +171,7 @@ abstract class CursorBasedIterator implements Iterator
     #[ReturnTypeWillChange]
     public function next()
     {
-        tryFetch: {
+        tryFetch:
             if (!$this->elements && $this->fetchmore) {
                 $this->fetch();
             }
@@ -183,7 +183,6 @@ abstract class CursorBasedIterator implements Iterator
             } else {
                 $this->valid = false;
             }
-        }
     }
 
     /**

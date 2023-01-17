@@ -125,7 +125,7 @@ class Pipeline implements ClientContextInterface
      * from the current connection.
      *
      * @param ConnectionInterface $connection Current connection instance.
-     * @param SplQueue           $commands   Queued commands.
+     * @param SplQueue            $commands   Queued commands.
      *
      * @return array
      */
@@ -194,10 +194,9 @@ class Pipeline implements ClientContextInterface
      *
      * @param mixed $callable Optional callback for execution.
      *
+     * @return array
      * @throws Exception
      * @throws InvalidArgumentException
-     *
-     * @return array
      */
     public function execute($callable = null)
     {

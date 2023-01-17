@@ -31,6 +31,7 @@ trait Weights
 
         if (static::$weightsArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -43,6 +44,7 @@ trait Weights
         if (empty($weightsArray)) {
             unset($arguments[static::$weightsArgumentPositionOffset]);
             parent::setArguments($arguments);
+
             return;
         }
 

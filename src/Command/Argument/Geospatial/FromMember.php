@@ -27,7 +27,7 @@ class FromMember implements FromInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {

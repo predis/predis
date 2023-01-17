@@ -32,6 +32,7 @@ trait MinMaxModifier
     {
         if ($offset >= count($arguments)) {
             $arguments[$offset] = $this->modifierEnum['min'];
+
             return;
         }
 

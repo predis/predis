@@ -29,6 +29,7 @@ trait WithCoord
             || false === $arguments[static::$withCoordArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -41,7 +42,7 @@ trait WithCoord
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withCoordArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$withCoordArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$withCoordArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

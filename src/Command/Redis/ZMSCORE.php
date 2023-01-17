@@ -21,12 +21,11 @@ use Predis\Command\Command as RedisCommand;
  * in the sorted set stored at key.
  *
  * For every member that does not exist in the sorted set, a null value is returned.
- *
  */
 class ZMSCORE extends RedisCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getId()
     {

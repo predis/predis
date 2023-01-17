@@ -26,6 +26,7 @@ trait Rev
 
         if (false === $argument) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -36,7 +37,7 @@ trait Rev
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$revArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$revArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$revArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

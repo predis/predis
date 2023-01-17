@@ -92,7 +92,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
     /**
      * Sets the initial retry interval (milliseconds).
-     * 
+     *
      * @param int $retryInterval Milliseconds between retries.
      */
     public function setRetryInterval($retryInterval)
@@ -238,7 +238,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $retryAfter = $this->retryInterval;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $response = $connection->executeCommand($command);
             } catch (ConnectionException $exception) {
@@ -261,7 +261,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }
@@ -368,9 +367,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @param int $slot Slot index.
      *
-     * @throws OutOfBoundsException
-     *
      * @return NodeConnectionInterface
+     * @throws OutOfBoundsException
      */
     public function getConnectionBySlot($slot)
     {
@@ -474,6 +472,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         }
 
         $this->move($connection, $slot);
+
         return $this->executeCommand($command);
     }
 
@@ -495,6 +494,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         }
 
         $connection->executeCommand(RawCommand::create('ASKING'));
+
         return $connection->executeCommand($command);
     }
 
@@ -517,7 +517,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $retries = 0;
         $retryAfter = $this->retryInterval;
 
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
 
@@ -534,7 +534,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
                 if ($exception instanceof ConnectionException) {
                     $connection = $exception->getConnection();
-                    
+
                     if ($connection) {
                         $connection->disconnect();
                         $this->remove($connection);
@@ -551,7 +551,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }

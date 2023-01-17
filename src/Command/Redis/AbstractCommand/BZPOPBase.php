@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Command\Redis\AbstractCommand;
+
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Keys;
 

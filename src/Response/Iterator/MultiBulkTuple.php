@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Response\Iterator;
+
 use InvalidArgumentException;
 use OuterIterator;
 use ReturnTypeWillChange;

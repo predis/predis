@@ -391,7 +391,7 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException('Discovery requires a connection factory');
         }
 
-        RETRY_FETCH: {
+        RETRY_FETCH:
             try {
                 if ($connection = $this->getMaster()) {
                     $this->discoverFromMaster($connection, $this->connectionFactory);
@@ -404,7 +404,6 @@ class MasterSlaveReplication implements ReplicationInterface
                 $this->remove($connection);
                 goto RETRY_FETCH;
             }
-        }
     }
 
     /**
@@ -475,7 +474,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        RETRY_COMMAND: {
+        RETRY_COMMAND:
             try {
                 $connection = $this->getConnectionByCommand($command);
                 $response = $connection->$method($command);
@@ -515,7 +514,6 @@ class MasterSlaveReplication implements ReplicationInterface
 
                 goto RETRY_COMMAND;
             }
-        }
 
         return $response;
     }

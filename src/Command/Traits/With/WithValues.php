@@ -25,7 +25,7 @@ trait WithValues
 
         if (is_bool($withValues) && $withValues) {
             $arguments[] = 'WITHVALUES';
-        } else if (!is_bool($withValues)) {
+        } elseif (!is_bool($withValues)) {
             $arguments[] = $withValues;
         }
 

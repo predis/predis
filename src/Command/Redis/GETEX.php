@@ -30,13 +30,14 @@ class GETEX extends RedisCommand
 
     public function getId()
     {
-       return 'GETEX';
+        return 'GETEX';
     }
 
     public function setArguments(array $arguments)
     {
         if (!array_key_exists(1, $arguments) || $arguments[1] === '') {
             parent::setArguments([$arguments[0]]);
+
             return;
         }
 
@@ -47,6 +48,7 @@ class GETEX extends RedisCommand
 
         if ($arguments[1] === 'persist') {
             parent::setArguments([$arguments[0], self::$modifierEnum[$arguments[1]]]);
+
             return;
         }
 

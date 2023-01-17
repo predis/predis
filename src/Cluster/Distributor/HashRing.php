@@ -22,8 +22,8 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
  */
 class HashRing implements DistributorInterface, HashGeneratorInterface
 {
-    const DEFAULT_REPLICAS = 128;
-    const DEFAULT_WEIGHT = 100;
+    public const DEFAULT_REPLICAS = 128;
+    public const DEFAULT_WEIGHT = 100;
 
     private $ring;
     private $ringKeys;

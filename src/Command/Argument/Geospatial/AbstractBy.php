@@ -27,7 +27,7 @@ abstract class AbstractBy implements ByInterface
     protected $unit;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     abstract public function toArray(): array;
 

@@ -38,6 +38,7 @@ trait Keys
         if ($withNumkeys) {
             $numkeys = count($keysArgument);
             parent::setArguments(array_merge($argumentsBeforeKeys, [$numkeys], $keysArgument, $argumentsAfterKeys));
+
             return;
         }
 

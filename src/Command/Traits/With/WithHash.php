@@ -25,6 +25,7 @@ trait WithHash
             || false === $arguments[static::$withHashArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -37,7 +38,7 @@ trait WithHash
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withHashArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$withHashArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$withHashArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

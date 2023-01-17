@@ -11,6 +11,7 @@
  */
 
 namespace Predis\PubSub;
+
 use InvalidArgumentException;
 
 /**

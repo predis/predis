@@ -109,7 +109,6 @@ class PhpiredisStreamConnection extends StreamConnection
             case 'tls':
             case 'rediss':
                 throw new InvalidArgumentException('SSL encryption is not supported by this connection backend.');
-
             default:
                 throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }

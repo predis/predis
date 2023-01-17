@@ -19,9 +19,6 @@ use Predis\NotSupportedException;
  */
 class PhpiredisCRC16 implements HashGeneratorInterface
 {
-    /**
-     *
-     */
     public function __construct()
     {
         if (!function_exists('phpiredis_utils_crc16')) {

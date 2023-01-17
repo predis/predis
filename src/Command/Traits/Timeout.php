@@ -24,12 +24,14 @@ trait Timeout
 
         if (static::$timeoutArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
         if ($arguments[static::$timeoutArgumentPositionOffset] === -1) {
             array_splice($arguments, static::$timeoutArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
+
             return;
         }
 

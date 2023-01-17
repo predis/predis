@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Command\Redis;
+
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\DB;
 use Predis\Command\Traits\Replace;
