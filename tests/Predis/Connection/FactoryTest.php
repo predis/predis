@@ -15,6 +15,8 @@ namespace Predis\Connection;
 use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Connection\Cluster\ClusterInterface;
+use ReflectionObject;
+use stdClass;
 
 /**
  *
@@ -315,7 +317,7 @@ class FactoryTest extends PredisTestCase
         $factory = new Factory();
 
         // TODO: using reflection to make a protected method accessible :facepalm:
-        $reflection = new \ReflectionObject($factory);
+        $reflection = new ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
         $prepareConnection->invoke($factory, $connection);
@@ -341,7 +343,7 @@ class FactoryTest extends PredisTestCase
         $factory = new Factory();
 
         // TODO: using reflection to make a protected method accessible :facepalm:
-        $reflection = new \ReflectionObject($factory);
+        $reflection = new ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
         $prepareConnection->invoke($factory, $connection);
@@ -368,7 +370,7 @@ class FactoryTest extends PredisTestCase
         $factory = new Factory();
 
         // TODO: using reflection to make a protected method accessible :facepalm:
-        $reflection = new \ReflectionObject($factory);
+        $reflection = new ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
         $prepareConnection->invoke($factory, $connection);
@@ -393,7 +395,7 @@ class FactoryTest extends PredisTestCase
         $factory = new Factory();
 
         // TODO: using reflection to make a protected method accessible :facepalm:
-        $reflection = new \ReflectionObject($factory);
+        $reflection = new ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
         $prepareConnection->invoke($factory, $connection);
@@ -419,7 +421,7 @@ class FactoryTest extends PredisTestCase
         $factory = new Factory();
 
         // TODO: using reflection to make a protected method accessible :facepalm:
-        $reflection = new \ReflectionObject($factory);
+        $reflection = new ReflectionObject($factory);
         $prepareConnection = $reflection->getMethod('prepareConnection');
         $prepareConnection->setAccessible(true);
         $prepareConnection->invoke($factory, $connection);
@@ -494,7 +496,7 @@ class FactoryTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
 
         $factory = new Factory();
-        $factory->define('foobar', new \stdClass());
+        $factory->define('foobar', new stdClass());
     }
 
     /**

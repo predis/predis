@@ -17,6 +17,8 @@ use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\Status as StatusResponse;
+use InvalidArgumentException;
+use Closure;
 
 /**
  * This class provides the implementation of a Predis connection that uses the
@@ -100,7 +102,7 @@ class PhpiredisSocketConnection extends AbstractConnection
                 break;
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         if (isset($parameters->persistent)) {
@@ -140,7 +142,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Returns the handler used by the protocol reader for inline responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getStatusHandler()
     {
@@ -158,7 +160,7 @@ class PhpiredisSocketConnection extends AbstractConnection
     /**
      * Returns the handler used by the protocol reader for error responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getErrorHandler()
     {

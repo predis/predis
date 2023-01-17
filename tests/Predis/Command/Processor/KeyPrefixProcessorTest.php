@@ -16,6 +16,7 @@ use PredisTestCase;
 use Predis\Command\RawCommand;
 use Predis\Command\CommandInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use stdClass;
 
 /**
  *
@@ -364,7 +365,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
         $this->expectExceptionMessage('Callback must be a valid callable object or NULL');
 
         $processor = new KeyPrefixProcessor('prefix:');
-        $processor->setCommandHandler('NEWCMD', new \stdClass());
+        $processor->setCommandHandler('NEWCMD', new stdClass());
     }
 
     // ******************************************************************** //

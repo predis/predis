@@ -13,6 +13,7 @@
 namespace Predis\Command;
 
 use PredisTestCase;
+use stdClass;
 
 /**
  *
@@ -130,7 +131,7 @@ class CommandTest extends PredisTestCase
         $arguments = [[], []];
         $this->assertSame($arguments, Command::normalizeArguments($arguments));
 
-        $arguments = [new \stdClass()];
+        $arguments = [new stdClass()];
         $this->assertSame($arguments, Command::normalizeArguments($arguments));
     }
 
@@ -144,7 +145,7 @@ class CommandTest extends PredisTestCase
         $this->assertSame($arguments, Command::normalizeVariadic($arguments));
         $this->assertSame($arguments, Command::normalizeVariadic(['key', ['value1', 'value2', 'value3']]));
 
-        $arguments = [new \stdClass()];
+        $arguments = [new stdClass()];
         $this->assertSame($arguments, Command::normalizeVariadic($arguments));
     }
 }

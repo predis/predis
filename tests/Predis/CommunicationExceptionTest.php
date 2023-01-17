@@ -14,6 +14,7 @@ namespace Predis;
 
 use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use Exception;
 
 /**
  *
@@ -117,7 +118,7 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param Connection\NodeConnectionInterface $connection Connection instance.
      * @param string                             $message    Exception message.
      * @param int                                $code       Exception code.
-     * @param \Exception                         $inner      Inner exception.
+     * @param Exception                         $inner      Inner exception.
      *
      * @return \Predis\CommunicationException
      */
@@ -125,7 +126,7 @@ class CommunicationExceptionTest extends PredisTestCase
         Connection\NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        \Exception $inner = null
+        Exception $inner = null
     ) {
         return $this->getMockBuilder('Predis\CommunicationException')
             ->setConstructorArgs([$connection, $message, $code, $inner])

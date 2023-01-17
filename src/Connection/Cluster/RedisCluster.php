@@ -25,6 +25,12 @@ use Predis\NotSupportedException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Error as ErrorResponse;
+use IteratorAggregate;
+use Countable;
+use Throwable;
+use ReturnTypeWillChange;
+use ArrayIterator;
+use OutOfBoundsException;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -46,7 +52,7 @@ use Predis\Response\Error as ErrorResponse;
  * Asking for the cluster configuration to Redis is actually done by issuing a
  * CLUSTER SLOTS command to a random node in the pool.
  */
-class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
+class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
     private $pool = [];
@@ -362,14 +368,14 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
      *
      * @param int $slot Slot index.
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      *
      * @return NodeConnectionInterface
      */
     public function getConnectionBySlot($slot)
     {
         if (!SlotMap::isValid($slot)) {
-            throw new \OutOfBoundsException("Invalid slot [$slot].");
+            throw new OutOfBoundsException("Invalid slot [$slot].");
         }
 
         if (isset($this->slots[$slot])) {
@@ -522,7 +528,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
                         throw new ServerException($message);
                     }
                 }
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 usleep($retryAfter * 1000);
                 $retryAfter = $retryAfter * 2;
 
@@ -583,7 +589,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->pool);
@@ -592,7 +598,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         if ($this->slotmap->isEmpty()) {
@@ -609,7 +615,7 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
             $connections[] = $connection;
         }
 
-        return new \ArrayIterator($connections);
+        return new ArrayIterator($connections);
     }
 
     /**

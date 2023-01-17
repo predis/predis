@@ -11,11 +11,17 @@
  */
 
 namespace Predis\Cluster;
+use ArrayAccess;
+use IteratorAggregate;
+use Countable;
+use ReturnTypeWillChange;
+use ArrayIterator;
+use OutOfBoundsException;
 
 /**
  * Slot map for redis-cluster.
  */
-class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
+class SlotMap implements ArrayAccess, IteratorAggregate, Countable
 {
     private $slots = [];
 
@@ -91,12 +97,12 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      * @param int                            $last       Last slot of the range.
      * @param NodeConnectionInterface|string $connection ID or connection instance.
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     public function setSlots($first, $last, $connection)
     {
         if (!static::isValidRange($first, $last)) {
-            throw new \OutOfBoundsException("Invalid slot range $first-$last for `$connection`");
+            throw new OutOfBoundsException("Invalid slot range $first-$last for `$connection`");
         }
 
         $this->slots += array_fill($first, $last - $first + 1, (string) $connection);
@@ -113,7 +119,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     public function getSlots($first, $last)
     {
         if (!static::isValidRange($first, $last)) {
-            throw new \OutOfBoundsException("Invalid slot range $first-$last");
+            throw new OutOfBoundsException("Invalid slot range $first-$last");
         }
 
         return array_intersect_key($this->slots, array_fill($first, $last - $first + 1, null));
@@ -126,7 +132,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return bool
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetExists($slot)
     {
         return isset($this->slots[$slot]);
@@ -139,7 +145,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($slot)
     {
         if (isset($this->slots[$slot])) {
@@ -155,11 +161,11 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetSet($slot, $connection)
     {
         if (!static::isValid($slot)) {
-            throw new \OutOfBoundsException("Invalid slot $slot for `$connection`");
+            throw new OutOfBoundsException("Invalid slot $slot for `$connection`");
         }
 
         $this->slots[(int) $slot] = (string) $connection;
@@ -172,7 +178,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return string
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetUnset($slot)
     {
         unset($this->slots[$slot]);
@@ -183,7 +189,7 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->slots);
@@ -192,11 +198,11 @@ class SlotMap implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Returns an iterator over the slot map.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
-        return new \ArrayIterator($this->slots);
+        return new ArrayIterator($this->slots);
     }
 }

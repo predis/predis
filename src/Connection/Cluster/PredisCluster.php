@@ -17,6 +17,10 @@ use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
+use IteratorAggregate;
+use Countable;
+use ReturnTypeWillChange;
+use ArrayIterator;
 
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers
@@ -24,7 +28,7 @@ use Predis\NotSupportedException;
  *
  * @todo Add the ability to remove connections from pool.
  */
-class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
+class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     /**
      * @var NodeConnectionInterface[]
@@ -203,7 +207,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->pool);
@@ -212,10 +216,10 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
-        return new \ArrayIterator($this->pool);
+        return new ArrayIterator($this->pool);
     }
 
     /**

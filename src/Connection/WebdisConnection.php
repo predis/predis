@@ -17,6 +17,8 @@ use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
+use Closure;
+use InvalidArgumentException;
 
 /**
  * This class implements a Predis connection that actually talks with Webdis
@@ -51,14 +53,14 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(ParametersInterface $parameters)
     {
         $this->assertExtensions();
 
         if ($parameters->scheme !== 'http') {
-            throw new \InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
+            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
         $this->parameters = $parameters;
@@ -158,7 +160,7 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Returns the handler used by the protocol reader for inline responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getStatusHandler()
     {
@@ -176,7 +178,7 @@ class WebdisConnection implements NodeConnectionInterface
     /**
      * Returns the handler used by the protocol reader for error responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getErrorHandler()
     {

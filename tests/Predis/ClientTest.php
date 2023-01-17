@@ -19,6 +19,9 @@ use Predis\Command\Factory as CommandFactory;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection\Replication\MasterSlaveReplication;
+use stdClass;
+use ReflectionProperty;
+use Iterator;
 
 /**
  *
@@ -447,7 +450,7 @@ class ClientTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid type for connection parameters');
 
-        $client = new Client(new \stdClass());
+        $client = new Client(new stdClass());
     }
 
     /**
@@ -458,7 +461,7 @@ class ClientTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('Invalid type for client options');
 
-        $client = new Client('tcp://host1', new \stdClass());
+        $client = new Client('tcp://host1', new stdClass());
     }
 
     /**
@@ -1018,7 +1021,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
-        $reflection = new \ReflectionProperty($pubsub, 'options');
+        $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
 
         $this->assertSame($options, $reflection->getValue($pubsub));
@@ -1118,11 +1121,11 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Transaction\MultiExec', $tx = $client->transaction($options));
 
         // I hate this part but reflection is the easiest way in this case.
-        $property = new \ReflectionProperty($tx, 'modeCAS');
+        $property = new ReflectionProperty($tx, 'modeCAS');
         $property->setAccessible(true);
         $this->assertSame($options['cas'], $property->getValue($tx));
 
-        $property = new \ReflectionProperty($tx, 'attempts');
+        $property = new ReflectionProperty($tx, 'attempts');
         $property->setAccessible(true);
         $this->assertSame($options['retry'], $property->getValue($tx));
     }
@@ -1217,7 +1220,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($aggregate);
 
-        /** @var \Iterator */
+        /** @var Iterator */
         $iterator = $client->getIterator();
 
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
@@ -1245,7 +1248,7 @@ class ClientTest extends PredisTestCase
         $connection = $this->getMockConnection('tcp://127.0.0.1:6381');
         $client = new Client($connection);
 
-        /** @var \Iterator */
+        /** @var Iterator */
         $iterator = $client->getIterator();
 
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());

@@ -15,11 +15,13 @@ namespace Predis\Monitor;
 use Predis\ClientInterface;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
+use Iterator;
+use ReturnTypeWillChange;
 
 /**
  * Redis MONITOR consumer.
  */
-class Consumer implements \Iterator
+class Consumer implements Iterator
 {
     private $client;
     private $valid;
@@ -90,7 +92,7 @@ class Consumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         // NOOP
@@ -101,7 +103,7 @@ class Consumer implements \Iterator
      *
      * @return object
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getValue();
@@ -110,7 +112,7 @@ class Consumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -119,7 +121,7 @@ class Consumer implements \Iterator
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
@@ -130,7 +132,7 @@ class Consumer implements \Iterator
      *
      * @return bool
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return $this->valid;

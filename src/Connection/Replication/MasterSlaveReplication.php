@@ -21,6 +21,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
+use InvalidArgumentException;
 
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
@@ -234,7 +235,7 @@ class MasterSlaveReplication implements ReplicationInterface
         }
 
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->current = $connection;
@@ -246,7 +247,7 @@ class MasterSlaveReplication implements ReplicationInterface
     public function switchToMaster()
     {
         if (!$connection = $this->getConnectionByRole('master')) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->switchTo($connection);
@@ -258,7 +259,7 @@ class MasterSlaveReplication implements ReplicationInterface
     public function switchToSlave()
     {
         if (!$connection = $this->getConnectionByRole('slave')) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->switchTo($connection);

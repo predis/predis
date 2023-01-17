@@ -13,6 +13,8 @@
 namespace Predis\Session;
 
 use Predis\ClientInterface;
+use SessionHandlerInterface;
+use ReturnTypeWillChange;
 
 /**
  * Session handler class that relies on Predis\Client to store PHP's sessions
@@ -22,7 +24,7 @@ use Predis\ClientInterface;
  * provided that a polyfill for `SessionHandlerInterface` is defined by either
  * you or an external package such as `symfony/http-foundation`.
  */
-class Handler implements \SessionHandlerInterface
+class Handler implements SessionHandlerInterface
 {
     protected $client;
     protected $ttl;
@@ -53,7 +55,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function open($save_path, $session_id)
     {
         // NOOP
@@ -63,7 +65,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function close()
     {
         // NOOP
@@ -73,7 +75,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         // NOOP
@@ -83,7 +85,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function read($session_id)
     {
         if ($data = $this->client->get($session_id)) {
@@ -95,7 +97,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function write($session_id, $session_data)
     {
         $this->client->setex($session_id, $this->ttl, $session_data);
@@ -106,7 +108,7 @@ class Handler implements \SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function destroy($session_id)
     {
         $this->client->del($session_id);

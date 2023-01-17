@@ -16,6 +16,7 @@ use Predis\Command\CommandInterface;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\Status as StatusResponse;
+use InvalidArgumentException;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -62,7 +63,7 @@ class StreamConnection extends AbstractConnection
                 break;
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;
@@ -86,7 +87,7 @@ class StreamConnection extends AbstractConnection
                 return $this->tlsStreamInitializer($this->parameters);
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
+                throw new InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
         }
     }
 
@@ -163,7 +164,7 @@ class StreamConnection extends AbstractConnection
     protected function unixStreamInitializer(ParametersInterface $parameters)
     {
         if (!isset($parameters->path)) {
-            throw new \InvalidArgumentException('Missing UNIX domain socket path.');
+            throw new InvalidArgumentException('Missing UNIX domain socket path.');
         }
 
         $flags = STREAM_CLIENT_CONNECT;
@@ -173,7 +174,7 @@ class StreamConnection extends AbstractConnection
                 $flags |= STREAM_CLIENT_PERSISTENT;
 
                 if ($persistent === null) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'Persistent connection IDs are not supported when using UNIX domain sockets.'
                     );
                 }

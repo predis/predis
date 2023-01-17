@@ -24,6 +24,7 @@ use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use InvalidArgumentException;
 
 /**
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -628,7 +629,7 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $connection->connect();

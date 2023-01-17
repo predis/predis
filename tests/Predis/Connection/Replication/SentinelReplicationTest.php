@@ -18,6 +18,7 @@ use Predis\Command;
 use Predis\Connection;
 use Predis\Replication;
 use Predis\Response;
+use ReflectionProperty;
 
 /**
  *
@@ -329,7 +330,7 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->updateSentinels();
 
         // TODO: sorry for the smell...
-        $reflection = new \ReflectionProperty($replication, 'sentinels');
+        $reflection = new ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
 
         $expected = [
@@ -381,7 +382,7 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->updateSentinels();
 
         // TODO: sorry for the smell...
-        $reflection = new \ReflectionProperty($replication, 'sentinels');
+        $reflection = new ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
 
         $expected = [
@@ -478,7 +479,7 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->querySentinel();
 
         // TODO: sorry for the smell...
-        $reflection = new \ReflectionProperty($replication, 'sentinels');
+        $reflection = new ReflectionProperty($replication, 'sentinels');
         $reflection->setAccessible(true);
 
         $sentinels = [

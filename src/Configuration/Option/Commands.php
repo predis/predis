@@ -17,6 +17,7 @@ use Predis\Command\RawFactory;
 use Predis\Command\RedisFactory;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
+use InvalidArgumentException;
 
 /**
  * Configures a connection factory to be used by the client.
@@ -39,7 +40,7 @@ class Commands implements OptionInterface
         } elseif(is_string($value)) {
             return $this->createFactoryByString($options, $value);
         } else {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '%s expects a valid command factory',
                 static::class
             ));
@@ -102,7 +103,7 @@ class Commands implements OptionInterface
                 return $this->createRawFactory($options);
 
             default:
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     '%s does not recognize `%s` as a supported configuration string',
                     static::class,
                     $value
@@ -120,7 +121,7 @@ class Commands implements OptionInterface
         $commands = new RawFactory();
 
         if (isset($options->prefix)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '%s does not support key prefixing', RawFactory::class
             ));
         }

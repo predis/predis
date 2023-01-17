@@ -23,6 +23,9 @@ use Predis\Protocol\ProtocolException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
+use SplQueue;
+use Exception;
+use InvalidArgumentException;
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
@@ -111,7 +114,7 @@ class MultiExec implements ClientContextInterface
     protected function reset()
     {
         $this->state->reset();
-        $this->commands = new \SplQueue();
+        $this->commands = new SplQueue();
     }
 
     /**
@@ -312,7 +315,7 @@ class MultiExec implements ClientContextInterface
      *
      * @param mixed $callable Callback for execution.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ClientException
      */
     private function checkBeforeExecution($callable)
@@ -325,7 +328,7 @@ class MultiExec implements ClientContextInterface
 
         if ($callable) {
             if (!is_callable($callable)) {
-                throw new \InvalidArgumentException('The argument must be a callable object.');
+                throw new InvalidArgumentException('The argument must be a callable object.');
             }
 
             if (!$this->commands->isEmpty()) {
@@ -432,7 +435,7 @@ class MultiExec implements ClientContextInterface
             // NOOP
         } catch (ServerException $exception) {
             // NOOP
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->discard();
         }
 

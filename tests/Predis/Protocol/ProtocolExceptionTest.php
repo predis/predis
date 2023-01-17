@@ -17,6 +17,7 @@ require_once __DIR__.'/../CommunicationExceptionTest.php';
 use Predis\CommunicationException;
 use Predis\CommunicationExceptionTest;
 use Predis\Connection\NodeConnectionInterface;
+use Exception;
 
 /**
  *
@@ -30,7 +31,7 @@ class ProtocolExceptionTest extends CommunicationExceptionTest
         NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        \Exception $inner = null
+        Exception $inner = null
     ): CommunicationException {
         return new ProtocolException($connection, $message, $code, $inner);
     }

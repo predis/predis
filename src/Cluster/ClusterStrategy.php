@@ -14,6 +14,7 @@ namespace Predis\Cluster;
 
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
+use InvalidArgumentException;
 
 /**
  * Common class implementing the logic needed to support clustering strategies.
@@ -197,7 +198,7 @@ abstract class ClusterStrategy implements StrategyInterface
      * @param string $commandID Command ID.
      * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -210,7 +211,7 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'The argument must be a callable object or NULL.'
             );
         }

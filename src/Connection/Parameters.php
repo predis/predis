@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Connection;
+use InvalidArgumentException;
 
 /**
  * Container for connection parameters used to initialize connections to Redis.
@@ -86,7 +87,7 @@ class Parameters implements ParametersInterface
      *
      * @param string $uri URI string.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @return array
      */
@@ -99,7 +100,7 @@ class Parameters implements ParametersInterface
         }
 
         if (!$parsed = parse_url($uri)) {
-            throw new \InvalidArgumentException("Invalid parameters URI: $uri");
+            throw new InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
         if (

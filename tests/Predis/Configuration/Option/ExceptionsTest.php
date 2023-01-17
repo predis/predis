@@ -14,6 +14,7 @@ namespace Predis\Configuration\Option;
 
 use PredisTestCase;
 use Predis\Configuration\OptionsInterface;
+use stdClass;
 
 /**
  *
@@ -68,7 +69,7 @@ class ExceptionsTest extends PredisTestCase
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $this->assertFalse($option->filter($options, new \stdClass()));
+        $this->assertFalse($option->filter($options, new stdClass()));
         $this->assertFalse($option->filter($options, 'invalid'));
     }
 }

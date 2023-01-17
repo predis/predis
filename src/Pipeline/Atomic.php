@@ -19,6 +19,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+use SplQueue;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
@@ -58,7 +59,7 @@ class Atomic extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $commandFactory = $this->getClient()->getCommandFactory();
         $connection->executeCommand($commandFactory->create('multi'));
