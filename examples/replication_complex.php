@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis allows to set Lua scripts as read-only operations for replication.
 // This works for both EVAL and EVALSHA and also for the client-side abstraction

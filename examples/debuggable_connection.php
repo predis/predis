@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This is an example of how you can easily extend an existing connection class
 // and trace the execution of commands for debugging purposes. This can be quite

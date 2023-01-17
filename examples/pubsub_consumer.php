@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Starting from Redis 2.0 clients can subscribe and listen for events published
 // on certain channels using a Publish/Subscribe (PUB/SUB) approach.

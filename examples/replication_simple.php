@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis supports master / slave replication scenarios where write operations
 // are performed on the master server and read operations are executed against

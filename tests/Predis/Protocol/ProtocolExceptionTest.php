@@ -12,7 +12,7 @@
 
 namespace Predis\Protocol;
 
-require_once __DIR__.'/../CommunicationExceptionTest.php';
+require_once __DIR__ . '/../CommunicationExceptionTest.php';
 
 use Predis\CommunicationException;
 use Predis\CommunicationExceptionTest;
