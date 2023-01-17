@@ -12,10 +12,10 @@
 
 namespace Predis\Command\Processor;
 
-use Predis\Command\CommandInterface;
 use ArrayAccess;
 use ArrayIterator;
 use InvalidArgumentException;
+use Predis\Command\CommandInterface;
 use ReturnTypeWillChange;
 use Traversable;
 

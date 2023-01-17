@@ -12,9 +12,9 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 use ReflectionProperty;
 
 /**

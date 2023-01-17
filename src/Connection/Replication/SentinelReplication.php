@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
@@ -24,7 +25,6 @@ use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
-use InvalidArgumentException;
 
 /**
  * @author Daniele Alessandri <suppakilla@gmail.com>

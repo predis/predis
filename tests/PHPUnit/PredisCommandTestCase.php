@@ -12,10 +12,10 @@
 
 namespace Predis\Command\Redis;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Command;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
 /**
  *

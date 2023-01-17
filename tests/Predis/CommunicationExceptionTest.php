@@ -12,9 +12,9 @@
 
 namespace Predis;
 
-use PredisTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
 /**
  *

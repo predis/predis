@@ -12,12 +12,12 @@
 
 namespace Predis\Connection\Cluster;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *

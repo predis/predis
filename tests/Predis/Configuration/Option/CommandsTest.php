@@ -12,11 +12,11 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Configuration\OptionsInterface;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\RedisFactory;
+use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 use stdClass;
 
 /**

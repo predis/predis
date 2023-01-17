@@ -12,9 +12,9 @@
 
 namespace Predis\Cluster;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
-use InvalidArgumentException;
 
 /**
  * Common class implementing the logic needed to support clustering strategies.

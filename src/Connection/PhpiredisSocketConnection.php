@@ -12,13 +12,13 @@
 
 namespace Predis\Connection;
 
+use Closure;
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\Status as StatusResponse;
-use InvalidArgumentException;
-use Closure;
 
 /**
  * This class provides the implementation of a Predis connection that uses the

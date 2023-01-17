@@ -12,6 +12,8 @@
 
 namespace Predis\Pipeline;
 
+use Exception;
+use InvalidArgumentException;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
@@ -19,8 +21,6 @@ use Predis\Command\CommandInterface;
 use Predis\Response;
 use PredisTestCase;
 use stdClass;
-use Exception;
-use InvalidArgumentException;
 
 /**
  *

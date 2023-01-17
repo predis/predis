@@ -13,8 +13,8 @@
 namespace Predis\Command\Traits\To;
 
 use Predis\Command\Argument\Server\To;
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 
 class ServerToTest extends PredisTestCase
 {

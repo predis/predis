@@ -12,11 +12,11 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\Status as StatusResponse;
-use InvalidArgumentException;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.

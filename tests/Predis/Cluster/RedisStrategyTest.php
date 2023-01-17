@@ -12,8 +12,8 @@
 
 namespace Predis\Cluster;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
 /**
  *

@@ -12,10 +12,10 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
-use InvalidArgumentException;
 
 /**
  * Base class with the common logic used by connection classes to communicate

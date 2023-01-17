@@ -12,10 +12,10 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
-use InvalidArgumentException;
 
 /**
  * Connection abstraction to Redis servers based on PHP's stream that uses an

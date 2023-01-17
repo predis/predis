@@ -12,11 +12,11 @@
 
 namespace Predis\Collection\Iterator;
 
+use InvalidArgumentException;
+use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
-use Iterator;
 use ReturnTypeWillChange;
-use InvalidArgumentException;
 
 /**
  * Abstracts the iteration of items stored in a list by leveraging the LRANGE

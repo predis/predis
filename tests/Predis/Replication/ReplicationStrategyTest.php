@@ -12,9 +12,9 @@
 
 namespace Predis\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
 /**
  *

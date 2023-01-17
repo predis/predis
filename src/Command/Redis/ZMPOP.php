@@ -14,8 +14,8 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Count;
-use Predis\Command\Traits\MinMaxModifier;
 use Predis\Command\Traits\Keys;
+use Predis\Command\Traits\MinMaxModifier;
 
 /**
  * @see https://redis.io/commands/zmpop/

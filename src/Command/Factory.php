@@ -12,9 +12,9 @@
 
 namespace Predis\Command;
 
+use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\Processor\ProcessorInterface;
-use InvalidArgumentException;
 
 /**
  * Base command factory class.

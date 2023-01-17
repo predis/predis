@@ -12,10 +12,10 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Cluster\Hash;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
-use InvalidArgumentException;
 
 /**
  * Configures an hash generator used by the redis-cluster connection backend.

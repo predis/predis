@@ -12,12 +12,12 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Command\FactoryInterface;
 use Predis\Command\RawFactory;
 use Predis\Command\RedisFactory;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
-use InvalidArgumentException;
 
 /**
  * Configures a connection factory to be used by the client.

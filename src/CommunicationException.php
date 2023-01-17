@@ -12,8 +12,8 @@
 
 namespace Predis;
 
-use Predis\Connection\NodeConnectionInterface;
 use Exception;
+use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Base exception class for network-related errors.

@@ -12,9 +12,9 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\PubSub\Consumer as PubSubConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub

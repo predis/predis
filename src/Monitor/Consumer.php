@@ -12,10 +12,10 @@
 
 namespace Predis\Monitor;
 
+use Iterator;
 use Predis\ClientInterface;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
-use Iterator;
 use ReturnTypeWillChange;
 
 /**

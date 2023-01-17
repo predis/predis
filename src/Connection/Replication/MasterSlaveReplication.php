@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
@@ -21,7 +22,6 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
-use InvalidArgumentException;
 
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
