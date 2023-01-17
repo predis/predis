@@ -14,8 +14,6 @@ namespace Predis\Command;
 
 /**
  * Defines a command whose keys can be prefixed.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface PrefixableCommandInterface extends CommandInterface
 {

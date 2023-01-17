@@ -20,8 +20,6 @@ use Predis\Command\CommandInterface;
  * keys extracted from supported commands.
  *
  * This is mostly useful to support clustering via client-side sharding.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface StrategyInterface
 {

@@ -25,8 +25,6 @@ use Predis\Connection\PhpiredisSocketConnection;
  * The client uses the connection factory to create the underlying connections
  * to single redis nodes in a single-server configuration or in replication and
  * cluster configurations.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Connections implements OptionInterface
 {

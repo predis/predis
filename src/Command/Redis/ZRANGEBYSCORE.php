@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/zrangebyscore
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZRANGEBYSCORE extends ZRANGE
 {

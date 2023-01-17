@@ -16,8 +16,6 @@ use Predis\Command\CommandInterface;
 
 /**
  * Defines a connection used to communicate with a single Redis node.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface NodeConnectionInterface extends ConnectionInterface
 {

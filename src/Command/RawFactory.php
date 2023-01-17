@@ -22,8 +22,6 @@ namespace Predis\Command;
  * When using this factory the client does not process arguments before sending
  * commands to Redis and server responses are not further processed before being
  * returned to the caller.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RawFactory implements FactoryInterface
 {

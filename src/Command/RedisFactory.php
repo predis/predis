@@ -20,8 +20,6 @@ namespace Predis\Command;
  * class in the Predis\Command\Redis namespace but this can be overridden for
  * any command ID simply by defining a new command handler class implementing
  * Predis\Command\CommandInterface.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RedisFactory extends Factory
 {

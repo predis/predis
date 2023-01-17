@@ -22,8 +22,6 @@ namespace Predis\Command;
  * of Predis\Client or managing internals like Redis Sentinel or Cluster as they
  * are not potentially subject to hijacking from third party libraries when they
  * override command handlers for standard Redis commands.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 final class RawCommand implements CommandInterface
 {

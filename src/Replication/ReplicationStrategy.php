@@ -17,8 +17,6 @@ use Predis\NotSupportedException;
 
 /**
  * Defines a strategy for master/slave replication.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ReplicationStrategy
 {

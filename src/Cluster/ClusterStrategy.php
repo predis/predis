@@ -17,8 +17,6 @@ use Predis\Command\ScriptCommand;
 
 /**
  * Common class implementing the logic needed to support clustering strategies.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class ClusterStrategy implements StrategyInterface
 {

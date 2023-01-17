@@ -14,8 +14,6 @@ namespace Predis\Command;
 
 /**
  * Defines an abstraction representing a Redis command.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface CommandInterface
 {

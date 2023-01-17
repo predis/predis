@@ -16,8 +16,6 @@ use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Base exception class for network-related errors.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class CommunicationException extends PredisException
 {

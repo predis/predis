@@ -22,8 +22,6 @@ use Predis\Connection\Cluster\RedisCluster;
  * Configures an aggregate connection used for clustering
  * multiple Redis nodes using various implementations with
  * different algorithms or strategies.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Cluster extends Aggregate
 {

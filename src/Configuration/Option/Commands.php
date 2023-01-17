@@ -20,8 +20,6 @@ use Predis\Configuration\OptionsInterface;
 
 /**
  * Configures a connection factory to be used by the client.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Commands implements OptionInterface
 {

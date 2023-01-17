@@ -21,8 +21,6 @@ use Predis\Command\Command as RedisCommand;
  * when migrating or writing new code.
  *
  * @link http://redis.io/commands/georadius
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class GEORADIUS extends RedisCommand
 {

@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/zrangebylex
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZRANGEBYLEX extends ZRANGE
 {

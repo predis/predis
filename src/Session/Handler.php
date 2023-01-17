@@ -21,8 +21,6 @@ use Predis\ClientInterface;
  * This class is mostly intended for PHP 5.4 but it can be used under PHP 5.3
  * provided that a polyfill for `SessionHandlerInterface` is defined by either
  * you or an external package such as `symfony/http-foundation`.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Handler implements \SessionHandlerInterface
 {

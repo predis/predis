@@ -14,8 +14,6 @@ namespace Predis\Connection;
 
 /**
  * Interface for classes providing a factory of connections to Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface FactoryInterface
 {

@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/incrbyfloat
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class INCRBYFLOAT extends RedisCommand
 {

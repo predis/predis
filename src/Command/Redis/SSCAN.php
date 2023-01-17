@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/sscan
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SSCAN extends RedisCommand
 {

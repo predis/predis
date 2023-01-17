@@ -21,8 +21,6 @@ use Predis\Protocol\ProtocolException;
  * It returns multibulk responses as PHP arrays.
  *
  * @link http://redis.io/topics/protocol
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiBulkResponse implements ResponseHandlerInterface
 {

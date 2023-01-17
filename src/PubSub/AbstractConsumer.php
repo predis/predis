@@ -14,8 +14,6 @@ namespace Predis\PubSub;
 
 /**
  * Base implementation of a PUB/SUB consumer abstraction based on PHP iterators.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class AbstractConsumer implements \Iterator
 {

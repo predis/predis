@@ -16,8 +16,6 @@ use Predis\Command\CommandInterface;
 
 /**
  * A command processor processes Redis commands before they are sent to Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ProcessorInterface
 {

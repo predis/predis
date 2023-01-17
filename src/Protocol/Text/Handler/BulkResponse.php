@@ -21,8 +21,6 @@ use Predis\Protocol\ProtocolException;
  * It translates the payload to a string or a NULL.
  *
  * @link http://redis.io/topics/protocol
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class BulkResponse implements ResponseHandlerInterface
 {

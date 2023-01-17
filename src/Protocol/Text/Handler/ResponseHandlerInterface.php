@@ -16,8 +16,6 @@ use Predis\Connection\CompositeConnectionInterface;
 
 /**
  * Defines a pluggable handler used to parse a particular type of response.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ResponseHandlerInterface
 {

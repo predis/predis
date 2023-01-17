@@ -31,8 +31,6 @@ use Predis\Response\Status as StatusResponse;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *  - ssl: context options array (see http://php.net/manual/en/context.ssl.php)
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StreamConnection extends AbstractConnection
 {

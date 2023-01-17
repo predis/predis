@@ -15,8 +15,6 @@ namespace Predis\PubSub;
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
  * PUB / SUB context.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class DispatcherLoop
 {

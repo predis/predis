@@ -17,8 +17,6 @@ use Predis\CommunicationException;
 /**
  * Exception class that identifies a role mismatch when connecting to node
  * managed by redis-sentinel.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RoleException extends CommunicationException
 {

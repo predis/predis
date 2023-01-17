@@ -15,8 +15,6 @@ namespace Predis\Cluster\Hash;
 /**
  * An hash generator implements the logic used to calculate the hash of a key to
  * distribute operations among Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface HashGeneratorInterface
 {

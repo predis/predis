@@ -15,8 +15,6 @@ namespace Predis\Connection;
 /**
  * Defines a connection to communicate with a single Redis server that leverages
  * an external protocol processor to handle pluggable protocol handlers.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface CompositeConnectionInterface extends NodeConnectionInterface
 {

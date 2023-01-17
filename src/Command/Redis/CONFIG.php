@@ -19,8 +19,6 @@ use Predis\Command\Command as RedisCommand;
  * @link http://redis.io/commands/config-get
  * @link http://redis.io/commands/config-resetstat
  * @link http://redis.io/commands/config-rewrite
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class CONFIG extends RedisCommand
 {

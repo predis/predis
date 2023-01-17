@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/expireat
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class EXPIREAT extends RedisCommand
 {

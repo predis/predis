@@ -17,8 +17,6 @@ use Predis\Command\CommandInterface;
 /**
  * Defines a virtual connection composed of multiple connection instances to
  * single Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface AggregateConnectionInterface extends ConnectionInterface
 {

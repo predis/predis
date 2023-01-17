@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/xrevrange
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class XREVRANGE extends XRANGE
 {

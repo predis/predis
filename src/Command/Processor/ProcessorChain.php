@@ -16,8 +16,6 @@ use Predis\Command\CommandInterface;
 
 /**
  * Default implementation of a command processors chain.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ProcessorChain implements \ArrayAccess, ProcessorInterface
 {

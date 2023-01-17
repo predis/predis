@@ -15,8 +15,6 @@ namespace Predis\Configuration;
 /**
  * Defines an handler used by Predis\Configuration\Options to filter, validate
  * or return default values for a given option.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface OptionInterface
 {

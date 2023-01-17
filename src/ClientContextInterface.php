@@ -192,8 +192,6 @@ use Predis\Command\CommandInterface;
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ClientContextInterface
 {

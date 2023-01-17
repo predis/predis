@@ -14,8 +14,6 @@ namespace Predis;
 
 /**
  * Exception class that identifies client-side errors.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ClientException extends PredisException
 {

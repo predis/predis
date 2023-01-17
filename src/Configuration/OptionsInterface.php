@@ -21,8 +21,6 @@ use Predis\Command\Processor\ProcessorInterface;
  * @property-read ProcessorInterface          $prefix      Key prefixing strategy using the supplied string as prefix
  * @property-read Command\FactoryInterface    $commands    Command factory for creating Redis commands
  * @property-read callable                    $replication Aggregate connection initializer for replication
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface OptionsInterface
 {

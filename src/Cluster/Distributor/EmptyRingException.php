@@ -14,8 +14,6 @@ namespace Predis\Cluster\Distributor;
 
 /**
  * Exception class that identifies empty rings.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class EmptyRingException extends \Exception
 {

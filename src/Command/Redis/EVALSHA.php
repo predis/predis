@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/evalsha
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class EVALSHA extends EVAL_
 {

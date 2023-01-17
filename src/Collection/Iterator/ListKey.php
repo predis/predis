@@ -25,8 +25,6 @@ use Predis\NotSupportedException;
  * guarantees on the returned elements because the collection can change several
  * times (trimmed, deleted, overwritten) during the iteration process.
  *
- * @author Daniele Alessandri <suppakilla@gmail.com>
- *
  * @link http://redis.io/commands/lrange
  */
 class ListKey implements \Iterator
