@@ -12,13 +12,13 @@
 
 namespace Predis\Connection;
 
+use Closure;
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
-use Closure;
-use InvalidArgumentException;
 
 /**
  * This class implements a Predis connection that actually talks with Webdis

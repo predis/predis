@@ -12,16 +12,16 @@
 
 namespace Predis;
 
-use PredisTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Connection\ParametersInterface;
-use Predis\Command\Factory as CommandFactory;
-use Predis\Connection\NodeConnectionInterface;
-use Predis\Command\Processor\KeyPrefixProcessor;
-use Predis\Connection\Replication\MasterSlaveReplication;
-use stdClass;
-use ReflectionProperty;
 use Iterator;
+use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\Factory as CommandFactory;
+use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
+use Predis\Connection\Replication\MasterSlaveReplication;
+use PredisTestCase;
+use ReflectionProperty;
+use stdClass;
 
 /**
  *

@@ -12,9 +12,9 @@
 
 namespace Predis\Monitor;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-monitor

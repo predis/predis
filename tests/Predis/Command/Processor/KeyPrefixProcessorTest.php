@@ -12,10 +12,10 @@
 
 namespace Predis\Command\Processor;
 
-use PredisTestCase;
-use Predis\Command\RawCommand;
-use Predis\Command\CommandInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
+use PredisTestCase;
 use stdClass;
 
 /**

@@ -12,6 +12,8 @@
 
 namespace Predis\Transaction;
 
+use Exception;
+use InvalidArgumentException;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
@@ -24,8 +26,6 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
 use SplQueue;
-use Exception;
-use InvalidArgumentException;
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.

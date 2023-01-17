@@ -12,8 +12,10 @@
 
 namespace Predis;
 
-use Traversable;
+use ArrayIterator;
 
+use InvalidArgumentException;
+use IteratorAggregate;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
@@ -29,10 +31,8 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Transaction\MultiExec as MultiExecTransaction;
-use IteratorAggregate;
 use ReturnTypeWillChange;
-use ArrayIterator;
-use InvalidArgumentException;
+use Traversable;
 
 /**
  * Client class used for connecting and executing commands on Redis.

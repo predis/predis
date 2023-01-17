@@ -14,10 +14,10 @@ namespace Predis\Protocol;
 
 require_once __DIR__ . '/../CommunicationExceptionTest.php';
 
+use Exception;
 use Predis\CommunicationException;
 use Predis\CommunicationExceptionTest;
 use Predis\Connection\NodeConnectionInterface;
-use Exception;
 
 /**
  *

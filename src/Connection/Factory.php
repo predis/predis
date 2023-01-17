@@ -12,10 +12,10 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\RawCommand;
 use ReflectionClass;
 use UnexpectedValueException;
-use InvalidArgumentException;
 
 /**
  * Standard connection factory for creating connections to Redis nodes.

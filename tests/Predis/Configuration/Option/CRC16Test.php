@@ -12,8 +12,8 @@
 
 namespace Predis\Configuration\Option;
 
-use PredisTestCase;
 use Predis\Configuration\OptionsInterface;
+use PredisTestCase;
 
 /**
  *

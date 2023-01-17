@@ -12,11 +12,11 @@
 
 namespace Predis\Cluster;
 use ArrayAccess;
-use IteratorAggregate;
-use Countable;
-use ReturnTypeWillChange;
 use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use OutOfBoundsException;
+use ReturnTypeWillChange;
 
 /**
  * Slot map for redis-cluster.

@@ -12,6 +12,8 @@
 
 namespace Predis\Pipeline;
 
+use Exception;
+use InvalidArgumentException;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
@@ -21,8 +23,6 @@ use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
-use InvalidArgumentException;
-use Exception;
 use SplQueue;
 
 /**

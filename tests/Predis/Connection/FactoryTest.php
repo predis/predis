@@ -12,9 +12,9 @@
 
 namespace Predis\Connection;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Connection\Cluster\ClusterInterface;
+use PredisTestCase;
 use ReflectionObject;
 use stdClass;
 

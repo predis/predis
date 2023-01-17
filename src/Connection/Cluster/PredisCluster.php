@@ -12,15 +12,15 @@
 
 namespace Predis\Connection\Cluster;
 
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
-use IteratorAggregate;
-use Countable;
 use ReturnTypeWillChange;
-use ArrayIterator;
 
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers

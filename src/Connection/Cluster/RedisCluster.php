@@ -12,6 +12,10 @@
 
 namespace Predis\Connection\Cluster;
 
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use OutOfBoundsException;
 use Predis\ClientException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
@@ -22,15 +26,11 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
+use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
-use Predis\Response\Error as ErrorResponse;
-use IteratorAggregate;
-use Countable;
-use Throwable;
 use ReturnTypeWillChange;
-use ArrayIterator;
-use OutOfBoundsException;
+use Throwable;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).

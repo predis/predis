@@ -12,9 +12,9 @@
 
 namespace Predis\Command\Processor;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
-use InvalidArgumentException;
 
 /**
  * Command processor capable of prefixing keys stored in the arguments of Redis

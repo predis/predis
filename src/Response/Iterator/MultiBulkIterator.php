@@ -12,9 +12,9 @@
 
 namespace Predis\Response\Iterator;
 
-use Predis\Response\ResponseInterface;
-use Iterator;
 use Countable;
+use Iterator;
+use Predis\Response\ResponseInterface;
 use ReturnTypeWillChange;
 
 /**

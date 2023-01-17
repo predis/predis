@@ -12,15 +12,15 @@
 
 namespace Predis\Transaction;
 
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientInterface;
-use PredisTestCase;
-use Predis\Response;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Response;
+use PredisTestCase;
 use RuntimeException;
-use Exception;
 
 /**
  * @group realm-transaction

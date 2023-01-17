@@ -12,11 +12,11 @@
 
 namespace Predis\Configuration\Option;
 
+use function PHPSTORM_META\expectedArguments;
 use PHPUnit\Framework\MockObject\MockObject;
-use PredisTestCase;
 use Predis\Configuration\OptionsInterface;
 
-use function PHPSTORM_META\expectedArguments;
+use PredisTestCase;
 
 /**
  *

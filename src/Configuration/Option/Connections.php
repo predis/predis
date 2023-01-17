@@ -12,13 +12,13 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
-use Predis\Connection\PhpiredisStreamConnection;
 use Predis\Connection\PhpiredisSocketConnection;
-use InvalidArgumentException;
+use Predis\Connection\PhpiredisStreamConnection;
 
 /**
  * Configures a new connection factory instance.

@@ -12,9 +12,9 @@
 
 namespace Predis\Configuration;
 
+use Exception;
 use PredisTestCase;
 use stdClass;
-use Exception;
 
 /**
  * @todo Use mock objects to test the inner workings of the Options class.

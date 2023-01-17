@@ -11,10 +11,10 @@
  */
 
 namespace Predis\Response\Iterator;
+use InvalidArgumentException;
 use OuterIterator;
 use ReturnTypeWillChange;
 use UnexpectedValueException;
-use InvalidArgumentException;
 
 /**
  * Outer iterator consuming streamable multibulk responses by yielding tuples of

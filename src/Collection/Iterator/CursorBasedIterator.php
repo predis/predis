@@ -12,9 +12,9 @@
 
 namespace Predis\Collection\Iterator;
 
+use Iterator;
 use Predis\ClientInterface;
 use Predis\NotSupportedException;
-use Iterator;
 use ReturnTypeWillChange;
 
 /**

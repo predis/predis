@@ -12,8 +12,8 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
 /**
  * @group realm-scripting

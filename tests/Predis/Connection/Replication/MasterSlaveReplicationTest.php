@@ -12,12 +12,12 @@
 
 namespace Predis\Connection\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
+use PredisTestCase;
 
 /**
  *
