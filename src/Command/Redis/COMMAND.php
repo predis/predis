@@ -16,8 +16,6 @@ use Predis\Command\Command as BaseCommand;
 
 /**
  * @link http://redis.io/commands/command
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class COMMAND extends BaseCommand
 {

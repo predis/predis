@@ -25,8 +25,6 @@ use Predis\Response\Status as StatusResponse;
  * Protocol processor for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ProtocolProcessor implements ProtocolProcessorInterface
 {

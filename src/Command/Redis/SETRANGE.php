@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/setrange
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SETRANGE extends RedisCommand
 {

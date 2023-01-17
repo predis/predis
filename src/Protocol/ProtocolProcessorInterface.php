@@ -18,8 +18,6 @@ use Predis\Connection\CompositeConnectionInterface;
 /**
  * Defines a pluggable protocol processor capable of serializing commands and
  * deserializing responses into PHP objects directly from a connection.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ProtocolProcessorInterface
 {

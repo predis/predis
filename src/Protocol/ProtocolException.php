@@ -17,8 +17,6 @@ use Predis\CommunicationException;
 /**
  * Exception used to identify errors encountered while parsing the Redis wire
  * protocol.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ProtocolException extends CommunicationException
 {

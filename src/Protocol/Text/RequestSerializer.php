@@ -19,8 +19,6 @@ use Predis\Protocol\RequestSerializerInterface;
  * Request serializer for the standard Redis wire protocol.
  *
  * @link http://redis.io/topics/protocol
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RequestSerializer implements RequestSerializerInterface
 {

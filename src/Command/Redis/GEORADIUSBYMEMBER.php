@@ -19,8 +19,6 @@ namespace Predis\Command\Redis;
  * when migrating or writing new code.
  *
  * @link http://redis.io/commands/georadiusbymember
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class GEORADIUSBYMEMBER extends GEORADIUS
 {

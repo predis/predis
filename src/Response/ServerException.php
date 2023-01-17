@@ -16,8 +16,6 @@ use Predis\PredisException;
 
 /**
  * Exception class that identifies server-side Redis errors.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ServerException extends PredisException implements ErrorInterface
 {

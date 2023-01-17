@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/msetnx
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MSETNX extends MSET
 {

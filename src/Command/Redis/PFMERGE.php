@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/pfmerge
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PFMERGE extends RedisCommand
 {

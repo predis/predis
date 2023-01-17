@@ -18,8 +18,6 @@ use Predis\Configuration\OptionsInterface;
 
 /**
  * Configures an hash generator used by the redis-cluster connection backend.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class CRC16 implements OptionInterface
 {

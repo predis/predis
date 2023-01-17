@@ -16,8 +16,6 @@ use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Streamable multibulk response.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiBulk extends MultiBulkIterator
 {

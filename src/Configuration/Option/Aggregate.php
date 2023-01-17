@@ -26,8 +26,6 @@ use Predis\Connection\NodeConnectionInterface;
  * invoked by the client to create a new aggregate connection instance.
  *
  * Creation and configuration of the aggregate connection is up to the user.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Aggregate implements OptionInterface
 {

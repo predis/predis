@@ -23,8 +23,6 @@ use Predis\Response\ResponseInterface;
  *
  * Always make sure that the whole iteration is consumed (or dropped) to prevent
  * protocol desynchronization issues.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class MultiBulkIterator implements \Iterator, \Countable, ResponseInterface
 {

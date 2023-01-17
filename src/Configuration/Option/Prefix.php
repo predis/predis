@@ -20,8 +20,6 @@ use Predis\Configuration\OptionsInterface;
 /**
  * Configures a command processor that apply the specified prefix string to a
  * series of Redis commands considered prefixable.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Prefix implements OptionInterface
 {

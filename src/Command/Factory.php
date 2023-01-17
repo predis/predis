@@ -21,8 +21,6 @@ use Predis\Command\Processor\ProcessorInterface;
  * This class provides all of the common functionalities required for a command
  * factory to create new instances of Redis commands objects. It also allows to
  * define or undefine command handler classes for each command ID.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class Factory implements FactoryInterface
 {

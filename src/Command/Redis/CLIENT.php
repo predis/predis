@@ -19,8 +19,6 @@ use Predis\Command\Command as RedisCommand;
  * @link http://redis.io/commands/client-kill
  * @link http://redis.io/commands/client-getname
  * @link http://redis.io/commands/client-setname
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class CLIENT extends RedisCommand
 {

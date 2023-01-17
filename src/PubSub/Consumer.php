@@ -20,8 +20,6 @@ use Predis\NotSupportedException;
 
 /**
  * PUB/SUB consumer abstraction.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Consumer extends AbstractConsumer
 {

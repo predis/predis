@@ -23,8 +23,6 @@ use Predis\NotSupportedException;
  * returns the exception instances as the rest of the response elements.
  *
  * @todo Awful naming!
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ConnectionErrorProof extends Pipeline
 {

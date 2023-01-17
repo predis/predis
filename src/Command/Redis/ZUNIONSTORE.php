@@ -19,8 +19,6 @@ use Predis\Command\Traits\Weights;
 
 /**
  * @link http://redis.io/commands/zunionstore
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZUNIONSTORE extends RedisCommand
 {

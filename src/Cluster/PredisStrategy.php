@@ -17,8 +17,6 @@ use Predis\Cluster\Distributor\HashRing;
 
 /**
  * Default cluster strategy used by Predis to handle client-side sharding.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PredisStrategy extends ClusterStrategy
 {

@@ -22,8 +22,6 @@ use Predis\Response\ServerException;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Atomic extends Pipeline
 {

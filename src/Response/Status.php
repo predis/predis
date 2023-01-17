@@ -14,8 +14,6 @@ namespace Predis\Response;
 
 /**
  * Represents a status response returned by Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Status implements ResponseInterface
 {

@@ -17,8 +17,6 @@ use Predis\Connection\NodeConnectionInterface;
 
 /**
  * Defines a group of Redis nodes in a master / slave replication setup.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ReplicationInterface extends AggregateConnectionInterface
 {

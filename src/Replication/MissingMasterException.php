@@ -16,8 +16,6 @@ use Predis\ClientException;
 
 /**
  * Exception class that identifies when master is missing in a replication setup.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MissingMasterException extends ClientException
 {

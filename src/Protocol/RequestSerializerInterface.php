@@ -16,8 +16,6 @@ use Predis\Command\CommandInterface;
 
 /**
  * Defines a pluggable serializer for Redis commands.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface RequestSerializerInterface
 {

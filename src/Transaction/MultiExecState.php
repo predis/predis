@@ -14,8 +14,6 @@ namespace Predis\Transaction;
 
 /**
  * Utility class used to track the state of a MULTI / EXEC transaction.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiExecState
 {

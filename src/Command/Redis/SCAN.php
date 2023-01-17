@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/scan
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SCAN extends RedisCommand
 {

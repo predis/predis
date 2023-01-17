@@ -14,8 +14,6 @@ namespace Predis\Command;
 
 /**
  * Base class for Redis commands.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class Command implements CommandInterface
 {

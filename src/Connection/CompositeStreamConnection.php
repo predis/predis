@@ -19,8 +19,6 @@ use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 /**
  * Connection abstraction to Redis servers based on PHP's stream that uses an
  * external protocol processor defining the protocol used for the communication.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class CompositeStreamConnection extends StreamConnection implements CompositeConnectionInterface
 {

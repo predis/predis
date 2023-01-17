@@ -19,8 +19,6 @@ use Predis\Protocol\ProtocolException;
 /**
  * Base class with the common logic used by connection classes to communicate
  * with Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class AbstractConnection implements NodeConnectionInterface
 {

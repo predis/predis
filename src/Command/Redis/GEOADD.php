@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/geoadd
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class GEOADD extends RedisCommand
 {

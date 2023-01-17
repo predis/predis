@@ -18,8 +18,6 @@ namespace Predis\Command;
  * A command factory is used through the library to create instances of commands
  * classes implementing Predis\Command\CommandInterface mapped to Redis commands
  * by their command ID string (SET, GET, etc...).
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface FactoryInterface
 {

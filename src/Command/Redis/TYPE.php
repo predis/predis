@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/type
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class TYPE extends RedisCommand
 {

@@ -16,8 +16,6 @@ namespace Predis\Connection;
  * Container for connection parameters used to initialize connections to Redis.
  *
  * {@inheritdoc}
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Parameters implements ParametersInterface
 {

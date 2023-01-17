@@ -16,8 +16,6 @@ use Predis\Command\RawCommand;
 
 /**
  * Standard connection factory for creating connections to Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Factory implements FactoryInterface
 {

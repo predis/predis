@@ -14,8 +14,6 @@ namespace Predis\Command\Redis;
 
 /**
  * @link http://redis.io/commands/zinterstore
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZINTERSTORE extends ZUNIONSTORE
 {

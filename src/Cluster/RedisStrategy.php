@@ -19,8 +19,6 @@ use Predis\NotSupportedException;
 /**
  * Default class used by Predis to calculate hashes out of keys of
  * commands supported by redis-cluster.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RedisStrategy extends ClusterStrategy
 {

@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/echo
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ECHO_ extends RedisCommand
 {

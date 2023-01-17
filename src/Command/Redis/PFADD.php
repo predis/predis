@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/pfadd
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class PFADD extends RedisCommand
 {

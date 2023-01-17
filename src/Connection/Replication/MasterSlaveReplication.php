@@ -25,8 +25,6 @@ use Predis\Response\ErrorInterface as ResponseErrorInterface;
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
  * single master / multiple slaves setup.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MasterSlaveReplication implements ReplicationInterface
 {

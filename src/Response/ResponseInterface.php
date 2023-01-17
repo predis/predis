@@ -14,8 +14,6 @@ namespace Predis\Response;
 
 /**
  * Represents a complex response object from Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ResponseInterface
 {

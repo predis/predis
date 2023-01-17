@@ -21,8 +21,6 @@ use Predis\Connection\Replication\SentinelReplication;
 /**
  * Configures an aggregate connection used for master/slave replication among
  * multiple Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Replication extends Aggregate
 {

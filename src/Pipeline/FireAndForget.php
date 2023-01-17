@@ -16,8 +16,6 @@ use Predis\Connection\ConnectionInterface;
 
 /**
  * Command pipeline that writes commands to the servers but discards responses.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class FireAndForget extends Pipeline
 {

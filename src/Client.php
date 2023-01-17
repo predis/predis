@@ -38,8 +38,6 @@ use Predis\Transaction\MultiExec as MultiExecTransaction;
  * one with its own responsibility and scope.
  *
  * @template-implements \IteratorAggregate<string, static>
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Client implements ClientInterface, \IteratorAggregate
 {

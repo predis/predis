@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/sdiffstore
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SDIFFSTORE extends RedisCommand
 {

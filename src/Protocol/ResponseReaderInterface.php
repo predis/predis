@@ -17,8 +17,6 @@ use Predis\Connection\CompositeConnectionInterface;
 /**
  * Defines a pluggable reader capable of parsing responses returned by Redis and
  * deserializing them to PHP objects.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ResponseReaderInterface
 {

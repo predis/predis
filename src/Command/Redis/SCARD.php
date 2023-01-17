@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/scard
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class SCARD extends RedisCommand
 {

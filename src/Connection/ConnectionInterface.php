@@ -17,8 +17,6 @@ use Predis\Command\CommandInterface;
 /**
  * Defines a connection object used to communicate with one or multiple
  * Redis servers.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ConnectionInterface
 {

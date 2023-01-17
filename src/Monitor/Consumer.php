@@ -18,8 +18,6 @@ use Predis\NotSupportedException;
 
 /**
  * Redis MONITOR consumer.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Consumer implements \Iterator
 {

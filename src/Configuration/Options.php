@@ -19,8 +19,6 @@ namespace Predis\Configuration;
  * an lazily initialize values in a mini-DI container approach.
  *
  * {@inheritdoc}
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Options implements OptionsInterface
 {

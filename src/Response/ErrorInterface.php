@@ -15,8 +15,6 @@ namespace Predis\Response;
 /**
  * Represents an error returned by Redis (responses identified by "-" in the
  * Redis protocol) during the execution of an operation on the server.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface ErrorInterface extends ResponseInterface
 {

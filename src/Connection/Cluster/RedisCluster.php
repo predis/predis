@@ -45,8 +45,6 @@ use Predis\Response\Error as ErrorResponse;
  * of the nodes and optionally enable such a behaviour upon -MOVED redirections.
  * Asking for the cluster configuration to Redis is actually done by issuing a
  * CLUSTER SLOTS command to a random node in the pool.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {

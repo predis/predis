@@ -16,8 +16,6 @@ namespace Predis\Cluster\Distributor;
  * This class implements an hashring-based distributor that uses the same
  * algorithm of libketama to distribute keys in a cluster using client-side
  * sharding.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
 class KetamaRing extends HashRing

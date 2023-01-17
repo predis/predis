@@ -16,8 +16,6 @@ use Predis\PredisException;
 
 /**
  * Exception class that identifies a MULTI / EXEC transaction aborted by Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class AbortedMultiExecException extends PredisException
 {

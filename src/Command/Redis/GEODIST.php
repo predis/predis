@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/geodist
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class GEODIST extends RedisCommand
 {

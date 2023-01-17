@@ -18,8 +18,6 @@ namespace Predis\Response\Iterator;
  *
  * This wrapper is useful for responses to commands such as `HGETALL` that can
  * be iterater as $key => $value pairs.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MultiBulkTuple extends MultiBulk implements \OuterIterator
 {

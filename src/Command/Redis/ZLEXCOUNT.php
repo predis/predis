@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/zlexcount
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ZLEXCOUNT extends RedisCommand
 {

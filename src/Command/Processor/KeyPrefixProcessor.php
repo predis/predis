@@ -18,8 +18,6 @@ use Predis\Command\PrefixableCommandInterface;
 /**
  * Command processor capable of prefixing keys stored in the arguments of Redis
  * commands supported.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyPrefixProcessor implements ProcessorInterface
 {

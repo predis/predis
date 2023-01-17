@@ -25,8 +25,6 @@ use Predis\NotSupportedException;
  * can change several times during the iteration process.
  *
  * @see http://redis.io/commands/scan
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class CursorBasedIterator implements \Iterator
 {

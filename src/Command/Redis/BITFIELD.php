@@ -16,8 +16,6 @@ use Predis\Command\Command as RedisCommand;
 
 /**
  * @link http://redis.io/commands/bitfield
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class BITFIELD extends RedisCommand
 {

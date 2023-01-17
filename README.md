@@ -479,8 +479,8 @@ found [on its actions page](https://github.com/predis/predis/actions).
 
 ### Author ###
 
-- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
 - [Till Krüss](https://till.im) ([Twitter](http://twitter.com/tillkruss))
+- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
 
 
 ### License ###
