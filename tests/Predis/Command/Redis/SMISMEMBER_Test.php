@@ -63,10 +63,10 @@ class SMISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider membersProvider
-     * @param array $set
-     * @param string $key
-     * @param array $members
-     * @param array $expectedResponse
+     * @param  array  $set
+     * @param  string $key
+     * @param  array  $members
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

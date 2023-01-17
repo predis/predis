@@ -78,12 +78,12 @@ class ZINTER_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param array $weights
-     * @param string $aggregate
-     * @param bool $withScores
-     * @param array $expectedResponse
+     * @param  array  $firstSortedSet
+     * @param  array  $secondSortedSet
+     * @param  array  $weights
+     * @param  string $aggregate
+     * @param  bool   $withScores
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -129,9 +129,9 @@ class ZINTER_Test extends PredisCommandTestCase
      * @dataProvider unexpectedValueProvider
      * @param $keys
      * @param $weights
-     * @param string $aggregate
-     * @param bool $withScores
-     * @param string $expectedExceptionMessage
+     * @param  string $aggregate
+     * @param  bool   $withScores
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

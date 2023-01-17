@@ -35,8 +35,8 @@ class HRANDFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
@@ -58,11 +58,11 @@ class HRANDFIELD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider hashesProvider
-     * @param array $hash
-     * @param string $key
-     * @param int $count
-     * @param bool $withValues
-     * @param array $expectedResponse
+     * @param  array  $hash
+     * @param  string $key
+     * @param  int    $count
+     * @param  bool   $withValues
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

@@ -38,8 +38,8 @@ class GeoFromTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(array $actualArguments, array $expectedArguments): void

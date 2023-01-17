@@ -55,10 +55,10 @@ class ZDIFF_test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSetDictionary
-     * @param array $secondSetDictionary
-     * @param array $expectedResponse
-     * @param bool $withScores
+     * @param  array $firstSetDictionary
+     * @param  array $secondSetDictionary
+     * @param  array $expectedResponse
+     * @param  bool  $withScores
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

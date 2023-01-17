@@ -61,9 +61,9 @@ class GETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider keysProvider
-     * @param array $kvPair
-     * @param array $arguments
-     * @param string $expectedResponse
+     * @param  array  $kvPair
+     * @param  array  $arguments
+     * @param  string $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -82,8 +82,8 @@ class GETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

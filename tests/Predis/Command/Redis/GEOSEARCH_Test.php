@@ -63,19 +63,19 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider coordinatesProvider
-     * @param array $firstCoordinates
-     * @param array $secondCoordinates
-     * @param array $thirdCoordinates
-     * @param string $key
-     * @param FromInterface $from
-     * @param ByInterface $by
-     * @param string|null $sorting
-     * @param int $count
-     * @param bool $any
-     * @param bool $withCoord
-     * @param bool $withDist
-     * @param bool $withHash
-     * @param array $expectedResponse
+     * @param  array         $firstCoordinates
+     * @param  array         $secondCoordinates
+     * @param  array         $thirdCoordinates
+     * @param  string        $key
+     * @param  FromInterface $from
+     * @param  ByInterface   $by
+     * @param  string|null   $sorting
+     * @param  int           $count
+     * @param  bool          $any
+     * @param  bool          $withCoord
+     * @param  bool          $withDist
+     * @param  bool          $withHash
+     * @param  array         $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -109,9 +109,9 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedException
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

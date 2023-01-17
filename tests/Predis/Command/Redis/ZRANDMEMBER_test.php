@@ -55,11 +55,11 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @param string $key
-     * @param int $count
-     * @param array $membersDictionary
-     * @param array $expectedResponse
-     * @param bool $withScores
+     * @param  string $key
+     * @param  int    $count
+     * @param  array  $membersDictionary
+     * @param  array  $expectedResponse
+     * @param  bool   $withScores
      * @return void
      * @dataProvider membersProvider
      * @requiresRedisVersion >= 6.2.0
