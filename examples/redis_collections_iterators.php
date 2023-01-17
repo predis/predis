@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 use Predis\Collection\Iterator;
 

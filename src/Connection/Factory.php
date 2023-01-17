@@ -103,7 +103,7 @@ class Factory implements FactoryInterface
 
         if (!$connection instanceof NodeConnectionInterface) {
             throw new UnexpectedValueException(
-                'Objects returned by connection initializers must implement '.
+                'Objects returned by connection initializers must implement ' .
                 "'Predis\Connection\NodeConnectionInterface'."
             );
         }

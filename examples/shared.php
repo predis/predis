@@ -14,7 +14,7 @@ if (PHP_SAPI !== 'cli') {
     die("Example scripts are meant to be executed locally via CLI.");
 }
 
-require __DIR__.'/../autoload.php';
+require __DIR__ . '/../autoload.php';
 
 function redis_version($info)
 {

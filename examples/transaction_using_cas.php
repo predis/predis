@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This is an implementation of an atomic client-side ZPOP using the support for
 // check-and-set (CAS) operations with MULTI/EXEC transactions, as described in

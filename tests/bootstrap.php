@@ -10,18 +10,18 @@
  * file that was distributed with this source code.
  */
 
-if (file_exists(__DIR__.'/../autoload.php')) {
-    require __DIR__.'/../autoload.php';
+if (file_exists(__DIR__ . '/../autoload.php')) {
+    require __DIR__ . '/../autoload.php';
 } elseif (@include('Predis/Autoloader.php')) {
     Predis\Autoloader::register();
 } else {
     die('ERROR: Unable to find a suitable mean to register Predis\Autoloader.');
 }
 
-require __DIR__.'/PHPUnit/ArrayHasSameValuesConstraint.php';
-require __DIR__.'/PHPUnit/OneOfConstraint.php';
-require __DIR__.'/PHPUnit/RedisCommandConstraint.php';
-require __DIR__.'/PHPUnit/PredisTestCase.php';
-require __DIR__.'/PHPUnit/PredisCommandTestCase.php';
-require __DIR__.'/PHPUnit/PredisConnectionTestCase.php';
-require __DIR__.'/PHPUnit/PredisDistributorTestCase.php';
+require __DIR__ . '/PHPUnit/ArrayHasSameValuesConstraint.php';
+require __DIR__ . '/PHPUnit/OneOfConstraint.php';
+require __DIR__ . '/PHPUnit/RedisCommandConstraint.php';
+require __DIR__ . '/PHPUnit/PredisTestCase.php';
+require __DIR__ . '/PHPUnit/PredisCommandTestCase.php';
+require __DIR__ . '/PHPUnit/PredisConnectionTestCase.php';
+require __DIR__ . '/PHPUnit/PredisDistributorTestCase.php';

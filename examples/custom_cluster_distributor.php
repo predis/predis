@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Developers can implement Predis\Distribution\DistributorInterface to create
 // their own distributors used by the client to distribute keys among a cluster

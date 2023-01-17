@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis supports redis-sentinel to provide high availability in master / slave
 // scenarios. The only but relevant difference with a basic replication scenario

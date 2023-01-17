@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis can prefix keys found in commands arguments before sending commands to
 // Redis, even for complex commands such as SORT, ZUNIONSTORE and ZINTERSTORE.
