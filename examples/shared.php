@@ -11,7 +11,7 @@
  */
 
 if (PHP_SAPI !== 'cli') {
-    die('Example scripts are meant to be executed locally via CLI.');
+    exit('Example scripts are meant to be executed locally via CLI.');
 }
 
 require __DIR__ . '/../autoload.php';

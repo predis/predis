@@ -59,7 +59,7 @@ class EventsListener implements Countable
 }
 
 // Attach our callable class to the dispatcher.
-$dispatcher->attachCallback('events', ($events = new EventsListener()));
+$dispatcher->attachCallback('events', $events = new EventsListener());
 
 // Attach a function to control the dispatcher loop termination with a message.
 $dispatcher->attachCallback('control', function ($payload, $dispatcher) {

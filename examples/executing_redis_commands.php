@@ -18,7 +18,8 @@ $client = new Predis\Client($single_server);
 $client->set('library', 'predis');
 $response = $client->get('library');
 
-var_export($response); echo PHP_EOL;
+var_export($response);
+echo PHP_EOL;
 /* OUTPUT: 'predis' */
 
 // Redis has the MSET and MGET commands to set or get multiple keys in one go,
@@ -33,7 +34,8 @@ $mkv = [
 $client->mset($mkv);
 $response = $client->mget(array_keys($mkv));
 
-var_export($response); echo PHP_EOL;
+var_export($response);
+echo PHP_EOL;
 /* OUTPUT:
 array (
   0 => '1st user',
@@ -49,7 +51,8 @@ $response = $client->executeRaw([
     'MGET', 'uid:0001', 'uid:0002', 'uid:0003',
 ]);
 
-var_export($response); echo PHP_EOL;
+var_export($response);
+echo PHP_EOL;
 /* OUTPUT:
 array (
   0 => '1st user',
