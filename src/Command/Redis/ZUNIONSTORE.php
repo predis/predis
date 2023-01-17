@@ -50,7 +50,7 @@ class ZUNIONSTORE extends RedisCommand
     public function setArguments(array $arguments)
     {
         // support old `$options` array for backwards compatibility
-        if (! isset($arguments[3]) && (isset($arguments[2]['weights']) || isset($arguments[2]['aggregate']))) {
+        if (!isset($arguments[3]) && (isset($arguments[2]['weights']) || isset($arguments[2]['aggregate']))) {
             $options = array_pop($arguments);
             array_push($arguments, $options['weights'] ?? []);
             array_push($arguments, $options['aggregate'] ?? 'sum');

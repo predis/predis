@@ -18,11 +18,12 @@ return (new PhpCsFixer\Config)
         'phpdoc_separation' => false,
         'phpdoc_annotation_without_dot' => false,
         'no_superfluous_phpdoc_tags' => false,
+        'no_unneeded_curly_braces' => false,
         'global_namespace_import' => true,
         'yoda_style' => false,
         'single_line_throw' => false,
         'concat_space' => ['spacing' => 'one'],
-        'increment_style' => ['style' => 'post'],
+        'increment_style' => false,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

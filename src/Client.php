@@ -13,7 +13,6 @@
 namespace Predis;
 
 use ArrayIterator;
-
 use InvalidArgumentException;
 use IteratorAggregate;
 use Predis\Command\CommandInterface;
@@ -45,7 +44,7 @@ use Traversable;
  */
 class Client implements ClientInterface, IteratorAggregate
 {
-    const VERSION = '2.1.1';
+    public const VERSION = '2.1.1';
 
     /** @var OptionsInterface */
     private $options;
@@ -62,8 +61,8 @@ class Client implements ClientInterface, IteratorAggregate
      */
     public function __construct($parameters = null, $options = null)
     {
-        $this->options = static::createOptions($options ?? new Options);
-        $this->connection = static::createConnection($this->options, $parameters ?? new Parameters);
+        $this->options = static::createOptions($options ?? new Options());
+        $this->connection = static::createConnection($this->options, $parameters ?? new Parameters());
         $this->commands = $this->options->commands;
     }
 
@@ -72,9 +71,8 @@ class Client implements ClientInterface, IteratorAggregate
      *
      * @param array|OptionsInterface $options Set of client options
      *
-     * @throws InvalidArgumentException
-     *
      * @return OptionsInterface
+     * @throws InvalidArgumentException
      */
     protected static function createOptions($options)
     {
@@ -108,9 +106,8 @@ class Client implements ClientInterface, IteratorAggregate
      * @param OptionsInterface $options    Client options container
      * @param mixed            $parameters Connection parameters
      *
-     * @throws InvalidArgumentException
-     *
      * @return ConnectionInterface
+     * @throws InvalidArgumentException
      */
     protected static function createConnection(OptionsInterface $options, $parameters)
     {
@@ -337,9 +334,8 @@ class Client implements ClientInterface, IteratorAggregate
      * @param CommandInterface       $command  Redis command that generated the error.
      * @param ErrorResponseInterface $response Instance of the error response.
      *
-     * @throws ServerException
-     *
      * @return mixed
+     * @throws ServerException
      */
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $response)
     {
@@ -387,11 +383,9 @@ class Client implements ClientInterface, IteratorAggregate
 
                 return $this->$initializer($arg0, $arg1);
 
-        // @codeCoverageIgnoreStart
             default:
                 return $this->$initializer($this, $argv);
         }
-        // @codeCoverageIgnoreEnd
     }
 
     /**
