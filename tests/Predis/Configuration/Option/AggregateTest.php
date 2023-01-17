@@ -49,7 +49,7 @@ class AggregateTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -82,7 +82,7 @@ class AggregateTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -115,7 +115,7 @@ class AggregateTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -167,7 +167,7 @@ class AggregateTest extends PredisTestCase
             );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -200,7 +200,7 @@ class AggregateTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -230,7 +230,7 @@ class AggregateTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -276,13 +276,13 @@ class AggregateTest extends PredisTestCase
 
         /** @var Factory|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\Factory')
-        ->onlyMethods(array('create'))
+        ->onlyMethods(['create'])
         ->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
-        $factory->aggregate($cluster, array(new $connectionClass(), new $connectionClass()));
+        $factory->aggregate($cluster, [new $connectionClass(), new $connectionClass()]);
     }
 
     /**
@@ -301,7 +301,7 @@ class AggregateTest extends PredisTestCase
 
         /** @var Factory|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\Factory')
-        ->onlyMethods(array('create'))
+        ->onlyMethods(['create'])
         ->getMock();
         $factory
             ->expects($this->exactly(3))
@@ -310,7 +310,7 @@ class AggregateTest extends PredisTestCase
                 return new $connectionClass();
             });
 
-        $factory->aggregate($cluster, array(null, 'tcp://127.0.0.1', array('scheme' => 'tcp'), new $connectionClass()));
+        $factory->aggregate($cluster, [null, 'tcp://127.0.0.1', ['scheme' => 'tcp'], new $connectionClass()]);
     }
 
     /**
@@ -326,12 +326,12 @@ class AggregateTest extends PredisTestCase
 
         /** @var Factory|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\Factory')
-        ->onlyMethods(array('create'))
+        ->onlyMethods(['create'])
         ->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
-        $factory->aggregate($cluster, array());
+        $factory->aggregate($cluster, []);
     }
 }

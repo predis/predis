@@ -39,8 +39,8 @@ class SETBIT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 7, 1);
-        $expected = array('key', 7, 1);
+        $arguments = ['key', 7, 1];
+        $expected = ['key', 7, 1];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

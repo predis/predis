@@ -41,8 +41,8 @@ class PFADD_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'a', 'b', 'c');
-        $expected = array('key', 'a', 'b', 'c');
+        $arguments = ['key', 'a', 'b', 'c'];
+        $expected = ['key', 'a', 'b', 'c'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -55,8 +55,8 @@ class PFADD_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsFieldsAsSingleArray(): void
     {
-        $arguments = array('key', array('a', 'b', 'c'));
-        $expected = array('key', 'a', 'b', 'c');
+        $arguments = ['key', ['a', 'b', 'c']];
+        $expected = ['key', 'a', 'b', 'c'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

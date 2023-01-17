@@ -76,7 +76,7 @@ abstract class CursorBasedIterator implements \Iterator
     {
         $this->valid = true;
         $this->fetchmore = true;
-        $this->elements = array();
+        $this->elements = [];
         $this->cursor = 0;
         $this->position = -1;
         $this->current = null;
@@ -89,7 +89,7 @@ abstract class CursorBasedIterator implements \Iterator
      */
     protected function getScanOptions()
     {
-        $options = array();
+        $options = [];
 
         if (strlen(strval($this->match)) > 0) {
             $options['MATCH'] = $this->match;

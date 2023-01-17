@@ -19,12 +19,12 @@ use Predis\Command\CommandInterface;
  */
 class ProcessorChain implements \ArrayAccess, ProcessorInterface
 {
-    private $processors = array();
+    private $processors = [];
 
     /**
      * @param array $processors List of instances of ProcessorInterface.
      */
-    public function __construct($processors = array())
+    public function __construct($processors = [])
     {
         foreach ($processors as $processor) {
             $this->add($processor);

@@ -23,7 +23,7 @@ use Predis\Connection\StreamConnection;
 class SimpleDebuggableConnection extends StreamConnection
 {
     private $tstart = 0;
-    private $debugBuffer = array();
+    private $debugBuffer = [];
 
     public function connect()
     {
@@ -66,11 +66,11 @@ class SimpleDebuggableConnection extends StreamConnection
     }
 }
 
-$options = array(
-    'connections' => array(
+$options = [
+    'connections' => [
         'tcp' => 'SimpleDebuggableConnection',
-    ),
-);
+    ],
+];
 
 $client = new Predis\Client($single_server, $options);
 $client->set('foo', 'bar');

@@ -37,7 +37,7 @@ class RequestSerializerTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->willReturn(array());
+            ->willReturn([]);
 
         $result = $serializer->serialize($command);
 
@@ -60,7 +60,7 @@ class RequestSerializerTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->willReturn(array('key', 'value'));
+            ->willReturn(['key', 'value']);
 
         $result = $serializer->serialize($command);
 
@@ -83,7 +83,7 @@ class RequestSerializerTest extends PredisTestCase
         $command
             ->expects($this->once())
             ->method('getArguments')
-            ->willReturn(array(0 => 'key:1', 2 => 'key:2'));
+            ->willReturn([0 => 'key:1', 2 => 'key:2']);
 
         $result = $serializer->serialize($command);
 

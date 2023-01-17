@@ -39,8 +39,8 @@ class SETRANGE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 5, 'range');
-        $expected = array('key', 5, 'range');
+        $arguments = ['key', 5, 'range'];
+        $expected = ['key', 5, 'range'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

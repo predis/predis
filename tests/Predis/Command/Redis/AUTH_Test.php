@@ -39,8 +39,8 @@ class AUTH_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('password');
-        $expected = array('password');
+        $arguments = ['password'];
+        $expected = ['password'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

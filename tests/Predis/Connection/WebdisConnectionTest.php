@@ -39,7 +39,7 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testSupportsSchemeUnix(): void
     {
-        $connection = $this->createConnectionWithParams(array('scheme' => 'http'));
+        $connection = $this->createConnectionWithParams(['scheme' => 'http']);
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
     }
@@ -52,7 +52,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Invalid scheme: 'tcp'");
 
-        $connection = $this->createConnectionWithParams(array('scheme' => 'tcp'));
+        $connection = $this->createConnectionWithParams(['scheme' => 'tcp']);
     }
 
     /**
@@ -112,7 +112,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("Command 'SELECT' is not allowed by Webdis");
 
         $connection = $this->createConnection();
-        $connection->executeCommand($this->getCommandFactory()->create('select', array(0)));
+        $connection->executeCommand($this->getCommandFactory()->create('select', [0]));
     }
 
     /**
@@ -124,7 +124,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->expectExceptionMessage("Command 'AUTH' is not allowed by Webdis");
 
         $connection = $this->createConnection();
-        $connection->executeCommand($this->getCommandFactory()->create('auth', array('foobar')));
+        $connection->executeCommand($this->getCommandFactory()->create('auth', ['foobar']));
     }
 
     /**
@@ -132,10 +132,10 @@ class WebdisConnectionTest extends PredisTestCase
      */
     public function testCanBeSerialized(): void
     {
-        $parameters = $this->getParameters(array(
+        $parameters = $this->getParameters([
             'alias' => 'redis',
             'read_write_timeout' => 10,
-        ));
+        ]);
 
         $connection = $this->createConnectionWithParams($parameters);
 
@@ -157,10 +157,10 @@ class WebdisConnectionTest extends PredisTestCase
         $commands = $this->getCommandFactory();
 
         $cmdPing = $commands->create('ping');
-        $cmdEcho = $commands->create('echo', array('echoed'));
-        $cmdGet = $commands->create('get', array('foobar'));
-        $cmdRpush = $commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol'));
-        $cmdLrange = $commands->create('lrange', array('metavars', 0, -1));
+        $cmdEcho = $commands->create('echo', ['echoed']);
+        $cmdGet = $commands->create('get', ['foobar']);
+        $cmdRpush = $commands->create('rpush', ['metavars', 'foo', 'hoge', 'lol']);
+        $cmdLrange = $commands->create('lrange', ['metavars', 0, -1]);
 
         $connection = $this->createConnection(true);
 
@@ -168,7 +168,7 @@ class WebdisConnectionTest extends PredisTestCase
         $this->assertSame('echoed', $connection->executeCommand($cmdEcho));
         $this->assertNull($connection->executeCommand($cmdGet));
         $this->assertSame(3, $connection->executeCommand($cmdRpush));
-        $this->assertSame(array('foo', 'hoge', 'lol'), $connection->executeCommand($cmdLrange));
+        $this->assertSame(['foo', 'hoge', 'lol'], $connection->executeCommand($cmdLrange));
     }
 
     /**
@@ -180,7 +180,7 @@ class WebdisConnectionTest extends PredisTestCase
     {
         $this->expectException('Predis\Connection\ConnectionException');
 
-        $connection = $this->createConnectionWithParams(array('host' => '169.254.10.10'));
+        $connection = $this->createConnectionWithParams(['host' => '169.254.10.10']);
         $connection->executeCommand($this->getCommandFactory()->create('ping'));
     }
 
@@ -195,11 +195,11 @@ class WebdisConnectionTest extends PredisTestCase
      */
     protected function getDefaultParametersArray(): array
     {
-        return array(
+        return [
             'scheme' => 'http',
             'host' => constant('WEBDIS_SERVER_HOST'),
             'port' => constant('WEBDIS_SERVER_PORT'),
-        );
+        ];
     }
 
     /**
@@ -207,7 +207,7 @@ class WebdisConnectionTest extends PredisTestCase
      */
     protected function createConnection(): NodeConnectionInterface
     {
-        return $this->createConnectionWithParams(array());
+        return $this->createConnectionWithParams([]);
     }
 
     /**

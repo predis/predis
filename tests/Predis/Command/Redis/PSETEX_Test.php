@@ -39,8 +39,8 @@ class PSETEX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 10, 'hello');
-        $expected = array('key', 10, 'hello');
+        $arguments = ['key', 10, 'hello'];
+        $expected = ['key', 10, 'hello'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

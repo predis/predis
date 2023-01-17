@@ -203,14 +203,14 @@ class StreamConnection extends AbstractConnection
         if (is_array($parameters->ssl)) {
             $options = $parameters->ssl;
         } else {
-            $options = array();
+            $options = [];
         }
 
         if (!isset($options['crypto_type'])) {
             $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
         }
 
-        if (!stream_context_set_option($resource, array('ssl' => $options))) {
+        if (!stream_context_set_option($resource, ['ssl' => $options])) {
             $this->onConnectionError('Error while setting SSL context options');
         }
 
@@ -322,7 +322,7 @@ class StreamConnection extends AbstractConnection
                     return;
                 }
 
-                $multibulk = array();
+                $multibulk = [];
 
                 for ($i = 0; $i < $count; ++$i) {
                     $multibulk[$i] = $this->read();

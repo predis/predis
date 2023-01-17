@@ -39,8 +39,8 @@ class PUBSUB_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('channels', 'predis:*');
-        $expected = array('channels', 'predis:*');
+        $arguments = ['channels', 'predis:*'];
+        $expected = ['channels', 'predis:*'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class PUBSUB_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $response = array('predis:incoming', 'predis:outgoing');
-        $expected = array('predis:incoming', 'predis:outgoing');
+        $response = ['predis:incoming', 'predis:outgoing'];
+        $expected = ['predis:incoming', 'predis:outgoing'];
 
         $command = $this->getCommandWithArguments('channels', 'predis:*');
 
@@ -66,8 +66,8 @@ class PUBSUB_Test extends PredisCommandTestCase
      */
     public function testPubsubNumsub(): void
     {
-        $response = array('predis:incoming', '10', 'predis:outgoing', '8');
-        $expected = array('predis:incoming' => '10', 'predis:outgoing' => '8');
+        $response = ['predis:incoming', '10', 'predis:outgoing', '8'];
+        $expected = ['predis:incoming' => '10', 'predis:outgoing' => '8'];
 
         $command = $this->getCommandWithArguments('numsub', 'predis:incoming', 'predis:outgoing');
 

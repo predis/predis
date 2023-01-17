@@ -85,6 +85,6 @@ class MultiBulkTuple extends MultiBulk implements \OuterIterator
         $v = $this->iterator->current();
         $this->iterator->next();
 
-        return array($k, $v);
+        return [$k, $v];
     }
 }

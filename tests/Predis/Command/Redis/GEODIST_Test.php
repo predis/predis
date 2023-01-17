@@ -39,8 +39,8 @@ class GEODIST_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'member:1', 'member:2', 'km');
-        $expected = array('key', 'member:1', 'member:2', 'km');
+        $arguments = ['key', 'member:1', 'member:2', 'km'];
+        $expected = ['key', 'member:1', 'member:2', 'km'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class GEODIST_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('103.31822459492736');
-        $expected = array('103.31822459492736');
+        $raw = ['103.31822459492736'];
+        $expected = ['103.31822459492736'];
 
         $command = $this->getCommand();
 

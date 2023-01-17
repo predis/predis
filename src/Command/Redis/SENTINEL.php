@@ -55,7 +55,7 @@ class SENTINEL extends RedisCommand
     protected static function processMastersOrSlaves(array $servers)
     {
         foreach ($servers as $idx => $node) {
-            $processed = array();
+            $processed = [];
             $count = count($node);
 
             for ($i = 0; $i < $count; ++$i) {

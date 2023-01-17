@@ -24,7 +24,7 @@ require __DIR__.'/shared.php';
 // PUBLISH control terminate_dispatcher
 
 // Create a client and disable r/w timeout on the socket
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Return an initialized PubSub consumer instance from the client.
 $pubsub = $client->pubSubLoop();
@@ -39,7 +39,7 @@ class EventsListener implements Countable
 
     public function __construct()
     {
-        $this->events = array();
+        $this->events = [];
     }
 
     public function count()

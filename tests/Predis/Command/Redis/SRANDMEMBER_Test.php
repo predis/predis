@@ -39,8 +39,8 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 1);
-        $expected = array('key', 1);
+        $arguments = ['key', 1];
+        $expected = ['key', 1];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -65,8 +65,8 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b');
 
-        $this->assertContains($redis->srandmember('letters'), array('a', 'b'));
-        $this->assertContains($redis->srandmember('letters'), array('a', 'b'));
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
 
         $this->assertSame(2, $redis->scard('letters'));
     }

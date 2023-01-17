@@ -39,8 +39,8 @@ class LSET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 'value');
-        $expected = array('key', 0, 'value');
+        $arguments = ['key', 0, 'value'];
+        $expected = ['key', 0, 'value'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +66,7 @@ class LSET_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', 'b', 'c');
 
         $this->assertEquals('OK', $redis->lset('letters', 1, 'B'));
-        $this->assertSame(array('a', 'B', 'c'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'B', 'c'], $redis->lrange('letters', 0, -1));
     }
 
     /**

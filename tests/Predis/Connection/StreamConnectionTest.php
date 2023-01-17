@@ -42,8 +42,8 @@ class StreamConnectionTest extends PredisConnectionTestCase
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(array('executeCommand', 'createResource'))
-            ->setConstructorArgs(array(new Parameters()))
+            ->onlyMethods(['executeCommand', 'createResource'])
+            ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
             ->method('executeCommand')
@@ -71,8 +71,8 @@ class StreamConnectionTest extends PredisConnectionTestCase
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(array('getResource'))
-            ->setConstructorArgs(array(new Parameters()))
+            ->onlyMethods(['getResource'])
+            ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
             ->method('getResource')
@@ -91,16 +91,16 @@ class StreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithFalseLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 0));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 0]);
         $this->assertNonPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => false));
+        $connection2 = $this->createConnectionWithParams(['persistent' => false]);
         $this->assertNonPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '0'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '0']);
         $this->assertNonPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'false'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'false']);
         $this->assertNonPersistentConnection($connection4);
     }
 
@@ -110,16 +110,16 @@ class StreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithTrueLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 1));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 1]);
         $this->assertPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
         $this->assertPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '1'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '1']);
         $this->assertPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'true'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'true']);
         $this->assertPersistentConnection($connection4);
 
         $connection1->disconnect();
@@ -131,8 +131,8 @@ class StreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => true));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection1 = $this->createConnectionWithParams(['persistent' => true]);
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);
@@ -148,8 +148,8 @@ class StreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 'conn1'));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => 'conn2'));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 'conn1']);
+        $connection2 = $this->createConnectionWithParams(['persistent' => 'conn2']);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);

@@ -48,7 +48,7 @@ class ClusterTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -99,7 +99,7 @@ class ClusterTest extends PredisTestCase
             );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -132,7 +132,7 @@ class ClusterTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -183,7 +183,7 @@ class ClusterTest extends PredisTestCase
             );
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -216,7 +216,7 @@ class ClusterTest extends PredisTestCase
             ->method('add');
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -246,7 +246,7 @@ class ClusterTest extends PredisTestCase
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callable
             ->expects($this->once())
@@ -274,7 +274,7 @@ class ClusterTest extends PredisTestCase
             ->with('connections');
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'predis'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = array()));
+        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = []));
     }
 
     /**
@@ -291,8 +291,8 @@ class ClusterTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('__get')
             ->withConsecutive(
-                array('connections'),
-                array('crc16')
+                ['connections'],
+                ['crc16']
             )
             ->willReturnOnConsecutiveCalls(
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
@@ -300,7 +300,7 @@ class ClusterTest extends PredisTestCase
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = array()));
+        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = []));
     }
 
     /**
@@ -317,8 +317,8 @@ class ClusterTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('__get')
             ->withConsecutive(
-                array('connections'),
-                array('crc16')
+                ['connections'],
+                ['crc16']
             )
             ->willReturnOnConsecutiveCalls(
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
@@ -326,7 +326,7 @@ class ClusterTest extends PredisTestCase
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis-cluster'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = array()));
+        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = []));
     }
 
     /**

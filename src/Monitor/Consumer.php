@@ -166,12 +166,12 @@ class Consumer implements \Iterator
         $event = preg_replace_callback('/ \(db (\d+)\) | \[(\d+) (.*?)\] /', $callback, $event, 1);
         @list($timestamp, $command, $arguments) = explode(' ', $event, 3);
 
-        return (object) array(
+        return (object) [
             'timestamp' => (float) $timestamp,
             'database' => $database,
             'client' => $client,
             'command' => substr($command, 1, -1),
             'arguments' => $arguments,
-        );
+        ];
     }
 }

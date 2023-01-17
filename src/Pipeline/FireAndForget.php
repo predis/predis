@@ -30,6 +30,6 @@ class FireAndForget extends Pipeline
 
         $connection->disconnect();
 
-        return array();
+        return [];
     }
 }

@@ -153,7 +153,7 @@ class RedisFactoryTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals('INFO', $command->getId());
-        $this->assertEquals(array(), $command->getArguments());
+        $this->assertEquals([], $command->getArguments());
     }
 
     /**
@@ -163,7 +163,7 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory();
 
-        $arguments = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
@@ -254,9 +254,9 @@ class RedisFactoryTest extends PredisTestCase
 
         $factory = new RedisFactory();
         $factory->setProcessor($processor);
-        $factory->create('set', array('foo', 'bar'));
+        $factory->create('set', ['foo', 'bar']);
 
-        $this->assertSame(array('FOO', 'BAR'), $argsRef);
+        $this->assertSame(['FOO', 'BAR'], $argsRef);
     }
 
     /**
@@ -293,7 +293,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     protected function getExpectedCommands(): array
     {
-        return array(
+        return [
             0 => 'EXISTS',
             1 => 'DEL',
             2 => 'TYPE',
@@ -453,6 +453,6 @@ class RedisFactoryTest extends PredisTestCase
             156 => 'GEODIST',
             157 => 'GEORADIUS',
             158 => 'GEORADIUSBYMEMBER',
-        );
+        ];
     }
 }

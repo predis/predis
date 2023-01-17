@@ -37,7 +37,7 @@ class MultiExec implements ClientContextInterface
     protected $commands;
     protected $exceptions = true;
     protected $attempts = 0;
-    protected $watchKeys = array();
+    protected $watchKeys = [];
     protected $modeCAS = false;
 
     /**
@@ -51,7 +51,7 @@ class MultiExec implements ClientContextInterface
         $this->client = $client;
         $this->state = new MultiExecState();
 
-        $this->configure($client, $options ?: array());
+        $this->configure($client, $options ?: []);
         $this->reset();
     }
 
@@ -171,7 +171,7 @@ class MultiExec implements ClientContextInterface
      *
      * @return mixed
      */
-    protected function call($commandID, array $arguments = array())
+    protected function call($commandID, array $arguments = [])
     {
         $response = $this->client->executeCommand(
             $this->client->createCommand($commandID, $arguments)
@@ -235,7 +235,7 @@ class MultiExec implements ClientContextInterface
             throw new ClientException('Sending WATCH after MULTI is not allowed.');
         }
 
-        $response = $this->call('WATCH', is_array($keys) ? $keys : array($keys));
+        $response = $this->call('WATCH', is_array($keys) ? $keys : [$keys]);
         $this->state->flag(MultiExecState::WATCH);
 
         return $response;
@@ -274,7 +274,7 @@ class MultiExec implements ClientContextInterface
         }
 
         $this->state->unflag(MultiExecState::WATCH);
-        $this->__call('UNWATCH', array());
+        $this->__call('UNWATCH', []);
 
         return $this;
     }
@@ -392,7 +392,7 @@ class MultiExec implements ClientContextInterface
             break;
         } while ($attempts-- > 0);
 
-        $response = array();
+        $response = [];
         $commands = $this->commands;
         $size = count($execResponse);
 

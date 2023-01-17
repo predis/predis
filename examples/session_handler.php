@@ -32,10 +32,10 @@ if (!interface_exists('SessionHandlerInterface')) {
 
 // Instantiate a new client just like you would normally do. Using a prefix for
 // keys will effectively prefix all session keys with the specified string.
-$client = new Predis\Client($single_server, array('prefix' => 'sessions:'));
+$client = new Predis\Client($single_server, ['prefix' => 'sessions:']);
 
 // Set `gc_maxlifetime` to specify a time-to-live of 5 seconds for session keys.
-$handler = new Predis\Session\Handler($client, array('gc_maxlifetime' => 5));
+$handler = new Predis\Session\Handler($client, ['gc_maxlifetime' => 5]);
 
 // Register the session handler.
 $handler->register();

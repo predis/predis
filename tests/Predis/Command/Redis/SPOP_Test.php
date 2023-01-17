@@ -39,8 +39,8 @@ class SPOP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 2);
-        $expected = array('key', 2);
+        $arguments = ['key', 2];
+        $expected = ['key', 2];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -65,8 +65,8 @@ class SPOP_Test extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b');
 
-        $this->assertContains($redis->spop('letters'), array('a', 'b'));
-        $this->assertContains($redis->spop('letters'), array('a', 'b'));
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
 
         $this->assertNull($redis->spop('letters'));
     }
@@ -81,7 +81,7 @@ class SPOP_Test extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b', 'c');
 
-        $this->assertSameValues(array('a', 'b', 'c'), $redis->spop('letters', 3));
+        $this->assertSameValues(['a', 'b', 'c'], $redis->spop('letters', 3));
         $this->assertEmpty($redis->spop('letters', 3));
 
         $this->assertNull($redis->spop('letters'));

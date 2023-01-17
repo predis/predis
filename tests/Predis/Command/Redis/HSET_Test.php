@@ -39,8 +39,8 @@ class HSET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field', 'value');
-        $expected = array('key', 'field', 'value');
+        $arguments = ['key', 'field', 'value'];
+        $expected = ['key', 'field', 'value'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -70,7 +70,7 @@ class HSET_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->hset('metavars', 'foo', 'bar'));
         $this->assertSame(1, $redis->hset('metavars', 'hoge', 'piyo'));
 
-        $this->assertSame(array('bar', 'piyo'), $redis->hmget('metavars', 'foo', 'hoge'));
+        $this->assertSame(['bar', 'piyo'], $redis->hmget('metavars', 'foo', 'hoge'));
     }
 
     /**

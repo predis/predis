@@ -33,15 +33,15 @@ class SLOWLOG extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
-            $log = array();
+            $log = [];
 
             foreach ($data as $index => $entry) {
-                $log[$index] = array(
+                $log[$index] = [
                     'id' => $entry[0],
                     'timestamp' => $entry[1],
                     'duration' => $entry[2],
                     'command' => $entry[3],
-                );
+                ];
             }
 
             return $log;

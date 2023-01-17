@@ -58,13 +58,13 @@ class KetamaRingTest extends PredisDistributorTestCase
      */
     public function testMultipleNodesInRing(): void
     {
-        $ring = $this->getSampleDistribution(array(
+        $ring = $this->getSampleDistribution([
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        ));
+        ]);
 
-        $expected = array(
+        $expected = [
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7000',
@@ -85,7 +85,7 @@ class KetamaRingTest extends PredisDistributorTestCase
             '127.0.0.1:7002',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        );
+        ];
 
         $actual = $this->getNodes($ring, 20);
 
@@ -101,7 +101,7 @@ class KetamaRingTest extends PredisDistributorTestCase
 
         $expected1 = array_fill(0, 10, '127.0.0.1:7000');
         $expected3 = array_fill(0, 10, '127.0.0.1:7001');
-        $expected2 = array(
+        $expected2 = [
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7000',
@@ -112,7 +112,7 @@ class KetamaRingTest extends PredisDistributorTestCase
             '127.0.0.1:7001',
             '127.0.0.1:7000',
             '127.0.0.1:7001',
-        );
+        ];
 
         $ring->add('127.0.0.1:7000');
         $actual1 = $this->getNodes($ring, 10);
@@ -133,11 +133,11 @@ class KetamaRingTest extends PredisDistributorTestCase
      */
     public function testGetByValue(): void
     {
-        $ring = $this->getSampleDistribution(array(
+        $ring = $this->getSampleDistribution([
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        ));
+        ]);
 
         $this->assertSame('127.0.0.1:7001', $ring->get('uid:256'));
         $this->assertSame('127.0.0.1:7002', $ring->get('uid:281'));
@@ -152,11 +152,11 @@ class KetamaRingTest extends PredisDistributorTestCase
      */
     public function testGetByHash(): void
     {
-        $ring = $this->getSampleDistribution(array(
+        $ring = $this->getSampleDistribution([
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        ));
+        ]);
 
         $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ?  -591277534 : 3703689762)); // uid:256
         $this->assertSame('127.0.0.1:7002', $ring->getByHash(PHP_INT_SIZE == 4 ? -1632011260 : 2662956036)); // uid:281
@@ -171,11 +171,11 @@ class KetamaRingTest extends PredisDistributorTestCase
      */
     public function testGetBySlot(): void
     {
-        $ring = $this->getSampleDistribution(array(
+        $ring = $this->getSampleDistribution([
             '127.0.0.1:7000',
             '127.0.0.1:7001',
             '127.0.0.1:7002',
-        ));
+        ]);
 
         $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -585685153 : 3709282143)); // uid:256
         $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1617239533 : 2677727763)); // uid:281
@@ -199,7 +199,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     {
         $node = '127.0.0.1:7000';
         $callable = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
 
         $callable

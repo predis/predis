@@ -31,7 +31,7 @@ class ReplicationStrategy
     {
         $this->disallowed = $this->getDisallowedOperations();
         $this->readonly = $this->getReadOnlyOperations();
-        $this->readonlySHA1 = array();
+        $this->readonlySHA1 = [];
     }
 
     /**
@@ -189,7 +189,7 @@ class ReplicationStrategy
      */
     protected function getDisallowedOperations()
     {
-        return array(
+        return [
             'SHUTDOWN' => true,
             'INFO' => true,
             'DBSIZE' => true,
@@ -201,7 +201,7 @@ class ReplicationStrategy
             'BGSAVE' => true,
             'BGREWRITEAOF' => true,
             'SLOWLOG' => true,
-        );
+        ];
     }
 
     /**
@@ -211,7 +211,7 @@ class ReplicationStrategy
      */
     protected function getReadOnlyOperations()
     {
-        return array(
+        return [
             'EXISTS' => true,
             'TYPE' => true,
             'KEYS' => true,
@@ -267,12 +267,12 @@ class ReplicationStrategy
             'BITPOS' => true,
             'TIME' => true,
             'PFCOUNT' => true,
-            'BITFIELD' => array($this, 'isBitfieldReadOnly'),
+            'BITFIELD' => [$this, 'isBitfieldReadOnly'],
             'GEOHASH' => true,
             'GEOPOS' => true,
             'GEODIST' => true,
-            'GEORADIUS' => array($this, 'isGeoradiusReadOnly'),
-            'GEORADIUSBYMEMBER' => array($this, 'isGeoradiusReadOnly'),
-        );
+            'GEORADIUS' => [$this, 'isGeoradiusReadOnly'],
+            'GEORADIUSBYMEMBER' => [$this, 'isGeoradiusReadOnly'],
+        ];
     }
 }

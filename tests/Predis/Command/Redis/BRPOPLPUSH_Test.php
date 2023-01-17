@@ -39,8 +39,8 @@ class BRPOPLPUSH_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key:source', 'key:destination', 10);
-        $expected = array('key:source', 'key:destination', 10);
+        $arguments = ['key:source', 'key:destination', 10];
+        $expected = ['key:source', 'key:destination', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -38,7 +38,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
 
-        $connection = $this->createConnectionWithParams(array('scheme' => 'tls'));
+        $connection = $this->createConnectionWithParams(['scheme' => 'tls']);
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
     }
@@ -51,7 +51,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
 
-        $connection = $this->createConnectionWithParams(array('scheme' => 'rediss'));
+        $connection = $this->createConnectionWithParams(['scheme' => 'rediss']);
 
         $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
     }
@@ -69,8 +69,8 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(array('executeCommand', 'createResource'))
-            ->setConstructorArgs(array(new Parameters()))
+            ->onlyMethods(['executeCommand', 'createResource'])
+            ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
             ->method('executeCommand')
@@ -98,12 +98,12 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     {
         $this->expectException('Predis\Connection\ConnectionException');
 
-        $connection = $this->createConnectionWithParams(array(
+        $connection = $this->createConnectionWithParams([
             'read_write_timeout' => 0.5,
-        ), true);
+        ], true);
 
         $connection->executeCommand(
-            $this->getCommandFactory()->create('brpop', array('foo', 3))
+            $this->getCommandFactory()->create('brpop', ['foo', 3])
         );
     }
 
@@ -130,16 +130,16 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithFalseLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 0));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 0]);
         $this->assertNonPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => false));
+        $connection2 = $this->createConnectionWithParams(['persistent' => false]);
         $this->assertNonPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '0'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '0']);
         $this->assertNonPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'false'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'false']);
         $this->assertNonPersistentConnection($connection4);
     }
 
@@ -149,16 +149,16 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithTrueLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 1));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 1]);
         $this->assertPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
         $this->assertPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '1'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '1']);
         $this->assertPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'true'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'true']);
         $this->assertPersistentConnection($connection4);
 
         $connection1->disconnect();
@@ -170,8 +170,8 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => true));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection1 = $this->createConnectionWithParams(['persistent' => true]);
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);
@@ -187,8 +187,8 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 'conn1'));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => 'conn2'));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 'conn1']);
+        $connection2 = $this->createConnectionWithParams(['persistent' => 'conn2']);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);

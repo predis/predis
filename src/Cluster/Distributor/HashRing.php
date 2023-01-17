@@ -30,7 +30,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     private $ringKeysCount;
     private $replicas;
     private $nodeHashCallback;
-    private $nodes = array();
+    private $nodes = [];
 
     /**
      * @param int   $replicas         Number of replicas in the ring.
@@ -52,10 +52,10 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
     {
         // In case of collisions in the hashes of the nodes, the node added
         // last wins, thus the order in which nodes are added is significant.
-        $this->nodes[] = array(
+        $this->nodes[] = [
             'object' => $node,
             'weight' => (int) $weight ?: $this::DEFAULT_WEIGHT,
-        );
+        ];
 
         $this->reset();
     }
@@ -130,7 +130,7 @@ class HashRing implements DistributorInterface, HashGeneratorInterface
             throw new EmptyRingException('Cannot initialize an empty hashring.');
         }
 
-        $this->ring = array();
+        $this->ring = [];
         $totalWeight = $this->computeTotalWeight();
         $nodesCount = count($this->nodes);
 

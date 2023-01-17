@@ -37,7 +37,7 @@ class RawCommandTest extends PredisTestCase
     public function testConstructorWithCommandIDAndArguments(): void
     {
         $commandID = 'SET';
-        $commandArgs = array('foo', 'bar');
+        $commandArgs = ['foo', 'bar'];
 
         $command = new RawCommand($commandID, $commandArgs);
 
@@ -56,7 +56,7 @@ class RawCommandTest extends PredisTestCase
 
         $command = RawCommand::create('SET', 'foo', 'bar');
         $this->assertSame('SET', $command->getId());
-        $this->assertSame(array('foo', 'bar'), $command->getArguments());
+        $this->assertSame(['foo', 'bar'], $command->getArguments());
     }
 
     /**
@@ -81,10 +81,10 @@ class RawCommandTest extends PredisTestCase
         $commandID = 'SET';
         $command = new RawCommand($commandID);
 
-        $command->setArguments($commandArgs = array('foo', 'bar'));
+        $command->setArguments($commandArgs = ['foo', 'bar']);
         $this->assertSame($commandArgs, $command->getArguments());
 
-        $command->setArguments($commandArgs = array('hoge', 'piyo'));
+        $command->setArguments($commandArgs = ['hoge', 'piyo']);
         $this->assertSame($commandArgs, $command->getArguments());
     }
 
@@ -96,10 +96,10 @@ class RawCommandTest extends PredisTestCase
         $commandID = 'SET';
         $command = new RawCommand($commandID);
 
-        $command->setRawArguments($commandArgs = array('foo', 'bar'));
+        $command->setRawArguments($commandArgs = ['foo', 'bar']);
         $this->assertSame($commandArgs, $command->getArguments());
 
-        $command->setRawArguments($commandArgs = array('hoge', 'piyo'));
+        $command->setRawArguments($commandArgs = ['hoge', 'piyo']);
         $this->assertSame($commandArgs, $command->getArguments());
     }
 
@@ -108,7 +108,7 @@ class RawCommandTest extends PredisTestCase
      */
     public function testGetArgumentAtIndex(): void
     {
-        $command = new RawCommand('GET', array('key'));
+        $command = new RawCommand('GET', ['key']);
 
         $this->assertSame('key', $command->getArgument(0));
         $this->assertNull($command->getArgument(1));
@@ -120,7 +120,7 @@ class RawCommandTest extends PredisTestCase
     public function testSetAndGetHash(): void
     {
         $slot = 1024;
-        $arguments = array('key', 'value');
+        $arguments = ['key', 'value'];
         $command = new RawCommand('SET', $arguments);
 
         $this->assertNull($command->getSlot());
@@ -128,7 +128,7 @@ class RawCommandTest extends PredisTestCase
         $command->setSlot($slot);
         $this->assertSame($slot, $command->getSlot());
 
-        $command->setArguments(array('hoge', 'piyo'));
+        $command->setArguments(['hoge', 'piyo']);
         $this->assertNull($command->getSlot());
     }
 
@@ -137,7 +137,7 @@ class RawCommandTest extends PredisTestCase
      */
     public function testNormalizesCommandIdentifiersToUppercase(): void
     {
-        $command = new RawCommand('set', array('key', 'value'));
+        $command = new RawCommand('set', ['key', 'value']);
 
         $this->assertSame('SET', $command->getId());
     }

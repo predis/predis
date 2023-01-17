@@ -47,15 +47,15 @@ LUA;
 
 // ------------------------------------------------------------------------- //
 
-$parameters = array(
+$parameters = [
     'tcp://127.0.0.1:6381?role=master&database=15',
     'tcp://127.0.0.1:6382?role=slave&alias=slave-01&database=15',
-);
+];
 
-$options = array(
-    'commands' => array(
+$options = [
+    'commands' => [
         'hmgetall' => 'HashMultipleGetAll',
-    ),
+    ],
     'replication' => function () {
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
@@ -64,7 +64,7 @@ $options = array(
 
         return $replication;
     },
-);
+];
 
 // ------------------------------------------------------------------------- //
 

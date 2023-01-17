@@ -32,7 +32,7 @@ class ZPOPMAX extends RedisCommand
      */
     public function parseResponse($data)
     {
-        $result = array();
+        $result = [];
 
         for ($i = 0; $i < count($data); ++$i) {
             $result[$data[$i]] = $data[++$i];

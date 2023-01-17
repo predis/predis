@@ -119,6 +119,6 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
      */
     public function __sleep()
     {
-        return array_merge(parent::__sleep(), array('protocol'));
+        return array_merge(parent::__sleep(), ['protocol']);
     }
 }

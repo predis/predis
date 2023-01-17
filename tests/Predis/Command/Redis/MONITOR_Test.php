@@ -41,9 +41,9 @@ class MONITOR_Test extends PredisCommandTestCase
     public function testFilterArguments(): void
     {
         $command = $this->getCommand();
-        $command->setArguments(array());
+        $command->setArguments([]);
 
-        $this->assertSame(array(), $command->getArguments());
+        $this->assertSame([], $command->getArguments());
     }
 
     /**

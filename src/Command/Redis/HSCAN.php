@@ -50,7 +50,7 @@ class HSCAN extends RedisCommand
     protected function prepareOptions($options)
     {
         $options = array_change_key_case($options, CASE_UPPER);
-        $normalized = array();
+        $normalized = [];
 
         if (!empty($options['MATCH'])) {
             $normalized[] = 'MATCH';
@@ -72,7 +72,7 @@ class HSCAN extends RedisCommand
     {
         if (is_array($data)) {
             $fields = $data[1];
-            $result = array();
+            $result = [];
 
             for ($i = 0; $i < count($fields); ++$i) {
                 $result[$fields[$i]] = $fields[++$i];

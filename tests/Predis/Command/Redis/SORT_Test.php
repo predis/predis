@@ -46,7 +46,7 @@ class SORT_Test extends PredisCommandTestCase
      */
     protected function lpushUnorderedList(Client $redis, $key)
     {
-        $list = array(2, 100, 3, 1, 30, 10);
+        $list = [2, 100, 3, 1, 30, 10];
         $redis->lpush($key, $list);
 
         return $list;
@@ -57,20 +57,20 @@ class SORT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $modifiers = array(
+        $modifiers = [
             'by' => 'by_key_*',
-            'limit' => array(1, 4),
-            'get' => array('object_*', '#'),
+            'limit' => [1, 4],
+            'get' => ['object_*', '#'],
             'sort' => 'asc',
             'alpha' => true,
             'store' => 'destination_key',
-        );
-        $arguments = array('key', $modifiers);
+        ];
+        $arguments = ['key', $modifiers];
 
-        $expected = array(
+        $expected = [
             'key', 'BY', 'by_key_*', 'GET', 'object_*', 'GET', '#',
             'LIMIT', 1, 4, 'ASC', 'ALPHA', 'STORE', 'destination_key',
-        );
+        ];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -83,8 +83,8 @@ class SORT_Test extends PredisCommandTestCase
      */
     public function testGetModifierCanBeString(): void
     {
-        $arguments = array('key', array('get' => '#'));
-        $expected = array('key', 'GET', '#');
+        $arguments = ['key', ['get' => '#']];
+        $expected = ['key', 'GET', '#'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -97,8 +97,8 @@ class SORT_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('value1', 'value2', 'value3');
-        $expected = array('value1', 'value2', 'value3');
+        $raw = ['value1', 'value2', 'value3'];
+        $expected = ['value1', 'value2', 'value3'];
 
         $command = $this->getCommand();
 
@@ -111,9 +111,9 @@ class SORT_Test extends PredisCommandTestCase
     public function testBasicSort(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
-        $this->assertEquals(array(1, 2, 3, 10, 30, 100), $redis->sort('list:unordered'));
+        $this->assertEquals([1, 2, 3, 10, 30, 100], $redis->sort('list:unordered'));
     }
 
     /**
@@ -122,20 +122,20 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithAscOrDescModifier(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertEquals(
-            array(100, 30, 10, 3, 2, 1),
-            $redis->sort('list:unordered', array(
+            [100, 30, 10, 3, 2, 1],
+            $redis->sort('list:unordered', [
                 'sort' => 'desc',
-            ))
+            ])
         );
 
         $this->assertEquals(
-            array(1, 2, 3, 10, 30, 100),
-            $redis->sort('list:unordered', array(
+            [1, 2, 3, 10, 30, 100],
+            $redis->sort('list:unordered', [
                 'sort' => 'asc',
-            ))
+            ])
         );
     }
 
@@ -145,20 +145,20 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithLimitModifier(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertEquals(
-            array(1, 2, 3),
-            $redis->sort('list:unordered', array(
-                'limit' => array(0, 3),
-            ))
+            [1, 2, 3],
+            $redis->sort('list:unordered', [
+                'limit' => [0, 3],
+            ])
         );
 
         $this->assertEquals(
-            array(10, 30),
-            $redis->sort('list:unordered', array(
-                'limit' => array(3, 2),
-            ))
+            [10, 30],
+            $redis->sort('list:unordered', [
+                'limit' => [3, 2],
+            ])
         );
     }
 
@@ -168,13 +168,13 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithAlphaModifier(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertEquals(
-            array(1, 10, 100, 2, 3, 30),
-            $redis->sort('list:unordered', array(
+            [1, 10, 100, 2, 3, 30],
+            $redis->sort('list:unordered', [
                 'alpha' => true,
-            ))
+            ])
         );
     }
 
@@ -184,16 +184,16 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithStoreModifier(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertCount(
-            $redis->sort('list:unordered', array(
+            $redis->sort('list:unordered', [
                 'store' => 'list:ordered',
-            )),
+            ]),
             $unordered
         );
 
-        $this->assertEquals(array(1, 2, 3, 10, 30, 100),  $redis->lrange('list:ordered', 0, -1));
+        $this->assertEquals([1, 2, 3, 10, 30, 100],  $redis->lrange('list:ordered', 0, -1));
     }
 
     /**
@@ -202,15 +202,15 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithCombinedModifiers(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertEquals(
-            array(30, 10, 3, 2),
-            $redis->sort('list:unordered', array(
+            [30, 10, 3, 2],
+            $redis->sort('list:unordered', [
                 'alpha' => false,
                 'sort' => 'desc',
-                'limit' => array(1, 4),
-            ))
+                'limit' => [1, 4],
+            ])
         );
     }
 
@@ -220,15 +220,15 @@ class SORT_Test extends PredisCommandTestCase
     public function testSortWithGetModifiers(): void
     {
         $redis = $this->getClient();
-        $redis->lpush('list:unordered', $unordered = array(2, 100, 3, 1, 30, 10));
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
-        $redis->rpush('list:uids', $uids = array(1003, 1001, 1002, 1000));
-        $redis->mset($sortget = array(
+        $redis->rpush('list:uids', $uids = [1003, 1001, 1002, 1000]);
+        $redis->mset($sortget = [
             'uid:1000' => 'foo',  'uid:1001' => 'bar',
             'uid:1002' => 'hoge', 'uid:1003' => 'piyo',
-        ));
+        ]);
 
-        $this->assertEquals(array_values($sortget), $redis->sort('list:uids', array('get' => 'uid:*')));
+        $this->assertEquals(array_values($sortget), $redis->sort('list:uids', ['get' => 'uid:*']));
     }
 
     /**

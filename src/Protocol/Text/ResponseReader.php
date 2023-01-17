@@ -41,13 +41,13 @@ class ResponseReader implements ResponseReaderInterface
      */
     protected function getDefaultHandlers()
     {
-        return array(
+        return [
             '+' => new Handler\StatusResponse(),
             '-' => new Handler\ErrorResponse(),
             ':' => new Handler\IntegerResponse(),
             '$' => new Handler\BulkResponse(),
             '*' => new Handler\MultiBulkResponse(),
-        );
+        ];
     }
 
     /**

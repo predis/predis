@@ -39,8 +39,8 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key:source', 'key:destination');
-        $expected = array('key:source', 'key:destination');
+        $arguments = ['key:source', 'key:destination'];
+        $expected = ['key:source', 'key:destination'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -69,8 +69,8 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
         $this->assertSame('b', $redis->rpoplpush('letters:source', 'letters:destination'));
         $this->assertSame('a', $redis->rpoplpush('letters:source', 'letters:destination'));
 
-        $this->assertSame(array(), $redis->lrange('letters:source', 0, -1));
-        $this->assertSame(array('a', 'b', 'c'), $redis->lrange('letters:destination', 0, -1));
+        $this->assertSame([], $redis->lrange('letters:source', 0, -1));
+        $this->assertSame(['a', 'b', 'c'], $redis->lrange('letters:destination', 0, -1));
     }
 
     /**
@@ -86,7 +86,7 @@ class RPOPLPUSH_Test extends PredisCommandTestCase
         $this->assertSame('b', $redis->rpoplpush('letters:source', 'letters:source'));
         $this->assertSame('a', $redis->rpoplpush('letters:source', 'letters:source'));
 
-        $this->assertSame(array('a', 'b', 'c'), $redis->lrange('letters:source', 0, -1));
+        $this->assertSame(['a', 'b', 'c'], $redis->lrange('letters:source', 0, -1));
     }
 
     /**

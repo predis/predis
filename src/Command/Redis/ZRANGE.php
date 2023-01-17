@@ -37,7 +37,7 @@ class ZRANGE extends RedisCommand
 
             if ($lastType === 'string' && strtoupper($arguments[3]) === 'WITHSCORES') {
                 // Used for compatibility with older versions
-                $arguments[3] = array('WITHSCORES' => true);
+                $arguments[3] = ['WITHSCORES' => true];
                 $lastType = 'array';
             }
 
@@ -60,7 +60,7 @@ class ZRANGE extends RedisCommand
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
-        $finalizedOpts = array();
+        $finalizedOpts = [];
 
         if (!empty($opts['WITHSCORES'])) {
             $finalizedOpts[] = 'WITHSCORES';
@@ -91,7 +91,7 @@ class ZRANGE extends RedisCommand
     public function parseResponse($data)
     {
         if ($this->withScores()) {
-            $result = array();
+            $result = [];
 
             for ($i = 0; $i < count($data); ++$i) {
                 $result[$data[$i]] = $data[++$i];

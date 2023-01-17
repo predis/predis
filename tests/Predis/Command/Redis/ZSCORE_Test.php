@@ -39,8 +39,8 @@ class ZSCORE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'member');
-        $expected = array('key', 'member');
+        $arguments = ['key', 'member'];
+        $expected = ['key', 'member'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

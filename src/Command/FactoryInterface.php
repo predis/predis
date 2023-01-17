@@ -38,5 +38,5 @@ interface FactoryInterface
      *
      * @return CommandInterface
      */
-    public function create(string $commandID, array $arguments = array()): CommandInterface;
+    public function create(string $commandID, array $arguments = []): CommandInterface;
 }

@@ -197,7 +197,7 @@ class Client implements ClientInterface, \IteratorAggregate
     {
         $selector = strtolower($selector);
 
-        if (!in_array($selector, array('id', 'key', 'slot', 'role', 'alias', 'command'))) {
+        if (!in_array($selector, ['id', 'key', 'slot', 'role', 'alias', 'command'])) {
             throw new \InvalidArgumentException("Invalid selector type: `$selector`");
         }
 
@@ -304,7 +304,7 @@ class Client implements ClientInterface, \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function createCommand($commandID, $arguments = array())
+    public function createCommand($commandID, $arguments = [])
     {
         return $this->commands->create($commandID, $arguments);
     }
@@ -517,13 +517,13 @@ class Client implements ClientInterface, \IteratorAggregate
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        $clients = array();
+        $clients = [];
         $connection = $this->getConnection();
 
         if (!$connection instanceof Traversable) {
-            return new \ArrayIterator(array(
+            return new \ArrayIterator([
                 (string) $connection => new static($connection, $this->getOptions())
-            ));
+            ]);
         }
 
         foreach ($connection as $node) {

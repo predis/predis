@@ -39,8 +39,8 @@ class SSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
-        $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
+        $arguments = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
+        $expected = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsBasicUsage(): void
     {
-        $arguments = array('key', 0);
-        $expected = array('key', 0);
+        $arguments = ['key', 0];
+        $expected = ['key', 0];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class SSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithOptionsArray(): void
     {
-        $arguments = array('key', 0, array('match' => 'member:*', 'count' => 10));
-        $expected = array('key', 0, 'MATCH', 'member:*', 'COUNT', 10);
+        $arguments = ['key', 0, ['match' => 'member:*', 'count' => 10]];
+        $expected = ['key', 0, 'MATCH', 'member:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -81,8 +81,8 @@ class SSCAN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('3', array('member:1', 'member:2', 'member:3'));
-        $expected = array('3', array('member:1', 'member:2', 'member:3'));
+        $raw = ['3', ['member:1', 'member:2', 'member:3']];
+        $expected = ['3', ['member:1', 'member:2', 'member:3']];
 
         $command = $this->getCommand();
 
@@ -96,7 +96,7 @@ class SSCAN_Test extends PredisCommandTestCase
     public function testScanWithoutMatch(): void
     {
         $redis = $this->getClient();
-        $redis->sadd('key', $members = array('member:one', 'member:two', 'member:three', 'member:four'));
+        $redis->sadd('key', $members = ['member:one', 'member:two', 'member:three', 'member:four']);
 
         $response = $redis->sscan('key', 0);
 
@@ -111,11 +111,11 @@ class SSCAN_Test extends PredisCommandTestCase
     public function testScanWithMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->sadd('key', $members = array('member:one', 'member:two', 'member:three', 'member:four'));
+        $redis->sadd('key', $members = ['member:one', 'member:two', 'member:three', 'member:four']);
 
         $response = $redis->sscan('key', 0, 'MATCH', 'member:t*');
 
-        $this->assertSameValues(array('member:two', 'member:three'), $response[1]);
+        $this->assertSameValues(['member:two', 'member:three'], $response[1]);
     }
 
     /**
@@ -125,7 +125,7 @@ class SSCAN_Test extends PredisCommandTestCase
     public function testScanWithNoMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->sadd('key', $members = array('member:one', 'member:two', 'member:three', 'member:four'));
+        $redis->sadd('key', $members = ['member:one', 'member:two', 'member:three', 'member:four']);
 
         $response = $redis->sscan('key', 0, 'MATCH', 'nomember:*');
 

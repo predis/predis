@@ -17,9 +17,9 @@ require __DIR__.'/shared.php';
 // Prefixing keys can be useful to create user-level namespaces for you keyspace
 // thus reducing the need for separate logical databases in certain scenarios.
 
-$client = new Predis\Client($single_server, array('prefix' => 'nrk:'));
+$client = new Predis\Client($single_server, ['prefix' => 'nrk:']);
 
-$client->mset(array('foo' => 'bar', 'lol' => 'wut'));
+$client->mset(['foo' => 'bar', 'lol' => 'wut']);
 var_export($client->mget('foo', 'lol'));
 /*
 array (

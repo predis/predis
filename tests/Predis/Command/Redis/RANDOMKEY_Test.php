@@ -39,8 +39,8 @@ class RANDOMKEY_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array();
-        $expected = array();
+        $arguments = [];
+        $expected = [];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +66,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
      */
     public function testReturnsZeroOnNonExpiringKeys(): void
     {
-        $keys = array('key:1' => 1, 'key:2' => 2, 'key:3' => 3);
+        $keys = ['key:1' => 1, 'key:2' => 2, 'key:3' => 3];
 
         $redis = $this->getClient();
         $redis->mset($keys);

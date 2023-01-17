@@ -78,7 +78,7 @@ abstract class ScriptCommand extends Command
             $numkeys = count($arguments) + $numkeys;
         }
 
-        $arguments = array_merge(array($this->getScriptHash(), (int) $numkeys), $arguments);
+        $arguments = array_merge([$this->getScriptHash(), (int) $numkeys], $arguments);
 
         parent::setArguments($arguments);
     }

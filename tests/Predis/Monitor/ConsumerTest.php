@@ -36,7 +36,7 @@ class ConsumerTest extends PredisTestCase
             ->with('MONITOR')
             ->willReturn(false);
 
-        $client = new Client(null, array('commands' => $commands));
+        $client = new Client(null, ['commands' => $commands]);
 
         new MonitorConsumer($client);
     }
@@ -65,13 +65,13 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('createCommand', 'executeCommand'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['createCommand', 'executeCommand'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->once())
             ->method('createCommand')
-            ->with('MONITOR', array())
+            ->with('MONITOR', [])
             ->willReturn($cmdMonitor);
         $client
             ->expects($this->once())
@@ -94,8 +94,8 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('disconnect'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->exactly(2))
@@ -115,8 +115,8 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('disconnect'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->once())
@@ -186,15 +186,15 @@ class ConsumerTest extends PredisTestCase
      */
     public function testMonitorAgainstRedisServer(): void
     {
-        $parameters = array(
+        $parameters = [
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
-        );
+        ];
 
-        $echoed = array();
+        $echoed = [];
 
         $producer = new Client($parameters);
         $producer->connect();
@@ -217,7 +217,7 @@ class ConsumerTest extends PredisTestCase
             }
         }
 
-        $this->assertSame(array('message1', 'message2', 'QUIT'), $echoed);
+        $this->assertSame(['message1', 'message2', 'QUIT'], $echoed);
         $this->assertFalse($monitor->valid());
         $this->assertEquals('PONG', $consumer->ping());
     }

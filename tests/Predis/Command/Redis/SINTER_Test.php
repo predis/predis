@@ -39,8 +39,8 @@ class SINTER_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key1', 'key2', 'key3');
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = ['key1', 'key2', 'key3'];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SINTER_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('key1', 'key2', 'key3'));
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = [['key1', 'key2', 'key3']];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,8 +67,8 @@ class SINTER_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('member1', 'member2', 'member3');
-        $expected = array('member1', 'member2', 'member3');
+        $raw = ['member1', 'member2', 'member3'];
+        $expected = ['member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
 
@@ -84,7 +84,7 @@ class SINTER_Test extends PredisCommandTestCase
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sinter('letters:1st'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sinter('letters:1st'));
     }
 
     /**
@@ -96,7 +96,7 @@ class SINTER_Test extends PredisCommandTestCase
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
-        $this->assertSameValues(array(), $redis->sinter('letters:1st', 'letters:2nd'));
+        $this->assertSameValues([], $redis->sinter('letters:1st', 'letters:2nd'));
     }
 
     /**
@@ -110,8 +110,8 @@ class SINTER_Test extends PredisCommandTestCase
         $redis->sadd('letters:2nd', 'a', 'c', 'f', 'g');
         $redis->sadd('letters:3rd', 'a', 'b', 'e', 'f');
 
-        $this->assertSameValues(array('a', 'c', 'f', 'g'), $redis->sinter('letters:1st', 'letters:2nd'));
-        $this->assertSameValues(array('a', 'f'), $redis->sinter('letters:1st', 'letters:2nd', 'letters:3rd'));
+        $this->assertSameValues(['a', 'c', 'f', 'g'], $redis->sinter('letters:1st', 'letters:2nd'));
+        $this->assertSameValues(['a', 'f'], $redis->sinter('letters:1st', 'letters:2nd', 'letters:3rd'));
     }
 
     /**

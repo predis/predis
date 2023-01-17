@@ -19,11 +19,11 @@ namespace Predis\Connection;
  */
 class Parameters implements ParametersInterface
 {
-    protected static $defaults = array(
+    protected static $defaults = [
         'scheme' => 'tcp',
         'host' => '127.0.0.1',
         'port' => 6379,
-    );
+    ];
 
     /**
      * Set of connection paramaters already filtered
@@ -36,7 +36,7 @@ class Parameters implements ParametersInterface
     /**
      * @param array $parameters Named array of connection parameters.
      */
-    public function __construct(array $parameters = array())
+    public function __construct(array $parameters = [])
     {
         $this->parameters = $this->filter($parameters + static::$defaults);
     }
@@ -69,7 +69,7 @@ class Parameters implements ParametersInterface
             $parameters = static::parse($parameters);
         }
 
-        return new static($parameters ?: array());
+        return new static($parameters ?: []);
     }
 
     /**
@@ -193,6 +193,6 @@ class Parameters implements ParametersInterface
      */
     public function __sleep()
     {
-        return array('parameters');
+        return ['parameters'];
     }
 }

@@ -39,8 +39,8 @@ class LTRIM_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 1);
-        $expected = array('key', 0, 1);
+        $arguments = ['key', 0, 1];
+        $expected = ['key', 0, 1];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,13 +66,13 @@ class LTRIM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
         $this->assertEquals('OK', $redis->ltrim('letters', 0, 2));
-        $this->assertSame(array('a', 'b', 'c'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c'], $redis->lrange('letters', 0, -1));
 
         $redis->flushdb();
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
         $this->assertEquals('OK', $redis->ltrim('letters', 5, 9));
-        $this->assertSame(array('f', 'g', 'h', 'i', 'l'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -85,7 +85,7 @@ class LTRIM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
         $this->assertEquals('OK', $redis->ltrim('letters', 0, -6));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -98,7 +98,7 @@ class LTRIM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
         $this->assertEquals('OK', $redis->ltrim('letters', -5, -5));
-        $this->assertSame(array('f'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['f'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -111,7 +111,7 @@ class LTRIM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 
         $this->assertEquals('OK', $redis->ltrim('letters', -100, 100));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'), $redis->lrange('letters', -100, 100));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', -100, 100));
     }
 
     /**

@@ -39,8 +39,8 @@ class GET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('foo');
-        $expected = array('foo');
+        $arguments = ['foo'];
+        $expected = ['foo'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

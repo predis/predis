@@ -39,8 +39,8 @@ class PERSIST_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

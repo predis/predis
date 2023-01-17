@@ -39,8 +39,8 @@ class PUBLISH_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('channel', 'message');
-        $expected = array('channel', 'message');
+        $arguments = ['channel', 'message'];
+        $expected = ['channel', 'message'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

@@ -41,10 +41,10 @@ class MultiBulkResponse implements ResponseHandlerInterface
             return;
         }
 
-        $list = array();
+        $list = [];
 
         if ($length > 0) {
-            $handlersCache = array();
+            $handlersCache = [];
             $reader = $connection->getProtocol()->getResponseReader();
 
             for ($i = 0; $i < $length; ++$i) {

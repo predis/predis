@@ -39,8 +39,8 @@ class ECHO_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('message');
-        $expected = array('message');
+        $arguments = ['message'];
+        $expected = ['message'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

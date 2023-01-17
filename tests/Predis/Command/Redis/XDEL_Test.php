@@ -39,8 +39,8 @@ class XDEL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('stream', 'id1', 'id2', 'id3');
-        $expected = array('stream', 'id1', 'id2', 'id3');
+        $arguments = ['stream', 'id1', 'id2', 'id3'];
+        $expected = ['stream', 'id1', 'id2', 'id3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

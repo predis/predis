@@ -39,8 +39,8 @@ class HMSET_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field1', 'value1', 'field2', 'value2');
-        $expected = array('key', 'field1', 'value1', 'field2', 'value2');
+        $arguments = ['key', 'field1', 'value1', 'field2', 'value2'];
+        $expected = ['key', 'field1', 'value1', 'field2', 'value2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class HMSET_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsFieldsValuesAsSingleArray(): void
     {
-        $arguments = array('key', array('field1' => 'value1', 'field2' => 'value2'));
-        $expected = array('key', 'field1', 'value1', 'field2', 'value2');
+        $arguments = ['key', ['field1' => 'value1', 'field2' => 'value2']];
+        $expected = ['key', 'field1', 'value1', 'field2', 'value2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -79,10 +79,10 @@ class HMSET_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
-        $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $redis->hgetall('metavars'));
 
         $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'barbar', 'lol', 'wut'));
-        $this->assertSame(array('foo' => 'barbar', 'hoge' => 'piyo', 'lol' => 'wut'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => 'barbar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
     }
 
     /**
@@ -95,7 +95,7 @@ class HMSET_Test extends PredisCommandTestCase
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
-        $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
     }
 
     /**

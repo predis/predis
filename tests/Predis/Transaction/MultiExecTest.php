@@ -41,7 +41,7 @@ class MultiExecTest extends PredisTestCase
             ->willReturn(false);
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $client = new Client($connection, array('commands' => $commands));
+        $client = new Client($connection, ['commands' => $commands]);
 
         new MultiExec($client);
     }
@@ -59,8 +59,8 @@ class MultiExecTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('supports')
             ->withConsecutive(
-                array('MULTI', 'EXEC', 'DISCARD'),
-                array('WATCH')
+                ['MULTI', 'EXEC', 'DISCARD'],
+                ['WATCH']
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -68,9 +68,9 @@ class MultiExecTest extends PredisTestCase
             );
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $client = new Client($connection, array('commands' => $commands));
+        $client = new Client($connection, ['commands' => $commands]);
 
-        $tx = new MultiExec($client, array('options' => 'cas'));
+        $tx = new MultiExec($client, ['options' => 'cas']);
         $tx->watch('foo');
     }
 
@@ -89,8 +89,8 @@ class MultiExecTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('supports')
             ->withConsecutive(
-                array('MULTI', 'EXEC', 'DISCARD'),
-                array('UNWATCH')
+                ['MULTI', 'EXEC', 'DISCARD'],
+                ['UNWATCH']
             )
             ->willReturnOnConsecutiveCalls(
                 true,
@@ -98,9 +98,9 @@ class MultiExecTest extends PredisTestCase
             );
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $client = new Client($connection, array('commands' => $commands));
+        $client = new Client($connection, ['commands' => $commands]);
 
-        $tx = new MultiExec($client, array('options' => 'cas'));
+        $tx = new MultiExec($client, ['options' => 'cas']);
 
         $tx->unwatch('foo');
     }
@@ -110,14 +110,14 @@ class MultiExecTest extends PredisTestCase
      */
     public function testExecutionWithFluentInterface(): void
     {
-        $commands = array();
-        $expected = array('one', 'two', 'three');
+        $commands = [];
+        $expected = ['one', 'two', 'three'];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
 
         $this->assertSame($expected, $tx->echo('one')->echo('two')->echo('three')->execute());
-        $this->assertSame(array('MULTI', 'ECHO', 'ECHO', 'ECHO', 'EXEC'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'ECHO', 'ECHO', 'ECHO', 'EXEC'], self::commandsToIDs($commands));
     }
 
     /**
@@ -125,8 +125,8 @@ class MultiExecTest extends PredisTestCase
      */
     public function testExecutionWithCallable(): void
     {
-        $commands = array();
-        $expected = array('one', 'two', 'three');
+        $commands = [];
+        $expected = ['one', 'two', 'three'];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -138,7 +138,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame($expected, $responses);
-        $this->assertSame(array('MULTI', 'ECHO', 'ECHO', 'ECHO', 'EXEC'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'ECHO', 'ECHO', 'ECHO', 'EXEC'], self::commandsToIDs($commands));
     }
 
     /**
@@ -146,7 +146,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testCannotMixExecutionWithFluentInterfaceAndCallable(): void
     {
-        $commands = array();
+        $commands = [];
 
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -162,7 +162,7 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertInstanceOf('Predis\ClientException', $exception);
-        $this->assertSame(array('MULTI', 'ECHO', 'DISCARD'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'ECHO', 'DISCARD'], self::commandsToIDs($commands));
     }
 
     /**
@@ -170,7 +170,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testEmptyTransactionDoesNotSendMultiExecCommands(): void
     {
-        $commands = array();
+        $commands = [];
 
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -180,7 +180,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertNull($responses);
-        $this->assertSame(array(), self::commandsToIDs($commands));
+        $this->assertSame([], self::commandsToIDs($commands));
     }
 
     /**
@@ -191,7 +191,7 @@ class MultiExecTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Cannot invoke "execute" or "exec" inside an active transaction context');
 
-        $commands = array();
+        $commands = [];
 
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -201,7 +201,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertNull($responses);
-        $this->assertSame(array(), self::commandsToIDs($commands));
+        $this->assertSame([], self::commandsToIDs($commands));
     }
 
     /**
@@ -209,7 +209,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testEmptyTransactionIgnoresDiscard(): void
     {
-        $commands = array();
+        $commands = [];
 
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -219,7 +219,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertNull($responses);
-        $this->assertSame(array(), self::commandsToIDs($commands));
+        $this->assertSame([], self::commandsToIDs($commands));
     }
 
     /**
@@ -227,7 +227,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testTransactionWithCommandsSendsDiscard(): void
     {
-        $commands = array();
+        $commands = [];
 
         $callback = $this->getExecuteCallback(null, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -239,7 +239,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertNull($responses);
-        $this->assertSame(array('MULTI', 'SET', 'GET', 'DISCARD'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'SET', 'GET', 'DISCARD'], self::commandsToIDs($commands));
     }
 
     /**
@@ -247,8 +247,8 @@ class MultiExecTest extends PredisTestCase
      */
     public function testSendMultiOnCommandsFollowingDiscard(): void
     {
-        $commands = array();
-        $expected = array('after DISCARD');
+        $commands = [];
+        $expected = ['after DISCARD'];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -260,7 +260,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('MULTI', 'ECHO', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'ECHO', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'], self::commandsToIDs($commands));
     }
     /**
      * @group disconnected
@@ -280,8 +280,8 @@ class MultiExecTest extends PredisTestCase
      */
     public function testUnwatchInsideMulti(): void
     {
-        $commands = array();
-        $expected = array('foobar', true);
+        $commands = [];
+        $expected = ['foobar', true];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -289,7 +289,7 @@ class MultiExecTest extends PredisTestCase
         $responses = $tx->echo('foobar')->unwatch('foo')->execute();
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('MULTI', 'ECHO', 'UNWATCH', 'EXEC'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'ECHO', 'UNWATCH', 'EXEC'], self::commandsToIDs($commands));
     }
 
     /**
@@ -297,9 +297,9 @@ class MultiExecTest extends PredisTestCase
      */
     public function testAutomaticWatchInOptions(): void
     {
-        $txCommands = $casCommands = array();
-        $expected = array('bar', 'piyo');
-        $options = array('watch' => array('foo', 'hoge'));
+        $txCommands = $casCommands = [];
+        $expected = ['bar', 'piyo'];
+        $options = ['watch' => ['foo', 'hoge']];
 
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
@@ -310,18 +310,18 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('WATCH'), self::commandsToIDs($casCommands));
-        $this->assertSame(array('foo', 'hoge'), $casCommands[0]->getArguments());
-        $this->assertSame(array('MULTI', 'GET', 'GET', 'EXEC'), self::commandsToIDs($txCommands));
+        $this->assertSame(['WATCH'], self::commandsToIDs($casCommands));
+        $this->assertSame(['foo', 'hoge'], $casCommands[0]->getArguments());
+        $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
     }
     /**
      * @group disconnected
      */
     public function testCheckAndSetWithFluentInterface(): void
     {
-        $txCommands = $casCommands = array();
-        $expected = array('bar', 'piyo');
-        $options = array('cas' => true, 'watch' => array('foo', 'hoge'));
+        $txCommands = $casCommands = [];
+        $expected = ['bar', 'piyo'];
+        $options = ['cas' => true, 'watch' => ['foo', 'hoge']];
 
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
@@ -337,8 +337,8 @@ class MultiExecTest extends PredisTestCase
             ->execute();
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('WATCH', 'WATCH', 'GET', 'GET'), self::commandsToIDs($casCommands));
-        $this->assertSame(array('MULTI', 'GET', 'GET', 'EXEC'), self::commandsToIDs($txCommands));
+        $this->assertSame(['WATCH', 'WATCH', 'GET', 'GET'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -346,9 +346,9 @@ class MultiExecTest extends PredisTestCase
      */
     public function testCheckAndSetWithBlock(): void
     {
-        $txCommands = $casCommands = array();
-        $expected = array('bar', 'piyo');
-        $options = array('cas' => true, 'watch' => array('foo', 'hoge'));
+        $txCommands = $casCommands = [];
+        $expected = ['bar', 'piyo'];
+        $options = ['cas' => true, 'watch' => ['foo', 'hoge']];
 
         $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
@@ -370,8 +370,8 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('WATCH', 'WATCH', 'GET', 'GET'), self::commandsToIDs($casCommands));
-        $this->assertSame(array('MULTI', 'GET', 'GET', 'EXEC'), self::commandsToIDs($txCommands));
+        $this->assertSame(['WATCH', 'WATCH', 'GET', 'GET'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -379,18 +379,18 @@ class MultiExecTest extends PredisTestCase
      */
     public function testCheckAndSetWithEmptyBlock(): void
     {
-        $txCommands = $casCommands = array();
-        $options = array('cas' => true);
+        $txCommands = $casCommands = [];
+        $options = ['cas' => true];
 
-        $callback = $this->getExecuteCallback(array(), $txCommands, $casCommands);
+        $callback = $this->getExecuteCallback([], $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
         $tx->execute(function ($tx) {
             $tx->multi();
         });
 
-        $this->assertSame(array(), self::commandsToIDs($casCommands));
-        $this->assertSame(array(), self::commandsToIDs($txCommands));
+        $this->assertSame([], self::commandsToIDs($casCommands));
+        $this->assertSame([], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -398,10 +398,10 @@ class MultiExecTest extends PredisTestCase
      */
     public function testCheckAndSetWithoutExec(): void
     {
-        $txCommands = $casCommands = array();
-        $options = array('cas' => true);
+        $txCommands = $casCommands = [];
+        $options = ['cas' => true];
 
-        $callback = $this->getExecuteCallback(array(), $txCommands, $casCommands);
+        $callback = $this->getExecuteCallback([], $txCommands, $casCommands);
         $tx = $this->getMockedTransaction($callback, $options);
 
         $tx->execute(function ($tx) {
@@ -409,8 +409,8 @@ class MultiExecTest extends PredisTestCase
             $tx->set('hoge', 'piyo');
         });
 
-        $this->assertSame(array('GET', 'SET'), self::commandsToIDs($casCommands));
-        $this->assertSame(array(), self::commandsToIDs($txCommands));
+        $this->assertSame(['GET', 'SET'], self::commandsToIDs($casCommands));
+        $this->assertSame([], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -422,7 +422,7 @@ class MultiExecTest extends PredisTestCase
         $this->expectExceptionMessage('Automatic retries are supported only when a callable block is provided');
 
 
-        $options = array('retry' => 1);
+        $options = ['retry' => 1];
 
         $callback = $this->getExecuteCallback();
         $tx = $this->getMockedTransaction($callback, $options);
@@ -435,12 +435,12 @@ class MultiExecTest extends PredisTestCase
      */
     public function testAutomaticRetryOnServerSideTransactionAbort(): void
     {
-        $casCommands = $txCommands = array();
-        $expected = array('bar');
-        $options = array('watch' => array('foo', 'bar'), 'retry' => ($attempts = 2) + 1);
+        $casCommands = $txCommands = [];
+        $expected = ['bar'];
+        $options = ['watch' => ['foo', 'bar'], 'retry' => ($attempts = 2) + 1];
 
         $signal = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $signal
             ->expects($this->exactly($attempts))
@@ -461,9 +461,9 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame($responses, $expected);
-        $this->assertSame(array('WATCH'), self::commandsToIDs($casCommands));
-        $this->assertSame(array('foo', 'bar'), $casCommands[0]->getArguments());
-        $this->assertSame(array('MULTI', 'GET', 'EXEC'), self::commandsToIDs($txCommands));
+        $this->assertSame(['WATCH'], self::commandsToIDs($casCommands));
+        $this->assertSame(['foo', 'bar'], $casCommands[0]->getArguments());
+        $this->assertSame(['MULTI', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -486,8 +486,8 @@ class MultiExecTest extends PredisTestCase
      */
     public function testHandlesStandardExceptionsInBlock(): void
     {
-        $commands = array();
-        $expected = array('foobar', true);
+        $commands = [];
+        $expected = ['foobar', true];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -507,7 +507,7 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertNull($responses);
         $this->assertIsArray($expected);
-        $this->assertSame(array('MULTI', 'SET', 'GET', 'DISCARD'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'SET', 'GET', 'DISCARD'], self::commandsToIDs($commands));
     }
 
     /**
@@ -515,8 +515,8 @@ class MultiExecTest extends PredisTestCase
      */
     public function testHandlesServerExceptionsInBlock(): void
     {
-        $commands = array();
-        $expected = array('foobar', true);
+        $commands = [];
+        $expected = ['foobar', true];
 
         $callback = $this->getExecuteCallback($expected, $commands);
         $tx = $this->getMockedTransaction($callback);
@@ -534,7 +534,7 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertNull($responses);
-        $this->assertSame(array('MULTI', 'SET', 'ECHO', 'DISCARD'), self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'SET', 'ECHO', 'DISCARD'], self::commandsToIDs($commands));
     }
 
     /**
@@ -586,7 +586,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenFalse(): void
     {
-        $expected = array('before', new Response\Error('ERR simulated error'), 'after');
+        $expected = ['before', new Response\Error('ERR simulated error'), 'after'];
 
         $connection = $this->getMockedConnection(function (CommandInterface $command) use ($expected) {
             switch ($command->getId()) {
@@ -601,8 +601,8 @@ class MultiExecTest extends PredisTestCase
             }
         });
 
-        $client = new Client($connection, array('exceptions' => true));
-        $tx = new MultiExec($client, array('exceptions' => false));
+        $client = new Client($connection, ['exceptions' => true]);
+        $tx = new MultiExec($client, ['exceptions' => false]);
 
         $result = $tx
             ->multi()
@@ -622,7 +622,7 @@ class MultiExecTest extends PredisTestCase
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR simulated error');
 
-        $expected = array('before', new Response\Error('ERR simulated error'), 'after');
+        $expected = ['before', new Response\Error('ERR simulated error'), 'after'];
 
         $connection = $this->getMockedConnection(function (CommandInterface $command) use ($expected) {
             switch ($command->getId()) {
@@ -637,8 +637,8 @@ class MultiExecTest extends PredisTestCase
             }
         });
 
-        $client = new Client($connection, array('exceptions' => false));
-        $tx = new MultiExec($client, array('exceptions' => true));
+        $client = new Client($connection, ['exceptions' => false]);
+        $tx = new MultiExec($client, ['exceptions' => true]);
 
         $tx->multi()->echo('before')->echo('ERROR PLEASE!')->echo('after')->exec();
     }
@@ -664,7 +664,7 @@ class MultiExecTest extends PredisTestCase
             }
         });
 
-        $client = new Client($connection, array('exceptions' => false));
+        $client = new Client($connection, ['exceptions' => false]);
         $tx = new MultiExec($client);
 
         $tx->multi()->echo('test')->exec();
@@ -723,7 +723,7 @@ class MultiExecTest extends PredisTestCase
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
-        $client = $this->getClient(array(), array('exceptions' => false));
+        $client = $this->getClient([], ['exceptions' => false]);
 
         $responses = $client->transaction(function (MultiExec $tx) {
             $tx->set('foo', 'bar');
@@ -766,7 +766,7 @@ class MultiExecTest extends PredisTestCase
         $client2 = $this->getClient();
 
         try {
-            $client1->transaction(array('watch' => 'sentinel'), function ($tx) use ($client2) {
+            $client1->transaction(['watch' => 'sentinel'], function ($tx) use ($client2) {
                 $tx->set('sentinel', 'client1');
                 $tx->get('sentinel');
                 $client2->set('sentinel', 'client2');
@@ -788,7 +788,7 @@ class MultiExecTest extends PredisTestCase
         $client = $this->getClient();
 
         $client->set('foo', 'bar');
-        $options = array('watch' => 'foo', 'cas' => true);
+        $options = ['watch' => 'foo', 'cas' => true];
 
         $responses = $client->transaction($options, function ($tx) {
             $tx->watch('foobar');
@@ -801,13 +801,13 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertIsArray($responses);
-        $this->assertSame(array(array('bar', null)), $responses);
+        $this->assertSame([['bar', null]], $responses);
 
         $hijack = true;
         $client2 = $this->getClient();
         $client->set('foo', 'bar');
 
-        $options = array('watch' => 'foo', 'cas' => true, 'retry' => 1);
+        $options = ['watch' => 'foo', 'cas' => true, 'retry' => 1];
         $responses = $client->transaction($options, function ($tx) use ($client2, &$hijack) {
             $foo = $tx->get('foo');
             $tx->multi();
@@ -824,7 +824,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertIsArray($responses);
-        $this->assertSame(array(array('hijacked!', null)), $responses);
+        $this->assertSame([['hijacked!', null]], $responses);
     }
 
     // ******************************************************************** //
@@ -864,8 +864,8 @@ class MultiExecTest extends PredisTestCase
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null): MultiExec
     {
         $connection = $this->getMockedConnection($executeCallback);
-        $client = new Client($connection, $clientOpts ?: array());
-        $transaction = new MultiExec($client, $txOpts ?: array());
+        $client = new Client($connection, $clientOpts ?: []);
+        $transaction = new MultiExec($client, $txOpts ?: []);
 
         return $transaction;
     }
@@ -880,9 +880,9 @@ class MultiExecTest extends PredisTestCase
      * @return callable
      */
     protected function getExecuteCallback(
-        ?array $expected = array(),
-        ?array &$commands = array(),
-        ?array &$cas = array()
+        ?array $expected = [],
+        ?array &$commands = [],
+        ?array &$cas = []
     ): callable {
         $multi = $watch = $abort = false;
 
@@ -918,7 +918,7 @@ class MultiExecTest extends PredisTestCase
                     $watch = $multi = false;
 
                     if ($abort) {
-                        $commands = $cas = array();
+                        $commands = $cas = [];
                         $abort = false;
 
                         return;
@@ -978,7 +978,7 @@ class MultiExecTest extends PredisTestCase
      *
      * @return ClientInterface
      */
-    protected function getClient(array $parameters = array(), array $options = array()): ClientInterface
+    protected function getClient(array $parameters = [], array $options = []): ClientInterface
     {
         return $this->createClient($parameters, $options);
     }

@@ -34,20 +34,20 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                array($this->isRedisCommand('MULTI')),
-                array($this->isRedisCommand('EXEC'))
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('EXEC')]
             )
             ->willReturnOnConsecutiveCalls(
                 new Response\Status('OK'),
-                array($pong, $pong, $pong)
+                [$pong, $pong, $pong]
             );
         $connection
             ->expects($this->exactly(3))
             ->method('writeRequest')
             ->withConsecutive(
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING'))
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')]
             );
         $connection
             ->expects($this->exactly(3))
@@ -64,7 +64,7 @@ class AtomicTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array($pong, $pong, $pong), $pipeline->execute());
+        $this->assertSame([$pong, $pong, $pong], $pipeline->execute());
     }
 
     /**
@@ -82,8 +82,8 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                array($this->isRedisCommand('MULTI')),
-                array($this->isRedisCommand('EXEC'))
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('EXEC')]
             )
             ->willReturnOnConsecutiveCalls(
                 new Response\Status('OK'),
@@ -93,9 +93,9 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('writeRequest')
             ->withConsecutive(
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING'))
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')]
             );
         $connection
             ->expects($this->exactly(3))
@@ -131,8 +131,8 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                array($this->isRedisCommand('MULTI')),
-                array($this->isRedisCommand('DISCARD'))
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('DISCARD')]
             )
             ->willReturnOnConsecutiveCalls(
                 new Response\Status('OK'),
@@ -142,9 +142,9 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('writeRequest')
             ->withConsecutive(
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING'))
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')]
             );
         $connection
             ->expects($this->exactly(3))
@@ -177,8 +177,8 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                array($this->isRedisCommand('MULTI')),
-                array($this->isRedisCommand('DISCARD'))
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('DISCARD')]
             )
             ->willReturnOnConsecutiveCalls(
                 new Response\Status('OK'),
@@ -188,8 +188,8 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('writeRequest')
             ->withConsecutive(
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING'))
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')]
             );
         $connection
             ->expects($this->once())
@@ -220,20 +220,20 @@ class AtomicTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                array($this->isRedisCommand('MULTI')),
-                array($this->isRedisCommand('EXEC'))
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('EXEC')]
             )
             ->willReturnOnConsecutiveCalls(
                 new Response\Status('OK'),
-                array($pong, $pong, $error)
+                [$pong, $pong, $error]
             );
         $connection
             ->expects($this->exactly(3))
             ->method('writeRequest')
             ->withConsecutive(
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING')),
-                array($this->isRedisCommand('PING'))
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')],
+                [$this->isRedisCommand('PING')]
             );
         $connection
             ->expects($this->exactly(3))
@@ -244,13 +244,13 @@ class AtomicTest extends PredisTestCase
                 $queued
             );
 
-        $pipeline = new Atomic(new Client($connection, array('exceptions' => false)));
+        $pipeline = new Atomic(new Client($connection, ['exceptions' => false]));
 
         $pipeline->ping();
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array($pong, $pong, $error), $pipeline->execute());
+        $this->assertSame([$pong, $pong, $error], $pipeline->execute());
     }
 
     /**

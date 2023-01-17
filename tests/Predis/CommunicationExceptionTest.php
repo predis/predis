@@ -93,8 +93,8 @@ class CommunicationExceptionTest extends PredisTestCase
 
         /** @var CommunicationException|MockObject */
         $exception = $this->getMockBuilder('Predis\CommunicationException')
-            ->setConstructorArgs(array($connection, 'Communication error message'))
-            ->onlyMethods(array('shouldResetConnection'))
+            ->setConstructorArgs([$connection, 'Communication error message'])
+            ->onlyMethods(['shouldResetConnection'])
             ->getMockForAbstractClass();
         $exception
             ->expects($this->once())
@@ -128,7 +128,7 @@ class CommunicationExceptionTest extends PredisTestCase
         \Exception $inner = null
     ) {
         return $this->getMockBuilder('Predis\CommunicationException')
-            ->setConstructorArgs(array($connection, $message, $code, $inner))
+            ->setConstructorArgs([$connection, $message, $code, $inner])
             ->getMockForAbstractClass();
     }
 }

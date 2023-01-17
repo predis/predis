@@ -55,7 +55,7 @@ class ConnectionErrorProof extends Pipeline
      */
     protected function executeSingleNode(NodeConnectionInterface $connection, \SplQueue $commands)
     {
-        $responses = array();
+        $responses = [];
         $sizeOfPipe = count($commands);
 
         foreach ($commands as $command) {
@@ -87,9 +87,9 @@ class ConnectionErrorProof extends Pipeline
      */
     protected function executeCluster(ClusterInterface $connection, \SplQueue $commands)
     {
-        $responses = array();
+        $responses = [];
         $sizeOfPipe = count($commands);
-        $exceptions = array();
+        $exceptions = [];
 
         foreach ($commands as $command) {
             $cmdConnection = $connection->getConnectionByCommand($command);

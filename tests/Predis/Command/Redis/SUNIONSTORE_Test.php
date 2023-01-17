@@ -39,8 +39,8 @@ class SUNIONSTORE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key:destination', 'key:source1', 'key:source:2');
-        $expected = array('key:destination', 'key:source1', 'key:source:2');
+        $arguments = ['key:destination', 'key:source1', 'key:source:2'];
+        $expected = ['key:destination', 'key:source1', 'key:source:2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -53,8 +53,8 @@ class SUNIONSTORE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsSourceKeysAsSingleArray(): void
     {
-        $arguments = array('key:destination', array('key:source1', 'key:source:2'));
-        $expected = array('key:destination', 'key:source1', 'key:source:2');
+        $arguments = ['key:destination', ['key:source1', 'key:source:2']];
+        $expected = ['key:destination', 'key:source1', 'key:source:2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,7 +80,7 @@ class SUNIONSTORE_Test extends PredisCommandTestCase
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
         $this->assertSame(7, $redis->sunionstore('letters:destination', 'letters:1st'));
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->smembers('letters:destination'));
     }
 
     /**
@@ -95,10 +95,10 @@ class SUNIONSTORE_Test extends PredisCommandTestCase
         $redis->sadd('letters:3rd', 'a', 'e', 'f');
 
         $this->assertSame(5, $redis->sunionstore('letters:destination', 'letters:2nd', 'letters:3rd'));
-        $this->assertSameValues(array('a', 'c', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(['a', 'c', 'e', 'f', 'g'], $redis->smembers('letters:destination'));
 
         $this->assertSame(7, $redis->sunionstore('letters:destination', 'letters:1st', 'letters:2nd', 'letters:3rd'));
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->smembers('letters:destination'));
     }
 
     /**

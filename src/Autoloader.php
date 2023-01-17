@@ -42,7 +42,7 @@ class Autoloader
      */
     public static function register($prepend = false)
     {
-        spl_autoload_register(array(new self(), 'autoload'), true, $prepend);
+        spl_autoload_register([new self(), 'autoload'], true, $prepend);
     }
 
     /**

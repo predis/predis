@@ -39,8 +39,8 @@ class SMOVE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key:source', 'key:destination', 'member');
-        $expected = array('key:source', 'key:destination', 'member');
+        $arguments = ['key:source', 'key:destination', 'member'];
+        $expected = ['key:source', 'key:destination', 'member'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -71,8 +71,8 @@ class SMOVE_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->smove('letters:source', 'letters:destination', 'b'));
         $this->assertSame(0, $redis->smove('letters:source', 'letters:destination', 'z'));
 
-        $this->assertSameValues(array('a', 'c'), $redis->smembers('letters:source'));
-        $this->assertSameValues(array('b'), $redis->smembers('letters:destination'));
+        $this->assertSameValues(['a', 'c'], $redis->smembers('letters:source'));
+        $this->assertSameValues(['b'], $redis->smembers('letters:destination'));
     }
 
     /**

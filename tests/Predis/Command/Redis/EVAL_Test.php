@@ -39,8 +39,8 @@ class EVAL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar');
-        $expected = array('return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar');
+        $arguments = ['return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar'];
+        $expected = ['return redis.call("SET", KEYS[1], ARGV[1])', 1, 'foo', 'bar'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -61,7 +61,7 @@ class EVAL_Test extends PredisCommandTestCase
      */
     public function testGetScriptHash(): void
     {
-        $command = $this->getCommandWithArgumentsArray(array($lua = 'return true', 0));
+        $command = $this->getCommandWithArgumentsArray([$lua = 'return true', 0]);
         $this->assertSame(sha1($lua), $command->getScriptHash());
     }
 
@@ -74,7 +74,7 @@ class EVAL_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
-        $result = array('foo', 'hoge', 'bar', 'piyo');
+        $result = ['foo', 'hoge', 'bar', 'piyo'];
 
         $this->assertSame($result, $redis->eval($lua, 2, 'foo', 'hoge', 'bar', 'piyo'));
     }

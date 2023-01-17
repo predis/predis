@@ -18,7 +18,7 @@ require __DIR__.'/shared.php';
 // exit the monitor loop and terminate this script in a graceful way.
 
 // Create a client and disable r/w timeout on the socket.
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Use only one instance of DateTime, we will update the timestamp later.
 $timestamp = new DateTime();

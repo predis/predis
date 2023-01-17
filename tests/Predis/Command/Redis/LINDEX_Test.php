@@ -39,8 +39,8 @@ class LINDEX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 1);
-        $expected = array('key', 1);
+        $arguments = ['key', 1];
+        $expected = ['key', 1];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

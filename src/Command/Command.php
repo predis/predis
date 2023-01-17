@@ -18,7 +18,7 @@ namespace Predis\Command;
 abstract class Command implements CommandInterface
 {
     private $slot;
-    private $arguments = array();
+    private $arguments = [];
 
     /**
      * {@inheritdoc}
@@ -108,7 +108,7 @@ abstract class Command implements CommandInterface
     public static function normalizeVariadic(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
-            return array_merge(array($arguments[0]), $arguments[1]);
+            return array_merge([$arguments[0]], $arguments[1]);
         }
 
         return $arguments;

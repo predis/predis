@@ -33,7 +33,7 @@ class HMSET extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
-            $flattenedKVs = array($arguments[0]);
+            $flattenedKVs = [$arguments[0]];
             $args = $arguments[1];
 
             foreach ($args as $k => $v) {

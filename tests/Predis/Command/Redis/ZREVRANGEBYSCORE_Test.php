@@ -39,13 +39,13 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $modifiers = array(
+        $modifiers = [
             'withscores' => true,
-            'limit' => array(0, 100),
-        );
+            'limit' => [0, 100],
+        ];
 
-        $arguments = array('zset', 0, 100, $modifiers);
-        $expected = array('zset', 0, 100, 'LIMIT', 0, 100, 'WITHSCORES');
+        $arguments = ['zset', 0, 100, $modifiers];
+        $expected = ['zset', 0, 100, 'LIMIT', 0, 100, 'WITHSCORES'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -58,8 +58,8 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithStringWithscores(): void
     {
-        $arguments = array('zset', 0, 100, 'withscores');
-        $expected = array('zset', 0, 100, 'WITHSCORES');
+        $arguments = ['zset', 0, 100, 'withscores'];
+        $expected = ['zset', 0, 100, 'WITHSCORES'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -72,8 +72,8 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithNamedLimit(): void
     {
-        $arguments = array('zset', 0, 100, array('limit' => array('offset' => 1, 'count' => 2)));
-        $expected = array('zset', 0, 100, 'LIMIT', 1, 2);
+        $arguments = ['zset', 0, 100, ['limit' => ['offset' => 1, 'count' => 2]]];
+        $expected = ['zset', 0, 100, 'LIMIT', 1, 2];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -86,8 +86,8 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('element1', 'element2', 'element3');
-        $expected = array('element1', 'element2', 'element3');
+        $raw = ['element1', 'element2', 'element3'];
+        $expected = ['element1', 'element2', 'element3'];
 
         $command = $this->getCommand();
 
@@ -99,10 +99,10 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testParseResponseWithScores(): void
     {
-        $raw = array('element1', '1', 'element2', '2', 'element3', '3');
-        $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
+        $raw = ['element1', '1', 'element2', '2', 'element3', '3'];
+        $expected = ['element1' => '1', 'element2' => '2', 'element3' => '3'];
 
-        $command = $this->getCommandWithArgumentsArray(array('zset', 0, 1, 'withscores'));
+        $command = $this->getCommandWithArgumentsArray(['zset', 0, 1, 'withscores']);
 
         $this->assertSame($expected, $command->parseResponse($raw));
     }
@@ -112,17 +112,17 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
      */
     public function testAddsWithscoresModifiersOnlyWhenOptionIsTrue(): void
     {
-        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => true));
-        $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
+        $command = $this->getCommandWithArguments('zset', 0, 100, ['withscores' => true]);
+        $this->assertSame(['zset', 0, 100, 'WITHSCORES'], $command->getArguments());
 
-        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => 1));
-        $this->assertSame(array('zset', 0, 100, 'WITHSCORES'), $command->getArguments());
+        $command = $this->getCommandWithArguments('zset', 0, 100, ['withscores' => 1]);
+        $this->assertSame(['zset', 0, 100, 'WITHSCORES'], $command->getArguments());
 
-        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => false));
-        $this->assertSame(array('zset', 0, 100), $command->getArguments());
+        $command = $this->getCommandWithArguments('zset', 0, 100, ['withscores' => false]);
+        $this->assertSame(['zset', 0, 100], $command->getArguments());
 
-        $command = $this->getCommandWithArguments('zset', 0, 100, array('withscores' => 0));
-        $this->assertSame(array('zset', 0, 100), $command->getArguments());
+        $command = $this->getCommandWithArguments('zset', 0, 100, ['withscores' => 0]);
+        $this->assertSame(['zset', 0, 100], $command->getArguments());
     }
 
     /**
@@ -135,12 +135,12 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame(array('a'), $redis->zrevrangebyscore('letters', -10, -10));
-        $this->assertSame(array(), $redis->zrevrangebyscore('letters', 10, 30));
-        $this->assertSame(array('e', 'd'), $redis->zrevrangebyscore('letters', 20, 20));
-        $this->assertSame(array('f', 'e', 'd', 'c', 'b'), $redis->zrevrangebyscore('letters', 30, 0));
+        $this->assertSame(['a'], $redis->zrevrangebyscore('letters', -10, -10));
+        $this->assertSame([], $redis->zrevrangebyscore('letters', 10, 30));
+        $this->assertSame(['e', 'd'], $redis->zrevrangebyscore('letters', 20, 20));
+        $this->assertSame(['f', 'e', 'd', 'c', 'b'], $redis->zrevrangebyscore('letters', 30, 0));
 
-        $this->assertSame(array(), $redis->zrevrangebyscore('unknown', 0, 30));
+        $this->assertSame([], $redis->zrevrangebyscore('unknown', 0, 30));
     }
 
     /**
@@ -153,9 +153,9 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame(array('f', 'e', 'd'), $redis->zrevrangebyscore('letters', '+inf', 15));
-        $this->assertSame(array('c', 'b', 'a'), $redis->zrevrangebyscore('letters', 15, '-inf'));
-        $this->assertSame(array('f', 'e', 'd', 'c', 'b', 'a'), $redis->zrevrangebyscore('letters', '+inf', '-inf'));
+        $this->assertSame(['f', 'e', 'd'], $redis->zrevrangebyscore('letters', '+inf', 15));
+        $this->assertSame(['c', 'b', 'a'], $redis->zrevrangebyscore('letters', 15, '-inf'));
+        $this->assertSame(['f', 'e', 'd', 'c', 'b', 'a'], $redis->zrevrangebyscore('letters', '+inf', '-inf'));
     }
 
     /**
@@ -168,9 +168,9 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame(array('e', 'd', 'c'), $redis->zrevrangebyscore('letters', '(30', 10));
-        $this->assertSame(array('f', 'e', 'd'), $redis->zrevrangebyscore('letters', 30, '(10'));
-        $this->assertSame(array('e', 'd'), $redis->zrevrangebyscore('letters', '(30', '(10'));
+        $this->assertSame(['e', 'd', 'c'], $redis->zrevrangebyscore('letters', '(30', 10));
+        $this->assertSame(['f', 'e', 'd'], $redis->zrevrangebyscore('letters', 30, '(10'));
+        $this->assertSame(['e', 'd'], $redis->zrevrangebyscore('letters', '(30', '(10'));
     }
 
     /**
@@ -182,10 +182,10 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
-        $expected = array('e' => '20', 'd' => '20', 'c' => '10');
+        $expected = ['e' => '20', 'd' => '20', 'c' => '10'];
 
         $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, 'withscores'));
-        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, array('withscores' => true)));
+        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, ['withscores' => true]));
     }
 
     /**
@@ -197,10 +197,10 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
-        $expected = array('d', 'c');
+        $expected = ['d', 'c'];
 
-        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, array('limit' => array(1, 2))));
-        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, array('limit' => array('offset' => 1, 'count' => 2))));
+        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, ['limit' => [1, 2]]));
+        $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, ['limit' => ['offset' => 1, 'count' => 2]]));
     }
 
     /**
@@ -213,8 +213,8 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $options = array('limit' => array(1, 2), 'withscores' => true);
-        $expected = array('d' => '20', 'c' => '10');
+        $options = ['limit' => [1, 2], 'withscores' => true];
+        $expected = ['d' => '20', 'c' => '10'];
 
         $this->assertSame($expected, $redis->zrevrangebyscore('letters', 20, 10, $options));
     }

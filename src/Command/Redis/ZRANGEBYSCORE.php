@@ -31,7 +31,7 @@ class ZRANGEBYSCORE extends ZRANGE
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
-        $finalizedOpts = array();
+        $finalizedOpts = [];
 
         if (isset($opts['LIMIT']) && is_array($opts['LIMIT'])) {
             $limit = array_change_key_case($opts['LIMIT'], CASE_UPPER);

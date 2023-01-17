@@ -39,8 +39,8 @@ class SCRIPT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
-        $expected = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
+        $arguments = ['EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff'];
+        $expected = ['EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -67,7 +67,7 @@ class SCRIPT_Test extends PredisCommandTestCase
         $redis->eval($lua = 'return true', 0);
         $sha1 = sha1($lua);
 
-        $this->assertSame(array(1, 0), $redis->script('EXISTS', $sha1, 'ffffffffffffffffffffffffffffffffffffffff'));
+        $this->assertSame([1, 0], $redis->script('EXISTS', $sha1, 'ffffffffffffffffffffffffffffffffffffffff'));
     }
 
     /**
@@ -95,7 +95,7 @@ class SCRIPT_Test extends PredisCommandTestCase
         $sha1 = $redis->script('LOAD', 'return true');
 
         $this->assertEquals('OK', $redis->script('FLUSH'));
-        $this->assertSame(array(0), $redis->script('EXISTS', $sha1));
+        $this->assertSame([0], $redis->script('EXISTS', $sha1));
     }
 
     /**

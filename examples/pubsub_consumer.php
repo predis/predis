@@ -16,7 +16,7 @@ require __DIR__.'/shared.php';
 // on certain channels using a Publish/Subscribe (PUB/SUB) approach.
 
 // Create a client and disable r/w timeout on the socket
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Initialize a new pubsub consumer.
 $pubsub = $client->pubSubLoop();

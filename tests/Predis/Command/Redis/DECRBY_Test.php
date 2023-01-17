@@ -39,8 +39,8 @@ class DECRBY_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 5);
-        $expected = array('key', 5);
+        $arguments = ['key', 5];
+        $expected = ['key', 5];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

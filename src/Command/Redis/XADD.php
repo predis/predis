@@ -32,7 +32,7 @@ class XADD extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        $args = array();
+        $args = [];
 
         $args[] = $arguments[0];
         $options = $arguments[3] ?? [];

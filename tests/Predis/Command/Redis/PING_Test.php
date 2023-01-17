@@ -39,8 +39,8 @@ class PING_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array();
-        $expected = array();
+        $arguments = [];
+        $expected = [];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

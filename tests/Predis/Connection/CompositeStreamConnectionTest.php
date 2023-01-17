@@ -42,8 +42,8 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(array('executeCommand', 'createResource'))
-            ->setConstructorArgs(array(new Parameters()))
+            ->onlyMethods(['executeCommand', 'createResource'])
+            ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
             ->method('executeCommand')
@@ -73,11 +73,11 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
         $connection->getProtocol()->useIterableMultibulk(true);
 
-        $connection->executeCommand($commands->create('rpush', array('metavars', 'foo', 'hoge', 'lol')));
-        $connection->writeRequest($commands->create('lrange', array('metavars', 0, -1)));
+        $connection->executeCommand($commands->create('rpush', ['metavars', 'foo', 'hoge', 'lol']));
+        $connection->writeRequest($commands->create('lrange', ['metavars', 0, -1]));
 
         $this->assertInstanceOf('Predis\Response\Iterator\MultiBulkIterator', $iterator = $connection->read());
-        $this->assertSame(array('foo', 'hoge', 'lol'), iterator_to_array($iterator));
+        $this->assertSame(['foo', 'hoge', 'lol'], iterator_to_array($iterator));
     }
 
     /**
@@ -86,16 +86,16 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithFalseLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 0));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 0]);
         $this->assertNonPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => false));
+        $connection2 = $this->createConnectionWithParams(['persistent' => false]);
         $this->assertNonPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '0'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '0']);
         $this->assertNonPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'false'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'false']);
         $this->assertNonPersistentConnection($connection4);
     }
 
@@ -105,16 +105,16 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentParameterWithTrueLikeValues(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 1));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 1]);
         $this->assertPersistentConnection($connection1);
 
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
         $this->assertPersistentConnection($connection2);
 
-        $connection3 = $this->createConnectionWithParams(array('persistent' => '1'));
+        $connection3 = $this->createConnectionWithParams(['persistent' => '1']);
         $this->assertPersistentConnection($connection3);
 
-        $connection4 = $this->createConnectionWithParams(array('persistent' => 'true'));
+        $connection4 = $this->createConnectionWithParams(['persistent' => 'true']);
         $this->assertPersistentConnection($connection4);
 
         $connection1->disconnect();
@@ -126,8 +126,8 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => true));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => true));
+        $connection1 = $this->createConnectionWithParams(['persistent' => true]);
+        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);
@@ -143,8 +143,8 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
     {
-        $connection1 = $this->createConnectionWithParams(array('persistent' => 'conn1'));
-        $connection2 = $this->createConnectionWithParams(array('persistent' => 'conn2'));
+        $connection1 = $this->createConnectionWithParams(['persistent' => 'conn1']);
+        $connection2 = $this->createConnectionWithParams(['persistent' => 'conn2']);
 
         $this->assertPersistentConnection($connection1);
         $this->assertPersistentConnection($connection2);

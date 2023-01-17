@@ -50,7 +50,7 @@ class PUBSUB extends RedisCommand
      */
     protected static function processNumsub(array $channels)
     {
-        $processed = array();
+        $processed = [];
         $count = count($channels);
 
         for ($i = 0; $i < $count; ++$i) {

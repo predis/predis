@@ -39,8 +39,8 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 5.0);
-        $expected = array('key', 5.0);
+        $arguments = ['key', 5.0];
+        $expected = ['key', 5.0];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
