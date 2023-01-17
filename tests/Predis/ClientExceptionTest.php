@@ -14,9 +14,6 @@ namespace Predis;
 
 use PredisTestCase;
 
-/**
- *
- */
 class ClientExceptionTest extends PredisTestCase
 {
     /**

@@ -17,9 +17,6 @@ use Predis\Command;
 use Predis\Command\CommandInterface;
 use PredisTestCase;
 
-/**
- *
- */
 abstract class PredisCommandTestCase extends PredisTestCase
 {
     /**

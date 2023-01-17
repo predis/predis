@@ -22,9 +22,6 @@ use Predis\Response;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class PipelineTest extends PredisTestCase
 {
     /**

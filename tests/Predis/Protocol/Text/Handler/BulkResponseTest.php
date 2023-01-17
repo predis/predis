@@ -14,9 +14,6 @@ namespace Predis\Protocol\Text;
 
 use PredisTestCase;
 
-/**
- *
- */
 class BulkResponseTest extends PredisTestCase
 {
     /**

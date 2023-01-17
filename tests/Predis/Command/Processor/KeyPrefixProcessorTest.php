@@ -18,9 +18,6 @@ use Predis\Command\RawCommand;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class KeyPrefixProcessorTest extends PredisTestCase
 {
     /**

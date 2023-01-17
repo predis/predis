@@ -125,11 +125,11 @@ class COMMAND_Test extends PredisCommandTestCase
             $expected[0][] = [
                 [
                     'flags',
-                    ['RO','access'],
+                    ['RO', 'access'],
                     'begin_search',
-                    ['type','index','spec', ['index',1]],
+                    ['type', 'index', 'spec', ['index', 1]],
                     'find_keys',
-                    ['type','range','spec', ['lastkey',0,'keystep',1,'limit',0]],
+                    ['type', 'range', 'spec', ['lastkey', 0, 'keystep', 1, 'limit', 0]],
                 ],
             ];
             $expected[0][] = [];

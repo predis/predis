@@ -14,9 +14,6 @@ namespace Predis\Command;
 
 use PredisTestCase;
 
-/**
- *
- */
 class RawFactoryTest extends PredisTestCase
 {
     /**

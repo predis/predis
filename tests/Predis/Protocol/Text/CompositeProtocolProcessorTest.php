@@ -19,9 +19,6 @@ use Predis\Protocol\RequestSerializerInterface;
 use Predis\Protocol\ResponseReaderInterface;
 use PredisTestCase;
 
-/**
- *
- */
 class CompositeProtocolProcessorTest extends PredisTestCase
 {
     /**

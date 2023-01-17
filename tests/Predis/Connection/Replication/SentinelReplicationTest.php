@@ -20,9 +20,6 @@ use Predis\Response;
 use PredisTestCase;
 use ReflectionProperty;
 
-/**
- *
- */
 class SentinelReplicationTest extends PredisTestCase
 {
     /**
@@ -1170,7 +1167,7 @@ class SentinelReplicationTest extends PredisTestCase
             )
            ->willReturnOnConsecutiveCalls(
                $cmdSetResponse
-            );
+           );
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave1
@@ -1184,8 +1181,8 @@ class SentinelReplicationTest extends PredisTestCase
                 [$this->isRedisCommand('GET', ['key'])]
             )
            ->willReturnOnConsecutiveCalls(
-                $cmdGetResponse
-            );
+               $cmdGetResponse
+           );
 
         $replication = $this->getReplicationConnection('svc', [$sentinel1]);
 
@@ -1513,7 +1510,7 @@ class SentinelReplicationTest extends PredisTestCase
         $replication = $this->getReplicationConnection('svc', [$sentinel1, $sentinel2]);
         try {
             $replication->updateSentinels();
-        } catch (\Predis\ClientException $exception){
+        } catch (\Predis\ClientException $exception) {
             $this->assertEquals('No sentinel server available for autodiscovery.', $exception->getMessage());
         }
 

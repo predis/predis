@@ -23,7 +23,7 @@ use Predis\Response\Error as ErrorResponse;
 class PhpiredisSocketConnectionTest extends PredisConnectionTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getConnectionClass(): string
     {

@@ -24,7 +24,7 @@ class ServerToTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use ServerTo;
 
             public static $toArgumentPositionOffset = 0;

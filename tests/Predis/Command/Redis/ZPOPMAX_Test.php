@@ -18,7 +18,6 @@ namespace Predis\Command\Redis;
  */
 class ZPOPMAX_Test extends PredisCommandTestCase
 {
-
     /**
      * {@inheritdoc}
      */

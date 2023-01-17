@@ -264,6 +264,7 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame($responses, $expected);
         $this->assertSame(['MULTI', 'ECHO', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'], self::commandsToIDs($commands));
     }
+
     /**
      * @group disconnected
      */
@@ -316,6 +317,7 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame(['foo', 'hoge'], $casCommands[0]->getArguments());
         $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
     }
+
     /**
      * @group disconnected
      */
@@ -423,7 +425,6 @@ class MultiExecTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Automatic retries are supported only when a callable block is provided');
 
-
         $options = ['retry' => 1];
 
         $callback = $this->getExecuteCallback();
@@ -455,7 +456,7 @@ class MultiExecTest extends PredisTestCase
             $tx->get('foo');
 
             if ($attempts > 0) {
-                $attempts -= 1;
+                $attempts--;
                 $signal();
 
                 $tx->echo('!!ABORT!!');
@@ -885,7 +886,8 @@ class MultiExecTest extends PredisTestCase
         ?array $expected = [],
         ?array &$commands = [],
         ?array &$cas = []
-    ): callable {
+    ): callable
+    {
         $multi = $watch = $abort = false;
 
         return function (CommandInterface $command) use (&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {

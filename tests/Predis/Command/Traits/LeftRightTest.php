@@ -22,7 +22,7 @@ class LeftRightTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use LeftRight;
 
             public static $leftRightArgumentPositionOffset = 0;
@@ -80,7 +80,7 @@ class LeftRightTest extends PredisTestCase
             'left/right argument not the first and not the last' => [
                 1,
                 ['first argument', 'left', 'third argument'],
-                ['first argument', 'LEFT','third argument'],
+                ['first argument', 'LEFT', 'third argument'],
             ],
             'aggregate argument the only argument' => [
                 0,

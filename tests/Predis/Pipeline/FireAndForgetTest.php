@@ -15,9 +15,6 @@ namespace Predis\Pipeline;
 use Predis\Client;
 use PredisTestCase;
 
-/**
- *
- */
 class FireAndForgetTest extends PredisTestCase
 {
     /**

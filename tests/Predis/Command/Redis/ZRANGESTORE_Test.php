@@ -17,7 +17,7 @@ use UnexpectedValueException;
 class ZRANGESTORE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -25,7 +25,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {

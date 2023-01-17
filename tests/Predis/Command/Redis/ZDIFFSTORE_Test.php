@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 class ZDIFFSTORE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -23,7 +23,7 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -77,7 +77,6 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
         $this->assertSame($expectedResultingElements, $actualResponse);
         $this->assertSame($expectedResponse, $redis->zrange('zdiffstore', 0, -1));
     }
-
 
     public function sortedSetsProvider(): array
     {

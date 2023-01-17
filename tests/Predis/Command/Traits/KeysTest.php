@@ -24,7 +24,7 @@ class KeysTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Keys;
 
             public static $keysArgumentPositionOffset = 0;

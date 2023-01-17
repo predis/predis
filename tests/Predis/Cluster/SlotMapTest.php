@@ -14,9 +14,6 @@ namespace Predis\Cluster;
 
 use PredisTestCase;
 
-/**
- *
- */
 class SlotMapTest extends PredisTestCase
 {
     /**

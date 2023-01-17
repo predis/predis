@@ -16,9 +16,6 @@ use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class ExceptionsTest extends PredisTestCase
 {
     /**

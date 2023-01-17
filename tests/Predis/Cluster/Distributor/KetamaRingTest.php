@@ -12,9 +12,6 @@
 
 namespace Predis\Cluster\Distributor;
 
-/**
- *
- */
 class KetamaRingTest extends PredisDistributorTestCase
 {
     /**
@@ -158,12 +155,12 @@ class KetamaRingTest extends PredisDistributorTestCase
             '127.0.0.1:7002',
         ]);
 
-        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ?  -591277534 : 3703689762)); // uid:256
+        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ? -591277534 : 3703689762)); // uid:256
         $this->assertSame('127.0.0.1:7002', $ring->getByHash(PHP_INT_SIZE == 4 ? -1632011260 : 2662956036)); // uid:281
-        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ?   345494622 :  345494622)); // uid:312
+        $this->assertSame('127.0.0.1:7001', $ring->getByHash(PHP_INT_SIZE == 4 ? 345494622 : 345494622)); // uid:312
         $this->assertSame('127.0.0.1:7000', $ring->getByHash(PHP_INT_SIZE == 4 ? -1042625818 : 3252341478)); // uid:432
-        $this->assertSame('127.0.0.1:7000', $ring->getByHash(PHP_INT_SIZE == 4 ?  -465463623 : 3829503673)); // uid:500
-        $this->assertSame('127.0.0.1:7002', $ring->getByHash(PHP_INT_SIZE == 4 ?  2141928822 : 2141928822)); // uid:641
+        $this->assertSame('127.0.0.1:7000', $ring->getByHash(PHP_INT_SIZE == 4 ? -465463623 : 3829503673)); // uid:500
+        $this->assertSame('127.0.0.1:7002', $ring->getByHash(PHP_INT_SIZE == 4 ? 2141928822 : 2141928822)); // uid:641
     }
 
     /**
@@ -177,16 +174,16 @@ class KetamaRingTest extends PredisDistributorTestCase
             '127.0.0.1:7002',
         ]);
 
-        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -585685153 : 3709282143)); // uid:256
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? -585685153 : 3709282143)); // uid:256
         $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1617239533 : 2677727763)); // uid:281
-        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ?   353009954 :  353009954)); // uid:312
+        $this->assertSame('127.0.0.1:7001', $ring->getBySlot(PHP_INT_SIZE == 4 ? 353009954 : 353009954)); // uid:312
         $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ? -1037794023 : 3257173273)); // uid:432
-        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ?  -458724341 : 3836242955)); // uid:500
+        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ? -458724341 : 3836242955)); // uid:500
         $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ? -2143763192 : 2151204104)); // uid:641
 
         // Test first and last slots
         $this->assertSame('127.0.0.1:7002', $ring->getBySlot(PHP_INT_SIZE == 4 ? -2135629153 : 2159338143));
-        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ?  2137506232 : 2137506232));
+        $this->assertSame('127.0.0.1:7000', $ring->getBySlot(PHP_INT_SIZE == 4 ? 2137506232 : 2137506232));
 
         // Test non-existing slot
         $this->assertNull($ring->getBySlot(0));

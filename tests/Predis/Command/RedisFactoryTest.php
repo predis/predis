@@ -16,9 +16,6 @@ use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
 use PredisTestCase;
 
-/**
- *
- */
 class RedisFactoryTest extends PredisTestCase
 {
     /**

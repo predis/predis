@@ -16,9 +16,6 @@ use Predis\Command\CommandInterface;
 use PredisTestCase;
 use stdClass;
 
-/**
- *
- */
 class ProcessorChainTest extends PredisTestCase
 {
     /**

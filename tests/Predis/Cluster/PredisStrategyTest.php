@@ -15,9 +15,6 @@ namespace Predis\Cluster;
 use PHPUnit\Framework\MockObject\MockObject;
 use PredisTestCase;
 
-/**
- *
- */
 class PredisStrategyTest extends PredisTestCase
 {
     /**
@@ -36,9 +33,9 @@ class PredisStrategyTest extends PredisTestCase
         $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:{baz}'));
 
         $this->assertSame($expected, $strategy->getSlotByKey('bar:{foo}:baz{}'));
-        $this->assertSame(PHP_INT_SIZE == 4 ? -1355751440 : 2939215856,  $strategy->getSlotByKey('{}bar:{foo}:baz'));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -1355751440 : 2939215856, $strategy->getSlotByKey('{}bar:{foo}:baz'));
 
-        $this->assertSame(PHP_INT_SIZE == 4 ?   -18873278 : 4276094018, $strategy->getSlotByKey(''));
+        $this->assertSame(PHP_INT_SIZE == 4 ? -18873278 : 4276094018, $strategy->getSlotByKey(''));
         $this->assertSame(PHP_INT_SIZE == 4 ? -1574052038 : 2720915258, $strategy->getSlotByKey('{}'));
     }
 

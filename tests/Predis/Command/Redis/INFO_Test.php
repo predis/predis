@@ -312,6 +312,7 @@ BUFFER;
         $this->assertIsArray($info = $redis->executeCommand($command));
         $this->assertArrayHasKey('redis_version', isset($info['Server']) ? $info['Server'] : $info);
     }
+
     /**
      * @group connected
      * @requiresRedisVersion < 2.6.0

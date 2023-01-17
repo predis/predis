@@ -14,9 +14,6 @@ namespace Predis\Response;
 
 use PredisTestCase;
 
-/**
- *
- */
 class StatusTest extends PredisTestCase
 {
     /**
