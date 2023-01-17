@@ -25,6 +25,7 @@ trait WithDist
             || false === $arguments[static::$withDistArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -37,7 +38,7 @@ trait WithDist
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$withDistArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$withDistArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$withDistArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

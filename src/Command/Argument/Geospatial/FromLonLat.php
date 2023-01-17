@@ -33,7 +33,7 @@ class FromLonLat implements FromInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {

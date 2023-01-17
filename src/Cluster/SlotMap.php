@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Cluster;
+
 use ArrayAccess;
 use ArrayIterator;
 use Countable;

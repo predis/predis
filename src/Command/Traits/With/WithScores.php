@@ -15,7 +15,7 @@ namespace Predis\Command\Traits\With;
 use Predis\Command\Command;
 
 /**
- * Handles last argument passed into command as WITHSCORES
+ * Handles last argument passed into command as WITHSCORES.
  *
  * @mixin Command
  */
@@ -27,7 +27,7 @@ trait WithScores
 
         if (is_bool($withScores) && $withScores) {
             $arguments[] = 'WITHSCORES';
-        } else if (!is_bool($withScores)) {
+        } elseif (!is_bool($withScores)) {
             $arguments[] = $withScores;
         }
 

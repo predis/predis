@@ -27,6 +27,7 @@ trait Sorting
 
         if (static::$sortArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -35,6 +36,7 @@ trait Sorting
         if (null === $argument) {
             array_splice($arguments, static::$sortArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -44,7 +46,7 @@ trait Sorting
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$sortArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$sortArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$sortArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge(
             $argumentsBefore,

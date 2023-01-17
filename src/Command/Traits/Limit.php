@@ -32,14 +32,16 @@ trait Limit
             || false === $arguments[static::$limitArgumentPositionOffset]
         ) {
             parent::setArguments($argumentsBefore);
+
             return;
         }
 
         $argument = $arguments[static::$limitArgumentPositionOffset];
-        $argumentsAfter = array_slice($arguments,  static::$limitArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$limitArgumentPositionOffset + 1);
 
         if (true === $argument) {
             parent::setArguments(array_merge($argumentsBefore, [self::$limitModifier], $argumentsAfter));
+
             return;
         }
 

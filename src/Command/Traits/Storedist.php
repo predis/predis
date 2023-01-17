@@ -29,6 +29,7 @@ trait Storedist
             || false === $arguments[static::$storeDistArgumentPositionOffset]
         ) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -41,7 +42,7 @@ trait Storedist
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$storeDistArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$storeDistArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$storeDistArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

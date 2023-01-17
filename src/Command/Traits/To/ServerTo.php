@@ -22,6 +22,7 @@ trait ServerTo
 
         if (static::$toArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -31,6 +32,7 @@ trait ServerTo
         if (null === $toArgument) {
             array_splice($arguments, static::$toArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
+
             return;
         }
 

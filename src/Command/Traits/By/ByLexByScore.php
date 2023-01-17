@@ -31,6 +31,7 @@ trait ByLexByScore
 
         if (false === $argument) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -41,7 +42,7 @@ trait ByLexByScore
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$byLexByScoreArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$byLexByScoreArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$byLexByScoreArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge($argumentsBefore, [$argument], $argumentsAfter));
     }

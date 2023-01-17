@@ -24,9 +24,6 @@ class ReplicationStrategy
     protected $readonly;
     protected $readonlySHA1;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->disallowed = $this->getDisallowedOperations();
@@ -40,9 +37,8 @@ class ReplicationStrategy
      *
      * @param CommandInterface $command Command instance.
      *
-     * @throws NotSupportedException
-     *
      * @return bool
+     * @throws NotSupportedException
      */
     public function isReadOperation(CommandInterface $command)
     {

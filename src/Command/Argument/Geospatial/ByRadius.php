@@ -28,7 +28,7 @@ class ByRadius extends AbstractBy
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {

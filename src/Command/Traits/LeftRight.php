@@ -35,6 +35,7 @@ trait LeftRight
         if (static::$leftRightArgumentPositionOffset >= $argumentsLength) {
             $arguments[] = 'LEFT';
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -48,7 +49,7 @@ trait LeftRight
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$leftRightArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$leftRightArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$leftRightArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge(
             $argumentsBefore,

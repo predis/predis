@@ -237,9 +237,8 @@ class WebdisConnection implements NodeConnectionInterface
      *
      * @param CommandInterface $command Command instance.
      *
-     * @throws NotSupportedException
-     *
      * @return string
+     * @throws NotSupportedException
      */
     protected function getCommandId(CommandInterface $command)
     {
@@ -253,7 +252,6 @@ class WebdisConnection implements NodeConnectionInterface
             case 'DISCARD':
             case 'MONITOR':
                 throw new NotSupportedException("Command '$commandID' is not allowed by Webdis.");
-
             default:
                 return $commandID;
         }

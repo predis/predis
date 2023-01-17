@@ -24,6 +24,7 @@ trait DB
 
         if (static::$dbArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -34,6 +35,7 @@ trait DB
         if ($arguments[static::$dbArgumentPositionOffset] < 0) {
             array_splice($arguments, static::$dbArgumentPositionOffset, 1);
             parent::setArguments($arguments);
+
             return;
         }
 

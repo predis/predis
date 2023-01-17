@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Connection;
+
 use InvalidArgumentException;
 
 /**
@@ -29,7 +30,7 @@ class Parameters implements ParametersInterface
     /**
      * Set of connection paramaters already filtered
      * for NULL or 0-length string values.
-     * 
+     *
      * @var array
      */
     protected $parameters;
@@ -87,9 +88,8 @@ class Parameters implements ParametersInterface
      *
      * @param string $uri URI string.
      *
-     * @throws InvalidArgumentException
-     *
      * @return array
+     * @throws InvalidArgumentException
      */
     public static function parse($uri)
     {

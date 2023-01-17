@@ -370,7 +370,7 @@ class KeyPrefixProcessor implements ProcessorInterface
                             }
                             break;
 
-                        case 'LIMIT';
+                        case 'LIMIT':
                             $i += 2;
                             break;
                     }
@@ -451,7 +451,6 @@ class KeyPrefixProcessor implements ProcessorInterface
                         case 'STOREDIST':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";
                             break;
-
                     }
                 }
             }

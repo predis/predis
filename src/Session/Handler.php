@@ -94,6 +94,7 @@ class Handler implements SessionHandlerInterface
 
         return '';
     }
+
     /**
      * {@inheritdoc}
      */

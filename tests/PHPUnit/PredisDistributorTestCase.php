@@ -14,9 +14,6 @@ namespace Predis\Cluster\Distributor;
 
 use PredisTestCase;
 
-/**
- *
- */
 abstract class PredisDistributorTestCase extends PredisTestCase
 {
     /**

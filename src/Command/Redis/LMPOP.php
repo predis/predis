@@ -12,9 +12,9 @@
 
 namespace Predis\Command\Redis;
 
-use \Predis\Command\Traits\Keys;
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Count;
+use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\LeftRight;
 
 class LMPOP extends RedisCommand

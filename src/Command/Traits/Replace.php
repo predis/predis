@@ -25,7 +25,7 @@ trait Replace
 
         if (is_bool($replace) && $replace) {
             $arguments[] = 'REPLACE';
-        } else if (!is_bool($replace)) {
+        } elseif (!is_bool($replace)) {
             $arguments[] = $replace;
         }
 

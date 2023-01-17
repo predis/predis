@@ -107,7 +107,7 @@ class GEOSEARCH extends RedisCommand
                 }
 
                 if (is_string($itemRow)) {
-                    $parsedData[$itemKey]['dist'] = round((float)$itemRow, 5);
+                    $parsedData[$itemKey]['dist'] = round((float) $itemRow, 5);
                 } elseif (is_int($itemRow)) {
                     $parsedData[$itemKey]['hash'] = $itemRow;
                 } else {

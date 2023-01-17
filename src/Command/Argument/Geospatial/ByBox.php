@@ -34,7 +34,7 @@ class ByBox extends AbstractBy
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {

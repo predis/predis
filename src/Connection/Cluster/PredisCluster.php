@@ -190,6 +190,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getConnectionByKey($key)
     {
         $hash = $this->strategy->getSlotByKey($key);
+
         return $this->distributor->getBySlot($hash);
     }
 

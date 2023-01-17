@@ -11,6 +11,7 @@
  */
 
 namespace Predis\Cluster\Distributor;
+
 use Exception;
 
 /**

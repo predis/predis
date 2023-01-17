@@ -11,6 +11,7 @@
  */
 
 namespace Predis\PubSub;
+
 use Iterator;
 use ReturnTypeWillChange;
 
@@ -19,17 +20,17 @@ use ReturnTypeWillChange;
  */
 abstract class AbstractConsumer implements Iterator
 {
-    const SUBSCRIBE = 'subscribe';
-    const UNSUBSCRIBE = 'unsubscribe';
-    const PSUBSCRIBE = 'psubscribe';
-    const PUNSUBSCRIBE = 'punsubscribe';
-    const MESSAGE = 'message';
-    const PMESSAGE = 'pmessage';
-    const PONG = 'pong';
+    public const SUBSCRIBE = 'subscribe';
+    public const UNSUBSCRIBE = 'unsubscribe';
+    public const PSUBSCRIBE = 'psubscribe';
+    public const PUNSUBSCRIBE = 'punsubscribe';
+    public const MESSAGE = 'message';
+    public const PMESSAGE = 'pmessage';
+    public const PONG = 'pong';
 
-    const STATUS_VALID = 1;       // 0b0001
-    const STATUS_SUBSCRIBED = 2;  // 0b0010
-    const STATUS_PSUBSCRIBED = 4; // 0b0100
+    public const STATUS_VALID = 1;       // 0b0001
+    public const STATUS_SUBSCRIBED = 2;  // 0b0010
+    public const STATUS_PSUBSCRIBED = 4; // 0b0100
 
     private $position = null;
     private $statusFlags = self::STATUS_VALID;
@@ -59,7 +60,7 @@ abstract class AbstractConsumer implements Iterator
      *
      * @param mixed $channel,... One or more channel names.
      */
-    public function subscribe($channel /*, ... */)
+    public function subscribe($channel /* , ... */)
     {
         $this->writeRequest(self::SUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_SUBSCRIBED;

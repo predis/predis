@@ -102,7 +102,7 @@ class Connections implements OptionInterface
          */
         $factory = $this->getDefault($options);
 
-        switch(strtolower($value)) {
+        switch (strtolower($value)) {
             case 'phpiredis':
             case 'phpiredis-stream':
                 $factory->define('tcp', PhpiredisStreamConnection::class);

@@ -37,7 +37,7 @@ class Commands implements OptionInterface
             return $value;
         } elseif (is_array($value)) {
             return $this->createFactoryByArray($options, $value);
-        } elseif(is_string($value)) {
+        } elseif (is_string($value)) {
             return $this->createFactoryByString($options, $value);
         } else {
             throw new InvalidArgumentException(sprintf(
@@ -76,6 +76,7 @@ class Commands implements OptionInterface
 
         return $commands;
     }
+
     /**
      * Creates a new command factory from a descriptive string.
      *

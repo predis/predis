@@ -31,9 +31,6 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     protected $mbiterable;
     protected $serializer;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->mbiterable = false;

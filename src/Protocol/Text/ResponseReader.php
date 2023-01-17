@@ -26,9 +26,6 @@ class ResponseReader implements ResponseReaderInterface
 {
     protected $handlers;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->handlers = $this->getDefaultHandlers();

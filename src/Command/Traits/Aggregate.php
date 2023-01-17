@@ -40,6 +40,7 @@ trait Aggregate
 
         if (static::$aggregateArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -53,7 +54,7 @@ trait Aggregate
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$aggregateArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$aggregateArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$aggregateArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge(
             $argumentsBefore,

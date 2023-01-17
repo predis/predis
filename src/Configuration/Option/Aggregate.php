@@ -63,9 +63,8 @@ class Aggregate implements OptionInterface
      * @param OptionsInterface $options  Client options
      * @param callable         $callable Callable initializer
      *
-     * @throws InvalidArgumentException
-     *
      * @return callable
+     * @throws InvalidArgumentException
      */
     protected function getConnectionInitializer(OptionsInterface $options, callable $callable)
     {
