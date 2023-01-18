@@ -42,6 +42,22 @@ jobs:
            php-version: 8.2
            tools: phpstan
 
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "directory=$(composer config cache-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.directory }}
+          key: tests-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: tests-php-${{ matrix.php }}-composer
+
+      - name: Install Composer dependencies
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: composer install --ansi --no-progress --prefer-dist $(if [ "$PHP_VERSION" == "8.0" ]; then echo "--ignore-platform-reqs"; fi;)
+
        - name: Run PHPStan
          run: phpstan analyse
  
