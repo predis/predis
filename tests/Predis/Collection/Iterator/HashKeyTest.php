@@ -483,7 +483,7 @@ class HashKeyTest extends PredisTestCase
             ->method('getCommandFactory')
             ->willReturn($this->getCommandFactory());
         $client
-            ->expects($this->once(1))
+            ->expects($this->once())
             ->method('hscan')
             ->withConsecutive(
                 ['key:hash', 0, ['MATCH' => 'field:*', 'COUNT' => 2]]

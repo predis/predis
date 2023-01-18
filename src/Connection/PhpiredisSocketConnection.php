@@ -283,7 +283,7 @@ class PhpiredisSocketConnection extends AbstractConnection
      * @param string              $address    IP address (DNS-resolved from hostname)
      * @param ParametersInterface $parameters Parameters used to initialize the connection.
      *
-     * @return string
+     * @return void
      */
     private function connectWithTimeout($socket, $address, ParametersInterface $parameters)
     {

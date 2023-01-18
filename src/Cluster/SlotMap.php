@@ -17,6 +17,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
+use Predis\Connection\NodeConnectionInterface;
 use ReturnTypeWillChange;
 
 /**
@@ -144,7 +145,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param int $slot Slot index.
      *
-     * @return string
+     * @return ?string
      */
     #[ReturnTypeWillChange]
     public function offsetGet($slot)
@@ -152,6 +153,8 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
         }
+
+        return null;
     }
 
     /**
@@ -159,8 +162,6 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param int                            $slot       Slot index.
      * @param NodeConnectionInterface|string $connection ID or connection instance.
-     *
-     * @return string
      */
     #[ReturnTypeWillChange]
     public function offsetSet($slot, $connection)
@@ -176,8 +177,6 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      * Returns the node assigned to the specified slot.
      *
      * @param int $slot Slot index.
-     *
-     * @return string
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($slot)

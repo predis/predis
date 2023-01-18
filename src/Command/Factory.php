@@ -56,6 +56,8 @@ abstract class Factory implements FactoryInterface
         if (isset($this->commands[$commandID = strtoupper($commandID)])) {
             return $this->commands[$commandID];
         }
+
+        return null;
     }
 
     /**
