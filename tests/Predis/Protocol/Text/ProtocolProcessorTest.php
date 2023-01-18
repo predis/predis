@@ -82,7 +82,7 @@ class ProtocolProcessorTest extends PredisTestCase
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
-            ->expects($this->once(4))
+            ->expects($this->once())
             ->method('readLine')
             ->willReturn('*1');
 

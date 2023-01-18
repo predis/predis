@@ -331,7 +331,7 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once(1))
+        $connection->expects($this->once())
             ->method('addConnectCommand')
             ->with($this->isRedisCommand('AUTH', ['foobar']));
 
@@ -358,7 +358,7 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once(1))
+        $connection->expects($this->once())
             ->method('addConnectCommand')
             ->with($this->isRedisCommand('AUTH', ['myusername', 'foobar']));
 

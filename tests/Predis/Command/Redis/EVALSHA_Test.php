@@ -61,7 +61,7 @@ class EVALSHA_Test extends PredisCommandTestCase
      */
     public function testGetScriptHash(): void
     {
-        $command = $this->getCommandWithArgumentsArray([$sha1 = sha1('return true')], 0);
+        $command = $this->getCommandWithArgumentsArray([$sha1 = sha1('return true')]);
         $this->assertSame($sha1, $command->getScriptHash());
     }
 
