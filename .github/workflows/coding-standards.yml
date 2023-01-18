@@ -10,7 +10,7 @@ on:
 jobs:
 
   php-cs-fixer:
-    name: linter
+    name: PHP CS Fixer
     runs-on: ubuntu-latest
 
     steps:
@@ -19,10 +19,29 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
           tools: php-cs-fixer
-        uses: shivammathur/setup-php@v2
 
       - name: Run php-cs-fixer
         run: php-cs-fixer fix --diff --dry-run --allow-risky=yes --using-cache=no
+
+  phpstan:
+     name: PHPStan
+     runs-on: ubuntu-latest
+
+     steps:
+
+       - name: Checkout
+         uses: actions/checkout@v3
+
+       - name: Setup PHP with Composer and extensions
+         uses: shivammathur/setup-php@v2
+         with:
+           php-version: 8.2
+           tools: phpstan
+
+       - name: Run PHPStan
+         run: phpstan analyse
+ 
