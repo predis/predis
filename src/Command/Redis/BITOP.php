@@ -33,7 +33,7 @@ class BITOP extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
-            list($operation, $destination) = $arguments;
+            [$operation, $destination] = $arguments;
             $arguments = $arguments[2];
             array_unshift($arguments, $operation, $destination);
         }

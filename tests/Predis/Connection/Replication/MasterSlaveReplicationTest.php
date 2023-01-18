@@ -989,7 +989,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
         $replication
             ->getReplicationStrategy()
             ->setCommandReadOnly('exists', function ($cmd) {
-                list($arg1) = $cmd->getArguments();
+                [$arg1] = $cmd->getArguments();
 
                 return $arg1 === 'foo';
             });

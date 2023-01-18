@@ -121,8 +121,8 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
         $this->assertSame(['subscribe', 'channel:foo', 1], $redis->subscribe('channel:foo'));
         $this->assertSame(['subscribe', 'channel:bar', 2], $redis->subscribe('channel:bar'));
 
-        list($_, $unsubscribed1, $_) = $redis->unsubscribe();
-        list($_, $unsubscribed2, $_) = $redis->getConnection()->read();
+        [$_, $unsubscribed1, $_] = $redis->unsubscribe();
+        [$_, $unsubscribed2, $_] = $redis->getConnection()->read();
         $this->assertSameValues(['channel:foo', 'channel:bar'], [$unsubscribed1, $unsubscribed2]);
 
         $this->assertSame('echoed', $redis->echo('echoed'));

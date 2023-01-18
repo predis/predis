@@ -118,7 +118,7 @@ abstract class CursorBasedIterator implements Iterator
      */
     protected function fetch()
     {
-        list($cursor, $elements) = $this->executeCommand();
+        [$cursor, $elements] = $this->executeCommand();
 
         if (!$cursor) {
             $this->fetchmore = false;

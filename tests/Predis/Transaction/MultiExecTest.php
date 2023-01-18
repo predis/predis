@@ -940,7 +940,7 @@ class MultiExecTest extends PredisTestCase
                     return true;
 
                 case 'ECHO':
-                    @list($trigger) = $command->getArguments();
+                    @[$trigger] = $command->getArguments();
                     if (strpos($trigger, 'ERR ') === 0) {
                         throw new Response\ServerException($trigger);
                     }
