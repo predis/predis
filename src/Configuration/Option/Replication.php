@@ -68,12 +68,12 @@ class Replication extends Aggregate
         switch ($description) {
             case 'sentinel':
             case 'redis-sentinel':
-                return function ($parameters, $options, $option) {
+                return function ($parameters, $options) {
                     return new SentinelReplication($options->service, $parameters, $options->connections);
                 };
 
             case 'predis':
-                return $this->getDefaultConnectionInitializer($options);
+                return $this->getDefaultConnectionInitializer();
 
             default:
                 throw new InvalidArgumentException(sprintf(
@@ -91,7 +91,7 @@ class Replication extends Aggregate
      */
     protected function getDefaultConnectionInitializer()
     {
-        return function ($parameters, $options, $option) {
+        return function ($parameters, $options) {
             $connection = new MasterSlaveReplication();
 
             if ($options->autodiscovery) {
