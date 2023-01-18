@@ -238,9 +238,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $retryAfter = $this->retryInterval;
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
-        RETRY_COMMAND:
+        while ($retries < $this->retryLimit) {
             try {
                 $response = $connection->executeCommand($command);
+                break;
             } catch (ConnectionException $exception) {
                 $connection = $exception->getConnection();
                 $connection->disconnect();
@@ -258,9 +259,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 usleep($retryAfter * 1000);
                 $retryAfter = $retryAfter * 2;
                 ++$retries;
-
-                goto RETRY_COMMAND;
             }
+        }
 
         return $response;
     }
