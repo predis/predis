@@ -285,7 +285,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         foreach ($response as $slots) {
             // We only support master servers for now, so we ignore subsequent
             // elements in the $slots array identifying slaves.
-            list($start, $end, $master) = $slots;
+            [$start, $end, $master] = $slots;
 
             if ($master[0] === '') {
                 $this->slotmap->setSlots($start, $end, (string) $connection);
@@ -461,7 +461,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     protected function onMovedResponse(CommandInterface $command, $details)
     {
-        list($slot, $connectionID) = explode(' ', $details, 2);
+        [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
             $connection = $this->createConnection($connectionID);
@@ -487,7 +487,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     protected function onAskResponse(CommandInterface $command, $details)
     {
-        list($slot, $connectionID) = explode(' ', $details, 2);
+        [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
             $connection = $this->createConnection($connectionID);

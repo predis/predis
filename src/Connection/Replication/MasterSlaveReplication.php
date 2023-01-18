@@ -375,7 +375,7 @@ class MasterSlaveReplication implements ReplicationInterface
                 continue;
             }
 
-            list($k, $v) = explode(':', $row, 2);
+            [$k, $v] = explode(':', $row, 2);
             $info[$k] = $v;
         }
 

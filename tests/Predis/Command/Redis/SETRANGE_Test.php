@@ -98,7 +98,7 @@ class SETRANGE_Test extends PredisCommandTestCase
 
         $this->assertSame(4, $redis->setrange('key:binary', 0, pack('i', -2147483648)));
 
-        list($unpacked) = array_values(unpack('i', $redis->get('key:binary')));
+        [$unpacked] = array_values(unpack('i', $redis->get('key:binary')));
         $this->assertEquals(-2147483648, $unpacked);
     }
 

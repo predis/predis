@@ -310,7 +310,7 @@ BUFFER;
         $command = $this->getCommand();
 
         $this->assertIsArray($info = $redis->executeCommand($command));
-        $this->assertArrayHasKey('redis_version', isset($info['Server']) ? $info['Server'] : $info);
+        $this->assertArrayHasKey('redis_version', $info['Server'] ?? $info);
     }
 
     /**

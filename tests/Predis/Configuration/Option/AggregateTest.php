@@ -260,7 +260,7 @@ class AggregateTest extends PredisTestCase
      */
     public function ___AggregateConnectionSkipCreationOnConnectionInstance(): void
     {
-        list(, $connectionClass) = $this->getMockConnectionClass();
+        [, $connectionClass] = $this->getMockConnectionClass();
 
         /** @var ClusterInterface|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
@@ -285,7 +285,7 @@ class AggregateTest extends PredisTestCase
      */
     public function ___AggregateConnectionWithMixedParameters(): void
     {
-        list(, $connectionClass) = $this->getMockConnectionClass();
+        [, $connectionClass] = $this->getMockConnectionClass();
 
         /** @var ClusterInterface|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();

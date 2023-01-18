@@ -62,7 +62,7 @@ class INFO extends RedisCommand
                 continue;
             }
 
-            list($k, $v) = $this->parseRow($row);
+            [$k, $v] = $this->parseRow($row);
             $current[$k] = $v;
         }
 
@@ -81,7 +81,7 @@ class INFO extends RedisCommand
                 continue;
             }
 
-            list($k, $v) = $this->parseRow($row);
+            [$k, $v] = $this->parseRow($row);
             $info[$k] = $v;
         }
 
@@ -97,7 +97,7 @@ class INFO extends RedisCommand
      */
     protected function parseRow($row)
     {
-        list($k, $v) = explode(':', $row, 2);
+        [$k, $v] = explode(':', $row, 2);
 
         if (preg_match('/^db\d+$/', $k)) {
             $v = $this->parseDatabaseStats($v);
@@ -118,7 +118,7 @@ class INFO extends RedisCommand
         $db = [];
 
         foreach (explode(',', $str) as $dbvar) {
-            list($dbvk, $dbvv) = explode('=', $dbvar);
+            [$dbvk, $dbvv] = explode('=', $dbvar);
             $db[trim($dbvk)] = $dbvv;
         }
 

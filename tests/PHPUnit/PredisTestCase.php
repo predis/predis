@@ -75,7 +75,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function assertRedisCommand($expected, $actual, string $message = ''): void
     {
         if (is_array($expected)) {
-            @list($command, $arguments) = $expected;
+            @[$command, $arguments] = $expected;
         } else {
             $command = $expected;
             $arguments = null;

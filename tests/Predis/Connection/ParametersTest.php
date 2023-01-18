@@ -415,9 +415,9 @@ class ParametersTest extends PredisTestCase
     {
         $defaults = $this->getDefaultParametersArray();
 
-        $scheme = isset($parameters['scheme']) ? $parameters['scheme'] : $defaults['scheme'];
-        $host = isset($parameters['host']) ? $parameters['host'] : $defaults['host'];
-        $port = isset($parameters['port']) ? $parameters['port'] : $defaults['port'];
+        $scheme = $parameters['scheme'] ?? $defaults['scheme'];
+        $host = $parameters['host'] ?? $defaults['host'];
+        $port = $parameters['port'] ?? $defaults['port'];
 
         unset($parameters['scheme'], $parameters['host'], $parameters['port']);
         $uriString = "$scheme://$host:$port/?";

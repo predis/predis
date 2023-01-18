@@ -439,7 +439,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testDefineConnectionWithFQN(): void
     {
-        list(, $connectionClass) = $this->getMockConnectionClass();
+        [, $connectionClass] = $this->getMockConnectionClass();
 
         $parameters = new Parameters(['scheme' => 'foobar']);
         $factory = new Factory();
@@ -455,7 +455,7 @@ class FactoryTest extends PredisTestCase
      */
     public function testDefineConnectionWithCallable(): void
     {
-        list(, $connectionClass) = $this->getMockConnectionClass();
+        [, $connectionClass] = $this->getMockConnectionClass();
 
         $parameters = new Parameters(['scheme' => 'foobar']);
         $factory = new Factory();
@@ -527,7 +527,7 @@ class FactoryTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Unknown connection scheme: 'test'");
 
-        list(, $connectionClass) = $this->getMockConnectionClass();
+        [, $connectionClass] = $this->getMockConnectionClass();
 
         $factory = new Factory();
 

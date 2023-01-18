@@ -29,7 +29,7 @@ class KetamaRingTest extends PredisDistributorTestCase
     {
         /** @var HashGeneratorInterface */
         $ring = $this->getDistributorInstance();
-        list(, $hash) = unpack('V', md5('foobar', true));
+        [, $hash] = unpack('V', md5('foobar', true));
 
         $this->assertEquals($hash, $ring->hash('foobar'));
     }

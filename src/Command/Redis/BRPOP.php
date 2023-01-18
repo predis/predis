@@ -33,7 +33,7 @@ class BRPOP extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[0])) {
-            list($arguments, $timeout) = $arguments;
+            [$arguments, $timeout] = $arguments;
             array_push($arguments, $timeout);
         }
 

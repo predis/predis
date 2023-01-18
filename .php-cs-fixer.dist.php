@@ -13,6 +13,7 @@ EOS;
 return (new PhpCsFixer\Config)
     ->setUsingCache(false)
     ->setRules([
+        '@PHP71Migration' => true,
         'header_comment' => ['header' => $PREDIS_HEADER],
         '@Symfony' => true,
         'phpdoc_separation' => false,

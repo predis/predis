@@ -54,7 +54,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 
     public function getBySlot($slot)
     {
-        return isset($this->nodes[$slot]) ? $this->nodes[$slot] : null;
+        return $this->nodes[$slot] ?? null;
     }
 
     public function getByHash($hash)

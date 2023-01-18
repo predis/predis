@@ -37,8 +37,8 @@ class ZRANGEBYSCORE extends ZRANGE
             $limit = array_change_key_case($opts['LIMIT'], CASE_UPPER);
 
             $finalizedOpts[] = 'LIMIT';
-            $finalizedOpts[] = isset($limit['OFFSET']) ? $limit['OFFSET'] : $limit[0];
-            $finalizedOpts[] = isset($limit['COUNT']) ? $limit['COUNT'] : $limit[1];
+            $finalizedOpts[] = $limit['OFFSET'] ?? $limit[0];
+            $finalizedOpts[] = $limit['COUNT'] ?? $limit[1];
         }
 
         return array_merge($finalizedOpts, parent::prepareOptions($options));
