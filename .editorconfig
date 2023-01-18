@@ -13,5 +13,5 @@ trim_trailing_whitespace = true
 [*.php]
 max_line_length = 120
 
-[*.{md,yml}]
+[*.{md,yml,yaml,neon}]
 indent_size = 2
