@@ -377,7 +377,6 @@ class MasterSlaveReplication implements ReplicationInterface
 
             [$k, $v] = explode(':', $row, 2);
             $info[$k] = $v;
-
         }
 
         return $info;
@@ -485,6 +484,8 @@ class MasterSlaveReplication implements ReplicationInterface
                 if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
                     throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
                 }
+
+                break;
             } catch (ConnectionException $exception) {
                 $connection = $exception->getConnection();
                 $connection->disconnect();
