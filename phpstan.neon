@@ -1,10 +1,28 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
     level: 0
+
     paths:
         - src
         - tests
+
     ignoreErrors:
         - '#^Function phpiredis_\w+ not found\.$#'
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 3
+			path: src/Client.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Connection/Parameters.php
+
+		-
+			message: "#^Static method Predis\\\\Command\\\\RawCommand\\:\\:create\\(\\) invoked with 0 parameters, at least 1 required\\.$#"
+			count: 1
+			path: tests/Predis/Command/RawCommandTest.php
+
+		-
+			message: "#^Call to an undefined method Predis\\\\Configuration\\\\Option\\\\AggregateTest\\:\\:getMockConnectionClass\\(\\)\\.$#"
+			count: 2
+			path: tests/Predis/Configuration/Option/AggregateTest.php
