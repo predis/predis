@@ -1,0 +1,10 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 0
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        - '#^Function phpiredis_\w+ not found\.$#'

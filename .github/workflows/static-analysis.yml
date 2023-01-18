@@ -1,0 +1,56 @@
+name: Static Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - v2.**
+  pull_request:
+
+jobs:
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '8.2'
+
+    services:
+      redis:
+        image: redis:7
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        ports:
+          - 6379:6379
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP with Composer and extensions
+        with:
+          php-version: ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "directory=$(composer config cache-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.directory }}
+          key: tests-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: tests-php-${{ matrix.php }}-composer
+
+      - name: Install Composer dependencies
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: composer install --ansi --no-progress --prefer-dist
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
