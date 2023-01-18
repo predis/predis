@@ -29,7 +29,7 @@ interface StrategyInterface
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return int
+     * @return int|null
      */
     public function getSlot(CommandInterface $command);
 
@@ -39,7 +39,7 @@ interface StrategyInterface
      *
      * @param string $key Key string.
      *
-     * @return int
+     * @return int|null
      */
     public function getSlotByKey($key);
 

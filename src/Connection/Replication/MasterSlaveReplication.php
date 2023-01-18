@@ -221,6 +221,8 @@ class MasterSlaveReplication implements ReplicationInterface
         } elseif ($role === 'slave') {
             return $this->pickSlave();
         }
+
+        return null;
     }
 
     /**
@@ -316,13 +318,15 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Returns a random slave.
      *
-     * @return NodeConnectionInterface
+     * @return ?NodeConnectionInterface
      */
     protected function pickSlave()
     {
         if ($this->slaves) {
             return $this->slaves[array_rand($this->slaves)];
         }
+
+        return null;
     }
 
     /**
