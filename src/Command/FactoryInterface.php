@@ -24,7 +24,7 @@ interface FactoryInterface
     /**
      * Checks if the command factory supports the specified list of commands.
      *
-     * @param array $commandIDs List of command IDs
+     * @param string ...$commandIDs List of command IDs
      *
      * @return bool
      */

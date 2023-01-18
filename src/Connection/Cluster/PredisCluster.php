@@ -46,7 +46,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $strategy;
 
     /**
-     * @var Predis\Cluster\Distributor\DistributorInterface
+     * @var \Predis\Cluster\Distributor\DistributorInterface
      */
     private $distributor;
 
@@ -149,9 +149,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getConnectionById($id)
     {
-        if (isset($this->pool[$id])) {
-            return $this->pool[$id];
-        }
+        return $this->pool[$id] ?? null;
     }
 
     /**
@@ -163,15 +161,13 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function getConnectionByAlias($alias)
     {
-        if (isset($this->aliases[$alias])) {
-            return $this->aliases[$alias];
-        }
+        return $this->aliases[$alias] ?? null;
     }
 
     /**
      * Retrieves a connection instance by slot.
      *
-     * @param string $key Key string.
+     * @param string $slot Slot name.
      *
      * @return NodeConnectionInterface|null
      */

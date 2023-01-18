@@ -43,11 +43,11 @@ final class RawCommand implements CommandInterface
      * Creates a new raw command using a variadic method.
      *
      * @param string $commandID Redis command ID
-     * @param string ...        Arguments list for the command
+     * param  string ...$args   Arguments list for the command
      *
      * @return CommandInterface
      */
-    public static function create($commandID /* [ $arg, ... */)
+    public static function create($commandID /* , $arg, ... */)
     {
         $arguments = func_get_args();
 
@@ -110,9 +110,7 @@ final class RawCommand implements CommandInterface
      */
     public function getSlot()
     {
-        if (isset($this->slot)) {
-            return $this->slot;
-        }
+        return $this->slot ?? null;
     }
 
     /**

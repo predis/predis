@@ -69,9 +69,7 @@ abstract class Command implements CommandInterface
      */
     public function getSlot()
     {
-        if (isset($this->slot)) {
-            return $this->slot;
-        }
+        return $this->slot ?? null;
     }
 
     /**

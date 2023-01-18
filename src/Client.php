@@ -392,7 +392,7 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * param mixed $arguments Array of options, a callable for execution, or both.
      *
      * @return Pipeline|array
      */
@@ -435,7 +435,7 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new transaction context and returns it, or returns the results
      * of a transaction executed inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * param mixed ...$arguments Array of options, a callable for execution, or both.
      *
      * @return MultiExecTransaction|array
      */
@@ -467,7 +467,7 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new publish/subscribe context and returns it, or starts its loop
      * inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * param mixed ...$arguments Array of options, a callable for execution, or both.
      *
      * @return PubSubConsumer|null
      */
@@ -497,6 +497,8 @@ class Client implements ClientInterface, IteratorAggregate
                 $pubsub->stop();
             }
         }
+
+        return null;
     }
 
     /**

@@ -188,9 +188,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnectionById($id)
     {
-        if (isset($this->pool[$id])) {
-            return $this->pool[$id];
-        }
+        return $this->pool[$id] ?? null;
     }
 
     /**
@@ -202,9 +200,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnectionByAlias($alias)
     {
-        if (isset($this->aliases[$alias])) {
-            return $this->aliases[$alias];
-        }
+        return $this->aliases[$alias] ?? null;
     }
 
     /**
@@ -318,15 +314,15 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Returns a random slave.
      *
-     * @return ?NodeConnectionInterface
+     * @return NodeConnectionInterface|null
      */
     protected function pickSlave()
     {
-        if ($this->slaves) {
-            return $this->slaves[array_rand($this->slaves)];
+        if (! $this->slaves) {
+            return null;
         }
 
-        return null;
+        return $this->slaves[array_rand($this->slaves)];
     }
 
     /**
@@ -381,6 +377,7 @@ class MasterSlaveReplication implements ReplicationInterface
 
             [$k, $v] = explode(':', $row, 2);
             $info[$k] = $v;
+
         }
 
         return $info;
@@ -395,19 +392,21 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException('Discovery requires a connection factory');
         }
 
-        RETRY_FETCH:
+        while (true) {
             try {
                 if ($connection = $this->getMaster()) {
                     $this->discoverFromMaster($connection, $this->connectionFactory);
+                    break;
                 } elseif ($connection = $this->pickSlave()) {
                     $this->discoverFromSlave($connection, $this->connectionFactory);
+                    break;
                 } else {
                     throw new ClientException('No connection available for discovery');
                 }
             } catch (ConnectionException $exception) {
                 $this->remove($connection);
-                goto RETRY_FETCH;
             }
+        }
     }
 
     /**
@@ -478,7 +477,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        RETRY_COMMAND:
+        while (true) {
             try {
                 $connection = $this->getConnectionByCommand($command);
                 $response = $connection->$method($command);
@@ -507,17 +506,14 @@ class MasterSlaveReplication implements ReplicationInterface
                 } elseif ($this->autoDiscovery) {
                     $this->discover();
                 }
-
-                goto RETRY_COMMAND;
             } catch (MissingMasterException $exception) {
                 if ($this->autoDiscovery) {
                     $this->discover();
                 } else {
                     throw $exception;
                 }
-
-                goto RETRY_COMMAND;
             }
+        }
 
         return $response;
     }
