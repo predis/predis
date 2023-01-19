@@ -10,6 +10,7 @@ class ClientConfiguration
     private static $config = [
         'modules' => [
             ['name' => 'Json', 'commandPrefix' => 'JSON'],
+            ['name' => 'CuckooFilter', 'commandPrefix' => 'CF'],
         ]
     ];
 

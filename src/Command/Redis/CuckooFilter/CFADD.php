@@ -1,6 +1,6 @@
 <?php
 
-namespace Predis\Command\Redis\CF;
+namespace Predis\Command\Redis\CuckooFilter;
 
 use Predis\Command\Command as RedisCommand;
 
