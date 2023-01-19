@@ -3,6 +3,9 @@
 /*
  * This file is part of the Predis package.
  *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -57,11 +60,11 @@ class SINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider setsProvider
-     * @param array $firstSet
-     * @param array $secondSet
-     * @param array $keys
-     * @param int $limit
-     * @param int $expectedCardinality
+     * @param  array $firstSet
+     * @param  array $secondSet
+     * @param  array $keys
+     * @param  int   $limit
+     * @param  int   $expectedCardinality
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -70,7 +73,7 @@ class SINTERCARD_Test extends PredisCommandTestCase
         array $secondSet,
         array $keys,
         int $limit,
-        int  $expectedCardinality
+        int $expectedCardinality
     ): void {
         $redis = $this->getClient();
 
@@ -83,8 +86,8 @@ class SINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -121,15 +124,15 @@ class SINTERCARD_Test extends PredisCommandTestCase
         return [
             'with required arguments' => [
                 [['key1', 'key2']],
-                [2, 'key1', 'key2']
+                [2, 'key1', 'key2'],
             ],
             'with default arguments' => [
                 [['key1', 'key2'], 0],
-                [2, 'key1', 'key2', 'LIMIT', 0]
+                [2, 'key1', 'key2', 'LIMIT', 0],
             ],
             'with non-default LIMIT' => [
                 [['key1', 'key2'], 2],
-                [2, 'key1', 'key2', 'LIMIT', 2]
+                [2, 'key1', 'key2', 'LIMIT', 2],
             ],
         ];
     }
@@ -142,35 +145,35 @@ class SINTERCARD_Test extends PredisCommandTestCase
                 ['key2', 'member1', 'member2', 'member3'],
                 ['key1', 'key2'],
                 0,
-                3
+                3,
             ],
             'with partial intersection' => [
                 ['key1', 'member1', 'member2', 'member3'],
                 ['key2', 'member1', 'member4', 'member5'],
                 ['key1', 'key2'],
                 0,
-                1
+                1,
             ],
             'with no intersection' => [
                 ['key1', 'member1', 'member2', 'member3'],
                 ['key2', 'member4', 'member5', 'member6'],
                 ['key1', 'key2'],
                 0,
-                0
+                0,
             ],
             'with no intersection on non-existing key' => [
                 ['key1', 'member1', 'member2', 'member3'],
                 ['key2', 'member1', 'member2', 'member3'],
                 ['key1', 'key3'],
                 0,
-                0
+                0,
             ],
             'with non-default LIMIT' => [
                 ['key1', 'member1', 'member2', 'member3'],
                 ['key2', 'member1', 'member2', 'member3'],
                 ['key1', 'key2'],
                 1,
-                1
+                1,
             ],
         ];
     }
@@ -180,11 +183,11 @@ class SINTERCARD_Test extends PredisCommandTestCase
         return [
             'with wrong keys argument' => [
                 ['key1', 0],
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with wrong limit argument' => [
                 [['key1'], 'wrong'],
-                'Wrong limit argument type'
+                'Wrong limit argument type',
             ],
         ];
     }
