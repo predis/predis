@@ -490,7 +490,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             return $info['modules'][$module]['ver'];
         }
 
-        throw new RuntimeException("Redis $module module is not available at your Redis server instance.");
+        return '0';
     }
 
     /**
