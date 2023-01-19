@@ -113,6 +113,7 @@ use Predis\Command\CommandInterface;
  * @method $this sdiff(array|string $keys)
  * @method $this sdiffstore($destination, array|string $keys)
  * @method $this sinter(array|string $keys)
+ * @method $this sintercard(array $keys, int $limit = 0)
  * @method $this sinterstore($destination, array|string $keys)
  * @method $this sismember($key, $member)
  * @method $this smembers($key)

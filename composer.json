@@ -31,7 +31,12 @@
         "php": "^7.2 || ^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0 || ~9.4.4"
+        "phpunit/phpunit": "^8.0 || ~9.4.4",
+        "friendsofphp/php-cs-fixer": "~3.2.0 || ^3.13"
+    },
+    "scripts": {
+        "style": "vendor/bin/php-cs-fixer fix --diff --dry-run",
+        "style:fix": "vendor/bin/php-cs-fixer fix"
     },
     "suggest": {
         "ext-curl": "Allows access to Webdis when paired with phpiredis"
