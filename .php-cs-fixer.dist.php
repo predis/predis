@@ -11,7 +11,6 @@ file that was distributed with this source code.
 EOS;
 
 return (new PhpCsFixer\Config)
-    ->setUsingCache(false)
     ->setRules([
         '@PHP71Migration' => true,
         'header_comment' => ['header' => $PREDIS_HEADER],

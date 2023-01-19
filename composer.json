@@ -13,12 +13,6 @@
             "name": "Till Krüss",
             "homepage": "https://till.im",
             "role": "Maintainer"
-        },
-        {
-            "name": "Daniele Alessandri",
-            "email": "suppakilla@gmail.com",
-            "homepage": "http://clorophilla.net",
-            "role": "Creator"
         }
     ],
     "funding": [
@@ -31,24 +25,24 @@
         "php": "^7.2 || ^8.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0 || ~9.4.4",
-        "friendsofphp/php-cs-fixer": "~3.2.0 || ^3.13"
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "phpstan/phpstan": "^1.9",
+        "phpunit/phpunit": "^8.0 || ~9.4.4"
     },
     "scripts": {
-        "style": "vendor/bin/php-cs-fixer fix --diff --dry-run",
-        "style:fix": "vendor/bin/php-cs-fixer fix"
-    },
-    "suggest": {
-        "ext-curl": "Allows access to Webdis when paired with phpiredis"
+        "phpstan": "phpstan analyse",
+        "style": "php-cs-fixer fix --diff --dry-run",
+        "style:fix": "php-cs-fixer fix"
     },
     "autoload": {
         "psr-4": {
             "Predis\\": "src/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "2.0-dev"
-        }
-    }
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
