@@ -35,7 +35,8 @@
         "friendsofphp/php-cs-fixer": "~3.2.0 || ^3.13"
     },
     "scripts": {
-        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --using-cache=yes"
+        "style": "vendor/bin/php-cs-fixer fix --diff --dry-run",
+        "style:fix": "vendor/bin/php-cs-fixer fix"
     },
     "suggest": {
         "ext-curl": "Allows access to Webdis when paired with phpiredis"
