@@ -153,6 +153,7 @@ use Predis\Command\CommandInterface;
  * @method $this zrevrangebylex($key, $start, $stop, array $options = null)
  * @method $this zremrangebylex($key, $min, $max)
  * @method $this zlexcount($key, $min, $max)
+ * @method $this pexpiretime(string $key)
  * @method $this pfadd($key, array $elements)
  * @method $this pfmerge($destinationKey, array|string $sourceKeys)
  * @method $this pfcount(array|string $keys)

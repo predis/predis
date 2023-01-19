@@ -171,6 +171,7 @@ use Predis\Response\Status;
  * @method array             zrevrangebylex(string $key, string $start, string $stop, array $options = null)
  * @method int               zremrangebylex(string $key, string $min, string $max)
  * @method int               zlexcount(string $key, string $min, string $max)
+ * @method int               pexpiretime(string $key)
  * @method int               pfadd(string $key, array $elements)
  * @method mixed             pfmerge(string $destinationKey, array|string $sourceKeys)
  * @method int               pfcount(string[]|string $keyOrKeys, string ...$keys = null)
