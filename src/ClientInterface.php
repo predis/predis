@@ -35,6 +35,7 @@ use Predis\Response\Status;
  * @method int               exists(string $key)
  * @method int               expire(string $key, int $seconds)
  * @method int               expireat(string $key, int $timestamp)
+ * @method int               expiretime(string $key)
  * @method array             keys(string $pattern)
  * @method int               move(string $key, int $db)
  * @method mixed             object($subcommand, string $key)

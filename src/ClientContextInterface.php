@@ -26,6 +26,7 @@ use Predis\Command\CommandInterface;
  * @method $this exists($key)
  * @method $this expire($key, $seconds)
  * @method $this expireat($key, $timestamp)
+ * @method $this expiretime(string $key)
  * @method $this keys($pattern)
  * @method $this move($key, $db)
  * @method $this object($subcommand, $key)
