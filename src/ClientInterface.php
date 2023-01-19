@@ -121,6 +121,7 @@ use Predis\Response\Status;
  * @method string[]          sdiff(array|string $keys)
  * @method int               sdiffstore(string $destination, array|string $keys)
  * @method string[]          sinter(array|string $keys)
+ * @method int               sintercard(array $keys, int $limit = 0)
  * @method int               sinterstore(string $destination, array|string $keys)
  * @method int               sismember(string $key, string $member)
  * @method string[]          smembers(string $key)
