@@ -92,6 +92,7 @@ use Predis\Command\CommandInterface;
  * @method $this blpop(array|string $keys, $timeout)
  * @method $this brpop(array|string $keys, $timeout)
  * @method $this brpoplpush($source, $destination, $timeout)
+ * @method $this lcs(string $key1, string $key2, bool $len = false, bool $idx = false, int $minMatchLen = 0, bool $withMatchLen = false)
  * @method $this lindex($key, $index)
  * @method $this linsert($key, $whence, $pivot, $value)
  * @method $this llen($key)
