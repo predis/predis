@@ -405,7 +405,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     protected function getRandomConnection()
     {
-        if (! $this->pool) {
+        if (!$this->pool) {
             return null;
         }
 

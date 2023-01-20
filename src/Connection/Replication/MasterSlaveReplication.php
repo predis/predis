@@ -318,7 +318,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     protected function pickSlave()
     {
-        if (! $this->slaves) {
+        if (!$this->slaves) {
             return null;
         }
 
