@@ -43,11 +43,11 @@ final class RawCommand implements CommandInterface
      * Creates a new raw command using a variadic method.
      *
      * @param string $commandID Redis command ID
-     * param  string ...$args   Arguments list for the command
+     * @param string ...$args   Arguments list for the command
      *
      * @return CommandInterface
      */
-    public static function create($commandID /* , $arg, ... */)
+    public static function create($commandID, ...$args)
     {
         $arguments = func_get_args();
 
