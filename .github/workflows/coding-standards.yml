@@ -41,6 +41,7 @@ jobs:
          with:
            php-version: 8.2
            tools: phpstan
+           coverage: none
 
        - name: Get Composer cache directory
          id: composer-cache
@@ -54,9 +55,7 @@ jobs:
            restore-keys: tests-php-${{ matrix.php }}-composer
 
        - name: Install Composer dependencies
-         env:
-           PHP_VERSION: ${{ matrix.php }}
-         run: composer install --ansi --no-progress --prefer-dist $(if [ "$PHP_VERSION" == "8.0" ]; then echo "--ignore-platform-reqs"; fi;)
+         run: composer install --ansi --no-progress --prefer-dist ${{ matrix.php == '8.0' && '--ignore-platform-reqs' }}
 
        - name: Run PHPStan
          run: phpstan analyse
