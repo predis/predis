@@ -185,6 +185,7 @@ use Predis\Response\Status;
  * @method mixed             unwatch()
  * @method mixed             watch(string $key)
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
+ * @method mixed             eval_ro(string $script, array $keys, ...$argument)
  * @method mixed             evalsha(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             script($subcommand, $argument = null)
  * @method mixed             auth(string $password)

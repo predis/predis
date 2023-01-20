@@ -167,6 +167,7 @@ use Predis\Command\CommandInterface;
  * @method $this unwatch()
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
+ * @method $this eval_ro(string $script, array $keys, ...$argument)
  * @method $this evalsha($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this script($subcommand, $argument = null)
  * @method $this auth($password)
