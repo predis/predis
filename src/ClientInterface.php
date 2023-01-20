@@ -101,6 +101,7 @@ use Predis\Response\Status;
  * @method array|null        blpop(array|string $keys, int|float $timeout)
  * @method array|null        brpop(array|string $keys, int|float $timeout)
  * @method string|null       brpoplpush(string $source, string $destination, int|float $timeout)
+ * @method mixed             lcs(string $key1, string $key2, bool $len = false, bool $idx = false, int $minMatchLen = 0, bool $withMatchLen = false)
  * @method string|null       lindex(string $key, int $index)
  * @method int               linsert(string $key, $whence, $pivot, $value)
  * @method int               llen(string $key)
