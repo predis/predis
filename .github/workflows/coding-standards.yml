@@ -55,7 +55,7 @@ jobs:
            restore-keys: tests-php-${{ matrix.php }}-composer
 
        - name: Install Composer dependencies
-         run: composer install --ansi --no-progress --prefer-dist ${{ matrix.php == '8.0' && '--ignore-platform-reqs' }}
+         run: composer install --ansi --no-progress --prefer-dist ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
        - name: Run PHPStan
          run: phpstan analyse
