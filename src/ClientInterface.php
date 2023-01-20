@@ -188,6 +188,7 @@ use Predis\Response\Status;
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             eval_ro(string $script, array $keys, ...$argument)
  * @method mixed             evalsha(string $script, int $numkeys, string ...$keyOrArg = null)
+ * @method mixed             evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method mixed             script($subcommand, $argument = null)
  * @method mixed             auth(string $password)
  * @method string            echo(string $message)
