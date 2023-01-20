@@ -392,11 +392,11 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new pipeline context and returns it, or returns the results of
      * a pipeline executed inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * @param mixed ...$arguments Array of options, a callable for execution, or both.
      *
      * @return Pipeline|array
      */
-    public function pipeline(/* arguments */)
+    public function pipeline(...$arguments)
     {
         return $this->sharedContextFactory('createPipeline', func_get_args());
     }
@@ -435,11 +435,11 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new transaction context and returns it, or returns the results
      * of a transaction executed inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * @param mixed ...$arguments Array of options, a callable for execution, or both.
      *
      * @return MultiExecTransaction|array
      */
-    public function transaction(/* arguments */)
+    public function transaction(...$arguments)
     {
         return $this->sharedContextFactory('createTransaction', func_get_args());
     }
@@ -467,11 +467,11 @@ class Client implements ClientInterface, IteratorAggregate
      * Creates a new publish/subscribe context and returns it, or starts its loop
      * inside the optionally provided callable object.
      *
-     * @param mixed ... Array of options, a callable for execution, or both.
+     * @param mixed ...$arguments Array of options, a callable for execution, or both.
      *
      * @return PubSubConsumer|null
      */
-    public function pubSubLoop(/* arguments */)
+    public function pubSubLoop(...$arguments)
     {
         return $this->sharedContextFactory('createPubSub', func_get_args());
     }
@@ -497,6 +497,8 @@ class Client implements ClientInterface, IteratorAggregate
                 $pubsub->stop();
             }
         }
+
+        return null;
     }
 
     /**

@@ -331,7 +331,7 @@ class PhpiredisSocketConnection extends AbstractConnection
                 $response = $this->executeCommand($command);
 
                 if ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`{$command->getId()}` failed: $response", 0);
+                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
                 }
             }
         }

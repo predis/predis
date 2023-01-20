@@ -19,18 +19,18 @@ namespace Predis\Connection;
  * each connection backend class (please refer to their specific documentation),
  * but the most common parameters used through the library are:
  *
- * @property string scheme             Connection scheme, such as 'tcp' or 'unix'.
- * @property string host               IP address or hostname of Redis.
- * @property int    port               TCP port on which Redis is listening to.
- * @property string path               Path of a UNIX domain socket file.
- * @property string alias              Alias for the connection.
- * @property float  timeout            Timeout for the connect() operation.
- * @property float  read_write_timeout Timeout for read() and write() operations.
- * @property bool   async_connect      Performs the connect() operation asynchronously.
- * @property bool   tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
- * @property bool   persistent         Leaves the connection open after a GC collection.
- * @property string password           Password to access Redis (see the AUTH command).
- * @property string database           Database index (see the SELECT command).
+ * @property string $scheme             Connection scheme, such as 'tcp' or 'unix'.
+ * @property string $host               IP address or hostname of Redis.
+ * @property int    $port               TCP port on which Redis is listening to.
+ * @property string $path               Path of a UNIX domain socket file.
+ * @property string $alias              Alias for the connection.
+ * @property float  $timeout            Timeout for the connect() operation.
+ * @property float  $read_write_timeout Timeout for read() and write() operations.
+ * @property bool   $async_connect      Performs the connect() operation asynchronously.
+ * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
+ * @property bool   $persistent         Leaves the connection open after a GC collection.
+ * @property string $password           Password to access Redis (see the AUTH command).
+ * @property string $database           Database index (see the SELECT command).
  */
 interface ParametersInterface
 {

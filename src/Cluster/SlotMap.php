@@ -30,7 +30,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Checks if the given slot is valid.
      *
-     * @param int $first Slot index.
+     * @param int $slot Slot index.
      *
      * @return bool
      */
@@ -145,16 +145,12 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param int $slot Slot index.
      *
-     * @return ?string
+     * @return string|null
      */
     #[ReturnTypeWillChange]
     public function offsetGet($slot)
     {
-        if (isset($this->slots[$slot])) {
-            return $this->slots[$slot];
-        }
-
-        return null;
+        return $this->slots[$slot] ?? null;
     }
 
     /**
@@ -162,6 +158,8 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      *
      * @param int                            $slot       Slot index.
      * @param NodeConnectionInterface|string $connection ID or connection instance.
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetSet($slot, $connection)
@@ -177,6 +175,8 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      * Returns the node assigned to the specified slot.
      *
      * @param int $slot Slot index.
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($slot)

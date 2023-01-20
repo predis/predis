@@ -49,15 +49,11 @@ abstract class Factory implements FactoryInterface
      *
      * @param string $commandID Command ID
      *
-     * @return ?string
+     * @return string|null
      */
     public function getCommandClass(string $commandID): ?string
     {
-        if (isset($this->commands[$commandID = strtoupper($commandID)])) {
-            return $this->commands[$commandID];
-        }
-
-        return null;
+        return $this->commands[strtoupper($commandID)] ?? null;
     }
 
     /**
@@ -138,7 +134,7 @@ abstract class Factory implements FactoryInterface
     /**
      * Returns the current command processor.
      *
-     * @return ?ProcessorInterface
+     * @return ProcessorInterface|null
      */
     public function getProcessor(): ?ProcessorInterface
     {

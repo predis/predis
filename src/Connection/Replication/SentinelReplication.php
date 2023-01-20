@@ -205,8 +205,9 @@ class SentinelReplication implements ReplicationInterface
     public function add(NodeConnectionInterface $connection)
     {
         $parameters = $connection->getParameters();
+        $role = $parameters->role;
 
-        if ('master' === $role = $parameters->role) {
+        if ('master' === $role) {
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
@@ -591,9 +592,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function getConnectionById($id)
     {
-        if (isset($this->pool[$id])) {
-            return $this->pool[$id];
-        }
+        return $this->pool[$id] ?? null;
     }
 
     /**
@@ -611,6 +610,8 @@ class SentinelReplication implements ReplicationInterface
             return $this->pickSlave();
         } elseif ($role === 'sentinel') {
             return $this->getSentinelConnection();
+        } else {
+            return null;
         }
     }
 
@@ -704,21 +705,21 @@ class SentinelReplication implements ReplicationInterface
     {
         $retries = 0;
 
-        SENTINEL_RETRY: {
+        while ($retries <= $this->retryLimit) {
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
+                break;
             } catch (CommunicationException $exception) {
                 $this->wipeServerList();
                 $exception->getConnection()->disconnect();
 
-                if ($retries == $this->retryLimit) {
+                if ($retries === $this->retryLimit) {
                     throw $exception;
                 }
 
                 usleep($this->retryWait * 1000);
 
                 ++$retries;
-                goto SENTINEL_RETRY;
             }
         }
 

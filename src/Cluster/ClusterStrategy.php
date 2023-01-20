@@ -240,9 +240,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys($arguments)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($arguments)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -262,9 +264,11 @@ abstract class ClusterStrategy implements StrategyInterface
             $keys[] = $arguments[$i];
         }
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -291,9 +295,11 @@ abstract class ClusterStrategy implements StrategyInterface
             }
         }
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $firstKey;
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $firstKey;
     }
 
     /**
@@ -307,9 +313,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -323,9 +331,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
-            return $arguments[1];
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
+            return null;
         }
+
+        return $arguments[1];
     }
 
     /**
@@ -351,10 +361,8 @@ abstract class ClusterStrategy implements StrategyInterface
                 }
             }
 
-            if ($this->checkSameSlotForKeys($keys)) {
-                return $arguments[0];
-            } else {
-                return;
+            if (!$this->checkSameSlotForKeys($keys)) {
+                return null;
             }
         }
 
@@ -373,9 +381,11 @@ abstract class ClusterStrategy implements StrategyInterface
         $arguments = $command->getArguments();
         $keys = array_merge([$arguments[0]], array_slice($arguments, 2, $arguments[1]));
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -387,15 +397,15 @@ abstract class ClusterStrategy implements StrategyInterface
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
     {
-        if ($command instanceof ScriptCommand) {
-            $keys = $command->getKeys();
-        } else {
-            $keys = array_slice($args = $command->getArguments(), 2, $args[1]);
+        $keys = $command instanceof ScriptCommand
+            ? $command->getKeys()
+            : array_slice($args = $command->getArguments(), 2, $args[1]);
+
+        if (!$keys || !$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
 
-        if ($keys && $this->checkSameSlotForKeys($keys)) {
-            return $keys[0];
-        }
+        return $keys[0];
     }
 
     /**

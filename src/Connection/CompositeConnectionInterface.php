@@ -42,7 +42,7 @@ interface CompositeConnectionInterface extends NodeConnectionInterface
     /**
      * Reads a line from the connection.
      *
-     * @param string
+     * @return string
      */
     public function readLine();
 }

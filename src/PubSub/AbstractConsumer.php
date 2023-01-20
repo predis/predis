@@ -58,7 +58,7 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Subscribes to the specified channels.
      *
-     * @param mixed $channel,... One or more channel names.
+     * @param string ...$channel One or more channel names.
      */
     public function subscribe($channel /* , ... */)
     {
@@ -69,9 +69,9 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Unsubscribes from the specified channels.
      *
-     * @param string ... One or more channel names.
+     * @param string ...$channel One or more channel names.
      */
-    public function unsubscribe(/* ... */)
+    public function unsubscribe(...$channel)
     {
         $this->writeRequest(self::UNSUBSCRIBE, func_get_args());
     }
@@ -79,9 +79,9 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Subscribes to the specified channels using a pattern.
      *
-     * @param mixed $pattern,... One or more channel name patterns.
+     * @param string ...$pattern One or more channel name patterns.
      */
-    public function psubscribe($pattern /* ... */)
+    public function psubscribe(...$pattern)
     {
         $this->writeRequest(self::PSUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_PSUBSCRIBED;
@@ -90,9 +90,9 @@ abstract class AbstractConsumer implements Iterator
     /**
      * Unsubscribes from the specified channels using a pattern.
      *
-     * @param string ... One or more channel name patterns.
+     * @param string ...$pattern One or more channel name patterns.
      */
-    public function punsubscribe(/* ... */)
+    public function punsubscribe(...$pattern)
     {
         $this->writeRequest(self::PUNSUBSCRIBE, func_get_args());
     }

@@ -52,10 +52,10 @@ class LMPOP extends RedisCommand
 
     public function parseResponse($data)
     {
-        if (null !== $data) {
-            return [$data[0] => $data[1]];
+        if (null === $data) {
+            return null;
         }
 
-        return null;
+        return [$data[0] => $data[1]];
     }
 }

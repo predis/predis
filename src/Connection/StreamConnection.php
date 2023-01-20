@@ -201,7 +201,7 @@ class StreamConnection extends AbstractConnection
             return $resource;
         }
 
-        if (is_array($parameters->ssl)) {
+        if (isset($parameters->ssl) && is_array($parameters->ssl)) {
             $options = $parameters->ssl;
         } else {
             $options = [];
@@ -232,7 +232,7 @@ class StreamConnection extends AbstractConnection
                 $response = $this->executeCommand($command);
 
                 if ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`{$command->getId()}` failed: $response", 0);
+                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
                 }
             }
         }
