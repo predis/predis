@@ -41,12 +41,9 @@ jobs:
         with:
           php-version: "8.1"
           coverage: none
+          tools: parallel-lint
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          dependency-versions: highest
       - name: Check source code for syntax errors
         run: composer exec -- parallel-lint bin/ examples/ src/ tests/
 
