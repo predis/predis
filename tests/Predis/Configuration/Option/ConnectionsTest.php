@@ -12,7 +12,6 @@
 
 namespace Predis\Configuration\Option;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 use stdClass;
