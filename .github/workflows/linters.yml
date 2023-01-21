@@ -82,6 +82,9 @@ jobs:
       - name: Perform static analysis
         run: composer run phpstan
 
+      - name: Perform static analysis on tests
+        run: composer run phpstan --configuration=phpstan-tests.dist.neon
+
   coding_standards:
     name: Coding Standards
     needs:

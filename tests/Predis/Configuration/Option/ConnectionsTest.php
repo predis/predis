@@ -37,7 +37,7 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings(): void
     {
-        /** @var OptionsInterface */
+        /** @var \Predis\Configuration\OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
@@ -49,7 +49,7 @@ class ConnectionsTest extends PredisTestCase
             ->method('define')
             ->with($this->matchesRegularExpression('/^tcp|redis$/'), $class);
 
-        /** @var OptionInterface */
+        /** @var \Predis\Configuration\OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
             ->onlyMethods(['getDefault'])
             ->getMock();
@@ -140,7 +140,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $parameters = ['database' => 5, 'password' => 'mypassword'];
 
-        /** @var OptionsInterface|MockObject */
+        /** @var \Predis\Configuration\OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
@@ -164,7 +164,7 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testAcceptsConnectionFactoryInstance(): void
     {
-        /** @var OptionInterface */
+        /** @var \Predis\Configuration\OptionInterface */
         $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
             ->onlyMethods(['getDefault'])
             ->getMock();
@@ -185,7 +185,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $option = new Connections();
 
-        /** @var OptionsInterface */
+        /** @var \Predis\Configuration\OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
@@ -212,7 +212,7 @@ class ConnectionsTest extends PredisTestCase
 
         $option = new Connections();
 
-        /** @var OptionsInterface */
+        /** @var \Predis\Configuration\OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new stdClass());

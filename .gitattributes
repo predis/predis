@@ -14,3 +14,4 @@
 /VERSION export-ignore
 /phpunit.xml.dist export-ignore
 /phpstan.dist.neon export-ignore
+/phpstan-tests.dist.neon export-ignore
