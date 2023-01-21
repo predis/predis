@@ -14,7 +14,21 @@ block_comment = *
 block_comment_end = */
 
 [*.php]
-max_line_length = 223
+max_line_length = 150
 
 [*.{md,yml,yaml,neon}]
 indent_size = 2
+
+# Files with too long lines
+[tests/Predis/Command/Processor/KeyPrefixProcessorTest.php]
+max_line_length = unset
+[tests/Predis/Configuration/Option/ReplicationTest.php]
+max_line_length = unset
+[tests/Predis/Configuration/Option/AggregateTest.php]
+max_line_length = unset
+[tests/Predis/Configuration/Option/ClusterTest.php]
+max_line_length = unset
+[src/ClientContextInterface.php]
+max_line_length = unset
+[src/ClientInterface.php]
+max_line_length = unset
