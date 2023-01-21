@@ -5,6 +5,7 @@
 [![Latest development][ico-version-dev]][link-packagist]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-build]][link-actions]
+[![Coverage Status][ico-coverage]][link-coverage]
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
@@ -492,7 +493,9 @@ The code for Predis is distributed under the terms of the MIT license (see [LICE
 [ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
 [ico-build]: https://img.shields.io/github/actions/workflow/status/predis/predis/tests.yml?branch=main&style=flat-square
+[ico-coverage]: https://img.shields.io/coverallsCoverage/github/predis/predis?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/predis/predis
 [link-actions]: https://github.com/predis/predis/actions
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
+[link-coverage]: https://coveralls.io/github/predis/predis
