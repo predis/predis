@@ -69,6 +69,10 @@ jobs:
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
 
+      - name: Debug PHPUnit tests
+        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
+        run: vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml --coverage-filter src
+
       - name: Send coverage to Coveralls
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
