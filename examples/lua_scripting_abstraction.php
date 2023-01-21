@@ -37,11 +37,11 @@ local cmd, insert = redis.call, table.insert
 local increment, results = ARGV[1], { }
 
 for idx, key in ipairs(KEYS) do
-  if cmd('exists', key) == 1 then
-    insert(results, idx, cmd('incrby', key, increment))
-  else
-    insert(results, idx, false)
-  end
+    if cmd('exists', key) == 1 then
+        insert(results, idx, cmd('incrby', key, increment))
+    else
+        insert(results, idx, false)
+    end
 end
 
 return results
@@ -61,8 +61,8 @@ var_export($client->increxby('foo', 'foofoo', 'foobar', 50));
 
 /*
 array (
-  0 => 60,
-  1 => NULL,
-  2 => 150,
+    0 => 60,
+    1 => NULL,
+    2 => 150,
 )
 */

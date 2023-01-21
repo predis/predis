@@ -35,15 +35,15 @@ $single_server = [
 
 $multiple_servers = [
     [
-       'host' => '127.0.0.1',
-       'port' => 6379,
-       'database' => 15,
-       'alias' => 'first',
+        'host' => '127.0.0.1',
+        'port' => 6379,
+        'database' => 15,
+        'alias' => 'first',
     ],
     [
-       'host' => '127.0.0.1',
-       'port' => 6380,
-       'database' => 15,
-       'alias' => 'second',
+        'host' => '127.0.0.1',
+        'port' => 6380,
+        'database' => 15,
+        'alias' => 'second',
     ],
 ];

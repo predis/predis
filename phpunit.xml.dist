@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit bootstrap="tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnError="false"
-         stopOnFailure="false"
-         beStrictAboutTestsThatDoNotTestAnything="true">
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+>
 
     <testsuites>
         <testsuite name="Predis Test Suite">

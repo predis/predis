@@ -69,7 +69,7 @@
   - `cluster`: string value (`predis`, `redis`), callable returning an aggregate
     connection.
   - `replication`: string value (`predis`, `sentinel`), callable returning an
-     aggregate connection.
+    aggregate connection.
   - `commands`: command factory, named array mapping command IDs to PHP classes,
     callable returning a command factory or a named array.
   - `connections`: connection factory, callable object returning a connection

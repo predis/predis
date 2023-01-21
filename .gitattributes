@@ -7,7 +7,7 @@
 /.editorconfig export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
-/.php_cs.dist export-ignore
+/.php-cs-fixer.dist.php export-ignore
 /CHANGELOG.md export-ignore
 /CONTRIBUTING.md export-ignore
 /FAQ.md export-ignore

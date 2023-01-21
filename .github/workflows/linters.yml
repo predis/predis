@@ -132,10 +132,10 @@ jobs:
         uses: "actions/checkout@v3"
       - name: "Check exported files"
         run: |
-          EXPECTED="LICENSE,README.md,composer.json"
+          EXPECTED="LICENSE,README.md,autoload.php,composer.json"
           CURRENT="$(
               git archive HEAD \
-                  | tar --list --exclude="autoload.php" --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
+                  | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
                   | paste --serial --delimiters=","
           )"
           echo "CURRENT =${CURRENT}"

@@ -692,7 +692,7 @@ class SentinelReplicationTest extends PredisTestCase
                 'port' => '6382',
                 'role' => 'slave',
             ])
-           ->willReturn($slave1);
+            ->willReturn($slave1);
 
         $replication = $this->getReplicationConnection('svc', [$sentinel1], $factory);
 
@@ -1165,9 +1165,9 @@ class SentinelReplicationTest extends PredisTestCase
             ->withConsecutive(
                 [$this->isRedisCommand('SET', ['key', $cmdGetResponse])]
             )
-           ->willReturnOnConsecutiveCalls(
-               $cmdSetResponse
-           );
+            ->willReturnOnConsecutiveCalls(
+                $cmdSetResponse
+            );
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
         $slave1
@@ -1180,9 +1180,9 @@ class SentinelReplicationTest extends PredisTestCase
             ->withConsecutive(
                 [$this->isRedisCommand('GET', ['key'])]
             )
-           ->willReturnOnConsecutiveCalls(
-               $cmdGetResponse
-           );
+            ->willReturnOnConsecutiveCalls(
+                $cmdGetResponse
+            );
 
         $replication = $this->getReplicationConnection('svc', [$sentinel1]);
 
