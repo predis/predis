@@ -3,4 +3,4 @@ skip=./.git
 check-hidden=
 check-filenames=
 builtin=clear,rare,informal,usage,code,names
-ignore-words-list=master,masters,slave,slaves,whitelist,cas,smove
+ignore-words-list=master,masters,slave,slaves,whitelist,cas,exat,smove
