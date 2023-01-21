@@ -11,7 +11,7 @@
  */
 
 /**
- * PHPUnit constraint matching arrays with same elemnts even in different order.
+ * PHPUnit constraint matching arrays with same elements even in different order.
  */
 class ArrayHasSameValuesConstraint extends \PHPUnit\Framework\Constraint\Constraint
 {

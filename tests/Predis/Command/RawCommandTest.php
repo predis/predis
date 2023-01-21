@@ -58,7 +58,7 @@ class RawCommandTest extends PredisTestCase
 
     /**
      * The signature of RawCommand::create() requires one argument which is the
-     * ID of the command (other arguments are fetched dinamically). If the first
+     * ID of the command (other arguments are fetched dynamically). If the first
      * argument is missing a standard PHP exception is thrown on PHP >= 7.1.
      *
      * @group disconnected

@@ -28,7 +28,7 @@ class Parameters implements ParametersInterface
     ];
 
     /**
-     * Set of connection paramaters already filtered
+     * Set of connection parameters already filtered
      * for NULL or 0-length string values.
      *
      * @var array

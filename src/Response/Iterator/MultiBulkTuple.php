@@ -22,7 +22,7 @@ use UnexpectedValueException;
  * keys and values.
  *
  * This wrapper is useful for responses to commands such as `HGETALL` that can
- * be iterater as $key => $value pairs.
+ * be iterator as $key => $value pairs.
  */
 class MultiBulkTuple extends MultiBulk implements OuterIterator
 {
