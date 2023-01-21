@@ -66,12 +66,6 @@ jobs:
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
         run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src
 
-      - name: Upload coverage artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: coveralls-debug
-          path: build/logs/clover.xml
-
       - name: Send coverage to Coveralls
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
