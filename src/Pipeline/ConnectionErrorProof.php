@@ -22,8 +22,6 @@ use SplQueue;
 /**
  * Command pipeline that does not throw exceptions on connection errors, but
  * returns the exception instances as the rest of the response elements.
- *
- * @todo Awful naming!
  */
 class ConnectionErrorProof extends Pipeline
 {

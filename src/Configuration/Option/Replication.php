@@ -108,14 +108,6 @@ class Replication extends Aggregate
      */
     public static function aggregate(OptionsInterface $options, AggregateConnectionInterface $connection, array $nodes)
     {
-        // TODO: at least for now we will replicate the previous behaviour of
-        // skipping automatic aggregation when using the redis-sentinel backend
-        // because $nodes contains an array of sentinel servers instead of Redis
-        // servers and SentinelReplication already gets the list of sentinels in
-        // the first argument of its constructor. SentinelReplication::add()
-        // actually knows how to handle connections marked with role=sentinel in
-        // their parameters but relying on it would require an explicit role to
-        // be set by the user and I would like to avoid enforcing that for now.
         if (!$connection instanceof SentinelReplication) {
             parent::aggregate($options, $connection, $nodes);
         }
