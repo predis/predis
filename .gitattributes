@@ -3,14 +3,14 @@
 /examples/ export-ignore
 /tests/ export-ignore
 /.github/ export-ignore
-/.codespellrc export-ignore
+/.codespellrc export-ignore linguist-language=INI
 /.editorconfig export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
-/CHANGELOG.md export-ignore
-/CONTRIBUTING.md export-ignore
-/FAQ.md export-ignore
+/CHANGELOG.md export-ignore linguist-documentation
+/CONTRIBUTING.md export-ignore linguist-documentation
+/FAQ.md export-ignore linguist-documentation
 /VERSION export-ignore
 /phpunit.xml.dist export-ignore
 /phpstan.dist.neon export-ignore
