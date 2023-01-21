@@ -25,7 +25,7 @@ jobs:
         uses: "actions/checkout@v3"
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" = ""
+          test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
       - name: "Find non-printable ASCII characters"
         run: |
           # ü for "Till Krüss"
