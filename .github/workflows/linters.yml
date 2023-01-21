@@ -115,7 +115,7 @@ jobs:
 
       - name: Search for TODO-s and FIXME-s
         run: |
-           ! git grep --extended-regexp --ignore-case '\b(TODO|FIXME)\b' -- ':/' ':!tests/*' ':!*/linters\.yml'
+          ! git grep --extended-regexp --ignore-case '\b(TODO|FIXME)\b' -- ':/' ':!tests/*' ':!*/linters\.yml'
 
   exported_files:
     name: Exported files
