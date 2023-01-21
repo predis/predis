@@ -1,8 +1,8 @@
 * text=auto
 
+/.github/ export-ignore
 /examples/ export-ignore
 /tests/ export-ignore
-/.github/ export-ignore
 /.codespellrc export-ignore linguist-language=INI
 /.editorconfig export-ignore
 /.gitattributes export-ignore
