@@ -20,5 +20,5 @@ indent_size = 2
 [tests/**.php]
 max_line_length = unset
 
-[{src/ClientInterface.php, src/ClientContextInterface.php}]
+[src/ClientInterface.php,src/ClientContextInterface.php]
 max_line_length = unset
