@@ -79,7 +79,7 @@ class ResponseReaderTest extends PredisTestCase
     public function testEmptyResponseHeader(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
-        $this->expectExceptionMessage('Unexpected empty reponse header [tcp://127.0.0.1:6379]');
+        $this->expectExceptionMessage('Unexpected empty response header [tcp://127.0.0.1:6379]');
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
         $connection

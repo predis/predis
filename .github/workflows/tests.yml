@@ -7,10 +7,14 @@ on:
       - v2.**
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   predis:
-    name: PHP ${{ matrix.php }} (Redis ${{ matrix.redis }})
+    name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,11 +28,11 @@ jobs:
           - '8.1'
           - '8.2'
         redis:
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
 
     services:
       redis:
@@ -39,29 +43,33 @@ jobs:
 
     steps:
 
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "directory=$(composer config cache-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.directory }}
-          key: tests-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: tests-php-${{ matrix.php }}-composer
+          coverage: ${{ (matrix.php == '8.1' && matrix.redis == '7') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
-        env:
-          PHP_VERSION: ${{ matrix.php }}
-        run: composer install --ansi --no-progress --prefer-dist $(if [ "$PHP_VERSION" == "8.0" ]; then echo "--ignore-platform-reqs"; fi;)
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: highest
+          composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit
+        if: ${{ matrix.php != '8.1' || matrix.redis != '7' }}
+        run: vendor/bin/phpunit --verbose
+
+      - name: Run PHPUnit tests with coverage
+        if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
+        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter src
+
+      - name: Send coverage to Coveralls
+        env:
+            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
+        run: |
+          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
+          php ./php-coveralls.phar -v

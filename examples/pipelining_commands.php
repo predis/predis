@@ -31,16 +31,16 @@ var_export($responses);
 
 /* OUTPUT:
 array (
-  0 => Predis\Response\Status::__set_state(array(
-    'payload' => 'OK',
-  )),
-  1 => 10,
-  2 => 40,
-  3 => true,
-  4 => '40',
-  5 => array (
-    0 => NULL,
-    1 => '40',
-  ),
+    0 => Predis\Response\Status::__set_state(array(
+        'payload' => 'OK',
+    )),
+    1 => 10,
+    2 => 40,
+    3 => true,
+    4 => '40',
+    5 => array (
+        0 => NULL,
+        1 => '40',
+    ),
 )
 */

@@ -14,7 +14,7 @@ require __DIR__ . '/shared.php';
 
 // This is an example of how you can easily extend an existing connection class
 // and trace the execution of commands for debugging purposes. This can be quite
-// useful as a starting poing to understand how your application interacts with
+// useful as a starting point to understand how your application interacts with
 // Redis.
 
 use Predis\Command\CommandInterface;
@@ -81,13 +81,13 @@ var_export($client->getConnection()->getDebugBuffer());
 
 /* OUTPUT:
 array (
-  0 => 'SELECT 15 -> 127.0.0.1:6379 [0.0008s]',
-  1 => 'SELECT 15 <- 127.0.0.1:6379 [0.001s]',
-  2 => 'SET foo -> 127.0.0.1:6379 [0.001s]',
-  3 => 'SET foo <- 127.0.0.1:6379 [0.0011s]',
-  4 => 'GET foo -> 127.0.0.1:6379 [0.0013s]',
-  5 => 'GET foo <- 127.0.0.1:6379 [0.0015s]',
-  6 => 'INFO -> 127.0.0.1:6379 [0.0019s]',
-  7 => 'INFO <- 127.0.0.1:6379 [0.0022s]',
+    0 => 'SELECT 15 -> 127.0.0.1:6379 [0.0008s]',
+    1 => 'SELECT 15 <- 127.0.0.1:6379 [0.001s]',
+    2 => 'SET foo -> 127.0.0.1:6379 [0.001s]',
+    3 => 'SET foo <- 127.0.0.1:6379 [0.0011s]',
+    4 => 'GET foo -> 127.0.0.1:6379 [0.0013s]',
+    5 => 'GET foo <- 127.0.0.1:6379 [0.0015s]',
+    6 => 'INFO -> 127.0.0.1:6379 [0.0019s]',
+    7 => 'INFO <- 127.0.0.1:6379 [0.0022s]',
 )
 */

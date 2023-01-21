@@ -80,7 +80,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * Sets the maximum number of retries for commands upon server failure.
      *
      * -1 = unlimited retry attempts
-     *  0 = no retry attempts (fails immediatly)
+     *  0 = no retry attempts (fails immediately)
      *  n = fail only after n retry attempts
      *
      * @param int $retry Number of retry attempts.

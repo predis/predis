@@ -269,7 +269,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     {
         return [
             'wrong BY argument value' => [
-                 0, -1, 'wrong value', false, false, 0, 0, 'By argument accepts only "bylex" and "byscore" values',
+                0, -1, 'wrong value', false, false, 0, 0, 'By argument accepts only "bylex" and "byscore" values',
             ],
             'wrong REV argument type' => [
                 0, -1, false, 'wrong value', false, 0, 0, 'Wrong rev argument type',

@@ -557,7 +557,7 @@ class FactoryTest extends PredisTestCase
     /**
      * Provides empty values for specific parameters.
      *
-     * These parameters usually trigger the addition of initializatin commands
+     * These parameters usually trigger the addition of initialization commands
      * to connection instances like `password` => AUTH and `database` => SELECT,
      * but they should not be added when their values are NULL or empty strings.
      *

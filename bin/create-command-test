@@ -117,7 +117,7 @@ class CommandTestCaseGenerator
     protected function getTestRealm()
     {
         if (empty($this->options['realm'])) {
-            throw new RuntimeException('Invalid value for realm has been sepcified (empty).');
+            throw new RuntimeException('Invalid value for realm has been specified (empty).');
         }
 
         return $this->options['realm'];

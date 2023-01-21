@@ -48,9 +48,9 @@ foreach (new Iterator\Keyspace($client, 'predis:*') as $key) {
 
 /* OUTPUT
 Scan the keyspace matching only our prefixed keys:
- - predis:zset
- - predis:set
- - predis:hash
+    - predis:zset
+    - predis:set
+    - predis:hash
 */
 
 // === Set iterator based on SSCAN ===
@@ -61,11 +61,11 @@ foreach (new Iterator\SetKey($client, 'predis:set') as $member) {
 
 /* OUTPUT
 Scan members of `predis:set`:
- - member:1
- - member:4
- - member:0
- - member:3
- - member:2
+    - member:1
+    - member:4
+    - member:0
+    - member:3
+    - member:2
 */
 
 // === Sorted set iterator based on ZSCAN ===
@@ -76,11 +76,11 @@ foreach (new Iterator\SortedSetKey($client, 'predis:zset') as $member => $rank) 
 
 /* OUTPUT
 Scan members and ranks of `predis:zset`:
- - member:4 [rank: -4]
- - member:3 [rank: -3]
- - member:2 [rank: -2]
- - member:1 [rank: -1]
- - member:0 [rank: 0]
+    - member:4 [rank: -4]
+    - member:3 [rank: -3]
+    - member:2 [rank: -2]
+    - member:1 [rank: -1]
+    - member:0 [rank: 0]
 */
 
 // === Hash iterator based on HSCAN ===
@@ -91,9 +91,9 @@ foreach (new Iterator\HashKey($client, 'predis:hash') as $field => $value) {
 
 /* OUTPUT
 Scan fields and values of `predis:hash`:
- - field:0 => value:0
- - field:1 => value:1
- - field:2 => value:2
- - field:3 => value:3
- - field:4 => value:4
+    - field:0 => value:0
+    - field:1 => value:1
+    - field:2 => value:2
+    - field:3 => value:3
+    - field:4 => value:4
 */

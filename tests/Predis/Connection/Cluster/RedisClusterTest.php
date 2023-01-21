@@ -707,12 +707,12 @@ class RedisClusterTest extends PredisTestCase
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
-             ->method('create')
-             ->with([
+            ->method('create')
+            ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
-              ])
-             ->willReturn($connection4);
+            ])
+            ->willReturn($connection4);
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
         /** @var Connection\Cluster\RedisCluster|MockObject */

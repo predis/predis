@@ -25,8 +25,6 @@ use ReturnTypeWillChange;
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers
  * implementing client-side sharding based on pluggable distribution strategies.
- *
- * @todo Add the ability to remove connections from pool.
  */
 class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
 {

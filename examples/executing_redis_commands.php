@@ -38,10 +38,11 @@ var_export($response);
 echo PHP_EOL;
 /* OUTPUT:
 array (
-  0 => '1st user',
-  1 => '2nd user',
-  2 => '3rd user',
-) */
+    0 => '1st user',
+    1 => '2nd user',
+    2 => '3rd user',
+)
+*/
 
 // Predis can also send "raw" commands to Redis. The difference between sending
 // commands to Redis the usual way and the "raw" way is that in the latter case
@@ -55,7 +56,8 @@ var_export($response);
 echo PHP_EOL;
 /* OUTPUT:
 array (
-  0 => '1st user',
-  1 => '2nd user',
-  2 => '3rd user',
-) */
+    0 => '1st user',
+    1 => '2nd user',
+    2 => '3rd user',
+)
+*/

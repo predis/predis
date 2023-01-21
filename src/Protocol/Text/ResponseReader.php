@@ -82,7 +82,7 @@ class ResponseReader implements ResponseReaderInterface
         $header = $connection->readLine();
 
         if ($header === '') {
-            $this->onProtocolError($connection, 'Unexpected empty reponse header');
+            $this->onProtocolError($connection, 'Unexpected empty response header');
         }
 
         $prefix = $header[0];

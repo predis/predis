@@ -80,7 +80,6 @@ class Atomic extends Pipeline
         $executed = $connection->executeCommand($commandFactory->create('exec'));
 
         if (!isset($executed)) {
-            // TODO: should be throwing a more appropriate exception.
             throw new ClientException(
                 'The underlying transaction has been aborted by the server.'
             );

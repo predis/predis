@@ -23,15 +23,15 @@ $client->mset(['foo' => 'bar', 'lol' => 'wut']);
 var_export($client->mget('foo', 'lol'));
 /*
 array (
-  0 => 'bar',
-  1 => 'wut',
+    0 => 'bar',
+    1 => 'wut',
 )
 */
 
 var_export($client->keys('*'));
 /*
 array (
-  0 => 'nrk:foo',
-  1 => 'nrk:lol',
+    0 => 'nrk:foo',
+    1 => 'nrk:lol',
 )
 */

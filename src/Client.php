@@ -358,7 +358,7 @@ class Client implements ClientInterface, IteratorAggregate
 
     /**
      * Executes the specified initializer method on `$this` by adjusting the
-     * actual invokation depending on the arity (0, 1 or 2 arguments). This is
+     * actual invocation depending on the arity (0, 1 or 2 arguments). This is
      * simply an utility method to create Redis contexts instances since they
      * follow a common initialization path.
      *

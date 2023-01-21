@@ -838,7 +838,7 @@ class MasterSlaveReplicationTest extends PredisTestCase
     {
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $master->expects($this->never())
-               ->method('executeCommand');
+            ->method('executeCommand');
 
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
         $slave1

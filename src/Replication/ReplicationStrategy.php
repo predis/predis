@@ -112,7 +112,7 @@ class ReplicationStrategy
 
     /**
      * Checks if a GEORADIUS command is a readable operation by parsing the
-     * arguments array of the specified commad instance.
+     * arguments array of the specified command instance.
      *
      * @param CommandInterface $command Command instance.
      *

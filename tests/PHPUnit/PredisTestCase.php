@@ -59,7 +59,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Ensures that two Redis commands are similar.
      *
-     * This method supports can test for different contraints by accepting a few
+     * This method supports can test for different constraints by accepting a few
      * combinations of values as indicated below:
      *
      * - a string identifying a Redis command by its ID
@@ -357,9 +357,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function isRedisServerVersion(string $operator, string $version): bool
     {
         $serverVersion = $this->getRedisServerVersion();
-        $comparation = version_compare($serverVersion, $version);
+        $comparison = version_compare($serverVersion, $version);
 
-        return (bool) eval("return $comparation $operator 0;");
+        return (bool) eval("return $comparison $operator 0;");
     }
 
     /**

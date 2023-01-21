@@ -91,7 +91,7 @@ class SentinelReplication implements ReplicationInterface
      * Max number of automatic retries of commands upon server failure.
      *
      * -1 = unlimited retry attempts
-     *  0 = no retry attempts (fails immediatly)
+     *  0 = no retry attempts (fails immediately)
      *  n = fail only after n retry attempts
      *
      * @var int
@@ -148,7 +148,7 @@ class SentinelReplication implements ReplicationInterface
      * Sets the maximum number of retries for commands upon server failure.
      *
      * -1 = unlimited retry attempts
-     *  0 = no retry attempts (fails immediatly)
+     *  0 = no retry attempts (fails immediately)
      *  n = fail only after n retry attempts
      *
      * @param int $retry Number of retry attempts.
