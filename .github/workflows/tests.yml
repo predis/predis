@@ -14,7 +14,7 @@ concurrency:
 jobs:
 
   predis:
-    name: PHP ${{ matrix.php }} (Redis ${{ matrix.redis }})
+    name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -70,8 +70,10 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Debug PHPUnit tests
-        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml --coverage-filter src
+        if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
+        run: |
+          vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml --coverage-filter src
+          find build/
 
       - name: Send coverage to Coveralls
         env:
