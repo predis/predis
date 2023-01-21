@@ -6,9 +6,8 @@ on:
   push:
     branches:
       - main
-      - "v2.**"
+      - v2.**
   pull_request: null
-# Add [skip ci] to commit message to skip CI.
 
 permissions: {}
 
@@ -17,24 +16,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   byte_level:
-    name: "0️⃣ Byte-level"
+    name: Byte-level
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Check file permissions
-        run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
+        run: test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
+
       - name: "Find non-printable ASCII characters"
         run: |
-          # ü for "Till Krüss"
           ! LC_ALL=C.UTF-8 find . -type f -name '*.php' -print0 \
             | xargs --null -- grep --perl-regexp --with-filename --line-number '[^ -~ü]'
 
   syntax_errors:
-    name: "1️⃣ Syntax errors"
+    name: Syntax errors
     runs-on: ubuntu-latest
+
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -42,92 +44,89 @@ jobs:
           php-version: "8.1"
           coverage: none
           tools: parallel-lint
+
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Check source code for syntax errors
         run: composer exec -- parallel-lint bin/ examples/ src/ tests/
 
-  #unit_tests:
-    #name: "2️⃣ Unit and functional tests"
-    #needs:
-    #  - byte_level
-    #  - syntax_errors
-    #strategy:
-    #  #fail-fast: false
-    #  matrix:
-    #    php-version:
-    #      - "8.0"
-    #    dependencies:
-    #      - lowest
-    #      - highest
-    #runs-on: ubuntu-latest
-    #steps:
-
   static_analysis:
-    name: "3️⃣ Static Analysis"
+    name: Static Analysis
     needs:
       - byte_level
       - syntax_errors
     runs-on: ubuntu-latest
+
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
           coverage: none
+
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Validate Composer configuration
         run: composer validate --no-interaction --strict
+
       - name: Install dependencies
         uses: ramsey/composer-install@v2
         with:
           dependency-versions: highest
+
       - name: Check PSR-4 mapping
         run: composer dump-autoload --no-interaction --optimize --strict-psr
+
       - name: Perform static analysis
         run: composer run phpstan
-        # @TODO Cognitive Complexity, Mess Detector, Magic Number Detector, Copy-Paste Detector
 
   coding_standards:
-    name: "4️⃣ Coding Standards"
+    name: Coding Standards
     needs:
       - byte_level
       - syntax_errors
     runs-on: ubuntu-latest
+
     steps:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.1"
           coverage: none
+
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Check EditorConfig configuration
         run: test -f .editorconfig
+
       - name: Check adherence to EditorConfig
         uses: greut/eclint-action@v0
+
       - name: Install dependencies
         uses: ramsey/composer-install@v2
         with:
           dependency-versions: highest
+
       - name: Check coding style
         run: composer exec -- php-cs-fixer fix --diff --dry-run --allow-risky=yes --using-cache=no
-      # Move TODO-s into GitHub issues!
+
       - name: Search for TODO-s and FIXME-s
-        # TODO Move todos from tests/ too!
-        run: |
-          ! git grep --extended-regexp --ignore-case '\b(TODO|FIXME)\b' -- ':/' ':!tests/*' ':!*/linters\.yml'
+        run: ! git grep --extended-regexp --ignore-case '\b(TODO|FIXME)\b' -- ':/' ':!tests/*' ':!*/linters\.yml'
 
   exported_files:
-    name: "5️⃣ Exported files"
+    name: Exported files
     needs:
       - byte_level
       - syntax_errors
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Check exported files
         run: |
           EXPECTED="LICENSE,README.md,autoload.php,composer.json"
@@ -143,17 +142,19 @@ jobs:
   spelling:
     name: Spelling
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Cache pip
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-codespell
+
       - name: Install codespell
-        run: |
-          pip install --user 'codespell>=2.2'
+        run: pip install --user 'codespell>=2.2'
+
       - name: Search for misspellings
-        run: |
-          "$(python -m site --user-base)/bin/codespell"
+        run: $(python -m site --user-base)/bin/codespell
