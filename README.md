@@ -448,9 +448,7 @@ implementation of the standard connection classes available in the `Predis\Conne
 ### Reporting bugs and contributing code ###
 
 Contributions to Predis are highly appreciated either in the form of pull requests for new features,
-bug fixes, or just bug reports. We only ask you to adhere to a [basic set of rules](CONTRIBUTING.md)
-before submitting your changes or filing bugs on the issue tracker to make it easier for everyone to
-stay consistent while working on the project.
+bug fixes, or just bug reports. We only ask you to adhere to issue and pull request templates.
 
 
 ### Test suite ###
