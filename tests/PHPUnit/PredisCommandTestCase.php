@@ -79,7 +79,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance with the specified arguments.
      *
-     * @param ... List of arguments for the command
+     * @param mixed ...$arguments List of arguments for the command
      *
      * @return CommandInterface
      */

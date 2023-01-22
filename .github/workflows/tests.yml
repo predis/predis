@@ -64,7 +64,7 @@ jobs:
 
       - name: Run PHPUnit tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter src
+        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src
 
       - name: Send coverage to Coveralls
         env:
