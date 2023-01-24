@@ -18,6 +18,13 @@ use Predis\Command\Traits\Get\Get;
 use Predis\Command\Traits\Limit\LimitObject;
 use Predis\Command\Traits\Sorting;
 
+/**
+ * @see https://redis.io/commands/sort_ro/
+ *
+ * Read-only variant of the SORT command.
+ * It is exactly like the original SORT but refuses the STORE option
+ * and can safely be used in read-only replicas.
+ */
 class SORT_RO extends RedisCommand
 {
     use ByArgument {
