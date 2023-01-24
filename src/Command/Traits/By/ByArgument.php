@@ -27,6 +27,7 @@ trait ByArgument
 
         if (static::$byArgumentPositionOffset >= $argumentsLength || null === $arguments[static::$byArgumentPositionOffset]) {
             parent::setArguments($arguments);
+
             return;
         }
 
