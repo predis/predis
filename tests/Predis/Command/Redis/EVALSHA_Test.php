@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class EVALSHA_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar');
-        $expected = array('9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar');
+        $arguments = ['9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar'];
+        $expected = ['9d0c0826bde023cc39eebaaf832c32a890f3b088', 1, 'foo', 'bar'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -60,7 +61,7 @@ class EVALSHA_Test extends PredisCommandTestCase
      */
     public function testGetScriptHash(): void
     {
-        $command = $this->getCommandWithArgumentsArray(array($sha1 = sha1('return true')), 0);
+        $command = $this->getCommandWithArgumentsArray([$sha1 = sha1('return true')]);
         $this->assertSame($sha1, $command->getScriptHash());
     }
 
@@ -74,7 +75,7 @@ class EVALSHA_Test extends PredisCommandTestCase
 
         $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
         $sha1 = sha1($lua);
-        $result = array('foo', 'hoge', 'bar', 'piyo');
+        $result = ['foo', 'hoge', 'bar', 'piyo'];
 
         $this->assertSame($result, $redis->eval($lua, 2, 'foo', 'hoge', 'bar', 'piyo'));
         $this->assertSame($result, $redis->evalsha($sha1, 2, 'foo', 'hoge', 'bar', 'piyo'));

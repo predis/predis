@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,14 +12,13 @@
 
 namespace Predis\Command\Processor;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\PrefixableCommandInterface;
 
 /**
  * Command processor capable of prefixing keys stored in the arguments of Redis
  * commands supported.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class KeyPrefixProcessor implements ProcessorInterface
 {
@@ -227,7 +227,7 @@ class KeyPrefixProcessor implements ProcessorInterface
      * @param string $commandID The ID of the command to be handled.
      * @param mixed  $callback  A valid callable object or NULL.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -240,7 +240,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Callback must be a valid callable object or NULL'
             );
         }
@@ -370,7 +370,7 @@ class KeyPrefixProcessor implements ProcessorInterface
                             }
                             break;
 
-                        case 'LIMIT';
+                        case 'LIMIT':
                             $i += 2;
                             break;
                     }
@@ -451,7 +451,6 @@ class KeyPrefixProcessor implements ProcessorInterface
                         case 'STOREDIST':
                             $arguments[$i] = "$prefix{$arguments[++$i]}";
                             break;
-
                     }
                 }
             }

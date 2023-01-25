@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\With;
 
 use Predis\Command\Command as RedisCommand;
@@ -14,7 +24,7 @@ class WithCoordTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use WithCoord;
 
             public static $withCoordArgumentPositionOffset = 0;
@@ -28,9 +38,9 @@ class WithCoordTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -50,7 +60,7 @@ class WithCoordTest extends PredisTestCase
         $this->testClass::$withCoordArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong WITHCOORD argument type");
+        $this->expectExceptionMessage('Wrong WITHCOORD argument type');
 
         $this->testClass->setArguments(['test']);
     }
@@ -61,22 +71,22 @@ class WithCoordTest extends PredisTestCase
             'WITHCOORD false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'WITHCOORD argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['WITHCOORD', 'second argument', 'third argument']
+                ['WITHCOORD', 'second argument', 'third argument'],
             ],
             'WITHCOORD argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'WITHCOORD']
+                ['first argument', 'second argument', 'WITHCOORD'],
             ],
             'WITHCOORD argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'WITHCOORD', 'third argument']
+                ['first argument', 'WITHCOORD', 'third argument'],
             ],
         ];
     }

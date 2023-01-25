@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class PEXPIRE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 100);
-        $expected = array('key', 100);
+        $arguments = ['key', 100];
+        $expected = ['key', 100];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -87,25 +88,25 @@ class PEXPIRE_Test extends PredisCommandTestCase
         $this->assertSame(0, $redis->exists('foo'));
     }
 
-     /**
-      * @medium
-      * @group connected
-      * @requiresRedisVersion >= 2.6.0
-      * @group slow
-      */
-     public function testConsistencyWithTTL(): void
-     {
-         $ttl = 1000;
-         $redis = $this->getClient();
+    /**
+     * @medium
+     * @group connected
+     * @requiresRedisVersion >= 2.6.0
+     * @group slow
+     */
+    public function testConsistencyWithTTL(): void
+    {
+        $ttl = 1000;
+        $redis = $this->getClient();
 
-         $this->assertEquals('OK', $redis->set('foo', 'bar'));
-         $this->assertSame(1, $redis->pexpire('foo', $ttl));
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
+        $this->assertSame(1, $redis->pexpire('foo', $ttl));
 
-         $this->sleep(0.5);
-         $this->assertThat($redis->pttl('foo'), $this->logicalAnd(
+        $this->sleep(0.5);
+        $this->assertThat($redis->pttl('foo'), $this->logicalAnd(
             $this->lessThanOrEqual($ttl), $this->greaterThan($ttl - 800)
         ));
-     }
+    }
 
     /**
      * @group connected

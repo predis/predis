@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('member1', 'member2', 'member3');
-        $expected = array('member1', 'member2', 'member3');
+        $raw = ['member1', 'member2', 'member3'];
+        $expected = ['member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
 
@@ -69,8 +70,8 @@ class SMEMBERS_Test extends PredisCommandTestCase
 
         $redis->sadd('letters', 'a', 'b', 'c', 'd', 'e');
 
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e'), $redis->smembers('letters'));
-        $this->assertSame(array(), $redis->smembers('digits'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e'], $redis->smembers('letters'));
+        $this->assertSame([], $redis->smembers('digits'));
     }
 
     /**

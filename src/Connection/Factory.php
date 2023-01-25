@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,25 +12,26 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\RawCommand;
+use ReflectionClass;
+use UnexpectedValueException;
 
 /**
  * Standard connection factory for creating connections to Redis nodes.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Factory implements FactoryInterface
 {
-    private $defaults = array();
+    private $defaults = [];
 
-    protected $schemes = array(
+    protected $schemes = [
         'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
         'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
         'rediss' => 'Predis\Connection\StreamConnection',
         'http' => 'Predis\Connection\WebdisConnection',
-    );
+    ];
 
     /**
      * Checks if the provided argument represents a valid connection class
@@ -38,9 +40,8 @@ class Factory implements FactoryInterface
      *
      * @param mixed $initializer FQN of a connection class or a callable for lazy initialization.
      *
-     * @throws \InvalidArgumentException
-     *
      * @return mixed
+     * @throws InvalidArgumentException
      */
     protected function checkInitializer($initializer)
     {
@@ -48,10 +49,10 @@ class Factory implements FactoryInterface
             return $initializer;
         }
 
-        $class = new \ReflectionClass($initializer);
+        $class = new ReflectionClass($initializer);
 
         if (!$class->isSubclassOf('Predis\Connection\NodeConnectionInterface')) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'A connection initializer must be a valid connection class or a callable object.'
             );
         }
@@ -87,7 +88,7 @@ class Factory implements FactoryInterface
         $scheme = $parameters->scheme;
 
         if (!isset($this->schemes[$scheme])) {
-            throw new \InvalidArgumentException("Unknown connection scheme: '$scheme'.");
+            throw new InvalidArgumentException("Unknown connection scheme: '$scheme'.");
         }
 
         $initializer = $this->schemes[$scheme];
@@ -100,8 +101,8 @@ class Factory implements FactoryInterface
         }
 
         if (!$connection instanceof NodeConnectionInterface) {
-            throw new \UnexpectedValueException(
-                'Objects returned by connection initializers must implement '.
+            throw new UnexpectedValueException(
+                'Objects returned by connection initializers must implement ' .
                 "'Predis\Connection\NodeConnectionInterface'."
             );
         }
@@ -144,7 +145,7 @@ class Factory implements FactoryInterface
         if (is_string($parameters)) {
             $parameters = Parameters::parse($parameters);
         } else {
-            $parameters = $parameters ?: array();
+            $parameters = $parameters ?: [];
         }
 
         if ($this->defaults) {
@@ -165,8 +166,8 @@ class Factory implements FactoryInterface
 
         if (isset($parameters->password) && strlen($parameters->password)) {
             $cmdAuthArgs = isset($parameters->username) && strlen($parameters->username)
-                ? array($parameters->username, $parameters->password)
-                : array($parameters->password);
+                ? [$parameters->username, $parameters->password]
+                : [$parameters->password];
 
             $connection->addConnectCommand(
                 new RawCommand('AUTH', $cmdAuthArgs)
@@ -175,7 +176,7 @@ class Factory implements FactoryInterface
 
         if (isset($parameters->database) && strlen($parameters->database)) {
             $connection->addConnectCommand(
-                new RawCommand('SELECT', array($parameters->database))
+                new RawCommand('SELECT', [$parameters->database])
             );
         }
     }
