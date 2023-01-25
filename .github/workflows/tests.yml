@@ -6,13 +6,10 @@ on:
       - main
       - v2.**
   pull_request:
-<<<<<<< HEAD
-=======
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
->>>>>>> 0a8e0c2f96ba234925f855ae6720fdc2e2687edf
 
 jobs:
 
@@ -31,18 +28,10 @@ jobs:
           - '8.1'
           - '8.2'
         redis:
-<<<<<<< HEAD
           - 3
           - 4
           - 5
           - 6
-=======
-          - '3'
-          - '4'
-          - '5'
-          - '6'
-          - '7'
->>>>>>> 0a8e0c2f96ba234925f855ae6720fdc2e2687edf
 
     services:
       redis:
