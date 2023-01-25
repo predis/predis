@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,8 +12,8 @@
 
 namespace Predis\PubSub;
 
-use PredisTestCase;
 use Predis\Client;
+use PredisTestCase;
 
 /**
  * @group realm-pubsub
@@ -43,13 +44,13 @@ class DispatcherLoopTest extends PredisTestCase
             'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
         );
 
-        $parameters = array(
+        $parameters = [
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from hanging on broken test
             'read_write_timeout' => 2,
-        );
+        ];
 
         $producer = new Client($parameters);
         $producer->connect();
@@ -61,7 +62,7 @@ class DispatcherLoopTest extends PredisTestCase
         $dispatcher = new DispatcherLoop($pubsub);
 
         $function01 = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $function01
             ->expects($this->exactly(2))
@@ -77,7 +78,7 @@ class DispatcherLoopTest extends PredisTestCase
             });
 
         $function02 = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $function02
             ->expects($this->once())
@@ -85,7 +86,7 @@ class DispatcherLoopTest extends PredisTestCase
             ->with('02:argument');
 
         $function03 = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $function03
             ->expects($this->never())
@@ -114,27 +115,27 @@ class DispatcherLoopTest extends PredisTestCase
             'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
         );
 
-        $parameters = array(
+        $parameters = [
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
-        );
+        ];
 
         $producerNonPfx = new Client($parameters);
         $producerNonPfx->connect();
 
-        $producerPfx = new Client($parameters, array('prefix' => 'foobar'));
+        $producerPfx = new Client($parameters, ['prefix' => 'foobar']);
         $producerPfx->connect();
 
-        $consumer = new Client($parameters, array('prefix' => 'foobar'));
+        $consumer = new Client($parameters, ['prefix' => 'foobar']);
 
         $pubsub = new Consumer($consumer);
         $dispatcher = new DispatcherLoop($pubsub);
 
         $callback = $this->getMockBuilder('stdClass')
-            ->addMethods(array('__invoke'))
+            ->addMethods(['__invoke'])
             ->getMock();
         $callback
             ->expects($this->exactly(1))

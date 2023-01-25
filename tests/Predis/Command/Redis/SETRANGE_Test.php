@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SETRANGE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 5, 'range');
-        $expected = array('key', 5, 'range');
+        $arguments = ['key', 5, 'range'];
+        $expected = ['key', 5, 'range'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -97,7 +98,7 @@ class SETRANGE_Test extends PredisCommandTestCase
 
         $this->assertSame(4, $redis->setrange('key:binary', 0, pack('i', -2147483648)));
 
-        list($unpacked) = array_values(unpack('i', $redis->get('key:binary')));
+        [$unpacked] = array_values(unpack('i', $redis->get('key:binary')));
         $this->assertEquals(-2147483648, $unpacked);
     }
 

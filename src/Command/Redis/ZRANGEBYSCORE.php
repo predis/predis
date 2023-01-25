@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,9 +13,7 @@
 namespace Predis\Command\Redis;
 
 /**
- * @link http://redis.io/commands/zrangebyscore
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/zrangebyscore
  */
 class ZRANGEBYSCORE extends ZRANGE
 {
@@ -32,14 +31,14 @@ class ZRANGEBYSCORE extends ZRANGE
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
-        $finalizedOpts = array();
+        $finalizedOpts = [];
 
         if (isset($opts['LIMIT']) && is_array($opts['LIMIT'])) {
             $limit = array_change_key_case($opts['LIMIT'], CASE_UPPER);
 
             $finalizedOpts[] = 'LIMIT';
-            $finalizedOpts[] = isset($limit['OFFSET']) ? $limit['OFFSET'] : $limit[0];
-            $finalizedOpts[] = isset($limit['COUNT']) ? $limit['COUNT'] : $limit[1];
+            $finalizedOpts[] = $limit['OFFSET'] ?? $limit[0];
+            $finalizedOpts[] = $limit['COUNT'] ?? $limit[1];
         }
 
         return array_merge($finalizedOpts, parent::prepareOptions($options));
