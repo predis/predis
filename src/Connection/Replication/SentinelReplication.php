@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
@@ -38,12 +40,12 @@ class SentinelReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $slaves = array();
+    protected $slaves = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $pool = array();
+    protected $pool = [];
 
     /**
      * @var NodeConnectionInterface
@@ -68,7 +70,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $sentinels = array();
+    protected $sentinels = [];
 
     /**
      * @var int
@@ -89,7 +91,7 @@ class SentinelReplication implements ReplicationInterface
      * Max number of automatic retries of commands upon server failure.
      *
      * -1 = unlimited retry attempts
-     *  0 = no retry attempts (fails immediatly)
+     *  0 = no retry attempts (fails immediately)
      *  n = fail only after n retry attempts
      *
      * @var int
@@ -146,7 +148,7 @@ class SentinelReplication implements ReplicationInterface
      * Sets the maximum number of retries for commands upon server failure.
      *
      * -1 = unlimited retry attempts
-     *  0 = no retry attempts (fails immediatly)
+     *  0 = no retry attempts (fails immediately)
      *  n = fail only after n retry attempts
      *
      * @param int $retry Number of retry attempts.
@@ -193,8 +195,8 @@ class SentinelReplication implements ReplicationInterface
         $this->reset();
 
         $this->master = null;
-        $this->slaves = array();
-        $this->pool = array();
+        $this->slaves = [];
+        $this->pool = [];
     }
 
     /**
@@ -203,8 +205,9 @@ class SentinelReplication implements ReplicationInterface
     public function add(NodeConnectionInterface $connection)
     {
         $parameters = $connection->getParameters();
+        $role = $parameters->role;
 
-        if ('master' === $role = $parameters->role) {
+        if ('master' === $role) {
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
@@ -271,7 +274,7 @@ class SentinelReplication implements ReplicationInterface
 
             // don't leak password from between configurations
             // https://github.com/predis/predis/pull/807/#discussion_r985764770
-            if (! isset($parameters['password'])) {
+            if (!isset($parameters['password'])) {
                 $parameters['password'] = null;
             }
 
@@ -319,17 +322,17 @@ class SentinelReplication implements ReplicationInterface
                     RawCommand::create('SENTINEL', 'sentinels', $this->service)
                 );
 
-                $this->sentinels = array();
+                $this->sentinels = [];
                 $this->sentinelIndex = 0;
                 // NOTE: sentinel server does not return itself, so we add it back.
                 $this->sentinels[] = $sentinel->getParameters()->toArray();
 
                 foreach ($payload as $sentinel) {
-                    $this->sentinels[] = array(
+                    $this->sentinels[] = [
                         'host' => $sentinel[3],
                         'port' => $sentinel[5],
                         'role' => 'sentinel',
-                    );
+                    ];
                 }
             } catch (ConnectionException $exception) {
                 $this->sentinelConnection = null;
@@ -388,11 +391,11 @@ class SentinelReplication implements ReplicationInterface
             $this->handleSentinelErrorResponse($sentinel, $payload);
         }
 
-        return array(
+        return [
             'host' => $payload[0],
             'port' => $payload[1],
             'role' => 'master',
-        );
+        ];
     }
 
     /**
@@ -405,7 +408,7 @@ class SentinelReplication implements ReplicationInterface
      */
     protected function querySentinelForSlaves(NodeConnectionInterface $sentinel, $service)
     {
-        $slaves = array();
+        $slaves = [];
 
         $payload = $sentinel->executeCommand(
             RawCommand::create('SENTINEL', 'slaves', $service)
@@ -418,15 +421,15 @@ class SentinelReplication implements ReplicationInterface
         foreach ($payload as $slave) {
             $flags = explode(',', $slave[9]);
 
-            if (array_intersect($flags, array('s_down', 'o_down', 'disconnected'))) {
+            if (array_intersect($flags, ['s_down', 'o_down', 'disconnected'])) {
                 continue;
             }
 
-            $slaves[] = array(
+            $slaves[] = [
                 'host' => $slave[3],
                 'port' => $slave[5],
                 'role' => 'slave',
-            );
+            ];
         }
 
         return $slaves;
@@ -589,9 +592,7 @@ class SentinelReplication implements ReplicationInterface
      */
     public function getConnectionById($id)
     {
-        if (isset($this->pool[$id])) {
-            return $this->pool[$id];
-        }
+        return $this->pool[$id] ?? null;
     }
 
     /**
@@ -609,6 +610,8 @@ class SentinelReplication implements ReplicationInterface
             return $this->pickSlave();
         } elseif ($role === 'sentinel') {
             return $this->getSentinelConnection();
+        } else {
+            return null;
         }
     }
 
@@ -627,7 +630,7 @@ class SentinelReplication implements ReplicationInterface
         }
 
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $connection->connect();
@@ -702,21 +705,21 @@ class SentinelReplication implements ReplicationInterface
     {
         $retries = 0;
 
-        SENTINEL_RETRY: {
+        while ($retries <= $this->retryLimit) {
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
+                break;
             } catch (CommunicationException $exception) {
                 $this->wipeServerList();
                 $exception->getConnection()->disconnect();
 
-                if ($retries == $this->retryLimit) {
+                if ($retries === $this->retryLimit) {
                     throw $exception;
                 }
 
                 usleep($this->retryWait * 1000);
 
                 ++$retries;
-                goto SENTINEL_RETRY;
             }
         }
 
@@ -762,8 +765,8 @@ class SentinelReplication implements ReplicationInterface
      */
     public function __sleep()
     {
-        return array(
+        return [
             'master', 'slaves', 'pool', 'service', 'sentinels', 'connectionFactory', 'strategy',
-        );
+        ];
     }
 }

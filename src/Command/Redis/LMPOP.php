@@ -1,10 +1,20 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Count;
-use \Predis\Command\Traits\Keys;
+use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\LeftRight;
 
 class LMPOP extends RedisCommand
@@ -42,10 +52,10 @@ class LMPOP extends RedisCommand
 
     public function parseResponse($data)
     {
-        if (null !== $data) {
-            return [$data[0] => $data[1]];
+        if (null === $data) {
+            return null;
         }
 
-        return null;
+        return [$data[0] => $data[1]];
     }
 }

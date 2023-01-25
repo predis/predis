@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class LPOP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +67,7 @@ class LPOP_Test extends PredisCommandTestCase
 
         $this->assertSame('a', $redis->lpop('letters'));
         $this->assertSame('b', $redis->lpop('letters'));
-        $this->assertSame(array('c', 'd'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['c', 'd'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -103,8 +104,8 @@ class LPOP_Test extends PredisCommandTestCase
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f');
 
-        $this->assertSame(array('a', 'b'), $redis->lpop('letters', 2));
-        $this->assertSame(array('c', 'd'), $redis->lpop('letters', 2));
-        $this->assertSame(array('e', 'f'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b'], $redis->lpop('letters', 2));
+        $this->assertSame(['c', 'd'], $redis->lpop('letters', 2));
+        $this->assertSame(['e', 'f'], $redis->lrange('letters', 0, -1));
     }
 }

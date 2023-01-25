@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -74,7 +75,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Ensures that two Redis commands are similar.
      *
-     * This method supports can test for different contraints by accepting a few
+     * This method supports can test for different constraints by accepting a few
      * combinations of values as indicated below:
      *
      * - a string identifying a Redis command by its ID
@@ -90,7 +91,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function assertRedisCommand($expected, $actual, string $message = ''): void
     {
         if (is_array($expected)) {
-            @list($command, $arguments) = $expected;
+            @[$command, $arguments] = $expected;
         } else {
             $command = $expected;
             $arguments = null;
@@ -114,9 +115,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Asserts that actual value is one of the values from expected array.
      *
-     * @param mixed $expected Expected array.
-     * @param mixed $actual  Actual value. If array given searching for any matching value between two arrays.
-     * @param string $message Optional assertion message
+     * @param  mixed  $expected Expected array.
+     * @param  mixed  $actual   Actual value. If array given searching for any matching value between two arrays.
+     * @param  string $message  Optional assertion message
      * @return void
      */
     public function assertOneOf(array $expected, $actual, string $message = ''): void
@@ -146,12 +147,12 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultParametersArray(): array
     {
-        return array(
+        return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
-        );
+        ];
     }
 
     /**
@@ -161,11 +162,11 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultOptionsArray(): array
     {
-        return array(
+        return [
             'commands' => new Command\RedisFactory(
                 new Command\Resolver\CommandResolver()
             ),
-        );
+        ];
     }
 
     /**
@@ -189,7 +190,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Connection\ParametersInterface
      */
-    protected function getParameters($additional = array()): Connection\ParametersInterface
+    protected function getParameters($additional = []): Connection\ParametersInterface
     {
         $parameters = array_merge($this->getDefaultParametersArray(), $additional);
         $parameters = new Connection\Parameters($parameters);
@@ -223,14 +224,14 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
-            $parameters ?: array()
+            $parameters ?: []
         );
 
         $options = array_merge(
-            array(
+            [
                 'commands' => $this->getCommandFactory(),
-            ),
-            $options ?: array()
+            ],
+            $options ?: []
         );
 
         $client = new Client($parameters, $options);
@@ -309,9 +310,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns the server version of the Redis instance used by the test suite.
      *
-     * @throws RuntimeException When the client cannot retrieve the current server version
-     *
      * @return string
+     * @throws RuntimeException When the client cannot retrieve the current server version
      */
     protected function getRedisServerVersion(): string
     {
@@ -381,9 +381,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function isRedisServerVersion(string $operator, string $version): bool
     {
         $serverVersion = $this->getRedisServerVersion();
-        $comparation = version_compare($serverVersion, $version);
+        $comparison = version_compare($serverVersion, $version);
 
-        return (bool) eval("return $comparation $operator 0;");
+        return (bool) eval("return $comparison $operator 0;");
     }
 
     /**
@@ -423,7 +423,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Ensures the current Redis JSON module matches version requirements for tests.
      *
-     * @param string $module
+     * @param  string $module
      * @return void
      */
     protected function checkRequiredRedisModuleVersion(string $module): void
@@ -434,7 +434,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
         if (version_compare($this->getRedisServerVersion(), '6.0.0', '<')) {
             $this->markTestSkipped(
-                "Test skipped because Redis JSON module available since Redis 6.x"
+                'Test skipped because Redis JSON module available since Redis 6.x'
             );
         }
 
@@ -457,8 +457,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param string $versionToCheck
-     * @param string $module
+     * @param  string $versionToCheck
+     * @param  string $module
      * @return bool
      */
     protected function isSatisfiedRedisModuleVersion(string $versionToCheck, string $module): bool
@@ -466,13 +466,13 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         $currentVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
         $versionToCheck = str_replace('.', '0', $versionToCheck);
 
-        return $currentVersion >= (int)$versionToCheck;
+        return $currentVersion >= (int) $versionToCheck;
     }
 
     /**
      * Returns version of Redis JSON module if it's available.
      *
-     * @param string $module
+     * @param  string $module
      * @return string
      */
     protected function getRedisModuleVersion(string $module): string
@@ -487,6 +487,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
         if (isset($info['modules'][$module]['ver'])) {
             $this->redisJsonVersion = $info['modules'][$module]['ver'];
+
             return $info['modules'][$module]['ver'];
         }
 
@@ -496,9 +497,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Returns version of given module for current Redis instance.
      * Runs if command belong to one of modules and marked with appropriate annotation
-     * Runs on @connected tests
+     * Runs on @connected tests.
      *
-     * @param string $module
+     * @param  string $module
      * @return string
      */
     protected function getRequiredModuleVersion(string $module): ?string

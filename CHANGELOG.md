@@ -1,5 +1,11 @@
 ## Changelog
 
+## v2.1.1 (2023-01-17)
+
+## Bug Fixes
+- Fix `@template` in `Predis\Client` (#1017)
+- Fix support options array in `ZINTERSTORE` and `ZUNIONSTORE` (#1018)
+
 ## v2.1.0 (2023-01-16)
 
 ## New Features
@@ -63,7 +69,7 @@
   - `cluster`: string value (`predis`, `redis`), callable returning an aggregate
     connection.
   - `replication`: string value (`predis`, `sentinel`), callable returning an
-     aggregate connection.
+    aggregate connection.
   - `commands`: command factory, named array mapping command IDs to PHP classes,
     callable returning a command factory or a named array.
   - `connections`: connection factory, callable object returning a connection
@@ -76,7 +82,7 @@
   acting as initializer instead of an aggregate connection instance.
 
 - The `connections` client option now accepts certain string values identifying
-  certain combinations of configurations for the connection factory. Currenlty
+  certain combinations of configurations for the connection factory. Currently
   this is used to provide a short way to configure Predis to load our phpiredis
   based connection backends simply, accepted values are:
 
@@ -101,7 +107,7 @@
   supported by the redis-sentinel backend due to its dynamic nature (connections
   are retrieved and initialized at runtime from sentinels) but it is possible to
   get a single connection from the pool by using its ID. It is also possible to
-  retrive a connection by role using the method getConnectionByRole().
+  retrieve a connection by role using the method getConnectionByRole().
 
 - The concept of connection ID (ip:port pair) and connection alias (the `alias`
   parameter) in `Predis\Connection\Cluster\PredisCluster` has been separated.
@@ -161,7 +167,7 @@
 
 - Support Pub/Sub and Pipelines when using replication
 
-- The class `Predis\Transaction\AbortedMultiExecException` now uses the correct 
+- The class `Predis\Transaction\AbortedMultiExecException` now uses the correct
   default types for the `$code` (integer) parameter.
 
 - __FIX__: using `strval` in `getScanOptions()` method, part of
@@ -169,7 +175,7 @@
   string value of `$this->match` and not passing `null` to `strlen()` function.
 
 - __FIX__: the value returned from `getArgument()` in `isReadOperation()` method,
-  part of `Predis\Replication\ReplicationStrategy` class, is checked to not pass 
+  part of `Predis\Replication\ReplicationStrategy` class, is checked to not pass
   `null` to `sha1` function.
 
 - __FIX__: the value returned from `getArgument()` in `parseResponse()`method,

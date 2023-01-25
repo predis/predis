@@ -1,9 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class LeftRightTest extends PredisTestCase
@@ -12,7 +22,7 @@ class LeftRightTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use LeftRight;
 
             public static $leftRightArgumentPositionOffset = 0;
@@ -26,9 +36,9 @@ class LeftRightTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -42,7 +52,7 @@ class LeftRightTest extends PredisTestCase
 
     /**
      * @dataProvider unexpectedValuesProvider
-     * @param array $actualArguments
+     * @param  array $actualArguments
      * @return void
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(array $actualArguments): void
@@ -60,23 +70,23 @@ class LeftRightTest extends PredisTestCase
             'left/right argument first and there is arguments after' => [
                 0,
                 ['left', 'second argument', 'third argument'],
-                ['LEFT', 'second argument', 'third argument']
+                ['LEFT', 'second argument', 'third argument'],
             ],
             'left/right argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', 'right'],
-                ['first argument', 'second argument', 'RIGHT']
+                ['first argument', 'second argument', 'RIGHT'],
             ],
             'left/right argument not the first and not the last' => [
                 1,
                 ['first argument', 'left', 'third argument'],
-                ['first argument', 'LEFT','third argument']
+                ['first argument', 'LEFT', 'third argument'],
             ],
             'aggregate argument the only argument' => [
                 0,
                 ['right'],
-                ['RIGHT']
-            ]
+                ['RIGHT'],
+            ],
         ];
     }
 

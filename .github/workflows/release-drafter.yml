@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   update_release_draft:
@@ -16,6 +20,6 @@ jobs:
 
       - uses: release-drafter/release-drafter@v5
         with:
-           config-name: release-drafter-config.yml
+          config-name: release-drafter-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis supports master / slave replication scenarios where write operations
 // are performed on the master server and read operations are executed against
@@ -21,12 +22,12 @@ require __DIR__.'/shared.php';
 // slave of the first one (see the "SLAVEOF" command).
 //
 
-$parameters = array(
+$parameters = [
     'tcp://127.0.0.1:6381?role=master&database=15',
     'tcp://127.0.0.1:6382?role=slave&database=15',
-);
+];
 
-$options = array('replication' => 'predis');
+$options = ['replication' => 'predis'];
 
 $client = new Predis\Client($parameters, $options);
 
