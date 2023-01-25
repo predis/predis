@@ -1,9 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\Json;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class SpaceTest extends PredisTestCase
@@ -12,7 +22,7 @@ class SpaceTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Space;
 
             public static $spaceArgumentPositionOffset = 0;
@@ -26,9 +36,9 @@ class SpaceTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedResponse
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(
@@ -49,7 +59,7 @@ class SpaceTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValueGiven(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Space argument value should be a string");
+        $this->expectExceptionMessage('Space argument value should be a string');
 
         $this->testClass->setArguments([1]);
     }
@@ -65,7 +75,7 @@ class SpaceTest extends PredisTestCase
             'with default value' => [
                 0,
                 [''],
-                [false]
+                [false],
             ],
             'with correct argument' => [
                 0,

@@ -12,7 +12,6 @@
 
 namespace Predis\Command;
 
-use Predis\ClientConfiguration;
 use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
 use Predis\Command\Resolver\CommandResolver;
