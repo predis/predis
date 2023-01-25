@@ -20,6 +20,7 @@ class ClientConfiguration
     private static $config = [
         'modules' => [
             ['name' => 'Json', 'commandPrefix' => 'JSON'],
+            ['name' => 'BloomFilter', 'commandPrefix' => 'BF'],
         ],
     ];
 
