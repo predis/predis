@@ -23,6 +23,21 @@ use Predis\Connection;
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion = null;
+    protected $redisJsonVersion;
+
+    /**
+     * @var string[]
+     */
+    private $modulesMapping = [
+        'json' => ['annotation' => 'requiresRedisJsonVersion', 'name' => 'ReJSON'],
+    ];
+
+    /**
+     * Info of current Redis instance.
+     *
+     * @var array
+     */
+    private $info;
 
     /**
      * {@inheritdoc}
@@ -30,6 +45,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->checkRequiredRedisServerVersion();
+        $this->checkRequiredRedisModuleVersion('json');
     }
 
     /**
@@ -147,7 +163,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultOptionsArray(): array
     {
         return [
-            'commands' => new Command\RedisFactory(),
+            'commands' => new Command\RedisFactory(
+                new Command\Resolver\CommandResolver()
+            ),
         ];
     }
 
@@ -187,7 +205,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getCommandFactory(): Command\Factory
     {
-        return new Command\RedisFactory();
+        return new Command\RedisFactory(new Command\Resolver\CommandResolver());
     }
 
     /**
@@ -301,8 +319,13 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             return $this->redisServerVersion;
         }
 
-        $client = $this->createClient(null, null, true);
-        $info = array_change_key_case($client->info());
+        if (isset($this->info)) {
+            $info = $this->info;
+        } else {
+            $client = $this->createClient(null, null, true);
+            $info = array_change_key_case($client->info());
+            $this->info = $info;
+        }
 
         if (isset($info['server']['redis_version'])) {
             // Redis >= 2.6
@@ -311,6 +334,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             // Redis < 2.6
             $version = $info['redis_version'];
         } else {
+            $client = $this->createClient(null, null, true);
             $connection = $client->getConnection();
             throw new RuntimeException("Unable to retrieve a valid server info payload from $connection");
         }
@@ -394,6 +418,110 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
                 "Test requires a Redis server instance $reqOperator $reqVersion but target server is $serverVersion"
             );
         }
+    }
+
+    /**
+     * Ensures the current Redis JSON module matches version requirements for tests.
+     *
+     * @param  string $module
+     * @return void
+     */
+    protected function checkRequiredRedisModuleVersion(string $module): void
+    {
+        if (null === $requiredVersion = $this->getRequiredModuleVersion($module)) {
+            return;
+        }
+
+        if (version_compare($this->getRedisServerVersion(), '6.0.0', '<')) {
+            $this->markTestSkipped(
+                'Test skipped because Redis JSON module available since Redis 6.x'
+            );
+        }
+
+        $requiredVersion = explode(' ', $requiredVersion, 2);
+
+        if (count($requiredVersion) === 1) {
+            $reqVersion = $requiredVersion[0];
+        } else {
+            $reqVersion = $requiredVersion[1];
+        }
+
+        if (!$this->isSatisfiedRedisModuleVersion($reqVersion, $module)) {
+            $redisModuleVersion = $this->getRedisModuleVersion($module);
+            $module = strtoupper($module);
+
+            $this->markTestSkipped(
+                "Test requires a Redis $module module >= $reqVersion but target module is $redisModuleVersion"
+            );
+        }
+    }
+
+    /**
+     * @param  string $versionToCheck
+     * @param  string $module
+     * @return bool
+     */
+    protected function isSatisfiedRedisModuleVersion(string $versionToCheck, string $module): bool
+    {
+        $currentVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
+        $versionToCheck = str_replace('.', '0', $versionToCheck);
+
+        return $currentVersion >= (int) $versionToCheck;
+    }
+
+    /**
+     * Returns version of Redis JSON module if it's available.
+     *
+     * @param  string $module
+     * @return string
+     */
+    protected function getRedisModuleVersion(string $module): string
+    {
+        if (isset($this->info)) {
+            $info = $this->info;
+        } else {
+            $client = $this->createClient(null, null, true);
+            $info = array_change_key_case($client->info());
+            $this->info = $info;
+        }
+
+        if (isset($info['modules'][$module]['ver'])) {
+            $this->redisJsonVersion = $info['modules'][$module]['ver'];
+
+            return $info['modules'][$module]['ver'];
+        }
+
+        return '0';
+    }
+
+    /**
+     * Returns version of given module for current Redis instance.
+     * Runs if command belong to one of modules and marked with appropriate annotation
+     * Runs on @connected tests.
+     *
+     * @param  string $module
+     * @return string
+     */
+    protected function getRequiredModuleVersion(string $module): ?string
+    {
+        if (!isset($this->modulesMapping[$module])) {
+            throw new InvalidArgumentException('No existing annotation for given module');
+        }
+
+        $moduleAnnotation = $this->modulesMapping[$module]['annotation'];
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group']) &&
+            !empty($annotations['method'][$moduleAnnotation]) &&
+            in_array('connected', $annotations['method']['group'], true)
+        ) {
+            return $annotations['method'][$moduleAnnotation][0];
+        }
+
+        return null;
     }
 
     /**
