@@ -61,6 +61,8 @@ use Predis\Response\Status;
  * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
+ * @method int               cfadd(string $key, $item)
+ * @method int               cfexists(string $key, $item)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
