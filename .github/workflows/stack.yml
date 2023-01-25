@@ -40,7 +40,7 @@ jobs:
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}      
+          php-version: ${{ matrix.php }}
 
       - name: Get Composer cache directory
         id: composer-cache
