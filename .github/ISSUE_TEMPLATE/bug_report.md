@@ -19,10 +19,10 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Versions (please complete the following information):**
- - Predis: [e.g. 1.1.2]
- - PHP [e.g. 8.0.0]
- - Redis Server [e.g. 6.0.0]
- - OS [e.g. Ubuntu 20.10]
+- Predis: [e.g. 1.1.2]
+- PHP [e.g. 8.0.0]
+- Redis Server [e.g. 6.0.0]
+- OS [e.g. Ubuntu 20.10]
 
 **Code sample**
 If applicable, a small snippet of code that reproduces the issue.

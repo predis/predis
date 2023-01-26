@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This is a basic example on how to use the Predis\DispatcherLoop class.
 //
@@ -23,7 +24,7 @@ require __DIR__.'/shared.php';
 // PUBLISH control terminate_dispatcher
 
 // Create a client and disable r/w timeout on the socket
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Return an initialized PubSub consumer instance from the client.
 $pubsub = $client->pubSubLoop();
@@ -38,7 +39,7 @@ class EventsListener implements Countable
 
     public function __construct()
     {
-        $this->events = array();
+        $this->events = [];
     }
 
     public function count()
@@ -58,7 +59,7 @@ class EventsListener implements Countable
 }
 
 // Attach our callable class to the dispatcher.
-$dispatcher->attachCallback('events', ($events = new EventsListener()));
+$dispatcher->attachCallback('events', $events = new EventsListener());
 
 // Attach a function to control the dispatcher loop termination with a message.
 $dispatcher->attachCallback('control', function ($payload, $dispatcher) {

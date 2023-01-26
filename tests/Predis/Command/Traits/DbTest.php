@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
 use Predis\Command\Command as RedisCommand;
@@ -14,7 +24,7 @@ class DbTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use DB;
 
             public static $dbArgumentPositionOffset = 0;
@@ -28,9 +38,9 @@ class DbTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $arguments
-     * @param array $expectedResponse
+     * @param  int   $offset
+     * @param  array $arguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $arguments, array $expectedResponse): void
@@ -61,18 +71,18 @@ class DbTest extends PredisTestCase
             'with positive integer db argument' => [
                 0,
                 [1],
-                ['DB', 1]
+                ['DB', 1],
             ],
             'with wrong offset' => [
                 1,
                 [1],
-                [1]
+                [1],
             ],
             'with negative integer db argument' => [
                 1,
                 ['argument1', -1],
-                ['argument1']
-            ]
+                ['argument1'],
+            ],
         ];
     }
 }

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,12 +12,10 @@
 
 namespace Predis;
 
-use PredisTestCase;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
-/**
- *
- */
 class CommunicationExceptionTest extends PredisTestCase
 {
     /**
@@ -92,8 +91,8 @@ class CommunicationExceptionTest extends PredisTestCase
 
         /** @var CommunicationException|MockObject */
         $exception = $this->getMockBuilder('Predis\CommunicationException')
-            ->setConstructorArgs(array($connection, 'Communication error message'))
-            ->onlyMethods(array('shouldResetConnection'))
+            ->setConstructorArgs([$connection, 'Communication error message'])
+            ->onlyMethods(['shouldResetConnection'])
             ->getMockForAbstractClass();
         $exception
             ->expects($this->once())
@@ -116,7 +115,7 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param Connection\NodeConnectionInterface $connection Connection instance.
      * @param string                             $message    Exception message.
      * @param int                                $code       Exception code.
-     * @param \Exception                         $inner      Inner exception.
+     * @param Exception                          $inner      Inner exception.
      *
      * @return \Predis\CommunicationException
      */
@@ -124,10 +123,10 @@ class CommunicationExceptionTest extends PredisTestCase
         Connection\NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        \Exception $inner = null
+        Exception $inner = null
     ) {
         return $this->getMockBuilder('Predis\CommunicationException')
-            ->setConstructorArgs(array($connection, $message, $code, $inner))
+            ->setConstructorArgs([$connection, $message, $code, $inner])
             ->getMockForAbstractClass();
     }
 }

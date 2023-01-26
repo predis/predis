@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,13 +12,10 @@
 
 namespace Predis\Replication;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ReplicationStrategyTest extends PredisTestCase
 {
     /**
@@ -82,13 +80,13 @@ class ReplicationStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $cmdReturnSort = $commands->create('SORT', array('key:list'));
+        $cmdReturnSort = $commands->create('SORT', ['key:list']);
         $this->assertFalse(
             $strategy->isReadOperation($cmdReturnSort),
             'SORT is expected to be a write operation.'
         );
 
-        $cmdStoreSort = $commands->create('SORT', array('key:list', array('store' => 'key:stored')));
+        $cmdStoreSort = $commands->create('SORT', ['key:list', ['store' => 'key:stored']]);
         $this->assertFalse(
             $strategy->isReadOperation($cmdStoreSort),
             'SORT with STORE is expected to be a write operation.'
@@ -103,37 +101,37 @@ class ReplicationStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $command = $commands->create('BITFIELD', array('key'));
+        $command = $commands->create('BITFIELD', ['key']);
         $this->assertTrue(
             $strategy->isReadOperation($command),
             'BITFIELD with no modifiers is expected to be a read operation.'
         );
 
-        $command = $commands->create('BITFIELD', array('key', 'GET', 'u4', '0'));
+        $command = $commands->create('BITFIELD', ['key', 'GET', 'u4', '0']);
         $this->assertTrue(
             $strategy->isReadOperation($command),
             'BITFIELD with GET only is expected to be a read operation.'
         );
 
-        $command = $commands->create('BITFIELD', array('key', 'SET', 'u4', '0', 1));
+        $command = $commands->create('BITFIELD', ['key', 'SET', 'u4', '0', 1]);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'BITFIELD with SET is expected to be a write operation.'
         );
 
-        $command = $commands->create('BITFIELD', array('key', 'INCRBY', 'u4', '0', 1));
+        $command = $commands->create('BITFIELD', ['key', 'INCRBY', 'u4', '0', 1]);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'BITFIELD with INCRBY is expected to be a write operation.'
         );
 
-        $command = $commands->create('BITFIELD', array('key', 'GET', 'u4', '0', 'INCRBY', 'u4', '0', 1));
+        $command = $commands->create('BITFIELD', ['key', 'GET', 'u4', '0', 'INCRBY', 'u4', '0', 1]);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'BITFIELD with GET and INCRBY is expected to be a write operation.'
         );
 
-        $command = $commands->create('BITFIELD', array('key', 'GET', 'u4', '0', 'SET', 'u4', '0', 1));
+        $command = $commands->create('BITFIELD', ['key', 'GET', 'u4', '0', 'SET', 'u4', '0', 1]);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'BITFIELD with GET and SET is expected to be a write operation.'
@@ -148,19 +146,19 @@ class ReplicationStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $command = $commands->create('GEORADIUS', array('key:geo', 15, 37, 200, 'km'));
+        $command = $commands->create('GEORADIUS', ['key:geo', 15, 37, 200, 'km']);
         $this->assertTrue(
             $strategy->isReadOperation($command),
             'GEORADIUS is expected to be a read operation.'
         );
 
-        $command = $commands->create('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $command = $commands->create('GEORADIUS', ['key:geo', 15, 37, 200, 'km', 'store', 'key:store']);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'GEORADIUS with STORE is expected to be a write operation.'
         );
 
-        $command = $commands->create('GEORADIUS', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $command = $commands->create('GEORADIUS', ['key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist']);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'GEORADIUS with STOREDIST is expected to be a write operation.'
@@ -175,19 +173,19 @@ class ReplicationStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $command = $commands->create('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km'));
+        $command = $commands->create('GEORADIUSBYMEMBER', ['key:geo', 15, 37, 200, 'km']);
         $this->assertTrue(
             $strategy->isReadOperation($command),
             'GEORADIUSBYMEMBER is expected to be a read operation.'
         );
 
-        $command = $commands->create('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'store', 'key:store'));
+        $command = $commands->create('GEORADIUSBYMEMBER', ['key:geo', 15, 37, 200, 'km', 'store', 'key:store']);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'GEORADIUSBYMEMBER with STORE is expected to be a write operation.'
         );
 
-        $command = $commands->create('GEORADIUSBYMEMBER', array('key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist'));
+        $command = $commands->create('GEORADIUSBYMEMBER', ['key:geo', 15, 37, 200, 'km', 'storedist', 'key:storedist']);
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'GEORADIUSBYMEMBER with STOREDIST is expected to be a write operation.'
@@ -277,10 +275,10 @@ class ReplicationStrategyTest extends PredisTestCase
             return $command->getArgument(1) === true;
         });
 
-        $command = $commands->create('SET', array('trigger', false));
+        $command = $commands->create('SET', ['trigger', false]);
         $this->assertFalse($strategy->isReadOperation($command));
 
-        $command = $commands->create('SET', array('trigger', true));
+        $command = $commands->create('SET', ['trigger', true]);
         $this->assertTrue($strategy->isReadOperation($command));
     }
 
@@ -297,13 +295,13 @@ class ReplicationStrategyTest extends PredisTestCase
 
         $strategy->setScriptReadOnly($readScript, true);
 
-        $cmdEval = $commands->create('EVAL', array($writeScript));
-        $cmdEvalSHA = $commands->create('EVALSHA', array(sha1($writeScript)));
+        $cmdEval = $commands->create('EVAL', [$writeScript]);
+        $cmdEvalSHA = $commands->create('EVALSHA', [sha1($writeScript)]);
         $this->assertFalse($strategy->isReadOperation($cmdEval));
         $this->assertFalse($strategy->isReadOperation($cmdEvalSHA));
 
-        $cmdEval = $commands->create('EVAL', array($readScript));
-        $cmdEvalSHA = $commands->create('EVALSHA', array(sha1($readScript)));
+        $cmdEval = $commands->create('EVAL', [$readScript]);
+        $cmdEvalSHA = $commands->create('EVALSHA', [sha1($readScript)]);
         $this->assertTrue($strategy->isReadOperation($cmdEval));
         $this->assertTrue($strategy->isReadOperation($cmdEvalSHA));
     }
@@ -317,7 +315,7 @@ class ReplicationStrategyTest extends PredisTestCase
 
         /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript'))
+            ->onlyMethods(['getScript'])
             ->getMock();
         $command
             ->expects($this->any())
@@ -328,10 +326,10 @@ class ReplicationStrategyTest extends PredisTestCase
             return $command->getArgument(2) === true;
         });
 
-        $command->setArguments(array(false));
+        $command->setArguments([false]);
         $this->assertFalse($strategy->isReadOperation($command));
 
-        $command->setArguments(array(true));
+        $command->setArguments([true]);
         $this->assertTrue($strategy->isReadOperation($command));
     }
 
@@ -344,14 +342,14 @@ class ReplicationStrategyTest extends PredisTestCase
 
         /** @var CommandInterface|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript'))
-            ->getMock(array('getScript'));
+            ->onlyMethods(['getScript'])
+            ->getMock(['getScript']);
         $command
             ->expects($this->any())
             ->method('getScript')
             ->willReturn($script = 'return true');
 
-        $command->setArguments(array('trigger', false));
+        $command->setArguments(['trigger', false]);
 
         $strategy->setScriptReadOnly($script, true);
 
@@ -371,7 +369,7 @@ class ReplicationStrategyTest extends PredisTestCase
      */
     protected function getExpectedCommands(?string $type = null): array
     {
-        $commands = array(
+        $commands = [
             /* commands operating on the connection */
             'AUTH' => 'read',
             'SELECT' => 'read',
@@ -516,7 +514,7 @@ class ReplicationStrategyTest extends PredisTestCase
             'GEODIST' => 'read',
             'GEORADIUS' => 'variable',
             'GEORADIUSBYMEMBER' => 'variable',
-        );
+        ];
 
         if (isset($type)) {
             $commands = array_filter($commands, function (string $expectedType) use ($type) {
