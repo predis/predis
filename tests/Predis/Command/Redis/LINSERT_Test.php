@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class LINSERT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'before', 'value1', 'value2');
-        $expected = array('key', 'before', 'value1', 'value2');
+        $arguments = ['key', 'before', 'value1', 'value2'];
+        $expected = ['key', 'before', 'value1', 'value2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +67,7 @@ class LINSERT_Test extends PredisCommandTestCase
 
         $this->assertSame(4, $redis->linsert('letters', 'before', 'c', 'b'));
         $this->assertSame(5, $redis->linsert('letters', 'after', 'c', 'd'));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->lrange('letters', 0, -1));
     }
 
     /**

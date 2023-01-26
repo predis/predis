@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +12,8 @@
 
 namespace Predis\Connection;
 
+use Closure;
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
@@ -42,9 +45,7 @@ use Predis\Response\Status as StatusResponse;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *
- * @link https://github.com/nrk/phpiredis
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see https://github.com/nrk/phpiredis
  */
 class PhpiredisStreamConnection extends StreamConnection
 {
@@ -107,10 +108,9 @@ class PhpiredisStreamConnection extends StreamConnection
 
             case 'tls':
             case 'rediss':
-                throw new \InvalidArgumentException('SSL encryption is not supported by this connection backend.');
-
+                throw new InvalidArgumentException('SSL encryption is not supported by this connection backend.');
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;
@@ -133,10 +133,10 @@ class PhpiredisStreamConnection extends StreamConnection
             $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
 
-            $timeout = array(
+            $timeout = [
                 'sec' => $timeoutSeconds = floor($rwtimeout),
                 'usec' => ($rwtimeout - $timeoutSeconds) * 1000000,
-            );
+            ];
 
             $socket = $socket ?: socket_import_stream($resource);
             @socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
@@ -179,7 +179,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Returns the handler used by the protocol reader for inline responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getStatusHandler()
     {
@@ -197,7 +197,7 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * Returns the handler used by the protocol reader for error responses.
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function getErrorHandler()
     {

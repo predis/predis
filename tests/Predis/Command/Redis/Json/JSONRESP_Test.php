@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -8,7 +18,7 @@ use Predis\Response\Status;
 class JSONRESP_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,7 +26,7 @@ class JSONRESP_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -48,10 +58,10 @@ class JSONRESP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param array $expectedResponse
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -93,7 +103,7 @@ class JSONRESP_Test extends PredisCommandTestCase
                 ['key', '$', '{"key1":{"key2":"value2"}}'],
                 'key',
                 '$.key1',
-                [[new Status('{'), "key2", "value2"]],
+                [[new Status('{'), 'key2', 'value2']],
             ],
             'with boolean value' => [
                 ['key', '$', '{"key1":true}'],
@@ -106,7 +116,7 @@ class JSONRESP_Test extends PredisCommandTestCase
                 'key',
                 '$.key1',
                 [null],
-            ]
+            ],
         ];
     }
 }
