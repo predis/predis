@@ -115,6 +115,7 @@ use Predis\Response\Status;
  * @method array             jsonobjlen(string $key, string $path = '$')
  * @method string            jsonset(string $key, string $path, string $value, ?string $subcommand = null)
  * @method array             jsonstrappend(string $key, string $path, string $value)
+ * @method array             jsonstrlen(string $key, string $path = '$')
  * @method string            blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method array|null        blpop(array|string $keys, int|float $timeout)
  * @method array|null        brpop(array|string $keys, int|float $timeout)
