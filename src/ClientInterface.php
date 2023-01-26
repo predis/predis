@@ -111,6 +111,7 @@ use Predis\Response\Status;
  * @method array             jsonarrappend(string $key, string $path = '$', ...$value)
  * @method array             jsonarrindex(string $key, string $path, string $value, int $start = 0, int $stop = 0)
  * @method array             jsonarrinsert(string $key, string $path, int $index, string ...$value)
+ * @method array             jsonarrlen(string $key, string $path = '$')
  * @method int               jsondel(string $key, string $path = '$')
  * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method string            jsonnumincrby(string $key, string $path, int $value)

@@ -102,6 +102,7 @@ use Predis\Command\CommandInterface;
  * @method $this jsonarrappend(string $key, string $path = '$', ...$value)
  * @method $this jsonarrindex(string $key, string $path, string $value, int $start = 0, int $stop = 0)
  * @method $this jsonarrinsert(string $key, string $path, int $index, string ...$value)
+ * @method $this jsonarrlen(string $key, string $path = '$')
  * @method $this jsondel(string $key, string $path = '$')
  * @method $this jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method $this jsonnumincrby(string $key, string $path, int $value)
