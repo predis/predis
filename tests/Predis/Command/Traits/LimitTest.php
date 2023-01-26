@@ -1,9 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class LimitTest extends PredisTestCase
@@ -14,7 +24,7 @@ class LimitTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Limit;
 
             public static $limitArgumentPositionOffset = 0;
@@ -28,9 +38,9 @@ class LimitTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -50,7 +60,7 @@ class LimitTest extends PredisTestCase
         $this->testClass::$limitArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong limit argument type");
+        $this->expectExceptionMessage('Wrong limit argument type');
 
         $this->testClass->setArguments(['test']);
     }
@@ -61,7 +71,7 @@ class LimitTest extends PredisTestCase
             'limit false argument first and there is arguments after' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                []
+                [],
             ],
             'limit false argument last and there is arguments before' => [
                 2,
@@ -76,22 +86,22 @@ class LimitTest extends PredisTestCase
             'limit argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['LIMIT', 'second argument', 'third argument']
+                ['LIMIT', 'second argument', 'third argument'],
             ],
             'limit argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'LIMIT']
+                ['first argument', 'second argument', 'LIMIT'],
             ],
             'limit argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'LIMIT', 'third argument']
+                ['first argument', 'LIMIT', 'third argument'],
             ],
             'limit argument is integer' => [
                 0,
                 [1],
-                ['LIMIT', 1]
+                ['LIMIT', 1],
             ],
             'limit argument with wrong offset' => [
                 2,

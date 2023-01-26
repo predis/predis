@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This is a basic example on how to use the Predis\Monitor\Consumer class. You
 // can use redis-cli to send commands to the same Redis instance your client is
@@ -17,7 +18,7 @@ require __DIR__.'/shared.php';
 // exit the monitor loop and terminate this script in a graceful way.
 
 // Create a client and disable r/w timeout on the socket.
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Use only one instance of DateTime, we will update the timestamp later.
 $timestamp = new DateTime();

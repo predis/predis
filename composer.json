@@ -10,12 +10,6 @@
     },
     "authors": [
         {
-            "name": "Daniele Alessandri",
-            "email": "suppakilla@gmail.com",
-            "homepage": "http://clorophilla.net",
-            "role": "Creator & Maintainer"
-        },
-        {
             "name": "Till Krüss",
             "homepage": "https://till.im",
             "role": "Maintainer"
@@ -31,20 +25,24 @@
         "php": "^7.2 || ^8.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.3",
+        "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^8.0 || ~9.4.4"
     },
-    "suggest": {
-        "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol",
-        "ext-curl": "Allows access to Webdis when paired with phpiredis"
+    "scripts": {
+        "phpstan": "phpstan analyse",
+        "style": "php-cs-fixer fix --diff --dry-run",
+        "style:fix": "php-cs-fixer fix"
     },
     "autoload": {
         "psr-4": {
             "Predis\\": "src/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-main": "2.0-dev"
-        }
-    }
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

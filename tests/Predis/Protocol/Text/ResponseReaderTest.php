@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,12 +12,9 @@
 
 namespace Predis\Protocol\Text;
 
-use PredisTestCase;
 use Predis\Protocol\Text\Handler\ResponseHandlerInterface;
+use PredisTestCase;
 
-/**
- *
- */
 class ResponseReaderTest extends PredisTestCase
 {
     /**
@@ -81,7 +79,7 @@ class ResponseReaderTest extends PredisTestCase
     public function testEmptyResponseHeader(): void
     {
         $this->expectException('Predis\Protocol\ProtocolException');
-        $this->expectExceptionMessage('Unexpected empty reponse header [tcp://127.0.0.1:6379]');
+        $this->expectExceptionMessage('Unexpected empty response header [tcp://127.0.0.1:6379]');
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface', 'tcp://127.0.0.1:6379');
         $connection

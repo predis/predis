@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,25 +12,25 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
+
 /**
  * Container for connection parameters used to initialize connections to Redis.
  *
  * {@inheritdoc}
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Parameters implements ParametersInterface
 {
-    protected static $defaults = array(
+    protected static $defaults = [
         'scheme' => 'tcp',
         'host' => '127.0.0.1',
         'port' => 6379,
-    );
+    ];
 
     /**
-     * Set of connection paramaters already filtered
+     * Set of connection parameters already filtered
      * for NULL or 0-length string values.
-     * 
+     *
      * @var array
      */
     protected $parameters;
@@ -37,7 +38,7 @@ class Parameters implements ParametersInterface
     /**
      * @param array $parameters Named array of connection parameters.
      */
-    public function __construct(array $parameters = array())
+    public function __construct(array $parameters = [])
     {
         $this->parameters = $this->filter($parameters + static::$defaults);
     }
@@ -70,7 +71,7 @@ class Parameters implements ParametersInterface
             $parameters = static::parse($parameters);
         }
 
-        return new static($parameters ?: array());
+        return new static($parameters ?: []);
     }
 
     /**
@@ -82,14 +83,13 @@ class Parameters implements ParametersInterface
      * database number in the "path" part these values override the values of
      * "password" and "database" if they are present in the "query" part.
      *
-     * @link http://www.iana.org/assignments/uri-schemes/prov/redis
-     * @link http://www.iana.org/assignments/uri-schemes/prov/rediss
+     * @see http://www.iana.org/assignments/uri-schemes/prov/redis
+     * @see http://www.iana.org/assignments/uri-schemes/prov/rediss
      *
      * @param string $uri URI string.
      *
-     * @throws \InvalidArgumentException
-     *
      * @return array
+     * @throws InvalidArgumentException
      */
     public static function parse($uri)
     {
@@ -100,7 +100,7 @@ class Parameters implements ParametersInterface
         }
 
         if (!$parsed = parse_url($uri)) {
-            throw new \InvalidArgumentException("Invalid parameters URI: $uri");
+            throw new InvalidArgumentException("Invalid parameters URI: $uri");
         }
 
         if (
@@ -194,6 +194,6 @@ class Parameters implements ParametersInterface
      */
     public function __sleep()
     {
-        return array('parameters');
+        return ['parameters'];
     }
 }

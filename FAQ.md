@@ -4,7 +4,7 @@ ________________________________________________
 ### What is the point of Predis? ###
 
 The main point of Predis is about offering a highly customizable and extensible client for Redis,
-that can be easily extended by developers while still being reasonabily fast. With Predis you can
+that can be easily extended by developers while still being reasonably fast. With Predis you can
 swap almost any class with your own custom implementation: you can have custom connection classes,
 new distribution strategies for client-side sharding, or handlers to replace or add Redis commands.
 All of this can be achieved without messing with the source code of the library and directly in your

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -34,8 +35,8 @@ class ListKeyTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -52,8 +53,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -64,7 +65,7 @@ class ListKeyTest extends PredisTestCase
             ->method('lrange')
             ->with('key:list', 0, 9)
             ->willReturn(
-                array()
+                []
             );
 
         $iterator = new ListKey($client, 'key:list');
@@ -80,8 +81,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -92,7 +93,7 @@ class ListKeyTest extends PredisTestCase
             ->method('lrange')
             ->with('key:list', 0, 9)
             ->willReturn(
-                array('item:1', 'item:2', 'item:3')
+                ['item:1', 'item:2', 'item:3']
             );
 
         $iterator = new ListKey($client, 'key:list');
@@ -123,8 +124,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -134,15 +135,15 @@ class ListKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('lrange')
             ->withConsecutive(
-                array('key:list', 0, 9),
-                array('key:list', 10, 19)
+                ['key:list', 0, 9],
+                ['key:list', 10, 19]
             )
             ->willReturnOnConsecutiveCalls(
-                array(
+                [
                     'item:1', 'item:2', 'item:3', 'item:4', 'item:5',
                     'item:6', 'item:7', 'item:8', 'item:9', 'item:10',
-                ),
-                array('item:11', 'item:12')
+                ],
+                ['item:11', 'item:12']
             );
 
         $iterator = new ListKey($client, 'key:list');
@@ -166,7 +167,7 @@ class ListKeyTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
+            ->onlyMethods(['getCommandFactory'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -186,7 +187,7 @@ class ListKeyTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
+            ->onlyMethods(['getCommandFactory'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -203,8 +204,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -215,7 +216,7 @@ class ListKeyTest extends PredisTestCase
             ->method('lrange')
             ->with('key:list', 0, 4)
             ->willReturn(
-                array('item:1', 'item:2')
+                ['item:1', 'item:2']
             );
 
         $iterator = new ListKey($client, 'key:list', 5);
@@ -241,8 +242,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -252,12 +253,12 @@ class ListKeyTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('lrange')
             ->withConsecutive(
-                array('key:list', 0, 1),
-                array('key:list', 2, 3)
+                ['key:list', 0, 1],
+                ['key:list', 2, 3]
             )
             ->willReturnOnConsecutiveCalls(
-                array('item:1', 'item:2'),
-                array('item:3')
+                ['item:1', 'item:2'],
+                ['item:3']
             );
 
         $iterator = new ListKey($client, 'key:list', 2);
@@ -288,8 +289,8 @@ class ListKeyTest extends PredisTestCase
     {
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('getCommandFactory'))
-            ->addMethods(array('lrange'))
+            ->onlyMethods(['getCommandFactory'])
+            ->addMethods(['lrange'])
             ->getMock();
         $client
             ->expects($this->any())
@@ -300,7 +301,7 @@ class ListKeyTest extends PredisTestCase
             ->method('lrange')
             ->with('key:list', 0, 9)
             ->willReturn(
-                array('item:1', 'item:2')
+                ['item:1', 'item:2']
             );
 
         $iterator = new ListKey($client, 'key:list');
