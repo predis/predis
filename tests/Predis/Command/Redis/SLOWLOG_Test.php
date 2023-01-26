@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -41,8 +42,8 @@ class SLOWLOG_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('GET', '2');
-        $expected = array('GET', '2');
+        $arguments = ['GET', '2'];
+        $expected = ['GET', '2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -57,15 +58,15 @@ class SLOWLOG_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array(array(0, 1323163469, 12451, array('SORT', 'list:unordered')));
-        $expected = array(
-            array(
+        $raw = [[0, 1323163469, 12451, ['SORT', 'list:unordered']]];
+        $expected = [
+            [
                 'id' => 0,
                 'timestamp' => 1323163469,
                 'duration' => 12451,
-                'command' => array('SORT', 'list:unordered'),
-            ),
-        );
+                'command' => ['SORT', 'list:unordered'],
+            ],
+        ];
 
         $command = $this->getCommand();
 

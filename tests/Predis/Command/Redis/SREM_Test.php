@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SREM_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'member1', 'member2', 'member3');
-        $expected = array('key', 'member1', 'member2', 'member3');
+        $arguments = ['key', 'member1', 'member2', 'member3'];
+        $expected = ['key', 'member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class SREM_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsMembersAsSingleArray(): void
     {
-        $arguments = array('key', array('member1', 'member2', 'member3'));
-        $expected = array('key', 'member1', 'member2', 'member3');
+        $arguments = ['key', ['member1', 'member2', 'member3']];
+        $expected = ['key', 'member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,7 +81,7 @@ class SREM_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->srem('letters', 'b'));
         $this->assertSame(1, $redis->srem('letters', 'd', 'z'));
-        $this->assertSameValues(array('a', 'c'), $redis->smembers('letters'));
+        $this->assertSameValues(['a', 'c'], $redis->smembers('letters'));
 
         $this->assertSame(0, $redis->srem('digits', 1));
     }
@@ -96,7 +97,7 @@ class SREM_Test extends PredisCommandTestCase
         $redis->sadd('letters', 'a', 'b', 'c', 'd');
 
         $this->assertSame(2, $redis->srem('letters', 'b', 'd', 'z'));
-        $this->assertSameValues(array('a', 'c'), $redis->smembers('letters'));
+        $this->assertSameValues(['a', 'c'], $redis->smembers('letters'));
 
         $this->assertSame(0, $redis->srem('digits', 1));
     }
@@ -112,7 +113,7 @@ class SREM_Test extends PredisCommandTestCase
         $redis->sadd('letters', 'a', 'b', 'c', 'd');
 
         $this->assertSame(2, $redis->srem('letters', ['b', 'd', 'z']));
-        $this->assertSameValues(array('a', 'c'), $redis->smembers('letters'));
+        $this->assertSameValues(['a', 'c'], $redis->smembers('letters'));
 
         $this->assertSame(0, $redis->srem('digits', [1]));
     }
