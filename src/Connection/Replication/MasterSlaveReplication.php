@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
@@ -24,8 +26,6 @@ use Predis\Response\ErrorInterface as ResponseErrorInterface;
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
  * single master / multiple slaves setup.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class MasterSlaveReplication implements ReplicationInterface
 {
@@ -42,17 +42,17 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $slaves = array();
+    protected $slaves = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $pool = array();
+    protected $pool = [];
 
     /**
      * @var NodeConnectionInterface[]
      */
-    protected $aliases = array();
+    protected $aliases = [];
 
     /**
      * @var NodeConnectionInterface
@@ -188,9 +188,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnectionById($id)
     {
-        if (isset($this->pool[$id])) {
-            return $this->pool[$id];
-        }
+        return $this->pool[$id] ?? null;
     }
 
     /**
@@ -202,9 +200,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function getConnectionByAlias($alias)
     {
-        if (isset($this->aliases[$alias])) {
-            return $this->aliases[$alias];
-        }
+        return $this->aliases[$alias] ?? null;
     }
 
     /**
@@ -221,6 +217,8 @@ class MasterSlaveReplication implements ReplicationInterface
         } elseif ($role === 'slave') {
             return $this->pickSlave();
         }
+
+        return null;
     }
 
     /**
@@ -235,7 +233,7 @@ class MasterSlaveReplication implements ReplicationInterface
         }
 
         if ($connection !== $this->master && !in_array($connection, $this->slaves, true)) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->current = $connection;
@@ -247,7 +245,7 @@ class MasterSlaveReplication implements ReplicationInterface
     public function switchToMaster()
     {
         if (!$connection = $this->getConnectionByRole('master')) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->switchTo($connection);
@@ -259,7 +257,7 @@ class MasterSlaveReplication implements ReplicationInterface
     public function switchToSlave()
     {
         if (!$connection = $this->getConnectionByRole('slave')) {
-            throw new \InvalidArgumentException('Invalid connection or connection not found.');
+            throw new InvalidArgumentException('Invalid connection or connection not found.');
         }
 
         $this->switchTo($connection);
@@ -316,13 +314,15 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * Returns a random slave.
      *
-     * @return NodeConnectionInterface
+     * @return NodeConnectionInterface|null
      */
     protected function pickSlave()
     {
-        if ($this->slaves) {
-            return $this->slaves[array_rand($this->slaves)];
+        if (!$this->slaves) {
+            return null;
         }
+
+        return $this->slaves[array_rand($this->slaves)];
     }
 
     /**
@@ -368,14 +368,14 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     private function handleInfoResponse($response)
     {
-        $info = array();
+        $info = [];
 
         foreach (preg_split('/\r?\n/', $response) as $row) {
             if (strpos($row, ':') === false) {
                 continue;
             }
 
-            list($k, $v) = explode(':', $row, 2);
+            [$k, $v] = explode(':', $row, 2);
             $info[$k] = $v;
         }
 
@@ -391,18 +391,19 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException('Discovery requires a connection factory');
         }
 
-        RETRY_FETCH: {
+        while (true) {
             try {
                 if ($connection = $this->getMaster()) {
                     $this->discoverFromMaster($connection, $this->connectionFactory);
+                    break;
                 } elseif ($connection = $this->pickSlave()) {
                     $this->discoverFromSlave($connection, $this->connectionFactory);
+                    break;
                 } else {
                     throw new ClientException('No connection available for discovery');
                 }
             } catch (ConnectionException $exception) {
                 $this->remove($connection);
-                goto RETRY_FETCH;
             }
         }
     }
@@ -422,17 +423,17 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException("Role mismatch (expected master, got slave) [$connection]");
         }
 
-        $this->slaves = array();
+        $this->slaves = [];
 
         foreach ($replication as $k => $v) {
             $parameters = null;
 
             if (strpos($k, 'slave') === 0 && preg_match('/ip=(?P<host>.*),port=(?P<port>\d+)/', $v, $parameters)) {
-                $slaveConnection = $connectionFactory->create(array(
+                $slaveConnection = $connectionFactory->create([
                     'host' => $parameters['host'],
                     'port' => $parameters['port'],
                     'role' => 'slave',
-                ));
+                ]);
 
                 $this->add($slaveConnection);
             }
@@ -454,11 +455,11 @@ class MasterSlaveReplication implements ReplicationInterface
             throw new ClientException("Role mismatch (expected slave, got master) [$connection]");
         }
 
-        $masterConnection = $connectionFactory->create(array(
+        $masterConnection = $connectionFactory->create([
             'host' => $replication['master_host'],
             'port' => $replication['master_port'],
             'role' => 'master',
-        ));
+        ]);
 
         $this->add($masterConnection);
 
@@ -475,7 +476,7 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        RETRY_COMMAND: {
+        while (true) {
             try {
                 $connection = $this->getConnectionByCommand($command);
                 $response = $connection->$method($command);
@@ -483,6 +484,8 @@ class MasterSlaveReplication implements ReplicationInterface
                 if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
                     throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
                 }
+
+                break;
             } catch (ConnectionException $exception) {
                 $connection = $exception->getConnection();
                 $connection->disconnect();
@@ -504,16 +507,12 @@ class MasterSlaveReplication implements ReplicationInterface
                 } elseif ($this->autoDiscovery) {
                     $this->discover();
                 }
-
-                goto RETRY_COMMAND;
             } catch (MissingMasterException $exception) {
                 if ($this->autoDiscovery) {
                     $this->discover();
                 } else {
                     throw $exception;
                 }
-
-                goto RETRY_COMMAND;
             }
         }
 
@@ -549,6 +548,6 @@ class MasterSlaveReplication implements ReplicationInterface
      */
     public function __sleep()
     {
-        return array('master', 'slaves', 'pool', 'aliases', 'strategy');
+        return ['master', 'slaves', 'pool', 'aliases', 'strategy'];
     }
 }

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -37,7 +38,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true],
             ],
             ['stream', 'NOMKSTREAM', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key', 'val'],
         ];
@@ -47,7 +48,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key1' => 'val1', 'key2' => 'val2'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true],
             ],
             ['stream', 'NOMKSTREAM', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key1', 'val1', 'key2', 'val2'],
         ];
@@ -57,7 +58,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5]
+                ['trim' => ['MINID', '~', '0-1'], 'limit' => 5],
             ],
             ['stream', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key', 'val'],
         ];
@@ -67,7 +68,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '~', '0-1']]
+                ['trim' => ['MINID', '~', '0-1']],
             ],
             ['stream', 'MINID', '~', '0-1', '*', 'key', 'val'],
         ];
@@ -77,7 +78,7 @@ class XADD_Test extends PredisCommandTestCase
                 'stream',
                 ['key' => 'val'],
                 '*',
-                ['trim' => ['MINID', '0-1']]
+                ['trim' => ['MINID', '0-1']],
             ],
             ['stream', 'MINID', '0-1', '*', 'key', 'val'],
         ];

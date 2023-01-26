@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SLAVEOF_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsHostPortArray(): void
     {
-        $arguments = array('127.0.0.1', '80');
-        $expected = array('127.0.0.1', '80');
+        $arguments = ['127.0.0.1', '80'];
+        $expected = ['127.0.0.1', '80'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class SLAVEOF_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsNoOneArray(): void
     {
-        $arguments = array('NO', 'ONE');
-        $expected = array('NO', 'ONE');
+        $arguments = ['NO', 'ONE'];
+        $expected = ['NO', 'ONE'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class SLAVEOF_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsNoOneString(): void
     {
-        $arguments = array('NO ONE');
-        $expected = array('NO', 'ONE');
+        $arguments = ['NO ONE'];
+        $expected = ['NO', 'ONE'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);

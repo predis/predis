@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -62,10 +63,10 @@ class SMISMEMBER_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider membersProvider
-     * @param array $set
-     * @param string $key
-     * @param array $members
-     * @param array $expectedResponse
+     * @param  array  $set
+     * @param  string $key
+     * @param  array  $members
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -104,13 +105,13 @@ class SMISMEMBER_Test extends PredisCommandTestCase
                 ['key', 'member1'],
                 'key',
                 ['member1'],
-                [1]
+                [1],
             ],
             'with one member - does not belongs to set' => [
                 ['key', 'member1'],
                 'key',
                 ['member2'],
-                [0]
+                [0],
             ],
             'with multiple members - belongs to set' => [
                 ['key', 'member1', 'member2'],
