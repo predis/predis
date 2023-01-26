@@ -1,10 +1,11 @@
 # Predis #
 
 [![Software license][ico-license]](LICENSE)
-[![Latest stable][ico-version-stable]][link-packagist]
-[![Latest development][ico-version-dev]][link-packagist]
+[![Latest stable][ico-version-stable]][link-releases]
+[![Latest development][ico-version-dev]][link-releases]
 [![Monthly installs][ico-downloads-monthly]][link-downloads]
 [![Build status][ico-build]][link-actions]
+[![Coverage Status][ico-coverage]][link-coverage]
 
 A flexible and feature-complete [Redis](http://redis.io) client for PHP 7.2 and newer.
 
@@ -447,9 +448,7 @@ implementation of the standard connection classes available in the `Predis\Conne
 ### Reporting bugs and contributing code ###
 
 Contributions to Predis are highly appreciated either in the form of pull requests for new features,
-bug fixes, or just bug reports. We only ask you to adhere to a [basic set of rules](CONTRIBUTING.md)
-before submitting your changes or filing bugs on the issue tracker to make it easier for everyone to
-stay consistent while working on the project.
+bug fixes, or just bug reports. We only ask you to adhere to issue and pull request templates.
 
 
 ### Test suite ###
@@ -479,8 +478,8 @@ found [on its actions page](https://github.com/predis/predis/actions).
 
 ### Author ###
 
-- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
 - [Till Krüss](https://till.im) ([Twitter](http://twitter.com/tillkruss))
+- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
 
 
 ### License ###
@@ -488,11 +487,13 @@ found [on its actions page](https://github.com/predis/predis/actions).
 The code for Predis is distributed under the terms of the MIT license (see [LICENSE](LICENSE)).
 
 [ico-license]: https://img.shields.io/github/license/predis/predis.svg?style=flat-square
-[ico-version-stable]: https://img.shields.io/packagist/v/predis/predis.svg?style=flat-square
-[ico-version-dev]: https://img.shields.io/packagist/vpre/predis/predis.svg?style=flat-square
+[ico-version-stable]: https://img.shields.io/github/v/tag/predis/predis?label=stable&style=flat-square
+[ico-version-dev]: https://img.shields.io/github/v/tag/predis/predis?include_prereleases&label=pre-release&style=flat-square
 [ico-downloads-monthly]: https://img.shields.io/packagist/dm/predis/predis.svg?style=flat-square
-[ico-build]: https://img.shields.io/github/actions/workflow/status/predis/predis/redis-server-tests.yml?branch=main&style=flat-square
+[ico-build]: https://img.shields.io/github/actions/workflow/status/predis/predis/tests.yml?branch=main&style=flat-square
+[ico-coverage]: https://img.shields.io/coverallsCoverage/github/predis/predis?style=flat-square
 
-[link-packagist]: https://packagist.org/packages/predis/predis
+[link-releases]: https://github.com/predis/predis/releases
 [link-actions]: https://github.com/predis/predis/actions
 [link-downloads]: https://packagist.org/packages/predis/predis/stats
+[link-coverage]: https://coveralls.io/github/predis/predis

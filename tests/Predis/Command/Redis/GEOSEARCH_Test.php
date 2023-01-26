@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use InvalidArgumentException;
@@ -14,7 +24,7 @@ use UnexpectedValueException;
 class GEOSEARCH_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -22,7 +32,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -53,19 +63,19 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider coordinatesProvider
-     * @param array $firstCoordinates
-     * @param array $secondCoordinates
-     * @param array $thirdCoordinates
-     * @param string $key
-     * @param FromInterface $from
-     * @param ByInterface $by
-     * @param string|null $sorting
-     * @param int $count
-     * @param bool $any
-     * @param bool $withCoord
-     * @param bool $withDist
-     * @param bool $withHash
-     * @param array $expectedResponse
+     * @param  array         $firstCoordinates
+     * @param  array         $secondCoordinates
+     * @param  array         $thirdCoordinates
+     * @param  string        $key
+     * @param  FromInterface $from
+     * @param  ByInterface   $by
+     * @param  string|null   $sorting
+     * @param  int           $count
+     * @param  bool          $any
+     * @param  bool          $withCoord
+     * @param  bool          $withDist
+     * @param  bool          $withHash
+     * @param  array         $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -99,9 +109,9 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedException
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -123,44 +133,44 @@ class GEOSEARCH_Test extends PredisCommandTestCase
         return [
             'with default arguments - FROMLONLAT, BYRADIUS' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km')],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km'],
             ],
             'with default arguments - FROMMEMBER, BYBOX' => [
-                ['key', new FromMember('member'), new ByBox(1,1, 'km')],
-                ['key', 'FROMMEMBER', 'member', 'BYBOX', 1, 1, 'km']
+                ['key', new FromMember('member'), new ByBox(1, 1, 'km')],
+                ['key', 'FROMMEMBER', 'member', 'BYBOX', 1, 1, 'km'],
             ],
             'with ASC sorting' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'asc'],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC'],
             ],
             'with DESC sorting' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'desc'],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'DESC']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'DESC'],
             ],
             'with COUNT argument - without ANY option' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, 20],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20]
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20],
             ],
             'with COUNT argument - with ANY option' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, 20, true],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20, 'ANY']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'COUNT', 20, 'ANY'],
             ],
             'with WITHCOORD argument' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, -1, false, true],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHCOORD']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHCOORD'],
             ],
             'with WITHDIST argument' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, -1, false, false, true],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHDIST']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHDIST'],
             ],
             'with WITHHASH argument' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), null, -1, false, false, false, true],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHHASH']
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'WITHHASH'],
             ],
             'with all arguments' => [
                 ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km'), 'asc', 20, true, true, true, true],
-                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC', 'COUNT', 20, 'ANY', 'WITHCOORD', 'WITHDIST', 'WITHHASH']
-            ]
+                ['key', 'FROMLONLAT', 1.1, 2.2, 'BYRADIUS', 1, 'km', 'ASC', 'COUNT', 20, 'ANY', 'WITHCOORD', 'WITHDIST', 'WITHHASH'],
+            ],
         ];
     }
 
@@ -176,7 +186,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 [
                     'member1' => ['lng' => 1.1, 'lat' => 2.2],
                     'member2' => ['lng' => 2.2, 'lat' => 3.3],
-                    'member3' => ['lng' => 3.3, 'lat' => 4.4]]
+                    'member3' => ['lng' => 3.3, 'lat' => 4.4]],
             ],
             'with WITHDIST modifier' => [
                 [['member1', '111.111'], ['member2', '222.222'], ['member3', '333.333']],
@@ -220,7 +230,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                         'lat' => 4.4,
                     ],
                 ],
-            ]
+            ],
         ];
     }
 
@@ -240,7 +250,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member1', 'member2', 'member3']
+                ['member1', 'member2', 'member3'],
             ],
             'with default arguments - FROMLONLAT, BYRADIUS - closest members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -255,7 +265,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member2', 'member1']
+                ['member2', 'member1'],
             ],
             'with default arguments - FROMMEMBER, BYBOX - all members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -270,7 +280,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member1', 'member2', 'member3']
+                ['member1', 'member2', 'member3'],
             ],
             'with default arguments - FROMMEMBER, BYBOX - closest members' => [
                 ['key', 1.1, 2, 'member1'],
@@ -285,7 +295,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member1', 'member2']
+                ['member1', 'member2'],
             ],
             'with ASC modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -300,7 +310,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member2', 'member1', 'member3']
+                ['member2', 'member1', 'member3'],
             ],
             'with DESC modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -315,7 +325,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member3', 'member1', 'member2']
+                ['member3', 'member1', 'member2'],
             ],
             'with COUNT modifier - without ANY option' => [
                 ['key', 1.1, 2, 'member1'],
@@ -330,7 +340,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member2']
+                ['member2'],
             ],
             'with COUNT modifier - with ANY option' => [
                 ['key', 1.1, 2, 'member1'],
@@ -345,7 +355,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 false,
                 false,
                 false,
-                ['member1', 'member2']
+                ['member1', 'member2'],
             ],
             'with WITHCOORD modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -364,7 +374,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                     'member1' => ['lng' => 1.1, 'lat' => 2.0],
                     'member2' => ['lng' => 2.1, 'lat' => 3.0],
                     'member3' => ['lng' => 3.1, 'lat' => 4.0],
-                ]
+                ],
             ],
             'with WITHDIST modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -383,7 +393,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                     'member1' => ['dist' => 222.7297],
                     'member2' => ['dist' => 165.1798],
                     'member3' => ['dist' => 233.006],
-                ]
+                ],
             ],
             'with WITHHASH modifier' => [
                 ['key', 1.1, 2, 'member1'],
@@ -402,7 +412,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                     'member1' => ['hash' => 3378086406303657],
                     'member2' => ['hash' => 3378965307136228],
                     'member3' => ['hash' => 3379626601756294],
-                ]
+                ],
             ],
             'with all arguments' => [
                 ['key', 1.1, 2, 'member1'],
@@ -435,37 +445,37 @@ class GEOSEARCH_Test extends PredisCommandTestCase
             'with wrong FROM argument' => [
                 ['key', false, new ByRadius(9999, 'km'), null, -1, false, false],
                 InvalidArgumentException::class,
-                'Invalid FROM argument value given'
+                'Invalid FROM argument value given',
             ],
             'with wrong BY argument' => [
                 ['key', new FromLonLat(1, 4), false, null, -1, false, false],
                 InvalidArgumentException::class,
-                'Invalid BY argument value given'
+                'Invalid BY argument value given',
             ],
             'with wrong sorting argument' => [
                 ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), 'wrong', -1, false, false],
                 UnexpectedValueException::class,
-                'Sorting argument accepts only: asc, desc values'
+                'Sorting argument accepts only: asc, desc values',
             ],
             'with wrong COUNT argument' => [
                 ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false],
                 UnexpectedValueException::class,
-                'Wrong count argument value or position offset'
+                'Wrong count argument value or position offset',
             ],
             'with wrong WITHCOORD argument' => [
                 ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, 'wrong'],
                 UnexpectedValueException::class,
-                'Wrong WITHCOORD argument type'
+                'Wrong WITHCOORD argument type',
             ],
             'with wrong WITHDIST argument' => [
                 ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false, 'wrong'],
                 UnexpectedValueException::class,
-                'Wrong WITHDIST argument type'
+                'Wrong WITHDIST argument type',
             ],
             'with wrong WITHHASH argument' => [
                 ['key', new FromLonLat(1, 4), new ByRadius(9999, 'km'), null, 0, false, false, false, 'wrong'],
                 UnexpectedValueException::class,
-                'Wrong WITHHASH argument type'
+                'Wrong WITHHASH argument type',
             ],
         ];
     }

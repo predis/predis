@@ -1,30 +1,36 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\CuckooFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-/**
- * @group commands
- * @group realm-bloom
- */
-class BFMADD_Test extends PredisCommandTestCase
+class CFADD_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return BFMADD::class;
+        return CFADD::class;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-        return 'BFMADD';
+        return 'CFADD';
     }
 
     /**
@@ -32,8 +38,8 @@ class BFMADD_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $actualArguments = ['key', 'item1', 'item2'];
-        $expectedArguments = ['key', 'item1', 'item2'];
+        $actualArguments = ['key', 'item'];
+        $expectedArguments = ['key', 'item'];
 
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
@@ -52,20 +58,20 @@ class BFMADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
-    public function testAddGivenItemsIntoBloomFilter(): void
+    public function testAddItemToCuckooFilter(): void
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->bfmadd('key', 'item1', 'item2');
-        $this->assertSame([1,1], $actualResponse);
-        $this->assertSame([1,1], $redis->bfmexists('key', 'item1', 'item2'));
+        $actualResponse = $redis->cfadd('key', 'item');
+        $this->assertSame(1, $actualResponse);
+        $this->assertSame(1, $redis->cfexists('key', 'item'));
     }
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {
@@ -74,7 +80,7 @@ class BFMADD_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('bfmadd_foo', 'bar');
-        $redis->bfmadd('bfmadd_foo', 'foo');
+        $redis->set('cfadd_foo', 'bar');
+        $redis->cfadd('cfadd_foo', 'foo');
     }
 }

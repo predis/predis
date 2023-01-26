@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,13 +16,11 @@ namespace Predis\Cluster\Distributor;
  * This class implements an hashring-based distributor that uses the same
  * algorithm of libketama to distribute keys in a cluster using client-side
  * sharding.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
 class KetamaRing extends HashRing
 {
-    const DEFAULT_REPLICAS = 160;
+    public const DEFAULT_REPLICAS = 160;
 
     /**
      * @param mixed $nodeHashCallback Callback returning a string used to calculate the hash of nodes.
