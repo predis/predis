@@ -110,6 +110,7 @@ use Predis\Response\Status;
  * @method int               hstrlen(string $key, string $field)
  * @method int               jsondel(string $key, string $path = '$')
  * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
+ * @method string            jsonnumincrby(string $key, string $path, int $value)
  * @method array             jsonmget(array $keys, string $path)
  * @method array             jsonobjkeys(string $key, string $path = '$')
  * @method array             jsonobjlen(string $key, string $path = '$')
