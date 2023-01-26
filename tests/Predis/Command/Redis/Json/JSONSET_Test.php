@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -8,7 +18,7 @@ use UnexpectedValueException;
 class JSONSET_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,7 +26,7 @@ class JSONSET_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -46,13 +56,13 @@ class JSONSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param string $key
-     * @param string $defaultJson
-     * @param string $appendedJson
-     * @param string $path
-     * @param string|null $subcommand
-     * @param string|null $expectedResponse
-     * @param string $expectedJson
+     * @param  string      $key
+     * @param  string      $defaultJson
+     * @param  string      $appendedJson
+     * @param  string      $path
+     * @param  string|null $nxXxArgument
+     * @param  string|null $expectedResponse
+     * @param  string      $expectedJson
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -61,14 +71,14 @@ class JSONSET_Test extends PredisCommandTestCase
         string $defaultJson,
         string $appendedJson,
         string $path,
-        ?string $subcommand,
+        ?string $nxXxArgument,
         ?string $expectedResponse,
         string $expectedJson
     ): void {
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->jsonset($key, '$', $defaultJson));
-        $this->assertEquals($expectedResponse, $redis->jsonset($key, $path, $appendedJson, $subcommand));
+        $this->assertEquals($expectedResponse, $redis->jsonset($key, $path, $appendedJson, $nxXxArgument));
         $this->assertSame($expectedJson, $redis->jsonget($key));
     }
 
@@ -82,7 +92,7 @@ class JSONSET_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Subcommand argument accepts only: nx, xx values');
+        $this->expectExceptionMessage('Argument accepts only: nx, xx values');
 
         $redis->jsonset('key', '$', 'value', 'wrong');
     }
@@ -92,13 +102,13 @@ class JSONSET_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key', 'path', 'value'],
-                ['key', 'path', 'value']
+                ['key', 'path', 'value'],
             ],
-            'with NX subcommand' => [
+            'with NX argument' => [
                 ['key', 'path', 'value', 'nx'],
                 ['key', 'path', 'value', 'NX'],
             ],
-            'with XX subcommand' => [
+            'with XX argument' => [
                 ['key', 'path', 'value', 'xx'],
                 ['key', 'path', 'value', 'XX'],
             ],
@@ -115,62 +125,62 @@ class JSONSET_Test extends PredisCommandTestCase
                 '$',
                 null,
                 'OK',
-                '{"key3":"value3"}'
+                '{"key3":"value3"}',
             ],
-            'override certain key - without subcommands' => [
+            'override certain key - without nxXx argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
                 '$.key2',
                 null,
                 'OK',
-                '{"key1":"value1","key2":"value3"}'
+                '{"key1":"value1","key2":"value3"}',
             ],
-            'append to json - without subcommands' => [
+            'append to json - without nxXx argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
                 '$.key3',
                 null,
                 'OK',
-                '{"key1":"value1","key2":"value2","key3":"value3"}'
+                '{"key1":"value1","key2":"value2","key3":"value3"}',
             ],
-            'override certain key - with XX subcommand' => [
+            'override certain key - with XX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
                 '$.key2',
                 'xx',
                 'OK',
-                '{"key1":"value1","key2":"value3"}'
+                '{"key1":"value1","key2":"value3"}',
             ],
-            'append to json - with NX subcommand' => [
+            'append to json - with NX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
                 '$.key3',
                 'nx',
                 'OK',
-                '{"key1":"value1","key2":"value2","key3":"value3"}'
+                '{"key1":"value1","key2":"value2","key3":"value3"}',
             ],
-            'override failed with XX subcommand' => [
+            'override failed with XX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value3"',
                 '$.key3',
                 'xx',
                 null,
-                '{"key1":"value1","key2":"value2"}'
+                '{"key1":"value1","key2":"value2"}',
             ],
-            'append failed with NX subcommand' => [
+            'append failed with NX argument' => [
                 'key',
                 '{"key1":"value1","key2":"value2"}',
                 '"value2"',
                 '$.key2',
                 'nx',
                 null,
-                '{"key1":"value1","key2":"value2"}'
-            ]
+                '{"key1":"value1","key2":"value2"}',
+            ],
         ];
     }
 }

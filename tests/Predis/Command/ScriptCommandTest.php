@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,16 +12,16 @@
 
 namespace Predis\Command;
 
-use PredisTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PredisTestCase;
 
 /**
  * @group realm-scripting
  */
 class ScriptCommandTest extends PredisTestCase
 {
-    const LUA_SCRIPT = 'return { KEYS[1], KEYS[2], ARGV[1], ARGV[2] }';
-    const LUA_SCRIPT_SHA1 = '6e07f61f502e36d123fe28523076af588f5c315e';
+    public const LUA_SCRIPT = 'return { KEYS[1], KEYS[2], ARGV[1], ARGV[2] }';
+    public const LUA_SCRIPT_SHA1 = '6e07f61f502e36d123fe28523076af588f5c315e';
 
     /**
      * @group disconnected
@@ -29,7 +30,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var CommandInterface */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript'))
+            ->onlyMethods(['getScript'])
             ->getMock();
 
         $this->assertSame('EVALSHA', $command->getId());
@@ -42,7 +43,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->exactly(2))
@@ -53,7 +54,7 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
         $this->assertSame(self::LUA_SCRIPT_SHA1, $command->getScriptHash());
     }
@@ -65,7 +66,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->once())
@@ -76,9 +77,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array('key1', 'key2'), $command->getKeys());
+        $this->assertSame(['key1', 'key2'], $command->getKeys());
     }
 
     /**
@@ -88,16 +89,16 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript'))
+            ->onlyMethods(['getScript'])
             ->getMock();
         $command
             ->expects($this->once())
             ->method('getScript')
             ->willReturn(self::LUA_SCRIPT);
 
-        $command->setArguments($arguments = array('value1', 'value2', 'value3'));
+        $command->setArguments($arguments = ['value1', 'value2', 'value3']);
 
-        $this->assertSame(array(), $command->getKeys());
+        $this->assertSame([], $command->getKeys());
     }
 
     /**
@@ -107,7 +108,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->once())
@@ -118,9 +119,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(-2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array('key1', 'key2'), $command->getKeys());
+        $this->assertSame(['key1', 'key2'], $command->getKeys());
     }
 
     /**
@@ -130,7 +131,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->once())
@@ -141,9 +142,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
+        $this->assertSame(array_merge([self::LUA_SCRIPT_SHA1, 2], $arguments), $command->getArguments());
     }
 
     /**
@@ -153,16 +154,16 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->once())
             ->method('getScript')
             ->willReturn(self::LUA_SCRIPT);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 0), $arguments), $command->getArguments());
+        $this->assertSame(array_merge([self::LUA_SCRIPT_SHA1, 0], $arguments), $command->getArguments());
     }
 
     /**
@@ -172,7 +173,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->once())
@@ -183,9 +184,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(-2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT_SHA1, 2), $arguments), $command->getArguments());
+        $this->assertSame(array_merge([self::LUA_SCRIPT_SHA1, 2], $arguments), $command->getArguments());
     }
 
     /**
@@ -195,7 +196,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->exactly(2))
@@ -206,9 +207,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $this->assertSame(array_merge(array(self::LUA_SCRIPT, 2), $arguments), $command->getEvalArguments());
+        $this->assertSame(array_merge([self::LUA_SCRIPT, 2], $arguments), $command->getEvalArguments());
     }
 
     /**
@@ -218,7 +219,7 @@ class ScriptCommandTest extends PredisTestCase
     {
         /** @var ScriptCommand|MockObject */
         $command = $this->getMockBuilder('Predis\Command\ScriptCommand')
-            ->onlyMethods(array('getScript', 'getKeysCount'))
+            ->onlyMethods(['getScript', 'getKeysCount'])
             ->getMock();
         $command
             ->expects($this->exactly(2))
@@ -229,9 +230,9 @@ class ScriptCommandTest extends PredisTestCase
             ->method('getKeysCount')
             ->willReturn(2);
 
-        $command->setArguments($arguments = array('key1', 'key2', 'value1', 'value2'));
+        $command->setArguments($arguments = ['key1', 'key2', 'value1', 'value2']);
 
-        $evalCMD = new RawCommand('EVAL', array_merge(array(self::LUA_SCRIPT, 2), $arguments));
+        $evalCMD = new RawCommand('EVAL', array_merge([self::LUA_SCRIPT, 2], $arguments));
 
         $this->assertRedisCommand($evalCMD, $command->getEvalCommand());
     }
