@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -59,13 +60,13 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param string $destination
-     * @param array $weights
-     * @param string $aggregate
-     * @param int $expectedResponse
-     * @param array $expectedResultSortedSet
+     * @param  array  $firstSortedSet
+     * @param  array  $secondSortedSet
+     * @param  string $destination
+     * @param  array  $weights
+     * @param  string $aggregate
+     * @param  int    $expectedResponse
+     * @param  array  $expectedResultSortedSet
      * @return void
      * @requiresRedisVersion >= 2.0.0
      */
@@ -117,8 +118,8 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
      * @param string $destination
      * @param $keys
      * @param $weights
-     * @param string $aggregate
-     * @param string $expectedExceptionMessage
+     * @param  string $aggregate
+     * @param  string $expectedExceptionMessage
      * @return void
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(
@@ -153,7 +154,14 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
             'with all arguments' => [
                 ['destination', ['key1', 'key2'], [1, 2], 'min'],
                 ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN'],
-            ]
+            ],
+            'with options array' => [
+                ['destination', ['key1', 'key2'], [
+                    'weights' => [1, 2],
+                    'aggregate' => 'min',
+                ]],
+                ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN'],
+            ],
         ];
     }
 
@@ -207,21 +215,21 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
                 1,
                 [],
                 'sum',
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with unexpected weights argument' => [
                 'destination',
                 ['key1'],
                 1,
                 'sum',
-                'Wrong weights argument type'
+                'Wrong weights argument type',
             ],
             'with unexpected aggregate argument' => [
                 'destination',
                 ['key1'],
                 [],
                 'wrong',
-                'Aggregate argument accepts only: min, max, sum values'
+                'Aggregate argument accepts only: min, max, sum values',
             ],
         ];
     }

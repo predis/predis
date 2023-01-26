@@ -1,0 +1,15 @@
+parameters:
+  level: 0
+
+  paths:
+    - tests/
+
+  ignoreErrors:
+    # Uses func_get_args()
+    - message: "#^Static method Predis\\\\Command\\\\RawCommand\\:\\:create\\(\\) invoked with 0 parameters, at least 1 required\\.$#"
+      count: 1
+      path: tests/Predis/Command/RawCommandTest.php
+    # Mockery
+    - message: "#^Call to an undefined method Predis\\\\Configuration\\\\Option\\\\AggregateTest\\:\\:getMockConnectionClass\\(\\)\\.$#"
+      count: 2
+      path: tests/Predis/Configuration/Option/AggregateTest.php

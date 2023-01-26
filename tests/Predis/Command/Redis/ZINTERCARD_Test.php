@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
@@ -8,7 +18,7 @@ use UnexpectedValueException;
 class ZINTERCARD_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,7 +26,7 @@ class ZINTERCARD_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -46,10 +56,10 @@ class ZINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param int $limit
-     * @param int $expectedResponse
+     * @param  array $firstSortedSet
+     * @param  array $secondSortedSet
+     * @param  int   $limit
+     * @param  int   $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -102,7 +112,7 @@ class ZINTERCARD_Test extends PredisCommandTestCase
      * @dataProvider unexpectedValuesProvider
      * @param $keys
      * @param $limit
-     * @param string $expectedExceptionMessage
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -139,26 +149,26 @@ class ZINTERCARD_Test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 0,
-                3
+                3,
             ],
             'with partial intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 4, 'member4'],
                 0,
-                2
+                2,
             ],
             'with no intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [4, 'member4', 5, 'member5', 6, 'member6'],
                 0,
-                0
+                0,
             ],
             'with full intersection and limit' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 1,
-                1
-            ]
+                1,
+            ],
         ];
     }
 
@@ -168,13 +178,13 @@ class ZINTERCARD_Test extends PredisCommandTestCase
             'with wrong type keys argument' => [
                 'wrong',
                 0,
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with wrong type limit argument' => [
                 ['key1', 'key'],
                 [1],
-                'Wrong limit argument type'
-            ]
+                'Wrong limit argument type',
+            ],
         ];
     }
 }

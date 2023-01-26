@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('channel1', 'channel2', 'channel3');
-        $expected = array('channel1', 'channel2', 'channel3');
+        $arguments = ['channel1', 'channel2', 'channel3'];
+        $expected = ['channel1', 'channel2', 'channel3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('channel1', 'channel2', 'channel3'));
-        $expected = array('channel1', 'channel2', 'channel3');
+        $arguments = [['channel1', 'channel2', 'channel3']];
+        $expected = ['channel1', 'channel2', 'channel3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('unsubscribe', 'channel', 1);
-        $expected = array('unsubscribe', 'channel', 1);
+        $raw = ['unsubscribe', 'channel', 1];
+        $expected = ['unsubscribe', 'channel', 1];
 
         $command = $this->getCommand();
 
@@ -82,7 +83,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('unsubscribe', 'channel', 0), $redis->unsubscribe('channel'));
+        $this->assertSame(['unsubscribe', 'channel', 0], $redis->unsubscribe('channel'));
         $this->assertSame('echoed', $redis->echo('echoed'));
     }
 
@@ -94,7 +95,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('unsubscribe', 'channel', 0), $redis->unsubscribe('channel'));
+        $this->assertSame(['unsubscribe', 'channel', 0], $redis->unsubscribe('channel'));
     }
 
     /**
@@ -105,8 +106,8 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('subscribe', 'channel', 1), $redis->subscribe('channel'));
-        $this->assertSame(array('unsubscribe', 'channel', 0), $redis->unsubscribe('channel'));
+        $this->assertSame(['subscribe', 'channel', 1], $redis->subscribe('channel'));
+        $this->assertSame(['unsubscribe', 'channel', 0], $redis->unsubscribe('channel'));
     }
 
     /**
@@ -117,12 +118,12 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('subscribe', 'channel:foo', 1), $redis->subscribe('channel:foo'));
-        $this->assertSame(array('subscribe', 'channel:bar', 2), $redis->subscribe('channel:bar'));
+        $this->assertSame(['subscribe', 'channel:foo', 1], $redis->subscribe('channel:foo'));
+        $this->assertSame(['subscribe', 'channel:bar', 2], $redis->subscribe('channel:bar'));
 
-        list($_, $unsubscribed1, $_) = $redis->unsubscribe();
-        list($_, $unsubscribed2, $_) = $redis->getConnection()->read();
-        $this->assertSameValues(array('channel:foo', 'channel:bar'), array($unsubscribed1, $unsubscribed2));
+        [$_, $unsubscribed1, $_] = $redis->unsubscribe();
+        [$_, $unsubscribed2, $_] = $redis->getConnection()->read();
+        $this->assertSameValues(['channel:foo', 'channel:bar'], [$unsubscribed1, $unsubscribed2]);
 
         $this->assertSame('echoed', $redis->echo('echoed'));
     }

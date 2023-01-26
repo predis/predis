@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONFORGET_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONFORGET_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,11 +57,11 @@ class JSONFORGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param int $expectedDeleteArgumentsCount
-     * @param string $expectedModifiedJson
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  int    $expectedDeleteArgumentsCount
+     * @param  string $expectedModifiedJson
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -79,28 +89,28 @@ class JSONFORGET_Test extends PredisCommandTestCase
                 'key',
                 '$.key2',
                 1,
-                '{"key1":"value1"}'
+                '{"key1":"value1"}',
             ],
             'with nested level' => [
                 ['key', '$', '{"key1":{"key2":"value2"}}'],
                 'key',
                 '$..key2',
                 1,
-                '{"key1":{}}'
+                '{"key1":{}}',
             ],
             'with nested level and same key on both levels' => [
                 ['key', '$', '{"key1":{"key2":"value2"},"key2":"value2"}'],
                 'key',
                 '$..key2',
                 2,
-                '{"key1":{}}'
+                '{"key1":{}}',
             ],
             'with wrong path' => [
                 ['key', '$', '{"key1":"value1","key2":"value2"}'],
                 'key',
                 '$.key3',
                 0,
-                '{"key1":"value1","key2":"value2"}'
+                '{"key1":"value1","key2":"value2"}',
             ],
         ];
     }

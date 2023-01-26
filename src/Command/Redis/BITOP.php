@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,9 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/bitop
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/bitop
  */
 class BITOP extends RedisCommand
 {
@@ -34,7 +33,7 @@ class BITOP extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (count($arguments) === 3 && is_array($arguments[2])) {
-            list($operation, $destination) = $arguments;
+            [$operation, $destination] = $arguments;
             $arguments = $arguments[2];
             array_unshift($arguments, $operation, $destination);
         }
