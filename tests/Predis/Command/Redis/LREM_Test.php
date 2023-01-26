@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class LREM_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 1, 'value');
-        $expected = array('key', 1, 'value');
+        $arguments = ['key', 1, 'value'];
+        $expected = ['key', 1, 'value'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -65,7 +66,7 @@ class LREM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', '_', 'b', '_', 'c', '_', 'd', '_');
 
         $this->assertSame(2, $redis->lrem('letters', 2, '_'));
-        $this->assertSame(array('a', 'b', 'c', '_', 'd', '_'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', '_', 'd', '_'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -78,7 +79,7 @@ class LREM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', '_', 'b', '_', 'c', '_', 'd', '_');
 
         $this->assertSame(2, $redis->lrem('letters', -2, '_'));
-        $this->assertSame(array('a', '_', 'b', '_', 'c', 'd'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', '_', 'b', '_', 'c', 'd'], $redis->lrange('letters', 0, -1));
     }
 
     /**
@@ -91,7 +92,7 @@ class LREM_Test extends PredisCommandTestCase
         $redis->rpush('letters', 'a', '_', 'b', '_', 'c', '_', 'd', '_');
 
         $this->assertSame(4, $redis->lrem('letters', 0, '_'));
-        $this->assertSame(array('a', 'b', 'c', 'd'), $redis->lrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd'], $redis->lrange('letters', 0, -1));
     }
 
     /**
