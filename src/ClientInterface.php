@@ -54,6 +54,7 @@ use Predis\Response\Status;
  * @method int               bfadd(string $key, $item)
  * @method int               bfexists(string $key, $item)
  * @method array             bfinfo(string $key, string $modifier = '')
+ * @method Status            bfloadchunk(string $key, int $iterator, $data)
  * @method array             bfmadd(string $key, ...$item)
  * @method array             bfmexists(string $key, ...$item)
  * @method Status            bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)

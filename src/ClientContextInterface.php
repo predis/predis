@@ -45,6 +45,7 @@ use Predis\Command\CommandInterface;
  * @method $this bfadd(string $key, $item)
  * @method $this bfexists(string $key, $item)
  * @method $this bfinfo(string $key, string $modifier = '')
+ * @method $this bfloadchunk(string $key, int $iterator, $data)
  * @method $this bfmadd(string $key, ...$item)
  * @method $this bfmexists(string $key, ...$item)
  * @method $this bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
