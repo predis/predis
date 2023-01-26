@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONSTRAPPEND_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,12 +57,12 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param string $value
-     * @param array $expectedStringLength
-     * @param string $expectedModifiedJson
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  string $value
+     * @param  array  $expectedStringLength
+     * @param  string $expectedModifiedJson
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -82,7 +92,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
                 '$.key2',
                 '"foo"',
                 [9],
-                '{"key1":"value1","key2":"value2foo"}'
+                '{"key1":"value1","key2":"value2foo"}',
             ],
             'appends to json string on nested level' => [
                 ['key', '$', '{"key1":{"key2":"value2"}}'],
@@ -90,7 +100,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
                 '$..key2',
                 '"foo"',
                 [9],
-                '{"key1":{"key2":"value2foo"}}'
+                '{"key1":{"key2":"value2foo"}}',
             ],
             'appends to json string on both levels' => [
                 ['key', '$', '{"key1":{"key2":"value2"},"key2":"value2"}'],
@@ -98,7 +108,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
                 '$..key2',
                 '"foo"',
                 [9, 9],
-                '{"key1":{"key2":"value2foo"},"key2":"value2foo"}'
+                '{"key1":{"key2":"value2foo"},"key2":"value2foo"}',
             ],
             'appends to non-json string' => [
                 ['key', '$', '{"key1":{"key2":[1,2,3]}}'],
@@ -106,7 +116,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
                 '$..key2',
                 '"foo"',
                 [null],
-                '{"key1":{"key2":[1,2,3]}}'
+                '{"key1":{"key2":[1,2,3]}}',
             ],
         ];
     }
