@@ -1,11 +1,21 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 class ZDIFFSTORE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -13,7 +23,7 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -45,10 +55,10 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSetDictionary
-     * @param array $secondSetDictionary
-     * @param array $expectedResponse
-     * @param int $expectedResultingElements
+     * @param  array $firstSetDictionary
+     * @param  array $secondSetDictionary
+     * @param  array $expectedResponse
+     * @param  int   $expectedResultingElements
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -68,7 +78,6 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->zrange('zdiffstore', 0, -1));
     }
 
-
     public function sortedSetsProvider(): array
     {
         return [
@@ -76,19 +85,19 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1', 'member2', 'member3'],
-                3
+                3,
             ],
             'partial intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3'],
-                1
+                1,
             ],
             'full intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [],
-                0
+                0,
             ],
         ];
     }

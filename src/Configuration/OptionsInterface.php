@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,16 +13,15 @@
 namespace Predis\Configuration;
 
 use Predis\Command\Processor\ProcessorInterface;
+
 /**
- * @property-read callable                    $aggregate   Custom aggregate connection initializer
- * @property-read callable                    $cluster     Aggregate connection initializer for clustering
- * @property-read Connection\FactoryInterface $connections Connection factory for creating new connections
- * @property-read bool                        $exceptions  Toggles exceptions in client for -ERR responses
- * @property-read ProcessorInterface          $prefix      Key prefixing strategy using the supplied string as prefix
- * @property-read Command\FactoryInterface    $commands    Command factory for creating Redis commands
- * @property-read callable                    $replication Aggregate connection initializer for replication
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @property callable                            $aggregate   Custom aggregate connection initializer
+ * @property callable                            $cluster     Aggregate connection initializer for clustering
+ * @property \Predis\Connection\FactoryInterface $connections Connection factory for creating new connections
+ * @property bool                                $exceptions  Toggles exceptions in client for -ERR responses
+ * @property ProcessorInterface                  $prefix      Key prefixing strategy using the supplied string as prefix
+ * @property \Predis\Command\FactoryInterface    $commands    Command factory for creating Redis commands
+ * @property callable                            $replication Aggregate connection initializer for replication
  */
 interface OptionsInterface
 {

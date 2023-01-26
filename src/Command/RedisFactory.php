@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -21,8 +22,6 @@ use Predis\Command\Resolver\CommandResolverInterface;
  * class in the Predis\Command\Redis namespace but this can be overridden for
  * any command ID simply by defining a new command handler class implementing
  * Predis\Command\CommandInterface.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class RedisFactory extends Factory
 {
@@ -33,11 +32,12 @@ class RedisFactory extends Factory
 
     public function __construct(CommandResolverInterface $commandResolver)
     {
-        $this->commands = array(
+        $this->commands = [
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
-        );
+        ];
+
         $this->commandResolver = $commandResolver;
     }
 
@@ -59,6 +59,7 @@ class RedisFactory extends Factory
         }
 
         $this->commands[$commandID] = $commandClass;
+
         return $commandClass;
     }
 
@@ -74,5 +75,4 @@ class RedisFactory extends Factory
         // details of the implementation of this mechanism.
         $this->commands[strtoupper($commandID)] = null;
     }
-
 }

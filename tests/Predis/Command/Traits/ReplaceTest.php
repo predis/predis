@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
 use Predis\Command\Command as RedisCommand;
@@ -13,7 +23,7 @@ class ReplaceTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Replace;
 
             public function getId()
@@ -25,8 +35,8 @@ class ReplaceTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $arguments
-     * @param array $expectedResponse
+     * @param  array $arguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(array $arguments, array $expectedResponse): void
@@ -39,7 +49,7 @@ class ReplaceTest extends PredisTestCase
     public function argumentsProvider(): array
     {
         return [
-            'with boolean - true' => [[true],['REPLACE']],
+            'with boolean - true' => [[true], ['REPLACE']],
             'with boolean - false' => [[false], []],
             'with non boolean' => [['string'], ['string']],
         ];

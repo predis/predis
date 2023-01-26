@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis allows to set Lua scripts as read-only operations for replication.
 // This works for both EVAL and EVALSHA and also for the client-side abstraction
@@ -29,7 +30,7 @@ use Predis\Replication\ReplicationStrategy;
 
 class HashMultipleGetAll extends ScriptCommand
 {
-    const BODY = <<<LUA
+    public const BODY = <<<LUA
 local hashes = {}
 for _, key in pairs(KEYS) do
     table.insert(hashes, key)
@@ -46,15 +47,15 @@ LUA;
 
 // ------------------------------------------------------------------------- //
 
-$parameters = array(
+$parameters = [
     'tcp://127.0.0.1:6381?role=master&database=15',
     'tcp://127.0.0.1:6382?role=slave&alias=slave-01&database=15',
-);
+];
 
-$options = array(
-    'commands' => array(
+$options = [
+    'commands' => [
         'hmgetall' => 'HashMultipleGetAll',
-    ),
+    ],
     'replication' => function () {
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
@@ -63,7 +64,7 @@ $options = array(
 
         return $replication;
     },
-);
+];
 
 // ------------------------------------------------------------------------- //
 

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SDIFF_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key1', 'key2', 'key3');
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = ['key1', 'key2', 'key3'];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class SDIFF_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('key1', 'key2', 'key3'));
-        $expected = array('key1', 'key2', 'key3');
+        $arguments = [['key1', 'key2', 'key3']];
+        $expected = ['key1', 'key2', 'key3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class SDIFF_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('member1', 'member2', 'member3');
-        $expected = array('member1', 'member2', 'member3');
+        $raw = ['member1', 'member2', 'member3'];
+        $expected = ['member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
 
@@ -83,8 +84,8 @@ class SDIFF_Test extends PredisCommandTestCase
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st'));
-        $this->assertSameValues(array('a', 'b', 'c', 'd', 'e', 'f', 'g'), $redis->sdiff('letters:1st', 'letters:2nd'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sdiff('letters:1st'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sdiff('letters:1st', 'letters:2nd'));
     }
 
     /**
@@ -98,8 +99,8 @@ class SDIFF_Test extends PredisCommandTestCase
         $redis->sadd('letters:2nd', 'a', 'c', 'f', 'g');
         $redis->sadd('letters:3rd', 'a', 'b', 'e', 'f');
 
-        $this->assertSameValues(array('b', 'd', 'e'), $redis->sdiff('letters:1st', 'letters:2nd'));
-        $this->assertSameValues(array('d'), $redis->sdiff('letters:1st', 'letters:2nd', 'letters:3rd'));
+        $this->assertSameValues(['b', 'd', 'e'], $redis->sdiff('letters:1st', 'letters:2nd'));
+        $this->assertSameValues(['d'], $redis->sdiff('letters:1st', 'letters:2nd', 'letters:3rd'));
     }
 
     /**

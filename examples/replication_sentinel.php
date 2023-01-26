@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Predis supports redis-sentinel to provide high availability in master / slave
 // scenarios. The only but relevant difference with a basic replication scenario
@@ -25,16 +26,16 @@ require __DIR__.'/shared.php';
 // without an explicit timeout value.
 //
 // NOTE: in real-world scenarios sentinels should be running on different hosts!
-$sentinels = array(
+$sentinels = [
     'tcp://127.0.0.1:5380?timeout=0.100',
     'tcp://127.0.0.1:5381?timeout=0.100',
     'tcp://127.0.0.1:5382?timeout=0.100',
-);
+];
 
-$client = new Predis\Client($sentinels, array(
+$client = new Predis\Client($sentinels, [
     'replication' => 'sentinel',
     'service' => 'mymaster',
-));
+]);
 
 // Read operation.
 $exists = $client->exists('foo') ? 'yes' : 'no';

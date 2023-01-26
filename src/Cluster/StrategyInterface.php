@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,8 +20,6 @@ use Predis\Command\CommandInterface;
  * keys extracted from supported commands.
  *
  * This is mostly useful to support clustering via client-side sharding.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 interface StrategyInterface
 {
@@ -30,7 +29,7 @@ interface StrategyInterface
      *
      * @param CommandInterface $command Command instance.
      *
-     * @return int
+     * @return int|null
      */
     public function getSlot(CommandInterface $command);
 
@@ -40,7 +39,7 @@ interface StrategyInterface
      *
      * @param string $key Key string.
      *
-     * @return int
+     * @return int|null
      */
     public function getSlotByKey($key);
 

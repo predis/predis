@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,14 +12,13 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Cluster\Hash;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 
 /**
  * Configures an hash generator used by the redis-cluster connection backend.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class CRC16 implements OptionInterface
 {
@@ -37,7 +37,7 @@ class CRC16 implements OptionInterface
         } elseif ($description === 'phpiredis') {
             return new Hash\PhpiredisCRC16();
         } else {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'String value for the crc16 option must be either `predis` or `phpiredis`'
             );
         }
@@ -58,7 +58,7 @@ class CRC16 implements OptionInterface
             return $value;
         } else {
             $class = get_class($this);
-            throw new \InvalidArgumentException("$class expects a valid hash generator");
+            throw new InvalidArgumentException("$class expects a valid hash generator");
         }
     }
 

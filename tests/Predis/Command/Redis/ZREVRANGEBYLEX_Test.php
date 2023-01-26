@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,12 +39,12 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $modifiers = array(
-            'limit' => array(0, 100),
-        );
+        $modifiers = [
+            'limit' => [0, 100],
+        ];
 
-        $arguments = array('zset', '[a', '[z', $modifiers);
-        $expected = array('zset', '[a', '[z', 'LIMIT', 0, 100);
+        $arguments = ['zset', '[a', '[z', $modifiers];
+        $expected = ['zset', '[a', '[z', 'LIMIT', 0, 100];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -56,8 +57,8 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithNamedLimit(): void
     {
-        $arguments = array('zset', '[a', '[z', array('limit' => array('offset' => 1, 'count' => 2)));
-        $expected = array('zset', '[a', '[z', 'LIMIT', 1, 2);
+        $arguments = ['zset', '[a', '[z', ['limit' => ['offset' => 1, 'count' => 2]]];
+        $expected = ['zset', '[a', '[z', 'LIMIT', 1, 2];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -70,8 +71,8 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('a', 'b', 'c');
-        $expected = array('a', 'b', 'c');
+        $raw = ['a', 'b', 'c'];
+        $expected = ['a', 'b', 'c'];
 
         $command = $this->getCommand();
 
@@ -88,10 +89,10 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
-        $this->assertSame(array('g', 'f', 'e', 'd', 'c', 'b', 'a'), $redis->zrevrangebylex('letters', '+', '-'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '-', '+'));
-        $this->assertSame(array(), $redis->zrevrangebylex('unknown', '-', '+'));
-        $this->assertSame(array(), $redis->zrevrangebylex('unknown', '+', '-'));
+        $this->assertSame(['g', 'f', 'e', 'd', 'c', 'b', 'a'], $redis->zrevrangebylex('letters', '+', '-'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '+', '-'));
     }
 
     /**
@@ -104,12 +105,12 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
-        $this->assertSame(array('a'), $redis->zrevrangebylex('letters', '[a', '[a'));
-        $this->assertSame(array('f', 'e', 'd', 'c'), $redis->zrevrangebylex('letters', '[f', '[c'));
-        $this->assertSame(array('g', 'f', 'e'), $redis->zrevrangebylex('letters', '+', '[e'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '-', '[c'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '[z', '[x'));
-        $this->assertSame(array(), $redis->zrevrangebylex('unknown', '[1', '[0'));
+        $this->assertSame(['a'], $redis->zrevrangebylex('letters', '[a', '[a'));
+        $this->assertSame(['f', 'e', 'd', 'c'], $redis->zrevrangebylex('letters', '[f', '[c'));
+        $this->assertSame(['g', 'f', 'e'], $redis->zrevrangebylex('letters', '+', '[e'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '-', '[c'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '[z', '[x'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '[1', '[0'));
     }
 
     /**
@@ -122,12 +123,12 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '(a', '(a'));
-        $this->assertSame(array('e', 'd'), $redis->zrevrangebylex('letters', '(f', '(c'));
-        $this->assertSame(array('g', 'f'), $redis->zrevrangebylex('letters', '+', '(e'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '-', '(c'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '(z', '(x'));
-        $this->assertSame(array(), $redis->zrevrangebylex('unknown', '(1', '(0'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '(a', '(a'));
+        $this->assertSame(['e', 'd'], $redis->zrevrangebylex('letters', '(f', '(c'));
+        $this->assertSame(['g', 'f'], $redis->zrevrangebylex('letters', '+', '(e'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '-', '(c'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '(z', '(x'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '(1', '(0'));
     }
 
     /**
@@ -140,11 +141,11 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '[a', '(a'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '(a', '[a'));
-        $this->assertSame(array('f', 'e', 'd'), $redis->zrevrangebylex('letters', '[f', '(c'));
-        $this->assertSame(array('e', 'd', 'c'), $redis->zrevrangebylex('letters', '(f', '[c'));
-        $this->assertSame(array(), $redis->zrevrangebylex('unknown', '[5', '(0'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '[a', '(a'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '(a', '[a'));
+        $this->assertSame(['f', 'e', 'd'], $redis->zrevrangebylex('letters', '[f', '(c'));
+        $this->assertSame(['e', 'd', 'c'], $redis->zrevrangebylex('letters', '(f', '[c'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '[5', '(0'));
     }
 
     /**
@@ -157,11 +158,11 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
-        $this->assertSame(array('e', 'd', 'c'), $redis->zrevrangebylex('letters', '+', '-', 'LIMIT', '2', '3'));
-        $this->assertSame(array('e', 'd', 'c'), $redis->zrevrangebylex('letters', '+', '-', array('limit' => array(2, 3))));
-        $this->assertSame(array('e', 'd', 'c'), $redis->zrevrangebylex('letters', '+', '-', array('limit' => array('offset' => 2, 'count' => 3))));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '[f', '[a', 'LIMIT', '2', '0'));
-        $this->assertSame(array(), $redis->zrevrangebylex('letters', '[f', '[a', 'LIMIT', '-4', '2'));
+        $this->assertSame(['e', 'd', 'c'], $redis->zrevrangebylex('letters', '+', '-', 'LIMIT', '2', '3'));
+        $this->assertSame(['e', 'd', 'c'], $redis->zrevrangebylex('letters', '+', '-', ['limit' => [2, 3]]));
+        $this->assertSame(['e', 'd', 'c'], $redis->zrevrangebylex('letters', '+', '-', ['limit' => ['offset' => 2, 'count' => 3]]));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '[f', '[a', 'LIMIT', '2', '0'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '[f', '[a', 'LIMIT', '-4', '2'));
     }
 
     /**
