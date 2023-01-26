@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\By;
 
 use InvalidArgumentException;
@@ -16,7 +26,7 @@ class GeoByTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use GeoBy;
 
             public function getId()
@@ -28,8 +38,8 @@ class GeoByTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(array $actualArguments, array $expectedArguments): void
@@ -45,7 +55,7 @@ class GeoByTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValue(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid BY argument value given");
+        $this->expectExceptionMessage('Invalid BY argument value given');
 
         $this->testClass->setArguments(['test']);
     }
@@ -55,11 +65,11 @@ class GeoByTest extends PredisTestCase
         return [
             'BYRADIUS argument' => [
                 ['first argument', new ByRadius(1, 'km'), 'third argument'],
-                ['first argument', 'BYRADIUS', 1, 'km', 'third argument']
+                ['first argument', 'BYRADIUS', 1, 'km', 'third argument'],
             ],
             'BYBOX argument' => [
                 ['first argument', new ByBox(1, 1, 'km'), 'third argument'],
-                ['first argument', 'BYBOX', 1, 1, 'km', 'third argument']
+                ['first argument', 'BYBOX', 1, 1, 'km', 'third argument'],
             ],
         ];
     }

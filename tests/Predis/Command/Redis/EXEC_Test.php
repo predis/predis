@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -39,9 +40,9 @@ class EXEC_Test extends PredisCommandTestCase
     public function testFilterArguments(): void
     {
         $command = $this->getCommand();
-        $command->setArguments(array());
+        $command->setArguments([]);
 
-        $this->assertSame(array(), $command->getArguments());
+        $this->assertSame([], $command->getArguments());
     }
 
     /**
@@ -49,8 +50,8 @@ class EXEC_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('tx1', 'tx2');
-        $expected = array('tx1', 'tx2');
+        $raw = ['tx1', 'tx2'];
+        $expected = ['tx1', 'tx2'];
 
         $command = $this->getCommand();
 
@@ -68,7 +69,7 @@ class EXEC_Test extends PredisCommandTestCase
         $redis->echo('tx1');
         $redis->echo('tx2');
 
-        $this->assertSame(array('tx1', 'tx2'), $redis->exec());
+        $this->assertSame(['tx1', 'tx2'], $redis->exec());
     }
 
     /**
@@ -80,7 +81,7 @@ class EXEC_Test extends PredisCommandTestCase
 
         $redis->multi();
 
-        $this->assertSame(array(), $redis->exec());
+        $this->assertSame([], $redis->exec());
     }
 
     /**
@@ -95,7 +96,7 @@ class EXEC_Test extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $redis->exists('foo');
 
-        $this->assertEquals(array('PONG', 'OK', 1), $redis->exec());
+        $this->assertEquals(['PONG', 'OK', 1], $redis->exec());
     }
 
     /**

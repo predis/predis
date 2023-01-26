@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONCLEAR_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONCLEAR_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,11 +57,11 @@ class JSONCLEAR_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param int $expectedClearValues
-     * @param string $expectedModifiedJson
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  int    $expectedClearValues
+     * @param  string $expectedModifiedJson
      * @return void
      * @requiresRedisJsonVersion >= 2.0.0
      */
@@ -79,36 +89,36 @@ class JSONCLEAR_Test extends PredisCommandTestCase
                 'key',
                 '$.key2',
                 1,
-                '{"key1":"value1","key2":[]}'
+                '{"key1":"value1","key2":[]}',
             ],
             'with json object' => [
                 ['key', '$', '{"key1":"value1","key2":{"key3":"value3"}}'],
                 'key',
                 '$.key2',
                 1,
-                '{"key1":"value1","key2":{}}'
+                '{"key1":"value1","key2":{}}',
             ],
             'with numeric values' => [
                 ['key', '$', '{"key1":"value1","key2":1}'],
                 'key',
                 '$.key2',
                 1,
-                '{"key1":"value1","key2":0}'
+                '{"key1":"value1","key2":0}',
             ],
             'with all accepted values' => [
                 ['key', '$', '{"key1":1,"key2":{"key3":"value3"},"key3":[1,2,3]}'],
                 'key',
                 '$.*',
                 3,
-                '{"key1":0,"key2":{},"key3":[]}'
+                '{"key1":0,"key2":{},"key3":[]}',
             ],
             'with string and boolean value' => [
                 ['key', '$', '{"key1":"value1","key2":true}'],
                 'key',
                 '$.*',
                 0,
-                '{"key1":"value1","key2":true}'
-            ]
+                '{"key1":"value1","key2":true}',
+            ],
         ];
     }
 }

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,12 +12,13 @@
 
 namespace Predis\Configuration\Option;
 
+use InvalidArgumentException;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
-use Predis\Connection\PhpiredisStreamConnection;
 use Predis\Connection\PhpiredisSocketConnection;
+use Predis\Connection\PhpiredisStreamConnection;
 
 /**
  * Configures a new connection factory instance.
@@ -24,8 +26,6 @@ use Predis\Connection\PhpiredisSocketConnection;
  * The client uses the connection factory to create the underlying connections
  * to single redis nodes in a single-server configuration or in replication and
  * cluster configurations.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Connections implements OptionInterface
 {
@@ -45,7 +45,7 @@ class Connections implements OptionInterface
         } elseif (is_string($value)) {
             return $this->createFactoryByString($options, $value);
         } else {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 '%s expects a valid connection factory', static::class
             ));
         }
@@ -102,7 +102,7 @@ class Connections implements OptionInterface
          */
         $factory = $this->getDefault($options);
 
-        switch(strtolower($value)) {
+        switch (strtolower($value)) {
             case 'phpiredis':
             case 'phpiredis-stream':
                 $factory->define('tcp', PhpiredisStreamConnection::class);
@@ -120,7 +120,7 @@ class Connections implements OptionInterface
                 return $factory;
 
             default:
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     '%s does not recognize `%s` as a supported configuration string', static::class, $value
                 ));
         }

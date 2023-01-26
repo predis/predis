@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class GEODIST_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'member:1', 'member:2', 'km');
-        $expected = array('key', 'member:1', 'member:2', 'km');
+        $arguments = ['key', 'member:1', 'member:2', 'km'];
+        $expected = ['key', 'member:1', 'member:2', 'km'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class GEODIST_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('103.31822459492736');
-        $expected = array('103.31822459492736');
+        $raw = ['103.31822459492736'];
+        $expected = ['103.31822459492736'];
 
         $command = $this->getCommand();
 
