@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\To;
 
 use Predis\Command\Argument\Server\To;
@@ -12,6 +22,7 @@ trait ServerTo
 
         if (static::$toArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -21,6 +32,7 @@ trait ServerTo
         if (null === $toArgument) {
             array_splice($arguments, static::$toArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
+
             return;
         }
 

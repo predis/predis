@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,9 +16,7 @@ namespace Predis\Command;
  * Base class used to implement an higher level abstraction for commands based
  * on Lua scripting with EVAL and EVALSHA.
  *
- * @link http://redis.io/commands/eval
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/eval
  */
 abstract class ScriptCommand extends Command
 {
@@ -79,7 +78,7 @@ abstract class ScriptCommand extends Command
             $numkeys = count($arguments) + $numkeys;
         }
 
-        $arguments = array_merge(array($this->getScriptHash(), (int) $numkeys), $arguments);
+        $arguments = array_merge([$this->getScriptHash(), (int) $numkeys], $arguments);
 
         parent::setArguments($arguments);
     }

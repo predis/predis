@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,9 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/sort
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/sort
  */
 class SORT extends RedisCommand
 {
@@ -39,7 +38,7 @@ class SORT extends RedisCommand
             return;
         }
 
-        $query = array($arguments[0]);
+        $query = [$arguments[0]];
         $sortParams = array_change_key_case($arguments[1], CASE_UPPER);
 
         if (isset($sortParams['BY'])) {

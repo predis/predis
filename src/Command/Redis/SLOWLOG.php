@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,9 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/slowlog
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/slowlog
  */
 class SLOWLOG extends RedisCommand
 {
@@ -34,15 +33,15 @@ class SLOWLOG extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
-            $log = array();
+            $log = [];
 
             foreach ($data as $index => $entry) {
-                $log[$index] = array(
+                $log[$index] = [
                     'id' => $entry[0],
                     'timestamp' => $entry[1],
                     'duration' => $entry[2],
                     'command' => $entry[3],
-                );
+                ];
             }
 
             return $log;
