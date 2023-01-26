@@ -1,30 +1,36 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\CuckooFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-/**
- * @group commands
- * @group realm-bloom
- */
-class BFSCANDUMP_Test extends PredisCommandTestCase
+class CFADD_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return BFSCANDUMP::class;
+        return CFADD::class;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-        return 'BFSCANDUMP';
+        return 'CFADD';
     }
 
     /**
@@ -32,8 +38,8 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $actualArguments = ['key', 1];
-        $expectedArguments = ['key', 1];
+        $actualArguments = ['key', 'item'];
+        $expectedArguments = ['key', 'item'];
 
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
@@ -54,16 +60,13 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
-    public function testScanDumpReturnsCorrectDataChunk(): void
+    public function testAddItemToCuckooFilter(): void
     {
-        $expectedIterator = 1;
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item1');
-        [$iterator, $dataChunk] = $redis->bfscandump('key', 0);
-
-        $this->assertSame($expectedIterator, $iterator);
-        $this->assertNotEmpty($dataChunk);
+        $actualResponse = $redis->cfadd('key', 'item');
+        $this->assertSame(1, $actualResponse);
+        $this->assertSame(1, $redis->cfexists('key', 'item'));
     }
 
     /**
@@ -77,7 +80,7 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('bfscandump_foo', 'bar');
-        $redis->bfscandump('bfscandump_foo', 0);
+        $redis->set('cfadd_foo', 'bar');
+        $redis->cfadd('cfadd_foo', 'foo');
     }
 }

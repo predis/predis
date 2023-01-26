@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class HSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
-        $expected = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
+        $arguments = ['key', 0, 'MATCH', 'field:*', 'COUNT', 10];
+        $expected = ['key', 0, 'MATCH', 'field:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class HSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsBasicUsage(): void
     {
-        $arguments = array('key', 0);
-        $expected = array('key', 0);
+        $arguments = ['key', 0];
+        $expected = ['key', 0];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class HSCAN_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithOptionsArray(): void
     {
-        $arguments = array('key', 0, array('match' => 'field:*', 'count' => 10));
-        $expected = array('key', 0, 'MATCH', 'field:*', 'COUNT', 10);
+        $arguments = ['key', 0, ['match' => 'field:*', 'count' => 10]];
+        $expected = ['key', 0, 'MATCH', 'field:*', 'COUNT', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,8 +81,8 @@ class HSCAN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('3', array('field:1', '1', 'field:2', '2', 'field:3', '3'));
-        $expected = array('3', array('field:1' => '1', 'field:2' => '2', 'field:3' => '3'));
+        $raw = ['3', ['field:1', '1', 'field:2', '2', 'field:3', '3']];
+        $expected = ['3', ['field:1' => '1', 'field:2' => '2', 'field:3' => '3']];
 
         $command = $this->getCommand();
 
@@ -94,8 +95,8 @@ class HSCAN_Test extends PredisCommandTestCase
      */
     public function testScanWithoutMatch(): void
     {
-        $expectedFields = array('field:one', 'field:two', 'field:three', 'field:four');
-        $expectedValues = array('one', 'two', 'three', 'four');
+        $expectedFields = ['field:one', 'field:two', 'field:three', 'field:four'];
+        $expectedValues = ['one', 'two', 'three', 'four'];
 
         $redis = $this->getClient();
         $redis->hmset('key', array_combine($expectedFields, $expectedValues));
@@ -114,12 +115,12 @@ class HSCAN_Test extends PredisCommandTestCase
     public function testScanWithMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->hmset('key', array('field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four'));
+        $redis->hmset('key', ['field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four']);
 
         $response = $redis->hscan('key', 0, 'MATCH', 'field:t*');
 
-        $this->assertSame(array('field:two', 'field:three'), array_keys($response[1]));
-        $this->assertSame(array('two', 'three'), array_values($response[1]));
+        $this->assertSame(['field:two', 'field:three'], array_keys($response[1]));
+        $this->assertSame(['two', 'three'], array_values($response[1]));
     }
 
     /**
@@ -129,7 +130,7 @@ class HSCAN_Test extends PredisCommandTestCase
     public function testScanWithNoMatchingMembers(): void
     {
         $redis = $this->getClient();
-        $redis->hmset('key', array('field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four'));
+        $redis->hmset('key', ['field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four']);
 
         $response = $redis->hscan('key', 0, 'MATCH', 'nofield:*');
 

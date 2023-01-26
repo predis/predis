@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use UnexpectedValueException;
@@ -7,7 +17,7 @@ use UnexpectedValueException;
 class ZRANGESTORE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -45,16 +55,16 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider rangesProvider
-     * @param array $actualSortedSet
-     * @param int|string $min
-     * @param int|string $max
+     * @param array       $actualSortedSet
+     * @param int|string  $min
+     * @param int|string  $max
      * @param string|bool $by
-     * @param bool $rev
-     * @param bool $limit
-     * @param int $offset
-     * @param int $count
-     * @param int $expectedResultingElements
-     * @param array $expectedResponse
+     * @param bool        $rev
+     * @param bool        $limit
+     * @param int         $offset
+     * @param int         $count
+     * @param int         $expectedResultingElements
+     * @param array       $expectedResponse
      * @requiresRedisVersion >= 6.2.0
      * @return void
      */
@@ -92,14 +102,14 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param int|string $min
-     * @param int|string $max
+     * @param int|string  $min
+     * @param int|string  $max
      * @param string|bool $by
      * @param $rev
      * @param $limit
-     * @param int $offset
-     * @param int $count
-     * @param string $expectedExceptionMessage
+     * @param  int    $offset
+     * @param  int    $count
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -161,7 +171,7 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
             'with BYSCORE/BYLEX argument, REV argument and LIMIT' => [
                 ['destination', 'source', 0, -1, 'bylex', true, true, 0, 1],
                 ['destination', 'source', 0, -1, 'BYLEX', 'REV', 'LIMIT', 0, 1],
-            ]
+            ],
         ];
     }
 
@@ -259,14 +269,14 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     {
         return [
             'wrong BY argument value' => [
-                 0, -1, 'wrong value', false, false, 0, 0, "By argument accepts only \"bylex\" and \"byscore\" values",
+                0, -1, 'wrong value', false, false, 0, 0, 'By argument accepts only "bylex" and "byscore" values',
             ],
             'wrong REV argument type' => [
                 0, -1, false, 'wrong value', false, 0, 0, 'Wrong rev argument type',
             ],
             'wrong LIMIT argument type' => [
-                0, -1, false, false, 'wrong value', 0, 0, 'Wrong limit argument type'
-            ]
+                0, -1, false, false, 'wrong value', 0, 0, 'Wrong limit argument type',
+            ],
         ];
     }
 }

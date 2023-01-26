@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,14 +12,11 @@
 
 namespace Predis\Command\Redis;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Command;
 use Predis\Command\CommandInterface;
+use PredisTestCase;
 
-/**
- *
- */
 abstract class PredisCommandTestCase extends PredisTestCase
 {
     /**
@@ -50,7 +48,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new client instance.
      *
-     * @param bool $flushdb Flush selected database before returning the client
+     * @param  bool   $flushdb Flush selected database before returning the client
      * @return Client
      */
     public function getClient(bool $flushdb = true): Client
@@ -81,7 +79,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance with the specified arguments.
      *
-     * @param ... List of arguments for the command
+     * @param mixed ...$arguments List of arguments for the command
      *
      * @return CommandInterface
      */
@@ -122,7 +120,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
      */
     public function testRawArguments(): void
     {
-        $expected = array('1st', '2nd', '3rd', '4th');
+        $expected = ['1st', '2nd', '3rd', '4th'];
 
         $command = $this->getCommand();
         $command->setRawArguments($expected);
