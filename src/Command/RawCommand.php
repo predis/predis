@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -21,8 +22,6 @@ namespace Predis\Command;
  * of Predis\Client or managing internals like Redis Sentinel or Cluster as they
  * are not potentially subject to hijacking from third party libraries when they
  * override command handlers for standard Redis commands.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 final class RawCommand implements CommandInterface
 {
@@ -34,7 +33,7 @@ final class RawCommand implements CommandInterface
      * @param string $commandID Command ID
      * @param array  $arguments Command arguments
      */
-    public function __construct($commandID, array $arguments = array())
+    public function __construct($commandID, array $arguments = [])
     {
         $this->commandID = strtoupper($commandID);
         $this->setArguments($arguments);
@@ -44,11 +43,11 @@ final class RawCommand implements CommandInterface
      * Creates a new raw command using a variadic method.
      *
      * @param string $commandID Redis command ID
-     * @param string ...        Arguments list for the command
+     * @param string ...$args   Arguments list for the command
      *
      * @return CommandInterface
      */
-    public static function create($commandID /* [ $arg, ... */)
+    public static function create($commandID, ...$args)
     {
         $arguments = func_get_args();
 
@@ -111,9 +110,7 @@ final class RawCommand implements CommandInterface
      */
     public function getSlot()
     {
-        if (isset($this->slot)) {
-            return $this->slot;
-        }
+        return $this->slot ?? null;
     }
 
     /**

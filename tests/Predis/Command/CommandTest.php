@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,10 +13,8 @@
 namespace Predis\Command;
 
 use PredisTestCase;
+use stdClass;
 
-/**
- *
- */
 class CommandTest extends PredisTestCase
 {
     /**
@@ -43,7 +42,7 @@ class CommandTest extends PredisTestCase
      */
     public function testSetRawArguments(): void
     {
-        $arguments = array('1st', '2nd', '3rd');
+        $arguments = ['1st', '2nd', '3rd'];
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setRawArguments($arguments);
@@ -59,7 +58,7 @@ class CommandTest extends PredisTestCase
      */
     public function testSetArguments(): void
     {
-        $arguments = array('1st', '2nd', '3rd');
+        $arguments = ['1st', '2nd', '3rd'];
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setArguments($arguments);
@@ -72,7 +71,7 @@ class CommandTest extends PredisTestCase
      */
     public function testGetArgumentAtIndex(): void
     {
-        $arguments = array('1st', '2nd', '3rd');
+        $arguments = ['1st', '2nd', '3rd'];
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
         $command->setArguments($arguments);
@@ -101,18 +100,18 @@ class CommandTest extends PredisTestCase
         $slot = 1024;
 
         $command = $this->getMockForAbstractClass('Predis\Command\Command');
-        $command->setRawArguments(array('key'));
+        $command->setRawArguments(['key']);
 
         $this->assertNull($command->getSlot());
 
         $command->setSlot($slot);
         $this->assertSame($slot, $command->getSlot());
 
-        $command->setArguments(array('key'));
+        $command->setArguments(['key']);
         $this->assertNull($command->getSlot());
 
         $command->setSlot($slot);
-        $command->setRawArguments(array('key'));
+        $command->setRawArguments(['key']);
         $this->assertNull($command->getSlot());
     }
 
@@ -121,15 +120,15 @@ class CommandTest extends PredisTestCase
      */
     public function testNormalizeArguments(): void
     {
-        $arguments = array('arg1', 'arg2', 'arg3', 'arg4');
+        $arguments = ['arg1', 'arg2', 'arg3', 'arg4'];
 
         $this->assertSame($arguments, Command::normalizeArguments($arguments));
-        $this->assertSame($arguments, Command::normalizeArguments(array($arguments)));
+        $this->assertSame($arguments, Command::normalizeArguments([$arguments]));
 
-        $arguments = array(array(), array());
+        $arguments = [[], []];
         $this->assertSame($arguments, Command::normalizeArguments($arguments));
 
-        $arguments = array(new \stdClass());
+        $arguments = [new stdClass()];
         $this->assertSame($arguments, Command::normalizeArguments($arguments));
     }
 
@@ -138,12 +137,12 @@ class CommandTest extends PredisTestCase
      */
     public function testNormalizeVariadic(): void
     {
-        $arguments = array('key', 'value1', 'value2', 'value3');
+        $arguments = ['key', 'value1', 'value2', 'value3'];
 
         $this->assertSame($arguments, Command::normalizeVariadic($arguments));
-        $this->assertSame($arguments, Command::normalizeVariadic(array('key', array('value1', 'value2', 'value3'))));
+        $this->assertSame($arguments, Command::normalizeVariadic(['key', ['value1', 'value2', 'value3']]));
 
-        $arguments = array(new \stdClass());
+        $arguments = [new stdClass()];
         $this->assertSame($arguments, Command::normalizeVariadic($arguments));
     }
 }

@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\From;
 
 use InvalidArgumentException;
@@ -16,7 +26,7 @@ class GeoFromTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use GeoFrom;
 
             public function getId()
@@ -28,8 +38,8 @@ class GeoFromTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(array $actualArguments, array $expectedArguments): void
@@ -45,7 +55,7 @@ class GeoFromTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValue(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid FROM argument value given");
+        $this->expectExceptionMessage('Invalid FROM argument value given');
 
         $this->testClass->setArguments(['test']);
     }
@@ -55,11 +65,11 @@ class GeoFromTest extends PredisTestCase
         return [
             'FROMLONLAT argument' => [
                 ['first argument', new FromLonLat(1.1, 2.2), 'third argument'],
-                ['first argument', 'FROMLONLAT', 1.1, 2.2, 'third argument']
+                ['first argument', 'FROMLONLAT', 1.1, 2.2, 'third argument'],
             ],
             'FROMMEMBER argument' => [
                 ['first argument', new FromMember('member1'), 'third argument'],
-                ['first argument', 'FROMMEMBER', 'member1', 'third argument']
+                ['first argument', 'FROMMEMBER', 'member1', 'third argument'],
             ],
         ];
     }

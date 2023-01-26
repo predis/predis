@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,15 +39,15 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array(
+        $arguments = [
             'Sicily', 'Agrigento', 100, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
-        $expected = array(
+        $expected = [
             'Sicily', 'Agrigento', 100, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -59,8 +60,8 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithComplexOptions(): void
     {
-        $arguments = array(
-            'Sicily', 'Agrigento', 100, 'km', array(
+        $arguments = [
+            'Sicily', 'Agrigento', 100, 'km', [
                 'store' => 'key:store',
                 'storedist' => 'key:storedist',
                 'withdist' => true,
@@ -68,13 +69,13 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
                 'withhash' => true,
                 'count' => 1,
                 'sort' => 'asc',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array(
+        $expected = [
             'Sicily', 'Agrigento', 100, 'km',
             'WITHCOORD', 'WITHDIST', 'WITHHASH', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist',
-        );
+        ];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -87,8 +88,8 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithSpecificOptionsSetToFalse(): void
     {
-        $arguments = array(
-            'Sicily', 'Agrigento', 100, 'km', array(
+        $arguments = [
+            'Sicily', 'Agrigento', 100, 'km', [
                 'store' => 'key:store',
                 'storedist' => 'key:storedist',
                 'withdist' => false,
@@ -96,10 +97,10 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
                 'withhash' => false,
                 'count' => 1,
                 'sort' => 'asc',
-            ),
-        );
+            ],
+        ];
 
-        $expected = array('Sicily', 'Agrigento', 100, 'km', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist');
+        $expected = ['Sicily', 'Agrigento', 100, 'km', 'COUNT', 1, 'ASC', 'STORE', 'key:store', 'STOREDIST', 'key:storedist'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -112,13 +113,13 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
      */
     public function testParseResponseWithNoOptions(): void
     {
-        $raw = array(
-            array('Agrigento', 'Palermo'),
-        );
+        $raw = [
+            ['Agrigento', 'Palermo'],
+        ];
 
-        $expected = array(
-            array('Agrigento', 'Palermo'),
-        );
+        $expected = [
+            ['Agrigento', 'Palermo'],
+        ];
 
         $command = $this->getCommand();
 
@@ -134,7 +135,7 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
-        $this->assertEquals(array('Agrigento', 'Palermo'), $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km'));
+        $this->assertEquals(['Agrigento', 'Palermo'], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km'));
     }
 
     /**
@@ -146,10 +147,10 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
-        $this->assertEquals(array(
-            array('Agrigento', '0.0000', array('13.5833314061164856', '37.31666804993816555')),
-            array('Palermo', '90.9778', array('13.36138933897018433', '38.11555639549629859')),
-        ), $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km', 'WITHDIST', 'WITHCOORD'));
+        $this->assertEquals([
+            ['Agrigento', '0.0000', ['13.5833314061164856', '37.31666804993816555']],
+            ['Palermo', '90.9778', ['13.36138933897018433', '38.11555639549629859']],
+        ], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km', 'WITHDIST', 'WITHCOORD'));
     }
 
     /**

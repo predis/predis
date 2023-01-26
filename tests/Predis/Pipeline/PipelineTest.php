@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,16 +12,16 @@
 
 namespace Predis\Pipeline;
 
+use Exception;
+use InvalidArgumentException;
 use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Response;
 use PredisTestCase;
+use stdClass;
 
-/**
- *
- */
 class PipelineTest extends PredisTestCase
 {
     /**
@@ -90,7 +91,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline->ping();
 
-        $this->assertSame(array($object), $pipeline->execute());
+        $this->assertSame([$object], $pipeline->execute());
     }
 
     /**
@@ -130,14 +131,14 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($error);
 
-        $client = new Client($connection, array('exceptions' => false));
+        $client = new Client($connection, ['exceptions' => false]);
 
         $pipeline = new Pipeline($client);
 
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array($error, $error), $pipeline->execute());
+        $this->assertSame([$error, $error], $pipeline->execute());
     }
 
     /**
@@ -146,7 +147,7 @@ class PipelineTest extends PredisTestCase
     public function testExecuteReturnsPipelineForFluentInterface(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $command = $this->getCommandFactory()->create('echo', array('one'));
+        $command = $this->getCommandFactory()->create('echo', ['one']);
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -170,9 +171,9 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $pipeline->executeCommand($commands->create('echo', array('one')));
-        $pipeline->executeCommand($commands->create('echo', array('two')));
-        $pipeline->executeCommand($commands->create('echo', array('three')));
+        $pipeline->executeCommand($commands->create('echo', ['one']));
+        $pipeline->executeCommand($commands->create('echo', ['two']));
+        $pipeline->executeCommand($commands->create('echo', ['three']));
     }
 
     /**
@@ -190,7 +191,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $this->assertSame(array(), $pipeline->execute());
+        $this->assertSame([], $pipeline->execute());
     }
 
     /**
@@ -215,7 +216,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline->flushPipeline();
 
-        $this->assertSame(array('one', 'two', 'three'), $pipeline->execute());
+        $this->assertSame(['one', 'two', 'three'], $pipeline->execute());
     }
 
     /**
@@ -231,7 +232,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline->flushPipeline(false);
 
-        $this->assertSame(array(), $pipeline->execute());
+        $this->assertSame([], $pipeline->execute());
     }
 
     /**
@@ -256,7 +257,7 @@ class PipelineTest extends PredisTestCase
         $pipeline->echo('three');
         $pipeline->echo('four');
 
-        $this->assertSame(array('one', 'two', 'three', 'four'), $pipeline->execute());
+        $this->assertSame(['one', 'two', 'three', 'four'], $pipeline->execute());
     }
 
     /**
@@ -284,7 +285,7 @@ class PipelineTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
 
-        $this->assertSame(array($pong, $pong, $pong), $pipeline->execute());
+        $this->assertSame([$pong, $pong, $pong], $pipeline->execute());
     }
 
     /**
@@ -310,7 +311,7 @@ class PipelineTest extends PredisTestCase
     {
         $this->expectException('InvalidArgumentException');
 
-        $noncallable = new \stdClass();
+        $noncallable = new stdClass();
 
         $pipeline = new Pipeline(new Client());
         $pipeline->execute($noncallable);
@@ -353,7 +354,7 @@ class PipelineTest extends PredisTestCase
             $pipe->echo('four');
         });
 
-        $this->assertSame(array('one', 'two', 'three', 'four'), $responses);
+        $this->assertSame(['one', 'two', 'three', 'four'], $responses);
     }
 
     /**
@@ -380,7 +381,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->echo('two');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -406,7 +407,7 @@ class PipelineTest extends PredisTestCase
             ->echo('three')
             ->execute();
 
-        $this->assertSame(array('one', 'two', 'three'), $results);
+        $this->assertSame(['one', 'two', 'three'], $results);
     }
 
     /**
@@ -421,7 +422,7 @@ class PipelineTest extends PredisTestCase
             $pipe->get('foo');
         });
 
-        $this->assertEquals(array('OK', 'bar'), $results);
+        $this->assertEquals(['OK', 'bar'], $results);
         $this->assertSame(1, $client->exists('foo'));
     }
 
@@ -439,7 +440,7 @@ class PipelineTest extends PredisTestCase
             $pipe->get('foo');
         });
 
-        $this->assertEquals(array('OK', 'bar'), $results);
+        $this->assertEquals(['OK', 'bar'], $results);
         $this->assertSame('oob message', $oob);
         $this->assertSame(1, $client->exists('foo'));
     }
@@ -458,7 +459,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -484,7 +485,7 @@ class PipelineTest extends PredisTestCase
                 $pipe->lpush('foo', 'bar');
                 $pipe->set('hoge', 'piyo');
             });
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // NOOP
         }
 
@@ -498,7 +499,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testIntegrationWithServerErrorInCallableBlock(): void
     {
-        $client = $this->getClient(array(), array('exceptions' => false));
+        $client = $this->getClient([], ['exceptions' => false]);
 
         $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
@@ -523,7 +524,7 @@ class PipelineTest extends PredisTestCase
      *
      * @return ClientInterface
      */
-    protected function getClient(array $parameters = array(), array $options = array()): ClientInterface
+    protected function getClient(array $parameters = [], array $options = []): ClientInterface
     {
         return $this->createClient($parameters, $options);
     }
@@ -537,10 +538,10 @@ class PipelineTest extends PredisTestCase
     {
         return function (CommandInterface $command) {
             if (($id = $command->getId()) !== 'ECHO') {
-                throw new \InvalidArgumentException("Expected ECHO, got {$id}");
+                throw new InvalidArgumentException("Expected ECHO, got {$id}");
             }
 
-            list($echoed) = $command->getArguments();
+            [$echoed] = $command->getArguments();
 
             return $echoed;
         };

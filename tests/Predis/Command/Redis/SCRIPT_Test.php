@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class SCRIPT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
-        $expected = array('EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff');
+        $arguments = ['EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff'];
+        $expected = ['EXISTS', '9d0c0826bde023cc39eebaaf832c32a890f3b088', 'ffffffffffffffffffffffffffffffffffffffff'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +67,7 @@ class SCRIPT_Test extends PredisCommandTestCase
         $redis->eval($lua = 'return true', 0);
         $sha1 = sha1($lua);
 
-        $this->assertSame(array(1, 0), $redis->script('EXISTS', $sha1, 'ffffffffffffffffffffffffffffffffffffffff'));
+        $this->assertSame([1, 0], $redis->script('EXISTS', $sha1, 'ffffffffffffffffffffffffffffffffffffffff'));
     }
 
     /**
@@ -94,7 +95,7 @@ class SCRIPT_Test extends PredisCommandTestCase
         $sha1 = $redis->script('LOAD', 'return true');
 
         $this->assertEquals('OK', $redis->script('FLUSH'));
-        $this->assertSame(array(0), $redis->script('EXISTS', $sha1));
+        $this->assertSame([0], $redis->script('EXISTS', $sha1));
     }
 
     /**

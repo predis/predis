@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Developers can implement Predis\Distribution\DistributorInterface to create
 // their own distributors used by the client to distribute keys among a cluster
@@ -27,7 +28,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 
     public function __construct()
     {
-        $this->nodes = array();
+        $this->nodes = [];
         $this->nodesCount = 0;
     }
 
@@ -53,7 +54,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 
     public function getBySlot($slot)
     {
-        return isset($this->nodes[$slot]) ? $this->nodes[$slot] : null;
+        return $this->nodes[$slot] ?? null;
     }
 
     public function getByHash($hash)
@@ -87,7 +88,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
     }
 }
 
-$options = array(
+$options = [
     'cluster' => function () {
         $distributor = new NaiveDistributor();
         $strategy = new PredisStrategy($distributor);
@@ -95,7 +96,7 @@ $options = array(
 
         return $cluster;
     },
-);
+];
 
 $client = new Predis\Client($multiple_servers, $options);
 

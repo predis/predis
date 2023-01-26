@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class TIME_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array();
-        $expected = array();
+        $arguments = [];
+        $expected = [];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,7 +53,7 @@ class TIME_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $expected = array(1331114908, 453990);
+        $expected = [1331114908, 453990];
         $command = $this->getCommand();
 
         $this->assertSame($expected, $command->parseResponse($expected));
