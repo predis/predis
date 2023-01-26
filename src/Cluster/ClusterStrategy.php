@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,21 +12,17 @@
 
 namespace Predis\Cluster;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
 
 /**
  * Common class implementing the logic needed to support clustering strategies.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class ClusterStrategy implements StrategyInterface
 {
     protected $commands;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->commands = $this->getDefaultCommands();
@@ -38,10 +35,10 @@ abstract class ClusterStrategy implements StrategyInterface
      */
     protected function getDefaultCommands()
     {
-        $getKeyFromFirstArgument = array($this, 'getKeyFromFirstArgument');
-        $getKeyFromAllArguments = array($this, 'getKeyFromAllArguments');
+        $getKeyFromFirstArgument = [$this, 'getKeyFromFirstArgument'];
+        $getKeyFromAllArguments = [$this, 'getKeyFromAllArguments'];
 
-        return array(
+        return [
             /* commands operating on the key space */
             'EXISTS' => $getKeyFromAllArguments,
             'DEL' => $getKeyFromAllArguments,
@@ -53,7 +50,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'PEXPIREAT' => $getKeyFromFirstArgument,
             'TTL' => $getKeyFromFirstArgument,
             'PTTL' => $getKeyFromFirstArgument,
-            'SORT' => array($this, 'getKeyFromSortCommand'),
+            'SORT' => [$this, 'getKeyFromSortCommand'],
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
 
@@ -72,13 +69,13 @@ abstract class ClusterStrategy implements StrategyInterface
             'INCRBYFLOAT' => $getKeyFromFirstArgument,
             'SETBIT' => $getKeyFromFirstArgument,
             'SETEX' => $getKeyFromFirstArgument,
-            'MSET' => array($this, 'getKeyFromInterleavedArguments'),
-            'MSETNX' => array($this, 'getKeyFromInterleavedArguments'),
+            'MSET' => [$this, 'getKeyFromInterleavedArguments'],
+            'MSETNX' => [$this, 'getKeyFromInterleavedArguments'],
             'SETNX' => $getKeyFromFirstArgument,
             'SETRANGE' => $getKeyFromFirstArgument,
             'STRLEN' => $getKeyFromFirstArgument,
             'SUBSTR' => $getKeyFromFirstArgument,
-            'BITOP' => array($this, 'getKeyFromBitOp'),
+            'BITOP' => [$this, 'getKeyFromBitOp'],
             'BITCOUNT' => $getKeyFromFirstArgument,
             'BITFIELD' => $getKeyFromFirstArgument,
 
@@ -89,9 +86,9 @@ abstract class ClusterStrategy implements StrategyInterface
             'LPOP' => $getKeyFromFirstArgument,
             'RPOP' => $getKeyFromFirstArgument,
             'RPOPLPUSH' => $getKeyFromAllArguments,
-            'BLPOP' => array($this, 'getKeyFromBlockingListCommands'),
-            'BRPOP' => array($this, 'getKeyFromBlockingListCommands'),
-            'BRPOPLPUSH' => array($this, 'getKeyFromBlockingListCommands'),
+            'BLPOP' => [$this, 'getKeyFromBlockingListCommands'],
+            'BRPOP' => [$this, 'getKeyFromBlockingListCommands'],
+            'BRPOPLPUSH' => [$this, 'getKeyFromBlockingListCommands'],
             'LPUSH' => $getKeyFromFirstArgument,
             'LPUSHX' => $getKeyFromFirstArgument,
             'RPUSH' => $getKeyFromFirstArgument,
@@ -122,7 +119,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'ZCARD' => $getKeyFromFirstArgument,
             'ZCOUNT' => $getKeyFromFirstArgument,
             'ZINCRBY' => $getKeyFromFirstArgument,
-            'ZINTERSTORE' => array($this, 'getKeyFromZsetAggregationCommands'),
+            'ZINTERSTORE' => [$this, 'getKeyFromZsetAggregationCommands'],
             'ZRANGE' => $getKeyFromFirstArgument,
             'ZRANGEBYSCORE' => $getKeyFromFirstArgument,
             'ZRANK' => $getKeyFromFirstArgument,
@@ -133,7 +130,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'ZREVRANGEBYSCORE' => $getKeyFromFirstArgument,
             'ZREVRANK' => $getKeyFromFirstArgument,
             'ZSCORE' => $getKeyFromFirstArgument,
-            'ZUNIONSTORE' => array($this, 'getKeyFromZsetAggregationCommands'),
+            'ZUNIONSTORE' => [$this, 'getKeyFromZsetAggregationCommands'],
             'ZSCAN' => $getKeyFromFirstArgument,
             'ZLEXCOUNT' => $getKeyFromFirstArgument,
             'ZRANGEBYLEX' => $getKeyFromFirstArgument,
@@ -163,17 +160,17 @@ abstract class ClusterStrategy implements StrategyInterface
             'PFMERGE' => $getKeyFromAllArguments,
 
             /* scripting */
-            'EVAL' => array($this, 'getKeyFromScriptingCommands'),
-            'EVALSHA' => array($this, 'getKeyFromScriptingCommands'),
+            'EVAL' => [$this, 'getKeyFromScriptingCommands'],
+            'EVALSHA' => [$this, 'getKeyFromScriptingCommands'],
 
             /* commands performing geospatial operations */
             'GEOADD' => $getKeyFromFirstArgument,
             'GEOHASH' => $getKeyFromFirstArgument,
             'GEOPOS' => $getKeyFromFirstArgument,
             'GEODIST' => $getKeyFromFirstArgument,
-            'GEORADIUS' => array($this, 'getKeyFromGeoradiusCommands'),
-            'GEORADIUSBYMEMBER' => array($this, 'getKeyFromGeoradiusCommands'),
-        );
+            'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
+            'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
+        ];
     }
 
     /**
@@ -198,7 +195,7 @@ abstract class ClusterStrategy implements StrategyInterface
      * @param string $commandID Command ID.
      * @param mixed  $callback  A valid callable object, or NULL to unset the handler.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setCommandHandler($commandID, $callback = null)
     {
@@ -211,7 +208,7 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'The argument must be a callable object or NULL.'
             );
         }
@@ -243,9 +240,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys($arguments)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($arguments)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -259,15 +258,17 @@ abstract class ClusterStrategy implements StrategyInterface
     protected function getKeyFromInterleavedArguments(CommandInterface $command)
     {
         $arguments = $command->getArguments();
-        $keys = array();
+        $keys = [];
 
         for ($i = 0; $i < count($arguments); $i += 2) {
             $keys[] = $arguments[$i];
         }
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -286,7 +287,7 @@ abstract class ClusterStrategy implements StrategyInterface
             return $firstKey;
         }
 
-        $keys = array($firstKey);
+        $keys = [$firstKey];
 
         for ($i = 1; $i < $argc; ++$i) {
             if (strtoupper($arguments[$i]) === 'STORE') {
@@ -294,9 +295,11 @@ abstract class ClusterStrategy implements StrategyInterface
             }
         }
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $firstKey;
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $firstKey;
     }
 
     /**
@@ -310,9 +313,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 0, count($arguments) - 1))) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -326,9 +331,11 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $arguments = $command->getArguments();
 
-        if ($this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
-            return $arguments[1];
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 1, count($arguments)))) {
+            return null;
         }
+
+        return $arguments[1];
     }
 
     /**
@@ -345,7 +352,7 @@ abstract class ClusterStrategy implements StrategyInterface
         $startIndex = $command->getId() === 'GEORADIUS' ? 5 : 4;
 
         if ($argc > $startIndex) {
-            $keys = array($arguments[0]);
+            $keys = [$arguments[0]];
 
             for ($i = $startIndex; $i < $argc; ++$i) {
                 $argument = strtoupper($arguments[$i]);
@@ -354,10 +361,8 @@ abstract class ClusterStrategy implements StrategyInterface
                 }
             }
 
-            if ($this->checkSameSlotForKeys($keys)) {
-                return $arguments[0];
-            } else {
-                return;
+            if (!$this->checkSameSlotForKeys($keys)) {
+                return null;
             }
         }
 
@@ -374,11 +379,13 @@ abstract class ClusterStrategy implements StrategyInterface
     protected function getKeyFromZsetAggregationCommands(CommandInterface $command)
     {
         $arguments = $command->getArguments();
-        $keys = array_merge(array($arguments[0]), array_slice($arguments, 2, $arguments[1]));
+        $keys = array_merge([$arguments[0]], array_slice($arguments, 2, $arguments[1]));
 
-        if ($this->checkSameSlotForKeys($keys)) {
-            return $arguments[0];
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
+
+        return $arguments[0];
     }
 
     /**
@@ -390,15 +397,15 @@ abstract class ClusterStrategy implements StrategyInterface
      */
     protected function getKeyFromScriptingCommands(CommandInterface $command)
     {
-        if ($command instanceof ScriptCommand) {
-            $keys = $command->getKeys();
-        } else {
-            $keys = array_slice($args = $command->getArguments(), 2, $args[1]);
+        $keys = $command instanceof ScriptCommand
+            ? $command->getKeys()
+            : array_slice($args = $command->getArguments(), 2, $args[1]);
+
+        if (!$keys || !$this->checkSameSlotForKeys($keys)) {
+            return null;
         }
 
-        if ($keys && $this->checkSameSlotForKeys($keys)) {
-            return $keys[0];
-        }
+        return $keys[0];
     }
 
     /**

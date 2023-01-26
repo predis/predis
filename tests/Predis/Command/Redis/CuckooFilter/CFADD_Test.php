@@ -1,26 +1,36 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\CuckooFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-class BFLOADCHUNK_Test extends PredisCommandTestCase
+class CFADD_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return BFLOADCHUNK::class;
+        return CFADD::class;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-        return 'BFLOADCHUNK';
+        return 'CFADD';
     }
 
     /**
@@ -28,8 +38,8 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $actualArguments = ['key', 1, 'data'];
-        $expectedArguments = ['key', 1, 'data'];
+        $actualArguments = ['key', 'item'];
+        $expectedArguments = ['key', 'item'];
 
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
@@ -50,35 +60,13 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
-    public function testLoadChunkSuccessfullyRestoresBloomFilter(): void
+    public function testAddItemToCuckooFilter(): void
     {
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item1');
-
-        $chunks = [];
-        $iter = 0;
-
-        while (true) {
-            [$iter, $data] = $redis->bfscandump('key', $iter);
-
-            if ($iter === 0) {
-                break;
-            }
-
-            $chunks[] = [$iter, $data];
-        }
-
-        $redis->flushall();
-
-        foreach ($chunks as $chunk) {
-            [$iter, $data] = $chunk;
-            $actualResponse = $redis->bfloadchunk('key', $iter, $data);
-
-            $this->assertEquals('OK', $actualResponse);
-        }
-
-        $this->assertSame(1, $redis->bfexists('key', 'item1'));
+        $actualResponse = $redis->cfadd('key', 'item');
+        $this->assertSame(1, $actualResponse);
+        $this->assertSame(1, $redis->cfexists('key', 'item'));
     }
 
     /**
@@ -92,7 +80,7 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('bfloadchunk_foo', 'bar');
-        $redis->bfloadchunk('bfloadchunk_foo', 0, 'data');
+        $redis->set('cfadd_foo', 'bar');
+        $redis->cfadd('cfadd_foo', 'foo');
     }
 }

@@ -1,22 +1,18 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-/**
- * @group commands
- * @group realm-bloom
- */
-class BFSCANDUMP_Test extends PredisCommandTestCase
+class BFLOADCHUNK_Test extends PredisCommandTestCase
 {
     /**
      * @inheritDoc
      */
     protected function getExpectedCommand(): string
     {
-        return BFSCANDUMP::class;
+        return BFLOADCHUNK::class;
     }
 
     /**
@@ -24,7 +20,7 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'BFSCANDUMP';
+        return 'BFLOADCHUNK';
     }
 
     /**
@@ -32,8 +28,8 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $actualArguments = ['key', 1];
-        $expectedArguments = ['key', 1];
+        $actualArguments = ['key', 1, 'data'];
+        $expectedArguments = ['key', 1, 'data'];
 
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
@@ -54,16 +50,35 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
-    public function testScanDumpReturnsCorrectDataChunk(): void
+    public function testLoadChunkSuccessfullyRestoresBloomFilter(): void
     {
-        $expectedIterator = 1;
         $redis = $this->getClient();
 
         $redis->bfadd('key', 'item1');
-        [$iterator, $dataChunk] = $redis->bfscandump('key', 0);
 
-        $this->assertSame($expectedIterator, $iterator);
-        $this->assertNotEmpty($dataChunk);
+        $chunks = [];
+        $iter = 0;
+
+        while (true) {
+            [$iter, $data] = $redis->bfscandump('key', $iter);
+
+            if ($iter === 0) {
+                break;
+            }
+
+            $chunks[] = [$iter, $data];
+        }
+
+        $redis->flushall();
+
+        foreach ($chunks as $chunk) {
+            [$iter, $data] = $chunk;
+            $actualResponse = $redis->bfloadchunk('key', $iter, $data);
+
+            $this->assertEquals('OK', $actualResponse);
+        }
+
+        $this->assertSame(1, $redis->bfexists('key', 'item1'));
     }
 
     /**
@@ -77,7 +92,7 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('bfscandump_foo', 'bar');
-        $redis->bfscandump('bfscandump_foo', 0);
+        $redis->set('bfloadchunk_foo', 'bar');
+        $redis->bfloadchunk('bfloadchunk_foo', 0, 'data');
     }
 }
