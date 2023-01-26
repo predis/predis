@@ -109,6 +109,7 @@ use Predis\Response\Status;
  * @method array             hvals(string $key)
  * @method int               hstrlen(string $key, string $field)
  * @method array             jsonarrappend(string $key, string $path = '$', ...$value)
+ * @method array             jsonarrindex(string $key, string $path, string $value, int $start = 0, int $stop = 0)
  * @method int               jsondel(string $key, string $path = '$')
  * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method string            jsonnumincrby(string $key, string $path, int $value)
