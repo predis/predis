@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class HGETALL_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key');
-        $expected = array('key');
+        $arguments = ['key'];
+        $expected = ['key'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class HGETALL_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
-        $expected = array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut');
+        $raw = ['foo', 'bar', 'hoge', 'piyo', 'lol', 'wut'];
+        $expected = ['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'];
 
         $command = $this->getCommand();
 
@@ -70,8 +71,8 @@ class HGETALL_Test extends PredisCommandTestCase
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
-        $this->assertSame(array('foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'), $redis->hgetall('metavars'));
-        $this->assertSame(array(), $redis->hgetall('unknown'));
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
+        $this->assertSame([], $redis->hgetall('unknown'));
     }
 
     /**

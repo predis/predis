@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\With;
 
 use Predis\Command\Command as RedisCommand;
@@ -16,7 +26,7 @@ class WithScoresTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use WithScores;
 
             public function getId()
@@ -28,8 +38,8 @@ class WithScoresTest extends PredisTestCase
 
     /**
      * @dataProvider valuesProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(array $actualArguments, array $expectedArguments): void
@@ -41,8 +51,8 @@ class WithScoresTest extends PredisTestCase
 
     /**
      * @dataProvider dataProvider
-     * @param array $actualData
-     * @param array $expectedResponse
+     * @param  array $actualData
+     * @param  array $expectedResponse
      * @return void
      */
     public function testParseDataReturnsCorrectResponse(array $actualData, array $expectedResponse): void
@@ -75,7 +85,7 @@ class WithScoresTest extends PredisTestCase
             'with modifier' => [
                 ['member1', '1', 'member2', '2', 'WITHSCORES'],
                 ['member1' => '1', 'member2' => '2'],
-            ]
+            ],
         ];
     }
 }

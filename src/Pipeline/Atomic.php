@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,11 +19,10 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+use SplQueue;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class Atomic extends Pipeline
 {
@@ -59,7 +59,7 @@ class Atomic extends Pipeline
     /**
      * {@inheritdoc}
      */
-    protected function executePipeline(ConnectionInterface $connection, \SplQueue $commands)
+    protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $commandFactory = $this->getClient()->getCommandFactory();
         $connection->executeCommand($commandFactory->create('multi'));
@@ -80,7 +80,6 @@ class Atomic extends Pipeline
         $executed = $connection->executeCommand($commandFactory->create('exec'));
 
         if (!isset($executed)) {
-            // TODO: should be throwing a more appropriate exception.
             throw new ClientException(
                 'The underlying transaction has been aborted by the server.'
             );
@@ -95,7 +94,7 @@ class Atomic extends Pipeline
             );
         }
 
-        $responses = array();
+        $responses = [];
         $sizeOfPipe = count($commands);
         $exceptions = $this->throwServerExceptions();
 

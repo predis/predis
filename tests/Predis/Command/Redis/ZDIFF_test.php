@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
@@ -7,7 +17,7 @@ use Predis\Response\ServerException;
 class ZDIFF_test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class ZDIFF_test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -45,10 +55,10 @@ class ZDIFF_test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSetDictionary
-     * @param array $secondSetDictionary
-     * @param array $expectedResponse
-     * @param bool $withScores
+     * @param  array $firstSetDictionary
+     * @param  array $secondSetDictionary
+     * @param  array $expectedResponse
+     * @param  bool  $withScores
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -93,7 +103,7 @@ class ZDIFF_test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('zdiff_foo', 'bar');
-        $redis->zdiff(['zdiff_foo'],true);
+        $redis->zdiff(['zdiff_foo'], true);
     }
 
     public function argumentsProvider(): array
@@ -112,31 +122,31 @@ class ZDIFF_test extends PredisCommandTestCase
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1', 'member2', 'member3'],
-                false
+                false,
             ],
             'partial intersection - without score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3'],
-                false
+                false,
             ],
             'full intersection' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [],
-                false
+                false,
             ],
             'no intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member4', 2, 'member5', 3, 'member6'],
                 ['member1' => '1', 'member2' => '2', 'member3' => '3'],
-                true
+                true,
             ],
             'partial intersection - with score' => [
                 [1, 'member1', 2, 'member2', 3, 'member3'],
                 [1, 'member1', 2, 'member2', 3, 'member4'],
                 ['member3' => '3'],
-                true
+                true,
             ],
         ];
     }
