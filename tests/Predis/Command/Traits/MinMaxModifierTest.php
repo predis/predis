@@ -1,9 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class MinMaxModifierTest extends PredisTestCase
@@ -14,7 +24,7 @@ class MinMaxModifierTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use MinMaxModifier;
 
             public function getId()
@@ -26,9 +36,9 @@ class MinMaxModifierTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testResolveModifierModifyArrayCorrect(
@@ -56,13 +66,13 @@ class MinMaxModifierTest extends PredisTestCase
             'with modifier' => [
                 0,
                 ['max'],
-                ['MAX']
+                ['MAX'],
             ],
             'without modifier' => [
                 2,
                 ['argument1', 'argument2'],
-                ['argument1', 'argument2', 'MIN']
-            ]
+                ['argument1', 'argument2', 'MIN'],
+            ],
         ];
     }
 }

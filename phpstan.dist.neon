@@ -1,0 +1,56 @@
+parameters:
+  level: 2
+
+  paths:
+    - src/
+
+  ignoreErrors:
+    # Tricky ones
+    - message: "#^Cannot cast Predis\\\\Response\\\\ResponseInterface to string\\.$#"
+      count: 1
+      path: src/Client.php
+    - message: "#^Cannot cast Predis\\\\Connection\\\\ConnectionInterface to string\\.$#"
+      count: 1
+      path: src/Client.php
+    # phpiredis extension is not installed
+    - "#^Function phpiredis_\\w+ not found\\.$#"
+    - "#^Constant PHPIREDIS_#"
+    # "new static" in non-final classes
+    - message: "#^Unsafe usage of new static\\(\\)\\.$#"
+      count: 3
+      path: src/Client.php
+    - message: "#^Unsafe usage of new static\\(\\)\\.$#"
+      count: 1
+      path: src/Connection/Parameters.php
+    # Using an interface as concrete type
+    - message: "#^Call to an undefined method Predis\\\\Command\\\\FactoryInterface\\:\\:define\\(\\)\\.$#"
+      count: 1
+      path: src/Configuration/Option/Commands.php
+    - message: "#^Call to an undefined method Predis\\\\Command\\\\FactoryInterface\\:\\:undefine\\(\\)\\.$#"
+      count: 1
+      path: src/Configuration/Option/Commands.php
+    - message: "#^Access to an undefined property Predis\\\\Configuration\\\\OptionsInterface\\:\\:\\$parameters\\.$#"
+      count: 1
+      path: src/Configuration/Option/Connections.php
+    - message: "#^Access to an undefined property Predis\\\\Connection\\\\ParametersInterface\\:\\:\\$weight\\.$#"
+      count: 1
+      path: src/Connection/Cluster/PredisCluster.php
+    - message: "#^Variable \\$response might not be defined\\.$#"
+      count: 2
+      path: src/Connection/Cluster/RedisCluster.php
+    - message: "#^Access to an undefined property Predis\\\\Connection\\\\ParametersInterface\\:\\:\\$role\\.$#"
+      count: 1
+      path: src/Connection/Replication/MasterSlaveReplication.php
+    - message: "#^Access to an undefined property Predis\\\\Connection\\\\ParametersInterface\\:\\:\\$role\\.$#"
+      count: 1
+      path: src/Connection/Replication/SentinelReplication.php
+    # try/catch problems
+    - message: "#^Variable \\$connection might not be defined\\.$#"
+      count: 1
+      path: src/Connection/Replication/MasterSlaveReplication.php
+    - message: "#^Variable \\$response might not be defined\\.$#"
+      count: 1
+      path: src/Connection/Replication/MasterSlaveReplication.php
+    - message: "#^Variable \\$response might not be defined\\.$#"
+      count: 1
+      path: src/Connection/Replication/SentinelReplication.php

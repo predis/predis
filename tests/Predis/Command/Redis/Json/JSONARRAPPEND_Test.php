@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONARRAPPEND_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,12 +57,12 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param array $values
-     * @param array $expectedArrayLength
-     * @param string $expectedModifiedJson
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  array  $values
+     * @param  array  $expectedArrayLength
+     * @param  string $expectedModifiedJson
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -83,7 +93,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
                 '$.key2',
                 ['"value3"'],
                 [3],
-                '{"key1":"value1","key2":["value1","value2","value3"]}'
+                '{"key1":"value1","key2":["value1","value2","value3"]}',
             ],
             'append multiple items - same type' => [
                 ['key', '$', '{"key1":"value1","key2":["value1","value2"]}'],
@@ -91,7 +101,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
                 '$.key2',
                 ['"value3"', '"value4"'],
                 [4],
-                '{"key1":"value1","key2":["value1","value2","value3","value4"]}'
+                '{"key1":"value1","key2":["value1","value2","value3","value4"]}',
             ],
             'append multiple items - different types' => [
                 ['key', '$', '{"key1":"value1","key2":["value1","value2"]}'],
@@ -99,7 +109,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
                 '$.key2',
                 ['"value3"', '5'],
                 [4],
-                '{"key1":"value1","key2":["value1","value2","value3",5]}'
+                '{"key1":"value1","key2":["value1","value2","value3",5]}',
             ],
             'append on root and nested level' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value1","value2"]}'],
@@ -107,7 +117,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
                 '$..key2',
                 ['"value3"', '5'],
                 [4, 4],
-                '{"key1":{"key2":["value1","value2","value3",5]},"key2":["value1","value2","value3",5]}'
+                '{"key1":{"key2":["value1","value2","value3",5]},"key2":["value1","value2","value3",5]}',
             ],
             'append on root and nested level - not array key' => [
                 ['key', '$', '{"key1":{"key2":"value2"},"key2":["value1","value2"]}'],
@@ -115,7 +125,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
                 '$..key2',
                 ['"value3"', '5'],
                 [4, null],
-                '{"key1":{"key2":"value2"},"key2":["value1","value2","value3",5]}'
+                '{"key1":{"key2":"value2"},"key2":["value1","value2","value3",5]}',
             ],
         ];
     }
