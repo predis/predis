@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\Json;
 
 use Predis\Command\Command;
@@ -24,12 +34,14 @@ trait NxXxArgument
 
         if (static::$nxXxArgumentPositionOffset >= $argumentsLength) {
             parent::setArguments($arguments);
+
             return;
         }
 
         if (null === $arguments[static::$nxXxArgumentPositionOffset]) {
             array_splice($arguments, static::$nxXxArgumentPositionOffset, 1, [false]);
             parent::setArguments($arguments);
+
             return;
         }
 
@@ -41,7 +53,7 @@ trait NxXxArgument
         }
 
         $argumentsBefore = array_slice($arguments, 0, static::$nxXxArgumentPositionOffset);
-        $argumentsAfter = array_slice($arguments,  static::$nxXxArgumentPositionOffset + 1);
+        $argumentsAfter = array_slice($arguments, static::$nxXxArgumentPositionOffset + 1);
 
         parent::setArguments(array_merge(
             $argumentsBefore,

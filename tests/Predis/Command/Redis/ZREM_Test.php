@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class ZREM_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('zset', 'member1', 'member2', 'member3');
-        $expected = array('zset', 'member1', 'member2', 'member3');
+        $arguments = ['zset', 'member1', 'member2', 'member3'];
+        $expected = ['zset', 'member1', 'member2', 'member3'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -65,7 +66,7 @@ class ZREM_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
         $this->assertSame(3, $redis->zrem('letters', 'b', 'd', 'f', 'z'));
-        $this->assertSame(array('a', 'c', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'c', 'e'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(0, $redis->zrem('unknown', 'a'));
     }

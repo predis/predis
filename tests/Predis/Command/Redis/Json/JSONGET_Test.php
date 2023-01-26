@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -8,7 +18,7 @@ use UnexpectedValueException;
 class JSONGET_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,7 +26,7 @@ class JSONGET_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -46,12 +56,12 @@ class JSONGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonData
-     * @param string $key
-     * @param string $indent
-     * @param string $newline
-     * @param string $space
-     * @param string $expectedResponse
+     * @param  array  $jsonData
+     * @param  string $key
+     * @param  string $indent
+     * @param  string $newline
+     * @param  string $space
+     * @param  string $expectedResponse
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -88,8 +98,8 @@ class JSONGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -108,15 +118,15 @@ class JSONGET_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key'],
-                ['key']
+                ['key'],
             ],
             'with INDENT modifier' => [
                 ['key', '\t'],
-                ['key', 'INDENT', '\t']
+                ['key', 'INDENT', '\t'],
             ],
             'with NEWLINE modifier' => [
                 ['key', '', '\n'],
-                ['key', 'NEWLINE', '\n']
+                ['key', 'NEWLINE', '\n'],
             ],
             'with SPACE modifier' => [
                 ['key', '', '', ' '],
@@ -129,7 +139,7 @@ class JSONGET_Test extends PredisCommandTestCase
             'with all arguments' => [
                 ['key', '\t', '\n', ' '],
                 ['key', 'INDENT', '\t', 'NEWLINE', '\n', 'SPACE', ' '],
-            ]
+            ],
         ];
     }
 
@@ -184,15 +194,15 @@ class JSONGET_Test extends PredisCommandTestCase
         return [
             'with wrong INDENT modifier' => [
                 ['key', 1, '', ''],
-                'Indent argument value should be a string'
+                'Indent argument value should be a string',
             ],
             'with wrong NEWLINE modifier' => [
                 ['key', '', 1, ''],
-                'Newline argument value should be a string'
+                'Newline argument value should be a string',
             ],
             'with wrong SPACE modifier' => [
                 ['key', '', '', 1],
-                'Space argument value should be a string'
+                'Space argument value should be a string',
             ],
         ];
     }
