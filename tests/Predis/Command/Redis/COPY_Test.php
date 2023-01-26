@@ -1,19 +1,29 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 class COPY_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-       return COPY::class;
+        return COPY::class;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -116,20 +126,20 @@ class COPY_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['source', 'destination'],
-                ['source', 'destination']
+                ['source', 'destination'],
             ],
             'with DB argument' => [
                 ['source', 'destination', 1],
-                ['source', 'destination', 'DB', 1]
+                ['source', 'destination', 'DB', 1],
             ],
             'with replace argument' => [
                 ['source', 'destination', -1, true],
-                ['source', 'destination', 'REPLACE']
+                ['source', 'destination', 'REPLACE'],
             ],
             'with all arguments' => [
                 ['source', 'destination', 1, true],
-                ['source', 'destination', 'DB', 1, 'REPLACE']
-            ]
+                ['source', 'destination', 'DB', 1, 'REPLACE'],
+            ],
         ];
     }
 }

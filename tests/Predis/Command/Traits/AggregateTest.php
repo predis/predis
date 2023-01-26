@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
 use Predis\Command\Command as RedisCommand;
@@ -12,7 +22,7 @@ class AggregateTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Aggregate;
 
             public static $aggregateArgumentPositionOffset = 0;
@@ -26,9 +36,9 @@ class AggregateTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -42,7 +52,7 @@ class AggregateTest extends PredisTestCase
 
     /**
      * @dataProvider unexpectedValuesProvider
-     * @param array $actualArguments
+     * @param  array $actualArguments
      * @return void
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(array $actualArguments): void
@@ -60,23 +70,23 @@ class AggregateTest extends PredisTestCase
             'aggregate argument first and there is arguments after' => [
                 0,
                 ['sum', 'second argument', 'third argument'],
-                ['AGGREGATE', 'SUM', 'second argument', 'third argument']
+                ['AGGREGATE', 'SUM', 'second argument', 'third argument'],
             ],
             'aggregate argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', 'min'],
-                ['first argument', 'second argument', 'AGGREGATE', 'MIN']
+                ['first argument', 'second argument', 'AGGREGATE', 'MIN'],
             ],
             'aggregate argument not the first and not the last' => [
                 1,
                 ['first argument', 'max', 'third argument'],
-                ['first argument', 'AGGREGATE', 'MAX', 'third argument']
+                ['first argument', 'AGGREGATE', 'MAX', 'third argument'],
             ],
             'aggregate argument the only argument' => [
                 0,
                 ['sum'],
-                ['AGGREGATE', 'SUM']
-            ]
+                ['AGGREGATE', 'SUM'],
+            ],
         ];
     }
 

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -40,8 +41,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('zset', 2);
-        $expected = array('zset', 2);
+        $arguments = ['zset', 2];
+        $expected = ['zset', 2];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -56,8 +57,8 @@ class ZPOPMIN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('element1', '1', 'element2', '2', 'element3', '3');
-        $expected = array('element1' => '1', 'element2' => '2', 'element3' => '3');
+        $raw = ['element1', '1', 'element2', '2', 'element3', '3'];
+        $expected = ['element1' => '1', 'element2' => '2', 'element3' => '3'];
 
         $command = $this->getCommand();
 
@@ -73,14 +74,14 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array(), $redis->zpopmin('letters'));
-        $this->assertSame(array(), $redis->zpopmin('letters', 3));
+        $this->assertSame([], $redis->zpopmin('letters'));
+        $this->assertSame([], $redis->zpopmin('letters', 3));
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame(array('a' => '-10'), $redis->zpopmin('letters'));
-        $this->assertSame(array('b' => '0', 'c' => '10', 'd' => '20'), $redis->zpopmin('letters', 3));
-        $this->assertSame(array('e' => '20', 'f' => '30'), $redis->zpopmin('letters', 3));
+        $this->assertSame(['a' => '-10'], $redis->zpopmin('letters'));
+        $this->assertSame(['b' => '0', 'c' => '10', 'd' => '20'], $redis->zpopmin('letters', 3));
+        $this->assertSame(['e' => '20', 'f' => '30'], $redis->zpopmin('letters', 3));
     }
 
     /**
