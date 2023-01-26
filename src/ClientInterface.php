@@ -53,6 +53,7 @@ use Predis\Response\Status;
  * @method int               append(string $key, $value)
  * @method int               bfadd(string $key, $item)
  * @method int               bfexists(string $key, $item)
+ * @method array             bfinfo(string $key, string $modifier = '')
  * @method array             bfmadd(string $key, ...$item)
  * @method array             bfmexists(string $key, ...$item)
  * @method int               bitcount(string $key, $start = null, $end = null)

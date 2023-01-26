@@ -44,6 +44,7 @@ use Predis\Command\CommandInterface;
  * @method $this append($key, $value)
  * @method $this bfadd(string $key, $item)
  * @method $this bfexists(string $key, $item)
+ * @method $this bfinfo(string $key, string $modifier = '')
  * @method $this bfmadd(string $key, ...$item)
  * @method $this bfmexists(string $key, ...$item)
  * @method $this bitcount($key, $start = null, $end = null)
