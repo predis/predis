@@ -3,19 +3,20 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // Starting from Redis 2.0 clients can subscribe and listen for events published
 // on certain channels using a Publish/Subscribe (PUB/SUB) approach.
 
 // Create a client and disable r/w timeout on the socket
-$client = new Predis\Client($single_server + array('read_write_timeout' => 0));
+$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 
 // Initialize a new pubsub consumer.
 $pubsub = $client->pubSubLoop();
@@ -43,7 +44,7 @@ foreach ($pubsub as $message) {
                 }
             } else {
                 echo "Received the following message from {$message->channel}:",
-                     PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
+                PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
             }
             break;
     }

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,8 +17,6 @@ use Predis\NotSupportedException;
 
 /**
  * Defines a strategy for master/slave replication.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class ReplicationStrategy
 {
@@ -25,14 +24,11 @@ class ReplicationStrategy
     protected $readonly;
     protected $readonlySHA1;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->disallowed = $this->getDisallowedOperations();
         $this->readonly = $this->getReadOnlyOperations();
-        $this->readonlySHA1 = array();
+        $this->readonlySHA1 = [];
     }
 
     /**
@@ -41,9 +37,8 @@ class ReplicationStrategy
      *
      * @param CommandInterface $command Command instance.
      *
-     * @throws NotSupportedException
-     *
      * @return bool
+     * @throws NotSupportedException
      */
     public function isReadOperation(CommandInterface $command)
     {
@@ -117,7 +112,7 @@ class ReplicationStrategy
 
     /**
      * Checks if a GEORADIUS command is a readable operation by parsing the
-     * arguments array of the specified commad instance.
+     * arguments array of the specified command instance.
      *
      * @param CommandInterface $command Command instance.
      *
@@ -190,7 +185,7 @@ class ReplicationStrategy
      */
     protected function getDisallowedOperations()
     {
-        return array(
+        return [
             'SHUTDOWN' => true,
             'INFO' => true,
             'DBSIZE' => true,
@@ -202,7 +197,7 @@ class ReplicationStrategy
             'BGSAVE' => true,
             'BGREWRITEAOF' => true,
             'SLOWLOG' => true,
-        );
+        ];
     }
 
     /**
@@ -212,7 +207,7 @@ class ReplicationStrategy
      */
     protected function getReadOnlyOperations()
     {
-        return array(
+        return [
             'EXISTS' => true,
             'TYPE' => true,
             'KEYS' => true,
@@ -268,12 +263,12 @@ class ReplicationStrategy
             'BITPOS' => true,
             'TIME' => true,
             'PFCOUNT' => true,
-            'BITFIELD' => array($this, 'isBitfieldReadOnly'),
+            'BITFIELD' => [$this, 'isBitfieldReadOnly'],
             'GEOHASH' => true,
             'GEOPOS' => true,
             'GEODIST' => true,
-            'GEORADIUS' => array($this, 'isGeoradiusReadOnly'),
-            'GEORADIUSBYMEMBER' => array($this, 'isGeoradiusReadOnly'),
-        );
+            'GEORADIUS' => [$this, 'isGeoradiusReadOnly'],
+            'GEORADIUSBYMEMBER' => [$this, 'isGeoradiusReadOnly'],
+        ];
     }
 }

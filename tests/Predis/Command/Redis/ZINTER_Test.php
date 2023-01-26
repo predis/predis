@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
@@ -12,7 +22,7 @@ use UnexpectedValueException;
 class ZINTER_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -20,7 +30,7 @@ class ZINTER_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -60,20 +70,20 @@ class ZINTER_Test extends PredisCommandTestCase
             ],
             'with all arguments' => [
                 [['key1', 'key2'], [1, 2], 'min', true],
-                [ 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
-            ]
+                [2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
+            ],
         ];
     }
 
     /**
      * @group connected
      * @dataProvider sortedSetsProvider
-     * @param array $firstSortedSet
-     * @param array $secondSortedSet
-     * @param array $weights
-     * @param string $aggregate
-     * @param bool $withScores
-     * @param array $expectedResponse
+     * @param  array  $firstSortedSet
+     * @param  array  $secondSortedSet
+     * @param  array  $weights
+     * @param  string $aggregate
+     * @param  bool   $withScores
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -119,9 +129,9 @@ class ZINTER_Test extends PredisCommandTestCase
      * @dataProvider unexpectedValueProvider
      * @param $keys
      * @param $weights
-     * @param string $aggregate
-     * @param bool $withScores
-     * @param string $expectedExceptionMessage
+     * @param  string $aggregate
+     * @param  bool   $withScores
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -185,21 +195,21 @@ class ZINTER_Test extends PredisCommandTestCase
                 [],
                 'sum',
                 false,
-                'Wrong keys argument type or position offset'
+                'Wrong keys argument type or position offset',
             ],
             'with unexpected weights argument' => [
                 ['key1'],
                 1,
                 'sum',
                 false,
-                'Wrong weights argument type'
+                'Wrong weights argument type',
             ],
             'with unexpected aggregate argument' => [
                 ['key1'],
                 [],
                 'wrong',
                 false,
-                'Aggregate argument accepts only: min, max, sum values'
+                'Aggregate argument accepts only: min, max, sum values',
             ],
         ];
     }

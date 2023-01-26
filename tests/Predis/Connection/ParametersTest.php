@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,9 +14,6 @@ namespace Predis\Connection;
 
 use PredisTestCase;
 
-/**
- *
- */
 class ParametersTest extends PredisTestCase
 {
     /**
@@ -68,12 +66,12 @@ class ParametersTest extends PredisTestCase
      */
     public function testConstructWithArrayParameters(): void
     {
-        $parameters = new Parameters(array(
+        $parameters = new Parameters([
             'port' => 7000,
             'custom' => 'foobar',
             'setnull' => null,
             'setemptystring' => '',
-        ));
+        ]);
 
         $this->sharedTestsWithArrayParameters($parameters);
     }
@@ -83,12 +81,12 @@ class ParametersTest extends PredisTestCase
      */
     public function testCreateWithArrayParameters(): void
     {
-        $parameters = new Parameters(array(
+        $parameters = new Parameters([
             'port' => 7000,
             'custom' => 'foobar',
             'setnull' => null,
             'setemptystring' => '',
-        ));
+        ]);
 
         $this->sharedTestsWithArrayParameters($parameters);
     }
@@ -98,13 +96,13 @@ class ParametersTest extends PredisTestCase
      */
     public function testCreateWithUriString(): void
     {
-        $overrides = array(
+        $overrides = [
             'port' => 7000,
             'database' => 5,
             'custom' => 'foobar',
             'setnull' => null,
             'setemptystring' => '',
-        );
+        ];
 
         $uriString = $this->getParametersString($overrides);
         $parameters = Parameters::create($uriString);
@@ -118,7 +116,7 @@ class ParametersTest extends PredisTestCase
      */
     public function testToArray(): void
     {
-        $additional = array('port' => 7000, 'custom' => 'foobar');
+        $additional = ['port' => 7000, 'custom' => 'foobar'];
         $parameters = new Parameters($additional);
 
         $this->assertEquals($this->getParametersArray($additional), $parameters->toArray());
@@ -129,7 +127,7 @@ class ParametersTest extends PredisTestCase
      */
     public function testSerialization(): void
     {
-        $parameters = new Parameters(array('port' => 7000, 'custom' => 'foobar'));
+        $parameters = new Parameters(['port' => 7000, 'custom' => 'foobar']);
         $unserialized = unserialize(serialize($parameters));
 
         $this->assertEquals($parameters->scheme, $unserialized->scheme);
@@ -149,7 +147,7 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'tcp://10.10.10.10:6400?timeout=0.5&persistent=1&database=5&password=secret';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'tcp',
             'host' => '10.10.10.10',
             'port' => 6400,
@@ -157,7 +155,7 @@ class ParametersTest extends PredisTestCase
             'persistent' => '1',
             'database' => '5',
             'password' => 'secret',
-        );
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -169,7 +167,7 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'redis://predis:secret@10.10.10.10:6400/5?timeout=0.5&persistent=1';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'redis',
             'host' => '10.10.10.10',
             'port' => 6400,
@@ -178,7 +176,7 @@ class ParametersTest extends PredisTestCase
             'username' => 'predis',
             'password' => 'secret',
             'database' => '5',
-        );
+        ];
 
         $parameters = Parameters::parse($uri);
 
@@ -224,12 +222,12 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'redis://10.10.10.10/5/rest/of/path';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'redis',
             'host' => '10.10.10.10',
             'path' => '/rest/of/path',
             'database' => '5',
-        );
+        ];
 
         $parameters = Parameters::parse($uri);
 
@@ -243,12 +241,12 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'unix:///tmp/redis.sock?timeout=0.5&persistent=1';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
             'timeout' => '0.5',
             'persistent' => '1',
-        );
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -260,12 +258,12 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'unix:/tmp/redis.sock?timeout=0.5&persistent=1';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'unix',
             'path' => '/tmp/redis.sock',
             'timeout' => '0.5',
             'persistent' => '1',
-        );
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -277,13 +275,13 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'tcp://10.10.10.10?persistent=1&foo=&bar';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'tcp',
             'host' => '10.10.10.10',
             'persistent' => '1',
             'foo' => '',
             'bar' => '',
-        );
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -295,12 +293,12 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'tcp://10.10.10.10?foobar=a=b=c&persistent=1';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'tcp',
             'host' => '10.10.10.10',
             'foobar' => 'a=b=c',
             'persistent' => '1',
-        );
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -312,12 +310,12 @@ class ParametersTest extends PredisTestCase
     {
         $uri = 'tcp://10.10.10.10?persistent=1&metavars[]=foo&metavars[]=hoge';
 
-        $expected = array(
+        $expected = [
             'scheme' => 'tcp',
             'host' => '10.10.10.10',
             'persistent' => '1',
-            'metavars' => array('foo', 'hoge'),
-        );
+            'metavars' => ['foo', 'hoge'],
+        ];
 
         $this->assertSame($expected, Parameters::parse($uri));
     }
@@ -327,10 +325,10 @@ class ParametersTest extends PredisTestCase
      */
     public function testParsingURIWithEmbeddedIPV6AddressShouldStripBracketsFromHost(): void
     {
-        $expected = array('scheme' => 'tcp', 'host' => '::1', 'port' => 7000);
+        $expected = ['scheme' => 'tcp', 'host' => '::1', 'port' => 7000];
         $this->assertSame($expected, Parameters::parse('tcp://[::1]:7000'));
 
-        $expected = array('scheme' => 'tcp', 'host' => '2001:db8:0:f101::1', 'port' => 7000);
+        $expected = ['scheme' => 'tcp', 'host' => '2001:db8:0:f101::1', 'port' => 7000];
         $this->assertSame($expected, Parameters::parse('tcp://[2001:db8:0:f101::1]:7000'));
     }
 
@@ -340,7 +338,7 @@ class ParametersTest extends PredisTestCase
     public function testParsingURIThrowOnInvalidURI(): void
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage("Invalid parameters URI: tcp://invalid:uri");
+        $this->expectExceptionMessage('Invalid parameters URI: tcp://invalid:uri');
 
         Parameters::parse('tcp://invalid:uri');
     }
@@ -399,11 +397,11 @@ class ParametersTest extends PredisTestCase
      */
     protected function getDefaultParametersArray(): array
     {
-        return array(
+        return [
             'scheme' => 'tcp',
             'host' => '127.0.0.1',
             'port' => 6379,
-        );
+        ];
     }
 
     /**
@@ -417,9 +415,9 @@ class ParametersTest extends PredisTestCase
     {
         $defaults = $this->getDefaultParametersArray();
 
-        $scheme = isset($parameters['scheme']) ? $parameters['scheme'] : $defaults['scheme'];
-        $host = isset($parameters['host']) ? $parameters['host'] : $defaults['host'];
-        $port = isset($parameters['port']) ? $parameters['port'] : $defaults['port'];
+        $scheme = $parameters['scheme'] ?? $defaults['scheme'];
+        $host = $parameters['host'] ?? $defaults['host'];
+        $port = $parameters['port'] ?? $defaults['port'];
 
         unset($parameters['scheme'], $parameters['host'], $parameters['port']);
         $uriString = "$scheme://$host:$port/?";

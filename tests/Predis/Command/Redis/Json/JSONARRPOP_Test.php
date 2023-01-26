@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONARRPOP_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONARRPOP_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,12 +57,12 @@ class JSONARRPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param int $index
-     * @param array $expectedPoppedElements
-     * @param string $expectedModifiedJson
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  int    $index
+     * @param  array  $expectedPoppedElements
+     * @param  string $expectedModifiedJson
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -82,7 +92,7 @@ class JSONARRPOP_Test extends PredisCommandTestCase
                 '$.key2',
                 -1,
                 ['"value2"'],
-                '{"key1":"value1","key2":["value1"]}'
+                '{"key1":"value1","key2":["value1"]}',
             ],
             'removes i-element' => [
                 ['key', '$', '{"key1":"value1","key2":["value1","value2"]}'],
@@ -90,15 +100,15 @@ class JSONARRPOP_Test extends PredisCommandTestCase
                 '$.key2',
                 0,
                 ['"value1"'],
-                '{"key1":"value1","key2":["value2"]}'
+                '{"key1":"value1","key2":["value2"]}',
             ],
             'removes elements from root and nested levels' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value1","value2"]}'],
                 'key',
                 '$..key2',
                 -1,
-                ['"value2"','"value2"'],
-                '{"key1":{"key2":["value1"]},"key2":["value1"]}'
+                ['"value2"', '"value2"'],
+                '{"key1":{"key2":["value1"]},"key2":["value1"]}',
             ],
             'removes element from non-array' => [
                 ['key', '$', '{"key1":"value1","key2":"value2"}'],
@@ -106,8 +116,8 @@ class JSONARRPOP_Test extends PredisCommandTestCase
                 '$.key2',
                 -1,
                 [null],
-                '{"key1":"value1","key2":"value2"}'
-            ]
+                '{"key1":"value1","key2":"value2"}',
+            ],
         ];
     }
 }
