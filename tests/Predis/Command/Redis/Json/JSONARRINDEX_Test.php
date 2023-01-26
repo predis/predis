@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONARRINDEX_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,13 +57,13 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param string $value
-     * @param int $start
-     * @param int $stop
-     * @param array $expectedIndices
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  string $value
+     * @param  int    $start
+     * @param  int    $stop
+     * @param  array  $expectedIndices
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -82,7 +92,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value2"',
                 0,
                 0,
-                [1]
+                [1],
             ],
             'on nested level' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]}}'],
@@ -91,7 +101,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value2"',
                 0,
                 0,
-                [1]
+                [1],
             ],
             'with both level matching keys' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value2"]}'],
@@ -100,7 +110,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value2"',
                 0,
                 0,
-                [0, 1]
+                [0, 1],
             ],
             'with non-array path' => [
                 ['key', '$', '{"key1":"value1","key2":"value2"}'],
@@ -109,7 +119,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value2"',
                 0,
                 0,
-                [null]
+                [null],
             ],
             'not found - limit by start and stop' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value2"]}'],
@@ -118,7 +128,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value2"',
                 0,
                 1,
-                [0, -1]
+                [0, -1],
             ],
             'not found - with wrong value' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value2"]}'],
@@ -127,7 +137,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
                 '"value3"',
                 0,
                 0,
-                [-1, -1]
+                [-1, -1],
             ],
         ];
     }
