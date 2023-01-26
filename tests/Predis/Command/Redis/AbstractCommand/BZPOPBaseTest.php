@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\AbstractCommand;
 
 use Predis\Command\CommandInterface;
@@ -16,8 +26,7 @@ class BZPOPBaseTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testCommand = new class extends BZPOPBase {
-
+        $this->testCommand = new class() extends BZPOPBase {
             public function getId(): string
             {
                 return 'test';
@@ -50,11 +59,11 @@ class BZPOPBaseTest extends PredisTestCase
         return [
             'with one key' => [
                 [['key1'], 1],
-                ['key1', 1]
+                ['key1', 1],
             ],
             'with multiple keys' => [
                 [['key1', 'key2', 'key3'], 1],
-                ['key1', 'key2', 'key3', 1]
+                ['key1', 'key2', 'key3', 1],
             ],
         ];
     }
@@ -64,11 +73,11 @@ class BZPOPBaseTest extends PredisTestCase
         return [
             'null-element array' => [
                 [null],
-                [null]
+                [null],
             ],
             'three-element array' => [
                 ['key', 'member', 'score'],
-                ['key' => ['member' => 'score']]
+                ['key' => ['member' => 'score']],
             ],
         ];
     }

@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
 use Predis\Command\Command as RedisCommand;
@@ -14,7 +24,7 @@ class RevTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Rev;
 
             public static $revArgumentPositionOffset = 0;
@@ -28,9 +38,9 @@ class RevTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -50,7 +60,7 @@ class RevTest extends PredisTestCase
         $this->testClass::$revArgumentPositionOffset = 0;
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Wrong rev argument type");
+        $this->expectExceptionMessage('Wrong rev argument type');
 
         $this->testClass->setArguments(['test']);
     }
@@ -61,22 +71,22 @@ class RevTest extends PredisTestCase
             'rev false argument' => [
                 0,
                 [false, 'second argument', 'third argument'],
-                [false, 'second argument', 'third argument']
+                [false, 'second argument', 'third argument'],
             ],
             'rev argument first and there is arguments after' => [
                 0,
                 [true, 'second argument', 'third argument'],
-                ['REV', 'second argument', 'third argument']
+                ['REV', 'second argument', 'third argument'],
             ],
             'rev argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', true],
-                ['first argument', 'second argument', 'REV']
+                ['first argument', 'second argument', 'REV'],
             ],
             'rev argument not the first and not the last' => [
                 1,
                 ['first argument', true, 'third argument'],
-                ['first argument', 'REV', 'third argument']
+                ['first argument', 'REV', 'third argument'],
             ],
         ];
     }

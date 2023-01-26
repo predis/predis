@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class ZADD_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 1, 'member1', 2, 'member2');
-        $expected = array('key', 1, 'member1', 2, 'member2');
+        $arguments = ['key', 1, 'member1', 2, 'member2'];
+        $expected = ['key', 1, 'member1', 2, 'member2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class ZADD_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsMembersScoresAsSingleArray(): void
     {
-        $arguments = array('key', array('member1' => 1, 'member2' => 2));
-        $expected = array('key', 1, 'member1', 2, 'member2');
+        $arguments = ['key', ['member1' => 1, 'member2' => 2]];
+        $expected = ['key', 1, 'member1', 2, 'member2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class ZADD_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsMembersScoresAsSingleArrayWithModifiers(): void
     {
-        $arguments = array('key', 'NX', 'CH', array('member1' => 1, 'member2' => 2));
-        $expected = array('key', 'NX', 'CH', 1, 'member1', 2, 'member2');
+        $arguments = ['key', 'NX', 'CH', ['member1' => 1, 'member2' => 2]];
+        $expected = ['key', 'NX', 'CH', 1, 'member1', 2, 'member2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -91,10 +92,10 @@ class ZADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame(5, $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(1, $redis->zadd('letters', 1, 'e', 8, 'c', 6, 'f'));
-        $this->assertSame(array('a', 'e', 'b', 'd', 'f', 'c'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'e', 'b', 'd', 'f', 'c'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -106,10 +107,10 @@ class ZADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame(5, $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(2, $redis->zadd('letters', 'NX', 8, 'a', 1, 'f', 8, 'g', 4, 'e'));
-        $this->assertSame(array('a', 'f', 'b', 'c', 'd', 'e', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'f', 'b', 'c', 'd', 'e', 'g'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -121,10 +122,10 @@ class ZADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame(5, $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(0, $redis->zadd('letters', 'XX', 1, 'd', 2, 'c', 3, 'b', 1, 'x', 0, 'y'));
-        $this->assertSame(array('a', 'd', 'c', 'b', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'd', 'c', 'b', 'e'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -136,13 +137,13 @@ class ZADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame(5, $redis->zadd('letters', 'CH', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
-        $this->assertSame(array('a', 'b', 'c', 'd', 'e'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(2, $redis->zadd('letters', 'NX', 'CH', 8, 'a', 1, 'f', 8, 'g', 4, 'e'));
-        $this->assertSame(array('a', 'f', 'b', 'c', 'd', 'e', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'f', 'b', 'c', 'd', 'e', 'g'], $redis->zrange('letters', 0, -1));
 
         $this->assertSame(3, $redis->zadd('letters', 'XX', 'CH', 1, 'd', 2, 'c', 3, 'b', 1, 'x', 0, 'y'));
-        $this->assertSame(array('a', 'd', 'f', 'c', 'b', 'e', 'g'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['a', 'd', 'f', 'c', 'b', 'e', 'g'], $redis->zrange('letters', 0, -1));
     }
 
     /**
@@ -181,7 +182,7 @@ class ZADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->zadd('letters', 0.2, 'b', 0.3, 'a', 0.1, 'c');
-        $this->assertSame(array('c', 'b', 'a'), $redis->zrange('letters', 0, -1));
+        $this->assertSame(['c', 'b', 'a'], $redis->zrange('letters', 0, -1));
     }
 
     /**

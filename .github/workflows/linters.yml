@@ -1,0 +1,167 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Linters
+
+on:
+  push:
+    branches:
+      - main
+      - v2.**
+  pull_request: null
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  byte_level:
+    name: Byte-level
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check file permissions
+        run: test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
+
+      - name: "Find non-printable ASCII characters"
+        run: |
+          ! LC_ALL=C.UTF-8 find . -type f -name '*.php' -print0 \
+            | xargs --null -- grep --perl-regexp --with-filename --line-number '[^ -~ü]'
+
+  syntax_errors:
+    name: Syntax errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          coverage: none
+          tools: parallel-lint
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check source code for syntax errors
+        run: composer exec -- parallel-lint bin/ examples/ src/ tests/
+
+  static_analysis:
+    name: Static Analysis
+    needs:
+      - byte_level
+      - syntax_errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Validate Composer configuration
+        run: composer validate --no-interaction --strict
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: highest
+
+      - name: Check PSR-4 mapping
+        run: composer dump-autoload --no-interaction --optimize --strict-psr
+
+      - name: Perform static analysis
+        run: composer run phpstan
+
+      - name: Perform static analysis on tests
+        run: composer run phpstan -- --configuration=phpstan-tests.dist.neon
+
+  coding_standards:
+    name: Coding Standards
+    needs:
+      - byte_level
+      - syntax_errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          coverage: none
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check EditorConfig configuration
+        run: test -f .editorconfig
+
+      - name: Check adherence to EditorConfig
+        uses: greut/eclint-action@v0
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: highest
+
+      - name: Check coding style
+        run: composer exec -- php-cs-fixer fix --diff --dry-run --allow-risky=yes --using-cache=no
+
+      - name: Search for TODO-s and FIXME-s
+        run: |
+          ! git grep --extended-regexp --ignore-case '\b(TODO|FIXME)\b' -- ':/' ':!tests/*' ':!*/linters\.yml'
+
+  exported_files:
+    name: Exported files
+    needs:
+      - byte_level
+      - syntax_errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check exported files
+        run: |
+          EXPECTED="LICENSE,README.md,autoload.php,composer.json"
+          CURRENT="$(
+              git archive HEAD \
+                  | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
+                  | paste --serial --delimiters=","
+          )"
+          echo "CURRENT =${CURRENT}"
+          echo "EXPECTED=${EXPECTED}"
+          test "${CURRENT}" = "${EXPECTED}"
+
+  spelling:
+    name: Spelling
+    needs:
+      - byte_level
+      - syntax_errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-codespell
+
+      - name: Install codespell
+        run: pip install --user 'codespell>=2.2'
+
+      - name: Search for misspellings
+        run: $(python -m site --user-base)/bin/codespell
