@@ -99,6 +99,7 @@ use Predis\Command\CommandInterface;
  * @method $this hsetnx($key, $field, $value)
  * @method $this hvals($key)
  * @method $this hstrlen($key, $field)
+ * @method $this jsonarrappend(string $key, string $path = '$', ...$value)
  * @method $this jsondel(string $key, string $path = '$')
  * @method $this jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method $this jsonnumincrby(string $key, string $path, int $value)
