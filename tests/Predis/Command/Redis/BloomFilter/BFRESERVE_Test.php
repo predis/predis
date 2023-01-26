@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -9,7 +19,7 @@ use UnexpectedValueException;
 class BFRESERVE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -17,7 +27,7 @@ class BFRESERVE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,10 +57,10 @@ class BFRESERVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider filtersProvider
-     * @param array $filter
-     * @param string $key
-     * @param string $modifier
-     * @param array $expectedModification
+     * @param  array  $filter
+     * @param  string $key
+     * @param  string $modifier
+     * @param  array  $expectedModification
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -102,20 +112,20 @@ class BFRESERVE_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key', 0.01, 2],
-                ['key', 0.01, 2]
+                ['key', 0.01, 2],
             ],
             'with EXPANSION argument' => [
                 ['key', 0.01, 2, 2],
-                ['key', 0.01, 2, 'EXPANSION', 2]
+                ['key', 0.01, 2, 'EXPANSION', 2],
             ],
             'with NONSCALING modifier' => [
                 ['key', 0.01, 2, -1, true],
-                ['key', 0.01, 2, 'NONSCALING']
+                ['key', 0.01, 2, 'NONSCALING'],
             ],
             'with all arguments' => [
                 ['key', 0.01, 2, 2, true],
-                ['key', 0.01, 2, 'EXPANSION', 2, 'NONSCALING']
-            ]
+                ['key', 0.01, 2, 'EXPANSION', 2, 'NONSCALING'],
+            ],
         ];
     }
 
@@ -126,19 +136,19 @@ class BFRESERVE_Test extends PredisCommandTestCase
                 ['key', 0.01, 100],
                 'key',
                 'capacity',
-                [100]
+                [100],
             ],
             'with modified expansion' => [
                 ['key', 0.01, 100, 2],
                 'key',
                 'expansion',
-                [2]
+                [2],
             ],
             'with NONSCALING modifier' => [
                 ['key', 0.01, 100, -1, true],
                 'key',
                 'expansion',
-                [null]
+                [null],
             ],
         ];
     }
