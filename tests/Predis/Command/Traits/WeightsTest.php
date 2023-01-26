@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits;
 
 use Predis\Command\Command as RedisCommand;
@@ -12,7 +22,7 @@ class WeightsTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Weights;
 
             public static $weightsArgumentPositionOffset = 0;
@@ -26,9 +36,9 @@ class WeightsTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  int   $offset
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $actualArguments, array $expectedArguments): void
@@ -52,7 +62,6 @@ class WeightsTest extends PredisTestCase
         $this->testClass->setArguments($actualArguments);
     }
 
-
     public function argumentsProvider(): array
     {
         return [
@@ -60,23 +69,23 @@ class WeightsTest extends PredisTestCase
             'weights argument first and there is arguments after' => [
                 0,
                 [[1, 2], 'second argument', 'third argument'],
-                ['WEIGHTS', 1, 2, 'second argument', 'third argument']
+                ['WEIGHTS', 1, 2, 'second argument', 'third argument'],
             ],
             'weights argument last and there is arguments before' => [
                 2,
                 ['first argument', 'second argument', [1, 2]],
-                ['first argument', 'second argument', 'WEIGHTS', 1, 2]
+                ['first argument', 'second argument', 'WEIGHTS', 1, 2],
             ],
             'weights argument not the first and not the last' => [
                 1,
                 ['first argument', [1, 2], 'third argument'],
-                ['first argument', 'WEIGHTS', 1, 2, 'third argument']
+                ['first argument', 'WEIGHTS', 1, 2, 'third argument'],
             ],
             'weights argument the only argument' => [
                 0,
                 [[1, 2]],
-                ['WEIGHTS', 1, 2]
-            ]
+                ['WEIGHTS', 1, 2],
+            ],
         ];
     }
 }

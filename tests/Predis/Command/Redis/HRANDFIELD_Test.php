@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
@@ -7,7 +17,7 @@ use Predis\Response\ServerException;
 class HRANDFIELD_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class HRANDFIELD_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -25,8 +35,8 @@ class HRANDFIELD_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
@@ -48,11 +58,11 @@ class HRANDFIELD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider hashesProvider
-     * @param array $hash
-     * @param string $key
-     * @param int $count
-     * @param bool $withValues
-     * @param array $expectedResponse
+     * @param  array  $hash
+     * @param  string $key
+     * @param  int    $count
+     * @param  bool   $withValues
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -91,16 +101,16 @@ class HRANDFIELD_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key'],
-                ['key']
+                ['key'],
             ],
             'with count argument' => [
                 ['key', 1],
-                ['key', 1]
+                ['key', 1],
             ],
             'with WITHVALUES argument' => [
                 ['key', 1, true],
-                ['key', 1, 'WITHVALUES']
-            ]
+                ['key', 1, 'WITHVALUES'],
+            ],
         ];
     }
 
@@ -112,14 +122,14 @@ class HRANDFIELD_Test extends PredisCommandTestCase
                 'key',
                 1,
                 false,
-                ['key1', 'key2', 'key3']
+                ['key1', 'key2', 'key3'],
             ],
             'one field - with values' => [
                 ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],
                 'key',
                 1,
                 true,
-                ['key1', 'value1', 'key2', 'value2', 'key3', 'value3']
+                ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],
             ],
             'multiple fields - without values' => [
                 ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],

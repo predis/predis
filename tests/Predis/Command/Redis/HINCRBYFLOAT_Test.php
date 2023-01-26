@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field', 10.5);
-        $expected = array('key', 'field', 10.5);
+        $arguments = ['key', 'field', 10.5];
+        $expected = ['key', 'field', 10.5];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -68,7 +69,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
         $redis->hincrbyfloat('metavars', 'hoge', 10.001);
         $this->assertSame('11', $redis->hincrbyfloat('metavars', 'hoge', 0.999));
 
-        $this->assertSame(array('foo' => '10.5', 'hoge' => '11'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => '10.5', 'hoge' => '11'], $redis->hgetall('metavars'));
     }
 
     /**
@@ -84,7 +85,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
         $redis->hincrbyfloat('metavars', 'hoge', -10.001);
         $this->assertSame('-11', $redis->hincrbyfloat('metavars', 'hoge', -0.999));
 
-        $this->assertSame(array('foo' => '-10.5', 'hoge' => '-11'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => '-10.5', 'hoge' => '-11'], $redis->hgetall('metavars'));
     }
 
     /**

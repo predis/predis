@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This example demonstrates how to use Predis to save PHP sessions on Redis.
 //
@@ -25,16 +26,16 @@ require __DIR__.'/shared.php';
 //
 
 if (!interface_exists('SessionHandlerInterface')) {
-    die('ATTENTION: the session handler implemented by Predis requires PHP >= 5.4.0 '.
+    exit('ATTENTION: the session handler implemented by Predis requires PHP >= 5.4.0 ' .
         "or a polyfill for SessionHandlerInterface provided by an external package.\n");
 }
 
 // Instantiate a new client just like you would normally do. Using a prefix for
 // keys will effectively prefix all session keys with the specified string.
-$client = new Predis\Client($single_server, array('prefix' => 'sessions:'));
+$client = new Predis\Client($single_server, ['prefix' => 'sessions:']);
 
 // Set `gc_maxlifetime` to specify a time-to-live of 5 seconds for session keys.
-$handler = new Predis\Session\Handler($client, array('gc_maxlifetime' => 5));
+$handler = new Predis\Session\Handler($client, ['gc_maxlifetime' => 5]);
 
 // Register the session handler.
 $handler->register();

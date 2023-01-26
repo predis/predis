@@ -1,9 +1,19 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Traits\BloomFilters;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 
 class ItemsTest extends PredisTestCase
 {
@@ -13,7 +23,7 @@ class ItemsTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class extends RedisCommand {
+        $this->testClass = new class() extends RedisCommand {
             use Items;
 
             public static $itemsArgumentPositionOffset = 0;
@@ -27,9 +37,9 @@ class ItemsTest extends PredisTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param int $offset
-     * @param array $arguments
-     * @param array $expectedResponse
+     * @param  int   $offset
+     * @param  array $arguments
+     * @param  array $expectedResponse
      * @return void
      */
     public function testReturnsCorrectArguments(int $offset, array $arguments, array $expectedResponse): void
@@ -47,13 +57,13 @@ class ItemsTest extends PredisTestCase
             'with wrong offset' => [
                 1,
                 [],
-                []
+                [],
             ],
             'with non-default argument' => [
                 0,
                 ['item1', 'item2'],
-                ['ITEMS', 'item1', 'item2']
-            ]
+                ['ITEMS', 'item1', 'item2'],
+            ],
         ];
     }
 }

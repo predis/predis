@@ -1,6 +1,16 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -13,7 +23,7 @@ use UnexpectedValueException;
 class BFINSERT_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -21,7 +31,7 @@ class BFINSERT_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -51,11 +61,11 @@ class BFINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider filtersProvider
-     * @param array $arguments
-     * @param string $key
-     * @param string $modifier
-     * @param array $expectedInfo
-     * @param array $expectedResponse
+     * @param  array  $arguments
+     * @param  string $key
+     * @param  string $modifier
+     * @param  array  $expectedInfo
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -116,7 +126,7 @@ class BFINSERT_Test extends PredisCommandTestCase
                 'Size' => 240,
                 'Number of filters' => 1,
                 'Number of items inserted' => 2,
-                'Expansion rate' => 2
+                'Expansion rate' => 2,
             ],
             $redis->bfinfo('key', '')
         );
@@ -125,8 +135,8 @@ class BFINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -147,32 +157,32 @@ class BFINSERT_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key', -1, -1, -1, false, false, 'item1'],
-                ['key', 'ITEMS', 'item1']
+                ['key', 'ITEMS', 'item1'],
             ],
             'with CAPACITY modifier' => [
                 ['key', 100, -1, -1, false, false, 'item1'],
-                ['key', 'CAPACITY', 100, 'ITEMS', 'item1']
+                ['key', 'CAPACITY', 100, 'ITEMS', 'item1'],
             ],
             'with ERROR modifier' => [
                 ['key', -1, 0.01, -1, false, false, 'item1'],
-                ['key', 'ERROR', 0.01, 'ITEMS', 'item1']
+                ['key', 'ERROR', 0.01, 'ITEMS', 'item1'],
             ],
             'with EXPANSION modifier' => [
                 ['key', -1, -1, 2, false, false, 'item1'],
-                ['key', 'EXPANSION', 2, 'ITEMS', 'item1']
+                ['key', 'EXPANSION', 2, 'ITEMS', 'item1'],
             ],
             'with NOCREATE modifier' => [
                 ['key', -1, -1, -1, true, false, 'item1'],
-                ['key', 'NOCREATE', 'ITEMS', 'item1']
+                ['key', 'NOCREATE', 'ITEMS', 'item1'],
             ],
             'with NONSCALING modifier' => [
                 ['key', -1, -1, -1, false, true, 'item1'],
-                ['key', 'NONSCALING', 'ITEMS', 'item1']
+                ['key', 'NONSCALING', 'ITEMS', 'item1'],
             ],
             'with all arguments' => [
                 ['key', 100, 0.01, 2, true, true, 'item1', 'item2'],
-                ['key', 'CAPACITY', 100, 'ERROR', 0.01, 'EXPANSION', 2, 'NOCREATE', 'NONSCALING', 'ITEMS', 'item1', 'item2']
-            ]
+                ['key', 'CAPACITY', 100, 'ERROR', 0.01, 'EXPANSION', 2, 'NOCREATE', 'NONSCALING', 'ITEMS', 'item1', 'item2'],
+            ],
         ];
     }
 
@@ -188,16 +198,16 @@ class BFINSERT_Test extends PredisCommandTestCase
                     'Size' => 240,
                     'Number of filters' => 1,
                     'Number of items inserted' => 2,
-                    'Expansion rate' => 2
+                    'Expansion rate' => 2,
                 ],
-                [1, 1]
+                [1, 1],
             ],
             'with CAPACITY modifier' => [
                 ['key', 120, -1, -1, false, false, 'item1', 'item2'],
                 'key',
                 'capacity',
                 [120],
-                [1, 1]
+                [1, 1],
             ],
             'with ERROR modifier' => [
                 ['key', -1, 0.01, -1, false, false, 'item1', 'item2'],
@@ -208,23 +218,23 @@ class BFINSERT_Test extends PredisCommandTestCase
                     'Size' => 240,
                     'Number of filters' => 1,
                     'Number of items inserted' => 2,
-                    'Expansion rate' => 2
+                    'Expansion rate' => 2,
                 ],
-                [1, 1]
+                [1, 1],
             ],
             'with EXPANSION modifier' => [
                 ['key', -1, -1, 3, false, false, 'item1', 'item2'],
                 'key',
                 'expansion',
                 [3],
-                [1, 1]
+                [1, 1],
             ],
             'with NONSCALING modifier' => [
                 ['key', -1, -1, -1, false, true, 'item1', 'item2'],
                 'key',
                 'expansion',
                 [null],
-                [1, 1]
+                [1, 1],
             ],
             'with all arguments' => [
                 ['key', 120, 0.01, 3, false, false, 'item1', 'item2'],
@@ -237,8 +247,8 @@ class BFINSERT_Test extends PredisCommandTestCase
                     'Number of items inserted' => 2,
                     'Expansion rate' => 3,
                 ],
-                [1, 1]
-            ]
+                [1, 1],
+            ],
         ];
     }
 
@@ -247,15 +257,15 @@ class BFINSERT_Test extends PredisCommandTestCase
         return [
             'with wrong CAPACITY' => [
                 ['key', -5, -1, -1, false, false, 'item1', 'item2'],
-                'Wrong capacity argument value or position offset'
+                'Wrong capacity argument value or position offset',
             ],
             'with wrong ERROR' => [
                 ['key', -1, -5, -1, false, false, 'item1', 'item2'],
-                'Wrong error argument value or position offset'
+                'Wrong error argument value or position offset',
             ],
             'with wrong EXPANSION' => [
                 ['key', -1, -1, -5, false, false, 'item1', 'item2'],
-                'Wrong expansion argument value or position offset'
+                'Wrong expansion argument value or position offset',
             ],
         ];
     }

@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,15 +12,11 @@
 
 namespace Predis\Command;
 
-use Predis\ClientConfiguration;
 use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
 use Predis\Command\Resolver\CommandResolver;
 use PredisTestCase;
 
-/**
- *
- */
 class RedisFactoryTest extends PredisTestCase
 {
     /**
@@ -154,7 +151,7 @@ class RedisFactoryTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals('INFO', $command->getId());
-        $this->assertEquals(array(), $command->getArguments());
+        $this->assertEquals([], $command->getArguments());
     }
 
     /**
@@ -164,7 +161,7 @@ class RedisFactoryTest extends PredisTestCase
     {
         $factory = new RedisFactory(new CommandResolver());
 
-        $arguments = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
@@ -178,7 +175,7 @@ class RedisFactoryTest extends PredisTestCase
     public function testCreateUndefinedCommand(): void
     {
         $this->expectException('Predis\ClientException');
-        $this->expectExceptionMessage("Command `UNKNOWN` is not a registered Redis command.");
+        $this->expectExceptionMessage('Command `UNKNOWN` is not a registered Redis command.');
 
         $factory = new RedisFactory(new CommandResolver());
 
@@ -255,9 +252,9 @@ class RedisFactoryTest extends PredisTestCase
 
         $factory = new RedisFactory(new CommandResolver());
         $factory->setProcessor($processor);
-        $factory->create('set', array('foo', 'bar'));
+        $factory->create('set', ['foo', 'bar']);
 
-        $this->assertSame(array('FOO', 'BAR'), $argsRef);
+        $this->assertSame(['FOO', 'BAR'], $argsRef);
     }
 
     /**
@@ -294,7 +291,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     protected function getExpectedCommands(): array
     {
-        return array(
+        return [
             0 => 'EXISTS',
             1 => 'DEL',
             2 => 'TYPE',
@@ -454,6 +451,6 @@ class RedisFactoryTest extends PredisTestCase
             156 => 'GEODIST',
             157 => 'GEORADIUS',
             158 => 'GEORADIUSBYMEMBER',
-        );
+        ];
     }
 }

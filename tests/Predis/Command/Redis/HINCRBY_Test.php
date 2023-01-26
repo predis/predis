@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class HINCRBY_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('key', 'field', 10);
-        $expected = array('key', 'field', 10);
+        $arguments = ['key', 'field', 10];
+        $expected = ['key', 'field', 10];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,7 +67,7 @@ class HINCRBY_Test extends PredisCommandTestCase
         $this->assertSame(10, $redis->hincrby('metavars', 'foo', 10));
         $this->assertSame(5, $redis->hincrby('metavars', 'hoge', 5));
         $this->assertSame(15, $redis->hincrby('metavars', 'hoge', 10));
-        $this->assertSame(array('foo' => '10', 'hoge' => '15'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => '10', 'hoge' => '15'], $redis->hgetall('metavars'));
     }
 
     /**
@@ -80,7 +81,7 @@ class HINCRBY_Test extends PredisCommandTestCase
         $this->assertSame(-10, $redis->hincrby('metavars', 'foo', -10));
         $this->assertSame(-5, $redis->hincrby('metavars', 'hoge', -5));
         $this->assertSame(-15, $redis->hincrby('metavars', 'hoge', -10));
-        $this->assertSame(array('foo' => '-10', 'hoge' => '-15'), $redis->hgetall('metavars'));
+        $this->assertSame(['foo' => '-10', 'hoge' => '-15'], $redis->hgetall('metavars'));
     }
 
     /**

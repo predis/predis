@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
@@ -18,8 +20,6 @@ use Predis\Protocol\ProtocolException;
 /**
  * Base class with the common logic used by connection classes to communicate
  * with Redis.
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 abstract class AbstractConnection implements NodeConnectionInterface
 {
@@ -27,7 +27,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     private $cachedId;
 
     protected $parameters;
-    protected $initCommands = array();
+    protected $initCommands = [];
 
     /**
      * @param ParametersInterface $parameters Initialization parameters for the connection.
@@ -51,9 +51,8 @@ abstract class AbstractConnection implements NodeConnectionInterface
      *
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      *
-     * @throws \InvalidArgumentException
-     *
      * @return ParametersInterface
+     * @throws InvalidArgumentException
      */
     abstract protected function assertParameters(ParametersInterface $parameters);
 
@@ -198,6 +197,6 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     public function __sleep()
     {
-        return array('parameters', 'initCommands');
+        return ['parameters', 'initCommands'];
     }
 }

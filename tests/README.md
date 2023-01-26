@@ -94,4 +94,4 @@ matches its group, as defined by the Redis documentation. Valid realms are:
 
 When unsure about which value to use for `--realm` for a specific command, you can just infer it by
 searching in [`commands.json`](https://github.com/redis/redis-doc/blob/master/commands.json) for the
-`group` attribute of the corrisponding command as use its value.
+`group` attribute of the corresponding command as use its value.
