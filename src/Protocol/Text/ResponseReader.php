@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,17 +20,12 @@ use Predis\Protocol\ResponseReaderInterface;
 /**
  * Response reader for the standard Redis wire protocol.
  *
- * @link http://redis.io/topics/protocol
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/topics/protocol
  */
 class ResponseReader implements ResponseReaderInterface
 {
     protected $handlers;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->handlers = $this->getDefaultHandlers();
@@ -42,13 +38,13 @@ class ResponseReader implements ResponseReaderInterface
      */
     protected function getDefaultHandlers()
     {
-        return array(
+        return [
             '+' => new Handler\StatusResponse(),
             '-' => new Handler\ErrorResponse(),
             ':' => new Handler\IntegerResponse(),
             '$' => new Handler\BulkResponse(),
             '*' => new Handler\MultiBulkResponse(),
-        );
+        ];
     }
 
     /**
@@ -86,7 +82,7 @@ class ResponseReader implements ResponseReaderInterface
         $header = $connection->readLine();
 
         if ($header === '') {
-            $this->onProtocolError($connection, 'Unexpected empty reponse header');
+            $this->onProtocolError($connection, 'Unexpected empty response header');
         }
 
         $prefix = $header[0];

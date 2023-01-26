@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 class JSONARRLEN_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class JSONARRLEN_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,10 +57,10 @@ class JSONARRLEN_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider jsonProvider
-     * @param array $jsonArguments
-     * @param string $key
-     * @param string $path
-     * @param array $expectedLength
+     * @param  array  $jsonArguments
+     * @param  string $key
+     * @param  string $path
+     * @param  array  $expectedLength
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -74,26 +84,26 @@ class JSONARRLEN_Test extends PredisCommandTestCase
                 ['key', '$', '{"key1":"value1","key2":["value1","value2"]}'],
                 'key',
                 '$.key2',
-                [2]
+                [2],
             ],
             'on nested level' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]}}'],
                 'key',
                 '$..key2',
-                [2]
+                [2],
             ],
             'with same keys on both levels' => [
                 ['key', '$', '{"key1":{"key2":["value1","value2"]},"key2":["value1","value2","value3"]}'],
                 'key',
                 '$..key2',
-                [3,2]
+                [3, 2],
             ],
             'with non-array path' => [
                 ['key', '$', '{"key1":"value1","key2":"value2"}'],
                 'key',
                 '$.key2',
-                [null]
-            ]
+                [null],
+            ],
         ];
     }
 }
