@@ -1,4 +1,4 @@
-name: Redis_server_tests
+name: Tests
 
 on:
   push:
@@ -20,10 +20,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-<<<<<<< HEAD:.github/workflows/redis-server-tests.yml
-        php-versions: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
-        redis-versions: ['3', '4', '5']
-=======
         php:
           - '7.2'
           - '7.3'
@@ -43,7 +39,6 @@ jobs:
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
         ports:
           - 6379:6379
->>>>>>> 1467c5bac06694e7270459720902cff1ec8531ca:.github/workflows/tests.yml
 
     steps:
 
