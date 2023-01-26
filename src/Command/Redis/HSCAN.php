@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,9 +15,7 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @link http://redis.io/commands/hscan
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
+ * @see http://redis.io/commands/hscan
  */
 class HSCAN extends RedisCommand
 {
@@ -51,7 +50,7 @@ class HSCAN extends RedisCommand
     protected function prepareOptions($options)
     {
         $options = array_change_key_case($options, CASE_UPPER);
-        $normalized = array();
+        $normalized = [];
 
         if (!empty($options['MATCH'])) {
             $normalized[] = 'MATCH';
@@ -73,7 +72,7 @@ class HSCAN extends RedisCommand
     {
         if (is_array($data)) {
             $fields = $data[1];
-            $result = array();
+            $result = [];
 
             for ($i = 0; $i < count($fields); ++$i) {
                 $result[$fields[$i]] = $fields[++$i];

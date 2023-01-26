@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -30,8 +32,6 @@ use Predis\Response\Status as StatusResponse;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *  - ssl: context options array (see http://php.net/manual/en/context.ssl.php)
- *
- * @author Daniele Alessandri <suppakilla@gmail.com>
  */
 class StreamConnection extends AbstractConnection
 {
@@ -63,7 +63,7 @@ class StreamConnection extends AbstractConnection
                 break;
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
         }
 
         return $parameters;
@@ -87,7 +87,7 @@ class StreamConnection extends AbstractConnection
                 return $this->tlsStreamInitializer($this->parameters);
 
             default:
-                throw new \InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
+                throw new InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
         }
     }
 
@@ -164,7 +164,7 @@ class StreamConnection extends AbstractConnection
     protected function unixStreamInitializer(ParametersInterface $parameters)
     {
         if (!isset($parameters->path)) {
-            throw new \InvalidArgumentException('Missing UNIX domain socket path.');
+            throw new InvalidArgumentException('Missing UNIX domain socket path.');
         }
 
         $flags = STREAM_CLIENT_CONNECT;
@@ -174,7 +174,7 @@ class StreamConnection extends AbstractConnection
                 $flags |= STREAM_CLIENT_PERSISTENT;
 
                 if ($persistent === null) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'Persistent connection IDs are not supported when using UNIX domain sockets.'
                     );
                 }
@@ -201,17 +201,17 @@ class StreamConnection extends AbstractConnection
             return $resource;
         }
 
-        if (is_array($parameters->ssl)) {
+        if (isset($parameters->ssl) && is_array($parameters->ssl)) {
             $options = $parameters->ssl;
         } else {
-            $options = array();
+            $options = [];
         }
 
         if (!isset($options['crypto_type'])) {
             $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
         }
 
-        if (!stream_context_set_option($resource, array('ssl' => $options))) {
+        if (!stream_context_set_option($resource, ['ssl' => $options])) {
             $this->onConnectionError('Error while setting SSL context options');
         }
 
@@ -232,7 +232,7 @@ class StreamConnection extends AbstractConnection
                 $response = $this->executeCommand($command);
 
                 if ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`{$command->getId()}` failed: $response", 0);
+                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
                 }
             }
         }
@@ -323,7 +323,7 @@ class StreamConnection extends AbstractConnection
                     return;
                 }
 
-                $multibulk = array();
+                $multibulk = [];
 
                 for ($i = 0; $i < $count; ++$i) {
                     $multibulk[$i] = $this->read();

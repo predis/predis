@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,9 +14,6 @@ namespace Predis\Command;
 
 use PredisTestCase;
 
-/**
- *
- */
 class RawFactoryTest extends PredisTestCase
 {
     /**
@@ -74,7 +72,7 @@ class RawFactoryTest extends PredisTestCase
 
         $this->assertInstanceOf('Predis\Command\RawCommand', $command);
         $this->assertEquals('INFO', $command->getId());
-        $this->assertEquals(array(), $command->getArguments());
+        $this->assertEquals([], $command->getArguments());
     }
 
     /**
@@ -84,7 +82,7 @@ class RawFactoryTest extends PredisTestCase
     {
         $factory = new RawFactory();
 
-        $arguments = array('foo', 'bar');
+        $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
 
         $this->assertInstanceOf('Predis\Command\RawCommand', $command);

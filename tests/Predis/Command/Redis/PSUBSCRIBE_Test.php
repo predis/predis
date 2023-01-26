@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,8 +39,8 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = array('channel:foo:*', 'channel:hoge:*');
-        $expected = array('channel:foo:*', 'channel:hoge:*');
+        $arguments = ['channel:foo:*', 'channel:hoge:*'];
+        $expected = ['channel:foo:*', 'channel:hoge:*'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -52,8 +53,8 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsAsSingleArray(): void
     {
-        $arguments = array(array('channel:foo:*', 'channel:hoge:*'));
-        $expected = array('channel:foo:*', 'channel:hoge:*');
+        $arguments = [['channel:foo:*', 'channel:hoge:*']];
+        $expected = ['channel:foo:*', 'channel:hoge:*'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -66,8 +67,8 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $raw = array('psubscribe', 'channel:*', 1);
-        $expected = array('psubscribe', 'channel:*', 1);
+        $raw = ['psubscribe', 'channel:*', 1];
+        $expected = ['psubscribe', 'channel:*', 1];
 
         $command = $this->getCommand();
 
@@ -82,7 +83,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('psubscribe', 'channel:*', 1), $redis->psubscribe('channel:*'));
+        $this->assertSame(['psubscribe', 'channel:*', 1], $redis->psubscribe('channel:*'));
     }
 
     /**
@@ -93,8 +94,8 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('psubscribe', 'channel:foo:*', 1), $redis->psubscribe('channel:foo:*'));
-        $this->assertSame(array('psubscribe', 'channel:hoge:*', 2), $redis->psubscribe('channel:hoge:*'));
+        $this->assertSame(['psubscribe', 'channel:foo:*', 1], $redis->psubscribe('channel:foo:*'));
+        $this->assertSame(['psubscribe', 'channel:hoge:*', 2], $redis->psubscribe('channel:hoge:*'));
     }
 
     /**
@@ -105,8 +106,8 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('psubscribe', 'channel:foo:*', 1), $redis->psubscribe('channel:foo:*'));
-        $this->assertSame(array('subscribe', 'channel:foo:bar', 2), $redis->subscribe('channel:foo:bar'));
+        $this->assertSame(['psubscribe', 'channel:foo:*', 1], $redis->psubscribe('channel:foo:*'));
+        $this->assertSame(['subscribe', 'channel:foo:bar', 2], $redis->subscribe('channel:foo:bar'));
     }
 
     /**
@@ -117,9 +118,9 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('psubscribe', 'channel:foo:*', 1), $redis->psubscribe('channel:foo:*'));
-        $this->assertSame(array('psubscribe', 'channel:hoge:*', 2), $redis->psubscribe('channel:hoge:*'));
-        $this->assertSame(array('unsubscribe', 'channel:foo:bar', 2), $redis->unsubscribe('channel:foo:bar'));
+        $this->assertSame(['psubscribe', 'channel:foo:*', 1], $redis->psubscribe('channel:foo:*'));
+        $this->assertSame(['psubscribe', 'channel:hoge:*', 2], $redis->psubscribe('channel:hoge:*'));
+        $this->assertSame(['unsubscribe', 'channel:foo:bar', 2], $redis->unsubscribe('channel:foo:bar'));
     }
 
     /**
@@ -130,9 +131,9 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertSame(array('psubscribe', 'channel:foo:*', 1), $redis->psubscribe('channel:foo:*'));
-        $this->assertSame(array('psubscribe', 'channel:hoge:*', 2), $redis->psubscribe('channel:hoge:*'));
-        $this->assertSame(array('punsubscribe', 'channel:*:*', 2), $redis->punsubscribe('channel:*:*'));
+        $this->assertSame(['psubscribe', 'channel:foo:*', 1], $redis->psubscribe('channel:foo:*'));
+        $this->assertSame(['psubscribe', 'channel:hoge:*', 2], $redis->psubscribe('channel:hoge:*'));
+        $this->assertSame(['punsubscribe', 'channel:*:*', 2], $redis->punsubscribe('channel:*:*'));
     }
 
     /**
@@ -144,7 +145,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
         $quit = $this->getCommandFactory()->create('quit');
 
-        $this->assertSame(array('subscribe', 'channel1', 1), $redis->subscribe('channel1'));
+        $this->assertSame(['subscribe', 'channel1', 1], $redis->subscribe('channel1'));
         $this->assertEquals('OK', $redis->executeCommand($quit));
     }
 
