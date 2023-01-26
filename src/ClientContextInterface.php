@@ -117,6 +117,7 @@ use Predis\Command\CommandInterface;
  * @method $this jsonstrappend(string $key, string $path, string $value)
  * @method $this jsonstrlen(string $key, string $path = '$')
  * @method $this jsontoggle(string $key, string $path)
+ * @method $this jsontype(string $key, string $path = '$')
  * @method $this blmove(string $source, string $destination, string $where, string $to, int $timeout)
  * @method $this blpop(array|string $keys, $timeout)
  * @method $this brpop(array|string $keys, $timeout)
