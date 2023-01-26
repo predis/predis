@@ -1,6 +1,16 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 
@@ -8,22 +18,22 @@ use Predis\Command\Redis\PredisCommandTestCase;
  * @group commands
  * @group realm-bloom
  */
-class BFEXISTS_Test extends PredisCommandTestCase
+class BFMEXISTS_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return BFEXISTS::class;
+        return BFMEXISTS::class;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-        return 'BFEXISTS';
+        return 'BFMEXISTS';
     }
 
     /**
@@ -31,8 +41,8 @@ class BFEXISTS_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $actualArguments = ['key', 'item'];
-        $expectedArguments = ['key', 'item'];
+        $actualArguments = ['key', 'item1', 'item2'];
+        $expectedArguments = ['key', 'item1', 'item2'];
 
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
@@ -53,13 +63,11 @@ class BFEXISTS_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 1.0
      */
-    public function testExistsReturnsExistingItemWithinBloomFilter(): void
+    public function testExistsReturnsExistingItemsWithinBloomFilter(): void
     {
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item');
-
-        $this->assertSame(1, $redis->bfexists('key', 'item'));
-        $this->assertSame(0, $redis->bfexists('key', 'non-existing'));
+        $redis->bfmadd('key', 'item1', 'item2');
+        $this->assertSame([1, 1], $redis->bfmexists('key', 'item1', 'item2'));
     }
 }

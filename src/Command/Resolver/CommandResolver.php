@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Resolver;
 
 use Predis\ClientConfiguration;
@@ -19,11 +29,11 @@ class CommandResolver implements CommandResolverInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function resolve(string $commandID): ?string
     {
-        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . "\\" . $commandID)) {
+        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . '\\' . $commandID)) {
             return $commandClass;
         }
 
@@ -33,7 +43,7 @@ class CommandResolver implements CommandResolverInterface
             return null;
         }
 
-        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . "\\" . $commandModule . "\\" . $commandID)) {
+        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . '\\' . $commandModule . '\\' . $commandID)) {
             return $commandClass;
         }
 
@@ -47,6 +57,7 @@ class CommandResolver implements CommandResolverInterface
                 return $module['name'];
             }
         }
+
         return null;
     }
 }

@@ -1,11 +1,25 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Response\Status;
 use UnexpectedValueException;
 
+/**
+ * @see https://redis.io/commands/bf.info/
+ *
+ * Return information about key filter.
+ */
 class BFINFO extends RedisCommand
 {
     /**
@@ -16,7 +30,7 @@ class BFINFO extends RedisCommand
         'size' => 'SIZE',
         'filters' => 'FILTERS',
         'items' => 'ITEMS',
-        'expansion' => 'EXPANSION'
+        'expansion' => 'EXPANSION',
     ];
 
     public function getId()
@@ -31,6 +45,7 @@ class BFINFO extends RedisCommand
 
             if ($modifier === '') {
                 parent::setArguments($arguments);
+
                 return;
             }
 
@@ -52,7 +67,7 @@ class BFINFO extends RedisCommand
 
             for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
                 if ($data[$i + 1] ?? false) {
-                    $result[(string)$data[$i]] = $data[++$i];
+                    $result[(string) $data[$i]] = $data[++$i];
                 }
             }
 

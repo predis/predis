@@ -1,6 +1,16 @@
 <?php
 
-namespace Predis\Command\Redis\BloomFilters;
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis\BloomFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -13,7 +23,7 @@ use UnexpectedValueException;
 class BFINFO_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -21,7 +31,7 @@ class BFINFO_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -52,10 +62,10 @@ class BFINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider filtersProvider
-     * @param array $filter
-     * @param string $key
-     * @param string $modifier
-     * @param array $expectedResponse
+     * @param  array  $filter
+     * @param  string $key
+     * @param  string $modifier
+     * @param  array  $expectedResponse
      * @return void
      * @requiresRedisBfVersion 1.0.0
      */
@@ -106,11 +116,11 @@ class BFINFO_Test extends PredisCommandTestCase
         return [
             'without argument' => [
                 [],
-                []
+                [],
             ],
             'with default modifier value' => [
                 ['key', ''],
-                ['key']
+                ['key'],
             ],
             'with CAPACITY modifier' => [
                 ['key', 'capacity'],
@@ -130,7 +140,7 @@ class BFINFO_Test extends PredisCommandTestCase
             ],
             'with EXPANSION modifier' => [
                 ['key', 'expansion'],
-                ['key', 'EXPANSION']
+                ['key', 'EXPANSION'],
             ],
         ];
     }
@@ -153,16 +163,16 @@ class BFINFO_Test extends PredisCommandTestCase
                     'Number of items inserted',
                     1,
                     'Expansion rate',
-                    2
+                    2,
                 ],
                 [
                     'Capacity' => 100,
                     'Size' => 296,
                     'Number of filters' => 1,
                     'Number of items inserted' => 1,
-                    'Expansion rate' => 2
-                ]
-            ]
+                    'Expansion rate' => 2,
+                ],
+            ],
         ];
     }
 
@@ -178,8 +188,8 @@ class BFINFO_Test extends PredisCommandTestCase
                     'Size' => 240,
                     'Number of filters' => 1,
                     'Number of items inserted' => 1,
-                    'Expansion rate' => 2
-                ]
+                    'Expansion rate' => 2,
+                ],
             ],
             'with CAPACITY modifier' => [
                 ['key', 'item'],

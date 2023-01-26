@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
@@ -7,7 +17,7 @@ use Predis\Response\ServerException;
 class BLMOVE_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class BLMOVE_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -47,13 +57,13 @@ class BLMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider listsProvider
-     * @param array $firstList
-     * @param array $secondList
-     * @param string $where
-     * @param string $to
-     * @param string $expectedResponse
-     * @param array $expectedModifiedFirstList
-     * @param array $expectedModifiedSecondList
+     * @param  array  $firstList
+     * @param  array  $secondList
+     * @param  string $where
+     * @param  string $to
+     * @param  string $expectedResponse
+     * @param  array  $expectedModifiedFirstList
+     * @param  array  $expectedModifiedSecondList
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -81,11 +91,11 @@ class BLMOVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider sameListProvider
-     * @param array $list
-     * @param string $where
-     * @param string $to
-     * @param string $expectedResponse
-     * @param array $expectedModifiedList
+     * @param  array  $list
+     * @param  string $where
+     * @param  string $to
+     * @param  string $expectedResponse
+     * @param  array  $expectedModifiedList
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

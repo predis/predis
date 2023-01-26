@@ -3,13 +3,14 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-require __DIR__.'/shared.php';
+require __DIR__ . '/shared.php';
 
 // This is an implementation of an atomic client-side ZPOP using the support for
 // check-and-set (CAS) operations with MULTI/EXEC transactions, as described in
@@ -27,15 +28,15 @@ require __DIR__.'/shared.php';
 function zpop($client, $key)
 {
     $element = null;
-    $options = array(
+    $options = [
         'cas' => true,      // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
         'retry' => 3,       // Number of retries on aborted transactions, after
                             // which the client bails out with an exception.
-    );
+    ];
 
     $client->transaction($options, function ($tx) use ($key, &$element) {
-        @list($element) = $tx->zrange($key, 0, 0);
+        @[$element] = $tx->zrange($key, 0, 0);
 
         if (isset($element)) {
             $tx->multi();   // With CAS, MULTI *must* be explicitly invoked.

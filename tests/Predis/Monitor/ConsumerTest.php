@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,9 +12,9 @@
 
 namespace Predis\Monitor;
 
-use PredisTestCase;
 use Predis\Client;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use PredisTestCase;
 
 /**
  * @group realm-monitor
@@ -35,7 +36,7 @@ class ConsumerTest extends PredisTestCase
             ->with('MONITOR')
             ->willReturn(false);
 
-        $client = new Client(null, array('commands' => $commands));
+        $client = new Client(null, ['commands' => $commands]);
 
         new MonitorConsumer($client);
     }
@@ -64,13 +65,13 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('createCommand', 'executeCommand'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['createCommand', 'executeCommand'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->once())
             ->method('createCommand')
-            ->with('MONITOR', array())
+            ->with('MONITOR', [])
             ->willReturn($cmdMonitor);
         $client
             ->expects($this->once())
@@ -93,8 +94,8 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('disconnect'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->exactly(2))
@@ -114,8 +115,8 @@ class ConsumerTest extends PredisTestCase
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
-            ->onlyMethods(array('disconnect'))
-            ->setConstructorArgs(array($connection))
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
             ->getMock();
         $client
             ->expects($this->once())
@@ -185,15 +186,15 @@ class ConsumerTest extends PredisTestCase
      */
     public function testMonitorAgainstRedisServer(): void
     {
-        $parameters = array(
+        $parameters = [
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
-        );
+        ];
 
-        $echoed = array();
+        $echoed = [];
 
         $producer = new Client($parameters);
         $producer->connect();
@@ -216,7 +217,7 @@ class ConsumerTest extends PredisTestCase
             }
         }
 
-        $this->assertSame(array('message1', 'message2', 'QUIT'), $echoed);
+        $this->assertSame(['message1', 'message2', 'QUIT'], $echoed);
         $this->assertFalse($monitor->valid());
         $this->assertEquals('PONG', $consumer->ping());
     }

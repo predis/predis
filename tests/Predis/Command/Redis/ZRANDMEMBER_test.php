@@ -1,14 +1,23 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Response\ServerException;
 
 class ZRANDMEMBER_test extends PredisCommandTestCase
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,11 +25,11 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
-       return 'ZRANDMEMBER';
+        return 'ZRANDMEMBER';
     }
 
     /**
@@ -45,11 +54,11 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @param string $key
-     * @param int $count
-     * @param array $membersDictionary
-     * @param array $expectedResponse
-     * @param bool $withScores
+     * @param  string $key
+     * @param  int    $count
+     * @param  array  $membersDictionary
+     * @param  array  $expectedResponse
+     * @param  bool   $withScores
      * @return void
      * @dataProvider membersProvider
      * @requiresRedisVersion >= 6.2.0
@@ -102,14 +111,14 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
                 2,
                 [1, 'member1', 2, 'member2'],
                 ['member1', 'member2'],
-                false
+                false,
             ],
             'multiple members - negative count - without score' => [
                 'test-zset',
                 -2,
                 [1, 'member1'],
                 ['member1', 'member1'],
-                false
+                false,
             ],
             'one member - with score' => ['test-zset', 1, [1, 'member1'], ['member1' => '1'], true],
             'multiple members - positive count - with score' => [
@@ -117,14 +126,14 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
                 2,
                 [1, 'member1', 2, 'member2'],
                 ['member1' => '1', 'member2' => '2'],
-                true
+                true,
             ],
             'multiple members - negative count - with score' => [
                 'test-zset',
                 -1,
                 [1, 'member1'],
                 ['member1' => '1'],
-                true
+                true,
             ],
         ];
     }

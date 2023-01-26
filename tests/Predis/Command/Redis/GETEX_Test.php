@@ -3,7 +3,8 @@
 /*
  * This file is part of the Predis package.
  *
- * (c) Daniele Alessandri <suppakilla@gmail.com>
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -60,9 +61,9 @@ class GETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider keysProvider
-     * @param array $kvPair
-     * @param array $arguments
-     * @param string $expectedResponse
+     * @param  array  $kvPair
+     * @param  array  $arguments
+     * @param  string $expectedResponse
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -81,8 +82,8 @@ class GETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param array $arguments
-     * @param string $expectedExceptionMessage
+     * @param  array  $arguments
+     * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -103,7 +104,7 @@ class GETEX_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['key'],
-                ['key']
+                ['key'],
             ],
             'with EX modifier' => [
                 ['key', 'ex', 1],
@@ -123,8 +124,8 @@ class GETEX_Test extends PredisCommandTestCase
             ],
             'with PERSIST modifier' => [
                 ['key', 'persist'],
-                ['key', 'PERSIST']
-            ]
+                ['key', 'PERSIST'],
+            ],
         ];
     }
 
@@ -139,27 +140,27 @@ class GETEX_Test extends PredisCommandTestCase
             'with expiration - EX modifier' => [
                 ['key', 'value'],
                 ['key', 'ex', 10],
-                'value'
+                'value',
             ],
             'with expiration - PX modifier' => [
                 ['key', 'value'],
                 ['key', 'px', 10],
-                'value'
+                'value',
             ],
             'with expiration - EXAT modifier' => [
                 ['key', 'value'],
                 ['key', 'exat', 10],
-                'value'
+                'value',
             ],
             'with expiration - PXAT modifier' => [
                 ['key', 'value'],
                 ['key', 'pxat', 10],
-                'value'
+                'value',
             ],
             'with expiration - PERSIST modifier' => [
                 ['key', 'value'],
                 ['key', 'persist'],
-                'value'
+                'value',
             ],
         ];
     }
@@ -169,12 +170,12 @@ class GETEX_Test extends PredisCommandTestCase
         return [
             'with wrong modifier' => [
                 ['key', 'wrong', 1],
-                'Modifier argument accepts only: ex, px, exat, pxat, persist values'
+                'Modifier argument accepts only: ex, px, exat, pxat, persist values',
             ],
             'without value provided' => [
                 ['key', 'ex'],
-                'You should provide value for current modifier'
-            ]
+                'You should provide value for current modifier',
+            ],
         ];
     }
 }
