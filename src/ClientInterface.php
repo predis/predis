@@ -121,6 +121,7 @@ use Predis\Response\Status;
  * @method array             jsonmget(array $keys, string $path)
  * @method array             jsonobjkeys(string $key, string $path = '$')
  * @method array             jsonobjlen(string $key, string $path = '$')
+ * @method array             jsonresp(string $key, string $path = '$')
  * @method string            jsonset(string $key, string $path, string $value, ?string $subcommand = null)
  * @method array             jsonstrappend(string $key, string $path, string $value)
  * @method array             jsonstrlen(string $key, string $path = '$')
