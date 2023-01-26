@@ -116,6 +116,7 @@ use Predis\Response\Status;
  * @method int               jsonclear(string $key, string $path = '$')
  * @method array             jsonarrtrim(string $key, string $path, int $start, int $stop)
  * @method int               jsondel(string $key, string $path = '$')
+ * @method int               jsonforget(string $key, string $path = '$')
  * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method string            jsonnumincrby(string $key, string $path, int $value)
  * @method array             jsonmget(array $keys, string $path)
