@@ -14,6 +14,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
@@ -48,6 +49,7 @@ use Predis\Response\Status;
  * @method int               renamenx(string $key, string $target)
  * @method array             scan($cursor, array $options = null)
  * @method array             sort(string $key, array $options = null)
+ * @method array             sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
