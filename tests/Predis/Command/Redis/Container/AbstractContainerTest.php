@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Container;
 
 use PHPUnit\Framework\TestCase;
@@ -41,7 +51,7 @@ class AbstractContainerTest extends TestCase
         $this->mockClient = $this->getMockBuilder(ClientInterface::class)->getMock();
 
         $this->testClass = new class($this->mockClient) extends AbstractContainer {
-            protected static $containerId = 'test';
+            protected static $containerCommandId = 'test';
         };
     }
 
@@ -50,7 +60,7 @@ class AbstractContainerTest extends TestCase
      */
     public function testGetContainerId(): void
     {
-        $this->assertSame('test', $this->testClass->getContainerId());
+        $this->assertSame('test', $this->testClass->getContainerCommandId());
     }
 
     /**

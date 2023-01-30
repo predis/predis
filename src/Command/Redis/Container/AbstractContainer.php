@@ -26,24 +26,23 @@ class AbstractContainer implements ContainerInterface
         $this->client = $client;
     }
 
-
     /**
      * {@inheritDoc}
      */
-    public function __call($commandID, $arguments)
+    public function __call($subcommandID, $arguments)
     {
-        array_unshift($arguments, strtoupper($commandID));
+        array_unshift($arguments, strtoupper($subcommandID));
 
         return $this->client->executeCommand(
-            $this->client->createCommand($this->getContainerId(), $arguments)
+            $this->client->createCommand($this->getContainerCommandId(), $arguments)
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getContainerId(): string
+    public function getContainerCommandId(): string
     {
-        return static::$containerId;
+        return static::$containerCommandId;
     }
 }

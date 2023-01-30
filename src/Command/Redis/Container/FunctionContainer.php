@@ -20,5 +20,5 @@ use Predis\Response\Status;
  */
 class FunctionContainer extends AbstractContainer
 {
-    protected static $containerId = 'function';
+    protected static $containerCommandId = 'function';
 }
