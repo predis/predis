@@ -20,5 +20,8 @@ use Predis\Response\Status;
  */
 class FunctionContainer extends AbstractContainer
 {
-    protected static $containerCommandId = 'function';
+    public function getContainerCommandId(): string
+    {
+        return 'functions';
+    }
 }

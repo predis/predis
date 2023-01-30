@@ -51,7 +51,10 @@ class AbstractContainerTest extends TestCase
         $this->mockClient = $this->getMockBuilder(ClientInterface::class)->getMock();
 
         $this->testClass = new class($this->mockClient) extends AbstractContainer {
-            protected static $containerCommandId = 'test';
+            public function getContainerCommandId(): string
+            {
+                return 'test';
+            }
         };
     }
 

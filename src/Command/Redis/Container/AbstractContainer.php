@@ -14,7 +14,7 @@ namespace Predis\Command\Redis\Container;
 
 use Predis\ClientInterface;
 
-class AbstractContainer implements ContainerInterface
+abstract class AbstractContainer implements ContainerInterface
 {
     /**
      * @var ClientInterface
@@ -38,11 +38,5 @@ class AbstractContainer implements ContainerInterface
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getContainerCommandId(): string
-    {
-        return static::$containerCommandId;
-    }
+    abstract public function getContainerCommandId(): string;
 }
