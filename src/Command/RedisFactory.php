@@ -12,6 +12,8 @@
 
 namespace Predis\Command;
 
+use Predis\Command\Redis\FUNCTIONS;
+
 /**
  * Command factory for mainline Redis servers.
  *
@@ -29,6 +31,8 @@ class RedisFactory extends Factory
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
+            // Class name corresponds to PHP reserved word "function", added mapping to bypass restrictions
+            'FUNCTION' => FUNCTIONS::class,
         ];
     }
 
