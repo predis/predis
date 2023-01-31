@@ -18,6 +18,7 @@ use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
+use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -64,6 +65,7 @@ use Predis\Response\Status;
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
+ * @method mixed             fcall(string $function, array $keys, ...$args)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
@@ -218,6 +220,9 @@ use Predis\Response\Status;
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ *
+ * Container commands
+ * @property FunctionContainer $function
  */
 interface ClientInterface
 {

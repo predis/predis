@@ -17,6 +17,7 @@ use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\Container\FunctionContainer;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -55,6 +56,7 @@ use Predis\Command\CommandInterface;
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
+ * @method $this fcall(string $function, array $keys, ...$args)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
@@ -200,6 +202,9 @@ use Predis\Command\CommandInterface;
  * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ *
+ * Container commands
+ * @property FunctionContainer $function
  */
 interface ClientContextInterface
 {
