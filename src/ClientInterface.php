@@ -72,6 +72,7 @@ use Predis\Response\Status;
  * @method int               cfaddnx(string $key, $item)
  * @method int               cfcount(string $key, $item)
  * @method int               cfexists(string $key, $item)
+ * @method array             cfinfo(string $key)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
