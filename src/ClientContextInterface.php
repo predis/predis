@@ -65,6 +65,7 @@ use Predis\Command\CommandInterface;
  * @method $this cfdel(string $key, $item)
  * @method $this cfexists(string $key, $item)
  * @method $this cfmexists(string $key, ...$item)
+ * @method $this cfinfo(string $key)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)

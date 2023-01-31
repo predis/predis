@@ -66,7 +66,7 @@ class BFINFO extends RedisCommand
             $result = [];
 
             for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
-                if ($data[$i + 1] ?? false) {
+                if (array_key_exists($i + 1, $data)) {
                     $result[(string) $data[$i]] = $data[++$i];
                 }
             }
