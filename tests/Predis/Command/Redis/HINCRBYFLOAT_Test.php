@@ -58,6 +58,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.6.0
      */
     public function testIncrementsValueOfFieldByFloat(): void
@@ -74,6 +75,7 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.6.0
      */
     public function testDecrementsValueOfFieldByFloat(): void

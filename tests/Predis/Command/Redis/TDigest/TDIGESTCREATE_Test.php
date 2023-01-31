@@ -15,6 +15,10 @@ namespace Predis\Command\Redis\TDigest;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TDIGESTCREATE_Test extends PredisCommandTestCase
 {
     /**

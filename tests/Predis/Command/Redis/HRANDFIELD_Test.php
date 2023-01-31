@@ -57,6 +57,7 @@ class HRANDFIELD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @dataProvider hashesProvider
      * @param  array  $hash
      * @param  string $key

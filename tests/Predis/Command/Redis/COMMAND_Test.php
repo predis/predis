@@ -97,6 +97,7 @@ class COMMAND_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsCommandInfoOnExistingCommand(): void

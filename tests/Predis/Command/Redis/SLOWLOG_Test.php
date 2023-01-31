@@ -87,6 +87,7 @@ class SLOWLOG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.2.12
      */
     public function testReturnsAnArrayOfLoggedCommands(): void

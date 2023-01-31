@@ -29,12 +29,7 @@ class CRC16Test extends PredisTestCase
         $hashGenerator = $option->getDefault($options);
 
         $this->assertInstanceOf('Predis\Cluster\Hash\HashGeneratorInterface', $hashGenerator);
-
-        if (function_exists('phpiredis_utils_crc16')) {
-            $this->assertInstanceOf('Predis\Cluster\Hash\PhpiredisCRC16', $hashGenerator);
-        } else {
-            $this->assertInstanceOf('Predis\Cluster\Hash\CRC16', $hashGenerator);
-        }
+        $this->assertInstanceOf('Predis\Cluster\Hash\CRC16', $hashGenerator);
     }
 
     /**
@@ -115,27 +110,11 @@ class CRC16Test extends PredisTestCase
 
     /**
      * @group disconnected
-     * @group ext-phpiredis
-     * @requires extension phpiredis
-     * @requires function phpiredis_utils_crc16
-     */
-    public function testAcceptsShortNameStringPhpiredis(): void
-    {
-        $option = new CRC16();
-
-        /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
-
-        $this->assertInstanceOf('Predis\Cluster\Hash\PhpiredisCRC16', $option->filter($options, 'phpiredis'));
-    }
-
-    /**
-     * @group disconnected
      */
     public function testThrowsExceptionOnInvalidShortNameString(): void
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('String value for the crc16 option must be either `predis` or `phpiredis`');
+        $this->expectExceptionMessage('String value for the crc16 option must be `predis`');
 
         $option = new CRC16();
 

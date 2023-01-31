@@ -86,7 +86,31 @@ class HMGET_Test extends PredisCommandTestCase
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 
         $this->assertSame(['bar', 'piyo', null], $redis->hmget('metavars', 'foo', 'hoge', 'unknown'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testReturnsDuplicateValues(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
         $this->assertSame(['bar', 'bar'], $redis->hmget('metavars', 'foo', 'foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testReturnsNullValues(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
         $this->assertSame([null, null], $redis->hmget('metavars', 'unknown', 'unknown'));
         $this->assertSame([null, null], $redis->hmget('unknown', 'foo', 'hoge'));
     }

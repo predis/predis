@@ -15,6 +15,8 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
+ * @group relay-error
+ *
  * @see http://redis.io/commands/config-set
  * @see http://redis.io/commands/config-get
  * @see http://redis.io/commands/config-resetstat
@@ -36,6 +38,10 @@ class CONFIG extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
+            if ($data !== array_values($data)) {
+                return $data; // RESP 3
+            }
+
             $result = [];
 
             for ($i = 0; $i < count($data); ++$i) {

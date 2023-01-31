@@ -94,6 +94,7 @@ class OBJECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.2.3
      */
     public function testReturnsNullOnNonExistingKey(): void

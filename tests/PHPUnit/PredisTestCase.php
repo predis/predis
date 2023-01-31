@@ -31,6 +31,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     private $modulesMapping = [
         'json' => ['annotation' => 'requiresRedisJsonVersion', 'name' => 'ReJSON'],
         'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
+        'search' => ['annotation' => 'requiresRediSearchVersion', 'name' => 'search'],
     ];
 
     /**
@@ -48,6 +49,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         $this->checkRequiredRedisServerVersion();
         $this->checkRequiredRedisModuleVersion('json');
         $this->checkRequiredRedisModuleVersion('bloomFilter');
+        $this->checkRequiredRedisModuleVersion('search');
     }
 
     /**
@@ -135,8 +137,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
     {
-        if (is_callable('parent::' . __FUNCTION__)) {
-            call_user_func('parent::' . __FUNCTION__, $pattern, $string, $message);
+        if (method_exists(get_parent_class(parent::class), __FUNCTION__)) {
+            call_user_func([parent::class, __FUNCTION__], $pattern, $string, $message);
         } else {
             static::assertRegExp($pattern, $string, $message);
         }
@@ -230,10 +232,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         );
 
         $options = array_merge(
-            [
-                'commands' => $this->getCommandFactory(),
-            ],
-            $options ?: []
+            ['commands' => $this->getCommandFactory()],
+            $options ?: [],
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );
 
         $client = new Client($parameters, $options);

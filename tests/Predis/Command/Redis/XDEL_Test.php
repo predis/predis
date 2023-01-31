@@ -15,6 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-stream
+ * @group relay-todo
  */
 class XDEL_Test extends PredisCommandTestCase
 {

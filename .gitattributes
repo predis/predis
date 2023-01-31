@@ -12,6 +12,7 @@
 /CONTRIBUTING.md export-ignore linguist-documentation
 /FAQ.md export-ignore linguist-documentation
 /VERSION export-ignore
+/phpunit.relay.xml export-ignore
 /phpunit.xml.dist export-ignore
 /phpstan.dist.neon export-ignore
 /phpstan-tests.dist.neon export-ignore

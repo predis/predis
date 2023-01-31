@@ -24,6 +24,7 @@ use RuntimeException;
 
 /**
  * @group realm-transaction
+ * @group relay-tx
  */
 class MultiExecTest extends PredisTestCase
 {

@@ -39,8 +39,8 @@ class EXPIRE_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = ['key', 'ttl'];
-        $expected = ['key', 'ttl'];
+        $arguments = ['key', 'ttl', 'xx'];
+        $expected = ['key', 'ttl', 'XX'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -88,6 +88,34 @@ class EXPIRE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @medium
+     * @group connected
+     * @group slow
+     * @group relay-todo
+     * @dataProvider keysProvider
+     * @param  array $firstKeyArguments
+     * @param  array $secondKeyArguments
+     * @param  array $positivePathArguments
+     * @param  array $negativePathArguments
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSetNewExpirationTimeWithExpireOptions(
+        array $firstKeyArguments,
+        array $secondKeyArguments,
+        array $positivePathArguments,
+        array $negativePathArguments
+    ): void {
+        $redis = $this->getClient();
+
+        $redis->set(...$firstKeyArguments);
+        $redis->set(...$secondKeyArguments);
+
+        $this->assertSame(1, $redis->expire(...$positivePathArguments));
+        $this->assertSame(0, $redis->expire(...$negativePathArguments));
+    }
+
+    /**
      * @group connected
      */
     public function testDeletesKeysOnNegativeTTL(): void
@@ -98,5 +126,35 @@ class EXPIRE_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->expire('foo', -10));
         $this->assertSame(0, $redis->exists('foo'));
+    }
+
+    public function keysProvider(): array
+    {
+        return [
+            'only if key has no expiry' => [
+                ['noExpiry', 'value'],
+                ['withExpiry', 'value', 'EX', 10],
+                ['noExpiry', 2, 'NX'],
+                ['withExpiry', 2, 'NX'],
+            ],
+            'only if key has expiry' => [
+                ['noExpiry', 'value'],
+                ['withExpiry', 'value', 'EX', 10],
+                ['withExpiry', 2, 'XX'],
+                ['noExpiry', 2, 'XX'],
+            ],
+            'only if new expiry is greater then current one' => [
+                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
+                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
+                ['newExpiryGreater', 20, 'GT'],
+                ['newExpiryLower', 20, 'GT'],
+            ],
+            'only if new expiry is lower then current one' => [
+                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
+                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
+                ['newExpiryLower', 20, 'LT'],
+                ['newExpiryGreater', 20, 'LT'],
+            ],
+        ];
     }
 }
