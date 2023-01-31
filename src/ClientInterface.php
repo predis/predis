@@ -74,6 +74,7 @@ use Predis\Response\Status;
  * @method int               cfexists(string $key, $item)
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)
+ * @method array             cfinsert(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
