@@ -233,7 +233,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             [
                 'commands' => $this->getCommandFactory(),
             ],
-            $options ?: []
+            $options ?: [],
+            ['connections' => 'relay']
         );
 
         $client = new Client($parameters, $options);
@@ -317,6 +318,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRedisServerVersion(): string
     {
+        $this->redisServerVersion = '7.0.5';
+
         if (isset($this->redisServerVersion)) {
             return $this->redisServerVersion;
         }

@@ -19,6 +19,7 @@ use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\PhpiredisSocketConnection;
 use Predis\Connection\PhpiredisStreamConnection;
+use Predis\Connection\RelayStreamConnection;
 
 /**
  * Configures a new connection factory instance.
@@ -103,6 +104,13 @@ class Connections implements OptionInterface
         $factory = $this->getDefault($options);
 
         switch (strtolower($value)) {
+            case 'relay':
+            case 'relay-stream':
+                $factory->define('tcp', RelayStreamConnection::class);
+                $factory->define('redis', RelayStreamConnection::class);
+                $factory->define('unix', RelayStreamConnection::class);
+                break;
+
             case 'phpiredis':
             case 'phpiredis-stream':
                 $factory->define('tcp', PhpiredisStreamConnection::class);
