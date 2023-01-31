@@ -61,7 +61,6 @@ use Predis\Command\CommandInterface;
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method $this cfadd(string $key, $item)
  * @method $this cfaddnx(string $key, $item)
- sp-903-cfmexists-command
  * @method $this cfcount(string $key, $item)
  * @method $this cfexists(string $key, $item)
  * @method $this cfmexists(string $key, ...$item)
