@@ -63,7 +63,11 @@ class CFMEXISTS_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
+        $this->assertSame([0, 0, 0], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
         $redis->cfadd('key', 'item1');
-        $this->assertSame([1, 0], $redis->cfmexists('key', 'item1', 'item2'));
+        $this->assertSame([1, 0, 0], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+        $redis->cfadd('key', 'item2');
+        $redis->cfadd('key', 'item3');
+        $this->assertSame([1, 1, 1], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
     }
 }
