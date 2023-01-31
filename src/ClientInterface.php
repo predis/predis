@@ -70,6 +70,7 @@ use Predis\Response\Status;
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method int               cfadd(string $key, $item)
  * @method int               cfaddnx(string $key, $item)
+ * @method int               cfcount(string $key, $item)
  * @method int               cfexists(string $key, $item)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
