@@ -57,6 +57,8 @@ class NoCreateTest extends PredisTestCase
      */
     public function testThrowsExceptionOnUnexpectedValue(): void
     {
+        $this->testClass::$noCreateArgumentPositionOffset = 0;
+
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong NOCREATE argument type');
 
