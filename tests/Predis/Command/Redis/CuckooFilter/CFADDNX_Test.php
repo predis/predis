@@ -84,7 +84,7 @@ class CFADDNX_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->set('cfadd_foo', 'bar');
-        $redis->cfadd('cfadd_foo', 'foo');
+        $redis->set('cfaddnx_foo', 'bar');
+        $redis->cfadd('cfaddnx_foo', 'foo');
     }
 }
