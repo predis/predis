@@ -60,6 +60,7 @@ use Predis\Command\CommandInterface;
  * @method $this bzpopmin(array $keys, int $timeout)
  * @method $this bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
  * @method $this cfadd(string $key, $item)
+ * @method $this cfaddnx(string $key, $item)
  * @method $this cfcount(string $key, $item)
  * @method $this cfexists(string $key, $item)
  * @method $this decr($key)
