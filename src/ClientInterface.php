@@ -76,6 +76,7 @@ use Predis\Response\Status;
  * @method Status            cfloadchunk(string $key, int $iterator, $data)
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)
+ * @method array             cfinsert(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method array             cfscandump(string $key, int $iterator)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)

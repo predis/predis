@@ -67,6 +67,7 @@ use Predis\Command\CommandInterface;
  * @method $this cfloadchunk(string $key, int $iterator, $data)
  * @method $this cfmexists(string $key, ...$item)
  * @method $this cfinfo(string $key)
+ * @method $this cfinsert(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method $this cfscandump(string $key, int $iterator)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
