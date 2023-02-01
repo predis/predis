@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Traits\BloomFilters;
 
-use PredisTestCase;
 use Predis\Command\Command as RedisCommand;
+use PredisTestCase;
 use UnexpectedValueException;
 
 class MaxIterationsTest extends PredisTestCase
