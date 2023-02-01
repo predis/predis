@@ -77,6 +77,7 @@ use Predis\Response\Status;
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)
  * @method array             cfinsert(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
+ * @method array             cfinsertnx(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method Status            cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method array             cfscandump(string $key, int $iterator)
  * @method int               decr(string $key)
