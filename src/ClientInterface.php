@@ -71,6 +71,7 @@ use Predis\Response\Status;
  * @method int               cfadd(string $key, $item)
  * @method int               cfaddnx(string $key, $item)
  * @method int               cfcount(string $key, $item)
+ * @method int               cfdel(string $key, $item)
  * @method int               cfexists(string $key, $item)
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)

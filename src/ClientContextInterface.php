@@ -62,6 +62,7 @@ use Predis\Command\CommandInterface;
  * @method $this cfadd(string $key, $item)
  * @method $this cfaddnx(string $key, $item)
  * @method $this cfcount(string $key, $item)
+ * @method $this cfdel(string $key, $item)
  * @method $this cfexists(string $key, $item)
  * @method $this cfmexists(string $key, ...$item)
  * @method $this cfinfo(string $key)
