@@ -75,6 +75,7 @@ use Predis\Response\Status;
  * @method int               cfexists(string $key, $item)
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)
+ * @method Status            cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)

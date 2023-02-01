@@ -66,6 +66,7 @@ use Predis\Command\CommandInterface;
  * @method $this cfexists(string $key, $item)
  * @method $this cfmexists(string $key, ...$item)
  * @method $this cfinfo(string $key)
+ * @method $this cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
