@@ -14,6 +14,13 @@ namespace Predis\Command\Redis\CountMinSketch;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * @see https://redis.io/commands/cms.merge/
+ *
+ * Merges several sketches into one sketch.
+ * All sketches must have identical width and depth.
+ * Weights can be used to multiply certain sketches. Default weight is 1.
+ */
 class CMSMERGE extends RedisCommand
 {
     public function getId()
