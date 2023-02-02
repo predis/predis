@@ -74,6 +74,7 @@ use Predis\Command\CommandInterface;
  * @method $this cmsincrby(string $key, string|int...$itemIncrementDictionary)
  * @method $this cmsinfo(string $key)
  * @method $this cmsinitbydim(string $key, int $width, int $depth)
+ * @method $this cmsinitbyprob(string $key, float $errorRate, float $probability)
  * @method $this cmsquery(string $key, string ...$item)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
