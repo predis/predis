@@ -67,9 +67,9 @@ class BFEXISTS_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item');
+        $redis->bfAdd('key', 'item');
 
-        $this->assertSame(1, $redis->bfexists('key', 'item'));
-        $this->assertSame(0, $redis->bfexists('key', 'non-existing'));
+        $this->assertSame(1, $redis->bfExists('key', 'item'));
+        $this->assertSame(0, $redis->bfExists('key', 'non-existing'));
     }
 }

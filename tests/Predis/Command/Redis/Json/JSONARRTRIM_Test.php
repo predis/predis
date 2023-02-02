@@ -78,11 +78,11 @@ class JSONARRTRIM_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsonarrtrim($key, $path, $start, $stop);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonArrTrim($key, $path, $start, $stop);
 
         $this->assertSame($expectedArrayLength, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

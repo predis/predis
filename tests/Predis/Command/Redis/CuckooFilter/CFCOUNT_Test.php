@@ -63,18 +63,18 @@ class CFCOUNT_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('key', 'item');
+        $redis->cfAdd('key', 'item');
 
-        $singleItemResponse = $redis->cfcount('key', 'item');
+        $singleItemResponse = $redis->cfCount('key', 'item');
         $this->assertSame(1, $singleItemResponse);
 
-        $redis->cfadd('key', 'item');
-        $redis->cfadd('key', 'item');
+        $redis->cfAdd('key', 'item');
+        $redis->cfAdd('key', 'item');
 
-        $multipleItemsResponse = $redis->cfcount('key', 'item');
+        $multipleItemsResponse = $redis->cfCount('key', 'item');
         $this->assertSame(3, $multipleItemsResponse);
 
-        $nonExistingItemResponse = $redis->cfcount('non_existing_key', 'item');
+        $nonExistingItemResponse = $redis->cfCount('non_existing_key', 'item');
         $this->assertSame(0, $nonExistingItemResponse);
     }
 }

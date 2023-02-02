@@ -64,8 +64,8 @@ class CMSINITBYDIM_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cmsinitbydim('key', 2000, 10);
-        $info = $redis->cmsinfo('key');
+        $actualResponse = $redis->cmsInitByDim('key', 2000, 10);
+        $info = $redis->cmsInfo('key');
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(2000, $info['width']);
@@ -84,6 +84,6 @@ class CMSINITBYDIM_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('cmsinitbydim_foo', 'bar');
-        $redis->cmsinitbydim('cmsinitbydim_foo', 2000, 10);
+        $redis->cmsInitByDim('cmsinitbydim_foo', 2000, 10);
     }
 }

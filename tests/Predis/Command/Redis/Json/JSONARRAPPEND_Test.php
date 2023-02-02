@@ -76,12 +76,12 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $actualResponse = $redis->jsonarrappend($key, $path, ...$values);
+        $actualResponse = $redis->jsonArrAppend($key, $path, ...$values);
 
         $this->assertSame($expectedArrayLength, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

@@ -68,9 +68,9 @@ class BFADD_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->bfadd('key', 'item');
+        $actualResponse = $redis->bfAdd('key', 'item');
         $this->assertSame(1, $actualResponse);
-        $this->assertSame(1, $redis->bfexists('key', 'item'));
+        $this->assertSame(1, $redis->bfExists('key', 'item'));
     }
 
     /**
@@ -85,6 +85,6 @@ class BFADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('bfadd_foo', 'bar');
-        $redis->bfadd('bfadd_foo', 'foo');
+        $redis->bfAdd('bfadd_foo', 'foo');
     }
 }

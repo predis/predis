@@ -75,9 +75,9 @@ class CFINFO_Test extends PredisCommandTestCase
             'Max iterations' => 20,
         ];
 
-        $redis->cfadd('key', 'item');
+        $redis->cfAdd('key', 'item');
 
-        $this->assertSame($expectedResponse, $redis->cfinfo('key'));
+        $this->assertSame($expectedResponse, $redis->cfInfo('key'));
     }
 
     /**
@@ -92,7 +92,7 @@ class CFINFO_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR not found');
 
-        $redis->cfinfo('non_existing_key');
+        $redis->cfInfo('non_existing_key');
     }
 
     public function responsesProvider(): array

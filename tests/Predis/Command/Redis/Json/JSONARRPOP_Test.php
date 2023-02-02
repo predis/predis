@@ -76,11 +76,11 @@ class JSONARRPOP_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsonarrpop($key, $path, $index);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonArrPop($key, $path, $index);
 
         $this->assertSame($expectedPoppedElements, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

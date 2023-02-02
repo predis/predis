@@ -68,9 +68,9 @@ class CMSINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
         $expectedResponse = ['width' => 2000, 'depth' => 10, 'count' => 0];
 
-        $redis->cmsinitbydim('key', 2000, 10);
+        $redis->cmsInitByDim('key', 2000, 10);
 
-        $actualResponse = $redis->cmsinfo('key');
+        $actualResponse = $redis->cmsInfo('key');
 
         $this->assertSame($expectedResponse, $actualResponse);
     }
@@ -86,6 +86,6 @@ class CMSINFO_Test extends PredisCommandTestCase
 
         $redis = $this->getClient();
 
-        $redis->cmsinfo('cmsinfo_foo');
+        $redis->cmsInfo('cmsinfo_foo');
     }
 }

@@ -72,9 +72,9 @@ class JSONTYPE_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertSame($expectedType, $redis->jsontype($key, $path));
+        $this->assertSame($expectedType, $redis->jsonType($key, $path));
     }
 
     public function jsonProvider(): array

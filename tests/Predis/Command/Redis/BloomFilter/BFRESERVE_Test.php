@@ -72,9 +72,9 @@ class BFRESERVE_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->bfreserve(...$filter);
+        $actualResponse = $redis->bfReserve(...$filter);
         $this->assertEquals('OK', $actualResponse);
-        $this->assertSame($expectedModification, $redis->bfinfo($key, $modifier));
+        $this->assertSame($expectedModification, $redis->bfInfo($key, $modifier));
     }
 
     /**
@@ -89,7 +89,7 @@ class BFRESERVE_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong expansion argument value or position offset');
 
-        $redis->bfreserve('key', 0.01, 2, 0);
+        $redis->bfReserve('key', 0.01, 2, 0);
     }
 
     /**
@@ -104,7 +104,7 @@ class BFRESERVE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('bfreserve_foo', 'bar');
-        $redis->bfreserve('bfreserve_foo', 0.01, 2);
+        $redis->bfReserve('bfreserve_foo', 0.01, 2);
     }
 
     public function argumentsProvider(): array

@@ -68,9 +68,9 @@ class BFMADD_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->bfmadd('key', 'item1', 'item2');
+        $actualResponse = $redis->bfMadd('key', 'item1', 'item2');
         $this->assertSame([1, 1], $actualResponse);
-        $this->assertSame([1, 1], $redis->bfmexists('key', 'item1', 'item2'));
+        $this->assertSame([1, 1], $redis->bfMexists('key', 'item1', 'item2'));
     }
 
     /**
@@ -85,6 +85,6 @@ class BFMADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('bfmadd_foo', 'bar');
-        $redis->bfmadd('bfmadd_foo', 'foo');
+        $redis->bfMadd('bfmadd_foo', 'foo');
     }
 }

@@ -65,10 +65,10 @@ class CFRESERVE_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cfreserve(...$filterArguments);
+        $actualResponse = $redis->cfReserve(...$filterArguments);
         $this->assertEquals('OK', $actualResponse);
 
-        $info = $redis->cfinfo('key');
+        $info = $redis->cfInfo('key');
 
         $this->assertSame($expectedCapacity, $info['Size']);
         $this->assertSame($expectedBucketSize, $info['Bucket size']);
@@ -88,7 +88,7 @@ class CFRESERVE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('cfreserve_foo', 'bar');
-        $redis->cfreserve('cfreserve_foo', 500);
+        $redis->cfReserve('cfreserve_foo', 500);
     }
 
     public function argumentsProvider(): array

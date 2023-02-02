@@ -75,8 +75,8 @@ class JSONGET_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonData);
-        $this->assertSame($expectedResponse, $redis->jsonget($key, $indent, $newline, $space));
+        $redis->jsonSet(...$jsonData);
+        $this->assertSame($expectedResponse, $redis->jsonGet($key, $indent, $newline, $space));
     }
 
     /**
@@ -88,8 +88,8 @@ class JSONGET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->jsonset('key', '$', '{"key1":"value1","key2":{"key3":"value3"}}');
-        $actualResponse = $redis->jsonget('key', '', '', '', '$.key1', '$..key3');
+        $redis->jsonSet('key', '$', '{"key1":"value1","key2":{"key3":"value3"}}');
+        $actualResponse = $redis->jsonGet('key', '', '', '', '$.key1', '$..key3');
 
         $this->assertStringContainsString('"$.key1":["value1"]', $actualResponse);
         $this->assertStringContainsString('"$..key3":["value3"]', $actualResponse);
@@ -110,7 +110,7 @@ class JSONGET_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $redis->jsonget(...$arguments);
+        $redis->jsonGet(...$arguments);
     }
 
     public function argumentsProvider(): array

@@ -64,8 +64,8 @@ class CFINSERT_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cfinsert(...$filterArguments);
-        $info = $redis->cfinfo($key);
+        $actualResponse = $redis->cfInsert(...$filterArguments);
+        $info = $redis->cfInfo($key);
 
         $this->assertSame($expectedResponse, $actualResponse);
         $this->assertSame($expectedCapacity, $info['Size']);
@@ -80,10 +80,10 @@ class CFINSERT_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('filter', 'item');
+        $redis->cfAdd('filter', 'item');
 
-        $actualResponse = $redis->cfinsert('filter', 500, false, 'item1');
-        $info = $redis->cfinfo('filter');
+        $actualResponse = $redis->cfInsert('filter', 500, false, 'item1');
+        $info = $redis->cfInfo('filter');
 
         $this->assertSame([1], $actualResponse);
         $this->assertSame(1080, $info['Size']);
@@ -101,7 +101,7 @@ class CFINSERT_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR not found');
 
-        $redis->cfinsert('key', -1, true, 'item');
+        $redis->cfInsert('key', -1, true, 'item');
     }
 
     /**
@@ -113,9 +113,9 @@ class CFINSERT_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('filter', 'item');
+        $redis->cfAdd('filter', 'item');
 
-        $actualResponse = $redis->cfinsert('filter', -1, true, 'item1');
+        $actualResponse = $redis->cfInsert('filter', -1, true, 'item1');
         $this->assertSame([1], $actualResponse);
     }
 
@@ -131,7 +131,7 @@ class CFINSERT_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Wrong NOCREATE argument type');
 
-        $redis->cfinsert('key', -1, 'wrong', 'item');
+        $redis->cfInsert('key', -1, 'wrong', 'item');
     }
 
     public function argumentsProvider(): array

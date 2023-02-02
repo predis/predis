@@ -65,8 +65,8 @@ class CFSCANDUMP_Test extends PredisCommandTestCase
         $expectedIterator = 1;
         $redis = $this->getClient();
 
-        $redis->cfadd('key', 'item1');
-        [$iterator, $dataChunk] = $redis->cfscandump('key', 0);
+        $redis->cfAdd('key', 'item1');
+        [$iterator, $dataChunk] = $redis->cfScandump('key', 0);
 
         $this->assertSame($expectedIterator, $iterator);
         $this->assertNotEmpty($dataChunk);
@@ -84,6 +84,6 @@ class CFSCANDUMP_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('cfscandump_foo', 'bar');
-        $redis->cfscandump('cfscandump_foo', 0);
+        $redis->cfScandump('cfscandump_foo', 0);
     }
 }

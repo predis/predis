@@ -74,9 +74,9 @@ class JSONNUMINCRBY_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertSame($expectedIncrementedResponse, $redis->jsonnumincrby($key, $path, $value));
+        $this->assertSame($expectedIncrementedResponse, $redis->jsonNumIncrBy($key, $path, $value));
     }
 
     public function jsonProvider(): array

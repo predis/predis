@@ -74,11 +74,11 @@ class JSONDEL_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsondel($key, $path);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonDel($key, $path);
 
         $this->assertSame($expectedDeleteArgumentsCount, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

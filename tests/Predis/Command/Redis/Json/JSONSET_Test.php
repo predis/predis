@@ -77,9 +77,9 @@ class JSONSET_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->jsonset($key, '$', $defaultJson));
-        $this->assertEquals($expectedResponse, $redis->jsonset($key, $path, $appendedJson, $nxXxArgument));
-        $this->assertSame($expectedJson, $redis->jsonget($key));
+        $this->assertEquals('OK', $redis->jsonSet($key, '$', $defaultJson));
+        $this->assertEquals($expectedResponse, $redis->jsonSet($key, $path, $appendedJson, $nxXxArgument));
+        $this->assertSame($expectedJson, $redis->jsonGet($key));
     }
 
     /**
@@ -94,7 +94,7 @@ class JSONSET_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Argument accepts only: nx, xx values');
 
-        $redis->jsonset('key', '$', 'value', 'wrong');
+        $redis->jsonSet('key', '$', 'value', 'wrong');
     }
 
     public function argumentsProvider(): array

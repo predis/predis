@@ -78,12 +78,12 @@ class JSONARRINSERT_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $actualResponse = $redis->jsonarrinsert($key, $path, $index, ...$values);
+        $actualResponse = $redis->jsonArrInsert($key, $path, $index, ...$values);
 
         $this->assertSame($expectedArrayLength, $actualResponse);
-        $this->assertSame($expectedModifiedArray, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedArray, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

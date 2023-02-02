@@ -63,8 +63,8 @@ class CFINSERTNX_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cfinsertnx(...$filterArguments);
-        $info = $redis->cfinfo($key);
+        $actualResponse = $redis->cfInsertNx(...$filterArguments);
+        $info = $redis->cfInfo($key);
 
         $this->assertSame($expectedResponse, $actualResponse);
         $this->assertSame($expectedCapacity, $info['Size']);
@@ -79,10 +79,10 @@ class CFINSERTNX_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('filter', 'item1');
-        $redis->cfadd('filter', 'item2');
+        $redis->cfAdd('filter', 'item1');
+        $redis->cfAdd('filter', 'item2');
 
-        $actualResponse = $redis->cfinsertnx('filter', -1, false, 'item1', 'item2');
+        $actualResponse = $redis->cfInsertNx('filter', -1, false, 'item1', 'item2');
         $this->assertSame([0, 0], $actualResponse);
     }
 
@@ -98,7 +98,7 @@ class CFINSERTNX_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR not found');
 
-        $redis->cfinsertnx('key', -1, true, 'item');
+        $redis->cfInsertNx('key', -1, true, 'item');
     }
 
     /**
@@ -110,9 +110,9 @@ class CFINSERTNX_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('filter', 'item');
+        $redis->cfAdd('filter', 'item');
 
-        $actualResponse = $redis->cfinsertnx('filter', -1, true, 'item1');
+        $actualResponse = $redis->cfInsertNx('filter', -1, true, 'item1');
         $this->assertSame([1], $actualResponse);
     }
 

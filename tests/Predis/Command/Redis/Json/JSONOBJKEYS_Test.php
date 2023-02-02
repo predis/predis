@@ -72,9 +72,9 @@ class JSONOBJKEYS_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertSame($expectedKeys, $redis->jsonobjkeys($key, $path));
+        $this->assertSame($expectedKeys, $redis->jsonObjKeys($key, $path));
     }
 
     public function jsonProvider(): array

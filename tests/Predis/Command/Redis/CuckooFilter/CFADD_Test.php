@@ -64,9 +64,9 @@ class CFADD_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cfadd('key', 'item');
+        $actualResponse = $redis->cfAdd('key', 'item');
         $this->assertSame(1, $actualResponse);
-        $this->assertSame(1, $redis->cfexists('key', 'item'));
+        $this->assertSame(1, $redis->cfExists('key', 'item'));
     }
 
     /**
@@ -81,6 +81,6 @@ class CFADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('cfadd_foo', 'bar');
-        $redis->cfadd('cfadd_foo', 'foo');
+        $redis->cfAdd('cfadd_foo', 'foo');
     }
 }

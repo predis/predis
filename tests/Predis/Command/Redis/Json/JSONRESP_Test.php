@@ -73,9 +73,9 @@ class JSONRESP_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertEquals($expectedResponse, $redis->jsonresp($key, $path));
+        $this->assertEquals($expectedResponse, $redis->jsonResp($key, $path));
     }
 
     public function jsonProvider(): array

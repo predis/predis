@@ -74,11 +74,11 @@ class JSONFORGET_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsonforget($key, $path);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonForget($key, $path);
 
         $this->assertSame($expectedDeleteArgumentsCount, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

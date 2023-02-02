@@ -74,11 +74,11 @@ class JSONCLEAR_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsonclear($key, $path);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonClear($key, $path);
 
         $this->assertSame($expectedClearValues, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

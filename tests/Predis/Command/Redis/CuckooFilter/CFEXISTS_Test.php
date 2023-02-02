@@ -63,9 +63,9 @@ class CFEXISTS_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('key', 'item');
+        $redis->cfAdd('key', 'item');
 
-        $this->assertSame(1, $redis->cfexists('key', 'item'));
-        $this->assertSame(0, $redis->cfexists('non-existing key', 'item'));
+        $this->assertSame(1, $redis->cfExists('key', 'item'));
+        $this->assertSame(0, $redis->cfExists('non-existing key', 'item'));
     }
 }

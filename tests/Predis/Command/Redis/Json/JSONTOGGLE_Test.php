@@ -74,11 +74,11 @@ class JSONTOGGLE_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsontoggle($key, $path);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonToggle($key, $path);
 
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

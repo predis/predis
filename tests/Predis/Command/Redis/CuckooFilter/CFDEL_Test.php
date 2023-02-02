@@ -64,20 +64,20 @@ class CFDEL_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->cfadd('key', 'item');
-        $singleItemResponse = $redis->cfdel('key', 'item');
+        $redis->cfAdd('key', 'item');
+        $singleItemResponse = $redis->cfDel('key', 'item');
 
         $this->assertSame(1, $singleItemResponse);
-        $this->assertSame(0, $redis->cfexists('key', 'item'));
+        $this->assertSame(0, $redis->cfExists('key', 'item'));
 
-        $redis->cfadd('key', 'item');
-        $redis->cfadd('key', 'item');
+        $redis->cfAdd('key', 'item');
+        $redis->cfAdd('key', 'item');
 
-        $multipleItemsResponse = $redis->cfdel('key', 'item');
+        $multipleItemsResponse = $redis->cfDel('key', 'item');
         $this->assertSame(1, $multipleItemsResponse);
-        $this->assertSame(1, $redis->cfexists('key', 'item'));
+        $this->assertSame(1, $redis->cfExists('key', 'item'));
 
-        $nonExistingItemResponse = $redis->cfdel('key', 'non_existing_item');
+        $nonExistingItemResponse = $redis->cfDel('key', 'non_existing_item');
         $this->assertSame(0, $nonExistingItemResponse);
     }
 
@@ -93,6 +93,6 @@ class CFDEL_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Not found');
 
-        $redis->cfdel('non_existing_key', 'item');
+        $redis->cfDel('non_existing_key', 'item');
     }
 }

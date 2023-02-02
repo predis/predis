@@ -64,13 +64,13 @@ class CFADDNX_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->cfaddnx('key', 'item');
+        $actualResponse = $redis->cfAddNx('key', 'item');
         $this->assertSame(1, $actualResponse);
-        $this->assertSame(1, $redis->cfexists('key', 'item'));
+        $this->assertSame(1, $redis->cfExists('key', 'item'));
 
-        $actualResponse = $redis->cfaddnx('key', 'item');
+        $actualResponse = $redis->cfAddNx('key', 'item');
         $this->assertSame(0, $actualResponse);
-        $this->assertSame(1, $redis->cfexists('key', 'item'));
+        $this->assertSame(1, $redis->cfExists('key', 'item'));
     }
 
     /**
@@ -85,6 +85,6 @@ class CFADDNX_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('cfaddnx_foo', 'bar');
-        $redis->cfaddnx('cfaddnx_foo', 'foo');
+        $redis->cfAddNx('cfaddnx_foo', 'foo');
     }
 }

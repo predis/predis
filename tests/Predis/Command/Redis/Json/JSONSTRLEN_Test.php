@@ -72,9 +72,9 @@ class JSONSTRLEN_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertSame($expectedStringLength, $redis->jsonstrlen($key, $path));
+        $this->assertSame($expectedStringLength, $redis->jsonStrLen($key, $path));
     }
 
     public function jsonProvider(): array

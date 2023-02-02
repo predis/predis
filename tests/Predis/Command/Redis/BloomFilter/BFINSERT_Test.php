@@ -78,10 +78,10 @@ class BFINSERT_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $actualResponse = $redis->bfinsert(...$arguments);
+        $actualResponse = $redis->bfInsert(...$arguments);
 
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame($expectedInfo, $redis->bfinfo($key, $modifier));
+        $this->assertSame($expectedInfo, $redis->bfInfo($key, $modifier));
     }
 
     /**
@@ -96,7 +96,7 @@ class BFINSERT_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR not found');
 
-        $redis->bfinsert('key', -1, -1, -1, true, false, 'item1');
+        $redis->bfInsert('key', -1, -1, -1, true, false, 'item1');
     }
 
     /**
@@ -108,8 +108,8 @@ class BFINSERT_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item1');
-        $actualResponse = $redis->bfinsert(
+        $redis->bfAdd('key', 'item1');
+        $actualResponse = $redis->bfInsert(
             'key',
             -1,
             -1,
@@ -128,7 +128,7 @@ class BFINSERT_Test extends PredisCommandTestCase
                 'Number of items inserted' => 2,
                 'Expansion rate' => 2,
             ],
-            $redis->bfinfo('key', '')
+            $redis->bfInfo('key', '')
         );
     }
 
@@ -149,7 +149,7 @@ class BFINSERT_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $redis->bfinsert(...$arguments);
+        $redis->bfInsert(...$arguments);
     }
 
     public function argumentsProvider(): array

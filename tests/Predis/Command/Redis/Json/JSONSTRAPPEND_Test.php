@@ -76,11 +76,11 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $actualResponse = $redis->jsonstrappend($key, $path, $value);
+        $redis->jsonSet(...$jsonArguments);
+        $actualResponse = $redis->jsonStrAppend($key, $path, $value);
 
         $this->assertSame($expectedStringLength, $actualResponse);
-        $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
+        $this->assertSame($expectedModifiedJson, $redis->jsonGet($key));
     }
 
     public function jsonProvider(): array

@@ -74,10 +74,10 @@ class JSONMGET_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$firstJson);
-        $redis->jsonset(...$secondJson);
+        $redis->jsonSet(...$firstJson);
+        $redis->jsonSet(...$secondJson);
 
-        $this->assertSame($expectedResponse, $redis->jsonmget($keys, $path));
+        $this->assertSame($expectedResponse, $redis->jsonMget($keys, $path));
     }
 
     public function jsonProvider(): array

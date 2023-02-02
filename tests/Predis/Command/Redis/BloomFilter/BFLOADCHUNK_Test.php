@@ -64,13 +64,13 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item1');
+        $redis->bfAdd('key', 'item1');
 
         $chunks = [];
         $iter = 0;
 
         while (true) {
-            [$iter, $data] = $redis->bfscandump('key', $iter);
+            [$iter, $data] = $redis->bfScandump('key', $iter);
 
             if ($iter === 0) {
                 break;
@@ -83,12 +83,12 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
 
         foreach ($chunks as $chunk) {
             [$iter, $data] = $chunk;
-            $actualResponse = $redis->bfloadchunk('key', $iter, $data);
+            $actualResponse = $redis->bfLoadchunk('key', $iter, $data);
 
             $this->assertEquals('OK', $actualResponse);
         }
 
-        $this->assertSame(1, $redis->bfexists('key', 'item1'));
+        $this->assertSame(1, $redis->bfExists('key', 'item1'));
     }
 
     /**
@@ -103,6 +103,6 @@ class BFLOADCHUNK_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('bfloadchunk_foo', 'bar');
-        $redis->bfloadchunk('bfloadchunk_foo', 0, 'data');
+        $redis->bfLoadchunk('bfloadchunk_foo', 0, 'data');
     }
 }

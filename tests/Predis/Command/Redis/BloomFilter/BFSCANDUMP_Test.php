@@ -69,8 +69,8 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
         $expectedIterator = 1;
         $redis = $this->getClient();
 
-        $redis->bfadd('key', 'item1');
-        [$iterator, $dataChunk] = $redis->bfscandump('key', 0);
+        $redis->bfAdd('key', 'item1');
+        [$iterator, $dataChunk] = $redis->bfScandump('key', 0);
 
         $this->assertSame($expectedIterator, $iterator);
         $this->assertNotEmpty($dataChunk);
@@ -88,6 +88,6 @@ class BFSCANDUMP_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('bfscandump_foo', 'bar');
-        $redis->bfscandump('bfscandump_foo', 0);
+        $redis->bfScandump('bfscandump_foo', 0);
     }
 }

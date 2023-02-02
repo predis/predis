@@ -72,9 +72,9 @@ class JSONOBJLEN_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
+        $redis->jsonSet(...$jsonArguments);
 
-        $this->assertSame($expectedObjectLength, $redis->jsonobjlen($key, $path));
+        $this->assertSame($expectedObjectLength, $redis->jsonObjLen($key, $path));
     }
 
     public function jsonProvider(): array

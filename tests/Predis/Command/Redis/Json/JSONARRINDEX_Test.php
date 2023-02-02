@@ -78,8 +78,8 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->jsonset(...$jsonArguments);
-        $this->assertSame($expectedIndices, $redis->jsonarrindex($key, $path, $value, $start, $stop));
+        $redis->jsonSet(...$jsonArguments);
+        $this->assertSame($expectedIndices, $redis->jsonArrIndex($key, $path, $value, $start, $stop));
     }
 
     public function jsonProvider(): array

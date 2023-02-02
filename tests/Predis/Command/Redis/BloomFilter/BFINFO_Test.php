@@ -77,8 +77,8 @@ class BFINFO_Test extends PredisCommandTestCase
     ): void {
         $redis = $this->getClient();
 
-        $redis->bfadd(...$filter);
-        $this->assertSame($expectedResponse, $redis->bfinfo($key, $modifier));
+        $redis->bfAdd(...$filter);
+        $this->assertSame($expectedResponse, $redis->bfInfo($key, $modifier));
     }
 
     /**
@@ -93,7 +93,7 @@ class BFINFO_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Argument accepts only: capacity, size, filters, items, expansion values');
 
-        $redis->bfinfo('key', 'wrong');
+        $redis->bfInfo('key', 'wrong');
     }
 
     /**
@@ -108,7 +108,7 @@ class BFINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->set('binfo_foo', 'bar');
-        $redis->bfinfo('binfo_foo');
+        $redis->bfInfo('binfo_foo');
     }
 
     public function argumentsProvider(): array
