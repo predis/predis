@@ -73,6 +73,7 @@ use Predis\Command\CommandInterface;
  * @method $this cfscandump(string $key, int $iterator)
  * @method $this cmsinfo(string $key)
  * @method $this cmsinitbydim(string $key, int $width, int $depth)
+ * @method $this cmsinitbyprob(string $key, float $errorRate, float $probability)
  * @method $this decr($key)
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)

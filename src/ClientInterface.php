@@ -82,6 +82,7 @@ use Predis\Response\Status;
  * @method array             cfscandump(string $key, int $iterator)
  * @method array             cmsinfo(string $key)
  * @method Status            cmsinitbydim(string $key, int $width, int $depth)
+ * @method Status            cmsinitbyprob(string $key, float $errorRate, float $probability)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
