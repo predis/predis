@@ -48,6 +48,14 @@ class CMSINCRBY_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testParseResponse(): void
+    {
+        $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
      * @group connected
      * @dataProvider sketchesProvider
      * @param  array $incrementArguments
