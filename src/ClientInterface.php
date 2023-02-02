@@ -84,6 +84,7 @@ use Predis\Response\Status;
  * @method array             cmsinfo(string $key)
  * @method Status            cmsinitbydim(string $key, int $width, int $depth)
  * @method Status            cmsinitbyprob(string $key, float $errorRate, float $probability)
+ * @method Status            cmsmerge(string $destination, array $sources, array $weights = [])
  * @method array             cmsquery(string $key, string ...$item)
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
