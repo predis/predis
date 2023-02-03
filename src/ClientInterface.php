@@ -183,6 +183,8 @@ use Predis\Response\Status;
  * @method string[]          sunion(array|string $keys)
  * @method int               sunionstore(string $destination, array|string $keys)
  * @method int               touch(string[]|string $keyOrKeys, string ...$keys = null)
+ * @method Status            tdigestcreate(string $key, int $compression = 0)
+ * @method array             tdigestinfo(string $key)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
