@@ -23,6 +23,7 @@ class ClientConfiguration
             ['name' => 'BloomFilter', 'commandPrefix' => 'BF'],
             ['name' => 'CuckooFilter', 'commandPrefix' => 'CF'],
             ['name' => 'CountMinSketch', 'commandPrefix' => 'CMS'],
+            ['name' => 'TDigest', 'commandPrefix' => 'TDIGEST'],
         ],
     ];
 
