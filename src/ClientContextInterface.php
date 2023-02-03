@@ -173,6 +173,7 @@ use Predis\Command\CommandInterface;
  * @method $this sscan($key, $cursor, array $options = null)
  * @method $this sunion(array|string $keys)
  * @method $this sunionstore($destination, array|string $keys)
+ * @method $this tdigestadd(string $key, float ...$value)
  * @method $this tdigestcreate(string $key, int $compression = 0)
  * @method $this tdigestinfo(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
