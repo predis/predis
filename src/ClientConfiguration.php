@@ -22,6 +22,8 @@ class ClientConfiguration
             ['name' => 'Json', 'commandPrefix' => 'JSON'],
             ['name' => 'BloomFilter', 'commandPrefix' => 'BF'],
             ['name' => 'CuckooFilter', 'commandPrefix' => 'CF'],
+            ['name' => 'CountMinSketch', 'commandPrefix' => 'CMS'],
+            ['name' => 'TDigest', 'commandPrefix' => 'TDIGEST'],
         ],
     ];
 
