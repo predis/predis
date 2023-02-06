@@ -190,6 +190,7 @@ use Predis\Response\Status;
  * @method Status            tdigestcreate(string $key, int $compression = 0)
  * @method array             tdigestinfo(string $key)
  * @method string            tdigestmax(string $key)
+ * @method string            tdigestmin(string $key)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
