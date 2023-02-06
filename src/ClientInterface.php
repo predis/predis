@@ -186,6 +186,7 @@ use Predis\Response\Status;
  * @method Status            tdigestadd(string $key, float ...$value)
  * @method array             tdigestbyrank(string $key, int ...$rank)
  * @method array             tdigestbyrevrank(string $key, int ...$reverseRank)
+ * @method array             tdigestcdf(string $key, int ...$value)
  * @method Status            tdigestcreate(string $key, int $compression = 0)
  * @method array             tdigestinfo(string $key)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
