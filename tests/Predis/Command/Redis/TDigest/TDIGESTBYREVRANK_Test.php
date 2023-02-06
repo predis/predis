@@ -15,14 +15,14 @@ namespace Predis\Command\Redis\TDigest;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-class TDIGESTBYRANK_Test extends PredisCommandTestCase
+class TDIGESTBYREVRANK_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return TDIGESTBYRANK::class;
+        return TDIGESTBYREVRANK::class;
     }
 
     /**
@@ -30,7 +30,7 @@ class TDIGESTBYRANK_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'TDIGESTBYRANK';
+        return 'TDIGESTBYREVRANK';
     }
 
     /**
@@ -60,20 +60,20 @@ class TDIGESTBYRANK_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
-    public function testReturnsValuesEstimatedForGivenRanks(): void
+    public function testReturnsValuesEstimatedForGivenReverseRanks(): void
     {
         $redis = $this->getClient();
-        $expectedResponse = ['1', '2', '2', '3', '3', '3', 'inf'];
+        $expectedResponse = ['3', '3', '3', '2', '2', '1', '-inf'];
 
         $redis->tdigestcreate('key');
         $redis->tdigestcreate('empty_key');
 
         $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
 
-        $actualResponse = $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5, 6);
+        $actualResponse = $redis->tdigestbyrevrank('key', 0, 1, 2, 3, 4, 5, 6);
 
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame(['nan', 'nan'], $redis->tdigestbyrank('empty_key', 0, 1));
+        $this->assertSame(['nan', 'nan'], $redis->tdigestbyrevrank('empty_key', 0, 1));
     }
 
     /**
@@ -88,6 +88,6 @@ class TDIGESTBYRANK_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR T-Digest: key does not exist');
 
-        $redis->tdigestbyrank('key', 1, 2, 3);
+        $redis->tdigestbyrevrank('key', 1, 2, 3);
     }
 }
