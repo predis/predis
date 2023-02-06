@@ -58,4 +58,19 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $addResponse);
         $this->assertSame(['1', '2', '3', '3', '4', '4', '4', '5', '5', '5', '5'], $quantileResponse);
     }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.4.0
+     */
+    public function testThrowsExceptionOnNonExistingTDigestSketch(): void
+    {
+        $redis = $this->getClient();
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('ERR T-Digest: key does not exist');
+
+        $redis->tdigestquantile('key', 1, 2, 3);
+    }
 }
