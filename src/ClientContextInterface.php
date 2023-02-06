@@ -176,6 +176,7 @@ use Predis\Command\CommandInterface;
  * @method $this tdigestadd(string $key, float ...$value)
  * @method $this tdigestbyrank(string $key, int ...$rank)
  * @method $this tdigestbyrevrank(string $key, int ...$reverseRank)
+ * @method $this tdigestcdf(string $key, int ...$value)
  * @method $this tdigestcreate(string $key, int $compression = 0)
  * @method $this tdigestinfo(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
