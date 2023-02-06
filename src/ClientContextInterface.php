@@ -181,6 +181,7 @@ use Predis\Command\CommandInterface;
  * @method $this tdigestinfo(string $key)
  * @method $this tdigestmax(string $key)
  * @method $this tdigestquantile(string $key, float ...$quantile)
+ * @method $this tdigestmin(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
