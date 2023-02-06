@@ -180,6 +180,7 @@ use Predis\Command\CommandInterface;
  * @method $this tdigestcreate(string $key, int $compression = 0)
  * @method $this tdigestinfo(string $key)
  * @method $this tdigestmax(string $key)
+ * @method $this tdigestmerge(string $destinationKey, array $sourceKeys, int $compression = 0, bool $override = false)
  * @method $this tdigestmin(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
