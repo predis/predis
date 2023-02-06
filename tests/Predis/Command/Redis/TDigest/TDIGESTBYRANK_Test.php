@@ -13,16 +13,15 @@
 namespace Predis\Command\Redis\TDigest;
 
 use Predis\Command\Redis\PredisCommandTestCase;
-use Predis\Response\ServerException;
 
-class TDIGESTADD_Test extends PredisCommandTestCase
+class TDIGESTBYRANK_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return TDIGESTADD::class;
+        return TDIGESTBYRANK::class;
     }
 
     /**
@@ -30,7 +29,7 @@ class TDIGESTADD_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'TDIGESTADD';
+        return 'TDIGESTBYRANK';
     }
 
     /**
@@ -60,31 +59,19 @@ class TDIGESTADD_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
-    public function testAddObservationsIntoGivenTDigestSketch(): void
+    public function testReturnsValuesEstimatedForGivenRanks(): void
     {
         $redis = $this->getClient();
+        $expectedResponse = ['1', '2', '2', '3', '3', '3', 'inf'];
 
         $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
 
-        $actualResponse = $redis->tdigestadd('key', 1, 2, 3);
-        $info = $redis->tdigestinfo('key');
+        $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
 
-        $this->assertEquals('OK', $actualResponse);
-        $this->assertSame(3, $info['Observations']);
-    }
+        $actualResponse = $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5, 6);
 
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisBfVersion >= 2.4.0
-     */
-    public function testThrowsExceptionOnNonExistingTDigestSketch(): void
-    {
-        $redis = $this->getClient();
-
-        $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('ERR T-Digest: key does not exist');
-
-        $redis->tdigestadd('key', 1, 2, 3);
+        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertSame(['nan', 'nan'], $redis->tdigestbyrank('empty_key', 0, 1));
     }
 }
