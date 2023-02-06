@@ -56,6 +56,6 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
         $quantileResponse = $redis->tdigestquantile('key', 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0);
 
         $this->assertEquals('OK', $addResponse);
-        $this->assertSame([1, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5], $quantileResponse);
+        $this->assertSame(['1', '2', '3', '3', '4', '4', '4', '5', '5', '5', '5'], $quantileResponse);
     }
 }
