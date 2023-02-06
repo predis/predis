@@ -175,6 +175,7 @@ use Predis\Command\CommandInterface;
  * @method $this sunionstore($destination, array|string $keys)
  * @method $this tdigestadd(string $key, float ...$value)
  * @method $this tdigestbyrank(string $key, int ...$rank)
+ * @method $this tdigestbyrevrank(string $key, int ...$reverseRank)
  * @method $this tdigestcreate(string $key, int $compression = 0)
  * @method $this tdigestinfo(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
