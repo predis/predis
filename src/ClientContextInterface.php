@@ -179,6 +179,7 @@ use Predis\Command\CommandInterface;
  * @method $this tdigestcdf(string $key, int ...$value)
  * @method $this tdigestcreate(string $key, int $compression = 0)
  * @method $this tdigestinfo(string $key)
+ * @method $this tdigestmax(string $key)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
