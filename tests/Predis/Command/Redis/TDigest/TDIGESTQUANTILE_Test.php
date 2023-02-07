@@ -36,6 +36,20 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArguments(): void
+    {
+        $actualArguments = ['key', 1, 2, 3];
+        $expectedArguments = ['key', 1, 2, 3];
+
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSameValues($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
@@ -46,7 +60,7 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
-    public function testquantile(): void
+    public function testReturnsValuesBelowGivenQuantile(): void
     {
         $redis = $this->getClient();
 
@@ -57,6 +71,9 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $addResponse);
         $this->assertSame(['1', '2', '3', '3', '4', '4', '4', '5', '5', '5', '5'], $quantileResponse);
+
+        $redis->tdigestcreate('empty_key');
+        $this->assertSame(['nan', 'nan'],$redis->tdigestquantile('empty_key', 0.0, 0.1));
     }
 
     /**
