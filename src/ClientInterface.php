@@ -196,6 +196,8 @@ use Predis\Response\Status;
  * @method Status            tdigestreset(string $key)
  * @method array             tdigestrevrank(string $key, float ...$value)
  * @method string            tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
+ * @method array             topkinfo(string $key)
+ * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)

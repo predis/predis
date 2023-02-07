@@ -24,6 +24,7 @@ class ClientConfiguration
             ['name' => 'CuckooFilter', 'commandPrefix' => 'CF'],
             ['name' => 'CountMinSketch', 'commandPrefix' => 'CMS'],
             ['name' => 'TDigest', 'commandPrefix' => 'TDIGEST'],
+            ['name' => 'TopK', 'commandPrefix' => 'TOPK'],
         ],
     ];
 
