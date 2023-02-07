@@ -192,6 +192,7 @@ use Predis\Response\Status;
  * @method string            tdigestmax(string $key)
  * @method string            tdigestmin(string $key)
  * @method array             tdigestrank(string $key, float ...$value)
+ * @method Status            tdigestreset(string $key)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
