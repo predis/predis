@@ -73,7 +73,7 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
         $this->assertSame(['1', '2', '3', '3', '4', '4', '4', '5', '5', '5', '5'], $quantileResponse);
 
         $redis->tdigestcreate('empty_key');
-        $this->assertSame(['nan', 'nan'],$redis->tdigestquantile('empty_key', 0.0, 0.1));
+        $this->assertSame(['nan', 'nan'], $redis->tdigestquantile('empty_key', 0.0, 0.1));
     }
 
     /**
