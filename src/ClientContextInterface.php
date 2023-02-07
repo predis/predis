@@ -186,6 +186,8 @@ use Predis\Command\CommandInterface;
  * @method $this tdigestreset(string $key)
  * @method $this tdigestrevrank(string $key, float ...$value)
  * @method $this tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
+ * @method $this topkinfo(string $key)
+ * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
