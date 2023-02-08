@@ -29,7 +29,7 @@ class TOPKLIST extends RedisCommand
     public function setArguments(array $arguments)
     {
         if (!empty($arguments[1])) {
-            $arguments[1] = 'WITHSCORES';
+            $arguments[1] = 'WITHCOUNT';
         }
 
         parent::setArguments($arguments);
@@ -38,7 +38,7 @@ class TOPKLIST extends RedisCommand
 
     public function parseResponse($data)
     {
-        if ($this->isWithScoreModifier()) {
+        if ($this->isWithCountModifier()) {
             $result = [];
 
             for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
@@ -54,15 +54,15 @@ class TOPKLIST extends RedisCommand
     }
 
     /**
-     * Checks for the presence of the WITHSCORES modifier.
+     * Checks for the presence of the WITHCOUNT modifier.
      *
      * @return bool
      */
-    private function isWithScoreModifier(): bool
+    private function isWithCountModifier(): bool
     {
         $arguments = $this->getArguments();
         $lastArgument = (!empty($arguments)) ? $arguments[count($arguments) - 1] : null;
 
-        return is_string($lastArgument) && strtoupper($lastArgument) === 'WITHSCORES';
+        return is_string($lastArgument) && strtoupper($lastArgument) === 'WITHCOUNT';
     }
 }
