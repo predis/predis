@@ -197,6 +197,7 @@ use Predis\Response\Status;
  * @method array             tdigestrevrank(string $key, float ...$value)
  * @method string            tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
  * @method array             topkadd(string $key, ...$items)
+ * @method array             topkincrby(string $key, ...$itemIncrement)
  * @method array             topkinfo(string $key)
  * @method array             topklist(string $key, bool $withCount = false)
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
