@@ -200,6 +200,7 @@ use Predis\Response\Status;
  * @method array             topkincrby(string $key, ...$itemIncrement)
  * @method array             topkinfo(string $key)
  * @method array             topklist(string $key, bool $withCount = false)
+ * @method array             topkquery(string $key, ...$items)
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
