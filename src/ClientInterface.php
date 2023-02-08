@@ -190,6 +190,7 @@ use Predis\Response\Status;
  * @method Status            tdigestcreate(string $key, int $compression = 0)
  * @method array             tdigestinfo(string $key)
  * @method string            tdigestmax(string $key)
+ * @method Status            tdigestmerge(string $destinationKey, array $sourceKeys, int $compression = 0, bool $override = false)
  * @method string[]          tdigestquantile(string $key, float ...$quantile)
  * @method string            tdigestmin(string $key)
  * @method array             tdigestrank(string $key, float ...$value)
