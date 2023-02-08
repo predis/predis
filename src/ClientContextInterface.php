@@ -190,6 +190,7 @@ use Predis\Command\CommandInterface;
  * @method $this topkincrby(string $key, ...$itemIncrement)
  * @method $this topkinfo(string $key)
  * @method $this topklist(string $key, bool $withCount = false)
+ * @method $this topkquery(string $key, ...$items)
  * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
