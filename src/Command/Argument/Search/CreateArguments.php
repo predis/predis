@@ -15,7 +15,7 @@ namespace Predis\Command\Argument\Search;
 use InvalidArgumentException;
 use Predis\Command\Argument\ArrayableArgument;
 
-class Arguments implements ArrayableArgument
+class CreateArguments implements ArrayableArgument
 {
     /**
      * @var array
@@ -158,7 +158,7 @@ class Arguments implements ArrayableArgument
      */
     public function noOffsets(): self
     {
-        $this->arguments[] = 'NOOFSETS';
+        $this->arguments[] = 'NOOFFSETS';
 
         return $this;
     }
@@ -231,9 +231,9 @@ class Arguments implements ArrayableArgument
      *
      * @return $this
      */
-    public function stopInitialScan(): self
+    public function skipInitialScan(): self
     {
-        $this->arguments[] = 'STOPINITIALSCAN';
+        $this->arguments[] = 'SKIPINITIALSCAN';
 
         return $this;
     }
