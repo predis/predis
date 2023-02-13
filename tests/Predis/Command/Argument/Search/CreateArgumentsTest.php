@@ -93,9 +93,9 @@ class CreateArgumentsTest extends TestCase
      */
     public function testCreatesArgumentsWithScoreModifier(): void
     {
-        $this->arguments->score(10);
+        $this->arguments->score(10.0);
 
-        $this->assertSame(['SCORE', 10], $this->arguments->toArray());
+        $this->assertSame(['SCORE', 10.0], $this->arguments->toArray());
     }
 
     /**

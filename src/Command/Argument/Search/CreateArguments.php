@@ -23,6 +23,14 @@ class CreateArguments implements ArrayableArgument
     private $arguments;
 
     /**
+     * @var string[]
+     */
+    private $supportedDataTypesEnum = [
+        'hash' => 'HASH',
+        'json' => 'JSON',
+    ];
+
+    /**
      * Specify data type for given index. To index JSON you must have the RedisJSON module to be installed.
      *
      * @param  string $modifier
@@ -30,14 +38,15 @@ class CreateArguments implements ArrayableArgument
      */
     public function on(string $modifier = 'hash'): self
     {
-        if (strtoupper($modifier) === 'HASH' || strtoupper($modifier) === 'JSON') {
+        if (in_array(strtoupper($modifier), $this->supportedDataTypesEnum)) {
             $this->arguments[] = 'ON';
-            $this->arguments[] = strtoupper($modifier);
+            $this->arguments[] = $this->supportedDataTypesEnum[strtolower($modifier)];
 
             return $this;
         }
 
-        throw new InvalidArgumentException('Wrong modifier value given. Currently supports: HASH, JSON');
+        $enumValues = implode(', ', array_values($this->supportedDataTypesEnum));
+        throw new InvalidArgumentException("Wrong modifier value given. Currently supports: {$enumValues}");
     }
 
     /**
@@ -75,7 +84,7 @@ class CreateArguments implements ArrayableArgument
      * @param  string $defaultLanguage
      * @return $this
      */
-    public function language(string $defaultLanguage): self
+    public function language(string $defaultLanguage = 'english'): self
     {
         $this->arguments[] = 'LANGUAGE';
         $this->arguments[] = $defaultLanguage;
@@ -100,10 +109,10 @@ class CreateArguments implements ArrayableArgument
     /**
      * Default score for documents in the index.
      *
-     * @param  int   $defaultScore
+     * @param  float $defaultScore
      * @return $this
      */
-    public function score(int $defaultScore): self
+    public function score(float $defaultScore = 1.0): self
     {
         $this->arguments[] = 'SCORE';
         $this->arguments[] = $defaultScore;
