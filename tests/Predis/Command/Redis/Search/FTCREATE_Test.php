@@ -73,7 +73,7 @@ class FTCREATE_Test extends PredisCommandTestCase
         $schema->addTextField('last');
         $schema->addNumericField('age');
 
-        $actualResponse = $redis->ftcreate('index', $arguments, $schema);
+        $actualResponse = $redis->ftcreate('index', $schema, $arguments);
 
         $this->assertEquals('OK', $actualResponse);
     }
@@ -81,76 +81,80 @@ class FTCREATE_Test extends PredisCommandTestCase
     public function argumentsProvider(): array
     {
         return [
+            'without arguments' => [
+                ['index', (new Schema())->addTextField('field_name')],
+                ['index', 'SCHEMA', 'field_name', 'TEXT'],
+            ],
             'with ON modifier - HASH' => [
-                ['index', (new CreateArguments())->on(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->on('hash')],
                 ['index', 'ON', 'HASH', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with ON modifier - JSON' => [
-                ['index', (new CreateArguments())->on('json'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->on('json')],
                 ['index', 'ON', 'JSON', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with prefixes' => [
-                ['index', (new CreateArguments())->prefix(['prefix1:', 'prefix2:']), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->prefix(['prefix1:', 'prefix2:'])],
                 ['index', 'PREFIX', 2, 'prefix1:', 'prefix2:', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with FILTER' => [
-                ['index', (new CreateArguments())->filter('@age>16'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->filter('@age>16')],
                 ['index', 'FILTER', '@age>16', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with LANGUAGE' => [
-                ['index', (new CreateArguments())->language('english'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->language('english')],
                 ['index', 'LANGUAGE', 'english', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with LANGUAGE_FIELD' => [
-                ['index', (new CreateArguments())->languageField('language_attribute'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->languageField('language_attribute')],
                 ['index', 'LANGUAGE_FIELD', 'language_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SCORE' => [
-                ['index', (new CreateArguments())->score(10), (new Schema())->addTextField('field_name')],
-                ['index', 'SCORE', 10, 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->score(1.0)],
+                ['index', 'SCORE', 1.0, 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SCORE_FIELD' => [
-                ['index', (new CreateArguments())->scoreField('score_attribute'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->scoreField('score_attribute')],
                 ['index', 'SCORE_FIELD', 'score_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with PAYLOAD_FIELD' => [
-                ['index', (new CreateArguments())->payloadField('payload_attribute'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->payloadField('payload_attribute')],
                 ['index', 'PAYLOAD_FIELD', 'payload_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with MAXTEXTFIELDS' => [
-                ['index', (new CreateArguments())->maxTextFields(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->maxTextFields()],
                 ['index', 'MAXTEXTFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOOFFSETS' => [
-                ['index', (new CreateArguments())->noOffsets(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->noOffsets()],
                 ['index', 'NOOFFSETS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOHL' => [
-                ['index', (new CreateArguments())->noHl(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->noHl()],
                 ['index', 'NOHL', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFIELDS' => [
-                ['index', (new CreateArguments())->noFields(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->noFields()],
                 ['index', 'NOFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFREQS' => [
-                ['index', (new CreateArguments())->noFreqs(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->noFreqs()],
                 ['index', 'NOFREQS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with STOPWORDS' => [
-                ['index', (new CreateArguments())->stopWords(['word1', 'word2']), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->stopWords(['word1', 'word2'])],
                 ['index', 'STOPWORDS', 2, 'word1', 'word2', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SKIPINITIALSCAN' => [
-                ['index', (new CreateArguments())->skipInitialScan(), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->skipInitialScan()],
                 ['index', 'SKIPINITIALSCAN', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with chain of arguments' => [
-                ['index', (new CreateArguments())->on()->prefix(['prefix1:', 'prefix2:'])->filter('@age>16'), (new Schema())->addTextField('field_name')],
+                ['index', (new Schema())->addTextField('field_name'), (new CreateArguments())->on('hash')->prefix(['prefix1:', 'prefix2:'])->filter('@age>16')],
                 ['index', 'ON', 'HASH', 'PREFIX', 2, 'prefix1:', 'prefix2:', 'FILTER', '@age>16', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with multiple fields schema' => [
-                ['index', (new CreateArguments())->on(), (new Schema())->addTextField('field_name')->addNumericField('numeric_field')->addTagField('tag_field', 'tf')],
+                ['index', (new Schema())->addTextField('field_name')->addNumericField('numeric_field')->addTagField('tag_field', 'tf'), (new CreateArguments())->on('hash')],
                 ['index', 'ON', 'HASH', 'SCHEMA', 'field_name', 'TEXT', 'numeric_field', 'NUMERIC', 'tag_field', 'AS', 'tf', 'TAG'],
             ],
         ];

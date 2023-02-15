@@ -87,18 +87,16 @@ class SchemaTest extends TestCase
     }
 
     /**
-     * @dataProvider vectorFieldsProvider
-     * @param  array $arguments
-     * @param  array $expectedSchema
      * @return void
      */
-    public function testAddsVectorFieldToSchemaConfiguration(
-        array $arguments,
-        array $expectedSchema
-    ): void {
-        $this->schema->addVectorField(...$arguments);
+    public function testAddsVectorFieldToSchemaConfiguration(): void
+    {
+        $this->schema->addVectorField('field_name', 'FLAT', ['attribute_name', 'attribute_value']);
 
-        $this->assertSame($expectedSchema, $this->schema->toArray());
+        $this->assertSame(
+            ['SCHEMA', 'field_name', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value'],
+            $this->schema->toArray()
+        );
     }
 
     /**
@@ -111,46 +109,16 @@ class SchemaTest extends TestCase
             'tag_field', 'AS', 'tf', 'TAG', 'SORTABLE',
             'numeric_field', 'AS', 'nf', 'NUMERIC', 'SORTABLE',
             'geo_field', 'AS', 'gf', 'GEO', 'SORTABLE',
-            'vector_field', 'AS', 'vf', 'VECTOR', 'SORTABLE',
+            'vector_field', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value',
         ];
 
         $this->schema->addTextField('text_field', 'txtf', true);
         $this->schema->addTagField('tag_field', 'tf', true);
         $this->schema->addNumericField('numeric_field', 'nf', true);
         $this->schema->addGeoField('geo_field', 'gf', true);
-        $this->schema->addVectorField('vector_field', 'vf', true);
+        $this->schema->addVectorField('vector_field', 'FLAT', ['attribute_name', 'attribute_value']);
 
         $this->assertSame($expectedSchema, $this->schema->toArray());
-    }
-
-    public function vectorFieldsProvider(): array
-    {
-        return [
-            'with default arguments' => [
-                ['field_name'],
-                ['SCHEMA', 'field_name', 'VECTOR'],
-            ],
-            'with alias' => [
-                ['field_name', 'fn'],
-                ['SCHEMA', 'field_name', 'AS', 'fn', 'VECTOR'],
-            ],
-            'with sortable - no UNF modifier' => [
-                ['field_name', '', true],
-                ['SCHEMA', 'field_name', 'VECTOR', 'SORTABLE'],
-            ],
-            'with sortable - UNF modifier' => [
-                ['field_name', '', true, true],
-                ['SCHEMA', 'field_name', 'VECTOR', 'SORTABLE', 'UNF'],
-            ],
-            'with just UNF modifier' => [
-                ['field_name', '', false, true],
-                ['SCHEMA', 'field_name', 'VECTOR'],
-            ],
-            'with NOINDEX modifier' => [
-                ['field_name', '', false, false, true],
-                ['SCHEMA', 'field_name', 'VECTOR', 'NOINDEX'],
-            ],
-        ];
     }
 
     public function geoFieldsProvider(): array

@@ -28,11 +28,12 @@ class FTCREATE extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        [$index, $arguments, $schema] = $arguments;
+        [$index, $schema] = $arguments;
+        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
 
         parent::setArguments(array_merge(
             [$index],
-            $arguments->toArray(),
+            $commandArguments,
             $schema->toArray()
         ));
     }
