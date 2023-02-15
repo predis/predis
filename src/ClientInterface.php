@@ -91,6 +91,7 @@ use Predis\Response\Status;
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
+ * @method Status            ftalter(string $index, Schema $schema, bool $skipInitialScan = false)
  * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)

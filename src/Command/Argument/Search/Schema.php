@@ -22,6 +22,16 @@ class Schema implements ArrayableArgument
     private $arguments = ['SCHEMA'];
 
     /**
+     * @param bool $additive Defines if schema should be additive, for additional attributes
+     */
+    public function __construct(bool $additive = false)
+    {
+        if ($additive) {
+            $this->arguments[] = 'ADD';
+        }
+    }
+
+    /**
      * Adds text field to schema configuration.
      *
      * @param  string $fieldName
