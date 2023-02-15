@@ -105,20 +105,19 @@ class Schema implements ArrayableArgument
      * Adds vector field to schema configuration.
      *
      * @param  string $fieldName
-     * @param  string $alias
-     * @param  bool   $sortable
-     * @param  bool   $unf
-     * @param  bool   $noIndex
+     * @param  string $algorithm
+     * @param  array  $attributeNameValueDictionary ['attribute_name', 'attribute_value'...]
      * @return $this
      */
     public function addVectorField(
         string $fieldName,
-        string $alias = '',
-        bool $sortable = false,
-        bool $unf = false,
-        bool $noIndex = false
+        string $algorithm,
+        array $attributeNameValueDictionary
     ): self {
-        return $this->addField('VECTOR', $fieldName, $alias, $sortable, $unf, $noIndex);
+        array_push($this->arguments, $fieldName, 'VECTOR', $algorithm, count($attributeNameValueDictionary));
+        $this->arguments = array_merge($this->arguments, $attributeNameValueDictionary);
+
+        return $this;
     }
 
     /**
@@ -148,6 +147,12 @@ class Schema implements ArrayableArgument
         return $this;
     }
 
+    /**
+     * @param  bool $sortable
+     * @param  bool $unf
+     * @param  bool $noIndex
+     * @return void
+     */
     private function setFieldConfiguration(bool $sortable, bool $unf, bool $noIndex): void
     {
         if ($sortable) {
@@ -159,6 +164,10 @@ class Schema implements ArrayableArgument
         }
     }
 
+    /**
+     * @param  string $alias
+     * @return void
+     */
     private function setAlias(string $alias): void
     {
         if ($alias !== '') {
@@ -167,6 +176,10 @@ class Schema implements ArrayableArgument
         }
     }
 
+    /**
+     * @param  bool $unf
+     * @return void
+     */
     private function setSortable(bool $unf): void
     {
         $this->arguments[] = 'SORTABLE';
@@ -176,6 +189,9 @@ class Schema implements ArrayableArgument
         }
     }
 
+    /**
+     * @return void
+     */
     private function setNoIndex(): void
     {
         $this->arguments[] = 'NOINDEX';
