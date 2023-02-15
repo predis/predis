@@ -36,7 +36,7 @@ class CreateArguments implements ArrayableArgument
      * @param  string $modifier
      * @return $this
      */
-    public function on(string $modifier = 'hash'): self
+    public function on(string $modifier): self
     {
         if (in_array(strtoupper($modifier), $this->supportedDataTypesEnum)) {
             $this->arguments[] = 'ON';
@@ -84,7 +84,7 @@ class CreateArguments implements ArrayableArgument
      * @param  string $defaultLanguage
      * @return $this
      */
-    public function language(string $defaultLanguage = 'english'): self
+    public function language(string $defaultLanguage): self
     {
         $this->arguments[] = 'LANGUAGE';
         $this->arguments[] = $defaultLanguage;
@@ -112,7 +112,7 @@ class CreateArguments implements ArrayableArgument
      * @param  float $defaultScore
      * @return $this
      */
-    public function score(float $defaultScore = 1.0): self
+    public function score(float $defaultScore): self
     {
         $this->arguments[] = 'SCORE';
         $this->arguments[] = $defaultScore;

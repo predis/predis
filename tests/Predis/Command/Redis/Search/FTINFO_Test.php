@@ -68,12 +68,12 @@ class FTINFO_Test extends PredisCommandTestCase
 
         $arguments = new CreateArguments();
         $arguments->prefix(['prefix:']);
-        $arguments->language();
+        $arguments->language('english');
 
         $schema = new Schema();
         $schema->addTextField('text_field');
 
-        $createResponse = $redis->ftcreate('index', $arguments, $schema);
+        $createResponse = $redis->ftcreate('index', $schema, $arguments);
         $this->assertEquals('OK', $createResponse);
 
         $actualResponse = $redis->ftinfo('index');
