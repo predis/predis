@@ -72,7 +72,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $schema->addNumericField('$..arr', 'arr');
         $schema->addTextField('$..val', 'val');
 
-        $ftCreateResponse = $redis->ftcreate('idx', $ftCreateArguments, $schema);
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
         $ftSearchArguments = new CreateArguments();
@@ -102,7 +102,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $schema->addTextField('field1', 'should_return');
         $schema->addTextField('field2', 'should_not_return');
 
-        $ftCreateResponse = $redis->ftcreate('idx', $ftCreateArguments, $schema);
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
         $ftSearchArguments = new CreateArguments();
