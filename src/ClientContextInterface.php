@@ -83,6 +83,7 @@ use Predis\Command\CommandInterface;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this ftaliasadd(string $alias, string $index)
+ * @method $this ftaliasupdate(string $alias, string $index)
  * @method $this ftcreate(string $index, CreateArguments $arguments, Schema $schema)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
