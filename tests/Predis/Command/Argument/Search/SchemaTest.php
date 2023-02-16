@@ -132,20 +132,16 @@ class SchemaTest extends TestCase
                 ['field_name', 'fn'],
                 ['SCHEMA', 'field_name', 'AS', 'fn', 'GEO'],
             ],
-            'with sortable - no UNF modifier' => [
-                ['field_name', '', true],
+            'with sortable - no UNF' => [
+                ['field_name', '', Schema::SORTABLE],
                 ['SCHEMA', 'field_name', 'GEO', 'SORTABLE'],
             ],
-            'with sortable - UNF modifier' => [
-                ['field_name', '', true, true],
+            'with sortable - with UNF' => [
+                ['field_name', '', Schema::SORTABLE_UNF],
                 ['SCHEMA', 'field_name', 'GEO', 'SORTABLE', 'UNF'],
             ],
-            'with just UNF modifier' => [
-                ['field_name', '', false, true],
-                ['SCHEMA', 'field_name', 'GEO'],
-            ],
             'with NOINDEX modifier' => [
-                ['field_name', '', false, false, true],
+                ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'GEO', 'NOINDEX'],
             ],
         ];
@@ -162,20 +158,16 @@ class SchemaTest extends TestCase
                 ['field_name', 'fn'],
                 ['SCHEMA', 'field_name', 'AS', 'fn', 'NUMERIC'],
             ],
-            'with sortable - no UNF modifier' => [
-                ['field_name', '', true],
+            'with sortable - no UNF' => [
+                ['field_name', '', Schema::SORTABLE],
                 ['SCHEMA', 'field_name', 'NUMERIC', 'SORTABLE'],
             ],
-            'with sortable - UNF modifier' => [
-                ['field_name', '', true, true],
+            'with sortable - with UNF' => [
+                ['field_name', '', Schema::SORTABLE_UNF],
                 ['SCHEMA', 'field_name', 'NUMERIC', 'SORTABLE', 'UNF'],
             ],
-            'with just UNF modifier' => [
-                ['field_name', '', false, true],
-                ['SCHEMA', 'field_name', 'NUMERIC'],
-            ],
             'with NOINDEX modifier' => [
-                ['field_name', '', false, false, true],
+                ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'NUMERIC', 'NOINDEX'],
             ],
         ];
@@ -192,20 +184,16 @@ class SchemaTest extends TestCase
                 ['field_name', 'fn'],
                 ['SCHEMA', 'field_name', 'AS', 'fn', 'TEXT'],
             ],
-            'with sortable - no UNF modifier' => [
-                ['field_name', '', true],
+            'with sortable - no UNF' => [
+                ['field_name', '', Schema::SORTABLE],
                 ['SCHEMA', 'field_name', 'TEXT', 'SORTABLE'],
             ],
-            'with sortable - UNF modifier' => [
-                ['field_name', '', true, true],
+            'with sortable - with UNF' => [
+                ['field_name', '', Schema::SORTABLE_UNF],
                 ['SCHEMA', 'field_name', 'TEXT', 'SORTABLE', 'UNF'],
             ],
-            'with just UNF modifier' => [
-                ['field_name', '', false, true],
-                ['SCHEMA', 'field_name', 'TEXT'],
-            ],
             'with NOINDEX modifier' => [
-                ['field_name', '', false, false, true],
+                ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'TEXT', 'NOINDEX'],
             ],
         ];
@@ -222,20 +210,16 @@ class SchemaTest extends TestCase
                 ['field_name', 'fn'],
                 ['SCHEMA', 'field_name', 'AS', 'fn', 'TAG'],
             ],
-            'with sortable - no UNF modifier' => [
-                ['field_name', '', true],
+            'with sortable - no UNF' => [
+                ['field_name', '', Schema::SORTABLE],
                 ['SCHEMA', 'field_name', 'TAG', 'SORTABLE'],
             ],
-            'with sortable - UNF modifier' => [
-                ['field_name', '', true, true],
+            'with sortable - with UNF' => [
+                ['field_name', '', Schema::SORTABLE_UNF],
                 ['SCHEMA', 'field_name', 'TAG', 'SORTABLE', 'UNF'],
             ],
-            'with just UNF modifier' => [
-                ['field_name', '', false, true],
-                ['SCHEMA', 'field_name', 'TAG'],
-            ],
             'with NOINDEX modifier' => [
-                ['field_name', '', false, false, true],
+                ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'TAG', 'NOINDEX'],
             ],
         ];
