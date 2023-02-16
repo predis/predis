@@ -248,6 +248,18 @@ class SearchArguments implements ArrayableArgument
     }
 
     /**
+     * Drop operation that, if set, deletes the actual document hashes.
+     *
+     * @return $this
+     */
+    public function dd(): self
+    {
+        $this->arguments[] = 'DD';
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

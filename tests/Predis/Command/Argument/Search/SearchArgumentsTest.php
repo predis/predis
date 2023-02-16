@@ -201,6 +201,16 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
+    public function testCreatesArgumentsWithDDModifier(): void
+    {
+        $this->arguments->dd();
+
+        $this->assertSame(['DD'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
     public function testCreatesCorrectArgumentsSetOnMethodsChainCall(): void
     {
         $this->arguments->prefix(['prefix:', 'prefix1:']);
