@@ -18,13 +18,13 @@ use PHPUnit\Framework\TestCase;
 class CreateArgumentsTest extends TestCase
 {
     /**
-     * @var CreateArguments
+     * @var SearchArguments
      */
     private $arguments;
 
     protected function setUp(): void
     {
-        $this->arguments = new CreateArguments();
+        $this->arguments = new SearchArguments();
     }
 
     /**

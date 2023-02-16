@@ -14,7 +14,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
-use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
@@ -91,7 +91,7 @@ use Predis\Response\Status;
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
- * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method Status            ftcreate(string $index, Schema $schema, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
