@@ -15,7 +15,7 @@ namespace Predis\Command\Argument\Search;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-class CreateArgumentsTest extends TestCase
+class SearchArgumentsTest extends TestCase
 {
     /**
      * @var SearchArguments
