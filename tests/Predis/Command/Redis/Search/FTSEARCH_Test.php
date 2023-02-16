@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 class FTSEARCH_Test extends PredisCommandTestCase
@@ -64,18 +64,18 @@ class FTSEARCH_Test extends PredisCommandTestCase
         );
         $this->assertEquals('OK', $jsonResponse);
 
-        $ftCreateArguments = new CreateArguments();
-        $ftCreateArguments->on('json');
-        $ftCreateArguments->prefix(['doc:']);
+        $searchArguments = new SearchArguments();
+        $searchArguments->on('json');
+        $searchArguments->prefix(['doc:']);
 
         $schema = new Schema();
         $schema->addNumericField('$..arr', 'arr');
         $schema->addTextField('$..val', 'val');
 
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $searchArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
-        $ftSearchArguments = new CreateArguments();
+        $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(2, 'arr', 'val');
 
         $actualResponse = $redis->ftsearch('idx', '*', $ftSearchArguments);
@@ -95,7 +95,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $hashResponse = $redis->hmset('doc:1', 'field1', 'value1', 'field2', 'value2');
         $this->assertEquals('OK', $hashResponse);
 
-        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments = new SearchArguments();
         $ftCreateArguments->prefix(['doc:']);
 
         $schema = new Schema();
@@ -105,7 +105,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
-        $ftSearchArguments = new CreateArguments();
+        $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
 
         $actualResponse = $redis->ftsearch('idx', '*', $ftSearchArguments);
@@ -116,99 +116,99 @@ class FTSEARCH_Test extends PredisCommandTestCase
     {
         return [
             'with NOCONTENT modifier' => [
-                ['index', '*', (new CreateArguments())->noContent()],
+                ['index', '*', (new SearchArguments())->noContent()],
                 ['index', '*', 'NOCONTENT'],
             ],
             'with VERBATIM modifier' => [
-                ['index', '*', (new CreateArguments())->verbatim()],
+                ['index', '*', (new SearchArguments())->verbatim()],
                 ['index', '*', 'VERBATIM'],
             ],
             'with WITHSCORES modifier' => [
-                ['index', '*', (new CreateArguments())->withScores()],
+                ['index', '*', (new SearchArguments())->withScores()],
                 ['index', '*', 'WITHSCORES'],
             ],
             'with WITHPAYLOADS modifier' => [
-                ['index', '*', (new CreateArguments())->withPayloads()],
+                ['index', '*', (new SearchArguments())->withPayloads()],
                 ['index', '*', 'WITHPAYLOADS'],
             ],
             'with WITHSORTKEYS modifier' => [
-                ['index', '*', (new CreateArguments())->withSortKeys()],
+                ['index', '*', (new SearchArguments())->withSortKeys()],
                 ['index', '*', 'WITHSORTKEYS'],
             ],
             'with FILTER modifier' => [
-                ['index', '*', (new CreateArguments())->searchFilter(['numeric_field', 1, 10])],
+                ['index', '*', (new SearchArguments())->searchFilter(['numeric_field', 1, 10])],
                 ['index', '*', 'FILTER', 'numeric_field', 1, 10],
             ],
             'with GEOFILTER modifier' => [
-                ['index', '*', (new CreateArguments())->geoFilter(['geo_field', 12.213, 14.212, 300, 'km'])],
+                ['index', '*', (new SearchArguments())->geoFilter(['geo_field', 12.213, 14.212, 300, 'km'])],
                 ['index', '*', 'GEOFILTER', 'geo_field', 12.213, 14.212, 300, 'km'],
             ],
             'with INKEYS modifier' => [
-                ['index', '*', (new CreateArguments())->inKeys(['key1', 'key2'])],
+                ['index', '*', (new SearchArguments())->inKeys(['key1', 'key2'])],
                 ['index', '*', 'INKEYS', 2, 'key1', 'key2'],
             ],
             'with INFIELDS modifier' => [
-                ['index', '*', (new CreateArguments())->inFields(['field1', 'field2'])],
+                ['index', '*', (new SearchArguments())->inFields(['field1', 'field2'])],
                 ['index', '*', 'INFIELDS', 2, 'field1', 'field2'],
             ],
             'with RETURN modifier' => [
-                ['index', '*', (new CreateArguments())->addReturn(2, 'identifier', true, 'property')],
+                ['index', '*', (new SearchArguments())->addReturn(2, 'identifier', true, 'property')],
                 ['index', '*', 'RETURN', 2, 'identifier', 'AS', 'property'],
             ],
             'with SUMMARIZE modifier' => [
-                ['index', '*', (new CreateArguments())->summarize(['field1', 'field2'], 2, 2, ',')],
+                ['index', '*', (new SearchArguments())->summarize(['field1', 'field2'], 2, 2, ',')],
                 ['index', '*', 'SUMMARIZE', 'FIELDS', 2, 'field1', 'field2', 'FRAGS', 2, 'LEN', 2, 'SEPARATOR', ','],
             ],
             'with HIGHLIGHT modifier' => [
-                ['index', '*', (new CreateArguments())->highlight(['field1', 'field2'], 'openTag', 'closeTag')],
+                ['index', '*', (new SearchArguments())->highlight(['field1', 'field2'], 'openTag', 'closeTag')],
                 ['index', '*', 'HIGHLIGHT', 'FIELDS', 2, 'field1', 'field2', 'TAGS', 'openTag', 'closeTag'],
             ],
             'with SLOP modifier' => [
-                ['index', '*', (new CreateArguments())->slop(2)],
+                ['index', '*', (new SearchArguments())->slop(2)],
                 ['index', '*', 'SLOP', 2],
             ],
             'with TIMEOUT modifier' => [
-                ['index', '*', (new CreateArguments())->timeout(2)],
+                ['index', '*', (new SearchArguments())->timeout(2)],
                 ['index', '*', 'TIMEOUT', 2],
             ],
             'with INORDER modifier' => [
-                ['index', '*', (new CreateArguments())->inOrder()],
+                ['index', '*', (new SearchArguments())->inOrder()],
                 ['index', '*', 'INORDER'],
             ],
             'with EXPANDER modifier' => [
-                ['index', '*', (new CreateArguments())->expander('expander')],
+                ['index', '*', (new SearchArguments())->expander('expander')],
                 ['index', '*', 'EXPANDER', 'expander'],
             ],
             'with SCORER modifier' => [
-                ['index', '*', (new CreateArguments())->scorer('scorer')],
+                ['index', '*', (new SearchArguments())->scorer('scorer')],
                 ['index', '*', 'SCORER', 'scorer'],
             ],
             'with EXPLAINSCORE modifier' => [
-                ['index', '*', (new CreateArguments())->explainScore()],
+                ['index', '*', (new SearchArguments())->explainScore()],
                 ['index', '*', 'EXPLAINSCORE'],
             ],
             'with PAYLOAD modifier' => [
-                ['index', '*', (new CreateArguments())->payload('payload')],
+                ['index', '*', (new SearchArguments())->payload('payload')],
                 ['index', '*', 'PAYLOAD', 'payload'],
             ],
             'with SORTBY modifier' => [
-                ['index', '*', (new CreateArguments())->sortBy('sort_attribute', 'desc')],
+                ['index', '*', (new SearchArguments())->sortBy('sort_attribute', 'desc')],
                 ['index', '*', 'SORTBY', 'sort_attribute', 'DESC'],
             ],
             'with LIMIT modifier' => [
-                ['index', '*', (new CreateArguments())->limit(2, 2)],
+                ['index', '*', (new SearchArguments())->limit(2, 2)],
                 ['index', '*', 'LIMIT', 2, 2],
             ],
             'with PARAMS modifier' => [
-                ['index', '*', (new CreateArguments())->params(['name1', 'value2', 'name2', 'value2'])],
+                ['index', '*', (new SearchArguments())->params(['name1', 'value2', 'name2', 'value2'])],
                 ['index', '*', 'PARAMS', 4, 'name1', 'value2', 'name2', 'value2'],
             ],
             'with DIALECT modifier' => [
-                ['index', '*', (new CreateArguments())->dialect('dialect')],
+                ['index', '*', (new SearchArguments())->dialect('dialect')],
                 ['index', '*', 'DIALECT', 'dialect'],
             ],
             'with chain of arguments' => [
-                ['index', '*', (new CreateArguments())->withScores()->withPayloads()->searchFilter(['numeric_field', 1, 10])->addReturn(2, 'identifier', true, 'property')],
+                ['index', '*', (new SearchArguments())->withScores()->withPayloads()->searchFilter(['numeric_field', 1, 10])->addReturn(2, 'identifier', true, 'property')],
                 ['index', '*', 'WITHSCORES', 'WITHPAYLOADS', 'FILTER', 'numeric_field', 1, 10, 'RETURN', 2, 'identifier', 'AS', 'property'],
             ],
         ];
