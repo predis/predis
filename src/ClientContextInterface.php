@@ -84,6 +84,7 @@ use Predis\Command\CommandInterface;
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this ftcreate(string $index, SearchArguments $arguments, Schema $schema)
  * @method $this ftdictadd(string $dict, ...$term)
+ * @method $this ftdictdump(string $dict)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
