@@ -15,7 +15,7 @@ namespace Predis\Command\Argument\Search;
 use InvalidArgumentException;
 use Predis\Command\Argument\ArrayableArgument;
 
-class CreateArguments implements ArrayableArgument
+class SearchArguments implements ArrayableArgument
 {
     /**
      * @var array
