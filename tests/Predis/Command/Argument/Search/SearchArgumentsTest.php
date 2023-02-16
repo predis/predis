@@ -15,16 +15,16 @@ namespace Predis\Command\Argument\Search;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-class CreateArgumentsTest extends TestCase
+class SearchArgumentsTest extends TestCase
 {
     /**
-     * @var CreateArguments
+     * @var SearchArguments
      */
     private $arguments;
 
     protected function setUp(): void
     {
-        $this->arguments = new CreateArguments();
+        $this->arguments = new SearchArguments();
     }
 
     /**
