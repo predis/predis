@@ -14,8 +14,8 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;

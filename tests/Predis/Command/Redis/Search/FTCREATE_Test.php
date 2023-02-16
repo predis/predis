@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 class FTCREATE_Test extends PredisCommandTestCase
