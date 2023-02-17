@@ -647,6 +647,56 @@ class SearchArguments implements ArrayableArgument
     }
 
     /**
+     * Adds search context.
+     *
+     * @return $this
+     */
+    public function search(): self
+    {
+        $this->arguments[] = 'SEARCH';
+
+        return $this;
+    }
+
+    /**
+     * Adds aggregate context.
+     *
+     * @return $this
+     */
+    public function aggregate(): self
+    {
+        $this->arguments[] = 'AGGREGATE';
+
+        return $this;
+    }
+
+    /**
+     * Removes details of reader iterator.
+     *
+     * @return $this
+     */
+    public function limited(): self
+    {
+        $this->arguments[] = 'LIMITED';
+
+        return $this;
+    }
+
+    /**
+     * Is query string, as if sent to FT.SEARCH.
+     *
+     * @param  string $query
+     * @return $this
+     */
+    public function query(string $query): self
+    {
+        $this->arguments[] = 'QUERY';
+        $this->arguments[] = $query;
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

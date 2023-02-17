@@ -463,6 +463,46 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
+    public function testCreatesArgumentsWithSearchModifier(): void
+    {
+        $this->arguments->search();
+
+        $this->assertSame(['SEARCH'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithAggregateModifier(): void
+    {
+        $this->arguments->aggregate();
+
+        $this->assertSame(['AGGREGATE'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithLimitedModifier(): void
+    {
+        $this->arguments->limited();
+
+        $this->assertSame(['LIMITED'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithQueryModifier(): void
+    {
+        $this->arguments->query('query');
+
+        $this->assertSame(['QUERY', 'query'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
     public function testCreatesCorrectFTCreateArgumentsSetOnMethodsChainCall(): void
     {
         $this->arguments->prefix(['prefix:', 'prefix1:']);
