@@ -94,6 +94,7 @@ use Predis\Response\Status;
  * @method string|null       get(string $key)
  * @method Status            ftcreate(string $index, Schema $schema, ?SearchArguments $arguments = null)
  * @method array             ftsearch(string $index, string $query, SearchArguments $arguments)
+ * @method int               ftsugadd(string $key, string $string, float $score, ?SearchArguments $arguments = null)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
  * @method string            getrange(string $key, $start, $end)

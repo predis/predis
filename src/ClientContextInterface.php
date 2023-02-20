@@ -85,6 +85,7 @@ use Predis\Command\CommandInterface;
  * @method $this get($key)
  * @method $this ftcreate(string $index, SearchArguments $arguments, Schema $schema)
  * @method $this ftsearch(string $index, string $query, SearchArguments $arguments)
+ * @method $this ftsugadd(string $key, string $string, float $score, ?SearchArguments $arguments = null)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
  * @method $this getrange($key, $start, $end)

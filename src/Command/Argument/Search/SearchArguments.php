@@ -647,6 +647,18 @@ class SearchArguments implements ArrayableArgument
     }
 
     /**
+     * Adds INCR modifier.
+     *
+     * @return $this
+     */
+    public function incr(): self
+    {
+        $this->arguments[] = 'INCR';
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

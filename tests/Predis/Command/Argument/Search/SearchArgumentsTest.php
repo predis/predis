@@ -463,6 +463,16 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
+    public function testCreatesArgumentsWithIncrModifier(): void
+    {
+        $this->arguments->incr();
+
+        $this->assertSame(['INCR'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
     public function testCreatesCorrectFTCreateArgumentsSetOnMethodsChainCall(): void
     {
         $this->arguments->prefix(['prefix:', 'prefix1:']);
