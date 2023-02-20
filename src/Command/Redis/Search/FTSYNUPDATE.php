@@ -14,6 +14,11 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * @see https://redis.io/commands/ft.synupdate/
+ *
+ * Update a synonym group
+ */
 class FTSYNUPDATE extends RedisCommand
 {
     public function getId()

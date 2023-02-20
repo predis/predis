@@ -103,7 +103,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRediSearchVersion >= 1.4.0
+     * @requiresRediSearchVersion >= 1.2.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
     {
