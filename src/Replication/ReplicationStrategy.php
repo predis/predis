@@ -289,5 +289,4 @@ class ReplicationStrategy
 
         return $this;
     }
-
 }
