@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Traits;
+namespace Predis\Command\Traits\Limit;
 
 use Predis\Command\Command as RedisCommand;
 use PredisTestCase;
