@@ -65,7 +65,7 @@ use Predis\Response\Status;
  * @method array             bfmexists(string $key, ...$item)
  * @method Status            bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method array             bfscandump(string $key, int $iterator)
- * @method int               bitcount(string $key, $start = null, $end = null)
+ * @method int               bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null, string $index = 'byte')

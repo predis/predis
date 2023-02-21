@@ -56,7 +56,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this bfmexists(string $key, ...$item)
  * @method $this bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method $this bfscandump(string $key, int $iterator)
- * @method $this bitcount($key, $start = null, $end = null)
+ * @method $this bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this bitpos($key, $bit, $start = null, $end = null, string $index = 'byte')
