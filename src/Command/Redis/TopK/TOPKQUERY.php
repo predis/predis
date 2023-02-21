@@ -10,25 +10,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis;
+namespace Predis\Command\Redis\TopK;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\BitByte;
 
 /**
- * @see http://redis.io/commands/bitpos
+ * @see https://redis.io/commands/topk.query/
  *
- * Return the position of the first bit set to 1 or 0 in a string.
+ * Checks whether an item is one of Top-K items.
+ * Multiple items can be checked at once.
  */
-class BITPOS extends RedisCommand
+class TOPKQUERY extends RedisCommand
 {
-    use BitByte;
-
-    /**
-     * {@inheritdoc}
-     */
     public function getId()
     {
-        return 'BITPOS';
+        return 'TOPK.QUERY';
     }
 }

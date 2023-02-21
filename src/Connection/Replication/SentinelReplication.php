@@ -509,7 +509,7 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Returns a random slave.
      *
-     * @return NodeConnectionInterface
+     * @return NodeConnectionInterface|void
      */
     protected function pickSlave()
     {
