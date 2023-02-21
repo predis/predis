@@ -15,6 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-hash
+ * @group relay-broken
  */
 class HMSET_Test extends PredisCommandTestCase
 {

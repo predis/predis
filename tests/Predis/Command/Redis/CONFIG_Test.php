@@ -15,6 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-server
+ * @group relay-broken
  */
 class CONFIG_Test extends PredisCommandTestCase
 {
