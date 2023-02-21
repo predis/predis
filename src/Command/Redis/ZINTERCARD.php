@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\Keys;
-use Predis\Command\Traits\Limit\Limit;
+use Predis\Command\Traits\Limit;
 
 /**
  * @see https://redis.io/commands/zintercard/

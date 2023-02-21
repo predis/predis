@@ -47,7 +47,7 @@ interface ReplicationInterface extends AggregateConnectionInterface
     /**
      * Returns a list of connections to slave servers.
      *
-     * @return NodeConnectionInterface[]
+     * @return NodeConnectionInterface
      */
     public function getSlaves();
 }

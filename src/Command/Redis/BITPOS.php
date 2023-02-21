@@ -13,17 +13,12 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\BitByte;
 
 /**
  * @see http://redis.io/commands/bitpos
- *
- * Return the position of the first bit set to 1 or 0 in a string.
  */
 class BITPOS extends RedisCommand
 {
-    use BitByte;
-
     /**
      * {@inheritdoc}
      */

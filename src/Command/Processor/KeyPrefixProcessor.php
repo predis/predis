@@ -178,12 +178,6 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEODIST' => $prefixFirst,
             'GEORADIUS' => $prefixGeoradius,
             'GEORADIUSBYMEMBER' => $prefixGeoradius,
-            /* ---------------- Redis 5.0 ---------------- */
-            'XADD' => $prefixFirst,
-            'XRANGE' => $prefixFirst,
-            'XDEL' => $prefixFirst,
-            'XLEN' => $prefixFirst,
-            'XACK' => $prefixFirst,
         ];
     }
 
