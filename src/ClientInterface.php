@@ -12,7 +12,6 @@
 
 namespace Predis;
 
-use phpDocumentor\Reflection\Types\Null_;
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Search\CreateArguments;
