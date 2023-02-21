@@ -13,7 +13,6 @@
 namespace Predis\Command;
 
 use Predis\Command\Redis\FUNCTIONS;
-
 use Predis\Command\Resolver\CommandResolverInterface;
 
 /**
