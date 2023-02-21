@@ -36,6 +36,22 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Selects the dialect version under which to execute the query.
+     * If not specified, the query will execute under the default dialect version
+     * set during module initial loading or via FT.CONFIG SET command.
+     *
+     * @param  string $dialect
+     * @return $this
+     */
+    public function dialect(string $dialect): self
+    {
+        $this->arguments[] = 'DIALECT';
+        $this->arguments[] = $dialect;
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array
