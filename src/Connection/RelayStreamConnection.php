@@ -18,6 +18,7 @@ use Relay\Relay;
 use Relay\Exception as RelayException;
 use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\Response\ServerException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
 
@@ -124,7 +125,7 @@ class RelayStreamConnection extends StreamConnection
 
         if (isset($parameters->read_write_timeout)) {
             $read_timeout = (float) $parameters->read_write_timeout;
-            $read_timeout = $read_timeout > 0 ? $read_timeout : -1;
+            $read_timeout = $read_timeout > 0 ? $read_timeout : 0;
         }
 
         $url = parse_url($address);
@@ -169,7 +170,7 @@ class RelayStreamConnection extends StreamConnection
      *
      * @return resource
      */
-    protected function getReader()
+    public function getReader()
     {
         return $this->reader;
     }
@@ -199,24 +200,45 @@ class RelayStreamConnection extends StreamConnection
     {
         $raw = [
             'INFO',
-            'zmpop',
+            'CLIENT',
+            'COPY',
+            'MSET',
+            'HMSET',
+            'HMGET',
+            'HRANDFIELD',
+            'GETEX',
+            'GEOSEARCH',
+            'GEOSEARCHSTORE',
+            'GEORADIUS',
+            'GEORADIUSBYMEMBER',
+            'ZRANGE',
+            'BITFIELD',
+            'ZMPOP',
+            'BLMPOP',
+            'BZMPOP',
             'ZUNION',
             'ZUNIONSTORE',
+            'EVAL',
+            'EVAL_RO',
+            'EVALSHA_RO',
         ];
 
         try {
             if (in_array($command->getId(), $raw)) {
-                return $this->reader->rawCommand(
+                $result = $this->reader->rawCommand(
                     $command->getId(),
+                    ...$command->getArguments()
+                );
+            } else {
+                $result = $this->reader->{$command->getId()}(
                     ...$command->getArguments()
                 );
             }
 
-            return $this->reader->{$command->getId()}(
-                ...$command->getArguments()
-            );
+            // return is_float($result) ? (string) $result : $result;
+            return $result;
         } catch (RelayException $ex) {
-            $this->onCommandError($ex);
+            throw $this->onCommandError($ex);
         }
 
         // if ($response instanceof ResponseInterface) {
@@ -235,7 +257,7 @@ class RelayStreamConnection extends StreamConnection
             $message = 'Operation against a key holding the wrong kind of value';
         }
 
-        return new ErrorResponse($message);
+        return new ServerException($message);
     }
 
     /**
@@ -266,6 +288,22 @@ class RelayStreamConnection extends StreamConnection
         throw new NotSupportedException(
             'The "relay" extension does not support reading responses.'
         );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __destruct()
+    {
+        if (isset($this->parameters->persistent) && $this->parameters->persistent) {
+            return;
+        }
+
+        if (! $this->reader->isConnected()) {
+            return;
+        }
+
+        $this->disconnect();
     }
 
     /**
