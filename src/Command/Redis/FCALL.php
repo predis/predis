@@ -13,22 +13,21 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\BitByte;
+use Predis\Command\Traits\Keys;
 
 /**
- * @see http://redis.io/commands/bitpos
+ * @see https://redis.io/commands/fcall/
  *
- * Return the position of the first bit set to 1 or 0 in a string.
+ * Invoke a function.
  */
-class BITPOS extends RedisCommand
+class FCALL extends RedisCommand
 {
-    use BitByte;
+    use Keys;
 
-    /**
-     * {@inheritdoc}
-     */
+    protected static $keysArgumentPositionOffset = 1;
+
     public function getId()
     {
-        return 'BITPOS';
+        return 'FCALL';
     }
 }
