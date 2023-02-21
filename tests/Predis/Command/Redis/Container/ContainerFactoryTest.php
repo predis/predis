@@ -36,7 +36,7 @@ class ContainerFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->mockClient = $this->getMockBuilder(ClientInterface::class)->getMock();
-        $this->expectedContainer = new FunctionContainer($this->mockClient);
+        $this->expectedContainer = new FUNCTIONS($this->mockClient);
         $this->factory = new ContainerFactory();
     }
 
