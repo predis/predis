@@ -13,19 +13,12 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Traits\Expire\ExpireOptions;
 
 /**
  * @see http://redis.io/commands/expire
- *
- * Set a timeout on key.
- * After the timeout has expired, the key will automatically be deleted.
- * A key with an associated timeout is often said to be volatile in Redis terminology.
  */
 class EXPIRE extends RedisCommand
 {
-    use ExpireOptions;
-
     /**
      * {@inheritdoc}
      */

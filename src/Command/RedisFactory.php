@@ -12,7 +12,6 @@
 
 namespace Predis\Command;
 
-use Predis\Command\Redis\FUNCTIONS;
 use Predis\Command\Resolver\CommandResolverInterface;
 
 /**
@@ -37,8 +36,6 @@ class RedisFactory extends Factory
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
-            // Class name corresponds to PHP reserved word "function", added mapping to bypass restrictions
-            'FUNCTION' => FUNCTIONS::class,
         ];
 
         $this->commandResolver = $commandResolver;
