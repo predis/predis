@@ -65,7 +65,7 @@ class SELECT_Test extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertEquals('OK', $redis->select(REDIS_SERVER_DBNUM - 1));
+        $this->assertEquals('OK', $redis->select(REDIS_SERVER_DBNUM + 1));
         $this->assertSame(0, $redis->exists('foo'));
     }
 
