@@ -14,6 +14,7 @@ namespace Predis\Command;
 
 use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
+use Predis\Command\Resolver\CommandResolver;
 use PredisTestCase;
 
 class RedisFactoryTest extends PredisTestCase
@@ -23,7 +24,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportedCommands(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         foreach ($this->getExpectedCommands() as $commandID) {
             $this->assertTrue($factory->supports($commandID), "Command factory does not support $commandID");
@@ -35,7 +36,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportCommand(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $this->assertTrue($factory->supports('info'));
         $this->assertTrue($factory->supports('INFO'));
@@ -49,7 +50,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportCommands(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $this->assertTrue($factory->supports('get', 'set'));
         $this->assertTrue($factory->supports('GET', 'SET'));
@@ -64,7 +65,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testGetCommandClass(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('ping'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
@@ -78,7 +79,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testDefineCommand(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')
             ->getMock();
@@ -96,7 +97,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testUndefineCommandInClassAutoload(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $this->assertTrue($factory->supports('PING'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
@@ -112,7 +113,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testUndefineCommandInClassMap(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $commandClass = get_class($this->getMockBuilder('Predis\Command\CommandInterface')->getMock());
         $factory->define('MOCK', $commandClass);
@@ -134,7 +135,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Class stdClass must implement Predis\Command\CommandInterface");
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $factory->define('mock', 'stdClass');
     }
@@ -144,7 +145,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testCreateCommandWithoutArguments(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $command = $factory->create('info');
 
@@ -158,7 +159,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testCreateCommandWithArguments(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
@@ -176,7 +177,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Command `UNKNOWN` is not a registered Redis command.');
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $factory->create('unknown');
     }
@@ -186,7 +187,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testGetDefaultProcessor(): void
     {
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $this->assertNull($factory->getProcessor());
     }
@@ -201,7 +202,7 @@ class RedisFactoryTest extends PredisTestCase
             ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
         $factory->setProcessor($processor);
 
         $this->assertSame($processor, $factory->getProcessor());
@@ -217,7 +218,7 @@ class RedisFactoryTest extends PredisTestCase
             ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
 
         $factory->setProcessor($processor);
         $this->assertSame($processor, $factory->getProcessor());
@@ -249,7 +250,7 @@ class RedisFactoryTest extends PredisTestCase
                 }
             );
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
         $factory->setProcessor($processor);
         $factory->create('set', ['foo', 'bar']);
 
@@ -273,7 +274,7 @@ class RedisFactoryTest extends PredisTestCase
         $chain->add($processor);
         $chain->add($processor);
 
-        $factory = new RedisFactory();
+        $factory = new RedisFactory(new CommandResolver());
         $factory->setProcessor($chain);
 
         $factory->create('info');
