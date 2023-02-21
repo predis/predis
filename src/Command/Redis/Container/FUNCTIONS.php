@@ -18,10 +18,10 @@ use Predis\Response\Status;
  * @method string load(string $functionCode, bool $replace = 'false')
  * @method Status delete(string $libraryName)
  */
-class FunctionContainer extends AbstractContainer
+class FUNCTIONS extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'functions';
+        return 'FUNCTIONS';
     }
 }
