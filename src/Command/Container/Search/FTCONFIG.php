@@ -17,6 +17,7 @@ use Predis\Response\Status;
 
 /**
  * @method array  get(string $option)
+ * @method array  help(string $option)
  * @method Status set(string $option, $value)
  */
 class FTCONFIG extends AbstractContainer

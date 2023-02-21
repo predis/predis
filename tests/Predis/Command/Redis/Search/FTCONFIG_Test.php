@@ -50,6 +50,20 @@ class FTCONFIG_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testHelpFilterArguments(): void
+    {
+        $arguments = ['HELP', 'option'];
+        $expected = ['HELP', 'option'];
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSameValues($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSetFilterArguments(): void
     {
         $arguments = ['SET', 'option', 'value'];
@@ -92,6 +106,28 @@ class FTCONFIG_Test extends PredisCommandTestCase
 
         $this->assertEquals([['MAXEXPANSIONS', '200']], $redis->ftconfig->get('MAXEXPANSIONS'));
         $this->assertEmpty($redis->ftconfig->get('foobar'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 1.0.0
+     */
+    public function testHelpReturnsGivenRediSearchConfigurationDescription(): void
+    {
+        $redis = $this->getClient();
+        $expectedResponse = [
+            [
+                'MAXEXPANSIONS',
+                'Description',
+                'Maximum prefix expansions to be used in a query',
+                'Value',
+                '200',
+            ],
+        ];
+
+        $this->assertEquals($expectedResponse, $redis->ftconfig->help('MAXEXPANSIONS'));
+        $this->assertEmpty($redis->ftconfig->help('foobar'));
     }
 
     /**
