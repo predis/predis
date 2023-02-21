@@ -21,7 +21,7 @@ use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
-use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\FUNCTIONS;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -294,7 +294,7 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
+ * @property FUNCTIONS $function
  */
 interface ClientInterface
 {

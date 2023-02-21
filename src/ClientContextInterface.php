@@ -20,7 +20,7 @@ use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\FUNCTIONS;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -276,7 +276,7 @@ use Predis\Command\Redis\Container\FunctionContainer;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
+ * @property FUNCTIONS $function
  */
 interface ClientContextInterface
 {
