@@ -13,15 +13,9 @@
 namespace Predis\Command\Argument\Search;
 
 use InvalidArgumentException;
-use Predis\Command\Argument\ArrayableArgument;
 
-class SearchArguments implements ArrayableArgument
+class CreateArguments extends CommonArguments
 {
-    /**
-     * @var array
-     */
-    private $arguments;
-
     /**
      * @var string[]
      */
@@ -74,20 +68,6 @@ class SearchArguments implements ArrayableArgument
     {
         $this->arguments[] = 'FILTER';
         $this->arguments[] = $filter;
-
-        return $this;
-    }
-
-    /**
-     * Adds default language for documents within an index.
-     *
-     * @param  string $defaultLanguage
-     * @return $this
-     */
-    public function language(string $defaultLanguage): self
-    {
-        $this->arguments[] = 'LANGUAGE';
-        $this->arguments[] = $defaultLanguage;
 
         return $this;
     }
@@ -245,13 +225,5 @@ class SearchArguments implements ArrayableArgument
         $this->arguments[] = 'SKIPINITIALSCAN';
 
         return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function toArray(): array
-    {
-        return $this->arguments;
     }
 }

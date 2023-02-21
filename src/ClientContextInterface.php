@@ -16,7 +16,7 @@ use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\Container\FunctionContainer;
@@ -86,7 +86,7 @@ use Predis\Command\Redis\Container\FunctionContainer;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
- * @method $this ftcreate(string $index, SearchArguments $arguments, Schema $schema)
+ * @method $this ftcreate(string $index, CreateArguments $arguments, Schema $schema)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)

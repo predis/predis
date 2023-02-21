@@ -15,16 +15,16 @@ namespace Predis\Command\Argument\Search;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-class SearchArgumentsTest extends TestCase
+class CreateArgumentsTest extends TestCase
 {
     /**
-     * @var SearchArguments
+     * @var CreateArguments
      */
     private $arguments;
 
     protected function setUp(): void
     {
-        $this->arguments = new SearchArguments();
+        $this->arguments = new CreateArguments();
     }
 
     /**
@@ -66,16 +66,6 @@ class SearchArgumentsTest extends TestCase
         $this->arguments->filter('@age>16');
 
         $this->assertSame(['FILTER', '@age>16'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithLanguageModifier(): void
-    {
-        $this->arguments->language('english');
-
-        $this->assertSame(['LANGUAGE', 'english'], $this->arguments->toArray());
     }
 
     /**
