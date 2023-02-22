@@ -25,7 +25,7 @@ class ContainerFactory
      * @var array
      */
     private static $specialMappings = [
-        'FUNCTION' => FunctionContainer::class,
+        'FUNCTION' => FUNCTIONS::class,
     ];
 
     /**
