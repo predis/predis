@@ -13,245 +13,389 @@
 namespace Predis\Command\Argument\Search;
 
 use InvalidArgumentException;
-use Predis\Command\Argument\ArrayableArgument;
 
-class SearchArguments implements ArrayableArgument
+class SearchArguments extends CommonArguments
 {
-    /**
-     * @var array
-     */
-    private $arguments;
-
     /**
      * @var string[]
      */
-    private $supportedDataTypesEnum = [
-        'hash' => 'HASH',
-        'json' => 'JSON',
+    private $sortingEnum = [
+        'asc' => 'ASC',
+        'desc' => 'DESC',
     ];
 
     /**
-     * Specify data type for given index. To index JSON you must have the RedisJSON module to be installed.
+     * Returns the document ids and not the content.
      *
-     * @param  string $modifier
      * @return $this
      */
-    public function on(string $modifier): self
+    public function noContent(): self
     {
-        if (in_array(strtoupper($modifier), $this->supportedDataTypesEnum)) {
-            $this->arguments[] = 'ON';
-            $this->arguments[] = $this->supportedDataTypesEnum[strtolower($modifier)];
+        $this->arguments[] = 'NOCONTENT';
 
-            return $this;
+        return $this;
+    }
+
+    /**
+     * Does not try to use stemming for query expansion but searches the query terms verbatim.
+     *
+     * @return $this
+     */
+    public function verbatim(): self
+    {
+        $this->arguments[] = 'VERBATIM';
+
+        return $this;
+    }
+
+    /**
+     * Also returns the relative internal score of each document.
+     *
+     * @return $this
+     */
+    public function withScores(): self
+    {
+        $this->arguments[] = 'WITHSCORES';
+
+        return $this;
+    }
+
+    /**
+     * Retrieves optional document payloads.
+     *
+     * @return $this
+     */
+    public function withPayloads(): self
+    {
+        $this->arguments[] = 'WITHPAYLOADS';
+
+        return $this;
+    }
+
+    /**
+     * Returns the value of the sorting key, right after the id and score and/or payload, if requested.
+     *
+     * @return $this
+     */
+    public function withSortKeys(): self
+    {
+        $this->arguments[] = 'WITHSORTKEYS';
+
+        return $this;
+    }
+
+    /**
+     * Limits results to those having numeric values ranging between min and max,
+     * if numeric_attribute is defined as a numeric attribute in FT.CREATE.
+     * Min and max follow ZRANGE syntax, and can be -inf, +inf, and use( for exclusive ranges.
+     * Multiple numeric filters for different attributes are supported in one query.
+     *
+     * @param  array ...$filter Should contain: numeric_field, min and max. Example: ['numeric_field', 1, 10]
+     * @return $this
+     */
+    public function searchFilter(array ...$filter): self
+    {
+        $arguments = func_get_args();
+
+        foreach ($arguments as $argument) {
+            array_push($this->arguments, 'FILTER', ...$argument);
         }
 
-        $enumValues = implode(', ', array_values($this->supportedDataTypesEnum));
-        throw new InvalidArgumentException("Wrong modifier value given. Currently supports: {$enumValues}");
+        return $this;
     }
 
     /**
-     * Adds one or more prefixes into index.
+     * Filter the results to a given radius from lon and lat. Radius is given as a number and units.
      *
-     * @param  array $prefixes
+     * @param  array ...$filter Should contain: geo_field, lon, lat, radius, unit. Example: ['geo_field', 34.1231, 35.1231, 300, km]
      * @return $this
      */
-    public function prefix(array $prefixes): self
+    public function geoFilter(array ...$filter): self
     {
-        $this->arguments[] = 'PREFIX';
-        $this->arguments[] = count($prefixes);
-        $this->arguments = array_merge($this->arguments, $prefixes);
+        $arguments = func_get_args();
+
+        foreach ($arguments as $argument) {
+            array_push($this->arguments, 'GEOFILTER', ...$argument);
+        }
 
         return $this;
     }
 
     /**
-     * Adds filter expression into index.
+     * Limits the result to a given set of keys specified in the list.
      *
-     * @param  string $filter
+     * @param  array $keys
      * @return $this
      */
-    public function filter(string $filter): self
+    public function inKeys(array $keys): self
     {
-        $this->arguments[] = 'FILTER';
-        $this->arguments[] = $filter;
+        $this->arguments[] = 'INKEYS';
+        $this->arguments[] = count($keys);
+        $this->arguments = array_merge($this->arguments, $keys);
 
         return $this;
     }
 
     /**
-     * Adds default language for documents within an index.
+     * Filters the results to those appearing only in specific attributes of the document, like title or URL.
      *
-     * @param  string $defaultLanguage
+     * @param  array $fields
      * @return $this
      */
-    public function language(string $defaultLanguage): self
+    public function inFields(array $fields): self
     {
-        $this->arguments[] = 'LANGUAGE';
-        $this->arguments[] = $defaultLanguage;
+        $this->arguments[] = 'INFIELDS';
+        $this->arguments[] = count($fields);
+        $this->arguments = array_merge($this->arguments, $fields);
 
         return $this;
     }
 
     /**
-     * Document attribute set as document language.
+     * Limits the attributes returned from the document.
+     * Num is the number of attributes following the keyword.
+     * If num is 0, it acts like NOCONTENT.
+     * Identifier is either an attribute name (for hashes and JSON) or a JSON Path expression (for JSON).
+     * Property is an optional name used in the result. If not provided, the identifier is used in the result.
      *
-     * @param  string $languageAttribute
+     * If you want to add alias property to your identifier just add "true" value in identifier enumeration,
+     * next value will be considered as alias to previous one.
+     *
+     * Example: 'identifier', true, 'property' => 'identifier' AS 'property'
+     *
+     * @param  int         $count
+     * @param  string|bool ...$identifier
      * @return $this
      */
-    public function languageField(string $languageAttribute): self
+    public function addReturn(int $count, ...$identifier): self
     {
-        $this->arguments[] = 'LANGUAGE_FIELD';
-        $this->arguments[] = $languageAttribute;
+        $arguments = func_get_args();
+
+        $this->arguments[] = 'RETURN';
+
+        for ($i = 1, $iMax = count($arguments); $i < $iMax; $i++) {
+            if (true === $arguments[$i]) {
+                $arguments[$i] = 'AS';
+            }
+        }
+
+        $this->arguments = array_merge($this->arguments, $arguments);
 
         return $this;
     }
 
     /**
-     * Default score for documents in the index.
+     * Returns only the sections of the attribute that contain the matched text.
      *
-     * @param  float $defaultScore
+     * @param  array  $fields
+     * @param  int    $frags
+     * @param  int    $len
+     * @param  string $separator
      * @return $this
      */
-    public function score(float $defaultScore): self
+    public function summarize(array $fields = [], int $frags = 0, int $len = 0, string $separator = ''): self
     {
-        $this->arguments[] = 'SCORE';
-        $this->arguments[] = $defaultScore;
+        $this->arguments[] = 'SUMMARIZE';
+
+        if (!empty($fields)) {
+            $this->arguments[] = 'FIELDS';
+            $this->arguments[] = count($fields);
+            $this->arguments = array_merge($this->arguments, $fields);
+        }
+
+        if ($frags !== 0) {
+            $this->arguments[] = 'FRAGS';
+            $this->arguments[] = $frags;
+        }
+
+        if ($len !== 0) {
+            $this->arguments[] = 'LEN';
+            $this->arguments[] = $len;
+        }
+
+        if ($separator !== '') {
+            $this->arguments[] = 'SEPARATOR';
+            $this->arguments[] = $separator;
+        }
 
         return $this;
     }
 
     /**
-     * Document attribute that used as the document rank based on the user ranking.
+     * Formats occurrences of matched text.
      *
-     * @param  string $scoreAttribute
+     * @param  array  $fields
+     * @param  string $openTag
+     * @param  string $closeTag
      * @return $this
      */
-    public function scoreField(string $scoreAttribute): self
+    public function highlight(array $fields = [], string $openTag = '', string $closeTag = ''): self
     {
-        $this->arguments[] = 'SCORE_FIELD';
-        $this->arguments[] = $scoreAttribute;
+        $this->arguments[] = 'HIGHLIGHT';
+
+        if (!empty($fields)) {
+            $this->arguments[] = 'FIELDS';
+            $this->arguments[] = count($fields);
+            $this->arguments = array_merge($this->arguments, $fields);
+        }
+
+        if ($openTag !== '' && $closeTag !== '') {
+            array_push($this->arguments, 'TAGS', $openTag, $closeTag);
+        }
 
         return $this;
     }
 
     /**
-     * Document attribute that you use as a binary safe payload string.
+     * Allows a maximum of N intervening number of unmatched offsets between phrase terms.
+     * In other words, the slop for exact phrases is 0.
      *
-     * @param  string $payloadAttribute
+     * @param  int   $slop
      * @return $this
      */
-    public function payloadField(string $payloadAttribute): self
+    public function slop(int $slop): self
     {
-        $this->arguments[] = 'PAYLOAD_FIELD';
-        $this->arguments[] = $payloadAttribute;
+        $this->arguments[] = 'SLOP';
+        $this->arguments[] = $slop;
 
         return $this;
     }
 
     /**
-     * Forces RediSearch to encode indexes as if there were more than 32 text attributes.
+     * Overrides the timeout parameter of the module.
      *
+     * @param  int   $timeout
      * @return $this
      */
-    public function maxTextFields(): self
+    public function timeout(int $timeout): self
     {
-        $this->arguments[] = 'MAXTEXTFIELDS';
+        $this->arguments[] = 'TIMEOUT';
+        $this->arguments[] = $timeout;
 
         return $this;
     }
 
     /**
-     * Does not store term offsets for documents.
+     * Puts the query terms in the same order in the document as in the query, regardless of the offsets between them.
+     * Typically used in conjunction with SLOP.
      *
      * @return $this
      */
-    public function noOffsets(): self
+    public function inOrder(): self
     {
-        $this->arguments[] = 'NOOFFSETS';
+        $this->arguments[] = 'INORDER';
 
         return $this;
     }
 
     /**
-     * Creates a lightweight temporary index that expires after a specified period of inactivity, in seconds.
+     * Uses a custom query expander instead of the stemmer.
      *
+     * @param  string $expander
      * @return $this
      */
-    public function temporary(): self
+    public function expander(string $expander): self
     {
-        $this->arguments[] = 'TEMPORARY';
+        $this->arguments[] = 'EXPANDER';
+        $this->arguments[] = $expander;
 
         return $this;
     }
 
     /**
-     * Conserves storage space and memory by disabling highlighting support.
+     * Uses a custom scoring function you define.
      *
+     * @param  string $scorer
      * @return $this
      */
-    public function noHl(): self
+    public function scorer(string $scorer): self
     {
-        $this->arguments[] = 'NOHL';
+        $this->arguments[] = 'SCORER';
+        $this->arguments[] = $scorer;
 
         return $this;
     }
 
     /**
-     * Does not store attribute bits for each term.
+     * Returns a textual description of how the scores were calculated.
+     * Using this options requires the WITHSCORES option.
      *
      * @return $this
      */
-    public function noFields(): self
+    public function explainScore(): self
     {
-        $this->arguments[] = 'NOFIELDS';
+        $this->arguments[] = 'EXPLAINSCORE';
 
         return $this;
     }
 
     /**
-     * Avoids saving the term frequencies in the index.
+     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
      *
+     * @param  string $payload
      * @return $this
      */
-    public function noFreqs(): self
+    public function payload(string $payload): self
     {
-        $this->arguments[] = 'NOFREQS';
+        $this->arguments[] = 'PAYLOAD';
+        $this->arguments[] = $payload;
 
         return $this;
     }
 
     /**
-     * Sets the index with a custom stopword list, to be ignored during indexing and search time.
+     * Orders the results by the value of this attribute.
+     * This applies to both text and numeric attributes.
+     * Attributes needed for SORTBY should be declared as SORTABLE in the index, in order to be available with very low latency.
+     * Note that this adds memory overhead.
      *
-     * @param  array $stopWords
+     * @param  string $sortAttribute
+     * @param  string $orderBy
      * @return $this
      */
-    public function stopWords(array $stopWords): self
+    public function sortBy(string $sortAttribute, string $orderBy = 'asc'): self
     {
-        $this->arguments[] = 'STOPWORDS';
-        $this->arguments[] = count($stopWords);
-        $this->arguments = array_merge($this->arguments, $stopWords);
+        $this->arguments[] = 'SORTBY';
+        $this->arguments[] = $sortAttribute;
+
+        if (in_array(strtoupper($orderBy), $this->sortingEnum)) {
+            $this->arguments[] = $this->sortingEnum[strtolower($orderBy)];
+        } else {
+            $enumValues = implode(', ', array_values($this->sortingEnum));
+            throw new InvalidArgumentException("Wrong order direction value given. Currently supports: {$enumValues}");
+        }
 
         return $this;
     }
 
     /**
-     * If set, does not scan and index.
+     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
      *
+     * @param  int   $offset
+     * @param  int   $num
      * @return $this
      */
-    public function skipInitialScan(): self
+    public function limit(int $offset, int $num): self
     {
-        $this->arguments[] = 'SKIPINITIALSCAN';
+        array_push($this->arguments, 'LIMIT', $offset, $num);
 
         return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * Defines one or more value parameters. Each parameter has a name and a value.
+     *
+     * Example: ['name1', 'value1', 'name2', 'value2'...]
+     *
+     * @param  array $nameValuesDictionary
+     * @return $this
      */
-    public function toArray(): array
+    public function params(array $nameValuesDictionary): self
     {
-        return $this->arguments;
+        $this->arguments[] = 'PARAMS';
+        $this->arguments[] = count($nameValuesDictionary);
+        $this->arguments = array_merge($this->arguments, $nameValuesDictionary);
+
+        return $this;
     }
 }
