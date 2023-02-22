@@ -198,44 +198,12 @@ class RelayStreamConnection extends StreamConnection
      */
     public function executeCommand(CommandInterface $command)
     {
-        $raw = [
-            'INFO',
-            'CLIENT',
-            'COPY',
-            'MSET',
-            'HMSET',
-            'HMGET',
-            'HRANDFIELD',
-            'GETEX',
-            'GEOSEARCH',
-            'GEOSEARCHSTORE',
-            'GEORADIUS',
-            'GEORADIUSBYMEMBER',
-            'ZRANGE',
-            'BITFIELD',
-            'ZMPOP',
-            'BLMPOP',
-            'BZMPOP',
-            'ZUNION',
-            'ZUNIONSTORE',
-            'EVAL',
-            'EVAL_RO',
-            'EVALSHA_RO',
-        ];
-
         try {
-            if (in_array($command->getId(), $raw)) {
-                $result = $this->reader->rawCommand(
-                    $command->getId(),
-                    ...$command->getArguments()
-                );
-            } else {
-                $result = $this->reader->{$command->getId()}(
-                    ...$command->getArguments()
-                );
-            }
+            $result = $this->reader->rawCommand(
+                $command->getId(),
+                ...$command->getArguments()
+            );
 
-            // return is_float($result) ? (string) $result : $result;
             return $result;
         } catch (RelayException $ex) {
             throw $this->onCommandError($ex);
