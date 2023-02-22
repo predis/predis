@@ -35,4 +35,14 @@ class CommonArgumentsTest extends TestCase
 
         $this->assertSame(['LANGUAGE', 'english'], $this->arguments->toArray());
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithDialectModifier(): void
+    {
+        $this->arguments->dialect('dialect');
+
+        $this->assertSame(['DIALECT', 'dialect'], $this->arguments->toArray());
+    }
 }
