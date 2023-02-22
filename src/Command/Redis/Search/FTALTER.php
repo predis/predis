@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Command as RedisCommand;
 
 class FTALTER extends RedisCommand
@@ -28,7 +27,7 @@ class FTALTER extends RedisCommand
         $commandArguments = [];
 
         if (!empty($arguments[2])) {
-            $commandArguments = (new SearchArguments())->skipInitialScan()->toArray();
+            $commandArguments = $arguments[2]->toArray();
         }
 
         parent::setArguments(array_merge(

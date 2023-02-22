@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -97,7 +98,7 @@ class FTALTER_Test extends PredisCommandTestCase
                 ['index', 'SCHEMA', 'ADD', 'text_field', 'TEXT'],
             ],
             'with SKIPINITIALSCAN modifier' => [
-                ['index', (new Schema(true))->addTextField('text_field'), true],
+                ['index', (new Schema(true))->addTextField('text_field'), (new CreateArguments())->skipInitialScan()],
                 ['index', 'SKIPINITIALSCAN', 'SCHEMA', 'ADD', 'text_field', 'TEXT'],
             ],
         ];
