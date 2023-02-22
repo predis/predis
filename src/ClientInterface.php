@@ -14,11 +14,14 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
-use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\FUNCTIONS;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -54,7 +57,6 @@ use Predis\Response\Status;
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
- * @method int               bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method int               bfadd(string $key, $item)
  * @method int               bfexists(string $key, $item)
  * @method array             bfinfo(string $key, string $modifier = '')
@@ -64,6 +66,7 @@ use Predis\Response\Status;
  * @method array             bfmexists(string $key, ...$item)
  * @method Status            bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method array             bfscandump(string $key, int $iterator)
+ * @method int               bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null, string $index = 'byte')
@@ -93,6 +96,12 @@ use Predis\Response\Status;
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method mixed             fcall(string $function, array $keys, ...$args)
+ * @method Status            ftaliasadd(string $alias, string $index)
+ * @method Status            ftaliasdel(string $alias)
+ * @method Status            ftaliasupdate(string $alias, string $index)
+ * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method array             ftinfo(string $index)
+ * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
@@ -289,7 +298,7 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
+ * @property FUNCTIONS $function
  */
 interface ClientInterface
 {
