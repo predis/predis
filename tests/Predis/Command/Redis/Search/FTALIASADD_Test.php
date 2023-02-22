@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -66,7 +66,7 @@ class FTALIASADD_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $arguments = new SearchArguments();
+        $arguments = new CreateArguments();
         $arguments->prefix(['prefix:']);
         $arguments->language('english');
 
@@ -104,7 +104,7 @@ class FTALIASADD_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $arguments = new SearchArguments();
+        $arguments = new CreateArguments();
         $arguments->prefix(['prefix:']);
         $arguments->language('english');
 
