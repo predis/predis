@@ -89,6 +89,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this fcall(string $function, array $keys, ...$args)
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
+ * @method $this ftaliasupdate(string $alias, string $index)
  * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method $this ftinfo(string $index)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)

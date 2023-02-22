@@ -98,6 +98,7 @@ use Predis\Response\Status;
  * @method mixed             fcall(string $function, array $keys, ...$args)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
+ * @method Status            ftaliasupdate(string $alias, string $index)
  * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method array             ftinfo(string $index)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
