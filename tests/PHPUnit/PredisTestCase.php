@@ -230,11 +230,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         );
 
         $options = array_merge(
-            [
-                'commands' => $this->getCommandFactory(),
-            ],
+            ['commands' => $this->getCommandFactory()],
             $options ?: [],
-            ['connections' => 'relay']
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : [],
         );
 
         $client = new Client($parameters, $options);
@@ -318,8 +316,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getRedisServerVersion(): string
     {
-        $this->redisServerVersion = '7.0.5';
-
         if (isset($this->redisServerVersion)) {
             return $this->redisServerVersion;
         }

@@ -21,16 +21,16 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          # - '7.2'
-          # - '7.3'
+          - '7.2'
+          - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
           - '8.2'
         redis:
-          # - 3
-          # - 4
-          # - 5
+          - 3
+          - 4
+          - 5
           - 6
 
     services:
@@ -58,13 +58,19 @@ jobs:
           dependency-versions: highest
           composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
-      - name: Run PHPUnit tests
+      - name: Run tests
         if: ${{ matrix.php != '8.1' || matrix.redis != '7' }}
         run: vendor/bin/phpunit --verbose
 
-      - name: Run PHPUnit tests with coverage
+      - name: Run tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
         run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src
+
+      - name: Run tests using Relay
+        if: ${{ matrix.php >= '7.4' || matrix.redis >= '6' }}
+        env:
+          USE_RELAY: true
+        run: vendor/bin/phpunit --verbose
 
       - name: Send coverage to Coveralls
         env:

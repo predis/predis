@@ -82,7 +82,6 @@ class GEOADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
-     * @group relay-broken
      */
     public function testCommandFillsSortedSet(): void
     {

@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-hash
- * @group relay-broken
  */
 class HINCRBY_Test extends PredisCommandTestCase
 {

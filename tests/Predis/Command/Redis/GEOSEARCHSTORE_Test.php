@@ -61,7 +61,6 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-broken
      * @dataProvider coordinatesProvider
      * @param  array         $firstCoordinates
      * @param  array         $secondCoordinates

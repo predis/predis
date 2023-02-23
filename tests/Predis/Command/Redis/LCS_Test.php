@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-string
- * @group relay-broken
  */
 class LCS_Test extends PredisCommandTestCase
 {
