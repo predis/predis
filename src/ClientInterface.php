@@ -15,6 +15,7 @@ namespace Predis;
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
@@ -103,7 +104,7 @@ use Predis\Response\Status;
  * @method int               ftdictadd(string $dict, ...$term)
  * @method int               ftdictdel(string $dict, ...$term)
  * @method array             ftdictdump(string $dict)
- * @method Status            ftdropindex(string $index, $dd = false)
+ * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
  * @method array             ftinfo(string $index)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)

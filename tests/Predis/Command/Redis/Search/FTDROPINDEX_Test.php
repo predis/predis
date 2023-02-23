@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -93,7 +94,7 @@ class FTDROPINDEX_Test extends PredisCommandTestCase
                 ['index'],
             ],
             'with DD modifier' => [
-                ['index', true],
+                ['index', (new DropArguments())->dd()],
                 ['index', 'DD'],
             ],
         ];

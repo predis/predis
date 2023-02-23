@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Command as RedisCommand;
 
 class FTDROPINDEX extends RedisCommand
@@ -24,11 +23,11 @@ class FTDROPINDEX extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $index = $arguments[0];
+        [$index] = $arguments;
         $commandArguments = [];
 
         if (!empty($arguments[1])) {
-            $commandArguments = (new SearchArguments())->dd()->toArray();
+            $commandArguments = $arguments[1]->toArray();
         }
 
         parent::setArguments(array_merge(
