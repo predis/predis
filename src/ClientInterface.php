@@ -100,6 +100,7 @@ use Predis\Response\Status;
  * @method Status            ftaliasdel(string $alias)
  * @method Status            ftaliasupdate(string $alias, string $index)
  * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method int               ftdictadd(string $dict, ...$term)
  * @method array             ftinfo(string $index)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
