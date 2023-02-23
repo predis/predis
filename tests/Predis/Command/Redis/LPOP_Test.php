@@ -72,6 +72,7 @@ class LPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      */
     public function testReturnsNullOnEmptyList(): void
     {

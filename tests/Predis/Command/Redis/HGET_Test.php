@@ -58,6 +58,7 @@ class HGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsValueOfSpecifiedField(): void

@@ -91,6 +91,7 @@ class GETBIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.2.0
      */
     public function testThrowsExceptionOnInvalidOffset(): void

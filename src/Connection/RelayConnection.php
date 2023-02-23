@@ -165,8 +165,6 @@ class RelayConnection extends StreamConnection
         $reader = new Relay;
         $reader->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
-        // TODO: throw errors, without switching from `null` to `false` responses
-
         return $reader;
     }
 

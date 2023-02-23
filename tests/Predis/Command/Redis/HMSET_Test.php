@@ -72,6 +72,7 @@ class HMSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.0.0
      */
     public function testSetsSpecifiedFieldsOfHash(): void
@@ -87,6 +88,7 @@ class HMSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 2.0.0
      */
     public function testSetsTheSpecifiedField(): void

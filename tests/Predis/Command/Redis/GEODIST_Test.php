@@ -63,6 +63,7 @@ class GEODIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requiresRedisVersion >= 3.2.0
      */
     public function testCommandReturnsGeoDistance(): void

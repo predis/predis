@@ -17,6 +17,7 @@ use Predis\Response\ServerException;
 /**
  * @group commands
  * @group realm-scripting
+ * @group relay-wtf
  */
 class FUNCTIONS_Test extends PredisCommandTestCase
 {
