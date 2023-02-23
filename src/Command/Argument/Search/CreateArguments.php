@@ -59,20 +59,6 @@ class CreateArguments extends CommonArguments
     }
 
     /**
-     * Adds filter expression into index.
-     *
-     * @param  string $filter
-     * @return $this
-     */
-    public function filter(string $filter): self
-    {
-        $this->arguments[] = 'FILTER';
-        $this->arguments[] = $filter;
-
-        return $this;
-    }
-
-    /**
      * Document attribute set as document language.
      *
      * @param  string $languageAttribute

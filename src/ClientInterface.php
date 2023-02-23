@@ -14,6 +14,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
@@ -96,6 +97,7 @@ use Predis\Response\Status;
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method mixed             fcall(string $function, array $keys, ...$args)
+ * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
  * @method Status            ftaliasupdate(string $alias, string $index)

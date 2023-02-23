@@ -40,16 +40,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithVerbatimModifier(): void
-    {
-        $this->arguments->verbatim();
-
-        $this->assertSame(['VERBATIM'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithWithScoresModifier(): void
     {
         $this->arguments->withScores();
@@ -178,16 +168,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithTimeoutModifier(): void
-    {
-        $this->arguments->timeout(2);
-
-        $this->assertSame(['TIMEOUT', 2], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithInOrderModifier(): void
     {
         $this->arguments->inOrder();
@@ -257,26 +237,6 @@ class SearchArgumentsTest extends TestCase
         $this->expectExceptionMessage('Wrong order direction value given. Currently supports: ASC, DESC');
 
         $this->arguments->sortBy('sort_attribute', 'wrong');
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithLimitModifier(): void
-    {
-        $this->arguments->limit(2, 2);
-
-        $this->assertSame(['LIMIT', 2, 2], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithParamsModifier(): void
-    {
-        $this->arguments->params(['name1', 'value1', 'name2', 'value2']);
-
-        $this->assertSame(['PARAMS', 4, 'name1', 'value1', 'name2', 'value2'], $this->arguments->toArray());
     }
 
     /**

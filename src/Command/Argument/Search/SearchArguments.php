@@ -37,18 +37,6 @@ class SearchArguments extends CommonArguments
     }
 
     /**
-     * Does not try to use stemming for query expansion but searches the query terms verbatim.
-     *
-     * @return $this
-     */
-    public function verbatim(): self
-    {
-        $this->arguments[] = 'VERBATIM';
-
-        return $this;
-    }
-
-    /**
      * Also returns the relative internal score of each document.
      *
      * @return $this
@@ -262,20 +250,6 @@ class SearchArguments extends CommonArguments
     }
 
     /**
-     * Overrides the timeout parameter of the module.
-     *
-     * @param  int   $timeout
-     * @return $this
-     */
-    public function timeout(int $timeout): self
-    {
-        $this->arguments[] = 'TIMEOUT';
-        $this->arguments[] = $timeout;
-
-        return $this;
-    }
-
-    /**
      * Puts the query terms in the same order in the document as in the query, regardless of the offsets between them.
      * Typically used in conjunction with SLOP.
      *
@@ -364,37 +338,6 @@ class SearchArguments extends CommonArguments
             $enumValues = implode(', ', array_values($this->sortingEnum));
             throw new InvalidArgumentException("Wrong order direction value given. Currently supports: {$enumValues}");
         }
-
-        return $this;
-    }
-
-    /**
-     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
-     *
-     * @param  int   $offset
-     * @param  int   $num
-     * @return $this
-     */
-    public function limit(int $offset, int $num): self
-    {
-        array_push($this->arguments, 'LIMIT', $offset, $num);
-
-        return $this;
-    }
-
-    /**
-     * Defines one or more value parameters. Each parameter has a name and a value.
-     *
-     * Example: ['name1', 'value1', 'name2', 'value2'...]
-     *
-     * @param  array $nameValuesDictionary
-     * @return $this
-     */
-    public function params(array $nameValuesDictionary): self
-    {
-        $this->arguments[] = 'PARAMS';
-        $this->arguments[] = count($nameValuesDictionary);
-        $this->arguments = array_merge($this->arguments, $nameValuesDictionary);
 
         return $this;
     }

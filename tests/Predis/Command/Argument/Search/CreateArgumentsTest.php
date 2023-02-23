@@ -61,16 +61,6 @@ class CreateArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithFilterModifier(): void
-    {
-        $this->arguments->filter('@age>16');
-
-        $this->assertSame(['FILTER', '@age>16'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithLanguageFieldModifier(): void
     {
         $this->arguments->languageField('language_attribute');
