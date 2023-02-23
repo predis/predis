@@ -13,12 +13,18 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\Expire\ExpireOptions;
 
 /**
  * @see http://redis.io/commands/expireat
+ *
+ * EXPIREAT has the same effect and semantic as EXPIRE, but instead of specifying
+ * the number of seconds representing the TTL (time to live), it takes an absolute Unix timestamp
  */
 class EXPIREAT extends RedisCommand
 {
+    use ExpireOptions;
+
     /**
      * {@inheritdoc}
      */

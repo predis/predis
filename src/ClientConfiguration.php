@@ -25,6 +25,7 @@ class ClientConfiguration
             ['name' => 'CountMinSketch', 'commandPrefix' => 'CMS'],
             ['name' => 'TDigest', 'commandPrefix' => 'TDIGEST'],
             ['name' => 'TopK', 'commandPrefix' => 'TOPK'],
+            ['name' => 'Search', 'commandPrefix' => 'FT'],
         ],
     ];
 
