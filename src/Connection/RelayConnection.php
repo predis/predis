@@ -49,7 +49,7 @@ use Predis\Response\Status as StatusResponse;
  *
  * @see https://github.com/cachewerk/relay
  */
-class RelayStreamConnection extends StreamConnection
+class RelayConnection extends StreamConnection
 {
     /**
      * The Relay instance.
@@ -75,7 +75,9 @@ class RelayStreamConnection extends StreamConnection
      */
     public function disconnect()
     {
-        $this->reader->close();
+        if ($this->reader->isConnected()) {
+            $this->reader->close();
+        }
     }
 
     /**
@@ -264,10 +266,6 @@ class RelayStreamConnection extends StreamConnection
     public function __destruct()
     {
         if (isset($this->parameters->persistent) && $this->parameters->persistent) {
-            return;
-        }
-
-        if (! $this->reader->isConnected()) {
             return;
         }
 

@@ -13,47 +13,22 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 
 /**
- * @group ext-phpiredis
- * @requires extension phpiredis
+ * @group ext-relay
+ * @requires extension relay
  */
-class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
+class RelayConnectionTest extends PredisConnectionTestCase
 {
     /**
      * {@inheritDoc}
      */
     public function getConnectionClass(): string
     {
-        return 'Predis\Connection\PhpiredisStreamConnection';
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSupportsSchemeTls(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
-
-        $connection = $this->createConnectionWithParams(['scheme' => 'tls']);
-
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSupportsSchemeRediss(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
-
-        $connection = $this->createConnectionWithParams(['scheme' => 'rediss']);
-
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+        return RelayConnection::class;
     }
 
     /**
