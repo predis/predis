@@ -93,6 +93,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method $this ftdictadd(string $dict, ...$term)
  * @method $this ftdictdel(string $dict, ...$term)
+ * @method $this ftdictdump(string $dict)
  * @method $this ftinfo(string $index)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method $this get($key)

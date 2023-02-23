@@ -102,6 +102,7 @@ use Predis\Response\Status;
  * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method int               ftdictadd(string $dict, ...$term)
  * @method int               ftdictdel(string $dict, ...$term)
+ * @method array             ftdictdump(string $dict)
  * @method array             ftinfo(string $index)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
