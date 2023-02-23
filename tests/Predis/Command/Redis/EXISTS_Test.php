@@ -97,6 +97,7 @@ class EXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-wtf
      * @requiresRedisVersion >= 3.0.3
      */
     public function testReturnValueWhenKeysExist(): void

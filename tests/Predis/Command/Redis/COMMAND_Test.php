@@ -17,6 +17,7 @@ use Predis\Response\Status;
 /**
  * @group commands
  * @group realm-server
+ * @group relay-todo
  */
 class COMMAND_Test extends PredisCommandTestCase
 {

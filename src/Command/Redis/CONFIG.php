@@ -15,6 +15,8 @@ namespace Predis\Command\Redis;
 use Predis\Command\Command as RedisCommand;
 
 /**
+ * @group relay-error
+ *
  * @see http://redis.io/commands/config-set
  * @see http://redis.io/commands/config-get
  * @see http://redis.io/commands/config-resetstat

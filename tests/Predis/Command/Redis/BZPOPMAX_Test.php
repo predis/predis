@@ -35,6 +35,7 @@ class BZPOPMAX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */

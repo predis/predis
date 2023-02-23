@@ -56,6 +56,7 @@ class BZMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      * @dataProvider sortedSetsProvider
      * @param  int    $timeout
      * @param  array  $sortedSetDictionary

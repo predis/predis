@@ -15,6 +15,9 @@ namespace Predis\Command\Redis\CuckooFilter;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group relay-todo
+ */
 class CFDEL_Test extends PredisCommandTestCase
 {
     /**

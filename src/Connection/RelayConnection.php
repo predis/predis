@@ -14,10 +14,15 @@ namespace Predis\Connection;
 
 use Closure;
 use InvalidArgumentException;
+
 use Relay\Relay;
 use Relay\Exception as RelayException;
+
+use Predis\ClientException;
 use Predis\NotSupportedException;
+
 use Predis\Command\CommandInterface;
+
 use Predis\Response\ServerException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
@@ -130,16 +135,14 @@ class RelayConnection extends StreamConnection
             $read_timeout = $read_timeout > 0 ? $read_timeout : 0;
         }
 
-        $url = parse_url($address);
-
         try {
             // TODO: support TLS, Scheme, Socket
             // TODO: `$flags` ???
             // TODO: compression
 
             $this->reader->connect(
-                $url['host'],
-                $url['port'],
+                isset($parameters->path) ? $parameters->path : $parameters->host,
+                isset($parameters->path) ? 0 : $parameters->port,
                 $timeout,
                 null,
                 $retry_interval = 0,
@@ -221,13 +224,22 @@ class RelayConnection extends StreamConnection
      */
     public function onCommandError(RelayException $exception)
     {
+        $code = $exception->getCode();
         $message = $exception->getMessage();
+
+        if (strpos($message, 'RELAY_ERR_IO')) {
+            return new ConnectionException($this, $message, $code, $exception);
+        }
+
+        if (strpos($message, 'RELAY_ERR_REDIS')) {
+            return new ServerException($message, $code, $exception);
+        }
 
         if (strpos($message, 'RELAY_ERR_WRONGTYPE') && strpos($message, "Got reply-type 'status'")) {
             $message = 'Operation against a key holding the wrong kind of value';
         }
 
-        return new ServerException($message);
+        return new ClientException($message, $code, $exception);
     }
 
     /**

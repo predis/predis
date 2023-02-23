@@ -14,7 +14,7 @@ concurrency:
 jobs:
 
   predis:
-    name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
+    name: PHP ${{ matrix.php }} (Redis ${{ matrix.redis }})
     runs-on: ubuntu-latest
 
     strategy:

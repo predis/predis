@@ -68,6 +68,7 @@ class COPY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
