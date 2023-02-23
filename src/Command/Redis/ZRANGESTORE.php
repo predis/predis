@@ -14,7 +14,7 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 use Predis\Command\Traits\By\ByLexByScore;
-use Predis\Command\Traits\Limit;
+use Predis\Command\Traits\Limit\Limit;
 use Predis\Command\Traits\Rev;
 
 /**
