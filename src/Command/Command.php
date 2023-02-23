@@ -120,7 +120,7 @@ abstract class Command implements CommandInterface
     public function filterArguments(): void
     {
         $this->arguments = array_filter($this->arguments, static function ($argument) {
-            return $argument !== false;
+            return $argument !== false && $argument !== null;
         });
     }
 }
