@@ -45,6 +45,6 @@
     <php>
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
-        <const name="REDIS_SERVER_DBNUM" value="15" />
+        <const name="REDIS_SERVER_DBNUM" value="0" />
     </php>
 </phpunit>
