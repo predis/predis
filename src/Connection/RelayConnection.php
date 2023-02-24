@@ -12,7 +12,6 @@
 
 namespace Predis\Connection;
 
-use Closure;
 use InvalidArgumentException;
 
 use Relay\Relay;
@@ -20,12 +19,8 @@ use Relay\Exception as RelayException;
 
 use Predis\ClientException;
 use Predis\NotSupportedException;
-
 use Predis\Command\CommandInterface;
-
 use Predis\Response\ServerException;
-use Predis\Response\Error as ErrorResponse;
-use Predis\Response\Status as StatusResponse;
 
 /**
  * This class provides the implementation of a Predis connection that uses
@@ -38,8 +33,8 @@ use Predis\Response\Status as StatusResponse;
  * nonexistent, the actual speed boost is for big multibulk responses when this
  * protocol processor can parse and return responses very fast.
  *
- * For instructions on how to build and install the phpiredis extension, please
- * consult the repository of the project.
+ * For instructions on how to install the Relay extension, please consult
+ * the repository of the project: https://relay.so/docs/installation
  *
  * The connection parameters supported by this class are:
  *
@@ -62,6 +57,11 @@ class RelayConnection extends StreamConnection
      * @var \Relay\Relay
      */
     private $reader;
+
+    private $notBypassed = [
+        'AUTH',
+        'SELECT',
+    ];
 
     /**
      * {@inheritdoc}
@@ -126,6 +126,29 @@ class RelayConnection extends StreamConnection
     }
 
     /**
+     * Creates a new instance of the protocol reader resource.
+     *
+     * @return \Relay\Relay
+     */
+    private function createReader()
+    {
+        $reader = new Relay;
+        $reader->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
+
+        return $reader;
+    }
+
+    /**
+     * Returns the underlying protocol reader resource.
+     *
+     * @return resource
+     */
+    public function getReader()
+    {
+        return $this->reader;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
@@ -158,47 +181,6 @@ class RelayConnection extends StreamConnection
     }
 
     /**
-     * Creates a new instance of the protocol reader resource.
-     *
-     * @return \Relay\Relay
-     */
-    private function createReader()
-    {
-        $reader = new Relay;
-        $reader->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
-
-        return $reader;
-    }
-
-    /**
-     * Returns the underlying protocol reader resource.
-     *
-     * @return resource
-     */
-    public function getReader()
-    {
-        return $this->reader;
-    }
-
-    // /**
-    //  * Returns the handler used by the protocol reader for inline responses.
-    //  *
-    //  * @return Closure
-    //  */
-    // protected function getStatusHandler()
-    // {
-    //     static $statusHandler;
-
-    //     if (!$statusHandler) {
-    //         $statusHandler = function ($payload) {
-    //             return StatusResponse::get($payload);
-    //         };
-    //     }
-
-    //     return $statusHandler;
-    // }
-
-    /**
      * {@inheritdoc}
      */
     public function executeCommand(CommandInterface $command)
@@ -208,19 +190,14 @@ class RelayConnection extends StreamConnection
         }
 
         try {
-            $result = $this->reader->rawCommand(
-                $command->getId(),
-                ...$command->getArguments()
-            );
+            $name = $command->getId();
 
-            return $result;
+            return in_array($name, $this->notBypassed)
+                ? $this->reader->{$name}(...$command->getArguments())
+                : $this->reader->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
             throw $this->onCommandError($ex);
         }
-
-        // if ($response instanceof ResponseInterface) {
-        //     return $response;
-        // }
     }
 
     /**
