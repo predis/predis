@@ -64,6 +64,4 @@ jobs:
 
       - name: Run tests using Relay
         if: ${{ matrix.php >= '7.4' }}
-        env:
-          USE_RELAY: true
-        run: vendor/bin/phpunit --verbose
+        run: vendor/bin/phpunit --verbose -c phpunit.relay.xml

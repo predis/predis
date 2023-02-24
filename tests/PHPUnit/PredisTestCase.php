@@ -234,7 +234,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         $options = array_merge(
             ['commands' => $this->getCommandFactory()],
             $options ?: [],
-            getenv('USE_RELAY') ? ['connections' => 'relay'] : [],
+            defined('USE_RELAY') && USE_RELAY ? ['connections' => 'relay'] : [],
         );
 
         $client = new Client($parameters, $options);
