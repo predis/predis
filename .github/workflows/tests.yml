@@ -67,7 +67,7 @@ jobs:
         run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src
 
       - name: Run tests using Relay
-        if: ${{ matrix.php >= '7.4' || matrix.redis >= '6' }}
+        if: ${{ matrix.redis >= '6' }}
         run: vendor/bin/phpunit --verbose -c phpunit.relay.xml
 
       - name: Send coverage to Coveralls
