@@ -16,6 +16,8 @@ use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
 /**
+ * @group commands
+ * @group realm-stack
  * @group relay-todo
  */
 class CFDEL_Test extends PredisCommandTestCase
