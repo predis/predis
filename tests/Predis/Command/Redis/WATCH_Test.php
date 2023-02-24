@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-todo
+ * @group relay-wtf
  */
 class WATCH_Test extends PredisCommandTestCase
 {
