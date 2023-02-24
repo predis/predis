@@ -16,7 +16,7 @@ use Predis\NotSupportedException;
 
 /**
  * Hash generator implementing the CRC-CCITT-16 algorithm used by redis-cluster.
- * 
+ *
  * @deprecated 2.1.2
  */
 class PhpiredisCRC16 implements HashGeneratorInterface
