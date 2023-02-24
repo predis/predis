@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-pubsub
- * @group relay-incompatible
  */
 class PUBLISH_Test extends PredisCommandTestCase
 {
@@ -59,6 +58,7 @@ class PUBLISH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testPublishesMessagesToChannel(): void

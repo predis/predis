@@ -66,6 +66,18 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     */
+    public function testGetResourceForcesConnection(): void
+    {
+        $connection = $this->createConnection();
+
+        $this->assertFalse($connection->isConnected());
+        $connection->getResource();
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @group connected
      * @group slow
      * @requires PHP 5.4
      */
@@ -102,7 +114,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithFalseLikeValues(): void
@@ -122,7 +134,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithTrueLikeValues(): void
@@ -144,7 +156,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
@@ -178,7 +190,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      */
     public function testTcpNodelayParameterSetsContextFlagWhenTrue()
     {
@@ -193,7 +205,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      */
     public function testTcpNodelayParameterDoesNotSetContextFlagWhenFalse()
     {
@@ -208,7 +220,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      */
     public function testTcpDelayContextFlagIsNotSetByDefault()
     {

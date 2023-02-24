@@ -194,7 +194,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-resource
+     * @group relay-incompatible
      */
     public function testGetResourceForcesConnection(): void
     {
