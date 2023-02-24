@@ -105,15 +105,15 @@ class SchemaTest extends TestCase
     public function testCreatesCorrectSchemaConfigurationOnMethodsChainCall(): void
     {
         $expectedSchema = [
-            'SCHEMA', 'text_field', 'AS', 'txtf', 'TEXT', 'SORTABLE',
-            'tag_field', 'AS', 'tf', 'TAG', 'SORTABLE',
+            'SCHEMA', 'text_field', 'AS', 'txtf', 'TEXT', 'SORTABLE', 'NOSTEM', 'WEIGHT', 10,
+            'tag_field', 'AS', 'tf', 'TAG', 'SORTABLE', 'SEPARATOR', '.', 'CASESENSITIVE',
             'numeric_field', 'AS', 'nf', 'NUMERIC', 'SORTABLE',
             'geo_field', 'AS', 'gf', 'GEO', 'SORTABLE',
             'vector_field', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value',
         ];
 
-        $this->schema->addTextField('text_field', 'txtf', true);
-        $this->schema->addTagField('tag_field', 'tf', true);
+        $this->schema->addTextField('text_field', 'txtf', true, false, true, '', 10);
+        $this->schema->addTagField('tag_field', 'tf', true, false, '.', true);
         $this->schema->addNumericField('numeric_field', 'nf', true);
         $this->schema->addGeoField('geo_field', 'gf', true);
         $this->schema->addVectorField('vector_field', 'FLAT', ['attribute_name', 'attribute_value']);
@@ -144,6 +144,10 @@ class SchemaTest extends TestCase
                 ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'GEO', 'NOINDEX'],
             ],
+            'with all modifiers' => [
+                ['field_name', 'fn', Schema::SORTABLE, true],
+                ['SCHEMA', 'field_name', 'AS', 'fn', 'GEO', 'SORTABLE', 'NOINDEX'],
+            ],
         ];
     }
 
@@ -169,6 +173,10 @@ class SchemaTest extends TestCase
             'with NOINDEX modifier' => [
                 ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'NUMERIC', 'NOINDEX'],
+            ],
+            'with all modifiers' => [
+                ['field_name', 'fn', Schema::SORTABLE, true],
+                ['SCHEMA', 'field_name', 'AS', 'fn', 'NUMERIC', 'SORTABLE', 'NOINDEX'],
             ],
         ];
     }
@@ -196,6 +204,26 @@ class SchemaTest extends TestCase
                 ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'TEXT', 'NOINDEX'],
             ],
+            'with NOSTEM modifier' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, true],
+                ['SCHEMA', 'field_name', 'TEXT', 'NOSTEM'],
+            ],
+            'with PHONETIC matcher' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, false, 'dm:en'],
+                ['SCHEMA', 'field_name', 'TEXT', 'PHONETIC', 'dm:en'],
+            ],
+            'with WEIGHT modifier' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, false, '', 10],
+                ['SCHEMA', 'field_name', 'TEXT', 'WEIGHT', 10],
+            ],
+            'with WITHSUFFIXTRIE modifier' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, false, '', 1, true],
+                ['SCHEMA', 'field_name', 'TEXT', 'WITHSUFFIXTRIE'],
+            ],
+            'with all modifiers' => [
+                ['field_name', 'fn', Schema::SORTABLE, true, true, 'dm:en', 10, true],
+                ['SCHEMA', 'field_name', 'AS', 'fn', 'TEXT', 'SORTABLE', 'NOINDEX', 'NOSTEM', 'PHONETIC', 'dm:en', 'WEIGHT', 10, 'WITHSUFFIXTRIE'],
+            ],
         ];
     }
 
@@ -221,6 +249,18 @@ class SchemaTest extends TestCase
             'with NOINDEX modifier' => [
                 ['field_name', '', Schema::NOT_SORTABLE, true],
                 ['SCHEMA', 'field_name', 'TAG', 'NOINDEX'],
+            ],
+            'with SEPARATOR modifier' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, '.'],
+                ['SCHEMA', 'field_name', 'TAG', 'SEPARATOR', '.'],
+            ],
+            'with CASESENSITIVE modifier' => [
+                ['field_name', '', Schema::NOT_SORTABLE, false, ',', true],
+                ['SCHEMA', 'field_name', 'TAG', 'CASESENSITIVE'],
+            ],
+            'with all modifiers' => [
+                ['field_name', 'fn', Schema::SORTABLE, true, '.', true],
+                ['SCHEMA', 'field_name', 'AS', 'fn', 'TAG', 'SORTABLE', 'NOINDEX', 'SEPARATOR', '.', 'CASESENSITIVE'],
             ],
         ];
     }

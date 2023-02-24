@@ -28,73 +28,120 @@ class Schema implements ArrayableArgument
     /**
      * Adds text field to schema configuration.
      *
-     * @param  string      $fieldName
+     * @param  string      $identifier
      * @param  string      $alias
      * @param  bool|string $sortable
      * @param  bool        $noIndex
+     * @param  bool        $noStem
+     * @param  string      $phonetic
+     * @param  int         $weight
+     * @param  bool        $withSuffixTrie
      * @return $this
      */
     public function addTextField(
-        string $fieldName,
+        string $identifier,
         string $alias = '',
-        $sortable = false,
-        bool $noIndex = false
+        $sortable = self::NOT_SORTABLE,
+        bool $noIndex = false,
+        bool $noStem = false,
+        string $phonetic = '',
+        int $weight = 1,
+        bool $withSuffixTrie = false
     ): self {
-        return $this->addField('TEXT', $fieldName, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('TEXT', $identifier, $alias, $sortable, $noIndex);
+
+        if ($noStem) {
+            $this->arguments[] = 'NOSTEM';
+        }
+
+        if ($phonetic !== '') {
+            $this->arguments[] = 'PHONETIC';
+            $this->arguments[] = $phonetic;
+        }
+
+        if ($weight !== 1) {
+            $this->arguments[] = 'WEIGHT';
+            $this->arguments[] = $weight;
+        }
+
+        if ($withSuffixTrie) {
+            $this->arguments[] = 'WITHSUFFIXTRIE';
+        }
+
+        return $this;
     }
 
     /**
      * Adds tag field to schema configuration.
      *
-     * @param  string      $fieldName
+     * @param  string      $identifier
      * @param  string      $alias
      * @param  bool|string $sortable
      * @param  bool        $noIndex
+     * @param  string      $separator
+     * @param  bool        $caseSensitive
      * @return $this
      */
     public function addTagField(
-        string $fieldName,
+        string $identifier,
         string $alias = '',
-        $sortable = false,
-        bool $noIndex = false
+        $sortable = self::NOT_SORTABLE,
+        bool $noIndex = false,
+        string $separator = ',',
+        bool $caseSensitive = false
     ): self {
-        return $this->addField('TAG', $fieldName, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('TAG', $identifier, $alias, $sortable, $noIndex);
+
+        if ($separator !== ',') {
+            $this->arguments[] = 'SEPARATOR';
+            $this->arguments[] = $separator;
+        }
+
+        if ($caseSensitive) {
+            $this->arguments[] = 'CASESENSITIVE';
+        }
+
+        return $this;
     }
 
     /**
      * Adds numeric field to schema configuration.
      *
-     * @param  string      $fieldName
+     * @param  string      $identifier
      * @param  string      $alias
      * @param  bool|string $sortable
      * @param  bool        $noIndex
      * @return $this
      */
     public function addNumericField(
-        string $fieldName,
+        string $identifier,
         string $alias = '',
         $sortable = self::NOT_SORTABLE,
         bool $noIndex = false
     ): self {
-        return $this->addField('NUMERIC', $fieldName, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('NUMERIC', $identifier, $alias, $sortable, $noIndex);
+
+        return $this;
     }
 
     /**
      * Adds geo field to schema configuration.
      *
-     * @param  string      $fieldName
+     * @param  string      $identifier
      * @param  string      $alias
      * @param  bool|string $sortable
      * @param  bool        $noIndex
      * @return $this
      */
     public function addGeoField(
-        string $fieldName,
+        string $identifier,
         string $alias = '',
         $sortable = self::NOT_SORTABLE,
         bool $noIndex = false
     ): self {
-        return $this->addField('GEO', $fieldName, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('GEO', $identifier, $alias, $sortable, $noIndex);
+
+        return $this;
     }
 
     /**
@@ -117,77 +164,39 @@ class Schema implements ArrayableArgument
     }
 
     /**
-     * Adds given field to schema configuration.
-     *
-     * @param  string      $type
-     * @param  string      $fieldName
+     * @param  string      $fieldType
+     * @param  string      $identifier
      * @param  string      $alias
      * @param  bool|string $sortable
      * @param  bool        $noIndex
-     * @return $this
+     * @return void
      */
-    private function addField(
-        string $type,
-        string $fieldName,
+    private function setCommonOptions(
+        string $fieldType,
+        string $identifier,
         string $alias = '',
         $sortable = self::NOT_SORTABLE,
         bool $noIndex = false
-    ): self {
-        $this->arguments[] = $fieldName;
-        $this->setAlias($alias);
-        $this->arguments[] = $type;
-        $this->setFieldConfiguration($sortable, $noIndex);
+    ): void {
+        $this->arguments[] = $identifier;
 
-        return $this;
-    }
-
-    /**
-     * @param  bool|string $sortable
-     * @param  bool        $noIndex
-     * @return void
-     */
-    private function setFieldConfiguration($sortable, bool $noIndex): void
-    {
-        if ($sortable) {
-            $this->setSortable($sortable);
-        }
-
-        if ($noIndex) {
-            $this->setNoIndex();
-        }
-    }
-
-    /**
-     * @param  string $alias
-     * @return void
-     */
-    private function setAlias(string $alias): void
-    {
         if ($alias !== '') {
             $this->arguments[] = 'AS';
             $this->arguments[] = $alias;
         }
-    }
 
-    /**
-     * @param  bool|string $sortable
-     * @return void
-     */
-    private function setSortable($sortable): void
-    {
-        $this->arguments[] = 'SORTABLE';
+        $this->arguments[] = $fieldType;
 
-        if ($sortable === self::SORTABLE_UNF) {
+        if ($sortable === self::SORTABLE) {
+            $this->arguments[] = 'SORTABLE';
+        } elseif ($sortable === self::SORTABLE_UNF) {
+            $this->arguments[] = 'SORTABLE';
             $this->arguments[] = 'UNF';
         }
-    }
 
-    /**
-     * @return void
-     */
-    private function setNoIndex(): void
-    {
-        $this->arguments[] = 'NOINDEX';
+        if ($noIndex) {
+            $this->arguments[] = 'NOINDEX';
+        }
     }
 
     /**
