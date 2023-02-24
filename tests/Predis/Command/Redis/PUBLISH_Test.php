@@ -15,6 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-pubsub
+ * @group relay-incompatible
  */
 class PUBLISH_Test extends PredisCommandTestCase
 {

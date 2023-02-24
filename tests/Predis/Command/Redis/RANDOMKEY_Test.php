@@ -76,6 +76,7 @@ class RANDOMKEY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-null
      */
     public function testReturnsNullOnEmptyDatabase(): void
     {

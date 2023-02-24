@@ -58,7 +58,7 @@ class GETSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-null
      */
     public function testReturnsPreviousValueOfKey(): void
     {

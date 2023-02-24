@@ -58,7 +58,7 @@ class LINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-null
      */
     public function testReturnsElementAtIndex(): void
     {
@@ -73,7 +73,7 @@ class LINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-null
      */
     public function testReturnsElementAtNegativeIndex(): void
     {

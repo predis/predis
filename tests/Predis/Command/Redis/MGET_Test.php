@@ -90,7 +90,7 @@ class MGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-null
      */
     public function testReturnsArrayWithNullValuesOnNonExistingKeys(): void
     {
@@ -101,7 +101,7 @@ class MGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-null
      */
     public function testDoesNotThrowExceptionOnWrongType(): void
     {
