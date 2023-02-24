@@ -56,7 +56,7 @@ class MONITOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-wtf
+     * @group relay-incompatible
      */
     public function testReturnsStatusResponseAndReadsEventsFromTheConnection(): void
     {
