@@ -13,7 +13,6 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
-
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 

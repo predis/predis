@@ -13,14 +13,12 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
-
-use Relay\Relay;
-use Relay\Exception as RelayException;
-
 use Predis\ClientException;
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Response\ServerException;
+use Relay\Exception as RelayException;
+use Relay\Relay;
 
 /**
  * This class provides the implementation of a Predis connection that uses
@@ -132,7 +130,7 @@ class RelayConnection extends StreamConnection
      */
     private function createReader()
     {
-        $reader = new Relay;
+        $reader = new Relay();
         $reader->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
         return $reader;
@@ -166,7 +164,7 @@ class RelayConnection extends StreamConnection
             // TODO: `$flags` ???
 
             $this->reader->connect(
-                isset($parameters->path) ? $parameters->path : $parameters->host,
+                $parameters->path ?? $parameters->host,
                 isset($parameters->path) ? 0 : $parameters->port,
                 $timeout,
                 null,
@@ -185,7 +183,7 @@ class RelayConnection extends StreamConnection
      */
     public function executeCommand(CommandInterface $command)
     {
-        if (! $this->reader->isConnected()) {
+        if (!$this->reader->isConnected()) {
             $this->getResource();
         }
 

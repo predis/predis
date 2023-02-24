@@ -16,8 +16,8 @@ use InvalidArgumentException;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
-use Predis\Connection\RelayConnection;
 use Predis\Connection\FactoryInterface;
+use Predis\Connection\RelayConnection;
 
 /**
  * Configures a new connection factory instance.
