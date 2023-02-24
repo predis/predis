@@ -15,6 +15,10 @@ namespace Predis\Command\Redis\Search;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTDICTDUMP_Test extends PredisCommandTestCase
 {
     /**

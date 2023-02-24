@@ -14,6 +14,10 @@ namespace Predis\Command\Redis\Json;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class JSONARRINDEX_Test extends PredisCommandTestCase
 {
     /**

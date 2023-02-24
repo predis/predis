@@ -15,6 +15,10 @@ namespace Predis\Command\Redis\Json;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\Status;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class JSONRESP_Test extends PredisCommandTestCase
 {
     /**
