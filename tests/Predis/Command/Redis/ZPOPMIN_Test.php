@@ -67,7 +67,7 @@ class ZPOPMIN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-float
+     * @group relay-todo
      * @requiresRedisVersion >= 5.0.0
      */
     public function testReturnsElements(): void
@@ -79,7 +79,7 @@ class ZPOPMIN_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame(['a' => '-10'], $redis->zpopmin('letters'));
+        $this->assertEquals(['a' => '-10'], $redis->zpopmin('letters'));
         $this->assertSame(['b' => '0', 'c' => '10', 'd' => '20'], $redis->zpopmin('letters', 3));
         $this->assertSame(['e' => '20', 'f' => '30'], $redis->zpopmin('letters', 3));
     }

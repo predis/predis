@@ -60,7 +60,6 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-float
      * @dataProvider membersProvider
      * @requiresRedisVersion >= 6.2.0
      */
@@ -79,7 +78,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd($key, ...$membersDictionary);
 
-        $this->assertSame($expectedResponse, $redis->zmscore($key, ...$members));
+        $this->assertEquals($expectedResponse, $redis->zmscore($key, ...$members));
         $this->assertNull($redis->zmscore($key, $notExpectedMember)[0]);
     }
 

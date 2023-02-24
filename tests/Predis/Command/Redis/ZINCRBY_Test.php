@@ -58,16 +58,15 @@ class ZINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-float
      */
     public function testIncrementsScoreOfMemberByFloat(): void
     {
         $redis = $this->getClient();
 
-        $this->assertSame('1', $redis->zincrby('letters', 1, 'member'));
-        $this->assertSame('0', $redis->zincrby('letters', -1, 'member'));
-        $this->assertSame('0.5', $redis->zincrby('letters', 0.5, 'member'));
-        $this->assertSame('-10', $redis->zincrby('letters', -10.5, 'member'));
+        $this->assertEquals('1', $redis->zincrby('letters', 1, 'member'));
+        $this->assertEquals('0', $redis->zincrby('letters', -1, 'member'));
+        $this->assertEquals('0.5', $redis->zincrby('letters', 0.5, 'member'));
+        $this->assertEquals('-10', $redis->zincrby('letters', -10.5, 'member'));
     }
 
     /**

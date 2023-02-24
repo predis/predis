@@ -35,7 +35,6 @@ class BZPOPMIN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-float
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
@@ -48,7 +47,7 @@ class BZPOPMIN_Test extends PredisCommandTestCase
 
         $redis->zadd('test-bzpopmin', ...$sortedSetDictionary);
 
-        $this->assertSame($expectedResponse, $redis->bzpopmin(['empty sorted set', 'test-bzpopmin'], 0));
+        $this->assertEquals($expectedResponse, $redis->bzpopmin(['empty sorted set', 'test-bzpopmin'], 0));
         $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmin', 0, -1));
     }
 

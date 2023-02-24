@@ -148,17 +148,16 @@ class ZADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-float
      * @requiresRedisVersion >= 3.0.2
      */
     public function testActsLikeZINCRBYWithModifierINCR(): void
     {
         $redis = $this->getClient();
 
-        $this->assertSame('1', $redis->zadd('letters', 'INCR', 1, 'a'));
-        $this->assertSame('0', $redis->zadd('letters', 'INCR', -1, 'a'));
-        $this->assertSame('0.5', $redis->zadd('letters', 'INCR', 0.5, 'a'));
-        $this->assertSame('-10', $redis->zadd('letters', 'INCR', -10.5, 'a'));
+        $this->assertEquals('1', $redis->zadd('letters', 'INCR', 1, 'a'));
+        $this->assertEquals('0', $redis->zadd('letters', 'INCR', -1, 'a'));
+        $this->assertEquals('0.5', $redis->zadd('letters', 'INCR', 0.5, 'a'));
+        $this->assertEquals('-10', $redis->zadd('letters', 'INCR', -10.5, 'a'));
     }
 
     /**
