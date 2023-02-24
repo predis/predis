@@ -148,6 +148,7 @@ class ZADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      * @requiresRedisVersion >= 3.0.2
      */
     public function testActsLikeZINCRBYWithModifierINCR(): void

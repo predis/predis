@@ -85,6 +85,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
     /**
      * @medium
      * @group connected
+     * @group relay-incompatible
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors(): void
     {
@@ -101,6 +102,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-resource
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithFalseLikeValues(): void
@@ -120,6 +122,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-resource
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithTrueLikeValues(): void
@@ -141,6 +144,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-todo
      * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
@@ -158,6 +162,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
@@ -173,6 +178,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-resource
      */
     public function testTcpNodelayParameterSetsContextFlagWhenTrue()
     {
@@ -187,6 +193,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-resource
      */
     public function testTcpNodelayParameterDoesNotSetContextFlagWhenFalse()
     {
@@ -201,6 +208,7 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-resource
      */
     public function testTcpDelayContextFlagIsNotSetByDefault()
     {

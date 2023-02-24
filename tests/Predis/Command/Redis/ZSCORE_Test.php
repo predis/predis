@@ -58,6 +58,7 @@ class ZSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      */
     public function testReturnsRank(): void
     {

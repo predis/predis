@@ -60,6 +60,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      * @dataProvider membersProvider
      * @requiresRedisVersion >= 6.2.0
      */

@@ -56,6 +56,7 @@ class ZMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      * @dataProvider sortedSetsProvider
      * @param  array  $sortedSetDictionary
      * @param  string $key

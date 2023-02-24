@@ -337,7 +337,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             // Redis < 2.6
             $version = $info['redis_version'];
         } else {
-            var_dump($info);
             $client = $this->createClient(null, null, true);
             $connection = $client->getConnection();
             throw new RuntimeException("Unable to retrieve a valid server info payload from $connection");

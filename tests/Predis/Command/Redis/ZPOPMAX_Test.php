@@ -66,9 +66,9 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
-     * @requiresRedisVersion >= 5.0.0
-     *
      * @group connected
+     * @group relay-float
+     * @requiresRedisVersion >= 5.0.0
      */
     public function testReturnsElements(): void
     {

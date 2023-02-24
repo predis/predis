@@ -28,9 +28,9 @@ use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
 
 /**
- * This class provides the implementation of a Predis connection that uses PHP's
- * streams for network communication and wraps the phpiredis C extension (PHP
- * bindings for hiredis) to parse and serialize the Redis protocol.
+ * This class provides the implementation of a Predis connection that uses
+ * Relay for network communication and wraps the C extension to parse
+ * and serialize the Redis protocol.
  *
  * This class is intended to provide an optional low-overhead alternative for
  * processing responses from Redis compared to the standard pure-PHP classes.
@@ -70,9 +70,16 @@ class RelayConnection extends StreamConnection
     {
         $this->assertExtensions();
 
-        parent::__construct($parameters);
-
+        $this->parameters = $this->assertParameters($parameters);
         $this->reader = $this->createReader();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isConnected()
+    {
+        return $this->reader->isConnected();
     }
 
     /**
@@ -80,7 +87,7 @@ class RelayConnection extends StreamConnection
      */
     public function disconnect()
     {
-        if ($this->reader->isConnected()) {
+        if ($this->isConnected()) {
             $this->reader->close();
         }
     }
@@ -123,10 +130,7 @@ class RelayConnection extends StreamConnection
      */
     protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
     {
-        // TODO: rename function?!
-        // TODO: client invalidations
-
-        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
+        $timeout = isset($parameters->timeout) ? (float) $parameters->timeout : 5.0;
 
         $read_timeout = 5.0;
 
@@ -136,9 +140,7 @@ class RelayConnection extends StreamConnection
         }
 
         try {
-            // TODO: support TLS, Scheme, Socket
             // TODO: `$flags` ???
-            // TODO: compression
 
             $this->reader->connect(
                 isset($parameters->path) ? $parameters->path : $parameters->host,
@@ -201,6 +203,10 @@ class RelayConnection extends StreamConnection
      */
     public function executeCommand(CommandInterface $command)
     {
+        if (! $this->reader->isConnected()) {
+            $this->getResource();
+        }
+
         try {
             $result = $this->reader->rawCommand(
                 $command->getId(),
@@ -238,16 +244,6 @@ class RelayConnection extends StreamConnection
         }
 
         return new ClientException($message, $code, $exception);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function read()
-    {
-        throw new NotSupportedException(
-            'The "relay" extension does not support reading responses.'
-        );
     }
 
     /**

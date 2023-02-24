@@ -58,6 +58,7 @@ class ZINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-float
      */
     public function testIncrementsScoreOfMemberByFloat(): void
     {
