@@ -38,6 +38,10 @@ class CONFIG extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
+            if ($data !== array_values($data)) {
+                return $data; // RESP 3
+            }
+
             $result = [];
 
             for ($i = 0; $i < count($data); ++$i) {
