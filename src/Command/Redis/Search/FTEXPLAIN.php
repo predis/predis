@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Command as RedisCommand;
 
 /**
@@ -33,7 +32,7 @@ class FTEXPLAIN extends RedisCommand
         $commandArguments = [];
 
         if (!empty($arguments[2])) {
-            $commandArguments = (new SearchArguments())->dialect($arguments[2])->toArray();
+            $commandArguments = $arguments[2]->toArray();
         }
 
         parent::setArguments(array_merge(

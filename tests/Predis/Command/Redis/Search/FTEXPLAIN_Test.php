@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -127,7 +128,7 @@ EOT;
                 ['index', 'query'],
             ],
             'with DIALECT' => [
-                ['index', 'query', 'dialect'],
+                ['index', 'query', (new ExplainArguments())->dialect('dialect')],
                 ['index', 'query', 'DIALECT', 'dialect'],
             ],
         ];
