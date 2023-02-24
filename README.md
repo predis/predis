@@ -25,7 +25,6 @@ More details about this project can be found on the [frequently asked questions]
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
 - Connections are established lazily by the client upon the first command and can be persisted.
 - Connections can be established via TCP/IP (also TLS/SSL-encrypted) or UNIX domain sockets.
-- Support for [Webdis](http://webd.is) (requires both `ext-curl` and `ext-phpiredis`).
 - Support for custom connection classes for providing different network or protocol backends.
 - Flexible system for defining custom commands and override the default ones.
 
@@ -396,31 +395,6 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 
 
 ### Customizable connection backends ###
-
-Predis can use different connection backends to connect to Redis. Two of them leverage a third party
-extension such as [phpiredis](https://github.com/nrk/phpiredis) resulting in major performance gains
-especially when dealing with big multibulk responses. While one is based on PHP streams, the other
-is based on socket resources provided by `ext-socket`. Both support TCP/IP and UNIX domain sockets:
-
-```php
-$client = new Predis\Client('tcp://127.0.0.1', [
-    'connections' => [
-        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',  // PHP stream resources
-        'unix' => 'Predis\Connection\PhpiredisSocketConnection',  // ext-socket resources
-    ],
-]);
-```
-
-The client can also be configured to rely on a [phpiredis](https://github.com/nrk/phpiredis)-backend
-by specifying a descriptive string for the `connections` client option. Supported string values are:
-
-- `phpiredis-stream` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisStreamConnection`
-- `phpiredis-socket` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisSocketConnection`
-- `phpiredis` is simply an alias of `phpiredis-stream`
-
-```php
-$client = new Predis\Client('tcp://127.0.0.1', ['connections' => 'phpiredis']);
-```
 
 Developers can create their own connection classes to support whole new network backends, extend
 existing classes or provide completely different implementations. Connection classes must implement
