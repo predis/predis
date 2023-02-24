@@ -58,7 +58,6 @@ class SPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      */
     public function testPopsRandomMemberFromSet(): void
     {
@@ -74,7 +73,6 @@ class SPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      * @requiresRedisVersion >= 3.2.0
      */
     public function testPopsMoreRandomMembersFromSet(): void

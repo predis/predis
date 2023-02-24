@@ -111,7 +111,6 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      * @requiresRedisVersion >= 2.6.12
      */
     public function testSetStringValueWithModifierNX(): void
@@ -124,7 +123,6 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      * @requiresRedisVersion >= 2.6.12
      */
     public function testSetStringValueWithModifierXX(): void

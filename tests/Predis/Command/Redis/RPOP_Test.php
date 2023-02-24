@@ -72,7 +72,6 @@ class RPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      */
     public function testReturnsNullOnEmptyList(): void
     {

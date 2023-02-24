@@ -73,7 +73,6 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      */
     public function testReturnsNullOnNonExistingSet(): void
     {

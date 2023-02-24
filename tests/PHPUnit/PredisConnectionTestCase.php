@@ -240,7 +240,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-null
      */
     public function testExecutesCommandWithHolesInArguments(): void
     {
@@ -254,7 +253,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-null
      */
     public function testExecutesMultipleCommandsOnServer(): void
     {

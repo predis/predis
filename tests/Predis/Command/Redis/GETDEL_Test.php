@@ -54,7 +54,6 @@ class GETDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */

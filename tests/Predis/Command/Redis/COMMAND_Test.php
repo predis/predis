@@ -85,7 +85,6 @@ class COMMAND_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-null
      * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsEmptyCommandInfoOnNonExistingCommand(): void
