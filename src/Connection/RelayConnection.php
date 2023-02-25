@@ -21,28 +21,28 @@ use Relay\Exception as RelayException;
 use Relay\Relay;
 
 /**
- * This class provides the implementation of a Predis connection that uses
- * Relay for network communication and wraps the C extension to parse
- * and serialize the Redis protocol.
+ * This class provides the implementation of a Predis connection that
+ * uses Relay for network communication and in-memory caching.
  *
- * This class is intended to provide an optional low-overhead alternative for
- * processing responses from Redis compared to the standard pure-PHP classes.
- * Differences in speed when dealing with short inline responses are practically
- * nonexistent, the actual speed boost is for big multibulk responses when this
- * protocol processor can parse and return responses very fast.
+ * Using Relay allows for:
+ * 1) significantly faster reads (in-memory caching)
+ * 2) fast data serialization (serialize or igbinary)
+ * 3) fast data compression (lzf, lz4, zstd)
+ *
+ * Using igbinary serialization and zstd compresses reduces
+ * network traffic and Redis memory usage by ~75%.
  *
  * For instructions on how to install the Relay extension, please consult
  * the repository of the project: https://relay.so/docs/installation
  *
  * The connection parameters supported by this class are:
  *
- *  - scheme: it can be either 'redis', 'tcp' or 'unix'.
+ *  - scheme: it can be either 'tcp', 'tls' or 'unix'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
- *  - async_connect: performs the connection asynchronously.
  *  - persistent: the connection is left intact after a GC collection.
  *
  * @see https://github.com/cachewerk/relay
@@ -161,8 +161,6 @@ class RelayConnection extends StreamConnection
         }
 
         try {
-            // TODO: `$flags` ???
-
             $this->reader->connect(
                 $parameters->path ?? $parameters->host,
                 isset($parameters->path) ? 0 : $parameters->port,
