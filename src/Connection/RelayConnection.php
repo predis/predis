@@ -25,11 +25,11 @@ use Relay\Relay;
  * uses Relay for network communication and in-memory caching.
  *
  * Using Relay allows for:
- * 1) significantly faster reads (in-memory caching)
- * 2) fast data serialization (serialize or igbinary)
- * 3) fast data compression (lzf, lz4, zstd)
+ * 1) significantly faster reads thanks to in-memory caching
+ * 2) fast data serialization using igbinary
+ * 3) fast data compression using lzf, lz4 or zstd
  *
- * Using igbinary serialization and zstd compresses reduces
+ * Usage of igbinary serialization and zstd compresses reduces
  * network traffic and Redis memory usage by ~75%.
  *
  * For instructions on how to install the Relay extension, please consult
@@ -44,6 +44,8 @@ use Relay\Relay;
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
  *  - persistent: the connection is left intact after a GC collection.
+ *  - serializer: data serializer
+ *  - compression: data compression algorithm
  *
  * @see https://github.com/cachewerk/relay
  */
@@ -54,7 +56,7 @@ class RelayConnection extends StreamConnection
      *
      * @var \Relay\Relay
      */
-    private $reader;
+    private $client;
 
     private $notBypassed = [
         'AUTH',
@@ -69,7 +71,7 @@ class RelayConnection extends StreamConnection
         $this->assertExtensions();
 
         $this->parameters = $this->assertParameters($parameters);
-        $this->reader = $this->createReader();
+        $this->client = $this->createClient();
     }
 
     /**
@@ -77,7 +79,7 @@ class RelayConnection extends StreamConnection
      */
     public function isConnected()
     {
-        return $this->reader->isConnected();
+        return $this->client->isConnected();
     }
 
     /**
@@ -85,8 +87,8 @@ class RelayConnection extends StreamConnection
      */
     public function disconnect()
     {
-        if ($this->isConnected()) {
-            $this->reader->close();
+        if ($this->client->isConnected()) {
+            $this->client->close();
         }
     }
 
@@ -107,43 +109,51 @@ class RelayConnection extends StreamConnection
      */
     protected function assertParameters(ParametersInterface $parameters)
     {
-        switch ($parameters->scheme) {
-            case 'tcp':
-            case 'redis':
-            case 'unix':
-                break;
+        if (! in_array($parameters->scheme, ['tcp', 'tls', 'unix', 'redis', 'rediss'])) {
+            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
+        }
 
-            case 'tls':
-            case 'rediss':
-                break;
-            default:
-                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
+        if (! in_array($parameters->serializer, [null, 'php', 'igbinary', 'msgpack', 'json'])) {
+            throw new InvalidArgumentException("Invalid serializer: '{$parameters->serializer}'.");
+        }
+
+        if (! in_array($parameters->compression, [null, 'lzf', 'lz4', 'zstd'])) {
+            throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
         }
 
         return $parameters;
     }
 
     /**
-     * Creates a new instance of the protocol reader resource.
+     * Creates a new instance of the client.
      *
      * @return \Relay\Relay
      */
-    private function createReader()
+    private function createClient()
     {
-        $reader = new Relay();
-        $reader->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
+        $client = new Relay();
+        $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
+        $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
-        return $reader;
+        return $client;
     }
 
     /**
-     * Returns the underlying protocol reader resource.
+     * Returns the underlying client.
      *
      * @return resource
      */
-    public function getReader()
+    public function getClient()
     {
-        return $this->reader;
+        return $this->client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getIdentifier()
+    {
+        return $this->client->endpointId();
     }
 
     /**
@@ -161,7 +171,7 @@ class RelayConnection extends StreamConnection
         }
 
         try {
-            $this->reader->connect(
+            $this->client->connect(
                 $parameters->path ?? $parameters->host,
                 isset($parameters->path) ? 0 : $parameters->port,
                 $timeout,
@@ -173,7 +183,7 @@ class RelayConnection extends StreamConnection
             $this->onConnectionError($ex->getMessage(), $ex->getCode());
         }
 
-        return $this->reader;
+        return $this->client;
     }
 
     /**
@@ -181,7 +191,7 @@ class RelayConnection extends StreamConnection
      */
     public function executeCommand(CommandInterface $command)
     {
-        if (!$this->reader->isConnected()) {
+        if (!$this->client->isConnected()) {
             $this->getResource();
         }
 
@@ -189,8 +199,8 @@ class RelayConnection extends StreamConnection
             $name = $command->getId();
 
             return in_array($name, $this->notBypassed)
-                ? $this->reader->{$name}(...$command->getArguments())
-                : $this->reader->rawCommand($name, ...$command->getArguments());
+                ? $this->client->{$name}(...$command->getArguments())
+                : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
             throw $this->onCommandError($ex);
         }
@@ -244,10 +254,6 @@ class RelayConnection extends StreamConnection
      */
     public function __destruct()
     {
-        if (isset($this->parameters->persistent) && $this->parameters->persistent) {
-            return;
-        }
-
         $this->disconnect();
     }
 
@@ -257,6 +263,6 @@ class RelayConnection extends StreamConnection
     public function __wakeup()
     {
         $this->assertExtensions();
-        $this->reader = $this->createReader();
+        $this->client = $this->createClient();
     }
 }
