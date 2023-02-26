@@ -33,6 +33,8 @@ class OneOfConstraint extends Constraint
     protected function matches($other): bool
     {
         if (is_array($other)) {
+            $other = is_array($other[0]) ? array_merge(...$other) : $other;
+
             return !empty(array_intersect($other, $this->array));
         }
 
