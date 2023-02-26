@@ -135,6 +135,22 @@ class RelayConnection extends StreamConnection
         $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
+        if ($this->parameters->serializer) {
+            $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
+                '%s::SERIALIZER_%s',
+                Relay::class,
+                strtoupper($this->parameters->serializer)
+            )));
+        }
+
+        if ($this->parameters->compression) {
+            $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
+                '%s::COMPRESSION_%s',
+                Relay::class,
+                strtoupper($this->parameters->serializer)
+            )));
+        }
+
         return $client;
     }
 
