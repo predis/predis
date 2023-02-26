@@ -39,7 +39,7 @@ class CONFIG extends RedisCommand
     {
         if (is_array($data)) {
             if ($data !== array_values($data)) {
-                return $data; // RESP 3
+                return $data; // Relay
             }
 
             $result = [];
