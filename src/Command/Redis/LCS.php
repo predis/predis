@@ -57,9 +57,11 @@ class LCS extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
-            return array_key_exists(0, $data)
-                ? [$data[0] => $data[1], $data[2] => $data[3]]
-                : $data;
+            if ($data !== array_values($data)) {
+                return $data; // Relay
+            }
+
+            return [$data[0] => $data[1], $data[2] => $data[3]];
         }
 
         return $data;
