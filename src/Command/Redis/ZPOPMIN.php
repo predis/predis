@@ -36,9 +36,9 @@ class ZPOPMIN extends RedisCommand
 
         for ($i = 0; $i < count($data); ++$i) {
             if (is_array($data[$i])) {
-                $result[$data[$i][0]] = sprintf('%s', (int) $data[$i][1]);
+                $result[$data[$i][0]] = $data[$i][1]; // Relay
             } else {
-                $result[$data[$i]] = sprintf('%s', (int) $data[++$i]);
+                $result[$data[$i]] = $data[++$i];
             }
         }
 
