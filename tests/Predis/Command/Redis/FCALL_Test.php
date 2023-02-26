@@ -20,6 +20,15 @@ use Predis\Response\ServerException;
  */
 class FCALL_Test extends PredisCommandTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (getenv('USE_RELAY')) {
+            $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
