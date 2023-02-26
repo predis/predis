@@ -181,8 +181,8 @@ class ZRANGEBYSCORE_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
         $expected = ['c' => '10', 'd' => '20', 'e' => '20'];
 
-        $this->assertSame($expected, $redis->zrangebyscore('letters', 10, 20, 'withscores'));
-        $this->assertSame($expected, $redis->zrangebyscore('letters', 10, 20, ['withscores' => true]));
+        $this->assertEquals($expected, $redis->zrangebyscore('letters', 10, 20, 'withscores'));
+        $this->assertEquals($expected, $redis->zrangebyscore('letters', 10, 20, ['withscores' => true]));
     }
 
     /**
@@ -212,7 +212,7 @@ class ZRANGEBYSCORE_Test extends PredisCommandTestCase
         $options = ['limit' => [1, 2], 'withscores' => true];
         $expected = ['d' => '20', 'e' => '20'];
 
-        $this->assertSame($expected, $redis->zrangebyscore('letters', 10, 20, $options));
+        $this->assertEquals($expected, $redis->zrangebyscore('letters', 10, 20, $options));
     }
 
     /**

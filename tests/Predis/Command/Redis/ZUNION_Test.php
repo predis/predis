@@ -82,7 +82,7 @@ class ZUNION_Test extends PredisCommandTestCase
             $withScores
         );
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**
