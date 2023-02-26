@@ -30,9 +30,14 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     {
         parent::setUp();
 
-        if (getenv('USE_RELAY')) {
-            $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
-        }
+        $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
     }
 
     /**
