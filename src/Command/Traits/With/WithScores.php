@@ -54,8 +54,8 @@ trait WithScores
 
             for ($i = 0, $iMax = count($data); $i < $iMax; ++$i) {
                 if (is_array($data[$i])) {
-                    $result[$data[$i][0]] = sprintf('%s', (int) $data[$i][1]);
-                } elseif ($data[$i + 1] ?? false) {
+                    $result[$data[$i][0]] = $data[$i][1]; // Relay
+                } elseif (array_key_exists($i + 1, $data)) {
                     $result[$data[$i]] = $data[++$i];
                 }
             }
