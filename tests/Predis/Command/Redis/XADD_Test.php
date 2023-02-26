@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-stream
- * @group relay-todo
  */
 class XADD_Test extends PredisCommandTestCase
 {

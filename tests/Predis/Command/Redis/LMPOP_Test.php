@@ -61,7 +61,6 @@ class LMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @dataProvider listProvider
      * @param  array      $listArguments
      * @param  string     $key

@@ -77,7 +77,6 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @dataProvider sortedSetsProvider
      * @param  array  $firstSortedSet
      * @param  array  $secondSortedSet

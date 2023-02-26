@@ -172,7 +172,6 @@ class ZRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      */
     public function testRangeWithWithscoresModifier(): void
     {
@@ -201,7 +200,6 @@ class ZRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      */
     public function testRangeWithCombinedModifiers(): void
     {

@@ -129,7 +129,6 @@ class ZREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      */
     public function testRangeWithWithscoresModifier(): void
     {

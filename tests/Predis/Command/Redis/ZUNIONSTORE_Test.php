@@ -59,7 +59,6 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @dataProvider sortedSetsProvider
      * @param  array  $firstSortedSet
      * @param  array  $secondSortedSet

@@ -175,7 +175,6 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 2.2.0
      */
     public function testRangeWithWithscoresModifier(): void
@@ -206,7 +205,6 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 2.2.0
      */
     public function testRangeWithCombinedModifiers(): void
