@@ -109,15 +109,15 @@ class RelayConnection extends StreamConnection
      */
     protected function assertParameters(ParametersInterface $parameters)
     {
-        if (! in_array($parameters->scheme, ['tcp', 'tls', 'unix', 'redis', 'rediss'])) {
+        if (!in_array($parameters->scheme, ['tcp', 'tls', 'unix', 'redis', 'rediss'])) {
             throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
         }
 
-        if (! in_array($parameters->serializer, [null, 'php', 'igbinary', 'msgpack', 'json'])) {
+        if (!in_array($parameters->serializer, [null, 'php', 'igbinary', 'msgpack', 'json'])) {
             throw new InvalidArgumentException("Invalid serializer: '{$parameters->serializer}'.");
         }
 
-        if (! in_array($parameters->compression, [null, 'lzf', 'lz4', 'zstd'])) {
+        if (!in_array($parameters->compression, [null, 'lzf', 'lz4', 'zstd'])) {
             throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
         }
 

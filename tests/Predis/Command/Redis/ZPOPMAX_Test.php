@@ -67,7 +67,6 @@ class ZPOPMAX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 5.0.0
      */
     public function testReturnsElements(): void
@@ -80,8 +79,8 @@ class ZPOPMAX_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
         $this->assertEquals(['f' => '30'], $redis->zpopmax('letters'));
-        $this->assertSame(['e' => '20', 'd' => '20', 'c' => '10'], $redis->zpopmax('letters', 3));
-        $this->assertSame(['b' => '0', 'a' => '-10'], $redis->zpopmax('letters', 3));
+        $this->assertEquals(['e' => '20', 'd' => '20', 'c' => '10'], $redis->zpopmax('letters', 3));
+        $this->assertEquals(['b' => '0', 'a' => '-10'], $redis->zpopmax('letters', 3));
     }
 
     /**

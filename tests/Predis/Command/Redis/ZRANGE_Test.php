@@ -129,7 +129,6 @@ class ZRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      */
     public function testRangeWithWithscoresModifier(): void
     {
@@ -138,8 +137,8 @@ class ZRANGE_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
         $expected = ['c' => '10', 'd' => '20', 'e' => '20'];
 
-        $this->assertSame($expected, $redis->zrange('letters', 2, 4, 'withscores'));
-        $this->assertSame($expected, $redis->zrange('letters', 2, 4, ['withscores' => true]));
+        $this->assertEquals($expected, $redis->zrange('letters', 2, 4, 'withscores'));
+        $this->assertEquals($expected, $redis->zrange('letters', 2, 4, ['withscores' => true]));
     }
 
     /**

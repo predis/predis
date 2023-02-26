@@ -57,7 +57,6 @@ class LCS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @dataProvider stringsProvider
      * @param array $stringsArguments
      * @param array $functionArguments
