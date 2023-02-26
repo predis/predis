@@ -32,16 +32,14 @@ class HGETALL extends RedisCommand
      */
     public function parseResponse($data)
     {
+        if ($data !== array_values($data)) {
+            return $data; // Relay
+        }
+
         $result = [];
 
         for ($i = 0; $i < count($data); ++$i) {
-            if ($data[$i] ?? false) {
-                $result[$data[$i]] = $data[++$i];
-            }
-        }
-
-        if (!count($result)) {
-            $result = $data;
+            $result[$data[$i]] = $data[++$i];
         }
 
         return $result;
