@@ -52,6 +52,18 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * If set, does not scan and index.
+     *
+     * @return $this
+     */
+    public function skipInitialScan(): self
+    {
+        $this->arguments[] = 'SKIPINITIALSCAN';
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

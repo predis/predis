@@ -17,6 +17,10 @@ use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSEARCH_Test extends PredisCommandTestCase
 {
     /**
