@@ -16,7 +16,7 @@ use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
  * @group commands
- * @group realm-bloom
+ * @group realm-stack
  */
 class BFEXISTS_Test extends PredisCommandTestCase
 {

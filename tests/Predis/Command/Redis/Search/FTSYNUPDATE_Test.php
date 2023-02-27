@@ -13,10 +13,14 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSYNUPDATE_Test extends PredisCommandTestCase
 {
     /**
@@ -103,7 +107,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRediSearchVersion >= 1.4.0
+     * @requiresRediSearchVersion >= 1.2.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
     {
@@ -128,7 +132,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
                 ['index', 'synonymGroupId', 'term1', 'term2'],
             ],
             'with SKIPINITIALSCAN modifier' => [
-                ['index', 'synonymGroupId', (new SearchArguments())->skipInitialScan(), 'term1', 'term2'],
+                ['index', 'synonymGroupId', (new SynUpdateArguments())->skipInitialScan(), 'term1', 'term2'],
                 ['index', 'synonymGroupId', 'SKIPINITIALSCAN', 'term1', 'term2'],
             ],
         ];

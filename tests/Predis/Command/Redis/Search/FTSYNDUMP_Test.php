@@ -16,6 +16,10 @@ use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSYNDUMP_Test extends PredisCommandTestCase
 {
     /**

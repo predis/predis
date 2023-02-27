@@ -81,6 +81,25 @@ class BITPOS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsBitPositionWithExplicitBitByteArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->setbit('key', 10, 0);
+        $this->assertSame(0, $redis->bitpos('key', 0, 0, 10, 'bit'), 'Get position of first bit set to 0 - full range');
+        $this->assertSame(-1, $redis->bitpos('key', 1, 0, 10, 'bit'), 'Get position of first bit set to 1 - full range');
+        $this->assertSame(-1, $redis->bitpos('key', 1, 5, 10, 'bit'), 'Get position of first bit set to 1 - specific range');
+
+        $redis->setbit('key', 5, 1);
+        $this->assertSame(0, $redis->bitpos('key', 0, 0, 5, 'bit'), 'Get position of first bit set to 0 - full range');
+        $this->assertSame(5, $redis->bitpos('key', 1, 0, 5, 'bit'), 'Get position of first bit set to 1 - full range');
+        $this->assertSame(5, $redis->bitpos('key', 1, 5, 10, 'bit'), 'Get position of first bit set to 1 - specific range');
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.7
      */
     public function testThrowsExceptionOnWrongType(): void
