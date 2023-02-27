@@ -27,7 +27,7 @@ $client->ftcreate('index_syndump', $schema);
 // 2. Add synonyms group with terms
 $client->ftsynupdate('index_syndump', 'synonym1', null, 'term1', 'term2');
 
-// 2. Dump terms with synonyms
+// 3. Dump terms with synonyms
 $response = $client->ftsyndump('index_syndump');
 
 echo 'Response:' . "\n";
