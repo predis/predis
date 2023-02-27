@@ -16,6 +16,7 @@ use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
@@ -106,6 +107,7 @@ use Predis\Response\Status;
  * @method array             ftdictdump(string $dict)
  * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
  * @method array             ftinfo(string $index)
+ * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
