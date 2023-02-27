@@ -100,6 +100,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this ftinfo(string $index)
  * @method $this ftprofile(string $index, ProfileArguments $arguments)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method $this ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)

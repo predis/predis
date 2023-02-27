@@ -109,6 +109,7 @@ use Predis\Response\Status;
  * @method array             ftinfo(string $index)
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
