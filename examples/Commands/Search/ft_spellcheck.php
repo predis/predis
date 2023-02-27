@@ -16,7 +16,7 @@ use Predis\Command\Argument\Search\SpellcheckArguments;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of FT.PROFILE command usage:
+// Example of FT.SPELLCHECK command usage:
 
 // 1. Create index
 $client = new Client();
