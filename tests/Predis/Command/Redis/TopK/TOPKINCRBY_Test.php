@@ -15,6 +15,10 @@ namespace Predis\Command\Redis\TopK;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TOPKINCRBY_Test extends PredisCommandTestCase
 {
     /**

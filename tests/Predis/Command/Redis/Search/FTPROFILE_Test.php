@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -85,22 +85,22 @@ class FTPROFILE_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('index: no such index');
 
-        $redis->ftprofile('index', (new SearchArguments())->search()->query('query'));
+        $redis->ftprofile('index', (new ProfileArguments())->search()->query('query'));
     }
 
     public function argumentsProvider(): array
     {
         return [
             'with default arguments - SEARCH' => [
-                ['index', (new SearchArguments())->search()->query('query')],
+                ['index', (new ProfileArguments())->search()->query('query')],
                 ['index', 'SEARCH', 'QUERY', 'query'],
             ],
             'with default arguments - AGGREGATE' => [
-                ['index', (new SearchArguments())->aggregate()->query('query')],
+                ['index', (new ProfileArguments())->aggregate()->query('query')],
                 ['index', 'AGGREGATE', 'QUERY', 'query'],
             ],
             'with LIMITED modifier' => [
-                ['index', (new SearchArguments())->aggregate()->limited()->query('query')],
+                ['index', (new ProfileArguments())->aggregate()->limited()->query('query')],
                 ['index', 'AGGREGATE', 'LIMITED', 'QUERY', 'query'],
             ],
         ];
@@ -111,11 +111,11 @@ class FTPROFILE_Test extends PredisCommandTestCase
         return [
             'with SEARCH context' => [
                 ['index', (new Schema())->addTextField('text_field')],
-                ['index', (new SearchArguments())->search()->query('hello world')],
+                ['index', (new ProfileArguments())->search()->query('hello world')],
             ],
             'with AGGREGATE context' => [
                 ['index', (new Schema())->addTextField('text_field')],
-                ['index', (new SearchArguments())->aggregate()->query('hello world')],
+                ['index', (new ProfileArguments())->aggregate()->query('hello world')],
             ],
         ];
     }

@@ -28,12 +28,12 @@ class FTSEARCH extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        [$index, $query, $arguments] = $arguments;
+        [$index, $query] = $arguments;
+        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
 
         parent::setArguments(array_merge(
-            [$index],
-            [$query],
-            $arguments->toArray()
+            [$index, $query],
+            $commandArguments
         ));
     }
 }

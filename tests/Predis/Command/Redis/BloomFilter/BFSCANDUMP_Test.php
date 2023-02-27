@@ -17,7 +17,7 @@ use Predis\Response\ServerException;
 
 /**
  * @group commands
- * @group realm-bloom
+ * @group realm-stack
  */
 class BFSCANDUMP_Test extends PredisCommandTestCase
 {

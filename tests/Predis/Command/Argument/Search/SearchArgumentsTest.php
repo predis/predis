@@ -30,177 +30,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithOnModifier(): void
-    {
-        $this->arguments->on('json');
-
-        $this->assertSame(['ON', 'JSON'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testThrowsExceptionOnInvalidModifierValue(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Wrong modifier value given. Currently supports: HASH, JSON');
-
-        $this->arguments->on('wrong');
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithPrefixModifier(): void
-    {
-        $this->arguments->prefix(['prefix:', 'prefix1:']);
-
-        $this->assertSame(['PREFIX', 2, 'prefix:', 'prefix1:'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithFilterModifier(): void
-    {
-        $this->arguments->filter('@age>16');
-
-        $this->assertSame(['FILTER', '@age>16'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithLanguageModifier(): void
-    {
-        $this->arguments->language('english');
-
-        $this->assertSame(['LANGUAGE', 'english'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithLanguageFieldModifier(): void
-    {
-        $this->arguments->languageField('language_attribute');
-
-        $this->assertSame(['LANGUAGE_FIELD', 'language_attribute'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithScoreModifier(): void
-    {
-        $this->arguments->score(10.0);
-
-        $this->assertSame(['SCORE', 10.0], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithScoreFieldModifier(): void
-    {
-        $this->arguments->scoreField('score_field');
-
-        $this->assertSame(['SCORE_FIELD', 'score_field'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithPayloadFieldModifier(): void
-    {
-        $this->arguments->payloadField('payload_field');
-
-        $this->assertSame(['PAYLOAD_FIELD', 'payload_field'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithMaxTestFieldsModifier(): void
-    {
-        $this->arguments->maxTextFields();
-
-        $this->assertSame(['MAXTEXTFIELDS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithNoOffsetsModifier(): void
-    {
-        $this->arguments->noOffsets();
-
-        $this->assertSame(['NOOFFSETS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithTemporaryModifier(): void
-    {
-        $this->arguments->temporary();
-
-        $this->assertSame(['TEMPORARY'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithNoHlModifier(): void
-    {
-        $this->arguments->noHl();
-
-        $this->assertSame(['NOHL'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithNoFieldsModifier(): void
-    {
-        $this->arguments->noFields();
-
-        $this->assertSame(['NOFIELDS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithNoFreqsModifier(): void
-    {
-        $this->arguments->noFreqs();
-
-        $this->assertSame(['NOFREQS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithStopWordsModifier(): void
-    {
-        $this->arguments->stopWords(['word1', 'word2']);
-
-        $this->assertSame(['STOPWORDS', 2, 'word1', 'word2'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithStopInitialScanModifier(): void
-    {
-        $this->arguments->skipInitialScan();
-
-        $this->assertSame(['SKIPINITIALSCAN'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithNoContentModifier(): void
     {
         $this->arguments->noContent();
@@ -453,71 +282,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithDialectModifier(): void
-    {
-        $this->arguments->dialect('dialect');
-
-        $this->assertSame(['DIALECT', 'dialect'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithSearchModifier(): void
-    {
-        $this->arguments->search();
-
-        $this->assertSame(['SEARCH'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithAggregateModifier(): void
-    {
-        $this->arguments->aggregate();
-
-        $this->assertSame(['AGGREGATE'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithLimitedModifier(): void
-    {
-        $this->arguments->limited();
-
-        $this->assertSame(['LIMITED'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithQueryModifier(): void
-    {
-        $this->arguments->query('query');
-
-        $this->assertSame(['QUERY', 'query'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesCorrectFTCreateArgumentsSetOnMethodsChainCall(): void
-    {
-        $this->arguments->prefix(['prefix:', 'prefix1:']);
-        $this->arguments->filter('@age>16');
-        $this->arguments->stopWords(['hello', 'world']);
-
-        $this->assertSame(
-            ['PREFIX', 2, 'prefix:', 'prefix1:', 'FILTER', '@age>16', 'STOPWORDS', 2, 'hello', 'world'],
-            $this->arguments->toArray()
-        );
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesCorrectFTSearchArgumentsSetOnMethodsChainCall(): void
     {
         $this->arguments->withScores();
@@ -529,6 +293,20 @@ class SearchArgumentsTest extends TestCase
             ['WITHSCORES', 'WITHPAYLOADS', 'FILTER', 'numeric_field', 1, 10, 'RETURN', 2, 'identifier', 'AS', 'property'],
             $this->arguments->toArray()
         );
+    }
+
+    public function sortByProvider(): array
+    {
+        return [
+            'with default arguments' => [
+                ['sort_attribute'],
+                ['SORTBY', 'sort_attribute', 'ASC'],
+            ],
+            'with DESC modifier' => [
+                ['sort_attribute', 'desc'],
+                ['SORTBY', 'sort_attribute', 'DESC'],
+            ],
+        ];
     }
 
     public function summarizeProvider(): array
@@ -583,20 +361,6 @@ class SearchArgumentsTest extends TestCase
             'with both tags' => [
                 [['field1', 'field2'], 'openTag', 'closeTag'],
                 ['HIGHLIGHT', 'FIELDS', 2, 'field1', 'field2', 'TAGS', 'openTag', 'closeTag'],
-            ],
-        ];
-    }
-
-    public function sortByProvider(): array
-    {
-        return [
-            'with default arguments' => [
-                ['sort_attribute'],
-                ['SORTBY', 'sort_attribute', 'ASC'],
-            ],
-            'with DESC modifier' => [
-                ['sort_attribute', 'desc'],
-                ['SORTBY', 'sort_attribute', 'DESC'],
             ],
         ];
     }
