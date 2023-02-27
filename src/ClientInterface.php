@@ -111,6 +111,7 @@ use Predis\Response\Status;
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method array             ftsyndump(string $index)
  * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)

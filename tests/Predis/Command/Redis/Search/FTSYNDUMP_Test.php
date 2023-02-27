@@ -13,7 +13,6 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -21,14 +20,14 @@ use Predis\Response\ServerException;
  * @group commands
  * @group realm-stack
  */
-class FTSYNUPDATE_Test extends PredisCommandTestCase
+class FTSYNDUMP_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return FTSYNUPDATE::class;
+        return FTSYNDUMP::class;
     }
 
     /**
@@ -36,15 +35,17 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'FTSYNUPDATE';
+        return 'FTSYNDUMP';
     }
 
     /**
      * @group disconnected
-     * @dataProvider argumentsProvider
      */
-    public function testFilterArguments(array $actualArguments, array $expectedArguments): void
+    public function testFilterArguments(): void
     {
+        $actualArguments = ['index'];
+        $expectedArguments = ['index'];
+
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
 
@@ -64,33 +65,14 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
-    public function testCreatesSynonymGroupWithinGivenIndex(): void
+    public function testDumpReturnsContentOfSynonymGroupFromGivenIndex(): void
     {
         $redis = $this->getClient();
+        $expectedResponse = ['term1', ['synonym1'], 'term2', ['synonym1']];
 
         $this->assertEquals(
             'OK',
-            $redis->ftcreate('index', (new Schema())->addTextField('text'))
-        );
-
-        $this->assertEquals(
-            'OK',
-            $redis->ftsynupdate('index', 'synonym1', null, 'term1', 'term2')
-        );
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRediSearchVersion >= 1.2.0
-     */
-    public function testUpdatesAlreadyExistingSynonymGroupWithinGivenIndex(): void
-    {
-        $redis = $this->getClient();
-
-        $this->assertEquals(
-            'OK',
-            $redis->ftcreate('index', (new Schema())->addTextField('text'))
+            $redis->ftcreate('index', (new Schema())->addTextField('text_field'))
         );
 
         $this->assertEquals(
@@ -98,10 +80,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
             $redis->ftsynupdate('index', 'synonym1', null, 'term1', 'term2')
         );
 
-        $this->assertEquals(
-            'OK',
-            $redis->ftsynupdate('index', 'synonym1', null, 'term3', 'term4')
-        );
+        $this->assertSame($expectedResponse, $redis->ftsyndump('index'));
     }
 
     /**
@@ -116,25 +95,6 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Unknown index name');
 
-        $redis->ftsynupdate(
-            'index',
-            'synonym1',
-            null,
-            'term1'
-        );
-    }
-
-    public function argumentsProvider(): array
-    {
-        return [
-            'with default arguments' => [
-                ['index', 'synonymGroupId', null, 'term1', 'term2'],
-                ['index', 'synonymGroupId', 'term1', 'term2'],
-            ],
-            'with SKIPINITIALSCAN modifier' => [
-                ['index', 'synonymGroupId', (new SynUpdateArguments())->skipInitialScan(), 'term1', 'term2'],
-                ['index', 'synonymGroupId', 'SKIPINITIALSCAN', 'term1', 'term2'],
-            ],
-        ];
+        $redis->ftsyndump('index');
     }
 }
