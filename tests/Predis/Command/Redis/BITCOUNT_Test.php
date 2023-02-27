@@ -39,8 +39,8 @@ class BITCOUNT_Test extends PredisCommandTestCase
      */
     public function testFilterArguments(): void
     {
-        $arguments = ['key', 0, 10];
-        $expected = ['key', 0, 10];
+        $arguments = ['key', 0, 10, 'bit'];
+        $expected = ['key', 0, 10, 'BIT'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -77,6 +77,24 @@ class BITCOUNT_Test extends PredisCommandTestCase
 
         $this->assertSame(5, $redis->bitcount('key'), 'Count bits set (without range)');
         $this->assertSame(3, $redis->bitcount('key', 2, 4), 'Count bits set (with range)');
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsNumberOfBitsSetWithExplicitBitByteArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->setbit('key', 1, 1);
+        $redis->setbit('key', 10, 1);
+        $redis->setbit('key', 16, 1);
+        $redis->setbit('key', 22, 1);
+        $redis->setbit('key', 32, 1);
+
+        $this->assertSame(2, $redis->bitcount('key', 0, 10, 'bit'), 'Count bits set (without range)');
+        $this->assertSame(1, $redis->bitcount('key', 0, 4, 'bit'), 'Count bits set (with range)');
     }
 
     /**

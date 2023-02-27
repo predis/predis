@@ -13,12 +13,17 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Traits\BitByte;
 
 /**
  * @see http://redis.io/commands/bitcount
+ *
+ * Count the number of set bits (population counting) in a string.
  */
 class BITCOUNT extends RedisCommand
 {
+    use BitByte;
+
     /**
      * {@inheritdoc}
      */
