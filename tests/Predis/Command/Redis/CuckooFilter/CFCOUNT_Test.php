@@ -14,6 +14,10 @@ namespace Predis\Command\Redis\CuckooFilter;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class CFCOUNT_Test extends PredisCommandTestCase
 {
     /**

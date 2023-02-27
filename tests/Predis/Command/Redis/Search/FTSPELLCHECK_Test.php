@@ -14,7 +14,7 @@ namespace Predis\Command\Redis\Search;
 
 use InvalidArgumentException;
 use Predis\Command\Argument\Search\Schema;
-use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SpellcheckArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -76,7 +76,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
         $actualResponse = $redis->ftspellcheck(
             'index',
             'held',
-            (new SearchArguments())->distance(2)->terms('dict')
+            (new SpellcheckArguments())->distance(2)->terms('dict')
         );
 
         $this->assertSame($expectedResponse, $actualResponse);
@@ -97,7 +97,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
         $redis->ftspellcheck(
             'index',
             'held',
-            (new SearchArguments())->distance(2)->terms('dict', 'wrong')
+            (new SpellcheckArguments())->distance(2)->terms('dict', 'wrong')
         );
     }
 
@@ -116,7 +116,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
         $redis->ftspellcheck(
             'index',
             'held',
-            (new SearchArguments())->distance(2)->terms('dict')
+            (new SpellcheckArguments())->distance(2)->terms('dict')
         );
     }
 
@@ -128,23 +128,23 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
                 ['index', 'query'],
             ],
             'with DISTANCE modifier' => [
-                ['index', 'query', (new SearchArguments())->distance(2)],
+                ['index', 'query', (new SpellcheckArguments())->distance(2)],
                 ['index', 'query', 'DISTANCE', 2],
             ],
             'with TERMS modifier - INCLUDE' => [
-                ['index', 'query', (new SearchArguments())->terms('dict', 'INCLUDE', 'term')],
+                ['index', 'query', (new SpellcheckArguments())->terms('dict', 'INCLUDE', 'term')],
                 ['index', 'query', 'TERMS', 'INCLUDE', 'dict', 'term'],
             ],
             'with TERMS modifier - EXCLUDE' => [
-                ['index', 'query', (new SearchArguments())->terms('dict', 'EXCLUDE', 'term')],
+                ['index', 'query', (new SpellcheckArguments())->terms('dict', 'EXCLUDE', 'term')],
                 ['index', 'query', 'TERMS', 'EXCLUDE', 'dict', 'term'],
             ],
             'with DIALECT modifier' => [
-                ['index', 'query', (new SearchArguments())->dialect('dialect')],
+                ['index', 'query', (new SpellcheckArguments())->dialect('dialect')],
                 ['index', 'query', 'DIALECT', 'dialect'],
             ],
             'with all arguments' => [
-                ['index', 'query', (new SearchArguments())->distance(2)->terms('dict', 'INCLUDE', 'term')->dialect('dialect')],
+                ['index', 'query', (new SpellcheckArguments())->distance(2)->terms('dict', 'INCLUDE', 'term')->dialect('dialect')],
                 ['index', 'query', 'DISTANCE', 2, 'TERMS', 'INCLUDE', 'dict', 'term', 'DIALECT', 'dialect'],
             ],
         ];
