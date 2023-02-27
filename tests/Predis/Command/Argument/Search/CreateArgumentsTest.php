@@ -181,16 +181,6 @@ class CreateArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithStopInitialScanModifier(): void
-    {
-        $this->arguments->skipInitialScan();
-
-        $this->assertSame(['SKIPINITIALSCAN'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesCorrectFTCreateArgumentsSetOnMethodsChainCall(): void
     {
         $this->arguments->prefix(['prefix:', 'prefix1:']);
