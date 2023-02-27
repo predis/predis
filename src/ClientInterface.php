@@ -113,6 +113,7 @@ use Predis\Response\Status;
  * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
  * @method array             ftsyndump(string $index)
  * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
+ * @method array             fttagvals(string $index, string $fieldName)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)

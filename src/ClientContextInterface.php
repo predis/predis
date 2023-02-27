@@ -104,6 +104,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
  * @method $this ftsyndump(string $index)
  * @method $this ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
+ * @method $this fttagvals(string $index, string $fieldName)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
