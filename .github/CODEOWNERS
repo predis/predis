@@ -1,5 +1,11 @@
-# Default owner
-*       @tillkruss
+# Default
+*    @tillkruss
 
-# RedisStack related
-*       @vladvildanov
+# Redis Stack
+src/Command/Redis/Json/*              @vladvildanov
+src/Command/Redis/Search/*            @vladvildanov
+src/Command/Redis/TopK/*              @vladvildanov
+src/Command/Redis/TDigest/*           @vladvildanov
+src/Command/Redis/BloomFilter/*       @vladvildanov
+src/Command/Redis/CuckooFilter/*      @vladvildanov
+src/Command/Redis/CountMinSketch/*    @vladvildanov
