@@ -72,7 +72,6 @@ class FCALL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @dataProvider functionsProvider
      * @param string $function
      * @param array  $functionArguments

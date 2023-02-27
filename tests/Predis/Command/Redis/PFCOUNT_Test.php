@@ -93,7 +93,6 @@ class PFCOUNT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 2.8.9
      */
     public function testThrowsExceptionOnWrongTypeOfAtLeastOneKey(): void

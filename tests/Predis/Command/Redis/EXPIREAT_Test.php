@@ -94,7 +94,6 @@ class EXPIREAT_Test extends PredisCommandTestCase
      * @medium
      * @group connected
      * @group slow
-     * @group relay-todo
      * @dataProvider keysProvider
      * @param  array $firstKeyArguments
      * @param  array $secondKeyArguments

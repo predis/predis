@@ -58,7 +58,6 @@ class HINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIncrementsValueOfFieldByInteger(): void
@@ -73,7 +72,6 @@ class HINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @requiresRedisVersion >= 2.0.0
      */
     public function testDecrementsValueOfFieldByInteger(): void
