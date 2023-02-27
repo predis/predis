@@ -43,7 +43,6 @@ use Relay\Relay;
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
- *  - persistent: the connection is left intact after a GC collection.
  *  - serializer: data serializer
  *  - compression: data compression algorithm
  *
@@ -58,9 +57,16 @@ class RelayConnection extends StreamConnection
      */
     private $client;
 
-    private $notBypassed = [
+    /**
+     * These commands must be called on the
+     * client, not using `rawCommand()`.
+     *
+     * @var string[]
+     */
+    private $atypicalCommands = [
         'AUTH',
         'SELECT',
+        'TYPE',
     ];
 
     /**
@@ -214,7 +220,7 @@ class RelayConnection extends StreamConnection
         try {
             $name = $command->getId();
 
-            return in_array($name, $this->notBypassed)
+            return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
