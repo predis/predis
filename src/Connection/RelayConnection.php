@@ -220,6 +220,8 @@ class RelayConnection extends StreamConnection
         try {
             $name = $command->getId();
 
+            // When using compression or a serializer, we need a dedicated
+            // handler for `Predis\Command\RawCommand` calls
             return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
