@@ -58,7 +58,7 @@ class PING_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-incompatible
      */
     public function testAlwaysReturnsStatusResponse(): void
     {

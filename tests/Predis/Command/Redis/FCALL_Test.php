@@ -95,7 +95,6 @@ class FCALL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
