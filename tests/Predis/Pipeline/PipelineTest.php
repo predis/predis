@@ -18,6 +18,7 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Response;
 use PredisTestCase;
 use stdClass;
@@ -492,7 +493,13 @@ class PipelineTest extends PredisTestCase
             // NOOP
         }
 
-        $this->assertInstanceOf('Predis\Response\ServerException', $exception);
+        // TODO: check and change the name if needed
+        if($client->getConnection() instanceof RelayConnection) {
+            $this->assertInstanceOf('Relay\Exception', $exception);
+        } else {
+            $this->assertInstanceOf('Predis\Response\ServerException', $exception);
+        }
+
         $this->assertSame(1, $client->exists('foo'));
         $this->assertSame(1, $client->exists('hoge'));
     }
@@ -503,6 +510,10 @@ class PipelineTest extends PredisTestCase
     public function testIntegrationWithServerErrorInCallableBlock(): void
     {
         $client = $this->getClient([], ['exceptions' => false]);
+
+        if($client->getConnection() instanceof RelayConnection) {
+            $this->markTestSkipped('Relay will always throw a connection');
+        }
 
         $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');

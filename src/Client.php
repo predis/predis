@@ -25,6 +25,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
@@ -448,6 +449,10 @@ class Client implements ClientInterface, IteratorAggregate
             $class = 'Predis\Pipeline\FireAndForget';
         } else {
             $class = 'Predis\Pipeline\Pipeline';
+        }
+
+        if( $this->connection instanceof RelayConnection) {
+            $class = 'Predis\Pipeline\Relay';
         }
 
         /*
