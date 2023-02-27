@@ -18,7 +18,7 @@ use UnexpectedValueException;
 
 /**
  * @group commands
- * @group realm-bloom
+ * @group realm-stack
  */
 class BFINSERT_Test extends PredisCommandTestCase
 {
