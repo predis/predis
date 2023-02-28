@@ -36,6 +36,48 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Selects the dialect version under which to execute the query.
+     * If not specified, the query will execute under the default dialect version
+     * set during module initial loading or via FT.CONFIG SET command.
+     *
+     * @param  string $dialect
+     * @return $this
+     */
+    public function dialect(string $dialect): self
+    {
+        $this->arguments[] = 'DIALECT';
+        $this->arguments[] = $dialect;
+
+        return $this;
+    }
+
+    /**
+     * If set, does not scan and index.
+     *
+     * @return $this
+     */
+    public function skipInitialScan(): self
+    {
+        $this->arguments[] = 'SKIPINITIALSCAN';
+
+        return $this;
+    }
+
+    /**
+     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
+     *
+     * @param  string $payload
+     * @return $this
+     */
+    public function payload(string $payload): self
+    {
+        $this->arguments[] = 'PAYLOAD';
+        $this->arguments[] = $payload;
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

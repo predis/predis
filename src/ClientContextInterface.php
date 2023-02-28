@@ -14,8 +14,14 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
+use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
@@ -57,7 +63,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this bfmexists(string $key, ...$item)
  * @method $this bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method $this bfscandump(string $key, int $iterator)
- * @method $this bitcount(string $key, $start = null, $end = null, string $index = 'byte')
+ * @method $this bitcount($key, $start = null, $end = null, string $index = 'byte')
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this bitpos($key, $bit, $start = null, $end = null, string $index = 'byte')
@@ -87,7 +93,23 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
- * @method $this ftcreate(string $index, CreateArguments $arguments, Schema $schema)
+ * @method $this ftaliasadd(string $alias, string $index)
+ * @method $this ftaliasdel(string $alias)
+ * @method $this ftaliasupdate(string $alias, string $index)
+ * @method $this ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
+ * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method $this ftdictadd(string $dict, ...$term)
+ * @method $this ftdictdel(string $dict, ...$term)
+ * @method $this ftdictdump(string $dict)
+ * @method $this ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method $this ftinfo(string $index)
+ * @method $this ftprofile(string $index, ProfileArguments $arguments)
+ * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method $this ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method $this ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
+ * @method $this ftsyndump(string $index)
+ * @method $this ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
+ * @method $this fttagvals(string $index, string $fieldName)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)

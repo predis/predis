@@ -16,6 +16,10 @@ use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 use UnexpectedValueException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class BFRESERVE_Test extends PredisCommandTestCase
 {
     /**
