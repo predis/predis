@@ -26,6 +26,7 @@ use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 
 /**
@@ -299,6 +300,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * Container commands
  * @property FUNCTIONS $function
  * @property FTCONFIG  $ftconfig
+ * @property JSONDEBUG $jsondebug
  */
 interface ClientContextInterface
 {
