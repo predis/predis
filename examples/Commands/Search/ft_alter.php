@@ -24,11 +24,16 @@ $schema = new Schema();
 $schema->addTextField('text_field');
 $client->ftcreate('index_alter', $schema);
 
+echo 'Default index attributes:' . "\n";
+$defaultAttributes = $client->ftinfo('index_alter');
+print_r($defaultAttributes[7]);
+
 // 2. Add additional attribute to existing index
 $schema = new Schema(true);
 $schema->addTextField('new_field_name');
 
-$response = $client->ftalter('index_alter', $schema);
+$client->ftalter('index_alter', $schema);
 
-echo 'Response:' . "\n";
-print_r($response);
+echo 'Updated index attributes:' . "\n";
+$updatedAttributes = $client->ftinfo('index_alter');
+print_r($updatedAttributes[7]);
