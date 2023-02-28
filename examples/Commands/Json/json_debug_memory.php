@@ -11,7 +11,6 @@
  */
 
 use Predis\Client;
-use Predis\Command\Argument\Search\Schema;
 
 require __DIR__ . '/../../shared.php';
 
