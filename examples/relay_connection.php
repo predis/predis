@@ -27,7 +27,7 @@ $client = new Predis\Client($single_server + $options, [
 ]);
 
 // Plain old SET and GET example...
-$client->getset('library', 'relay');
+$client->set('library', 'relay');
 $client->get('library');
 
 var_export(

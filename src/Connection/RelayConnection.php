@@ -141,25 +141,27 @@ class RelayConnection extends StreamConnection
     private function createClient()
     {
         $client = new Relay();
-        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
-        $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
+
+        // whether to use instantaneous client-side invalidation
+        $client->setOption(Relay::OPT_CLIENT_INVALIDATIONS, true);
+
+        // throw when errors occur and return `null` for non-existent keys
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
-        if ($this->parameters->serializer) {
-            $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
-                '%s::SERIALIZER_%s',
-                Relay::class,
-                strtoupper($this->parameters->serializer)
-            )));
-        }
+        // whether to use in-memory caching
+        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
 
-        if ($this->parameters->compression) {
-            $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
-                '%s::COMPRESSION_%s',
-                Relay::class,
-                strtoupper($this->parameters->serializer)
-            )));
-        }
+        $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
+            '%s::SERIALIZER_%s',
+            Relay::class,
+            strtoupper($this->parameters->serializer ?? 'none')
+        )));
+
+        $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
+            '%s::COMPRESSION_%s',
+            Relay::class,
+            strtoupper($this->parameters->compression ?? 'none')
+        )));
 
         return $client;
     }
