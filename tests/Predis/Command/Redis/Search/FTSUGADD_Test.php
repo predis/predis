@@ -12,9 +12,13 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSUGADD_Test extends PredisCommandTestCase
 {
     /**
@@ -73,15 +77,15 @@ class FTSUGADD_Test extends PredisCommandTestCase
                 ['key', 'string', 1],
             ],
             'with INCR modifier' => [
-                ['key', 'string', 1, (new SearchArguments())->incr()],
+                ['key', 'string', 1, (new SugAddArguments())->incr()],
                 ['key', 'string', 1, 'INCR'],
             ],
             'with PAYLOAD' => [
-                ['key', 'string', 1, (new SearchArguments())->payload('payload')],
+                ['key', 'string', 1, (new SugAddArguments())->payload('payload')],
                 ['key', 'string', 1, 'PAYLOAD', 'payload'],
             ],
             'with all arguments' => [
-                ['key', 'string', 1, (new SearchArguments())->incr()->payload('payload')],
+                ['key', 'string', 1, (new SugAddArguments())->incr()->payload('payload')],
                 ['key', 'string', 1, 'INCR', 'PAYLOAD', 'payload'],
             ],
         ];

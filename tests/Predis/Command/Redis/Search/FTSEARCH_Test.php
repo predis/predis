@@ -12,10 +12,15 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSEARCH_Test extends PredisCommandTestCase
 {
     /**
@@ -64,15 +69,15 @@ class FTSEARCH_Test extends PredisCommandTestCase
         );
         $this->assertEquals('OK', $jsonResponse);
 
-        $searchArguments = new SearchArguments();
-        $searchArguments->on('json');
-        $searchArguments->prefix(['doc:']);
+        $createArguments = new CreateArguments();
+        $createArguments->on('json');
+        $createArguments->prefix(['doc:']);
 
         $schema = new Schema();
         $schema->addNumericField('$..arr', 'arr');
         $schema->addTextField('$..val', 'val');
 
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $searchArguments);
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
         $ftSearchArguments = new SearchArguments();
@@ -95,7 +100,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $hashResponse = $redis->hmset('doc:1', 'field1', 'value1', 'field2', 'value2');
         $this->assertEquals('OK', $hashResponse);
 
-        $ftCreateArguments = new SearchArguments();
+        $ftCreateArguments = new CreateArguments();
         $ftCreateArguments->prefix(['doc:']);
 
         $schema = new Schema();

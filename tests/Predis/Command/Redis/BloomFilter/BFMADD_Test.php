@@ -17,7 +17,7 @@ use Predis\Response\ServerException;
 
 /**
  * @group commands
- * @group realm-bloom
+ * @group realm-stack
  */
 class BFMADD_Test extends PredisCommandTestCase
 {
