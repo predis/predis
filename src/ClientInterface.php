@@ -20,6 +20,7 @@ use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
@@ -113,6 +114,7 @@ use Predis\Response\Status;
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method int               ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
  * @method array             ftsyndump(string $index)
  * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method array             fttagvals(string $index, string $fieldName)

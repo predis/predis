@@ -64,6 +64,20 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
+     *
+     * @param  string $payload
+     * @return $this
+     */
+    public function payload(string $payload): self
+    {
+        $this->arguments[] = 'PAYLOAD';
+        $this->arguments[] = $payload;
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array
