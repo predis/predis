@@ -13,12 +13,14 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
-use Predis\ClientException;
-use Predis\Command\CommandInterface;
-use Predis\NotSupportedException;
-use Predis\Response\ServerException;
-use Relay\Exception as RelayException;
+
 use Relay\Relay;
+use Relay\Exception as RelayException;
+
+use Predis\ClientException;
+use Predis\NotSupportedException;
+use Predis\Command\CommandInterface;
+use Predis\Response\ServerException;
 
 /**
  * This class provides the implementation of a Predis connection that
@@ -43,6 +45,7 @@ use Relay\Relay;
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
+ *  - cache: whether to use in-memory caching
  *  - serializer: data serializer
  *  - compression: data compression algorithm
  *
@@ -138,6 +141,7 @@ class RelayConnection extends StreamConnection
     private function createClient()
     {
         $client = new Relay();
+        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
         $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
