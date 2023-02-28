@@ -15,6 +15,10 @@ namespace Predis\Command\Redis\Json;
 use Predis\Command\Redis\PredisCommandTestCase;
 use UnexpectedValueException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class JSONGET_Test extends PredisCommandTestCase
 {
     /**
