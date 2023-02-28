@@ -330,20 +330,6 @@ class SearchArguments extends CommonArguments
     }
 
     /**
-     * Adds an arbitrary, binary safe payload that is exposed to custom scoring functions.
-     *
-     * @param  string $payload
-     * @return $this
-     */
-    public function payload(string $payload): self
-    {
-        $this->arguments[] = 'PAYLOAD';
-        $this->arguments[] = $payload;
-
-        return $this;
-    }
-
-    /**
      * Orders the results by the value of this attribute.
      * This applies to both text and numeric attributes.
      * Attributes needed for SORTBY should be declared as SORTABLE in the index, in order to be available with very low latency.

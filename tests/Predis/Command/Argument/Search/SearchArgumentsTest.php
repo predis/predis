@@ -226,16 +226,6 @@ class SearchArgumentsTest extends TestCase
     }
 
     /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithPayloadModifier(): void
-    {
-        $this->arguments->payload('payload');
-
-        $this->assertSame(['PAYLOAD', 'payload'], $this->arguments->toArray());
-    }
-
-    /**
      * @dataProvider sortByProvider
      * @param  array $arguments
      * @param  array $expectedResponse
