@@ -25,7 +25,8 @@ use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\FUNCTIONS;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Search\FTCONFIG;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -297,6 +298,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  *
  * Container commands
  * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
  */
 interface ClientContextInterface
 {
