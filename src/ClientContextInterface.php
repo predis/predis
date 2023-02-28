@@ -14,6 +14,7 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
@@ -93,7 +94,7 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
  * @method $this ftaliasupdate(string $alias, string $index)
- * @method $this ftalter(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method $this ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
  * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method $this ftdictadd(string $dict, ...$term)
  * @method $this ftdictdel(string $dict, ...$term)
