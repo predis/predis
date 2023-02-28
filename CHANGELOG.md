@@ -6,6 +6,9 @@
 - Fix `@template` in `Predis\Client` (#1017)
 - Fix support options array in `ZINTERSTORE` and `ZUNIONSTORE` (#1018)
 
+## Deprecated
+- Deprecated phpiredis and webdis connections
+
 ## v2.1.0 (2023-01-16)
 
 ## New Features

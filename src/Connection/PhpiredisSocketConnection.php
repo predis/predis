@@ -44,6 +44,7 @@ use Predis\Response\Status as StatusResponse;
  *  - read_write_timeout: timeout of read / write operations.
  *
  * @see http://github.com/nrk/phpiredis
+ * @deprecated 2.1.2
  */
 class PhpiredisSocketConnection extends AbstractConnection
 {
