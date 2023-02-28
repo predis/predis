@@ -2,4 +2,4 @@
 *    @tillkruss
 
 # Redis commands (Stack included)
-src/Command/Redis/*              @vladvildanov
+src/Command/Redis/*              @predis/team
