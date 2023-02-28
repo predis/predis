@@ -396,29 +396,14 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 
 ### Customizable connection backends ###
 
-Predis can use different connection backends to connect to Redis. Two of them leverage a third party
-extension such as [phpiredis](https://github.com/nrk/phpiredis) resulting in major performance gains
-especially when dealing with big multibulk responses. While one is based on PHP streams, the other
-is based on socket resources provided by `ext-socket`. Both support TCP/IP and UNIX domain sockets:
+Predis can use different connection backends to connect to Redis. The builtin Relay integration
+leverages the [Relay](https://github.com/cachewerk/relay) extension for PHP for major performance
+gains, by caching a partial replica of the Redis dataset in PHP shared runtime memory.
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', [
-    'connections' => [
-        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',  // PHP stream resources
-        'unix' => 'Predis\Connection\PhpiredisSocketConnection',  // ext-socket resources
-    ],
+    'connections' => 'relay',
 ]);
-```
-
-The client can also be configured to rely on a [phpiredis](https://github.com/nrk/phpiredis)-backend
-by specifying a descriptive string for the `connections` client option. Supported string values are:
-
-- `phpiredis-stream` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisStreamConnection`
-- `phpiredis-socket` maps `tcp`, `redis` and `unix` to `Predis\Connection\PhpiredisSocketConnection`
-- `phpiredis` is simply an alias of `phpiredis-stream`
-
-```php
-$client = new Predis\Client('tcp://127.0.0.1', ['connections' => 'phpiredis']);
 ```
 
 Developers can create their own connection classes to support whole new network backends, extend
@@ -463,23 +448,6 @@ be disabled. See [the tests README](tests/README.md) for more details about test
 
 Predis uses GitHub Actions for continuous integration and the history for past and current builds can be
 found [on its actions page](https://github.com/predis/predis/actions).
-
-
-## Other ##
-
-
-### Project related links ###
-
-- [Source code](https://github.com/predis/predis)
-- [Wiki](https://github.com/predis/predis/wiki)
-- [Issue tracker](https://github.com/predis/predis/issues)
-
-
-### Author ###
-
-- [Till Krüss](https://till.im) ([Twitter](http://twitter.com/tillkruss))
-- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
-
 
 ### License ###
 
