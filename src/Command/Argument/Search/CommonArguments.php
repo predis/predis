@@ -78,6 +78,30 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Also returns the relative internal score of each document.
+     *
+     * @return $this
+     */
+    public function withScores(): self
+    {
+        $this->arguments[] = 'WITHSCORES';
+
+        return $this;
+    }
+
+    /**
+     * Retrieves optional document payloads.
+     *
+     * @return $this
+     */
+    public function withPayloads(): self
+    {
+        $this->arguments[] = 'WITHPAYLOADS';
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array
