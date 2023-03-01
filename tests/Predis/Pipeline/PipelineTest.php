@@ -493,13 +493,7 @@ class PipelineTest extends PredisTestCase
             // NOOP
         }
 
-        // TODO: check and change the name if needed
-        if($client->getConnection() instanceof RelayConnection) {
-            $this->assertInstanceOf('Relay\Exception', $exception);
-        } else {
-            $this->assertInstanceOf('Predis\Response\ServerException', $exception);
-        }
-
+        $this->assertInstanceOf('Predis\Response\ServerException', $exception);
         $this->assertSame(1, $client->exists('foo'));
         $this->assertSame(1, $client->exists('hoge'));
     }

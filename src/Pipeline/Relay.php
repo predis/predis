@@ -12,8 +12,9 @@
 
 namespace Predis\Pipeline;
 
-use InvalidArgumentException;
 use Predis\Connection\ConnectionInterface;
+use Predis\Response\ServerException;
+use Relay\Exception;
 use SplQueue;
 
 /**
@@ -23,15 +24,20 @@ class Relay extends Pipeline
 {
     /**
      * {@inheritdoc}
+     * @throws ServerException
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
-        $pipeline = $connection->getClient()->pipeline();
+        try {
+            $pipeline = $connection->getClient()->pipeline();
 
-        foreach ($commands as $command) {
-           $pipeline->rawCommand($command->getId(), ...$command->getArguments());
+            foreach ($commands as $command) {
+                $pipeline->rawCommand($command->getId(), ...$command->getArguments());
+            }
+
+            return $pipeline->exec();
+        } catch (Exception $e) {
+            throw new ServerException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
-
-        return $pipeline->exec();
     }
 }
