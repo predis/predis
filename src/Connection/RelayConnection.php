@@ -13,12 +13,14 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
-use Predis\ClientException;
-use Predis\Command\CommandInterface;
-use Predis\NotSupportedException;
-use Predis\Response\ServerException;
-use Relay\Exception as RelayException;
+
 use Relay\Relay;
+use Relay\Exception as RelayException;
+
+use Predis\ClientException;
+use Predis\NotSupportedException;
+use Predis\Command\CommandInterface;
+use Predis\Response\ServerException;
 
 /**
  * This class provides the implementation of a Predis connection that
@@ -43,6 +45,7 @@ use Relay\Relay;
  *  - path: path of a UNIX domain socket when scheme is 'unix'.
  *  - timeout: timeout to perform the connection.
  *  - read_write_timeout: timeout of read / write operations.
+ *  - cache: whether to use in-memory caching
  *  - serializer: data serializer
  *  - compression: data compression algorithm
  *
@@ -138,24 +141,27 @@ class RelayConnection extends StreamConnection
     private function createClient()
     {
         $client = new Relay();
-        $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
+
+        // whether to use instantaneous client-side invalidation
+        $client->setOption(Relay::OPT_CLIENT_INVALIDATIONS, true);
+
+        // throw when errors occur and return `null` for non-existent keys
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
-        if ($this->parameters->serializer) {
-            $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
-                '%s::SERIALIZER_%s',
-                Relay::class,
-                strtoupper($this->parameters->serializer)
-            )));
-        }
+        // whether to use in-memory caching
+        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
 
-        if ($this->parameters->compression) {
-            $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
-                '%s::COMPRESSION_%s',
-                Relay::class,
-                strtoupper($this->parameters->serializer)
-            )));
-        }
+        $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
+            '%s::SERIALIZER_%s',
+            Relay::class,
+            strtoupper($this->parameters->serializer ?? 'none')
+        )));
+
+        $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
+            '%s::COMPRESSION_%s',
+            Relay::class,
+            strtoupper($this->parameters->compression ?? 'none')
+        )));
 
         return $client;
     }
@@ -220,6 +226,8 @@ class RelayConnection extends StreamConnection
         try {
             $name = $command->getId();
 
+            // When using compression or a serializer, we need a dedicated
+            // handler for `Predis\Command\RawCommand` calls
             return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());

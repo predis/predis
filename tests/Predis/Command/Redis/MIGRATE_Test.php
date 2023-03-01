@@ -88,7 +88,7 @@ class MIGRATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-todo
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsStatusNOKEYOnNonExistingKey(): void
