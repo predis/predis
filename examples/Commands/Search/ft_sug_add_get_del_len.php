@@ -16,12 +16,14 @@ use Predis\Command\Argument\Search\SugGetArguments;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of FT.SUGADD, FT.SUGGET, FT.SUGDEL commands usage:
+// Example of FT.SUGADD, FT.SUGGET, FT.SUGDEL, FT.SUGLEN commands usage:
 
 // 1. Add suggestion to key with payload
 $client = new Client();
 
 $client->ftsugadd('key', 'hello', 2, (new SugAddArguments())->payload('payload'));
+
+echo 'Suggestions dictionary length: ' . $client->ftsuglen('key') . "\n";
 
 // 2. Perform fuzzy search by prefix to get previous suggestion with payload
 $response = $client->ftsugget('key', 'hellp', (new SugGetArguments())->fuzzy()->withPayloads());

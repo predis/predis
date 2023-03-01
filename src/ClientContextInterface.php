@@ -111,6 +111,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
  * @method $this ftsugdel(string $key, string $string)
  * @method $this ftsugget(string $key, string $prefix, ?SugGetArguments $arguments = null)
+ * @method $this ftsuglen(string $key)
  * @method $this ftsyndump(string $index)
  * @method $this ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method $this fttagvals(string $index, string $fieldName)
