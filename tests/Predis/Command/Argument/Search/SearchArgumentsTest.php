@@ -50,26 +50,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithWithScoresModifier(): void
-    {
-        $this->arguments->withScores();
-
-        $this->assertSame(['WITHSCORES'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithWithPayloadsModifier(): void
-    {
-        $this->arguments->withPayloads();
-
-        $this->assertSame(['WITHPAYLOADS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithWithSortKeysModifier(): void
     {
         $this->arguments->withSortKeys();

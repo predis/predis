@@ -49,30 +49,6 @@ class SearchArguments extends CommonArguments
     }
 
     /**
-     * Also returns the relative internal score of each document.
-     *
-     * @return $this
-     */
-    public function withScores(): self
-    {
-        $this->arguments[] = 'WITHSCORES';
-
-        return $this;
-    }
-
-    /**
-     * Retrieves optional document payloads.
-     *
-     * @return $this
-     */
-    public function withPayloads(): self
-    {
-        $this->arguments[] = 'WITHPAYLOADS';
-
-        return $this;
-    }
-
-    /**
      * Returns the value of the sorting key, right after the id and score and/or payload, if requested.
      *
      * @return $this
