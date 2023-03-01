@@ -1,5 +1,5 @@
 [codespell]
-skip=./.git
+skip=./.git,./src/Command/Redis/Search/FTSUGGET,./examples/Commands/Search/ft_sug_add_get_del.php
 check-hidden=
 check-filenames=
 builtin=clear,rare,informal,usage,code,names
