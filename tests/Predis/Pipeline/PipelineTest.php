@@ -18,7 +18,6 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
-use Predis\Connection\RelayConnection;
 use Predis\Response;
 use PredisTestCase;
 use stdClass;
@@ -500,14 +499,11 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testIntegrationWithServerErrorInCallableBlock(): void
     {
         $client = $this->getClient([], ['exceptions' => false]);
-
-        if($client->getConnection() instanceof RelayConnection) {
-            $this->markTestSkipped('Relay will always throw a connection');
-        }
 
         $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
