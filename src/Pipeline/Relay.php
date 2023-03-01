@@ -14,7 +14,7 @@ namespace Predis\Pipeline;
 
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\ServerException;
-use Relay\Exception;
+use Relay\Exception as RelayException;
 use SplQueue;
 
 /**
@@ -22,6 +22,18 @@ use SplQueue;
  */
 class Relay extends Pipeline
 {
+    /**
+     * These commands must be called on the
+     * client, not using `rawCommand()`.
+     *
+     * @var string[]
+     */
+    private $atypicalCommands = [
+        'AUTH',
+        'SELECT',
+        'TYPE',
+    ];
+
     /**
      * {@inheritdoc}
      * @throws ServerException
@@ -32,11 +44,16 @@ class Relay extends Pipeline
             $pipeline = $connection->getClient()->pipeline();
 
             foreach ($commands as $command) {
-                $pipeline->rawCommand($command->getId(), ...$command->getArguments());
+                $name = $command->getId();
+
+                in_array($name, $this->atypicalCommands)
+                    ? $pipeline->{$name}(...$command->getArguments())
+                    : $pipeline->rawCommand($name, ...$command->getArguments());
             }
 
             return $pipeline->exec();
-        } catch (Exception $e) {
+
+        } catch (RelayException $e) {
             throw new ServerException($e->getMessage(), $e->getCode(), $e->getPrevious());
         }
     }
