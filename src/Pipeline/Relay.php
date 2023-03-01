@@ -23,18 +23,6 @@ use SplQueue;
 class Relay extends Pipeline
 {
     /**
-     * These commands must be called on the
-     * client, not using `rawCommand()`.
-     *
-     * @var string[]
-     */
-    private $atypicalCommands = [
-        'AUTH',
-        'SELECT',
-        'TYPE',
-    ];
-
-    /**
      * {@inheritdoc}
      * @throws ServerException
      */
@@ -46,7 +34,7 @@ class Relay extends Pipeline
             foreach ($commands as $command) {
                 $name = $command->getId();
 
-                in_array($name, $this->atypicalCommands)
+                in_array($name, $connection->atypicalCommands)
                     ? $pipeline->{$name}(...$command->getArguments())
                     : $pipeline->rawCommand($name, ...$command->getArguments());
             }

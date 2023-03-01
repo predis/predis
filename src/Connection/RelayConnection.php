@@ -66,7 +66,7 @@ class RelayConnection extends StreamConnection
      *
      * @var string[]
      */
-    private $atypicalCommands = [
+    public $atypicalCommands = [
         'AUTH',
         'SELECT',
         'TYPE',
