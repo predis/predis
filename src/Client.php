@@ -453,6 +453,10 @@ class Client implements ClientInterface, IteratorAggregate
 
         if( $this->connection instanceof RelayConnection) {
             $class = 'Predis\Pipeline\Relay';
+            
+            if (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+                throw new \Relay\Exception('Relay does not support fire-and-forget');
+            }
         }
 
         /*
