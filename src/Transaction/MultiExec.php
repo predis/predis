@@ -14,18 +14,25 @@ namespace Predis\Transaction;
 
 use Exception;
 use InvalidArgumentException;
-use Predis\ClientContextInterface;
-use Predis\ClientException;
+use SplQueue;
+
+use Relay\Relay;
+
 use Predis\ClientInterface;
-use Predis\Command\CommandInterface;
+use Predis\ClientContextInterface;
+
+use Predis\ClientException;
 use Predis\CommunicationException;
-use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
-use Predis\Protocol\ProtocolException;
+
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
-use SplQueue;
+
+use Predis\Command\CommandInterface;
+use Predis\Protocol\ProtocolException;
+use Predis\Connection\Cluster\ClusterInterface;
+
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
@@ -207,6 +214,8 @@ class MultiExec implements ClientContextInterface
 
         if ($response instanceof StatusResponse && $response == 'QUEUED') {
             $this->commands->enqueue($command);
+        } elseif ($response instanceof Relay) {
+            $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
             throw new AbortedMultiExecException($this, $response->getMessage());
         } else {
@@ -375,7 +384,8 @@ class MultiExec implements ClientContextInterface
 
             $execResponse = $this->call('EXEC');
 
-            if ($execResponse === null) {
+            // The additional `false` check is needed for Relay, let's hope it won't break anything
+            if ($execResponse === null || $execResponse === false) {
                 if ($attempts === 0) {
                     throw new AbortedMultiExecException(
                         $this, 'The current transaction has been aborted by the server.'
