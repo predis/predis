@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-fixme
  */
 class MULTI_Test extends PredisCommandTestCase
 {
@@ -79,6 +78,8 @@ class MULTI_Test extends PredisCommandTestCase
         $this->assertSame($relay, $redis->multi());
         $this->assertSame($relay, $redis->echo('tx1'));
         $this->assertSame($relay, $redis->echo('tx2'));
+
+        $relay->discard();
     }
 
     /**
@@ -96,6 +97,7 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction(): void
     {
