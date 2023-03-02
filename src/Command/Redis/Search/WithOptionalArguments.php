@@ -26,11 +26,11 @@ abstract class WithOptionalArguments extends RedisCommand
      */
     public function buildOptionalArguments(ArgumentBuilder $builder, array $arguments): array
     {
-        $argumentsMapping = $this->getOptionalArguments();
+        $optionalArguments = $this->getOptionalArguments();
 
         foreach ($arguments as $key => $argumentValue) {
             if (!empty($argumentValue)) {
-                $argumentName = $argumentsMapping[$key];
+                $argumentName = $optionalArguments[$key];
 
                 $builder = $builder->{$argumentName}($argumentValue);
             }
