@@ -26,8 +26,14 @@ $client = new Predis\Client($single_server + $options, [
     'connections' => 'relay',
 ]);
 
-// Plain old SET and GET example...
+// Write key to Redis
 $client->set('library', 'relay');
+
+// Retrieve key from Redis
+$client->get('library');
+
+// Retrieve key from Relay (without socket/network communication)
+// This key is no available to all PHP workers in this FPM pool
 $client->get('library');
 
 var_export(
