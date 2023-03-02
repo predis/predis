@@ -14,25 +14,19 @@ namespace Predis\Transaction;
 
 use Exception;
 use InvalidArgumentException;
-use SplQueue;
-
-use Relay\Relay;
-
-use Predis\ClientInterface;
 use Predis\ClientContextInterface;
-
 use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
-
+use Predis\Protocol\ProtocolException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
-
-use Predis\Command\CommandInterface;
-use Predis\Protocol\ProtocolException;
-use Predis\Connection\Cluster\ClusterInterface;
-
+use Relay\Relay;
+use SplQueue;
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.

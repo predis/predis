@@ -37,7 +37,7 @@ class HRANDFIELD extends RedisCommand
      */
     public function parseResponse($data)
     {
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             return $data;
         }
 

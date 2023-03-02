@@ -13,14 +13,12 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
-
-use Relay\Relay;
-use Relay\Exception as RelayException;
-
 use Predis\ClientException;
-use Predis\NotSupportedException;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 use Predis\Response\ServerException;
+use Relay\Exception as RelayException;
+use Relay\Relay;
 
 /**
  * This class provides the implementation of a Predis connection that

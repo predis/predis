@@ -12,9 +12,10 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
-use Predis\Response\ServerException;
 use Predis\Connection\ConnectionInterface;
+use Predis\Response\ServerException;
+use Relay\Exception as RelayException;
+use SplQueue;
 
 class RelayAtomic extends Atomic
 {
@@ -36,7 +37,7 @@ class RelayAtomic extends Atomic
             }
 
             return $transaction->exec();
-        } catch (RelayException $ex)
+        } catch (RelayException $ex) {
             $connection->getClient()->discard();
 
             throw new ServerException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());

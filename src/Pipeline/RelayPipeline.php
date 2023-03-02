@@ -12,10 +12,10 @@
 
 namespace Predis\Pipeline;
 
-use SplQueue;
-use Relay\Exception as RelayException;
-use Predis\Response\ServerException;
 use Predis\Connection\ConnectionInterface;
+use Predis\Response\ServerException;
+use Relay\Exception as RelayException;
+use SplQueue;
 
 class RelayPipeline extends Pipeline
 {

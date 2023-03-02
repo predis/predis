@@ -12,41 +12,34 @@
 
 namespace Predis;
 
-use Traversable;
 use ArrayIterator;
-use IteratorAggregate;
-
-use RuntimeException;
 use InvalidArgumentException;
-
-use Predis\Command\RawCommand;
-use Predis\Command\ScriptCommand;
+use IteratorAggregate;
 use Predis\Command\CommandInterface;
-
 use Predis\Command\Container\ContainerFactory;
 use Predis\Command\Container\ContainerInterface;
-
+use Predis\Command\RawCommand;
+use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
-
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayConnection;
-
-use Predis\Response\ErrorInterface as ErrorResponseInterface;
-use Predis\Response\ResponseInterface;
-use Predis\Response\ServerException;
-
-use Predis\Pipeline\Pipeline;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Atomic;
 use Predis\Pipeline\FireAndForget;
+use Predis\Pipeline\Pipeline;
+use Predis\Pipeline\RelayAtomic;
 use Predis\Pipeline\RelayPipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
-
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Response\ResponseInterface;
+use Predis\Response\ServerException;
 use Predis\Transaction\MultiExec as MultiExecTransaction;
-
+use ReturnTypeWillChange;
+use RuntimeException;
+use Traversable;
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -447,8 +440,8 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Actual pipeline context initializer method.
      *
-     * @param array|null $options Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array|null $options  Options for the context.
+     * @param mixed      $callable Optional callable used to execute the context.
      *
      * @return Pipeline|array
      */
@@ -567,7 +560,7 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * @return Traversable<string, static>
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         $clients = [];
