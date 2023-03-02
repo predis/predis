@@ -55,7 +55,7 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testAbortsTransactionAndRestoresNormalFlow(): void
@@ -66,6 +66,22 @@ class DISCARD_Test extends PredisCommandTestCase
 
         $this->assertEquals('QUEUED', $redis->set('foo', 'bar'));
         $this->assertEquals('OK', $redis->discard());
+        $this->assertSame(0, $redis->exists('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group ext-relay
+     */
+    public function testAbortsTransactionAndRestoresNormalFlowUsingRelay(): void
+    {
+        $redis = $this->getClient();
+        $relay = $redis->getConnection()->getClient();
+
+        $redis->multi();
+
+        $this->assertSame($relay, $redis->set('foo', 'bar'));
+        $this->assertTrue($redis->discard());
         $this->assertSame(0, $redis->exists('foo'));
     }
 

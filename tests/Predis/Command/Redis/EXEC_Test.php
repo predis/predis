@@ -15,7 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-fixme
  */
 class EXEC_Test extends PredisCommandTestCase
 {
@@ -102,6 +101,7 @@ class EXEC_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void
     {

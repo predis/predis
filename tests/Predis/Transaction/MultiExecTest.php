@@ -24,7 +24,6 @@ use RuntimeException;
 
 /**
  * @group realm-transaction
- * @group relay-fixme
  */
 class MultiExecTest extends PredisTestCase
 {
@@ -680,6 +679,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      */
     public function testIntegrationHandlesStandardExceptionsInBlock(): void
     {
@@ -701,6 +701,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {
@@ -724,6 +725,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
@@ -742,6 +744,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIntegrationSendMultiOnCommandsAfterDiscard(): void
@@ -761,6 +764,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
@@ -785,6 +789,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationCheckAndSetWithDiscardAndRetry(): void
