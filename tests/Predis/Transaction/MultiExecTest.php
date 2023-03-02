@@ -700,7 +700,8 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible (#582)
+     * @group relay-incompatible
+     * @group relay-582
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {

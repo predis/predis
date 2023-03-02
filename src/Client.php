@@ -22,8 +22,9 @@ use InvalidArgumentException;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\ContainerFactory;
-use Predis\Command\Redis\Container\ContainerInterface;
+
+use Predis\Command\Container\ContainerFactory;
+use Predis\Command\Container\ContainerInterface;
 
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;

@@ -101,7 +101,8 @@ class EXEC_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible (#581)
+     * @group relay-incompatible
+     * @group relay-581
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void
     {
