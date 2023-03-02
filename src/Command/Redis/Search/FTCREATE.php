@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 
 /**
  * @see https://redis.io/commands/ft.create/
@@ -31,10 +32,16 @@ class FTCREATE extends WithOptionalArguments
         [$index, $schema] = array_splice($arguments, 0, 2);
         $optionalArguments = $this->buildOptionalArguments(new CreateArguments(), $arguments);
 
+        $schema = array_reduce($schema, static function (array $carry, FieldInterface $field) {
+            return array_merge($carry, $field->toArray());
+        }, []);
+
+        array_unshift($schema, 'SCHEMA');
+
         parent::setArguments(array_merge(
             [$index],
             $optionalArguments,
-            $schema->toArray()
+            $schema
         ));
     }
 

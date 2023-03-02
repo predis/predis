@@ -18,6 +18,7 @@ use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Argument\Search\SugGetArguments;
@@ -107,7 +108,7 @@ use Predis\Response\Status;
  * @method Status            ftaliasdel(string $alias)
  * @method Status            ftaliasupdate(string $alias, string $index)
  * @method Status            ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
- * @method Status            ftcreate(string $index, Schema $schema, string $on = '', array $prefixes = [], string $filter = '', string $language = '', string $languageField = '', float $score = 0, string $scoreField = '', string $payloadField = '', bool $maxTextFields = false, int $temporary = 0, bool $noOffsets = false, bool $noHl = false, bool $noFields = false, bool $noFreqs = false, array $stopWords = [], bool $skipInitialScan = false)
+ * @method Status            ftcreate(string $index, FieldInterface[] $schema, string $on = '', array $prefixes = [], string $filter = '', string $language = '', string $languageField = '', float $score = 0, string $scoreField = '', string $payloadField = '', bool $maxTextFields = false, int $temporary = 0, bool $noOffsets = false, bool $noHl = false, bool $noFields = false, bool $noFreqs = false, array $stopWords = [], bool $skipInitialScan = false)
  * @method int               ftdictadd(string $dict, ...$term)
  * @method int               ftdictdel(string $dict, ...$term)
  * @method array             ftdictdump(string $dict)
