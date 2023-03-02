@@ -679,7 +679,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
      */
     public function testIntegrationHandlesStandardExceptionsInBlock(): void
     {
@@ -701,7 +700,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
+     * @group relay-incompatible (#582)
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {
@@ -725,7 +724,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
+     * @group relay-incompatible
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
@@ -744,7 +743,25 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
+     * @group ext-relay
+     */
+    public function testIntegrationReturnsErrorResponseOnRedisErrorInBlock(): void
+    {
+        $client = $this->getClient([], ['exceptions' => false]);
+
+        $responses = $client->transaction(function (MultiExec $tx) {
+            $tx->set('foo', 'bar');
+            $tx->lpush('foo', 'bar');
+            $tx->echo('foobar');
+        });
+
+        $this->assertSame(true, $responses[0]);
+        $this->assertSame(false, $responses[1]);
+        $this->assertSame('foobar', $responses[2]);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIntegrationSendMultiOnCommandsAfterDiscard(): void
@@ -764,7 +781,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
@@ -789,7 +805,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-tx
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationCheckAndSetWithDiscardAndRetry(): void
