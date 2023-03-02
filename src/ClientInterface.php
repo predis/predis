@@ -14,15 +14,22 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
+use Predis\Command\Argument\Search\SugGetArguments;
+use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\FactoryInterface;
-use Predis\Command\Redis\Container\FUNCTIONS;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -100,13 +107,23 @@ use Predis\Response\Status;
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
  * @method Status            ftaliasupdate(string $alias, string $index)
+ * @method Status            ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
  * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
  * @method int               ftdictadd(string $dict, ...$term)
  * @method int               ftdictdel(string $dict, ...$term)
  * @method array             ftdictdump(string $dict)
  * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
  * @method array             ftinfo(string $index)
+ * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method int               ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
+ * @method int               ftsugdel(string $key, string $string)
+ * @method array             ftsugget(string $key, string $prefix, ?SugGetArguments $arguments = null)
+ * @method int               ftsuglen(string $key)
+ * @method array             ftsyndump(string $index)
+ * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
+ * @method array             fttagvals(string $index, string $fieldName)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
@@ -304,6 +321,8 @@ use Predis\Response\Status;
  *
  * Container commands
  * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property JSONDEBUG $jsondebug
  */
 interface ClientInterface
 {

@@ -214,16 +214,4 @@ class CreateArguments extends CommonArguments
 
         return $this;
     }
-
-    /**
-     * If set, does not scan and index.
-     *
-     * @return $this
-     */
-    public function skipInitialScan(): self
-    {
-        $this->arguments[] = 'SKIPINITIALSCAN';
-
-        return $this;
-    }
 }
