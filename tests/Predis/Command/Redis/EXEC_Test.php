@@ -87,6 +87,7 @@ class EXEC_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-needs-work
      */
     public function testResponsesOfTransactionsAreNotParsed(): void
     {

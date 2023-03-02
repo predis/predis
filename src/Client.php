@@ -25,6 +25,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
@@ -435,10 +436,11 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Actual pipeline context initializer method.
      *
-     * @param array $options  Options for the context.
+     * @param array|null $options Options for the context.
      * @param mixed $callable Optional callable used to execute the context.
      *
      * @return Pipeline|array
+     * @throws \Relay\Exception
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
@@ -448,6 +450,14 @@ class Client implements ClientInterface, IteratorAggregate
             $class = 'Predis\Pipeline\FireAndForget';
         } else {
             $class = 'Predis\Pipeline\Pipeline';
+        }
+
+        if( $this->connection instanceof RelayConnection) {
+            $class = 'Predis\Pipeline\Relay';
+
+            if (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+                throw new \Relay\Exception('Relay does not support fire-and-forget');
+            }
         }
 
         /*

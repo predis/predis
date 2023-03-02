@@ -56,6 +56,7 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-needs-work
      */
     public function testInitializesNewTransaction(): void
     {
@@ -68,6 +69,7 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-needs-work
      */
     public function testActuallyReturnsResponseObjectAbstraction(): void
     {
