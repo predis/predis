@@ -133,9 +133,9 @@ class CreateArgumentsTest extends TestCase
      */
     public function testCreatesArgumentsWithTemporaryModifier(): void
     {
-        $this->arguments->temporary();
+        $this->arguments->temporary(1);
 
-        $this->assertSame(['TEMPORARY'], $this->arguments->toArray());
+        $this->assertSame(['TEMPORARY', 1], $this->arguments->toArray());
     }
 
     /**

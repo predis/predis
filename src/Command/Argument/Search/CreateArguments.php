@@ -155,11 +155,13 @@ class CreateArguments extends CommonArguments
     /**
      * Creates a lightweight temporary index that expires after a specified period of inactivity, in seconds.
      *
+     * @param  int   $seconds
      * @return $this
      */
-    public function temporary(): self
+    public function temporary(int $seconds): self
     {
         $this->arguments[] = 'TEMPORARY';
+        $this->arguments[] = $seconds;
 
         return $this;
     }

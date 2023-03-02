@@ -12,14 +12,14 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\Argument\Search\CreateArguments;
 
 /**
  * @see https://redis.io/commands/ft.create/
  *
  * Create an index with the given specification
  */
-class FTCREATE extends RedisCommand
+class FTCREATE extends WithOptionalArguments
 {
     public function getId()
     {
@@ -28,13 +28,35 @@ class FTCREATE extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        [$index, $schema] = $arguments;
-        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
+        [$index, $schema] = array_splice($arguments, 0, 2);
+        $optionalArguments = $this->buildOptionalArguments(new CreateArguments(), $arguments);
 
         parent::setArguments(array_merge(
             [$index],
-            $commandArguments,
+            $optionalArguments,
             $schema->toArray()
         ));
+    }
+
+    public function getOptionalArguments(): array
+    {
+        return [
+            'on',
+            'prefix',
+            'filter',
+            'language',
+            'languageField',
+            'score',
+            'scoreField',
+            'payloadField',
+            'maxTextFields',
+            'temporary',
+            'noOffsets',
+            'noHl',
+            'noFields',
+            'noFreqs',
+            'stopWords',
+            'skipInitialScan',
+        ];
     }
 }

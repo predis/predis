@@ -12,9 +12,7 @@
 
 namespace Predis\Command\Argument\Search;
 
-use Predis\Command\Argument\ArrayableArgument;
-
-class ProfileArguments implements ArrayableArgument
+class ProfileArguments implements ArgumentBuilder
 {
     /**
      * @var array
