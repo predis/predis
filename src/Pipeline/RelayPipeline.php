@@ -24,8 +24,9 @@ class RelayPipeline extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        /* @var \Predis\Connection\RelayConnection $connection */
+
         try {
-            /** @var \Predis\Connection\RelayConnection $connection */
             $pipeline = $connection->getClient()->pipeline();
 
             foreach ($commands as $command) {

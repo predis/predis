@@ -169,7 +169,7 @@ class RelayConnection extends StreamConnection
     /**
      * Returns the underlying client.
      *
-     * @return resource
+     * @return \Relay\Relay
      */
     public function getClient()
     {
