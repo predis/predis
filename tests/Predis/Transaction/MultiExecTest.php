@@ -24,7 +24,7 @@ use RuntimeException;
 
 /**
  * @group realm-transaction
- * @group relay-tx
+ * @group relay-fixme
  */
 class MultiExecTest extends PredisTestCase
 {
@@ -701,7 +701,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-needs-work
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {

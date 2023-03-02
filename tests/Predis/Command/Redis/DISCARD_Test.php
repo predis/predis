@@ -55,6 +55,7 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.0.0
      */
     public function testAbortsTransactionAndRestoresNormalFlow(): void
@@ -70,6 +71,7 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void

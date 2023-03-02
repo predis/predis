@@ -15,7 +15,7 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-tx
+ * @group relay-fixme
  */
 class EXEC_Test extends PredisCommandTestCase
 {

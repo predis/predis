@@ -76,6 +76,7 @@ class GETBIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.2.0
      */
     public function testThrowsExceptionOnNegativeOffset(): void
@@ -91,6 +92,7 @@ class GETBIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.2.0
      */
     public function testThrowsExceptionOnInvalidOffset(): void

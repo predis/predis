@@ -22,9 +22,6 @@ use Predis\Response;
 use PredisTestCase;
 use stdClass;
 
-/**
- * @group relay-tx
- */
 class PipelineTest extends PredisTestCase
 {
     /**
