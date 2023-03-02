@@ -61,8 +61,7 @@ class RelayConnection extends StreamConnection
     private $client;
 
     /**
-     * These commands must be called on the
-     * client, not using `rawCommand()`.
+     * These commands must be called on the client, not using `Relay::rawCommand()`.
      *
      * @var string[]
      */
@@ -70,6 +69,9 @@ class RelayConnection extends StreamConnection
         'AUTH',
         'SELECT',
         'TYPE',
+        'MULTI',
+        'EXEC',
+        'DISCARD',
     ];
 
     /**
@@ -264,9 +266,7 @@ class RelayConnection extends StreamConnection
      */
     public function writeRequest(CommandInterface $command)
     {
-        throw new NotSupportedException(
-            'The "relay" extension does not support writing requests.'
-        );
+        throw new NotSupportedException('The "relay" extension does not support writing requests.');
     }
 
     /**
@@ -274,9 +274,7 @@ class RelayConnection extends StreamConnection
      */
     public function readResponse(CommandInterface $command)
     {
-        throw new NotSupportedException(
-            'The "relay" extension does not support reading responses.'
-        );
+        throw new NotSupportedException('The "relay" extension does not support reading responses.');
     }
 
     /**

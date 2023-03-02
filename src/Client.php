@@ -12,30 +12,40 @@
 
 namespace Predis;
 
+use Traversable;
 use ArrayIterator;
-use InvalidArgumentException;
 use IteratorAggregate;
-use Predis\Command\CommandInterface;
+
+use RuntimeException;
+use InvalidArgumentException;
+
 use Predis\Command\RawCommand;
+use Predis\Command\ScriptCommand;
+use Predis\Command\CommandInterface;
 use Predis\Command\Redis\Container\ContainerFactory;
 use Predis\Command\Redis\Container\ContainerInterface;
-use Predis\Command\ScriptCommand;
+
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
+
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayConnection;
-use Predis\Monitor\Consumer as MonitorConsumer;
-use Predis\Pipeline\Pipeline;
-use Predis\PubSub\Consumer as PubSubConsumer;
+
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+
+use Predis\Pipeline\Pipeline;
+use Predis\Monitor\Consumer as MonitorConsumer;
+use Predis\Pipeline\Atomic;
+use Predis\Pipeline\FireAndForget;
+use Predis\Pipeline\RelayPipeline;
+use Predis\PubSub\Consumer as PubSubConsumer;
+
 use Predis\Transaction\MultiExec as MultiExecTransaction;
-use ReturnTypeWillChange;
-use RuntimeException;
-use Traversable;
+
 
 /**
  * Client class used for connecting and executing commands on Redis.
@@ -445,18 +455,20 @@ class Client implements ClientInterface, IteratorAggregate
     protected function createPipeline(array $options = null, $callable = null)
     {
         if (isset($options['atomic']) && $options['atomic']) {
-            $class = 'Predis\Pipeline\Atomic';
+            $class = Atomic::class;
         } elseif (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
-            $class = 'Predis\Pipeline\FireAndForget';
+            $class = FireAndForget::class;
         } else {
-            $class = 'Predis\Pipeline\Pipeline';
+            $class = Pipeline::class;
         }
 
-        if( $this->connection instanceof RelayConnection) {
-            $class = 'Predis\Pipeline\Relay';
-
-            if (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
-                throw new \Relay\Exception('Relay does not support fire-and-forget');
+        if ($this->connection instanceof RelayConnection) {
+            if (isset($options['atomic']) && $options['atomic']) {
+                $class = RelayAtomic::class;
+            } elseif (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+                throw new NotSupportedException('The "relay" extension does not support fire-and-forget pipelines.');
+            } else {
+                $class = RelayPipeline::class;
             }
         }
 
@@ -555,7 +567,7 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * @return Traversable<string, static>
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $clients = [];

@@ -12,23 +12,20 @@
 
 namespace Predis\Pipeline;
 
-use Predis\Connection\ConnectionInterface;
-use Predis\Response\ServerException;
-use Relay\Exception as RelayException;
 use SplQueue;
+use Relay\Exception as RelayException;
+use Predis\Response\ServerException;
+use Predis\Connection\ConnectionInterface;
 
-/**
- * Command pipeline that writes commands to the servers but discards responses.
- */
-class Relay extends Pipeline
+class RelayPipeline extends Pipeline
 {
     /**
      * {@inheritdoc}
-     * @throws ServerException
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         try {
+            /** @var \Predis\Connection\RelayConnection $connection */
             $pipeline = $connection->getClient()->pipeline();
 
             foreach ($commands as $command) {
@@ -40,9 +37,10 @@ class Relay extends Pipeline
             }
 
             return $pipeline->exec();
+        } catch (RelayException $ex) {
+            $connection->getClient()->discard();
 
-        } catch (RelayException $e) {
-            throw new ServerException($e->getMessage(), $e->getCode(), $e->getPrevious());
+            throw new ServerException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
         }
     }
 }
