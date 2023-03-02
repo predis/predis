@@ -87,7 +87,7 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void

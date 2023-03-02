@@ -679,7 +679,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      */
     public function testIntegrationHandlesStandardExceptionsInBlock(): void
     {
@@ -701,7 +701,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {
@@ -725,7 +725,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
@@ -744,7 +744,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIntegrationSendMultiOnCommandsAfterDiscard(): void
@@ -764,7 +764,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
@@ -789,7 +789,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-fixme
+     * @group relay-tx
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationCheckAndSetWithDiscardAndRetry(): void
