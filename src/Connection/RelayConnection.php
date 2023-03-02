@@ -145,7 +145,10 @@ class RelayConnection extends StreamConnection
         // whether to use instantaneous client-side invalidation
         $client->setOption(Relay::OPT_CLIENT_INVALIDATIONS, true);
 
-        // throw when errors occur and return `null` for non-existent keys
+        // throw when errors occur
+        $client->setOption(Relay::OPT_THROW_ON_ERROR, true);
+
+        // return `null` for non-existent keys
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
         // whether to use in-memory caching

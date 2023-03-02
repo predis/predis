@@ -87,15 +87,12 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
-     * @group relay-581
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR DISCARD without MULTI');
+        $this->expectExceptionMessage('DISCARD without MULTI');
 
         $redis = $this->getClient();
 

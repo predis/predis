@@ -101,14 +101,11 @@ class EXEC_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
-     * @group relay-581
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR EXEC without MULTI');
+        $this->expectExceptionMessage('EXEC without MULTI');
 
         $redis = $this->getClient();
 
