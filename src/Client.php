@@ -451,7 +451,6 @@ class Client implements ClientInterface, IteratorAggregate
      * @param mixed $callable Optional callable used to execute the context.
      *
      * @return Pipeline|array
-     * @throws \Relay\Exception
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
