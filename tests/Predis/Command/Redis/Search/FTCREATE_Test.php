@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\Schema;
 use Predis\Command\Redis\PredisCommandTestCase;
 

@@ -15,7 +15,6 @@ namespace Predis;
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Search\AlterArguments;
-use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\Schema;
