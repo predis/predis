@@ -36,6 +36,7 @@ $client->get('library');
 // This key is no available to all PHP workers in this FPM pool
 $client->get('library');
 
+// For debugging only:
 var_export(
     $client->getConnection()->getClient()->_getKeys()
 );
