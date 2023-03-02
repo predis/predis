@@ -745,7 +745,7 @@ class MultiExecTest extends PredisTestCase
      * @group connected
      * @group ext-relay
      */
-    public function testIntegrationReturnsErrorResponseOnRedisErrorInBlock(): void
+    public function testIntegrationReturnsErrorResponseOnRedisErrorInBlockWhenUsingRelay(): void
     {
         $client = $this->getClient([], ['exceptions' => false]);
 
