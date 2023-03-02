@@ -77,6 +77,7 @@ class GETBIT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-incompatible
+     * @group relay-fixme
      * @group relay-580
      * @requiresRedisVersion >= 2.2.0
      */
@@ -94,6 +95,7 @@ class GETBIT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-incompatible
+     * @group relay-fixme
      * @group relay-580
      * @requiresRedisVersion >= 2.2.0
      */
