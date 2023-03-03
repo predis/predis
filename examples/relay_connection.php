@@ -41,15 +41,15 @@ var_export(
     $client->getConnection()->getClient()->_getKeys()
 );
 
-/*
+/**
 array (
-  'library' => array (
-    0 => array (
-      'type' => 'string',
-      'local-len' => 5,
-      'remote-len' => 5,
-      'size' => 5,
+    'library' => array (
+        0 => array (
+            'type' => 'string',
+            'local-len' => 5,
+            'remote-len' => 5,
+            'size' => 5,
+        ),
     ),
-  ),
 )
 */
