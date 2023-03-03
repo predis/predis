@@ -13,6 +13,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Connection\ConnectionInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use SplQueue;
@@ -20,12 +21,15 @@ use SplQueue;
 class RelayPipeline extends Pipeline
 {
     /**
-     * {@inheritdoc}
+     * Implements the logic to flush the queued commands and read the responses
+     * from the current connection.
+     *
+     * @param  RelayConnection $connection Current connection instance.
+     * @param  SplQueue        $commands   Queued commands.
+     * @return array
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
-        /* @var \Predis\Connection\RelayConnection $connection */
-
         try {
             $pipeline = $connection->getClient()->pipeline();
 
