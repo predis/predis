@@ -184,6 +184,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XDEL' => $prefixFirst,
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
+            /* ---------------- Redis 7.0 ---------------- */
+            'FCALL' => $prefixEvalKeys,
         ];
     }
 
