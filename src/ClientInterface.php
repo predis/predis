@@ -120,6 +120,7 @@ use Predis\Response\Status;
  * @method int               ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
  * @method int               ftsugdel(string $key, string $string)
  * @method array             ftsugget(string $key, string $prefix, ?SugGetArguments $arguments = null)
+ * @method int               ftsuglen(string $key)
  * @method array             ftsyndump(string $index)
  * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method array             fttagvals(string $index, string $fieldName)
