@@ -99,7 +99,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this ftaliasdel(string $alias)
  * @method $this ftaliasupdate(string $alias, string $index)
  * @method $this ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
- * @method $this ftcreate(string $index, FieldInterface[] $schema, string $on = '', array $prefixes = [], string $filter = '', string $language = '', string $languageField = '', float $score = 0, string $scoreField = '', bool $maxTextFields = false, int $temporarySeconds = 0, bool $noOffsets = false, bool $noHl = false, bool $noFields = false, bool $noFreqs = false, array $stopWords = [], bool $skipInitialScan = false)
+ * @method $this ftcreate(string $index, FieldInterface[] $schema, string $on = 'HASH', array $prefixes = [], string $filter = '', string $language = 'English', string $languageField = '', float $score = 1.0, string $scoreField = '', bool $maxTextFields = false, int $temporarySeconds = 0, bool $noOffsets = false, bool $noHl = false, bool $noFields = false, bool $noFreqs = false, array $stopWords = [], bool $skipInitialScan = false)
  * @method $this ftdictadd(string $dict, ...$term)
  * @method $this ftdictdel(string $dict, ...$term)
  * @method $this ftdictdump(string $dict)
