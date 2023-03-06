@@ -55,7 +55,6 @@ class FTCREATE extends WithOptionalArguments
             'languageField',
             'score',
             'scoreField',
-            'payloadField',
             'maxTextFields',
             'temporary',
             'noOffsets',

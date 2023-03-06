@@ -101,16 +101,6 @@ class CreateArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithPayloadFieldModifier(): void
-    {
-        $this->arguments->payloadField('payload_field');
-
-        $this->assertSame(['PAYLOAD_FIELD', 'payload_field'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithMaxTestFieldsModifier(): void
     {
         $this->arguments->maxTextFields();

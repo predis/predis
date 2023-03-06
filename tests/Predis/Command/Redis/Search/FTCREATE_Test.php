@@ -84,7 +84,6 @@ class FTCREATE_Test extends PredisCommandTestCase
             '',
             0,
             '',
-            '',
             false,
             0,
             false,
@@ -136,40 +135,36 @@ class FTCREATE_Test extends PredisCommandTestCase
                 ['index', [new TextField('field_name')], '', [], '', '', '', 0, 'score_attribute'],
                 ['index', 'SCORE_FIELD', 'score_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
-            'with PAYLOAD_FIELD' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', 'payload_attribute'],
-                ['index', 'PAYLOAD_FIELD', 'payload_attribute', 'SCHEMA', 'field_name', 'TEXT'],
-            ],
             'with MAXTEXTFIELDS' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', true],
                 ['index', 'MAXTEXTFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with TEMPORARY' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 1],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 1],
                 ['index', 'TEMPORARY', 1, 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOOFFSETS' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, true],
                 ['index', 'NOOFFSETS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOHL' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, false, true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, false, true],
                 ['index', 'NOHL', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFIELDS' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, false, false, true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, false, false, true],
                 ['index', 'NOFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFREQS' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, false, false, false, true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, false, false, false, true],
                 ['index', 'NOFREQS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with STOPWORDS' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, false, false, false, false, ['word1', 'word2']],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, false, false, false, false, ['word1', 'word2']],
                 ['index', 'STOPWORDS', 2, 'word1', 'word2', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SKIPINITIALSCAN' => [
-                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', '', false, 0, false, false, false, false, [], true],
+                ['index', [new TextField('field_name')], '', [], '', '', '', 0, '', false, 0, false, false, false, false, [], true],
                 ['index', 'SKIPINITIALSCAN', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with chain of arguments' => [

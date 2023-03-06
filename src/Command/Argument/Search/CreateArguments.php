@@ -115,20 +115,6 @@ class CreateArguments extends CommonArguments
     }
 
     /**
-     * Document attribute that you use as a binary safe payload string.
-     *
-     * @param  string $payloadAttribute
-     * @return $this
-     */
-    public function payloadField(string $payloadAttribute): self
-    {
-        $this->arguments[] = 'PAYLOAD_FIELD';
-        $this->arguments[] = $payloadAttribute;
-
-        return $this;
-    }
-
-    /**
      * Forces RediSearch to encode indexes as if there were more than 32 text attributes.
      *
      * @return $this
