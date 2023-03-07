@@ -73,12 +73,7 @@ class FCALL_RO_Test extends PredisCommandTestCase
         $this->assertSame(
             self::LIB_NAME,
             $redis->function->load(
-                "#!lua name=mylib
-                redis.register_function{
-                    function_name='myfunc',
-                    callback=function(keys, args) return redis.call('GET', keys[1]) end,
-                    flags={'no-writes'}
-                }"
+                "#!lua name=mylib\n redis.register_function{function_name='myfunc',callback=function(keys, args) return redis.call('GET', keys[1]) end,flags={'no-writes'}}"
             )
         );
 
