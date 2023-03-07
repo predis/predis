@@ -70,7 +70,7 @@ use Predis\Command\Redis\Container\FunctionContainer;
  * @method $this mset(array $dictionary)
  * @method $this msetnx(array $dictionary)
  * @method $this psetex($key, $milliseconds, $value)
- * @method $this set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method $this set($key, $value, bool $getOld = false, $expireResolution = null, $expireTTL = null, $flag = null)
  * @method $this setbit($key, $offset, $value)
  * @method $this setex($key, $seconds, $value)
  * @method $this setnx($key, $value)

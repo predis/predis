@@ -53,8 +53,8 @@ class SET_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsRedisWithModifiers(): void
     {
-        $arguments = ['foo', 'bar', 'EX', '10', 'NX'];
-        $expected = ['foo', 'bar', 'EX', '10', 'NX'];
+        $arguments = ['foo', 'bar', true, 'EX', '10', 'NX'];
+        $expected = ['foo', 'bar', 'GET', 'EX', '10', 'NX'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -90,7 +90,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', 'ex', 1));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'ex', 1));
         $this->assertSame(1, $redis->ttl('foo'));
     }
 
@@ -102,7 +102,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', 'px', 1000));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'px', 1000));
 
         $pttl = $redis->pttl('foo');
         $this->assertGreaterThan(0, $pttl);
@@ -117,7 +117,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', 'NX'));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'NX'));
         $this->assertNull($redis->set('foo', 'bar', 'NX'));
     }
 
@@ -131,7 +131,59 @@ class SET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->set('foo', 'bar'));
 
-        $this->assertEquals('OK', $redis->set('foo', 'barbar', 'XX'));
-        $this->assertNull($redis->set('foofoo', 'barbar', 'XX'));
+        $this->assertEquals('OK', $redis->set('foo', 'barbar', false, 'XX'));
+        $this->assertNull($redis->set('foofoo', 'barbar', false, 'XX'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetOverrideStringValueAndRetainsOldTTL(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('foo', 'bar', false, 'EX', 100);
+        $this->assertGreaterThanOrEqual(99, $redis->ttl('foo'));
+        $this->assertLessThanOrEqual(100, $redis->ttl('foo'));
+
+        $this->assertEquals('OK', $redis->set('foo', 'barbar', false, 'KEEPTTL'));
+        $this->assertGreaterThanOrEqual(99, $redis->ttl('foo'));
+        $this->assertLessThanOrEqual(100, $redis->ttl('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testSetReturnsOldValueIfItPreviouslyExistsWithGetModifier(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('foo', 'bar');
+
+        $this->assertSame('bar', $redis->set('foo', 'foobar', true));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testSetReturnsNullIfKeyDidNotExistsWithGetModifier(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertNull($redis->set('foo', 'foobar', true));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSetReturnsNullIfKeyDidNotExistsWithGetAndNXModifier(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertNull($redis->set('foo', 'foobar', true, 'NX'));
     }
 }
