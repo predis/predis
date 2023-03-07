@@ -27,6 +27,16 @@ class SET extends RedisCommand
         return 'SET';
     }
 
+    public function setArguments(array $arguments)
+    {
+        if (isset($arguments[2]) && true === $arguments[2]) {
+            $arguments[2] = 'GET';
+        }
+
+        parent::setArguments($arguments);
+        $this->filterArguments();
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
