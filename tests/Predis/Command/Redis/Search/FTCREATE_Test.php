@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
@@ -74,24 +75,12 @@ class FTCREATE_Test extends PredisCommandTestCase
             new NumericField('age'),
         ];
 
-        $actualResponse = $redis->ftcreate(
-            'index',
-            $schema,
-            '',
-            ['prefix:', 'prefix1:'],
-            '@age>16',
-            '',
-            '',
-            0,
-            '',
-            false,
-            0,
-            false,
-            false,
-            false,
-            false,
-            ['hello', 'world']
-        );
+        $arguments = new CreateArguments();
+        $arguments->prefix(['prefix:', 'prefix1:']);
+        $arguments->filter('@age>16');
+        $arguments->stopWords(['hello', 'world']);
+
+        $actualResponse = $redis->ftcreate('index', $schema, $arguments);
 
         $this->assertEquals('OK', $actualResponse);
     }
@@ -104,75 +93,75 @@ class FTCREATE_Test extends PredisCommandTestCase
                 ['index', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with ON modifier - HASH' => [
-                ['index', [new TextField('field_name')], 'hash'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->on()],
                 ['index', 'ON', 'HASH', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with ON modifier - JSON' => [
-                ['index', [new TextField('field_name')], 'json'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->on('JSON')],
                 ['index', 'ON', 'JSON', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with prefixes' => [
-                ['index', [new TextField('field_name')], 'hash', ['prefix1:', 'prefix2:']],
-                ['index', 'ON', 'HASH', 'PREFIX', 2, 'prefix1:', 'prefix2:', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->prefix(['prefix1:', 'prefix2:'])],
+                ['index', 'PREFIX', 2, 'prefix1:', 'prefix2:', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with FILTER' => [
-                ['index', [new TextField('field_name')], 'hash', [], '@age>16'],
-                ['index', 'ON', 'HASH', 'FILTER', '@age>16', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->filter('@age>16')],
+                ['index', 'FILTER', '@age>16', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with LANGUAGE' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english'],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->language()],
+                ['index', 'LANGUAGE', 'english', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with LANGUAGE_FIELD' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', 'language_attribute'],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'LANGUAGE_FIELD', 'language_attribute', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->languageField('language_attribute')],
+                ['index', 'LANGUAGE_FIELD', 'language_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SCORE' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->score()],
+                ['index', 'SCORE', 1.0, 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SCORE_FIELD' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, 'score_attribute'],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'SCORE_FIELD', 'score_attribute', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->scoreField('score_attribute')],
+                ['index', 'SCORE_FIELD', 'score_attribute', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with MAXTEXTFIELDS' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'MAXTEXTFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->maxTextFields()],
+                ['index', 'MAXTEXTFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with TEMPORARY' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 1],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'TEMPORARY', 1, 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->temporary(1)],
+                ['index', 'TEMPORARY', 1, 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOOFFSETS' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'NOOFFSETS', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->noOffsets()],
+                ['index', 'NOOFFSETS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOHL' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, false, true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'NOHL', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->noHl()],
+                ['index', 'NOHL', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFIELDS' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, false, false, true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'NOFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->noFields()],
+                ['index', 'NOFIELDS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with NOFREQS' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, false, false, false, true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'NOFREQS', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->noFreqs()],
+                ['index', 'NOFREQS', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with STOPWORDS' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, false, false, false, false, ['word1', 'word2']],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'STOPWORDS', 2, 'word1', 'word2', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->stopWords(['word1', 'word2'])],
+                ['index', 'STOPWORDS', 2, 'word1', 'word2', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with SKIPINITIALSCAN' => [
-                ['index', [new TextField('field_name')], 'hash', [], '', 'english', '', 1.0, '', false, 0, false, false, false, false, [], true],
-                ['index', 'ON', 'HASH', 'LANGUAGE', 'english', 'SCORE', 1.0, 'SKIPINITIALSCAN', 'SCHEMA', 'field_name', 'TEXT'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->skipInitialScan()],
+                ['index', 'SKIPINITIALSCAN', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with chain of arguments' => [
-                ['index', [new TextField('field_name')], 'hash', ['prefix1:', 'prefix2:'], '@age>16'],
+                ['index', [new TextField('field_name')], (new CreateArguments())->on()->prefix(['prefix1:', 'prefix2:'])->filter('@age>16')],
                 ['index', 'ON', 'HASH', 'PREFIX', 2, 'prefix1:', 'prefix2:', 'FILTER', '@age>16', 'SCHEMA', 'field_name', 'TEXT'],
             ],
             'with multiple fields schema' => [
-                ['index', [new TextField('text_field'), new NumericField('numeric_field'), new TagField('tag_field', 'tf')], 'hash'],
+                ['index', [new TextField('text_field'), new NumericField('numeric_field'), new TagField('tag_field', 'tf')], (new CreateArguments())->on()],
                 ['index', 'ON', 'HASH', 'SCHEMA', 'text_field', 'TEXT', 'numeric_field', 'NUMERIC', 'tag_field', 'AS', 'tf', 'TAG'],
             ],
         ];
