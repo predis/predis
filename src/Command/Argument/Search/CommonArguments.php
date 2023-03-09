@@ -12,7 +12,9 @@
 
 namespace Predis\Command\Argument\Search;
 
-class CommonArguments implements ArgumentBuilder
+use Predis\Command\Argument\ArrayableArgument;
+
+class CommonArguments implements ArrayableArgument
 {
     /**
      * @var array

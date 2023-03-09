@@ -12,7 +12,9 @@
 
 namespace Predis\Command\Argument\Search;
 
-class DropArguments implements ArgumentBuilder
+use Predis\Command\Argument\ArrayableArgument;
+
+class DropArguments implements ArrayableArgument
 {
     /**
      * @var array
