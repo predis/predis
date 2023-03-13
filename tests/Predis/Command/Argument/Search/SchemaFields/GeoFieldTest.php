@@ -13,7 +13,6 @@
 namespace Predis\Command\Argument\Search\SchemaFields;
 
 use PHPUnit\Framework\TestCase;
-use Predis\Command\Argument\Search\Schema;
 
 class GeoFieldTest extends TestCase
 {
@@ -42,15 +41,15 @@ class GeoFieldTest extends TestCase
                 ['field_name', 'AS', 'fn', 'GEO'],
             ],
             'with sortable - no UNF' => [
-                ['field_name', '', Schema::SORTABLE],
+                ['field_name', '', AbstractField::SORTABLE],
                 ['field_name', 'GEO', 'SORTABLE'],
             ],
             'with sortable - with UNF' => [
-                ['field_name', '', Schema::SORTABLE_UNF],
+                ['field_name', '', AbstractField::SORTABLE_UNF],
                 ['field_name', 'GEO', 'SORTABLE', 'UNF'],
             ],
             'with NOINDEX modifier' => [
-                ['field_name', '', Schema::NOT_SORTABLE, true],
+                ['field_name', '', AbstractField::NOT_SORTABLE, true],
                 ['field_name', 'GEO', 'NOINDEX'],
             ],
         ];
