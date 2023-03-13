@@ -118,18 +118,17 @@ class ACL_Test extends PredisCommandTestCase
         $this->assertEquals(
             'OK',
             $redis->acl->setUser(
-                'Test',
-                'on',
-                'nopass',
-                '+GET',
+                'alan',
                 'allkeys',
-                '&*',
-                '(+SET ~key2)'
+                '+@string',
+                '+@set',
+                '-SADD',
+                '>alanpassword'
             )
         );
 
         foreach (['flags', 'passwords', 'commands', 'keys', 'channels', 'selectors'] as $key) {
-            $this->assertContains($key, $redis->acl->getUser('Test'));
+            $this->assertContains($key, $redis->acl->getUser('alan'));
         }
     }
 
