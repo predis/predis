@@ -58,6 +58,7 @@ use Predis\Command\Redis\Container\FunctionContainer;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
+ * @method $this fcall_ro(string $function, array $keys, ...$args)
  * @method $this get($key)
  * @method $this getbit($key, $offset)
  * @method $this getex(string $key, $modifier = '', $value = false)
