@@ -15,8 +15,12 @@ namespace Predis\Command\Redis\Container;
 use Predis\Response\Status;
 
 /**
- * @method string load(string $functionCode, bool $replace = 'false')
  * @method Status delete(string $libraryName)
+ * @method string dump()
+ * @method Status flush(string $modifier = '')
+ * @method array  list(string $libraryName = '', bool $withCode = false)
+ * @method string load(string $functionCode, bool $replace = 'false')
+ * @method Status restore(string $serializedValue, string $modifier = '')
  */
 class FunctionContainer extends AbstractContainer
 {
