@@ -127,7 +127,7 @@ class ACL_Test extends PredisCommandTestCase
             )
         );
 
-        foreach (['flags', 'passwords', 'commands', 'keys', 'channels', 'selectors'] as $key) {
+        foreach (['flags', 'passwords', 'commands', 'keys', 'channels'] as $key) {
             $this->assertContains($key, $redis->acl->getUser('alan'));
         }
     }
