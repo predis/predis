@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -69,8 +69,7 @@ class FTALIASUPDATE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $schema = new Schema();
-        $schema->addTextField('text_field');
+        $schema = [new TextField('text_field')];
 
         $createResponse = $redis->ftcreate('index', $schema);
         $this->assertEquals('OK', $createResponse);
@@ -88,8 +87,7 @@ class FTALIASUPDATE_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $schema = new Schema();
-        $schema->addTextField('text_field');
+        $schema = [new TextField('text_field')];
 
         $createResponse = $redis->ftcreate('index', $schema);
         $this->assertEquals('OK', $createResponse);

@@ -14,17 +14,22 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
+use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\FUNCTIONS;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -91,11 +96,12 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
+ * @method $this ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
  * @method $this ftaliasupdate(string $alias, string $index)
- * @method $this ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
- * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method $this ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
+ * @method $this ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)
  * @method $this ftdictadd(string $dict, ...$term)
  * @method $this ftdictdel(string $dict, ...$term)
  * @method $this ftdictdump(string $dict)
@@ -105,6 +111,10 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  * @method $this ftprofile(string $index, ProfileArguments $arguments)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
  * @method $this ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method $this ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
+ * @method $this ftsugdel(string $key, string $string)
+ * @method $this ftsugget(string $key, string $prefix, ?SugGetArguments $arguments = null)
+ * @method $this ftsuglen(string $key)
  * @method $this ftsyndump(string $index)
  * @method $this ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method $this fttagvals(string $index, string $fieldName)
@@ -296,6 +306,8 @@ use Predis\Command\Redis\Container\FUNCTIONS;
  *
  * Container commands
  * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property JSONDEBUG $jsondebug
  */
 interface ClientContextInterface
 {
