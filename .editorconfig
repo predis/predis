@@ -22,6 +22,3 @@ max_line_length = unset
 
 [{src/ClientInterface.php,src/ClientContextInterface.php}]
 max_line_length = unset
-
-[tests/Predis/Command/Redis/Search/FTEXPLAIN_Test.php]
-indent_size = unset
