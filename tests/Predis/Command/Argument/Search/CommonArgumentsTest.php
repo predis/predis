@@ -49,6 +49,46 @@ class CommonArgumentsTest extends TestCase
     /**
      * @return void
      */
+    public function testCreatesArgumentsWithPayloadModifier(): void
+    {
+        $this->arguments->payload('payload');
+
+        $this->assertSame(['PAYLOAD', 'payload'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithStopInitialScanModifier(): void
+    {
+        $this->arguments->skipInitialScan();
+
+        $this->assertSame(['SKIPINITIALSCAN'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithWithScoresModifier(): void
+    {
+        $this->arguments->withScores();
+
+        $this->assertSame(['WITHSCORES'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithWithPayloadsModifier(): void
+    {
+        $this->arguments->withPayloads();
+
+        $this->assertSame(['WITHPAYLOADS'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
     public function testCreatesArgumentsWithVerbatimModifier(): void
     {
         $this->arguments->verbatim();

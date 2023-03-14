@@ -40,26 +40,6 @@ class SearchArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithWithScoresModifier(): void
-    {
-        $this->arguments->withScores();
-
-        $this->assertSame(['WITHSCORES'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithWithPayloadsModifier(): void
-    {
-        $this->arguments->withPayloads();
-
-        $this->assertSame(['WITHPAYLOADS'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithWithSortKeysModifier(): void
     {
         $this->arguments->withSortKeys();
@@ -203,16 +183,6 @@ class SearchArgumentsTest extends TestCase
         $this->arguments->explainScore();
 
         $this->assertSame(['EXPLAINSCORE'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
-    public function testCreatesArgumentsWithPayloadModifier(): void
-    {
-        $this->arguments->payload('payload');
-
-        $this->assertSame(['PAYLOAD', 'payload'], $this->arguments->toArray());
     }
 
     /**

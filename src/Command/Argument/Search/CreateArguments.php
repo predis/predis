@@ -30,7 +30,7 @@ class CreateArguments extends CommonArguments
      * @param  string $modifier
      * @return $this
      */
-    public function on(string $modifier): self
+    public function on(string $modifier = 'HASH'): self
     {
         if (in_array(strtoupper($modifier), $this->supportedDataTypesEnum)) {
             $this->arguments[] = 'ON';
@@ -78,7 +78,7 @@ class CreateArguments extends CommonArguments
      * @param  float $defaultScore
      * @return $this
      */
-    public function score(float $defaultScore): self
+    public function score(float $defaultScore = 1.0): self
     {
         $this->arguments[] = 'SCORE';
         $this->arguments[] = $defaultScore;
@@ -96,20 +96,6 @@ class CreateArguments extends CommonArguments
     {
         $this->arguments[] = 'SCORE_FIELD';
         $this->arguments[] = $scoreAttribute;
-
-        return $this;
-    }
-
-    /**
-     * Document attribute that you use as a binary safe payload string.
-     *
-     * @param  string $payloadAttribute
-     * @return $this
-     */
-    public function payloadField(string $payloadAttribute): self
-    {
-        $this->arguments[] = 'PAYLOAD_FIELD';
-        $this->arguments[] = $payloadAttribute;
 
         return $this;
     }
@@ -141,11 +127,13 @@ class CreateArguments extends CommonArguments
     /**
      * Creates a lightweight temporary index that expires after a specified period of inactivity, in seconds.
      *
+     * @param  int   $seconds
      * @return $this
      */
-    public function temporary(): self
+    public function temporary(int $seconds): self
     {
         $this->arguments[] = 'TEMPORARY';
+        $this->arguments[] = $seconds;
 
         return $this;
     }
@@ -197,18 +185,6 @@ class CreateArguments extends CommonArguments
         $this->arguments[] = 'STOPWORDS';
         $this->arguments[] = count($stopWords);
         $this->arguments = array_merge($this->arguments, $stopWords);
-
-        return $this;
-    }
-
-    /**
-     * If set, does not scan and index.
-     *
-     * @return $this
-     */
-    public function skipInitialScan(): self
-    {
-        $this->arguments[] = 'SKIPINITIALSCAN';
 
         return $this;
     }

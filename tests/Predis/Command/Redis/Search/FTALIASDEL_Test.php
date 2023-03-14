@@ -12,10 +12,14 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTALIASDEL_Test extends PredisCommandTestCase
 {
     /**
@@ -65,8 +69,7 @@ class FTALIASDEL_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $schema = new Schema();
-        $schema->addTextField('field_name');
+        $schema = [new TextField('text_field')];
 
         $this->assertEquals('OK', $redis->ftcreate('index', $schema));
         $this->assertEquals('OK', $redis->ftaliasadd('alias', 'index'));

@@ -13,10 +13,15 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSEARCH_Test extends PredisCommandTestCase
 {
     /**
@@ -69,9 +74,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $createArguments->on('json');
         $createArguments->prefix(['doc:']);
 
-        $schema = new Schema();
-        $schema->addNumericField('$..arr', 'arr');
-        $schema->addTextField('$..val', 'val');
+        $schema = [new NumericField('$..arr', 'arr'), new TextField('$..val', 'val')];
 
         $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArguments);
         $this->assertEquals('OK', $ftCreateResponse);
@@ -99,9 +102,10 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $ftCreateArguments = new CreateArguments();
         $ftCreateArguments->prefix(['doc:']);
 
-        $schema = new Schema();
-        $schema->addTextField('field1', 'should_return');
-        $schema->addTextField('field2', 'should_not_return');
+        $schema = [
+            new TextField('field1', 'should_return'),
+            new TextField('field2', 'should_not_return'),
+        ];
 
         $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);

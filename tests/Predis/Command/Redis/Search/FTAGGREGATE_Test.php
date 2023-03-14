@@ -14,7 +14,9 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\AbstractField;
+use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -80,10 +82,11 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         ];
 
         $ftCreateArguments = (new CreateArguments())->prefix(['user:']);
-        $schema = (new Schema())
-            ->addTextField('name')
-            ->addTextField('country')
-            ->addNumericField('dob', '', Schema::SORTABLE);
+        $schema = [
+            new TextField('name'),
+            new TextField('country'),
+            new NumericField('dob', '', AbstractField::SORTABLE),
+        ];
 
         $this->assertEquals('OK', $redis->ftcreate('idx', $schema, $ftCreateArguments));
         $this->assertSame(

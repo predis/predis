@@ -13,10 +13,14 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTALIASADD_Test extends PredisCommandTestCase
 {
     /**
@@ -68,10 +72,9 @@ class FTALIASADD_Test extends PredisCommandTestCase
 
         $arguments = new CreateArguments();
         $arguments->prefix(['prefix:']);
-        $arguments->language('english');
+        $arguments->language();
 
-        $schema = new Schema();
-        $schema->addTextField('text_field');
+        $schema = [new TextField('text_field')];
 
         $createResponse = $redis->ftcreate('index', $schema, $arguments);
         $this->assertEquals('OK', $createResponse);
@@ -106,10 +109,9 @@ class FTALIASADD_Test extends PredisCommandTestCase
 
         $arguments = new CreateArguments();
         $arguments->prefix(['prefix:']);
-        $arguments->language('english');
+        $arguments->language();
 
-        $schema = new Schema();
-        $schema->addTextField('text_field');
+        $schema = [new TextField('text_field')];
 
         $createResponse = $redis->ftcreate('index', $schema, $arguments);
         $this->assertEquals('OK', $createResponse);
