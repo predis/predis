@@ -14,8 +14,21 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AlterArguments;
+use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ProfileArguments;
+use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SearchArguments;
+use Predis\Command\Argument\Search\SugAddArguments;
+use Predis\Command\Argument\Search\SugGetArguments;
+use Predis\Command\Argument\Search\SynUpdateArguments;
+use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -33,8 +46,8 @@ use Predis\Response\Status;
  * @method int               del(string[]|string $keyOrKeys, string ...$keys = null)
  * @method string|null       dump(string $key)
  * @method int               exists(string $key)
- * @method int               expire(string $key, int $seconds)
- * @method int               expireat(string $key, int $timestamp)
+ * @method int               expire(string $key, int $seconds, string $expireOption = '')
+ * @method int               expireat(string $key, int $timestamp, string $expireOption = '')
  * @method int               expiretime(string $key)
  * @method array             keys(string $pattern)
  * @method int               move(string $key, int $db)
@@ -48,6 +61,7 @@ use Predis\Response\Status;
  * @method int               renamenx(string $key, string $target)
  * @method array             scan($cursor, array $options = null)
  * @method array             sort(string $key, array $options = null)
+ * @method array             sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
@@ -60,10 +74,10 @@ use Predis\Response\Status;
  * @method array             bfmexists(string $key, ...$item)
  * @method Status            bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method array             bfscandump(string $key, int $iterator)
- * @method int               bitcount(string $key, $start = null, $end = null)
+ * @method int               bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
- * @method int               bitpos(string $key, $bit, $start = null, $end = null)
+ * @method int               bitpos(string $key, $bit, $start = null, $end = null, string $index = 'byte')
  * @method array             blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)
@@ -89,6 +103,27 @@ use Predis\Response\Status;
  * @method int               decr(string $key)
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
+ * @method mixed             fcall(string $function, array $keys, ...$args)
+ * @method Status            ftaliasadd(string $alias, string $index)
+ * @method Status            ftaliasdel(string $alias)
+ * @method Status            ftaliasupdate(string $alias, string $index)
+ * @method Status            ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
+ * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method int               ftdictadd(string $dict, ...$term)
+ * @method int               ftdictdel(string $dict, ...$term)
+ * @method array             ftdictdump(string $dict)
+ * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method array             ftinfo(string $index)
+ * @method array             ftprofile(string $index, ProfileArguments $arguments)
+ * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method array             ftspellcheck(string $index, string $query, ?SearchArguments $arguments = null)
+ * @method int               ftsugadd(string $key, string $string, float $score, ?SugAddArguments $arguments = null)
+ * @method int               ftsugdel(string $key, string $string)
+ * @method array             ftsugget(string $key, string $prefix, ?SugGetArguments $arguments = null)
+ * @method int               ftsuglen(string $key)
+ * @method array             ftsyndump(string $index)
+ * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
+ * @method array             fttagvals(string $index, string $fieldName)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
@@ -283,6 +318,11 @@ use Predis\Response\Status;
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ *
+ * Container commands
+ * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property JSONDEBUG $jsondebug
  */
 interface ClientInterface
 {

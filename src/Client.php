@@ -16,6 +16,8 @@ use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\ContainerFactory;
+use Predis\Command\Container\ContainerInterface;
 use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
@@ -31,6 +33,7 @@ use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Transaction\MultiExec as MultiExecTransaction;
 use ReturnTypeWillChange;
+use RuntimeException;
 use Traversable;
 
 /**
@@ -308,6 +311,34 @@ class Client implements ClientInterface, IteratorAggregate
     public function createCommand($commandID, $arguments = [])
     {
         return $this->commands->create($commandID, $arguments);
+    }
+
+    /**
+     * @param $name
+     * @return ContainerInterface
+     */
+    public function __get($name)
+    {
+        return ContainerFactory::create($this, $name);
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return mixed
+     */
+    public function __set($name, $value)
+    {
+        throw new RuntimeException('Not allowed');
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __isset($name)
+    {
+        throw new RuntimeException('Not allowed');
     }
 
     /**

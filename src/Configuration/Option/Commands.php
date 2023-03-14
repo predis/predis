@@ -16,7 +16,6 @@ use InvalidArgumentException;
 use Predis\Command\FactoryInterface;
 use Predis\Command\RawFactory;
 use Predis\Command\RedisFactory;
-use Predis\Command\Resolver\CommandResolver;
 use Predis\Configuration\OptionInterface;
 use Predis\Configuration\OptionsInterface;
 
@@ -136,7 +135,7 @@ class Commands implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        $commands = new RedisFactory(new CommandResolver());
+        $commands = new RedisFactory();
 
         if (isset($options->prefix)) {
             $commands->setProcessor($options->prefix);

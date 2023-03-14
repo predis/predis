@@ -12,7 +12,8 @@
 
 namespace Predis\Command;
 
-use Predis\Command\Resolver\CommandResolverInterface;
+use Predis\ClientConfiguration;
+use Predis\Command\Redis\FUNCTIONS;
 
 /**
  * Command factory for mainline Redis servers.
@@ -25,20 +26,17 @@ use Predis\Command\Resolver\CommandResolverInterface;
  */
 class RedisFactory extends Factory
 {
-    /**
-     * @var CommandResolverInterface
-     */
-    private $commandResolver;
+    private const COMMANDS_NAMESPACE = "Predis\Command\Redis";
 
-    public function __construct(CommandResolverInterface $commandResolver)
+    public function __construct()
     {
         $this->commands = [
             'ECHO' => 'Predis\Command\Redis\ECHO_',
             'EVAL' => 'Predis\Command\Redis\EVAL_',
             'OBJECT' => 'Predis\Command\Redis\OBJECT_',
+            // Class name corresponds to PHP reserved word "function", added mapping to bypass restrictions
+            'FUNCTION' => FUNCTIONS::class,
         ];
-
-        $this->commandResolver = $commandResolver;
     }
 
     /**
@@ -52,7 +50,7 @@ class RedisFactory extends Factory
             return $this->commands[$commandID];
         }
 
-        $commandClass = $this->commandResolver->resolve($commandID);
+        $commandClass = $this->resolve($commandID);
 
         if (null === $commandClass) {
             return null;
@@ -74,5 +72,41 @@ class RedisFactory extends Factory
         // explicit mapping is defined, see RedisFactory::getCommandClass() for
         // details of the implementation of this mechanism.
         $this->commands[strtoupper($commandID)] = null;
+    }
+
+    /**
+     * Resolves command object from given command ID.
+     *
+     * @param  string      $commandID Command ID of virtual method call
+     * @return string|null FQDN of corresponding command object
+     */
+    private function resolve(string $commandID): ?string
+    {
+        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . '\\' . $commandID)) {
+            return $commandClass;
+        }
+
+        $commandModule = $this->resolveCommandModuleByPrefix($commandID);
+
+        if (null === $commandModule) {
+            return null;
+        }
+
+        if (class_exists($commandClass = self::COMMANDS_NAMESPACE . '\\' . $commandModule . '\\' . $commandID)) {
+            return $commandClass;
+        }
+
+        return null;
+    }
+
+    private function resolveCommandModuleByPrefix(string $commandID): ?string
+    {
+        foreach (ClientConfiguration::getModules() as $module) {
+            if (preg_match("/^{$module['commandPrefix']}/", $commandID)) {
+                return $module['name'];
+            }
+        }
+
+        return null;
     }
 }
