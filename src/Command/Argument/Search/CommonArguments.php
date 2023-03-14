@@ -27,7 +27,7 @@ class CommonArguments implements ArrayableArgument
      * @param  string $defaultLanguage
      * @return $this
      */
-    public function language(string $defaultLanguage): self
+    public function language(string $defaultLanguage = 'english'): self
     {
         $this->arguments[] = 'LANGUAGE';
         $this->arguments[] = $defaultLanguage;

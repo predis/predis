@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\AlterArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -68,13 +68,11 @@ class FTALTER_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $schema = new Schema();
-        $schema->addTextField('field_name');
+        $schema = [new TextField('field_name')];
 
         $this->assertEquals('OK', $redis->ftcreate('index', $schema));
 
-        $schema = new Schema(true);
-        $schema->addTextField('new_field_name');
+        $schema = [new TextField('new_field_name')];
 
         $this->assertEquals('OK', $redis->ftalter('index', $schema));
     }
@@ -91,18 +89,18 @@ class FTALTER_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Unknown index name');
 
-        $redis->ftalter('alias', (new Schema())->addTextField('field_name'));
+        $redis->ftalter('alias', [new TextField('field_name')]);
     }
 
     public function argumentsProvider(): array
     {
         return [
             'with default arguments' => [
-                ['index', (new Schema(true))->addTextField('text_field')],
+                ['index', [new TextField('text_field')]],
                 ['index', 'SCHEMA', 'ADD', 'text_field', 'TEXT'],
             ],
             'with SKIPINITIALSCAN modifier' => [
-                ['index', (new Schema(true))->addTextField('text_field'), (new AlterArguments())->skipInitialScan()],
+                ['index', [new TextField('text_field')], (new AlterArguments())->skipInitialScan()],
                 ['index', 'SKIPINITIALSCAN', 'SCHEMA', 'ADD', 'text_field', 'TEXT'],
             ],
         ];
