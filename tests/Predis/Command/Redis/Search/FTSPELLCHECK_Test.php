@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use InvalidArgumentException;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SpellcheckArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -72,8 +72,8 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->ftcreate(
             'index',
-            (new Schema())->addTextField('text_field'))
-        );
+            [new TextField('text_field')]
+        ));
 
         $this->assertEquals(2, $redis->ftdictadd('dict', 'hello', 'help'));
 

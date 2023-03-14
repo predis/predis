@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Command as RedisCommand;
 
 /**
@@ -31,10 +32,16 @@ class FTCREATE extends RedisCommand
         [$index, $schema] = $arguments;
         $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
 
+        $schema = array_reduce($schema, static function (array $carry, FieldInterface $field) {
+            return array_merge($carry, $field->toArray());
+        }, []);
+
+        array_unshift($schema, 'SCHEMA');
+
         parent::setArguments(array_merge(
             [$index],
             $commandArguments,
-            $schema->toArray()
+            $schema
         ));
     }
 }

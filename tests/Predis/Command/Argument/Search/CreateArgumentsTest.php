@@ -101,16 +101,6 @@ class CreateArgumentsTest extends TestCase
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithPayloadFieldModifier(): void
-    {
-        $this->arguments->payloadField('payload_field');
-
-        $this->assertSame(['PAYLOAD_FIELD', 'payload_field'], $this->arguments->toArray());
-    }
-
-    /**
-     * @return void
-     */
     public function testCreatesArgumentsWithMaxTestFieldsModifier(): void
     {
         $this->arguments->maxTextFields();
@@ -133,9 +123,9 @@ class CreateArgumentsTest extends TestCase
      */
     public function testCreatesArgumentsWithTemporaryModifier(): void
     {
-        $this->arguments->temporary();
+        $this->arguments->temporary(1);
 
-        $this->assertSame(['TEMPORARY'], $this->arguments->toArray());
+        $this->assertSame(['TEMPORARY', 1], $this->arguments->toArray());
     }
 
     /**
