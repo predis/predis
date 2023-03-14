@@ -22,7 +22,7 @@ jobs:
       matrix:
         os:
           - 'ubuntu-latest'
-          - 'mac-latest'
+          - 'macos-latest'
         php:
           - '7.2'
           - '7.3'
