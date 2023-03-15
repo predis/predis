@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -75,7 +75,7 @@ class FTTAGVALS_Test extends PredisCommandTestCase
             'OK',
             $redis->ftcreate(
                 'index',
-                (new Schema())->addTagField('tag_field'),
+                [new TagField('tag_field')],
                 (new CreateArguments())->prefix(['prefix:'])
             )
         );

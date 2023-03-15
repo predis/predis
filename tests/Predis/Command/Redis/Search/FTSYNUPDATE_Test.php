@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -70,7 +70,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
 
         $this->assertEquals(
             'OK',
-            $redis->ftcreate('index', (new Schema())->addTextField('text'))
+            $redis->ftcreate('index', [new TextField('text')])
         );
 
         $this->assertEquals(
@@ -90,7 +90,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
 
         $this->assertEquals(
             'OK',
-            $redis->ftcreate('index', (new Schema())->addTextField('text'))
+            $redis->ftcreate('index', [new TextField('text')])
         );
 
         $this->assertEquals(
