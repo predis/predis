@@ -18,6 +18,7 @@ use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
@@ -115,6 +116,7 @@ use Predis\Response\Status;
  * @method int               ftdictdel(string $dict, ...$term)
  * @method array             ftdictdump(string $dict)
  * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method string            ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
  * @method array             ftinfo(string $index)
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)

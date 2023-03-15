@@ -106,6 +106,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this ftdictdel(string $dict, ...$term)
  * @method $this ftdictdump(string $dict)
  * @method $this ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method $this ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
  * @method $this ftinfo(string $index)
  * @method $this ftprofile(string $index, ProfileArguments $arguments)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
