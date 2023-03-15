@@ -11,7 +11,7 @@
  */
 
 use Predis\Client;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 
 require __DIR__ . '/../../shared.php';
 
@@ -20,8 +20,9 @@ require __DIR__ . '/../../shared.php';
 // 1. Create index
 $client = new Client();
 
-$schema = new Schema();
-$schema->addTextField('text_field');
+$schema = [
+    new TextField('text_field'),
+];
 $client->ftcreate('index_alter', $schema);
 
 echo 'Default index attributes:' . "\n";
@@ -29,8 +30,9 @@ $defaultAttributes = $client->ftinfo('index_alter');
 print_r($defaultAttributes[7]);
 
 // 2. Add additional attribute to existing index
-$schema = new Schema(true);
-$schema->addTextField('new_field_name');
+$schema = [
+    new TextField('new_field_name'),
+];
 
 $client->ftalter('index_alter', $schema);
 

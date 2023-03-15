@@ -19,7 +19,7 @@ use Predis\Command\Argument\Search\SchemaFields\TextField;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of FT.AGGREGATE command usage:
+// Example of FT.CURSOR READ command usage
 
 // 1. Create index
 $client = new Client();
@@ -31,7 +31,7 @@ $schema = [
     new NumericField('dob', '', AbstractField::SORTABLE),
 ];
 
-$client->ftcreate('idx', $schema, $ftCreateArguments);
+$client->ftcreate('index_cursor_read', $schema, $ftCreateArguments);
 
 // 2. Add documents
 $client->hset('user:0', 'name', 'Vlad', 'country', 'Ukraine', 'dob', 813801600);
@@ -43,10 +43,20 @@ $ftAggregateArguments = (new AggregateArguments())
     ->apply('year(@dob)', 'birth')
     ->groupBy('@country', '@birth')
     ->reduce('COUNT', true, 'country_birth_Vlad_count')
-    ->sortBy(0, '@birth', 'DESC');
+    ->sortBy(0, '@birth', 'DESC')
+    ->withCursor(1);
 
-$response = $client->ftaggregate('idx', '@name: "Vlad"', $ftAggregateArguments);
+[$response, $cursor] = $client->ftaggregate('index_cursor_read', '@name: "Vlad"', $ftAggregateArguments);
 
-// Response grouped by user country and birth year, with users count in each group, sorted by birth year from DESC.
-echo 'Response:' . "\n";
-print_r($response);
+// 4. Processing response in loop until cursorId exists
+$actualResponse = [];
+$cursors = [];
+
+while ($cursor) {
+    $actualResponse[] = $response[1];
+    $cursors[] = $cursor;
+    [$response, $cursor] = $client->ftcursor->read('index_cursor_read', $cursor);
+}
+
+echo "Response: \n";
+print_r($actualResponse);
