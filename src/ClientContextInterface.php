@@ -27,6 +27,7 @@ use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
+use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
@@ -227,6 +228,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tdigestreset(string $key)
  * @method $this tdigestrevrank(string $key, float ...$value)
  * @method $this tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
+ * @method $this tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method $this topkadd(string $key, ...$items)
  * @method $this topkincrby(string $key, ...$itemIncrement)
  * @method $this topkinfo(string $key)

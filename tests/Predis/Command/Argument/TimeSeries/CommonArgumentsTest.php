@@ -65,4 +65,14 @@ class CommonArgumentsTest extends TestCase
 
         $this->assertSame(['LABELS', 'label1', 1, 'label2', 2], $this->arguments->toArray());
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithEncodingModifier(): void
+    {
+        $this->arguments->encoding(CommonArguments::ENCODING_UNCOMPRESSED);
+
+        $this->assertSame(['ENCODING', CommonArguments::ENCODING_UNCOMPRESSED], $this->arguments->toArray());
+    }
 }

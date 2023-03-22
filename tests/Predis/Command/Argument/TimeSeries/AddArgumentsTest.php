@@ -14,25 +14,25 @@ namespace Predis\Command\Argument\TimeSeries;
 
 use PHPUnit\Framework\TestCase;
 
-class CreateArgumentsTest extends TestCase
+class AddArgumentsTest extends TestCase
 {
     /**
-     * @var CreateArguments
+     * @var AddArguments
      */
     private $arguments;
 
     protected function setUp(): void
     {
-        $this->arguments = new CreateArguments();
+        $this->arguments = new AddArguments();
     }
 
     /**
      * @return void
      */
-    public function testCreatesArgumentsWithEncodingModifier(): void
+    public function testCreatesArgumentsWithOnDuplicateModifier(): void
     {
-        $this->arguments->encoding(CreateArguments::ENCODING_UNCOMPRESSED);
+        $this->arguments->onDuplicate(CommonArguments::POLICY_LAST);
 
-        $this->assertSame(['ENCODING', CreateArguments::ENCODING_UNCOMPRESSED], $this->arguments->toArray());
+        $this->assertSame(['ON_DUPLICATE', CommonArguments::POLICY_LAST], $this->arguments->toArray());
     }
 }

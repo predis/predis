@@ -23,6 +23,9 @@ class CommonArguments implements ArrayableArgument
     public const POLICY_MAX = 'MAX';
     public const POLICY_SUM = 'SUM';
 
+    public const ENCODING_UNCOMPRESSED = 'UNCOMPRESSED';
+    public const ENCODING_COMPRESSED = 'COMPRESSED';
+
     /**
      * @var array
      */
@@ -76,6 +79,19 @@ class CommonArguments implements ArrayableArgument
     public function labels(...$labelValuePair): self
     {
         array_push($this->arguments, 'LABELS', ...$labelValuePair);
+
+        return $this;
+    }
+
+    /**
+     * Specifies the series samples encoding format.
+     *
+     * @param  string $encoding
+     * @return $this
+     */
+    public function encoding(string $encoding = self::ENCODING_COMPRESSED): self
+    {
+        array_push($this->arguments, 'ENCODING', $encoding);
 
         return $this;
     }
