@@ -20,7 +20,7 @@ class CreateArguments extends CommonArguments
     /**
      * Specifies the series samples encoding format.
      *
-     * @param  string|null $encoding
+     * @param  string $encoding
      * @return $this
      */
     public function encoding(string $encoding = self::ENCODING_COMPRESSED): self
