@@ -18,6 +18,7 @@ use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
@@ -26,6 +27,7 @@ use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
+use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -231,6 +233,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this topklist(string $key, bool $withCount = false)
  * @method $this topkquery(string $key, ...$items)
  * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
+ * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
