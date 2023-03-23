@@ -14,19 +14,4 @@ namespace Predis\Command\Argument\TimeSeries;
 
 class CreateArguments extends CommonArguments
 {
-    public const ENCODING_UNCOMPRESSED = 'UNCOMPRESSED';
-    public const ENCODING_COMPRESSED = 'COMPRESSED';
-
-    /**
-     * Specifies the series samples encoding format.
-     *
-     * @param  string $encoding
-     * @return $this
-     */
-    public function encoding(string $encoding = self::ENCODING_COMPRESSED): self
-    {
-        array_push($this->arguments, 'ENCODING', $encoding);
-
-        return $this;
-    }
 }
