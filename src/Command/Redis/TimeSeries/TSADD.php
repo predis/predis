@@ -14,6 +14,11 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * @see https://redis.io/commands/ts.add/
+ *
+ * Append a sample to a time series.
+ */
 class TSADD extends RedisCommand
 {
     public function getId()
