@@ -28,6 +28,7 @@ use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\Argument\TimeSeries\AddArguments;
+use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
@@ -245,6 +246,7 @@ use Predis\Response\Status;
  * @method array             topkquery(string $key, ...$items)
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
+ * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
