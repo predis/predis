@@ -244,7 +244,10 @@ class StreamConnection extends AbstractConnection
     public function disconnect()
     {
         if ($this->isConnected()) {
-            fclose($this->getResource());
+            $resource = $this->getResource();
+            if (is_resource($resource)) {
+                fclose($resource);
+            }
             parent::disconnect();
         }
     }
