@@ -247,6 +247,7 @@ use Predis\Response\Status;
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)

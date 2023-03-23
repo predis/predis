@@ -237,6 +237,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method $this tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsget(string $key, GetArguments $arguments = null)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
