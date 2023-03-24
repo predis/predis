@@ -15,24 +15,24 @@ namespace Predis\Command\Redis\TimeSeries;
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @see https://redis.io/commands/ts.add/
+ * @see https://redis.io/commands/ts.get/
  *
- * Append a sample to a time series.
+ * Get the sample with the highest timestamp from a given time series.
  */
-class TSADD extends RedisCommand
+class TSGET extends RedisCommand
 {
     public function getId()
     {
-        return 'TS.ADD';
+        return 'TS.GET';
     }
 
     public function setArguments(array $arguments)
     {
-        [$key, $timestamp, $value] = $arguments;
-        $commandArguments = (!empty($arguments[3])) ? $arguments[3]->toArray() : [];
+        [$key] = $arguments;
+        $commandArguments = (!empty($arguments[1])) ? $arguments[1]->toArray() : [];
 
         parent::setArguments(array_merge(
-            [$key, $timestamp, $value],
+            [$key],
             $commandArguments
         ));
     }
