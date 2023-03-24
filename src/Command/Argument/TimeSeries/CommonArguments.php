@@ -97,6 +97,19 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Is used when a time series is a compaction.
+     * With LATEST, TS.GET reports the compacted value of the latest, possibly partial, bucket.
+     *
+     * @return $this
+     */
+    public function latest(): self
+    {
+        $this->arguments[] = 'LATEST';
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array

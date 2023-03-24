@@ -75,4 +75,14 @@ class CommonArgumentsTest extends TestCase
 
         $this->assertSame(['ENCODING', CommonArguments::ENCODING_UNCOMPRESSED], $this->arguments->toArray());
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithLatestModifier(): void
+    {
+        $this->arguments->latest();
+
+        $this->assertSame(['LATEST'], $this->arguments->toArray());
+    }
 }
