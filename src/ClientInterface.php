@@ -30,6 +30,7 @@ use Predis\Command\Argument\Server\To;
 use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
+use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\CommandInterface;
@@ -250,6 +251,7 @@ use Predis\Response\Status;
  * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method int               tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
