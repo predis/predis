@@ -31,6 +31,7 @@ use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
+use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -251,6 +252,7 @@ use Predis\Response\Status;
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
+ * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
