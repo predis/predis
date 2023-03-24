@@ -253,6 +253,7 @@ use Predis\Response\Status;
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)

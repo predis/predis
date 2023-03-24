@@ -11,13 +11,12 @@
  */
 
 use Predis\Client;
-use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of TS.ADD command usage:
+// Example of TS.MADD command usage:
 
 // 1. Create time series
 $client = new Client();
@@ -28,11 +27,10 @@ $arguments = (new CreateArguments())
     ->labels('sensor_id', 2, 'area_id', 32);
 
 $client->tscreate('temperature:2:32', $arguments);
+$client->tscreate('temperature:2:33', $arguments);
 
-// 2. Add sample into newly created time series
-$addArguments = (new AddArguments())
-    ->retention(31536000000);
+// 2. Add samples into few time series
+$response = $client->tsmadd('temperature:2:32', 123123123123, 27, 'temperature:2:33', 123123123124, 28);
+$stringResponse = implode(', ', $response);
 
-$response = $client->tsadd('temperature:2:32', 123123123123, 27, $addArguments);
-
-echo "Timeseries was added with timestamp: {$response}";
+echo "Samples was added to time series - timestamps: {$stringResponse}";
