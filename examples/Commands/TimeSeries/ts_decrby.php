@@ -14,10 +14,11 @@ use Predis\Client;
 use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
+use Predis\Command\Argument\TimeSeries\DecrByArguments;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of TS.ADD command usage:
+// Example of TS.DECRBY command usage:
 
 // 1. Create time series
 $client = new Client();
@@ -35,4 +36,10 @@ $addArguments = (new AddArguments())
 
 $response = $client->tsadd('temperature:2:32', 123123123123, 27, $addArguments);
 
-echo "Timeseries was added with timestamp: {$response}";
+echo "Timeseries was added with timestamp: {$response}\n";
+
+// 3. Increasing value and timestamp
+$client->tsdecrby('temperature:2:32', 1, (new DecrByArguments())->timestamp(123123123124));
+$response = $client->tsget('temperature:2:32');
+
+echo "Decreased value to - {$response[1]} and timestamp to {$response[0]}";
