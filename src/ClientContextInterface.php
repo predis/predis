@@ -245,6 +245,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsget(string $key, GetArguments $arguments = null)
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method $this tsmadd(mixed ...$keyTimestampValue)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
