@@ -30,7 +30,7 @@ class IncrByArguments extends CommonArguments
     /**
      * Changes data storage from compressed (default) to uncompressed.
      *
-     * @return void
+     * @return $this
      */
     public function uncompressed(): self
     {
