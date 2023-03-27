@@ -14,7 +14,6 @@ namespace Predis\Command;
 
 use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
-use Predis\Command\Resolver\CommandResolver;
 use PredisTestCase;
 
 class RedisFactoryTest extends PredisTestCase
@@ -24,7 +23,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportedCommands(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         foreach ($this->getExpectedCommands() as $commandID) {
             $this->assertTrue($factory->supports($commandID), "Command factory does not support $commandID");
@@ -36,7 +35,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportCommand(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $this->assertTrue($factory->supports('info'));
         $this->assertTrue($factory->supports('INFO'));
@@ -50,7 +49,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testSupportCommands(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $this->assertTrue($factory->supports('get', 'set'));
         $this->assertTrue($factory->supports('GET', 'SET'));
@@ -65,7 +64,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testGetCommandClass(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('ping'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
@@ -79,7 +78,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testDefineCommand(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $command = $this->getMockBuilder('Predis\Command\CommandInterface')
             ->getMock();
@@ -97,7 +96,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testUndefineCommandInClassAutoload(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $this->assertTrue($factory->supports('PING'));
         $this->assertSame('Predis\Command\Redis\PING', $factory->getCommandClass('PING'));
@@ -113,7 +112,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testUndefineCommandInClassMap(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $commandClass = get_class($this->getMockBuilder('Predis\Command\CommandInterface')->getMock());
         $factory->define('MOCK', $commandClass);
@@ -135,7 +134,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->expectException('InvalidArgumentException');
         $this->expectExceptionMessage("Class stdClass must implement Predis\Command\CommandInterface");
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $factory->define('mock', 'stdClass');
     }
@@ -145,7 +144,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testCreateCommandWithoutArguments(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $command = $factory->create('info');
 
@@ -159,7 +158,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testCreateCommandWithArguments(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $arguments = ['foo', 'bar'];
         $command = $factory->create('set', $arguments);
@@ -177,7 +176,7 @@ class RedisFactoryTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('Command `UNKNOWN` is not a registered Redis command.');
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $factory->create('unknown');
     }
@@ -187,7 +186,7 @@ class RedisFactoryTest extends PredisTestCase
      */
     public function testGetDefaultProcessor(): void
     {
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $this->assertNull($factory->getProcessor());
     }
@@ -202,7 +201,7 @@ class RedisFactoryTest extends PredisTestCase
             ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
         $factory->setProcessor($processor);
 
         $this->assertSame($processor, $factory->getProcessor());
@@ -218,7 +217,7 @@ class RedisFactoryTest extends PredisTestCase
             ->getMockBuilder('Predis\Command\Processor\ProcessorInterface')
             ->getMock();
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
 
         $factory->setProcessor($processor);
         $this->assertSame($processor, $factory->getProcessor());
@@ -250,7 +249,7 @@ class RedisFactoryTest extends PredisTestCase
                 }
             );
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
         $factory->setProcessor($processor);
         $factory->create('set', ['foo', 'bar']);
 
@@ -274,7 +273,7 @@ class RedisFactoryTest extends PredisTestCase
         $chain->add($processor);
         $chain->add($processor);
 
-        $factory = new RedisFactory(new CommandResolver());
+        $factory = new RedisFactory();
         $factory->setProcessor($chain);
 
         $factory->create('info');
@@ -451,6 +450,95 @@ class RedisFactoryTest extends PredisTestCase
             156 => 'GEODIST',
             157 => 'GEORADIUS',
             158 => 'GEORADIUSBYMEMBER',
+            159 => 'JSONSET',
+            160 => 'JSONGET',
+            161 => 'JSONARRAPPEND',
+            162 => 'JSONARRINDEX',
+            163 => 'JSONARRINSERT',
+            164 => 'JSONARRLEN',
+            165 => 'JSONARRPOP',
+            166 => 'JSONARRTRIM',
+            167 => 'JSONCLEAR',
+            168 => 'JSONDEBUG',
+            169 => 'JSONDEL',
+            170 => 'JSONFORGET',
+            171 => 'JSONMGET',
+            172 => 'JSONNUMINCRBY',
+            173 => 'JSONOBJKEYS',
+            174 => 'JSONOBJLEN',
+            175 => 'JSONRESP',
+            176 => 'JSONSTRAPPEND',
+            177 => 'JSONSTRLEN',
+            178 => 'JSONTOGGLE',
+            179 => 'JSONTYPE',
+            180 => 'BFADD',
+            181 => 'BFEXISTS',
+            182 => 'BFINFO',
+            183 => 'BFINSERT',
+            184 => 'BFLOADCHUNK',
+            185 => 'BFMADD',
+            186 => 'BFMEXISTS',
+            187 => 'BFRESERVE',
+            188 => 'BFSCANDUMP',
+            189 => 'CMSINCRBY',
+            190 => 'CMSINFO',
+            191 => 'CMSINITBYDIM',
+            192 => 'CMSINITBYPROB',
+            193 => 'CMSMERGE',
+            194 => 'CMSQUERY',
+            195 => 'CFADD',
+            196 => 'CFADDNX',
+            197 => 'CFCOUNT',
+            198 => 'CFDEL',
+            199 => 'CFEXISTS',
+            200 => 'CFINFO',
+            201 => 'CFINSERT',
+            202 => 'CFINSERTNX',
+            203 => 'CFLOADCHUNK',
+            204 => 'CFMEXISTS',
+            205 => 'CFRESERVE',
+            206 => 'CFSCANDUMP',
+            207 => 'TDIGESTADD',
+            208 => 'TDIGESTBYRANK',
+            209 => 'TDIGESTBYREVRANK',
+            210 => 'TDIGESTCDF',
+            211 => 'TDIGESTCREATE',
+            212 => 'TDIGESTINFO',
+            213 => 'TDIGESTMAX',
+            214 => 'TDIGESTMERGE',
+            215 => 'TDIGESTMIN',
+            216 => 'TDIGESTQUANTILE',
+            217 => 'TDIGESTRANK',
+            218 => 'TDIGESTRESET',
+            219 => 'TDIGESTREVRANK',
+            220 => 'TDIGESTTRIMMED_MEAN',
+            221 => 'TOPKADD',
+            222 => 'TOPKINCRBY',
+            223 => 'TOPKINFO',
+            224 => 'TOPKLIST',
+            225 => 'TOPKQUERY',
+            226 => 'TOPKRESERVE',
+            227 => 'FTALIASADD',
+            228 => 'FTALIASDEL',
+            229 => 'FTALIASUPDATE',
+            230 => 'FTALTER',
+            231 => 'FTCONFIG',
+            232 => 'FTCREATE',
+            233 => 'FTDICTADD',
+            234 => 'FTDICTDEL',
+            235 => 'FTDICTDUMP',
+            236 => 'FTDROPINDEX',
+            237 => 'FTINFO',
+            238 => 'FTPROFILE',
+            239 => 'FTSEARCH',
+            240 => 'FTSPELLCHECK',
+            241 => 'FTSUGADD',
+            242 => 'FTSUGDEL',
+            243 => 'FTSUGGET',
+            244 => 'FTSUGLEN',
+            245 => 'FTSYNDUMP',
+            246 => 'FTSYNUPDATE',
+            247 => 'FTTAGVALS',
         ];
     }
 }

@@ -56,7 +56,7 @@ class Connections implements OptionInterface
      * The factory instance is configured according to the supplied named array
      * mapping URI schemes (passed as keys) to the FCQN of classes implementing
      * Predis\Connection\NodeConnectionInterface, or callable objects acting as
-     * lazy initalizers and returning new instances of classes implementing
+     * lazy initializers and returning new instances of classes implementing
      * Predis\Connection\NodeConnectionInterface.
      *
      * @param OptionsInterface $options Client options

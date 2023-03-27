@@ -13,7 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\ProfileArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -114,11 +114,11 @@ class FTPROFILE_Test extends PredisCommandTestCase
     {
         return [
             'with SEARCH context' => [
-                ['index', (new Schema())->addTextField('text_field')],
+                ['index', [new TextField('text_field')]],
                 ['index', (new ProfileArguments())->search()->query('hello world')],
             ],
             'with AGGREGATE context' => [
-                ['index', (new Schema())->addTextField('text_field')],
+                ['index', [new TextField('text_field')]],
                 ['index', (new ProfileArguments())->aggregate()->query('hello world')],
             ],
         ];

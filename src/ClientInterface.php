@@ -14,17 +14,26 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
+use Predis\Command\Argument\TimeSeries\AddArguments;
+use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
+use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
+use Predis\Command\Argument\TimeSeries\DecrByArguments;
+use Predis\Command\Argument\TimeSeries\GetArguments;
+use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -104,15 +113,17 @@ use Predis\Response\Status;
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method mixed             fcall(string $function, array $keys, ...$args)
+ * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
  * @method Status            ftaliasupdate(string $alias, string $index)
- * @method Status            ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
- * @method Status            ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method Status            ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
+ * @method Status            ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)
  * @method int               ftdictadd(string $dict, ...$term)
  * @method int               ftdictdel(string $dict, ...$term)
  * @method array             ftdictdump(string $dict)
  * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method string            ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
  * @method array             ftinfo(string $index)
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
@@ -238,6 +249,15 @@ use Predis\Response\Status;
  * @method array             topklist(string $key, bool $withCount = false)
  * @method array             topkquery(string $key, ...$items)
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
+ * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
+ * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
+ * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method int               tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
+ * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
+ * @method array             tsget(string $key, GetArguments $arguments = null)
+ * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method array             tsmadd(mixed ...$keyTimestampValue)
+ * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)

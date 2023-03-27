@@ -26,6 +26,7 @@ class ClientConfiguration
             ['name' => 'TDigest', 'commandPrefix' => 'TDIGEST'],
             ['name' => 'TopK', 'commandPrefix' => 'TOPK'],
             ['name' => 'Search', 'commandPrefix' => 'FT'],
+            ['name' => 'TimeSeries', 'commandPrefix' => 'TS'],
         ],
     ];
 

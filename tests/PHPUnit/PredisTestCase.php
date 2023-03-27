@@ -32,6 +32,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         'json' => ['annotation' => 'requiresRedisJsonVersion', 'name' => 'ReJSON'],
         'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
         'search' => ['annotation' => 'requiresRediSearchVersion', 'name' => 'search'],
+        'timeSeries' => ['annotation' => 'requiresRedisTimeSeriesVersion', 'name' => 'timeseries'],
     ];
 
     /**
@@ -47,9 +48,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->checkRequiredRedisServerVersion();
-        $this->checkRequiredRedisModuleVersion('json');
-        $this->checkRequiredRedisModuleVersion('bloomFilter');
-        $this->checkRequiredRedisModuleVersion('search');
+
+        foreach ($this->modulesMapping as $module => $config) {
+            $this->checkRequiredRedisModuleVersion($module);
+        }
     }
 
     /**
@@ -167,9 +169,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultOptionsArray(): array
     {
         return [
-            'commands' => new Command\RedisFactory(
-                new Command\Resolver\CommandResolver()
-            ),
+            'commands' => new Command\RedisFactory(),
         ];
     }
 
@@ -209,7 +209,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getCommandFactory(): Command\Factory
     {
-        return new Command\RedisFactory(new Command\Resolver\CommandResolver());
+        return new Command\RedisFactory();
     }
 
     /**

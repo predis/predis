@@ -14,17 +14,26 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
+use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\ProfileArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
+use Predis\Command\Argument\TimeSeries\AddArguments;
+use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
+use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
+use Predis\Command\Argument\TimeSeries\DecrByArguments;
+use Predis\Command\Argument\TimeSeries\GetArguments;
+use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -95,15 +104,17 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this decrby($key, $decrement)
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
+ * @method $this ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
  * @method $this ftaliasupdate(string $alias, string $index)
- * @method $this ftalter(string $index, Schema $schema, ?AlterArguments $arguments = null)
- * @method $this ftcreate(string $index, Schema $schema, ?CreateArguments $arguments = null)
+ * @method $this ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
+ * @method $this ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)
  * @method $this ftdictadd(string $dict, ...$term)
  * @method $this ftdictdel(string $dict, ...$term)
  * @method $this ftdictdump(string $dict)
  * @method $this ftdropindex(string $index, ?DropArguments $arguments = null)
+ * @method $this ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
  * @method $this ftinfo(string $index)
  * @method $this ftprofile(string $index, ProfileArguments $arguments)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
@@ -228,6 +239,15 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this topklist(string $key, bool $withCount = false)
  * @method $this topkquery(string $key, ...$items)
  * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
+ * @method $this tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
+ * @method $this tsalter(string $key, ?TSAlterArguments $arguments = null)
+ * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
+ * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
+ * @method $this tsget(string $key, GetArguments $arguments = null)
+ * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method $this tsmadd(mixed ...$keyTimestampValue)
+ * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
