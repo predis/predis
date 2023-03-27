@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Argument\Search\SchemaFields;
 
-class VectorField implements FieldInterface
+class VectorField extends AbstractField
 {
     /**
      * @var array
@@ -23,13 +23,17 @@ class VectorField implements FieldInterface
      * @param string $fieldName
      * @param string $algorithm
      * @param array  $attributeNameValueDictionary
+     * @param string $alias
      */
     public function __construct(
         string $fieldName,
         string $algorithm,
-        array $attributeNameValueDictionary
+        array $attributeNameValueDictionary,
+        string $alias = ''
     ) {
-        array_push($this->fieldArguments, $fieldName, 'VECTOR', $algorithm, count($attributeNameValueDictionary));
+        $this->setCommonOptions('VECTOR', $fieldName, $alias);
+
+        array_push($this->fieldArguments, $algorithm, count($attributeNameValueDictionary));
         $this->fieldArguments = array_merge($this->fieldArguments, $attributeNameValueDictionary);
     }
 
