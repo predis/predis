@@ -258,6 +258,7 @@ use Predis\Response\Status;
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method array             tsqueryindex(string ...$filterExpression)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
