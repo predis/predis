@@ -41,7 +41,7 @@ var_export(
     $client->getConnection()->getClient()->_getKeys()
 );
 
-/**
+/*
 array (
     'library' => array (
         0 => array (

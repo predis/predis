@@ -14,6 +14,7 @@ namespace Predis\Pipeline;
 
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\RelayConnection;
+use Predis\Response\Error;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use SplQueue;
@@ -30,6 +31,8 @@ class RelayPipeline extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $throw = $this->client->getOptions()->exceptions;
+
         try {
             $pipeline = $connection->getClient()->pipeline();
 
@@ -41,7 +44,21 @@ class RelayPipeline extends Pipeline
                     : $pipeline->rawCommand($name, ...$command->getArguments());
             }
 
-            return $pipeline->exec();
+            $results = $pipeline->exec();
+
+            if (!is_array($results)) {
+                return $results;
+            }
+
+            foreach ($results as $key => $response) {
+                if ($response instanceof RelayException) {
+                    $results[$key] = $throw
+                        ? throw new ServerException($response->getMessage())
+                        : new Error($response->getMessage());
+                }
+            }
+
+            return $results;
         } catch (RelayException $ex) {
             $connection->getClient()->discard();
 

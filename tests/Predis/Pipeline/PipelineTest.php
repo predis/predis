@@ -496,8 +496,6 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
      */
     public function testIntegrationWithServerErrorInCallableBlock(): void
     {
