@@ -255,6 +255,7 @@ use Predis\Response\Status;
  * @method Status            tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method int               tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
+ * @method Status            tsdeleterule(string $sourceKey, string $destKey)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method array             tsmadd(mixed ...$keyTimestampValue)

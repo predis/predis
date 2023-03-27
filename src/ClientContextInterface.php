@@ -245,6 +245,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
+ * @method $this tsdeleterule(string $sourceKey, string $destKey)
  * @method $this tsget(string $key, GetArguments $arguments = null)
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method $this tsmadd(mixed ...$keyTimestampValue)
