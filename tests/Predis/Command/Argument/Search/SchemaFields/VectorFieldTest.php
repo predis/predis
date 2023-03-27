@@ -22,7 +22,7 @@ class VectorFieldTest extends TestCase
     public function testReturnsCorrectFieldArgumentsArray(): void
     {
         $this->assertSame(
-            ['field_name', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value'],
-            (new VectorField('field_name', 'FLAT', ['attribute_name', 'attribute_value']))->toArray());
+            ['field_name', 'AS', 'field', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value'],
+            (new VectorField('field_name', 'FLAT', ['attribute_name', 'attribute_value'], 'field'))->toArray());
     }
 }
