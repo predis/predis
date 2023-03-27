@@ -12,6 +12,6 @@
 
 namespace Predis\Command\Argument\TimeSeries;
 
-class GetArguments extends CommonArguments
+class DecrByArguments extends IncrByArguments
 {
 }

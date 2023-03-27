@@ -30,8 +30,10 @@ use Predis\Command\Argument\Server\To;
 use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
+use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -240,9 +242,12 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method $this tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsget(string $key, GetArguments $arguments = null)
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method $this tsmadd(mixed ...$keyTimestampValue)
+ * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)

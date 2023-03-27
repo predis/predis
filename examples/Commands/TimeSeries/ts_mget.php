@@ -11,13 +11,13 @@
  */
 
 use Predis\Client;
-use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
+use Predis\Command\Argument\TimeSeries\MGetArguments;
 
 require __DIR__ . '/../../shared.php';
 
-// Example of TS.ADD command usage:
+// Example of TS.MGET command usage:
 
 // 1. Create time series
 $client = new Client();
@@ -25,14 +25,17 @@ $client = new Client();
 $arguments = (new CreateArguments())
     ->retention(60000)
     ->duplicatePolicy(CommonArguments::POLICY_MAX)
-    ->labels('sensor_id', 2, 'area_id', 32);
+    ->labels('type', 'temp', 'sensor_id', 2, 'area_id', 32);
 
 $client->tscreate('temperature:2:32', $arguments);
+$client->tscreate('temperature:2:33', $arguments);
 
-// 2. Add sample into newly created time series
-$addArguments = (new AddArguments())
-    ->retention(31536000000);
+// 2. Add samples into time series
+$client->tsadd('temperature:2:32', 123123123123, 27);
+$client->tsadd('temperature:2:33', 123123123124, 27);
 
-$response = $client->tsadd('temperature:2:32', 123123123123, 27, $addArguments);
+// 3. Get sample from multiple time series matching given filter expression, with selected labels only
+$response = $client->tsmget((new MGetArguments())->selectedLabels('type'), 'type=temp');
 
-echo "Timeseries was added with timestamp: {$response}";
+echo "Sample from time series, with label = 'type':\n";
+print_r($response);
