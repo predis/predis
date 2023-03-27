@@ -252,6 +252,7 @@ use Predis\Response\Status;
  * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method Status            tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method int               tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
