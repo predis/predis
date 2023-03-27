@@ -12,33 +12,6 @@
 
 namespace Predis\Command\Argument\TimeSeries;
 
-use Predis\Command\Argument\ArrayableArgument;
-
-class GetArguments implements ArrayableArgument
+class GetArguments extends CommonArguments
 {
-    /**
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * Is used when a time series is a compaction.
-     * With LATEST, TS.GET reports the compacted value of the latest, possibly partial, bucket.
-     *
-     * @return $this
-     */
-    public function latest(): self
-    {
-        $this->arguments[] = 'LATEST';
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function toArray(): array
-    {
-        return $this->arguments;
-    }
 }
