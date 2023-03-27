@@ -14,17 +14,17 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
+use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
-use Predis\Response\ServerException;
 
-class TSCREATE_Test extends PredisCommandTestCase
+class TSINFO_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return TSCREATE::class;
+        return TSINFO::class;
     }
 
     /**
@@ -32,7 +32,7 @@ class TSCREATE_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'TSCREATE';
+        return 'TSINFO';
     }
 
     /**
@@ -60,9 +60,12 @@ class TSCREATE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
-    public function testCreatesTimeSeriesWithGivenArguments(): void
+    public function testReturnsInformationAboutGivenTimeSeries(): void
     {
         $redis = $this->getClient();
+        $expectedResponse = ['totalSamples', 0, 'memoryUsage', 4239, 'firstTimestamp', 0, 'lastTimestamp', 0,
+            'retentionTime', 60000, 'chunkCount', 1, 'chunkSize', 4096, 'chunkType', 'compressed', 'duplicatePolicy',
+        'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', []];
 
         $arguments = (new CreateArguments())
             ->retention(60000)
@@ -73,21 +76,8 @@ class TSCREATE_Test extends PredisCommandTestCase
             'OK',
             $redis->tscreate('temperature:2:32', $arguments)
         );
-    }
 
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.0.0
-     */
-    public function testThrowsExceptionOnNonExistingKey(): void
-    {
-        $redis = $this->getClient();
-
-        $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('ERR TSDB: the key does not exist');
-
-        $redis->tsinfo('non_existing_key');
+        $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
     }
 
     public function argumentsProvider(): array
@@ -97,25 +87,9 @@ class TSCREATE_Test extends PredisCommandTestCase
                 ['key'],
                 ['key'],
             ],
-            'with RETENTION modifier' => [
-                ['key', (new CreateArguments())->retention(100)],
-                ['key', 'RETENTION', 100],
-            ],
-            'with ENCODING modifier' => [
-                ['key', (new CreateArguments())->encoding(CreateArguments::ENCODING_UNCOMPRESSED)],
-                ['key', 'ENCODING', CreateArguments::ENCODING_UNCOMPRESSED],
-            ],
-            'with CHUNK_SIZE modifier' => [
-                ['key', (new CreateArguments())->chunkSize(100)],
-                ['key', 'CHUNK_SIZE', 100],
-            ],
-            'with DUPLICATE_POLICY modifier' => [
-                ['key', (new CreateArguments())->duplicatePolicy(CommonArguments::POLICY_FIRST)],
-                ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
-            ],
-            'with all modifiers' => [
-                ['key', (new CreateArguments())->retention(100)->encoding(CreateArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
-                ['key', 'RETENTION', 100, 'ENCODING', CreateArguments::ENCODING_UNCOMPRESSED, 'CHUNK_SIZE', 100, 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
+            'with DEBUG modifier' => [
+                ['key', (new InfoArguments())->debug()],
+                ['key', 'DEBUG'],
             ],
         ];
     }
