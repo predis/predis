@@ -37,7 +37,7 @@ class CommonArguments implements ArrayableArgument
      * @param  int   $retentionPeriod
      * @return $this
      */
-    public function retention(int $retentionPeriod): self
+    public function retentionMsecs(int $retentionPeriod): self
     {
         array_push($this->arguments, 'RETENTION', $retentionPeriod);
 

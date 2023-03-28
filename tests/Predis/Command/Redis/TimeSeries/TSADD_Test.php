@@ -65,7 +65,7 @@ class TSADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $createArguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -75,7 +75,7 @@ class TSADD_Test extends PredisCommandTestCase
         );
 
         $addArguments = (new AddArguments())
-            ->retention(31536000000);
+            ->retentionMsecs(31536000000);
 
         $this->assertEquals(
             123123123123,
@@ -91,7 +91,7 @@ class TSADD_Test extends PredisCommandTestCase
                 ['key', 123123121321, 1.0],
             ],
             'with RETENTION modifier' => [
-                ['key', 123123121321, 1.0, (new AddArguments())->retention(100)],
+                ['key', 123123121321, 1.0, (new AddArguments())->retentionMsecs(100)],
                 ['key', 123123121321, 1.0, 'RETENTION', 100],
             ],
             'with ENCODING modifier' => [
@@ -107,7 +107,7 @@ class TSADD_Test extends PredisCommandTestCase
                 ['key', 123123121321, 1.0, 'ON_DUPLICATE', CommonArguments::POLICY_FIRST],
             ],
             'with all modifiers' => [
-                ['key', 123123121321, 1.0, (new AddArguments())->retention(100)->encoding(CommonArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->onDuplicate(CommonArguments::POLICY_FIRST)],
+                ['key', 123123121321, 1.0, (new AddArguments())->retentionMsecs(100)->encoding(CommonArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->onDuplicate(CommonArguments::POLICY_FIRST)],
                 ['key', 123123121321, 1.0, 'RETENTION', 100, 'ENCODING', CommonArguments::ENCODING_UNCOMPRESSED, 'CHUNK_SIZE', 100, 'ON_DUPLICATE', CommonArguments::POLICY_FIRST],
             ],
         ];
