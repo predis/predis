@@ -24,7 +24,7 @@ require __DIR__ . '/../../shared.php';
 $client = new Client();
 
 $arguments = (new CreateArguments())
-    ->retention(60000)
+    ->retentionMsecs(60000)
     ->duplicatePolicy(CommonArguments::POLICY_MAX)
     ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -32,7 +32,7 @@ $client->tscreate('temperature:2:32', $arguments);
 
 // 2. Add sample into newly created time series
 $addArguments = (new AddArguments())
-    ->retention(31536000000);
+    ->retentionMsecs(31536000000);
 
 $response = $client->tsadd('temperature:2:32', 123123123123, 27, $addArguments);
 
