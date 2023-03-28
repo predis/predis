@@ -66,7 +66,7 @@ class TSGET_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $createArguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 

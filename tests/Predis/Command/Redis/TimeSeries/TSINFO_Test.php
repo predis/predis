@@ -68,7 +68,7 @@ class TSINFO_Test extends PredisCommandTestCase
         'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', []];
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
