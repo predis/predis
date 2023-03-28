@@ -35,6 +35,7 @@ use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
+use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -261,6 +262,7 @@ use Predis\Response\Status;
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method array             tsqueryindex(string ...$filterExpression)
+ * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
