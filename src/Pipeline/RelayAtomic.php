@@ -13,6 +13,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Connection\ConnectionInterface;
+use Predis\Response\Error;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use SplQueue;
@@ -24,6 +25,8 @@ class RelayAtomic extends Atomic
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $throw = $this->client->getOptions()->exceptions;
+
         try {
             /** @var \Predis\Connection\RelayConnection $connection */
             $transaction = $connection->getClient()->multi();
@@ -36,11 +39,29 @@ class RelayAtomic extends Atomic
                     : $transaction->rawCommand($name, ...$command->getArguments());
             }
 
-            return $transaction->exec();
+            $responses = $transaction->exec();
+
+            if (!is_array($responses)) {
+                return $responses;
+            }
+
+            foreach ($responses as $key => $response) {
+                if (!$response instanceof RelayException) {
+                    continue;
+                }
+
+                if ($throw) {
+                    throw new $response();
+                }
+
+                $responses[$key] = new Error($response->getMessage());
+            }
+
+            return $responses;
         } catch (RelayException $ex) {
             $connection->getClient()->discard();
 
-            throw new ServerException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+            throw new ServerException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 }

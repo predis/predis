@@ -44,25 +44,29 @@ class RelayPipeline extends Pipeline
                     : $pipeline->rawCommand($name, ...$command->getArguments());
             }
 
-            $results = $pipeline->exec();
+            $responses = $pipeline->exec();
 
-            if (!is_array($results)) {
-                return $results;
+            if (!is_array($responses)) {
+                return $responses;
             }
 
-            foreach ($results as $key => $response) {
-                if ($response instanceof RelayException) {
-                    $results[$key] = $throw
-                        ? throw new ServerException($response->getMessage())
-                        : new Error($response->getMessage());
+            foreach ($responses as $key => $response) {
+                if (!$response instanceof RelayException) {
+                    continue;
                 }
+
+                if ($throw) {
+                    throw new $response();
+                }
+
+                $responses[$key] = new Error($response->getMessage());
             }
 
-            return $results;
+            return $responses;
         } catch (RelayException $ex) {
             $connection->getClient()->discard();
 
-            throw new ServerException($ex->getMessage(), $ex->getCode(), $ex->getPrevious());
+            throw new ServerException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 }

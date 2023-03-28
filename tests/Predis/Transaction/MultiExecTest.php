@@ -700,9 +700,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
-     * @group relay-582
      */
     public function testIntegrationThrowsExceptionOnRedisErrorInBlock(): void
     {
@@ -727,7 +724,6 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group relay-incompatible
-     * @group relay-fixme
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
@@ -748,7 +744,7 @@ class MultiExecTest extends PredisTestCase
      * @group connected
      * @group ext-relay
      */
-    public function testIntegrationReturnsErrorResponseOnRedisErrorInBlockWhenUsingRelay(): void
+    public function testIntegrationReturnsErrorObjectOnRedisErrorInBlockWhenUsingRelay(): void
     {
         $client = $this->getClient([], ['exceptions' => false]);
 
@@ -758,8 +754,8 @@ class MultiExecTest extends PredisTestCase
             $tx->echo('foobar');
         });
 
-        $this->assertSame(true, $responses[0]);
-        $this->assertSame(false, $responses[1]);
+        $this->assertTrue($responses[0]);
+        $this->assertInstanceOf('Predis\Response\Error', $responses[1]);
         $this->assertSame('foobar', $responses[2]);
     }
 
@@ -784,6 +780,8 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
