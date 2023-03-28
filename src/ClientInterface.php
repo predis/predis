@@ -260,6 +260,7 @@ use Predis\Response\Status;
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)

@@ -14,6 +14,11 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * @see https://redis.io/commands/ts.range/
+ *
+ * Query a range in forward direction.
+ */
 class TSRANGE extends RedisCommand
 {
     public function getId()
