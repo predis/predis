@@ -67,7 +67,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -77,7 +77,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
         );
 
         $addArguments = (new AddArguments())
-            ->retention(31536000000);
+            ->retentionMsecs(31536000000);
 
         $this->assertEquals(
             123123123123,
@@ -100,7 +100,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -125,7 +125,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -135,7 +135,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
         );
 
         $addArguments = (new AddArguments())
-            ->retention(31536000000);
+            ->retentionMsecs(31536000000);
 
         $this->assertEquals(
             123123123123,
@@ -160,7 +160,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
                 ['key', 1.0, 'TIMESTAMP', 10],
             ],
             'with RETENTION modifier' => [
-                ['key', 1.0, (new IncrByArguments())->retention(100)],
+                ['key', 1.0, (new IncrByArguments())->retentionMsecs(100)],
                 ['key', 1.0, 'RETENTION', 100],
             ],
             'with UNCOMPRESSED modifier' => [
@@ -176,7 +176,7 @@ class TSINCRBY_Test extends PredisCommandTestCase
                 ['key', 1.0, 'LABELS', 'label1', 1, 'label2', 2],
             ],
             'with all modifiers' => [
-                ['key', 1.0, (new IncrByArguments())->timestamp(10)->retention(100)->uncompressed()->chunkSize(100)->labels('label1', 1, 'label2', 2)],
+                ['key', 1.0, (new IncrByArguments())->timestamp(10)->retentionMsecs(100)->uncompressed()->chunkSize(100)->labels('label1', 1, 'label2', 2)],
                 ['key', 1.0, 'TIMESTAMP', 10, 'RETENTION', 100, 'UNCOMPRESSED', 'CHUNK_SIZE', 100, 'LABELS', 'label1', 1, 'label2', 2],
             ],
         ];

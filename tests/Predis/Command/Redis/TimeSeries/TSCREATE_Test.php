@@ -15,6 +15,7 @@ namespace Predis\Command\Redis\TimeSeries;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
+use Predis\Response\ServerException;
 
 class TSCREATE_Test extends PredisCommandTestCase
 {
@@ -64,7 +65,7 @@ class TSCREATE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -72,6 +73,21 @@ class TSCREATE_Test extends PredisCommandTestCase
             'OK',
             $redis->tscreate('temperature:2:32', $arguments)
         );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testThrowsExceptionOnNonExistingKey(): void
+    {
+        $redis = $this->getClient();
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('ERR TSDB: the key does not exist');
+
+        $redis->tsinfo('non_existing_key');
     }
 
     public function argumentsProvider(): array
@@ -82,7 +98,7 @@ class TSCREATE_Test extends PredisCommandTestCase
                 ['key'],
             ],
             'with RETENTION modifier' => [
-                ['key', (new CreateArguments())->retention(100)],
+                ['key', (new CreateArguments())->retentionMsecs(100)],
                 ['key', 'RETENTION', 100],
             ],
             'with ENCODING modifier' => [
@@ -98,7 +114,7 @@ class TSCREATE_Test extends PredisCommandTestCase
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
             ],
             'with all modifiers' => [
-                ['key', (new CreateArguments())->retention(100)->encoding(CreateArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
+                ['key', (new CreateArguments())->retentionMsecs(100)->encoding(CreateArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'RETENTION', 100, 'ENCODING', CreateArguments::ENCODING_UNCOMPRESSED, 'CHUNK_SIZE', 100, 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
             ],
         ];
