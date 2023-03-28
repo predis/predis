@@ -31,7 +31,7 @@ class CommonArgumentsTest extends TestCase
      */
     public function testCreatesArgumentsWithRetentionModifier(): void
     {
-        $this->arguments->retention(10);
+        $this->arguments->retentionMsecs(10);
 
         $this->assertSame(['RETENTION', 10], $this->arguments->toArray());
     }
