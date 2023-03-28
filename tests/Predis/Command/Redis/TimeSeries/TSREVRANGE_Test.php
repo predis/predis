@@ -17,14 +17,14 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
-class TSRANGE_Test extends PredisCommandTestCase
+class TSREVRANGE_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return TSRANGE::class;
+        return TSREVRANGE::class;
     }
 
     /**
@@ -32,7 +32,7 @@ class TSRANGE_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'TSRANGE';
+        return 'TSREVRANGE';
     }
 
     /**
@@ -60,7 +60,7 @@ class TSRANGE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
-    public function testReturnsQueriedRangeInForwardDirectionFromGivenTimeSeries(): void
+    public function testReturnsQueriedRangeInReverseDirectionFromGivenTimeSeries(): void
     {
         $redis = $this->getClient();
 
@@ -74,8 +74,8 @@ class TSRANGE_Test extends PredisCommandTestCase
 
         $rangeArguments = (new RangeArguments())->filterByValue(-100, 100);
         $this->assertEquals(
-            [[1000, '30'], [1010, '35'], [1030, '40']],
-            $redis->tsrange('temp:TLV', '-', '+', $rangeArguments)
+            [[1030, '40'], [1010, '35'], [1000, '30']],
+            $redis->tsrevrange('temp:TLV', '-', '+', $rangeArguments)
         );
     }
 
@@ -91,7 +91,7 @@ class TSRANGE_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR TSDB: the key does not exist');
 
-        $redis->tsrange('non_existing_key', 1000, 1000);
+        $redis->tsrevrange('non_existing_key', 1000, 1000);
     }
 
     public function argumentsProvider(): array
