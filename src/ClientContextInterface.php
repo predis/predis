@@ -34,6 +34,7 @@ use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
+use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
@@ -248,6 +249,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method $this tsmadd(mixed ...$keyTimestampValue)
  * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method $this tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
