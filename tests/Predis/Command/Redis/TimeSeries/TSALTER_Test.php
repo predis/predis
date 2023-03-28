@@ -66,7 +66,7 @@ class TSALTER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $arguments = (new CreateArguments())
-            ->retention(60000)
+            ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
@@ -76,7 +76,7 @@ class TSALTER_Test extends PredisCommandTestCase
         );
 
         $alterArguments = (new AlterArguments())
-            ->retention(10000000);
+            ->retentionMsecs(10000000);
 
         $this->assertEquals(
             'OK',
@@ -107,7 +107,7 @@ class TSALTER_Test extends PredisCommandTestCase
                 ['key'],
             ],
             'with RETENTION modifier' => [
-                ['key', (new AlterArguments())->retention(100)],
+                ['key', (new AlterArguments())->retentionMsecs(100)],
                 ['key', 'RETENTION', 100],
             ],
             'with CHUNK_SIZE modifier' => [
@@ -119,7 +119,7 @@ class TSALTER_Test extends PredisCommandTestCase
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
             ],
             'with all modifiers' => [
-                ['key', (new AlterArguments())->retention(100)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
+                ['key', (new AlterArguments())->retentionMsecs(100)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'RETENTION', 100, 'CHUNK_SIZE', 100, 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
             ],
         ];

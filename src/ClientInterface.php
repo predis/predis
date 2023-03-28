@@ -33,6 +33,7 @@ use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
@@ -257,8 +258,10 @@ use Predis\Response\Status;
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method array             tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method array             tsqueryindex(string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)

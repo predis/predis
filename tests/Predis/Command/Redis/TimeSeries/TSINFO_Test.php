@@ -14,18 +14,17 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
-use Predis\Command\Argument\TimeSeries\GetArguments;
+use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
-use Predis\Response\ServerException;
 
-class TSGET_Test extends PredisCommandTestCase
+class TSINFO_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
-        return TSGET::class;
+        return TSINFO::class;
     }
 
     /**
@@ -33,7 +32,7 @@ class TSGET_Test extends PredisCommandTestCase
      */
     protected function getExpectedId(): string
     {
-        return 'TSGET';
+        return 'TSINFO';
     }
 
     /**
@@ -61,51 +60,24 @@ class TSGET_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
-    public function testGetSampleWithHighestTimestampFromGivenTimeSeries(): void
+    public function testReturnsInformationAboutGivenTimeSeries(): void
     {
         $redis = $this->getClient();
+        $expectedResponse = ['totalSamples', 0, 'memoryUsage', 4239, 'firstTimestamp', 0, 'lastTimestamp', 0,
+            'retentionTime', 60000, 'chunkCount', 1, 'chunkSize', 4096, 'chunkType', 'compressed', 'duplicatePolicy',
+        'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', []];
 
-        $createArguments = (new CreateArguments())
+        $arguments = (new CreateArguments())
             ->retentionMsecs(60000)
             ->duplicatePolicy(CommonArguments::POLICY_MAX)
             ->labels('sensor_id', 2, 'area_id', 32);
 
         $this->assertEquals(
             'OK',
-            $redis->tscreate('temperature:2:32', $createArguments)
+            $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        $this->assertEquals(
-            123123123123,
-            $redis->tsadd('temperature:2:32', 123123123123, 27)
-        );
-
-        $this->assertEquals(
-            123123123124,
-            $redis->tsadd('temperature:2:32', 123123123124, 28)
-        );
-
-        $this->assertEquals(
-            123123123125,
-            $redis->tsadd('temperature:2:32', 123123123125, 29)
-        );
-
-        $this->assertEquals([123123123125, '29'], $redis->tsget('temperature:2:32'));
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.0.0
-     */
-    public function testThrowsExceptionOnNonExistingKey(): void
-    {
-        $redis = $this->getClient();
-
-        $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('ERR TSDB: the key does not exist');
-
-        $redis->tsget('non_existing_key');
+        $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
     }
 
     public function argumentsProvider(): array
@@ -115,9 +87,9 @@ class TSGET_Test extends PredisCommandTestCase
                 ['key'],
                 ['key'],
             ],
-            'with LATEST modifier' => [
-                ['key', (new GetArguments())->latest()],
-                ['key', 'LATEST'],
+            'with DEBUG modifier' => [
+                ['key', (new InfoArguments())->debug()],
+                ['key', 'DEBUG'],
             ],
         ];
     }
