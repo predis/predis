@@ -250,6 +250,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method $this tsmadd(mixed ...$keyTimestampValue)
  * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method $this tsqueryindex(string ...$filterExpression)s
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
