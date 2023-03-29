@@ -244,6 +244,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method $this tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method $this tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsget(string $key, GetArguments $arguments = null)
