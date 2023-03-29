@@ -35,6 +35,7 @@ use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
+use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
@@ -263,6 +264,7 @@ use Predis\Response\Status;
  * @method array             tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method array             tsmrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
  * @method array             tsqueryindex(string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
