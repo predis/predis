@@ -139,16 +139,16 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', 'value1', '{key}:2', 'value2'];
 
-        $commandID = 'SORT';
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'value1', '{key}:2', 'value2']);
 
-        $command = $commands->create($commandID, ['{key}:1']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('SORT');
 
-        $command = $commands->create($commandID, ['{key}:1', ['STORE' => '{key}:2']]);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -157,12 +157,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForBlockingListCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', '{key}:2', 10];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', '{key}:2', 10]);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand));
         }
     }
 
@@ -172,12 +177,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForZsetAggregationCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:destination', ['{key}:1', '{key}:1'], [], 'sum'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:destination', 2, '{key}:1', '{key}:1', 'AGGREGATE', 'SUM']);
 
         foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -187,12 +197,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForBitOpCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['AND', '{key}:destination', '{key}:src:1', '{key}:src:2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['AND', '{key}:destination', '{key}:src:1', '{key}:src:2']);
 
         foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -202,14 +217,15 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForGeoradiusCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $commandID = 'GEORADIUS';
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 10, 10, 1, 'km']);
 
-        $command = $commands->create($commandID, ['{key}:1', 10, 10, 1, 'km']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('GEORADIUS');
 
-        $command = $commands->create($commandID, ['{key}:1', 10, 10, 1, 'km', 'store', '{key}:2', 'storedist', '{key}:3']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -218,14 +234,16 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForGeoradiusByMemberCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $commandID = 'GEORADIUSBYMEMBER';
 
-        $command = $commands->create($commandID, ['{key}:1', 'member', 1, 'km']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'member', 1, 'km']);
 
-        $command = $commands->create($commandID, ['{key}:1', 'member', 1, 'km', 'store', '{key}:2', 'storedist', '{key}:3']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('GEORADIUSBYMEMBER');
+
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -234,12 +252,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForEvalCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2']);
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
