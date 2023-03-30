@@ -179,7 +179,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'JSON.ARRPOP' => $getKeyFromFirstArgument,
             'JSON.ARRTRIM' => $getKeyFromFirstArgument,
             'JSON.CLEAR' => $getKeyFromFirstArgument,
-            'JSON.DEBUG MEMORY' => $getKeyFromFirstArgument,
+            'JSON.DEBUG' => $getKeyFromFirstArgument,
             'JSON.DEL' => $getKeyFromFirstArgument,
             'JSON.FORGET' => $getKeyFromFirstArgument,
             'JSON.GET' => $getKeyFromFirstArgument,

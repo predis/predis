@@ -13,10 +13,21 @@
 namespace Predis\Cluster;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 use PredisTestCase;
 
 class PredisStrategyTest extends PredisTestCase
 {
+    /**
+     * @var MockObject|CommandInterface
+     */
+    private $mockCommand;
+
+    protected function setUp(): void
+    {
+        $this->mockCommand = $this->createMock(CommandInterface::class);
+    }
+
     /**
      * @group disconnected
      */
@@ -67,12 +78,18 @@ class PredisStrategyTest extends PredisTestCase
     public function testFirstKeyCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['key'];
+
+        $this->mockCommand
+            ->method('getArgument')
+            ->with(0)
+            ->willReturn('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -82,12 +99,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testAllKeysCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', '{key}:2', '{key}:3', '{key}:4'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', '{key}:2', '{key}:3', '{key}:4']);
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -97,12 +119,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testInterleavedKeysCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', 'value1', '{key}:2', 'value2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'value1', '{key}:2', 'value2']);
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -453,7 +480,7 @@ class PredisStrategyTest extends PredisTestCase
             'JSON.ARRPOP' => 'keys-first',
             'JSON.ARRTRIM' => 'keys-first',
             'JSON.CLEAR' => 'keys-first',
-            'JSON.DEBUG MEMORY' => 'keys-first',
+            'JSON.DEBUG' => 'keys-first',
             'JSON.DEL' => 'keys-first',
             'JSON.FORGET' => 'keys-first',
             'JSON.GET' => 'keys-first',

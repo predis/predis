@@ -193,7 +193,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'JSON.ARRPOP' => $prefixFirst,
             'JSON.ARRTRIM' => $prefixFirst,
             'JSON.CLEAR' => $prefixFirst,
-            'JSON.DEBUG MEMORY' => $prefixFirst,
+            'JSON.DEBUG' => $prefixFirst,
             'JSON.DEL' => $prefixFirst,
             'JSON.FORGET' => $prefixFirst,
             'JSON.GET' => $prefixFirst,
