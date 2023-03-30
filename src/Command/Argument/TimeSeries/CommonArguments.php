@@ -110,6 +110,30 @@ class CommonArguments implements ArrayableArgument
     }
 
     /**
+     * Includes in the reply all label-value pairs representing metadata labels of the time series.
+     *
+     * @return $this
+     */
+    public function withLabels(): self
+    {
+        $this->arguments[] = 'WITHLABELS';
+
+        return $this;
+    }
+
+    /**
+     * Returns a subset of the label-value pairs that represent metadata labels of the time series.
+     *
+     * @return $this
+     */
+    public function selectedLabels(string ...$labels): self
+    {
+        array_push($this->arguments, 'SELECTED_LABELS', ...$labels);
+
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function toArray(): array
