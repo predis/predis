@@ -14,26 +14,20 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Command as RedisCommand;
 
-/**
- * @see https://redis.io/commands/ft.aggregate/
- *
- * Run a search query on an index, and perform aggregate transformations
- * on the results, extracting statistics etc. from them
- */
-class FTAGGREGATE extends RedisCommand
+class FTCURSOR extends RedisCommand
 {
     public function getId()
     {
-        return 'FT.AGGREGATE';
+        return 'FT.CURSOR';
     }
 
     public function setArguments(array $arguments)
     {
-        [$index, $query] = $arguments;
-        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
+        [$subcommand, $index, $cursorId] = $arguments;
+        $commandArguments = (!empty($arguments[3])) ? $arguments[3]->toArray() : [];
 
         parent::setArguments(array_merge(
-            [$index, $query],
+            [$subcommand, $index, $cursorId],
             $commandArguments
         ));
     }

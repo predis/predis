@@ -41,6 +41,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -353,6 +354,7 @@ use Predis\Response\Status;
  * Container commands
  * @property FUNCTIONS $function
  * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
  * @property JSONDEBUG $jsondebug
  */
 interface ClientInterface
