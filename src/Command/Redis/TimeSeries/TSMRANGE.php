@@ -10,30 +10,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis\Search;
+namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Command as RedisCommand;
 
 /**
- * @see https://redis.io/commands/ft.aggregate/
+ * @see https://redis.io/commands/ts.mrange/
  *
- * Run a search query on an index, and perform aggregate transformations
- * on the results, extracting statistics etc. from them
+ * Query a range across multiple time series by filters in forward direction.
  */
-class FTAGGREGATE extends RedisCommand
+class TSMRANGE extends RedisCommand
 {
     public function getId()
     {
-        return 'FT.AGGREGATE';
+        return 'TS.MRANGE';
     }
 
     public function setArguments(array $arguments)
     {
-        [$index, $query] = $arguments;
-        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
+        [$fromTimestamp, $toTimestamp] = $arguments;
+        $commandArguments = $arguments[2]->toArray();
 
         parent::setArguments(array_merge(
-            [$index, $query],
+            [$fromTimestamp, $toTimestamp],
             $commandArguments
         ));
     }
