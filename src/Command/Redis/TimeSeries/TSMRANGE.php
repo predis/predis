@@ -14,6 +14,11 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * @see https://redis.io/commands/ts.mrange/
+ *
+ * Query a range across multiple time series by filters in forward direction.
+ */
 class TSMRANGE extends RedisCommand
 {
     public function getId()

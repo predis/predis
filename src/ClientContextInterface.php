@@ -255,6 +255,7 @@ use Predis\Command\Container\Search\FTCONFIG;
  * @method $this tsmadd(mixed ...$keyTimestampValue)
  * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method $this tsmrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
+ * @method $this tsmrevrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
  * @method $this tsqueryindex(string ...$filterExpression)
  * @method $this tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method $this tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
