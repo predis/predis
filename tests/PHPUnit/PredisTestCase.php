@@ -131,6 +131,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultParametersArray(): array
     {
+        if ($this->isClusterTest()) {
+            return $this->prepareClusterEndpoints();
+        }
+
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
@@ -215,6 +219,15 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             ],
             $options ?: []
         );
+
+        if ($this->isClusterTest()) {
+            $options = array_merge(
+                [
+                    'cluster' => 'redis',
+                ],
+                $options
+            );
+        }
 
         $client = new Client($parameters, $options);
         $client->connect();
@@ -406,5 +419,37 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
             $this->markTestSkipped($message);
         }
+    }
+
+    /**
+     * Check annotations if it's matches to cluster test scenario.
+     *
+     * @return bool
+     */
+    protected function isClusterTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
+            !empty($annotations['method']['requiresRedisVersion']) &&
+            in_array('connected', $annotations['method']['group'], true) &&
+            in_array('cluster', $annotations['method']['group'], true);
+    }
+
+    /**
+     * Parse comma-separated cluster endpoints and convert them into tcp strings.
+     *
+     * @return array
+     */
+    protected function prepareClusterEndpoints(): array
+    {
+        $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+
+        return array_map(static function (string $elem) {
+            return 'tcp://' . $elem;
+        }, $endpoints);
     }
 }

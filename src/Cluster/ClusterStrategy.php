@@ -53,6 +53,8 @@ abstract class ClusterStrategy implements StrategyInterface
             'SORT' => [$this, 'getKeyFromSortCommand'],
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
+            'FLUSHDB' => [$this, 'getFakeKey'],
+            'INFO' => [$this, 'getFakeKey'],
 
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,
@@ -214,6 +216,16 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         $this->commands[$commandID] = $callback;
+    }
+
+    /**
+     * Get fake key for commands with no key argument.
+     *
+     * @return string
+     */
+    protected function getFakeKey(): string
+    {
+        return 'key';
     }
 
     /**

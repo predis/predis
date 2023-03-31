@@ -53,5 +53,8 @@
         <!-- Webdis -->
         <const name="WEBDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="WEBDIS_SERVER_PORT" value="7379" />
+
+        <!-- Redis Cluster -->
+        <const name="REDIS_CLUSTER_ENDPOINTS" value="127.0.0.1:6372,127.0.0.1:6373,127.0.0.1:6374" />
     </php>
 </phpunit>

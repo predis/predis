@@ -41,6 +41,16 @@ jobs:
         ports:
           - 6379:6379
 
+      redis-cluster:
+        image: redisfab/redis-py-cluster:6.2.6
+        ports:
+          - 6372:16379
+          - 6373:16380
+          - 6374:16381
+          - 6375:16382
+          - 6376:16383
+          - 6377:16384
+
     steps:
 
       - name: Checkout repository
