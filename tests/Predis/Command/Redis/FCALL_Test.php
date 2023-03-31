@@ -21,20 +21,6 @@ use Predis\Response\ServerException;
  */
 class FCALL_Test extends PredisCommandTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->getClient()->executeRaw(['FUNCTION', 'FLUSH']);
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -86,6 +72,7 @@ class FCALL_Test extends PredisCommandTestCase
         $expectedResponse
     ): void {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->assertSame('mylib', $redis->function->load($function));
 
@@ -102,6 +89,7 @@ class FCALL_Test extends PredisCommandTestCase
     public function testThrowsExceptionOnNonExistingFunctionGiven(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR Function not found');
