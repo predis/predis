@@ -171,6 +171,10 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
             'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
 
+            /* commands operating on streams */
+            'XREVRANGE' => $getKeyFromFirstArgument,
+            'XTRIM' => $getKeyFromFirstArgument,
+
             /* RedisJSON */
             'JSON.ARRAPPEND' => $getKeyFromFirstArgument,
             'JSON.ARRINDEX' => $getKeyFromFirstArgument,

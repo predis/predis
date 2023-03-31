@@ -522,6 +522,10 @@ class RedisStrategyTest extends PredisTestCase
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
 
+            /* commands operating on streams */
+            'XREVRANGE' => 'keys-first',
+            'XTRIM' => 'keys-first',
+
             /* RedisJSON */
             'JSON.ARRAPPEND' => 'keys-first',
             'JSON.ARRINDEX' => 'keys-first',
