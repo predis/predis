@@ -25,11 +25,12 @@ class RelayAtomic extends Atomic
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $client = $connection->getClient();
         $throw = $this->client->getOptions()->exceptions;
 
         try {
             /** @var \Predis\Connection\RelayConnection $connection */
-            $transaction = $connection->getClient()->multi();
+            $transaction = $client->multi();
 
             foreach ($commands as $command) {
                 $name = $command->getId();
@@ -46,20 +47,20 @@ class RelayAtomic extends Atomic
             }
 
             foreach ($responses as $key => $response) {
-                if (!$response instanceof RelayException) {
-                    continue;
-                }
+                if ($response instanceof RelayException) {
+                    if ($throw) {
+                        throw $response;
+                    }
 
-                if ($throw) {
-                    throw new $response();
+                    $responses[$key] = new Error($response->getMessage());
                 }
-
-                $responses[$key] = new Error($response->getMessage());
             }
 
             return $responses;
         } catch (RelayException $ex) {
-            $connection->getClient()->discard();
+            if ($client->getMode() !== $client::ATOMIC) {
+                $client->discard();
+            }
 
             throw new ServerException($ex->getMessage(), $ex->getCode(), $ex);
         }

@@ -31,10 +31,11 @@ class RelayPipeline extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $client = $connection->getClient();
         $throw = $this->client->getOptions()->exceptions;
 
         try {
-            $pipeline = $connection->getClient()->pipeline();
+            $pipeline = $client->pipeline();
 
             foreach ($commands as $command) {
                 $name = $command->getId();
@@ -51,20 +52,20 @@ class RelayPipeline extends Pipeline
             }
 
             foreach ($responses as $key => $response) {
-                if (!$response instanceof RelayException) {
-                    continue;
-                }
+                if ($response instanceof RelayException) {
+                    if ($throw) {
+                        throw $response;
+                    }
 
-                if ($throw) {
-                    throw new $response();
+                    $responses[$key] = new Error($response->getMessage());
                 }
-
-                $responses[$key] = new Error($response->getMessage());
             }
 
             return $responses;
         } catch (RelayException $ex) {
-            $connection->getClient()->discard();
+            if ($client->getMode() !== $client::ATOMIC) {
+                $client->discard();
+            }
 
             throw new ServerException($ex->getMessage(), $ex->getCode(), $ex);
         }
