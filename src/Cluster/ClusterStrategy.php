@@ -54,7 +54,6 @@ abstract class ClusterStrategy implements StrategyInterface
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
             'FLUSHDB' => [$this, 'getFakeKey'],
-            'INFO' => [$this, 'getFakeKey'],
 
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,
@@ -164,6 +163,9 @@ abstract class ClusterStrategy implements StrategyInterface
             /* scripting */
             'EVAL' => [$this, 'getKeyFromScriptingCommands'],
             'EVALSHA' => [$this, 'getKeyFromScriptingCommands'],
+
+            /* server */
+            'INFO' => [$this, 'getFakeKey'],
 
             /* commands performing geospatial operations */
             'GEOADD' => $getKeyFromFirstArgument,

@@ -350,6 +350,7 @@ class RedisStrategyTest extends PredisTestCase
             'SORT' => 'keys-first', // TODO
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'FLUSHDB' => 'keys-fake',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',
@@ -459,6 +460,9 @@ class RedisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+
+            /* server */
+            'INFO' => 'keys-fake',
 
             /* commands performing geospatial operations */
             'GEOADD' => 'keys-first',
