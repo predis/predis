@@ -37,7 +37,7 @@ class CommonArguments implements ArrayableArgument
      * @param  int   $retentionPeriod
      * @return $this
      */
-    public function retention(int $retentionPeriod): self
+    public function retentionMsecs(int $retentionPeriod): self
     {
         array_push($this->arguments, 'RETENTION', $retentionPeriod);
 
@@ -105,6 +105,30 @@ class CommonArguments implements ArrayableArgument
     public function latest(): self
     {
         $this->arguments[] = 'LATEST';
+
+        return $this;
+    }
+
+    /**
+     * Includes in the reply all label-value pairs representing metadata labels of the time series.
+     *
+     * @return $this
+     */
+    public function withLabels(): self
+    {
+        $this->arguments[] = 'WITHLABELS';
+
+        return $this;
+    }
+
+    /**
+     * Returns a subset of the label-value pairs that represent metadata labels of the time series.
+     *
+     * @return $this
+     */
+    public function selectedLabels(string ...$labels): self
+    {
+        array_push($this->arguments, 'SELECTED_LABELS', ...$labels);
 
         return $this;
     }

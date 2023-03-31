@@ -11,7 +11,7 @@
  */
 
 use Predis\Client;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 
 require __DIR__ . '/../../shared.php';
 
@@ -20,8 +20,9 @@ require __DIR__ . '/../../shared.php';
 // 1. Create index
 $client = new Client();
 
-$schema = new Schema();
-$schema->addTextField('text_field');
+$schema = [
+    new TextField('text_field'),
+];
 $client->ftcreate('index_synupdate', $schema);
 
 // 2. Add synonyms into synonym group

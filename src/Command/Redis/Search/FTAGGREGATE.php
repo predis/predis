@@ -37,23 +37,4 @@ class FTAGGREGATE extends RedisCommand
             $commandArguments
         ));
     }
-
-    public function parseResponse($data)
-    {
-        if (count($data) > 1) {
-            $result = [$data[0]];
-
-            for ($i = 1, $iMax = count($data); $i < $iMax; ++$i) {
-                for ($j = 0, $jMax = count($data[$i]); $j < $jMax; ++$j) {
-                    if (array_key_exists($j + 1, $data[$i])) {
-                        $result[$i][(string) $data[$i][$j]] = $data[$i][++$j];
-                    }
-                }
-            }
-
-            return $result;
-        }
-
-        return $data;
-    }
 }

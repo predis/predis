@@ -33,11 +33,15 @@ use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
+use Predis\Command\Argument\TimeSeries\MRangeArguments;
+use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -252,12 +256,20 @@ use Predis\Response\Status;
  * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
  * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
+ * @method Status            tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method int               tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method int               tsdel(string $key, int $fromTimestamp, int $toTimestamp)
+ * @method Status            tsdeleterule(string $sourceKey, string $destKey)
  * @method array             tsget(string $key, GetArguments $arguments = null)
  * @method int               tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
+ * @method array             tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method array             tsmadd(mixed ...$keyTimestampValue)
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
+ * @method array             tsmrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
+ * @method array             tsmrevrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
+ * @method array             tsqueryindex(string ...$filterExpression)
+ * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
@@ -342,6 +354,7 @@ use Predis\Response\Status;
  * Container commands
  * @property FUNCTIONS $function
  * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
  * @property JSONDEBUG $jsondebug
  */
 interface ClientInterface

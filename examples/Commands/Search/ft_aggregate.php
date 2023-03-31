@@ -13,7 +13,9 @@
 use Predis\Client;
 use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\AbstractField;
+use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 
 require __DIR__ . '/../../shared.php';
 
@@ -23,10 +25,11 @@ require __DIR__ . '/../../shared.php';
 $client = new Client();
 
 $ftCreateArguments = (new CreateArguments())->prefix(['user:']);
-$schema = (new Schema())
-    ->addTextField('name')
-    ->addTextField('country')
-    ->addNumericField('dob', '', Schema::SORTABLE);
+$schema = [
+    new TextField('name'),
+    new TextField('country'),
+    new NumericField('dob', '', AbstractField::SORTABLE),
+];
 
 $client->ftcreate('idx', $schema, $ftCreateArguments);
 

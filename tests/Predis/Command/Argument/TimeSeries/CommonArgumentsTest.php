@@ -31,7 +31,7 @@ class CommonArgumentsTest extends TestCase
      */
     public function testCreatesArgumentsWithRetentionModifier(): void
     {
-        $this->arguments->retention(10);
+        $this->arguments->retentionMsecs(10);
 
         $this->assertSame(['RETENTION', 10], $this->arguments->toArray());
     }
@@ -84,5 +84,25 @@ class CommonArgumentsTest extends TestCase
         $this->arguments->latest();
 
         $this->assertSame(['LATEST'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithWithLabelsModifier(): void
+    {
+        $this->arguments->withLabels();
+
+        $this->assertSame(['WITHLABELS'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithSelectedLabelsModifier(): void
+    {
+        $this->arguments->selectedLabels('label1', 'label2');
+
+        $this->assertSame(['SELECTED_LABELS', 'label1', 'label2'], $this->arguments->toArray());
     }
 }
