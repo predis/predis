@@ -17,6 +17,7 @@ use Predis\Response\ServerException;
 /**
  * @group commands
  * @group realm-scripting
+ * @requiresRedisVersion >= 7.0.0
  */
 class FCALL_Test extends PredisCommandTestCase
 {
