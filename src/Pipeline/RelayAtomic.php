@@ -25,11 +25,12 @@ class RelayAtomic extends Atomic
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        /** @var \Predis\Connection\RelayConnection $connection */
         $client = $connection->getClient();
+
         $throw = $this->client->getOptions()->exceptions;
 
         try {
-            /** @var \Predis\Connection\RelayConnection $connection */
             $transaction = $client->multi();
 
             foreach ($commands as $command) {
