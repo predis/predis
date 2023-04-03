@@ -21,6 +21,29 @@ class ReplicationStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testLoadBalancing(): void
+    {
+        $commands = $this->getCommandFactory();
+        $strategy = new ReplicationStrategy();
+
+        $command = $commands->create('GET', ['key']);
+
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GET is expected to be a read operation.'
+        );
+
+        $strategy->disableLoadBalancing();
+
+        $this->assertFalse(
+            $strategy->isReadOperation($command),
+            'GET is expected to be a write operation.'
+        );
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReadCommands(): void
     {
         $commands = $this->getCommandFactory();

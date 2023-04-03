@@ -181,9 +181,11 @@ class KeyPrefixProcessor implements ProcessorInterface
             /* ---------------- Redis 5.0 ---------------- */
             'XADD' => $prefixFirst,
             'XRANGE' => $prefixFirst,
+            'XREVRANGE' => $prefixFirst,
             'XDEL' => $prefixFirst,
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
+            'XTRIM' => $prefixFirst,
         ];
     }
 

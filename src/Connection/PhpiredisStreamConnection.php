@@ -46,6 +46,7 @@ use Predis\Response\Status as StatusResponse;
  *  - persistent: the connection is left intact after a GC collection.
  *
  * @see https://github.com/nrk/phpiredis
+ * @deprecated 2.1.2
  */
 class PhpiredisStreamConnection extends StreamConnection
 {

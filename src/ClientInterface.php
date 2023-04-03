@@ -38,6 +38,7 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\ACL;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
@@ -117,6 +118,7 @@ use Predis\Response\Status;
  * @method int               decrby(string $key, int $decrement)
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method mixed             fcall(string $function, array $keys, ...$args)
+ * @method mixed             fcall_ro(string $function, array $keys, ...$args)
  * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
@@ -356,6 +358,7 @@ use Predis\Response\Status;
  * @property FTCONFIG  $ftconfig
  * @property FTCURSOR  $ftcursor
  * @property JSONDEBUG $jsondebug
+ * @property ACL       $acl
  */
 interface ClientInterface
 {

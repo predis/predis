@@ -23,6 +23,7 @@ class ReplicationStrategy
     protected $disallowed;
     protected $readonly;
     protected $readonlySHA1;
+    protected $loadBalancing = true;
 
     public function __construct()
     {
@@ -42,6 +43,10 @@ class ReplicationStrategy
      */
     public function isReadOperation(CommandInterface $command)
     {
+        if (!$this->loadBalancing) {
+            return false;
+        }
+
         if (isset($this->disallowed[$id = $command->getId()])) {
             throw new NotSupportedException(
                 "The command '$id' is not allowed in replication mode."
@@ -270,5 +275,18 @@ class ReplicationStrategy
             'GEORADIUS' => [$this, 'isGeoradiusReadOnly'],
             'GEORADIUSBYMEMBER' => [$this, 'isGeoradiusReadOnly'],
         ];
+    }
+
+    /**
+     * Disables reads to slaves when using
+     * a replication topology.
+     *
+     * @return self
+     */
+    public function disableLoadBalancing(): self
+    {
+        $this->loadBalancing = false;
+
+        return $this;
     }
 }

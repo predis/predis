@@ -43,6 +43,7 @@ use Predis\Response\Status as StatusResponse;
  * @see http://webd.is
  * @see http://github.com/nicolasff/webdis
  * @see http://github.com/seppo0010/phpiredis
+ * @deprecated 2.1.2
  */
 class WebdisConnection implements NodeConnectionInterface
 {
