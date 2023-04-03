@@ -12,7 +12,7 @@
 
 use Predis\Client;
 use Predis\Command\Argument\Search\CreateArguments;
-use Predis\Command\Argument\Search\Schema;
+use Predis\Command\Argument\Search\SchemaFields\TagField;
 
 require __DIR__ . '/../../shared.php';
 
@@ -21,8 +21,9 @@ require __DIR__ . '/../../shared.php';
 // 1. Create index
 $client = new Client();
 
-$schema = new Schema();
-$schema->addTagField('tag_field');
+$schema = [
+    new TagField('tag_field'),
+];
 $client->ftcreate('index_tagvals', $schema, (new CreateArguments())->prefix(['prefix:']));
 
 // 2. Add indexed tags

@@ -52,11 +52,10 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
-     * @dataProvider responsesProvider
      */
-    public function testParseResponse(array $actualResponse, array $expectedResponse): void
+    public function testParseResponse(): void
     {
-        $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
+        $this->assertSame(1, $this->getCommand()->parseResponse(1));
     }
 
     /**
@@ -70,14 +69,10 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         $expectedResponse = [
             2,
             [
-                'country' => 'Ukraine',
-                'birth' => '1995',
-                'country_birth_Vlad_count' => '2',
+                'country', 'Ukraine', 'birth', '1995', 'country_birth_Vlad_count', '2',
             ],
             [
-                'country' => 'Israel',
-                'birth' => '1994',
-                'country_birth_Vlad_count' => '1',
+                'country', 'Israel', 'birth', '1994', 'country_birth_Vlad_count', '1',
             ],
         ];
 
@@ -201,37 +196,6 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
                 [
                     'index', '@name: "test"', 'APPLY', 'year(@dob)', 'AS', 'birth', 'GROUPBY', 2, '@birth', '@country',
                     'REDUCE', 'COUNT', 0, 'AS', 'num_visits', 'SORTBY', 1, '@day',
-                ],
-            ],
-        ];
-    }
-
-    public function responsesProvider(): array
-    {
-        return [
-            'with one element response' => [
-                [100],
-                [100],
-            ],
-            'with many elements response' => [
-                [
-                    1,
-                    [
-                        'Country',
-                        'Ukraine',
-                        'Birth',
-                        '1995',
-                        'Count',
-                        2,
-                    ],
-                ],
-                [
-                    1,
-                    [
-                        'Country' => 'Ukraine',
-                        'Birth' => '1995',
-                        'Count' => 2,
-                    ],
                 ],
             ],
         ];

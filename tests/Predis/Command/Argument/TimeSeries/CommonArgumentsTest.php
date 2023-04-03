@@ -85,4 +85,24 @@ class CommonArgumentsTest extends TestCase
 
         $this->assertSame(['LATEST'], $this->arguments->toArray());
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithWithLabelsModifier(): void
+    {
+        $this->arguments->withLabels();
+
+        $this->assertSame(['WITHLABELS'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithSelectedLabelsModifier(): void
+    {
+        $this->arguments->selectedLabels('label1', 'label2');
+
+        $this->assertSame(['SELECTED_LABELS', 'label1', 'label2'], $this->arguments->toArray());
+    }
 }
