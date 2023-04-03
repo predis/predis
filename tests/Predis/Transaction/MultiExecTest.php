@@ -886,8 +886,7 @@ class MultiExecTest extends PredisTestCase
         ?array $expected = [],
         ?array &$commands = [],
         ?array &$cas = []
-    ): callable
-    {
+    ): callable {
         $multi = $watch = $abort = false;
 
         return function (CommandInterface $command) use (&$expected, &$commands, &$cas, &$multi, &$watch, &$abort) {
