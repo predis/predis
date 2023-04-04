@@ -253,6 +253,32 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testPrefixFCall(): void
+    {
+        $arguments = [
+            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'foo', 'bar', 'hoge', 'piyo'
+        ];
+
+        $expected = [
+            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'prefix:foo', 'prefix:bar', 'hoge', 'piyo',
+        ];
+
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+        $command->setRawArguments($arguments);
+
+        KeyPrefixProcessor::fCallKeys($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+
+        // Empty arguments
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+
+        KeyPrefixProcessor::fCallKeys($command, 'prefix:');
+        $this->assertEmpty($command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testPrefixMigrate(): void
     {
         $arguments = ['127.0.0.1', '6379', 'key', '0', '10', 'COPY', 'REPLACE'];
