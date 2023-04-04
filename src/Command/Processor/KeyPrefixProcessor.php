@@ -39,6 +39,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         $prefixSkipLast = static::class . '::skipLast';
         $prefixSort = static::class . '::sort';
         $prefixEvalKeys = static::class . '::evalKeys';
+        $prefixFCallKeys = static::class . '::fcallKeys';
         $prefixZsetStore = static::class . '::zsetStore';
         $prefixMigrate = static::class . '::migrate';
         $prefixGeoradius = static::class . '::georadius';
@@ -186,6 +187,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
             'XTRIM' => $prefixFirst,
+            /* ---------------- Redis 7.0 ---------------- */
+            'FCALL' => $prefixFCallKeys,
         ];
     }
 
@@ -396,6 +399,23 @@ class KeyPrefixProcessor implements ProcessorInterface
      * @param string           $prefix  Prefix string.
      */
     public static function evalKeys(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            for ($i = 2; $i < $arguments[1] + 2; ++$i) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $command->setRawArguments($arguments);
+        }
+    }
+
+    /**
+     * Applies the specified prefix to the keys of an FCall-based command.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function fCallKeys(CommandInterface $command, $prefix)
     {
         if ($arguments = $command->getArguments()) {
             for ($i = 2; $i < $arguments[1] + 2; ++$i) {
