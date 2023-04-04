@@ -256,7 +256,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     public function testPrefixFCall(): void
     {
         $arguments = [
-            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'foo', 'bar', 'hoge', 'piyo'
+            'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}', 2, 'foo', 'bar', 'hoge', 'piyo',
         ];
 
         $expected = [
