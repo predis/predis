@@ -73,3 +73,18 @@ jobs:
         run: |
           wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
           php ./php-coveralls.phar -v
+
+  test-report:
+    needs:
+      - predis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        with:
+          name: PHPUnit Tests
+          path: 'report.xml'
+          reporter: java-junit
