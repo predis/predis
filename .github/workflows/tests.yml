@@ -98,7 +98,6 @@ jobs:
       - name: Test Report
         uses: dorny/test-reporter@v1
         with:
-          artifact: test-results
           name: PHPUnit Tests
-          path: '*.xml'
+          path: 'report.xml'
           reporter: java-junit
