@@ -1,18 +1,17 @@
 name: Test Report
 on:
-  workflow_run:
-    workflows:
-      - Tests
-    types:
-      - completed
+  push:
+    branches:
+      - main
+      - v2.**
+  pull_request:
+
 jobs:
   report:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Test Report
         uses: dorny/test-reporter@v1
