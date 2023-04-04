@@ -74,6 +74,13 @@ jobs:
           wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
           php ./php-coveralls.phar -v
 
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: test-results
+          path: report.xml
+
   test-report:
     name: Test report
     needs:
@@ -86,6 +93,7 @@ jobs:
       - name: Test Report
         uses: dorny/test-reporter@v1
         with:
+          artifact: test-results
           name: PHPUnit Tests
-          path: 'report.xml'
+          path: '*.xml'
           reporter: java-junit
