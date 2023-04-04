@@ -75,6 +75,7 @@ jobs:
           php ./php-coveralls.phar -v
 
   test-report:
+    name: Test report
     needs:
       - predis
     runs-on: ubuntu-latest
