@@ -101,3 +101,5 @@ jobs:
           name: PHPUnit Tests
           path: 'report.xml'
           reporter: java-junit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
