@@ -4,6 +4,8 @@ on:
     branches:
       - main
       - v2.**
+  pull_request:
+
   workflow_run:
     workflows: ['Tests']
     types:
