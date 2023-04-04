@@ -62,7 +62,7 @@ class CFDEL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.0.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testDeletesItemFromGivenCuckooFilter(): void
     {
@@ -88,7 +88,7 @@ class CFDEL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.0.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testDeleteThrowsExceptionOnNonExistingFilterKey(): void
     {
