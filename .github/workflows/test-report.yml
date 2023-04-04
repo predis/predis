@@ -1,5 +1,9 @@
 name: Test Report
 on:
+  push:
+    branches:
+      - main
+      - v2.**
   workflow_run:
     workflows: ['Tests']
     types:
