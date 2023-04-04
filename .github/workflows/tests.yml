@@ -72,7 +72,7 @@ jobs:
         with:
           name: PHPUnit Tests report
           path: report.xml
-          reporter: jest-junit
+          reporter: java-junit
 
       - name: Send coverage to Coveralls
         env:
