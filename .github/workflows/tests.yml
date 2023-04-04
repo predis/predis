@@ -66,14 +66,6 @@ jobs:
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
         run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src --log-junit report.xml
 
-      - name: Test report
-        uses: dorny/test-reporter@v1
-        if: ${{ success() || failure() }}
-        with:
-          name: PHPUnit Tests report
-          path: report.xml
-          reporter: java-junit
-
       - name: Send coverage to Coveralls
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}

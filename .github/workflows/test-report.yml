@@ -1,0 +1,15 @@
+name: Test Report
+on:
+  workflow_run:
+    workflows: ['Tests']
+    types:
+      - completed
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/test-reporter@v1
+        with:
+          name: PHPUnit Tests
+          path: 'report.xml'
+          reporter: java-junit
