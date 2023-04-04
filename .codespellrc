@@ -1,6 +1,6 @@
 [codespell]
-skip=./.git,./src/Command/Redis/Search/FTSUGGET.php,./examples/Commands/Search/ft_sug_add_get_del_len.php
+skip=./.git
 check-hidden=
 check-filenames=
 builtin=clear,rare,informal,usage,code,names
-ignore-words-list=master,masters,slave,slaves,whitelist,cas,exat,smove
+ignore-words-list=master,masters,slave,slaves,whitelist,cas,exat,smove,SUGGET
