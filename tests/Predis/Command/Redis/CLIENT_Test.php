@@ -91,6 +91,19 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsOfClientNoTouch(): void
+    {
+        $arguments = $expected = ['no-touch', 'on'];
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponseOfClientKill(): void
     {
         $command = $this->getCommand();
@@ -172,6 +185,20 @@ BUFFER;
     }
 
     /**
+     * @dataProvider noTouchProvider
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     * @param  string $argument
+     * @return void
+     */
+    public function testNoTouchControlKeysAccess(string $argument): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client('no-touch', $argument));
+    }
+
+    /**
      * @return array
      */
     public function invalidConnectionNameProvider()
@@ -181,6 +208,14 @@ BUFFER;
             ['foo \n'],
             ['foo $'],
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function noTouchProvider(): array
+    {
+        return [['on'], ['off']];
     }
 
     /**
