@@ -66,35 +66,6 @@ jobs:
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
         run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src --log-junit report.xml
 
-      - name: Archive test report
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: test-results
-          path: report.xml
-
-      - name: Send coverage to Coveralls
-        env:
-            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
-        run: |
-          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
-          php ./php-coveralls.phar -v
-
-  test-report:
-    name: Test report
-    needs:
-      - predis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download test report
-        uses: actions/download-artifact@v3
-        with:
-          name: test-results
-
       - name: Test Report
         uses: dorny/test-reporter@v1
         with:
@@ -103,3 +74,11 @@ jobs:
           reporter: java-junit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send coverage to Coveralls
+        env:
+            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
+        run: |
+          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
+          php ./php-coveralls.phar -v
