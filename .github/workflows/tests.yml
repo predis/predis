@@ -14,7 +14,8 @@ concurrency:
 jobs:
 
   predis:
-    permissions: write-all
+    permissions:
+      checks: write
     name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
     runs-on: ubuntu-latest
 
