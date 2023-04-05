@@ -377,17 +377,20 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Compares the specified version string against the Redis server version in
      * use for integration tests.
      *
-     * @param string $operator Comparison operator
-     * @param string $version  Version to compare
-     *
+     * @param  array $requirements
      * @return bool
      */
-    public function isRedisServerVersion(string $operator, string $version): bool
+    public function isRedisServerVersion(array $requirements): bool
     {
         $serverVersion = $this->getRedisServerVersion();
-        $comparison = version_compare($serverVersion, $version);
+        $comparison = true;
 
-        return (bool) eval("return $comparison $operator 0;");
+        foreach ($requirements as $requirement) {
+            $comparison = $comparison &&
+                version_compare($serverVersion, $requirement['version'], $requirement['operator']);
+        }
+
+        return $comparison;
     }
 
     /**
@@ -405,21 +408,14 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             return;
         }
 
-        $requiredVersion = explode(' ', $requiredVersion, 2);
+        $requirements = $this->parseVersionRequirements($requiredVersion);
 
-        if (count($requiredVersion) === 1) {
-            $reqOperator = '>=';
-            $reqVersion = $requiredVersion[0];
-        } else {
-            $reqOperator = $requiredVersion[0];
-            $reqVersion = $requiredVersion[1];
-        }
 
-        if (!$this->isRedisServerVersion($reqOperator, $reqVersion)) {
+        if (!$this->isRedisServerVersion($requirements)) {
             $serverVersion = $this->getRedisServerVersion();
 
             $this->markTestSkipped(
-                "Test requires a Redis server instance $reqOperator $reqVersion but target server is $serverVersion"
+                "Test requires a Redis server instance {$requiredVersion} but target server is $serverVersion"
             );
         }
     }
@@ -538,5 +534,35 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
             $this->markTestSkipped($message);
         }
+    }
+
+    /**
+     * Parse requirements from annotation value.
+     *
+     * @param  string $requirementsString
+     * @return array
+     */
+    protected function parseVersionRequirements(string $requirementsString): array
+    {
+        $requirements = explode(' ', $requirementsString);
+
+        if (count($requirements) === 1) {
+            return [['operator' => '>=', 'version' => $requirements[0]]];
+        }
+
+        $processedRequirements = [];
+
+        for ($i = 0, $iMax = count($requirements); $i < $iMax; $i++) {
+            if (isset($requirements[$i + 1])) {
+                $processedRequirements[] = [
+                    'operator' => $requirements[$i],
+                    'version' => $requirements[$i + 1],
+                ];
+
+                $i++;
+            }
+        }
+
+        return $processedRequirements;
     }
 }

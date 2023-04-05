@@ -66,7 +66,7 @@ class MONITOR_Test extends PredisCommandTestCase
 
         // NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
         // +OK to the client that issued the MONITOR command.
-        if ($this->isRedisServerVersion('<=', '2.4.0')) {
+        if ($this->isRedisServerVersion([['operator' => '<=', 'version' => '2.4.0']])) {
             $this->assertMatchesRegularExpression('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
         }
     }

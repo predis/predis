@@ -110,7 +110,7 @@ class COMMAND_Test extends PredisCommandTestCase
         // command in the request with a list of the ACL categories associated
         // to a command. We simply append this additional array in the expected
         // response if the test suite is executed against Redis >= 6.0.
-        if ($this->isRedisServerVersion('>=', '6.0')) {
+        if ($this->isRedisServerVersion([['operator' => '>=', 'version' => '6.0.0']])) {
             $expected[0][] = ['@read', '@string', '@fast'];
         }
 
@@ -120,7 +120,7 @@ class COMMAND_Test extends PredisCommandTestCase
         // - Subcommands: https://redis.io/commands/command/#subcommands.
         // We simply append this additional array in the expected response if the
         // test suite is executed against Redis >= 7.0.
-        if ($this->isRedisServerVersion('>=', '7.0')) {
+        if ($this->isRedisServerVersion([['operator' => '>=', 'version' => '7.0.0']])) {
             $expected[0][] = [];
             $expected[0][] = [
                 [

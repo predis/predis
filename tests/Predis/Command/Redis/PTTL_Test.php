@@ -90,7 +90,7 @@ class PTTL_Test extends PredisCommandTestCase
      */
     public function testReturnsLessThanZeroOnNonExistingKeys(): void
     {
-        if ($this->isRedisServerVersion('<', '2.8.0')) {
+        if ($this->isRedisServerVersion([['operator' => '<', 'version' => '2.8.0']])) {
             $this->assertSame(-1, $this->getClient()->pttl('foo'));
         } else {
             $this->assertSame(-2, $this->getClient()->pttl('foo'));

@@ -144,11 +144,11 @@ class CONFIG_Test extends PredisCommandTestCase
     public function testThrowsExceptionWhenSettingUnknownConfiguration(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        if ($this->isRedisServerVersion('<=', '6.0')) {
+        if ($this->isRedisServerVersion([['operator' => '<=', 'version' => '6.0.0']])) {
             $this->expectExceptionMessage('ERR Unsupported CONFIG parameter: foo');
         }
 
-        if ($this->isRedisServerVersion('>=', '7.0')) {
+        if ($this->isRedisServerVersion([['operator' => '>=', 'version' => '7.0.0']])) {
             $this->expectExceptionMessage("ERR Unknown option or number of arguments for CONFIG SET - 'foo'");
         }
 
