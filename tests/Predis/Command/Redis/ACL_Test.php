@@ -89,7 +89,7 @@ class ACL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.0.0 < 7.2.0
+     * @requiresRedisVersion >= 7.0.0 < 7.1.0
      */
     public function testDryRunSimulateExecutionOfGivenCommandByUser(): void
     {
