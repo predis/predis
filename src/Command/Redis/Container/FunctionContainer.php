@@ -10,20 +10,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Container\Search;
+namespace Predis\Command\Redis\Container;
 
-use Predis\Command\Container\AbstractContainer;
 use Predis\Response\Status;
 
 /**
- * @method array  get(string $option)
- * @method array  help(string $option)
- * @method Status set(string $option, $value)
+ * @method string load(string $functionCode, bool $replace = 'false')
+ * @method Status delete(string $libraryName)
  */
-class FTCONFIG extends AbstractContainer
+class FunctionContainer extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'FTCONFIG';
+        return 'FUNCTIONS';
     }
 }

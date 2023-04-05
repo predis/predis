@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Container;
+namespace Predis\Command\Redis\Container;
 
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;

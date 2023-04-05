@@ -10,12 +10,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Container;
+namespace Predis\Command\Redis\Container;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
-use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Redis\Container\Search\FTCONFIG;
 use UnexpectedValueException;
 
 class ContainerFactoryTest extends TestCase
@@ -73,7 +73,7 @@ class ContainerFactoryTest extends TestCase
     public function containerProvider(): array
     {
         return [
-            'core command' => ['function', FUNCTIONS::class],
+            'core command' => ['function', FunctionContainer::class],
             'module command' => ['ftconfig', FTCONFIG::class],
         ];
     }

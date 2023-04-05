@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Container;
+namespace Predis\Command\Redis\Container;
 
 use Predis\ClientConfiguration;
 use Predis\ClientInterface;
@@ -18,7 +18,7 @@ use UnexpectedValueException;
 
 class ContainerFactory
 {
-    private const CONTAINER_NAMESPACE = "Predis\Command\Container";
+    private const CONTAINER_NAMESPACE = "Predis\Command\Redis\Container";
 
     /**
      * Mappings for class names that corresponds to PHP reserved words.
@@ -26,7 +26,7 @@ class ContainerFactory
      * @var array
      */
     private static $specialMappings = [
-        'FUNCTION' => FUNCTIONS::class,
+        'FUNCTION' => FunctionContainer::class,
     ];
 
     /**

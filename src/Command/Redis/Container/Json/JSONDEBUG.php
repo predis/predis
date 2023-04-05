@@ -10,18 +10,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Container;
+namespace Predis\Command\Redis\Container\Json;
 
-use Predis\Response\Status;
+use Predis\Command\Redis\Container\AbstractContainer;
 
 /**
- * @method string load(string $functionCode, bool $replace = 'false')
- * @method Status delete(string $libraryName)
+ * @method array memory(string $key, string $path)
+ * @method array help()
  */
-class FUNCTIONS extends AbstractContainer
+class JSONDEBUG extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'FUNCTIONS';
+        return 'JSONDEBUG';
     }
 }
