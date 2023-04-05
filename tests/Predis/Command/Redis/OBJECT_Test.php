@@ -82,7 +82,7 @@ class OBJECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion == 2.2.3
+     * @requiresRedisVersion >= 2.2.3 < 7.2.0
      */
     public function testObjectEncoding(): void
     {
