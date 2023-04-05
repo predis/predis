@@ -15,7 +15,6 @@ jobs:
 
   predis:
     name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
-    permissions: write-all
     runs-on: ubuntu-latest
 
     strategy:
@@ -73,6 +72,7 @@ jobs:
           name: PHPUnit Tests
           path: 'report.xml'
           reporter: java-junit
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Send coverage to Coveralls
         env:
