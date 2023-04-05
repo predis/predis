@@ -410,7 +410,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 
         $requirements = $this->parseVersionRequirements($requiredVersion);
 
-
         if (!$this->isRedisServerVersion($requirements)) {
             $serverVersion = $this->getRedisServerVersion();
 
