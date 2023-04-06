@@ -1,5 +1,14 @@
 ## Changelog
 
+## Unreleased
+
+### Added
+- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands
+- Added support for `FCALL_RO` command
+
+### Fixed
+- Fixed prefixes for `XTRIM` and `XREVRANGE` commands
+
 ## v2.2 (2023-04-06)
 
 ## Added
@@ -14,7 +23,7 @@
 
 ## v2.1.2 (2023-03-02)
 
-## Added
+### Added
 - Added stream commands to `KeyPrefixProcessor` (#1051)
 - Added `ReplicationStrategy::$loadBalancing` option to disable replica reads (#1168)
 - Added support for `FCALL` and `FUNCTIONS` commands (#1049)
@@ -28,28 +37,28 @@
 - Added support for new arguments for `BITPOS` and `BITCOUNT` commands (#1045)
 - Added support for new arguments for `EXPIRE` and `EXPIREAT` commands (#1046)
 
-## Bug Fixes
+### Bug Fixes
 - Fixed deprecated function call syntax
 
-## Deprecated
+### Deprecated
 - Further deprecated phpiredis and webdis integration (#1179)
 
-## Maintenance
+### Maintenance
 - Applied coding standards
 - Pass PHPStan level 2
 
 ## v2.1.1 (2023-01-17)
 
-## Bug Fixes
+### Bug Fixes
 - Fix `@template` in `Predis\Client` (#1017)
 - Fix support options array in `ZINTERSTORE` and `ZUNIONSTORE` (#1018)
 
-## Deprecated
+### Deprecated
 - Deprecated phpiredis and webdis connections
 
 ## v2.1.0 (2023-01-16)
 
-## New Features
+### New Features
 - Implemented `GETEX` command (#872)
 - Implemented `GETDEL` command (#869)
 - Implemented `COPY` command (#866)
@@ -75,10 +84,10 @@
 - Implemented `GEOSEARCH` command (#867)
 - Implemented `GEOSEARCHSTORE` command (#873)
 
-## Bug Fixes
+### Bug Fixes
 - Added annotations to suppress PHP 8.1 return type deprecation warning (#810)
 
-## Maintenance
+### Maintenance
 - Added mixin annotations for traits (#835)
 
 ## v2.0.3 (2022-10-11)
