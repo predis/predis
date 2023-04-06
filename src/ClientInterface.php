@@ -332,7 +332,7 @@ use Predis\Response\Status;
  * @method mixed             select(int $database)
  * @method mixed             bgrewriteaof()
  * @method mixed             bgsave()
- * @method mixed             client($subcommand, $argument = null)
+ * @method mixed             client($subcommand, ...$arguments = null)
  * @method mixed             config($subcommand, $argument = null)
  * @method int               dbsize()
  * @method mixed             flushall()

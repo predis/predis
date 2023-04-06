@@ -199,6 +199,20 @@ BUFFER;
     }
 
     /**
+     * @dataProvider setInfoProvider
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     * @param  array $arguments
+     * @return void
+     */
+    public function testSetInfoAssignAttributesToCurrentConnection(array $arguments): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client('setinfo', ...$arguments));
+    }
+
+    /**
      * @return array
      */
     public function invalidConnectionNameProvider()
@@ -216,6 +230,17 @@ BUFFER;
     public function noTouchProvider(): array
     {
         return [['on'], ['off']];
+    }
+
+    /**
+     * @return array
+     */
+    public function setInfoProvider(): array
+    {
+        return [
+            'with LIBNAME argument' => [['LIB-NAME', 'test']],
+            'with LIBVER argument' => [['LIB-VER', '1.0.0']],
+        ];
     }
 
     /**
