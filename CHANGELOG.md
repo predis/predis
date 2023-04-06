@@ -1,5 +1,17 @@
 ## Changelog
 
+## v2.2 (2023-04-06)
+
+## Added
+- Added support for `Redis JSON` module (#1260)
+- Added support for `Redis Bloom` module (#885, #906)
+- Added support for `Redis Search` module (#1142)
+- Added support for `Redis TimeSeries` module (#1217)
+
+## Bug Fixes
+- Fix `fclose()` being called on invalid stream resource (#1199)
+- Fix `BitByte` and `ExpireOptions` traits skip processing on null values (#1169)
+
 ## v2.1.2 (2023-03-02)
 
 ## Added
