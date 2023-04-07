@@ -320,6 +320,7 @@ use Predis\Response\Status;
  * @method array|null        exec()
  * @method mixed             multi()
  * @method mixed             unwatch()
+ * @method array             waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method mixed             watch(string $key)
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             eval_ro(string $script, array $keys, ...$argument)

@@ -302,6 +302,7 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this exec()
  * @method $this multi()
  * @method $this unwatch()
+ * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
