@@ -16,6 +16,8 @@ class WAITAOF_Test extends PredisCommandTestCase
 {
     protected function setUp(): void
     {
+        parent::setUp();
+
         $redis = $this->getClient();
         $this->assertEquals('OK', $redis->config('set', 'appendonly', 'yes'));
     }
