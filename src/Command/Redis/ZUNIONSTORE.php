@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\Aggregate;
 use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\Weights;
@@ -63,5 +63,19 @@ class ZUNIONSTORE extends RedisCommand
         $arguments = $this->getArguments();
 
         $this->setKeys($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $length = ((int) $arguments[1]) + 2;
+
+            for ($i = 2; $i < $length; ++$i) {
+                $arguments[$i] = "$prefix{$arguments[$i]}";
+            }
+
+            $this->setRawArguments($arguments);
+        }
     }
 }

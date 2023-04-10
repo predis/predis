@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-geospatial
@@ -129,6 +131,22 @@ class GEORADIUS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @dataProvider prefixKeysProvider
+     * @group disconnected
+     */
+    public function testPrefixKeys(array $actualArguments, array $expectedArguments): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $prefix = 'prefix:';
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
@@ -168,5 +186,27 @@ class GEORADIUS_Test extends PredisCommandTestCase
 
         $redis->lpush('Sicily', 'Palermo');
         $redis->georadius('Sicily', 15, 37, 200, 'km');
+    }
+
+    public function prefixKeysProvider(): array
+    {
+        return [
+            'with empty arguments' => [
+                [],
+                [],
+            ],
+            'with key argument only' => [
+                ['key'],
+                ['prefix:key'],
+            ],
+            'with key and STORE arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'prefix:key'],
+            ],
+            'with key and STOREDIST arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'prefix:key'],
+            ],
+        ];
     }
 }
