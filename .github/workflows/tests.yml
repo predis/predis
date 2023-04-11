@@ -66,12 +66,14 @@ jobs:
 
       - name: Run PHPUnit tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src --log-junit report.xml
+        run: |
+          vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src --log-junit report.xml
+          ls -R
 
       - uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: phpunit-report
+          name: phpunit-report-${{matrix.php}}-${{matrix.redis}}
           path: report.xml
 
       - name: Test Report
@@ -79,7 +81,7 @@ jobs:
         continue-on-error: true
         if: success() || failure()
         with:
-          artifact: phpunit-report
+          artifact: phpunit-report-${{matrix.php}}-${{matrix.redis}}
           name: PHPUnit Tests
           path: '*.xml'
           reporter: java-junit
