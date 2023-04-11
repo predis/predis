@@ -70,11 +70,16 @@ jobs:
 
       - name: Test Report
         uses: dorny/test-reporter@v1
+        continue-on-error: true
+        if: success() || failure()
         with:
           name: PHPUnit Tests
-          path: 'report.xml'
+          path: '*.xml'
           reporter: java-junit
-          token: ${{ secrets.GITHUB_TOKEN }}
+          list-suites: all
+          list-tests: all
+          max-annotations: 10
+          fail-on-error: 'false'
 
       - name: Send coverage to Coveralls
         env:
