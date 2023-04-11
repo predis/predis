@@ -25,6 +25,12 @@ trait ExpireOptions
     {
         $value = array_pop($arguments);
 
+        if (null === $value) {
+            parent::setArguments($arguments);
+
+            return;
+        }
+
         if (in_array(strtoupper($value), self::$argumentEnum, true)) {
             $arguments[] = self::$argumentEnum[strtolower($value)];
         } else {

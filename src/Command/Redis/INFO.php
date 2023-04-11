@@ -97,6 +97,10 @@ class INFO extends RedisCommand
      */
     protected function parseRow($row)
     {
+        if (preg_match('/^module:name/', $row)) {
+            return $this->parseModuleRow($row);
+        }
+
         [$k, $v] = explode(':', $row, 2);
 
         if (preg_match('/^db\d+$/', $k)) {
@@ -123,5 +127,31 @@ class INFO extends RedisCommand
         }
 
         return $db;
+    }
+
+    /**
+     * Parsing module rows because of different format.
+     *
+     * @param  string $row
+     * @return array
+     */
+    protected function parseModuleRow(string $row): array
+    {
+        [$moduleKeyword, $moduleData] = explode(':', $row);
+        $explodedData = explode(',', $moduleData);
+        $parsedData = [];
+
+        foreach ($explodedData as $moduleDataRow) {
+            [$k, $v] = explode('=', $moduleDataRow);
+
+            if ($k === 'name') {
+                $parsedData[0] = $v;
+                continue;
+            }
+
+            $parsedData[1][$k] = $v;
+        }
+
+        return $parsedData;
     }
 }

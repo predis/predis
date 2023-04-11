@@ -12,14 +12,16 @@
 
 namespace Predis\Command\Redis\Container;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
+use Predis\Command\Redis\Container\Search\FTCONFIG;
 use UnexpectedValueException;
 
 class ContainerFactoryTest extends TestCase
 {
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ClientInterface
+     * @var MockObject|ClientInterface
      */
     private $mockClient;
 
@@ -28,37 +30,59 @@ class ContainerFactoryTest extends TestCase
      */
     private $factory;
 
-    /**
-     * @var ContainerInterface
-     */
-    private $expectedContainer;
-
     protected function setUp(): void
     {
         $this->mockClient = $this->getMockBuilder(ClientInterface::class)->getMock();
-        $this->expectedContainer = new FunctionContainer($this->mockClient);
         $this->factory = new ContainerFactory();
     }
 
     /**
+     * @dataProvider containerProvider
+     * @param  string $containerCommandId
+     * @param  string $expectedContainerClass
      * @return void
      */
-    public function testCreatesReturnsExistingCommandContainerClass(): void
-    {
+    public function testCreatesReturnsExistingCommandContainerClass(
+        string $containerCommandId,
+        string $expectedContainerClass
+    ): void {
+        $expectedContainer = new $expectedContainerClass($this->mockClient);
+
         $this->assertEquals(
-            $this->expectedContainer,
-            $this->factory::create($this->mockClient, 'function')
+            $expectedContainer,
+            $this->factory::create($this->mockClient, $containerCommandId)
         );
     }
 
     /**
+     * @dataProvider unexpectedValuesProvider
+     * @param  string $containerCommandId
+     * @param  string $expectedExceptionMessage
      * @return void
      */
-    public function testThrowsExceptionOnNonExistingCommand(): void
-    {
+    public function testThrowsExceptionOnNonExistingCommand(
+        string $containerCommandId,
+        string $expectedExceptionMessage
+    ): void {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Given command is not supported.');
+        $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $this->factory::create($this->mockClient, 'foobar');
+        $this->factory::create($this->mockClient, $containerCommandId);
+    }
+
+    public function containerProvider(): array
+    {
+        return [
+            'core command' => ['function', FunctionContainer::class],
+            'module command' => ['ftconfig', FTCONFIG::class],
+        ];
+    }
+
+    public function unexpectedValuesProvider(): array
+    {
+        return [
+            'not supported module container command' => ['ftfoobar', 'Given module container command is not supported.'],
+            'not supported core container command' => ['foobar', 'Given container command is not supported.'],
+        ];
     }
 }
