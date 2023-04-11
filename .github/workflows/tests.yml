@@ -79,6 +79,7 @@ jobs:
         continue-on-error: true
         if: success() || failure()
         with:
+          artifact: phpunit-report
           name: PHPUnit Tests
           path: '*.xml'
           reporter: java-junit
