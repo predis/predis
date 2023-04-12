@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * SUBSTR is actually the old name of GETRANGE in version of Redis <= 2.0.
  * This command should be considered obsolete and we will perform any kind
@@ -58,5 +60,22 @@ class SUBSTR_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame('substring', $this->getCommand()->parseResponse('substring'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 }
