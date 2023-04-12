@@ -145,6 +145,9 @@ class RelayConnection extends StreamConnection
         // throw when errors occur and return `null` for non-existent keys
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
+        // disable Relay reconnect feature
+        $client->setOption(Relay::OPT_MAX_RETRIES, 0);
+
         // whether to use in-memory caching
         $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
 
