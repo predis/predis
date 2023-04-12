@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Client;
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -103,6 +104,22 @@ class SORT_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->assertSame($expected, $command->parseResponse($raw));
+    }
+
+    /**
+     * @dataProvider prefixKeysProvider
+     * @group disconnected
+     */
+    public function testPrefixKeys(array $actualArguments, array $expectedArguments): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $prefix = 'prefix:';
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -243,5 +260,27 @@ class SORT_Test extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
         $redis->sort('foo');
+    }
+
+    public function prefixKeysProvider(): array
+    {
+        return [
+            'with only argument' => [
+                ['key'],
+                ['prefix:key'],
+            ],
+            'with key and BY arguments' => [
+                ['key', ['by' => 'key']],
+                ['prefix:key', 'BY', 'prefix:key'],
+            ],
+            'with key and STORE arguments' => [
+                ['key', ['store' => 'key']],
+                ['prefix:key', 'STORE', 'prefix:key'],
+            ],
+            'with key and GET arguments' => [
+                ['key', ['get' => 'key']],
+                ['prefix:key', 'GET', 'prefix:key'],
+            ],
+        ];
     }
 }

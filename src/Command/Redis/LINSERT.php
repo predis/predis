@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/linsert
@@ -25,5 +25,10 @@ class LINSERT extends RedisCommand
     public function getId()
     {
         return 'LINSERT';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
