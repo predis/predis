@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @deprecated As of Redis version 6.2.0, this command is regarded as deprecated.
@@ -73,5 +73,26 @@ class GEORADIUS extends RedisCommand
         }
 
         parent::setArguments($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+            $startIndex = $this->getId() === 'GEORADIUS' ? 5 : 4;
+
+            if (($count = count($arguments)) > $startIndex) {
+                for ($i = $startIndex; $i < $count; ++$i) {
+                    switch (strtoupper($arguments[$i])) {
+                        case 'STORE':
+                        case 'STOREDIST':
+                            $arguments[$i] = "$prefix{$arguments[++$i]}";
+                            break;
+                    }
+                }
+            }
+
+            $this->setRawArguments($arguments);
+        }
     }
 }
