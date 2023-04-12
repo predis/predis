@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/bitop
@@ -39,5 +39,10 @@ class BITOP extends RedisCommand
         }
 
         parent::setArguments($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixSkippingFirstArgument($prefix);
     }
 }

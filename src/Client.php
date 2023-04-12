@@ -52,7 +52,7 @@ use Traversable;
  */
 class Client implements ClientInterface, IteratorAggregate
 {
-    public const VERSION = '2.1.1';
+    public const VERSION = '2.1.2';
 
     /** @var OptionsInterface */
     private $options;
