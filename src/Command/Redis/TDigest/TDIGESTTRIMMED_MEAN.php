@@ -26,4 +26,18 @@ class TDIGESTTRIMMED_MEAN extends RedisCommand
     {
         return 'TDIGEST.TRIMMED_MEAN';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        // convert Relay (RESP3) constants to strings
+        switch ($data) {
+            case NAN: return 'nan';
+            case INF: return 'inf';
+            case -INF: return '-inf';
+            default: return $data;
+        }
+    }
 }

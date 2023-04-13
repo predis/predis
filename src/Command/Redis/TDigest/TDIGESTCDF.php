@@ -27,4 +27,24 @@ class TDIGESTCDF extends RedisCommand
     {
         return 'TDIGEST.CDF';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        // convert Relay (RESP3) constants to strings
+        return array_map(function ($value) {
+            switch ($value) {
+                case NAN: return 'nan';
+                case INF: return 'inf';
+                case -INF: return '-inf';
+                default: return $value;
+            }
+        }, $data);
+    }
 }

@@ -35,9 +35,10 @@ class TDIGESTBYREVRANK extends RedisCommand
             return $data;
         }
 
-        // convert Relay (RESP3) infinite constant to string
+        // convert Relay (RESP3) constants to strings
         return array_map(function ($value) {
             switch ($value) {
+                case NAN: return 'nan';
                 case INF: return 'inf';
                 case -INF: return '-inf';
                 default: return $value;
