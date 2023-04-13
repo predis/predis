@@ -35,7 +35,7 @@ class TDIGESTMIN extends RedisCommand
         switch ($data) {
             case INF: return 'inf';
             case -INF: return '-inf';
-            case is_nan($data): return 'nan';
+            case is_float($data) && is_nan($data): return 'nan';
             default: return $data;
         }
     }

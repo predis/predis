@@ -40,7 +40,7 @@ class TDIGESTBYREVRANK extends RedisCommand
             switch ($value) {
                 case INF: return 'inf';
                 case -INF: return '-inf';
-                case is_nan($value): return 'nan';
+                case is_float($value) && is_nan($value): return 'nan';
                 default: return $value;
             }
         }, $data);
