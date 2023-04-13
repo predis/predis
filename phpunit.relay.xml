@@ -20,6 +20,10 @@
     <groups>
         <exclude>
             <group>relay-incompatible</group>
+            <group>realm-webdis</group>
+            <group>realm-stack</group>
+            <group>ext-curl</group>
+            <group>ext-phpiredis</group>
         </exclude>
     </groups>
 
