@@ -71,7 +71,7 @@ class TDIGESTRESET_Test extends PredisCommandTestCase
         $redis->tdigestcreate('key', 500);
         $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
 
-        $this->assertSame(
+        $this->assertEquals(
             ['1', '2', '2', '3', '3', '3'],
             $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
         );

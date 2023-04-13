@@ -25,4 +25,19 @@ class TDIGESTBYRANK extends RedisCommand
     {
         return 'TDIGEST.BYRANK';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        // convert Relay (RESP3) infinite constant to string
+        return array_map(function ($value) {
+            return $value === INF ? 'inf' : $value;
+        }, $data);
+    }
 }

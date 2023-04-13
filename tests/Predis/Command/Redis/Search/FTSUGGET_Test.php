@@ -78,7 +78,7 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->ftsugget(...$getArguments);
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**

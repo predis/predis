@@ -84,7 +84,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame($expectedCompression, $info['Compression']);
-        $this->assertSame(
+        $this->assertEquals(
             $expectedMergedSketchValues,
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
         );
@@ -110,7 +110,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(1000, $info['Compression']);
-        $this->assertSame(
+        $this->assertEquals(
             ['1', '2', '3', '4', 'inf'],
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
         );
@@ -133,7 +133,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
         $redis->tdigestadd('source-key2', 3, 4);
         $redis->tdigestadd('destination-key', 5, 6, 7, 8);
 
-        $this->assertSame(
+        $this->assertEquals(
             ['5', '6', '7', '8', 'inf'],
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
         );
@@ -176,7 +176,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(100, $info['Compression']);
-        $this->assertSame(
+        $this->assertEquals(
             ['1', '2', '3', '4', '5', '6', '7', '8', 'inf'],
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4, 5, 6, 7, 8)
         );
