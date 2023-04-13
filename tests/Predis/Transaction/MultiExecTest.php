@@ -754,7 +754,7 @@ class MultiExecTest extends PredisTestCase
             $tx->echo('foobar');
         });
 
-        $this->assertTrue($responses[0]);
+        $this->assertSame('OK', $responses[0]);
         $this->assertInstanceOf('Predis\Response\Error', $responses[1]);
         $this->assertSame('foobar', $responses[2]);
     }

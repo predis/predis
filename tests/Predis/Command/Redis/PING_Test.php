@@ -78,10 +78,9 @@ class PING_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $response = $redis->ping();
-        $this->assertTrue($response);
         $this->assertEquals('PONG', $response);
 
-        $response = $redis->ping('PONG');
-        $this->assertSame('PONG', $response);
+        $response = $redis->ping('HELLO');
+        $this->assertSame('HELLO', $response);
     }
 }
