@@ -25,4 +25,23 @@ class TDIGESTBYREVRANK extends RedisCommand
     {
         return 'TDIGEST.BYREVRANK';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        // convert Relay (RESP3) infinite constant to string
+        return array_map(function ($value) {
+            switch ($value) {
+                case INF: return 'inf';
+                case -INF: return '-inf';
+                default: return $value;
+            }
+        }, $data);
+    }
 }

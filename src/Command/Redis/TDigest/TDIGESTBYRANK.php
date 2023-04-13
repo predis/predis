@@ -37,7 +37,11 @@ class TDIGESTBYRANK extends RedisCommand
 
         // convert Relay (RESP3) infinite constant to string
         return array_map(function ($value) {
-            return $value === INF ? 'inf' : $value;
+            switch ($value) {
+                case INF: return 'inf';
+                case -INF: return '-inf';
+                default: return $value;
+            }
         }, $data);
     }
 }
