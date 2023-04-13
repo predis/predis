@@ -116,6 +116,7 @@ class Connections implements OptionInterface
                 $factory->define('tcp', PhpiredisSocketConnection::class);
                 $factory->define('redis', PhpiredisSocketConnection::class);
                 $factory->define('unix', PhpiredisSocketConnection::class);
+                break;
 
             case 'relay':
                 $factory->define('tcp', RelayConnection::class);
