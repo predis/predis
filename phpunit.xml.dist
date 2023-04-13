@@ -28,6 +28,9 @@
 
     <groups>
         <exclude>
+            <group>ext-phpiredis</group>
+            <group>ext-curl</group>
+            <group>realm-webdis</group>
             <group>ext-relay</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
