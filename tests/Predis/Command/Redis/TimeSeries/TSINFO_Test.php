@@ -17,6 +17,10 @@ use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSINFO_Test extends PredisCommandTestCase
 {
     /**
