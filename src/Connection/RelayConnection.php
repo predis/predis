@@ -146,7 +146,7 @@ class RelayConnection extends StreamConnection
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
 
         // disable Relay reconnect feature
-        $client->setOption(Relay::OPT_MAX_RETRIES, 0);
+        // $client->setOption(Relay::OPT_MAX_RETRIES, 0);
 
         // whether to use in-memory caching
         $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
