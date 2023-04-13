@@ -23,7 +23,7 @@ $relay = $client->getConnection()->getClient();
 // establish connection
 $client->ping();
 
-// register FLUSH callback
+// register `FLUSH*` callback
 $relay->onFlushed(
     static function (Relay\Event $event) use (&$key) {
         echo 'Redis was flushed, unsetting $key...' . PHP_EOL;
@@ -31,7 +31,7 @@ $relay->onFlushed(
     }
 );
 
-// register INVALIDATE callback
+// register `INVALIDATE` callback
 $relay->onInvalidated(
     static function (Relay\Event $event) use (&$key) {
         if ($event->key === 'library') {
@@ -42,14 +42,19 @@ $relay->onInvalidated(
 );
 
 // Write key to Redis
-$client->set('library', 'relay');
+$client->set('library', mt_rand());
 
-// Retrieve key from Redis (cached in Relay and $key)
+// Retrieve key once from Redis, then cached in Relay and $key
 $key = $client->get('library');
 
 while (true) {
-    // $relay->dispatchEvents();
     echo '$key is: ' . var_export($key, true) . PHP_EOL;
+
+    // To trigger our event callbacks, we need to either interact with Relay:
+    $relay->get(mt_rand());
+
+    // ... or alternatively simply dispatch events:
+    $relay->dispatchEvents();
 
     sleep(1);
 }

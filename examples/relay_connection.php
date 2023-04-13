@@ -18,8 +18,8 @@ $options = [
 
     // Relay specific options
     'cache' => true,
-    'compression' => 'lz4',
-    'serializer' => 'igbinary',
+    // 'compression' => 'lz4',
+    // 'serializer' => 'igbinary',
 ];
 
 $client = new Predis\Client($single_server + $options, [
@@ -27,14 +27,14 @@ $client = new Predis\Client($single_server + $options, [
 ]);
 
 // Write key to Redis
-$client->set('library', 'relay');
+$client->set('torpedo', mt_rand());
 
 // Retrieve key from Redis
-$client->get('library');
+$client->get('torpedo');
 
-// Retrieve key from Relay (without socket/network communication)
-// This key is no available to all PHP workers in this FPM pool
-$client->get('library');
+// Retrieve key from Relay (without talking to Redis)
+// This key is now available to all PHP workers in this FPM pool
+$client->get('torpedo');
 
 // For debugging only:
 var_export(
@@ -43,12 +43,12 @@ var_export(
 
 /*
 array (
-    'library' => array (
+    'torpedo' => array (
         0 => array (
             'type' => 'string',
-            'local-len' => 5,
-            'remote-len' => 5,
-            'size' => 5,
+            'local-len' => 10,
+            'remote-len' => 10,
+            'size' => 10,
         ),
     ),
 )
