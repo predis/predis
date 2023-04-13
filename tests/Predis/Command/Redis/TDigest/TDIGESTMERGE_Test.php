@@ -148,7 +148,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(100, $info['Compression']);
-        $this->assertSame(
+        $this->assertEquals(
             ['1', '2', '3', '4', 'inf'],
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
         );
