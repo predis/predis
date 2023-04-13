@@ -137,8 +137,8 @@ class ZREVRANGE_Test extends PredisCommandTestCase
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
         $expected = ['d' => '20', 'c' => '10', 'b' => '0'];
 
-        $this->assertSame($expected, $redis->zrevrange('letters', 2, 4, 'withscores'));
-        $this->assertSame($expected, $redis->zrevrange('letters', 2, 4, ['withscores' => true]));
+        $this->assertEquals($expected, $redis->zrevrange('letters', 2, 4, 'withscores'));
+        $this->assertEquals($expected, $redis->zrevrange('letters', 2, 4, ['withscores' => true]));
     }
 
     /**

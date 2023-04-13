@@ -26,11 +26,14 @@ namespace Predis\Connection;
  * @property string $alias              Alias for the connection.
  * @property float  $timeout            Timeout for the connect() operation.
  * @property float  $read_write_timeout Timeout for read() and write() operations.
- * @property bool   $async_connect      Performs the connect() operation asynchronously.
- * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
  * @property bool   $persistent         Leaves the connection open after a GC collection.
  * @property string $password           Password to access Redis (see the AUTH command).
  * @property string $database           Database index (see the SELECT command).
+ * @property bool   $async_connect      Performs the connect() operation asynchronously.
+ * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
+ * @property bool   $cache              (Relay only) Whether to use in-memory caching.
+ * @property string $serializer         (Relay only) Serializer used for data serialization.
+ * @property string $compression        (Relay only) Algorithm used for data compression.
  */
 interface ParametersInterface
 {

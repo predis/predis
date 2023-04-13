@@ -55,6 +55,7 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testInitializesNewTransaction(): void
     {
@@ -67,6 +68,23 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group ext-relay
+     */
+    public function testInitializesNewTransactionUsingRelay(): void
+    {
+        $redis = $this->getClient();
+        $relay = $redis->getConnection()->getClient();
+
+        $this->assertSame($relay, $redis->multi());
+        $this->assertSame($relay, $redis->echo('tx1'));
+        $this->assertSame($relay, $redis->echo('tx2'));
+
+        $relay->discard();
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      */
     public function testActuallyReturnsResponseObjectAbstraction(): void
     {
@@ -79,6 +97,7 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction(): void
     {
