@@ -16,6 +16,8 @@ namespace Predis\Command\Redis;
  * @group commands
  * @group realm-transaction
  * @group relay-incompatible
+ *
+ * Waiting for `UNWATCH` support in Relay.
  */
 class UNWATCH_Test extends PredisCommandTestCase
 {

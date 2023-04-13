@@ -60,6 +60,8 @@ class PUBLISH_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
+     *
+     * Waiting for `PUBLISH` support in Relay.
      */
     public function testPublishesMessagesToChannel(): void
     {
