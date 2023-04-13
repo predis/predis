@@ -60,7 +60,7 @@ jobs:
         run: composer install --ansi --no-progress --prefer-dist
 
       - name: Run tests
-        run: vendor/bin/phpunit --verbose
+        run: vendor/bin/phpunit --group realm-stack
 
       - name: Run tests using Relay
-        run: vendor/bin/phpunit --verbose -c phpunit.relay.xml
+        run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml

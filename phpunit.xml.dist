@@ -28,10 +28,11 @@
 
     <groups>
         <exclude>
-            <group>ext-phpiredis</group>
-            <group>ext-curl</group>
             <group>realm-webdis</group>
+            <group>realm-stack</group>
             <group>ext-relay</group>
+            <group>ext-curl</group>
+            <group>ext-phpiredis</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
