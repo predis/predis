@@ -41,13 +41,15 @@ class TDIGESTBYREVRANK extends RedisCommand
                 return $value;
             }
 
+            if (is_nan($value)) {
+                return 'nan';
+            }
+
             switch ($value) {
                 case INF: return 'inf';
                 case -INF: return '-inf';
-                case is_nan($value): return 'nan';
+                default: return $value;
             }
-
-            return $value;
         }, $data);
     }
 }

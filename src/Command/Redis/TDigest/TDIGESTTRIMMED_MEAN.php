@@ -37,12 +37,14 @@ class TDIGESTTRIMMED_MEAN extends RedisCommand
         }
 
         // convert Relay (RESP3) constants to strings
+        if (is_nan($data)) {
+            return 'nan';
+        }
+
         switch ($data) {
             case INF: return 'inf';
             case -INF: return '-inf';
-            case is_nan($data): return 'nan';
+            default: return $data;
         }
-
-        return $data;
     }
 }
