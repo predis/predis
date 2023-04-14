@@ -31,7 +31,7 @@ class TDIGESTMIN extends RedisCommand
      */
     public function parseResponse($data)
     {
-        if (is_string($data) || ! is_float($data)) {
+        if (is_string($data) || !is_float($data)) {
             return $data;
         }
 
