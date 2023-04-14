@@ -31,12 +31,17 @@ class TDIGESTQUANTILE extends RedisCommand
      */
     public function parseResponse($data)
     {
+        if (is_string($data) || ! is_float($data)) {
+            return $data;
+        }
+
         // convert Relay (RESP3) constants to strings
         switch ($data) {
             case INF: return 'inf';
             case -INF: return '-inf';
-            case is_float($data) && is_nan($data): return 'nan';
-            default: return $data;
+            case is_nan($data): return 'nan';
         }
+
+        return $data;
     }
 }
