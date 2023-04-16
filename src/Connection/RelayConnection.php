@@ -51,12 +51,14 @@ use Relay\Relay;
  */
 class RelayConnection extends StreamConnection
 {
+    use RelayMethods;
+
     /**
      * The Relay instance.
      *
      * @var \Relay\Relay
      */
-    private $client;
+    protected $client;
 
     /**
      * These commands must be called on the client, not using `Relay::rawCommand()`.
