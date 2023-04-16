@@ -52,9 +52,9 @@ while (true) {
     echo '$key is: ' . var_export($key, true) . PHP_EOL;
 
     // To trigger our event callbacks, we need to either interact with Relay:
-    $relay->get(mt_rand());
+    $client->get(mt_rand());
 
-    // ... or alternatively simply dispatch events:
+    // ... or alternatively dispatch events directly on Relay:
     $relay->dispatchEvents();
 
     sleep(1);
