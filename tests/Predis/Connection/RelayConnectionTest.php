@@ -78,7 +78,11 @@ class RelayConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      * @group slow
+     * @group relay-incompatible
+     * @group relay-fixme
      * @requires PHP 5.4
+     *
+     * This is a bug in Relay v0.6.3 and earlier.
      */
     public function testThrowsExceptionOnReadWriteTimeout(): void
     {
