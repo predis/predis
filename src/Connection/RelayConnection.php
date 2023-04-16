@@ -130,6 +130,14 @@ class RelayConnection extends StreamConnection
             throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
         }
 
+        if (isset($parameters->serializer)) {
+            throw new NotSupportedException('The serializer parameter is currently unsupported.');
+        }
+
+        if (isset($parameters->compression)) {
+            throw new NotSupportedException('The compression parameter is currently unsupported.');
+        }
+
         return $parameters;
     }
 
@@ -141,19 +149,27 @@ class RelayConnection extends StreamConnection
     private function createClient()
     {
         $client = new Relay();
-        $client->setOption(Relay::OPT_REPLY_LITERAL, true);
+
+        // throw when errors occur and return `null` for non-existent keys
         $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
-        // $client->setOption(Relay::OPT_MAX_RETRIES, 0);
+
+        // use reply literals
+        $client->setOption(Relay::OPT_REPLY_LITERAL, true);
+
+        // disable Relay's command/connection retry
+        $client->setOption(Relay::OPT_MAX_RETRIES, 0);
 
         // whether to use in-memory caching
         $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
 
+        // set data serializer
         $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
             '%s::SERIALIZER_%s',
             Relay::class,
             strtoupper($this->parameters->serializer ?? 'none')
         )));
 
+        // set data compression algorithm
         $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
             '%s::COMPRESSION_%s',
             Relay::class,
@@ -188,6 +204,7 @@ class RelayConnection extends StreamConnection
     {
         $timeout = isset($parameters->timeout) ? (float) $parameters->timeout : 5.0;
 
+        $retry_interval = 0;
         $read_timeout = 5.0;
 
         if (isset($parameters->read_write_timeout)) {
@@ -201,7 +218,7 @@ class RelayConnection extends StreamConnection
                 isset($parameters->path) ? 0 : $parameters->port,
                 $timeout,
                 null,
-                $retry_interval = 0,
+                $retry_interval,
                 $read_timeout
             );
         } catch (RelayException $ex) {
@@ -224,7 +241,8 @@ class RelayConnection extends StreamConnection
             $name = $command->getId();
 
             // When using compression or a serializer, we'll need a dedicated
-            // handler for `Predis\Command\RawCommand` calls
+            // handler for `Predis\Command\RawCommand` calls, currently both
+            // parameters are unsupported until a future Relay release
             return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());

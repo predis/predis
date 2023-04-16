@@ -18,7 +18,8 @@ $client = new Predis\Client($single_server, [
     'connections' => 'relay',
 ]);
 
-$relay = $client->getConnection()->getClient();
+/** @var Predis\Connection\RelayConnection $relay */
+$relay = $client->getConnection();
 
 // establish connection
 $client->ping();
