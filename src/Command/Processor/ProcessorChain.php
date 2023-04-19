@@ -117,7 +117,6 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     /**
      * @param int                $index
      * @param ProcessorInterface $processor
-     *
      * @return void
      */
     #[ReturnTypeWillChange]
@@ -134,7 +133,6 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
 
     /**
      * @param int $index
-     *
      * @return void
      */
     #[ReturnTypeWillChange]
