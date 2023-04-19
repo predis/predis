@@ -151,7 +151,7 @@ abstract class AbstractConsumer implements Iterator
     abstract protected function writeRequest($method, $arguments);
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function rewind()
@@ -172,7 +172,7 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
     #[ReturnTypeWillChange]
     public function key()
@@ -181,7 +181,7 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
     #[ReturnTypeWillChange]
     public function next()

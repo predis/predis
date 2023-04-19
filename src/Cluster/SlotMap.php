@@ -19,6 +19,7 @@ use IteratorAggregate;
 use OutOfBoundsException;
 use Predis\Connection\NodeConnectionInterface;
 use ReturnTypeWillChange;
+use Traversable;
 
 /**
  * Slot map for redis-cluster.
@@ -198,7 +199,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Returns an iterator over the slot map.
      *
-     * @return ArrayIterator
+     * @return Traversable<int, string>
      */
     #[ReturnTypeWillChange]
     public function getIterator()

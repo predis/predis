@@ -93,7 +93,9 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $index
+     *
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function offsetExists($index)
@@ -102,7 +104,9 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $index
+     *
+     * @return ProcessorInterface
      */
     #[ReturnTypeWillChange]
     public function offsetGet($index)
@@ -111,7 +115,10 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param int                $index
+     * @param ProcessorInterface $processor
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetSet($index, $processor)
@@ -126,7 +133,9 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param int $index
+     *
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($index)
