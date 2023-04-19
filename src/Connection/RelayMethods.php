@@ -17,7 +17,7 @@ trait RelayMethods
     /**
      * Registers a new `flushed` event listener.
      *
-     * @param  callable  $callback
+     * @param  callable $callback
      * @return bool
      */
     public function onFlushed(?callable $callback)
@@ -28,8 +28,8 @@ trait RelayMethods
     /**
      * Registers a new `invalidated` event listener.
      *
-     * @param  callable  $callback
-     * @param  string  $pattern
+     * @param  callable $callback
+     * @param  string   $pattern
      * @return bool
      */
     public function onInvalidated(?callable $callback, ?string $pattern = null)
@@ -50,7 +50,7 @@ trait RelayMethods
     /**
      * Adds ignore pattern(s). Matching keys will not be cached in memory.
      *
-     * @param  string  $pattern,...
+     * @param  string $pattern,...
      * @return int
      */
     public function addIgnorePatterns(string ...$pattern)
@@ -61,7 +61,7 @@ trait RelayMethods
     /**
      * Adds allow pattern(s). Only matching keys will be cached in memory.
      *
-     * @param  string  $pattern,...
+     * @param  string $pattern,...
      * @return int
      */
     public function addAllowPatterns(string ...$pattern)
@@ -125,8 +125,8 @@ trait RelayMethods
      * When given an endpoint and database index, only that database
      * for that connection will be flushed.
      *
-     * @param  ?string  $endpointId
-     * @param  ?int  $db
+     * @param  ?string $endpointId
+     * @param  ?int    $db
      * @return bool
      */
     public function flushMemory(?string $endpointId = null, int $db = null)
