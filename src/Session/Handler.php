@@ -53,8 +53,8 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param string $save_path
-     * @param string $session_id
+     * @param  string $save_path
+     * @param  string $session_id
      * @return bool
      */
     #[ReturnTypeWillChange]
@@ -75,7 +75,7 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param int $maxlifetime
+     * @param  int $maxlifetime
      * @return bool
      */
     #[ReturnTypeWillChange]
@@ -86,7 +86,7 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param string $session_id
+     * @param  string $session_id
      * @return string
      */
     #[ReturnTypeWillChange]
@@ -100,8 +100,8 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param string $session_id
-     * @param string $session_data
+     * @param  string $session_id
+     * @param  string $session_data
      * @return bool
      */
     #[ReturnTypeWillChange]
@@ -114,7 +114,6 @@ class Handler implements SessionHandlerInterface
 
     /**
      * @param string $session_id
-     *
      * @return bool
      */
     #[ReturnTypeWillChange]
