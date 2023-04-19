@@ -93,7 +93,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * @param  int $index
+     * @param  int  $index
      * @return bool
      */
     #[ReturnTypeWillChange]
@@ -103,7 +103,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * @param  int $index
+     * @param  int                $index
      * @return ProcessorInterface
      */
     #[ReturnTypeWillChange]
@@ -113,7 +113,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * @param  int $index
+     * @param  int                $index
      * @param  ProcessorInterface $processor
      * @return void
      */
@@ -130,7 +130,7 @@ class ProcessorChain implements ArrayAccess, ProcessorInterface
     }
 
     /**
-     * @param  int $index
+     * @param  int  $index
      * @return void
      */
     #[ReturnTypeWillChange]

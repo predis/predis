@@ -75,7 +75,7 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param  int $maxlifetime
+     * @param  int  $maxlifetime
      * @return bool
      */
     #[ReturnTypeWillChange]
@@ -113,7 +113,7 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * @param string $session_id
+     * @param  string $session_id
      * @return bool
      */
     #[ReturnTypeWillChange]
