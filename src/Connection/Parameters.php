@@ -173,6 +173,20 @@ class Parameters implements ParametersInterface
         return isset($this->parameters[$parameter]);
     }
 
+
+    /**
+     * Sets a value
+     *
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public function __set($name, $value)
+    {
+        $this->parameters[$name] = $value;
+    }
+
+
     /**
      * {@inheritdoc}
      */

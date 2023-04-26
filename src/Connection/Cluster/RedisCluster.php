@@ -25,6 +25,8 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -333,14 +335,21 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection($connectionID)
+    protected function createConnection($connectionID, ParametersInterface $src = null)
     {
         $separator = strrpos($connectionID, ':');
+        $host = substr($connectionID, 0, $separator);
+        $port = substr($connectionID, $separator + 1);
 
-        return $this->connections->create([
-            'host' => substr($connectionID, 0, $separator),
-            'port' => substr($connectionID, $separator + 1),
-        ]);
+        if ($src != null) {
+            $params = Parameters::create($src->toArray());
+        } else {
+            $params = new Parameters();
+        }
+        $params->host = $host;
+        $params->port = $port;
+
+        return $this->connections->create($params);
     }
 
     /**
@@ -384,7 +393,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $connectionID = $this->guessNode($slot);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $randomConnection = $this->getRandomConnection();
+            $connection = $this->createConnection($connectionID,$randomConnection != null ? $randomConnection->getParameters(): null);
             $this->pool[$connectionID] = $connection;
         }
 
@@ -435,16 +445,16 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error)
+    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error, ParametersInterface $src)
     {
         $details = explode(' ', $error->getMessage(), 2);
 
         switch ($details[0]) {
             case 'MOVED':
-                return $this->onMovedResponse($command, $details[1]);
+                return $this->onMovedResponse($command, $details[1], $src);
 
             case 'ASK':
-                return $this->onAskResponse($command, $details[1]);
+                return $this->onAskResponse($command, $details[1], null);
 
             default:
                 return $error;
@@ -460,12 +470,12 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onMovedResponse(CommandInterface $command, $details)
+    protected function onMovedResponse(CommandInterface $command, $details, ParametersInterface $src)
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $src);
         }
 
         if ($this->useClusterSlots) {
@@ -486,12 +496,12 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onAskResponse(CommandInterface $command, $details)
+    protected function onAskResponse(CommandInterface $command, $details, ParametersInterface $src)
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $src);
         }
 
         $connection->executeCommand(RawCommand::create('ASKING'));
@@ -583,7 +593,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $response = $this->retryCommandOnFailure($command, __FUNCTION__);
 
         if ($response instanceof ErrorResponseInterface) {
-            return $this->onErrorResponse($command, $response);
+            $randomConnection = $this->getRandomConnection();
+            return $this->onErrorResponse($command, $response, $randomConnection != null ? $randomConnection->getParameters(): null);
         }
 
         return $response;
