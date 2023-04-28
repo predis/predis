@@ -693,7 +693,6 @@ class RedisClusterTest extends PredisTestCase
                 new Response\Error('MOVED 1970 127.0.0.1:9381')
             );
 
-
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=11101-16383');
         $connection3
             ->expects($this->never())

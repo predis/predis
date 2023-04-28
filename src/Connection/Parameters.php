@@ -173,9 +173,8 @@ class Parameters implements ParametersInterface
         return isset($this->parameters[$parameter]);
     }
 
-
     /**
-     * Sets a value
+     * Sets a value.
      *
      * @param $name
      * @param $value
@@ -185,7 +184,6 @@ class Parameters implements ParametersInterface
     {
         $this->parameters[$name] = $value;
     }
-
 
     /**
      * {@inheritdoc}

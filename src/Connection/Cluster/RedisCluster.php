@@ -336,15 +336,15 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection(string $connectionID, ParametersInterface $src = null) : NodeConnectionInterface
+    protected function createConnection(string $connectionID, ParametersInterface $src = null): NodeConnectionInterface
     {
         $separator = strrpos($connectionID, ':');
         $host = substr($connectionID, 0, $separator);
         $port = substr($connectionID, $separator + 1);
 
         if ($src != null) {
-            $baseParams = array_filter($src->toArray(), function ($_, $key){
-                return !in_array($key, ["slots", "host", "port"]);
+            $baseParams = array_filter($src->toArray(), function ($_, $key) {
+                return !in_array($key, ['slots', 'host', 'port']);
             }, ARRAY_FILTER_USE_BOTH);
             $params = new Parameters($baseParams);
         } else {
@@ -436,9 +436,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     protected function move(NodeConnectionInterface $connection, $slot)
     {
-        $this->pool[(string)$connection] = $connection;
-        $this->slots[(int)$slot] = $connection;
-        $this->slotmap[(int)$slot] = $connection;
+        $this->pool[(string) $connection] = $connection;
+        $this->slots[(int) $slot] = $connection;
+        $this->slotmap[(int) $slot] = $connection;
     }
 
     /**
@@ -598,6 +598,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
         if ($response instanceof ErrorResponseInterface) {
             $randomConnection = $this->getRandomConnection();
+
             return $this->onErrorResponse($command, $response, $randomConnection != null ? $randomConnection->getParameters() : null);
         }
 
@@ -683,6 +684,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function useClusterSlots($value)
     {
-        $this->useClusterSlots = (bool)$value;
+        $this->useClusterSlots = (bool) $value;
     }
 }
