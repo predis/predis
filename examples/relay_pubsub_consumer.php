@@ -12,48 +12,44 @@
 
 require __DIR__ . '/shared.php';
 
-// Starting from Redis 2.0 clients can subscribe and listen for events published
-// on certain channels using a Publish/Subscribe (PUB/SUB) approach.
-
-// Create a client and disable r/w timeout on the socket
-$client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
+// Create a Relay client, unlike Predis r/w timeout does not need to be disabled
+$client = new Predis\Client($single_server, ['connections' => 'relay']);
 
 // Initialize a new pubsub consumer.
 $pubsub = $client->pubSubLoop();
 
-// Subscribe to your channels
-$pubsub->subscribe('control_channel', 'notifications');
-
-// Start processing the pubsub messages. Open a terminal and use redis-cli
-// to push messages to the channels. Examples:
-//   redis-cli PUBLISH notifications "this is a test"
-//   redis-cli PUBLISH control_channel quit_loop
-foreach ($pubsub as $message) {
+// When using Relay you cannot use foreach-loops to iterate
+// over messages instead use a callback function
+$poorMansKafka = function ($message, $client) {
     switch ($message->kind) {
         case 'subscribe':
             echo "Subscribed to {$message->channel}", PHP_EOL;
             break;
 
         case 'message':
+        case 'pmessage':
             if ($message->channel == 'control_channel') {
                 if ($message->payload == 'quit_loop') {
                     echo 'Aborting pubsub loop...', PHP_EOL;
-                    $pubsub->unsubscribe();
+                    $client->unsubscribe();
                 } else {
                     echo "Received an unrecognized command: {$message->payload}.", PHP_EOL;
                 }
             } else {
-                echo "Received the following message from {$message->channel}:",
+                echo "Received the message from `{$message->channel}` channel:",
                 PHP_EOL, "  {$message->payload}", PHP_EOL, PHP_EOL;
             }
-            break;
     }
-}
+};
 
-// Always unset the pubsub consumer instance when you are done! The
-// class destructor will take care of cleanups and prevent protocol
-// desynchronizations between the client and the server.
-unset($pubsub);
+// Subscribe to your channels and start processing the messages.
+$pubsub->subscribe('control_channel', 'notifications', $poorMansKafka);
+
+// Open a terminal and use redis-cli to push messages to the channels. Examples:
+//   redis-cli PUBLISH notifications "this is a test"
+//   redis-cli PUBLISH control_channel quit_loop
+
+// When using Relay, there is no need to unset the pubsub consumer instance when you are done
 
 // Say goodbye :-)
 $version = redis_version($client->info());

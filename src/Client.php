@@ -33,6 +33,7 @@ use Predis\Pipeline\Pipeline;
 use Predis\Pipeline\RelayAtomic;
 use Predis\Pipeline\RelayPipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
+use Predis\PubSub\RelayConsumer as RelayPubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -532,7 +533,11 @@ class Client implements ClientInterface, IteratorAggregate
      */
     protected function createPubSub(array $options = null, $callable = null)
     {
-        $pubsub = new PubSubConsumer($this, $options);
+        if ($this->connection instanceof RelayConnection) {
+            $pubsub = new RelayPubSubConsumer($this, $options);
+        } else {
+            $pubsub = new PubSubConsumer($this, $options);
+        }
 
         if (!isset($callable)) {
             return $pubsub;

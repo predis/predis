@@ -68,10 +68,19 @@ class RelayConnection extends StreamConnection
     public $atypicalCommands = [
         'AUTH',
         'SELECT',
+
         'TYPE',
+
         'MULTI',
         'EXEC',
         'DISCARD',
+
+        'SUBSCRIBE',
+        'UNSUBSCRIBE',
+        'PSUBSCRIBE',
+        'PUNSUBSCRIBE',
+        'SSUBSCRIBE',
+        'SUNSUBSCRIBE',
     ];
 
     /**

@@ -32,8 +32,8 @@ abstract class AbstractConsumer implements Iterator
     public const STATUS_SUBSCRIBED = 2;  // 0b0010
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
 
-    private $position = null;
-    private $statusFlags = self::STATUS_VALID;
+    protected $position = null;
+    protected $statusFlags = self::STATUS_VALID;
 
     /**
      * Automatically stops the consumer when the garbage collector kicks in.
