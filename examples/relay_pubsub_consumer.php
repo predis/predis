@@ -12,8 +12,11 @@
 
 require __DIR__ . '/shared.php';
 
-// Create a Relay client, unlike Predis r/w timeout does not need to be disabled
-$client = new Predis\Client($single_server, ['connections' => 'relay']);
+// Create a Relay client and disable r/w timeout on the connection
+$client = new Predis\Client(
+    $single_server + ['read_write_timeout' => 0],
+    ['connections' => 'relay']
+);
 
 // Initialize a new pubsub consumer.
 $pubsub = $client->pubSubLoop();
