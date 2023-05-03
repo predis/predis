@@ -174,6 +174,14 @@ class Parameters implements ParametersInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function __set($name, $value)
+    {
+        $this->parameters[$name] = $value;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function __toString()
