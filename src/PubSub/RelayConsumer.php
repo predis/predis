@@ -36,10 +36,10 @@ class RelayConsumer extends Consumer
             $channels,
             function ($relay, $channel, $message) use ($callback) {
                 $callback((object) [
-                    'kind' => self::MESSAGE,
+                    'kind' => is_null($message) ? self::SUBSCRIBE : self::MESSAGE,
                     'channel' => $channel,
                     'payload' => $message,
-                ]);
+                ], $relay);
             }
         ]);
 
@@ -65,11 +65,11 @@ class RelayConsumer extends Consumer
             $patterns,
             function ($relay, $pattern, $channel, $message) use ($callback) {
                 $callback((object) [
-                    'kind' => self::PMESSAGE,
+                    'kind' => is_null($message) ? self::PSUBSCRIBE : self::PMESSAGE,
                     'pattern' => $pattern,
                     'channel' => $channel,
                     'payload' => $message,
-                ]);
+                ], $relay);
             }
         ]);
 
