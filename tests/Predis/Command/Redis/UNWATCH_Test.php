@@ -15,9 +15,6 @@ namespace Predis\Command\Redis;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-incompatible
- *
- * Waiting for `UNWATCH` support in Relay.
  */
 class UNWATCH_Test extends PredisCommandTestCase
 {
@@ -78,6 +75,7 @@ class UNWATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanBeCalledInsideTransaction(): void
@@ -86,5 +84,17 @@ class UNWATCH_Test extends PredisCommandTestCase
 
         $redis->multi();
         $this->assertInstanceOf('Predis\Response\Status', $redis->unwatch());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.2.0
+     */
+    public function testCanBeCalledInsideTransactionUsingRelay(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->multi();
+        $this->assertInstanceOf('Relay\\Relay', $redis->unwatch());
     }
 }

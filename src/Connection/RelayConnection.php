@@ -75,6 +75,9 @@ class RelayConnection extends StreamConnection
         'EXEC',
         'DISCARD',
 
+        'WATCH',
+        'UNWATCH',
+
         'SUBSCRIBE',
         'UNSUBSCRIBE',
         'PSUBSCRIBE',
@@ -258,14 +261,14 @@ class RelayConnection extends StreamConnection
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
-            throw $this->onCommandError($ex);
+            throw $this->onCommandError($ex, $command);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function onCommandError(RelayException $exception)
+    public function onCommandError(RelayException $exception, CommandInterface $command)
     {
         $code = $exception->getCode();
         $message = $exception->getMessage();

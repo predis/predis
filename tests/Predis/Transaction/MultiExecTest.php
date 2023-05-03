@@ -780,11 +780,8 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
+     * @group relay-risky
      * @requiresRedisVersion >= 2.2.0
-     *
-     * Waiting for `WATCH` support in Relay.
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
     {

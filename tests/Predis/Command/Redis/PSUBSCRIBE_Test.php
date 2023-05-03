@@ -16,8 +16,6 @@ namespace Predis\Command\Redis;
  * @group commands
  * @group realm-pubsub
  * @group relay-incompatible
- *
- * Waiting for `PSUBSCRIBE` support in Relay.
  */
 class PSUBSCRIBE_Test extends PredisCommandTestCase
 {
