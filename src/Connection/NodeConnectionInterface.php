@@ -49,6 +49,13 @@ interface NodeConnectionInterface extends ConnectionInterface
     public function addConnectCommand(CommandInterface $command);
 
     /**
+     * Returns init commands array for current connection.
+     *
+     * @return CommandInterface[]
+     */
+    public function getInitCommands(): array;
+
+    /**
      * Reads a response from the server.
      *
      * @return mixed

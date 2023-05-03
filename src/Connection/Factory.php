@@ -174,6 +174,12 @@ class Factory implements FactoryInterface
             );
         }
 
+        if (isset($parameters->protocol) && (int) $parameters->protocol > 2) {
+            $connection->addConnectCommand(
+                new RawCommand('HELLO', [$parameters->protocol, 'SETNAME', 'predis'])
+            );
+        }
+
         if (isset($parameters->database) && strlen($parameters->database)) {
             $connection->addConnectCommand(
                 new RawCommand('SELECT', [$parameters->database])
