@@ -31,6 +31,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use ReturnTypeWillChange;
 use Throwable;
+use Traversable;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -589,7 +590,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     #[ReturnTypeWillChange]
     public function count()
@@ -598,7 +599,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return Traversable<string, NodeConnectionInterface>
      */
     #[ReturnTypeWillChange]
     public function getIterator()

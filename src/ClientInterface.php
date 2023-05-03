@@ -38,12 +38,12 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
-use Predis\Command\Container\ACL;
-use Predis\Command\Container\FUNCTIONS;
-use Predis\Command\Container\Json\JSONDEBUG;
-use Predis\Command\Container\Search\FTCONFIG;
-use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\FactoryInterface;
+use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\Json\JSONDEBUG;
+use Predis\Command\Redis\Container\Search\FTCONFIG;
+use Predis\Command\Redis\Container\Search\FTCURSOR;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -354,11 +354,11 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FUNCTIONS $function
- * @property FTCONFIG  $ftconfig
- * @property FTCURSOR  $ftcursor
- * @property JSONDEBUG $jsondebug
- * @property ACL       $acl
+ * @property FunctionContainer $function
+ * @property FTCONFIG          $ftconfig
+ * @property FTCURSOR          $ftcursor
+ * @property JSONDEBUG         $jsondebug
+ * @property ACL               $acl
  */
 interface ClientInterface
 {
