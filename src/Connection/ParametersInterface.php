@@ -58,7 +58,7 @@ interface ParametersInterface
      * Sets a new value in the parameters OR overrides a value, previously set.
      *
      * @param $name     string  Key that needs to be set
-     * @param $value    object  Value associatied with this key
+     * @param $value    object  Value associated with this key
      * @return mixed
      */
     public function __set($name, $value);

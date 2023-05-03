@@ -174,7 +174,7 @@ class Parameters implements ParametersInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __set($name, $value)
     {
