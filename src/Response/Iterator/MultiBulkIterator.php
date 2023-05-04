@@ -34,7 +34,7 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     protected $size;
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function rewind()
@@ -43,7 +43,7 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
     #[ReturnTypeWillChange]
     public function current()
@@ -52,7 +52,7 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @return int|null
      */
     #[ReturnTypeWillChange]
     public function key()
@@ -61,7 +61,7 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     #[ReturnTypeWillChange]
     public function next()
@@ -72,7 +72,7 @@ abstract class MultiBulkIterator implements Iterator, Countable, ResponseInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function valid()

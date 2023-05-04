@@ -63,7 +63,7 @@ class MultiBulkTuple extends MultiBulk implements OuterIterator
     }
 
     /**
-     * {@inheritdoc}
+     * @return MultiBulk
      */
     #[ReturnTypeWillChange]
     public function getInnerIterator()

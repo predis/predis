@@ -22,6 +22,6 @@ class FunctionContainer extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'functions';
+        return 'FUNCTIONS';
     }
 }
