@@ -25,12 +25,15 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use ReturnTypeWillChange;
 use Throwable;
+use Traversable;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
@@ -64,8 +67,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryInterval = 10;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @param FactoryInterface       $connections Optional connection factory.
+     * @param StrategyInterface|null $strategy    Optional cluster strategy.
      */
     public function __construct(
         FactoryInterface $connections,
@@ -328,18 +331,29 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * Creates a new connection instance from the given connection ID.
      *
-     * @param string $connectionID Identifier for the connection.
+     * @param string                   $connectionID Identifier for the connection.
+     * @param ParametersInterface|null $src          Previously established connection to base the connection setup off.
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection($connectionID)
+    protected function createConnection(string $connectionID, ParametersInterface $src = null): NodeConnectionInterface
     {
         $separator = strrpos($connectionID, ':');
+        $host = substr($connectionID, 0, $separator);
+        $port = substr($connectionID, $separator + 1);
 
-        return $this->connections->create([
-            'host' => substr($connectionID, 0, $separator),
-            'port' => substr($connectionID, $separator + 1),
-        ]);
+        if ($src != null) {
+            $baseParams = array_filter($src->toArray(), function ($_, $key) {
+                return !in_array($key, ['slots', 'host', 'port']);
+            }, ARRAY_FILTER_USE_BOTH);
+            $params = new Parameters($baseParams);
+        } else {
+            $params = new Parameters();
+        }
+        $params->host = $host;
+        $params->port = $port;
+
+        return $this->connections->create($params->toArray());
     }
 
     /**
@@ -383,7 +397,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $connectionID = $this->guessNode($slot);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $randomConnection = $this->getRandomConnection();
+            $connection = $this->createConnection($connectionID, $randomConnection != null ? $randomConnection->getParameters() : null);
             $this->pool[$connectionID] = $connection;
         }
 
@@ -434,16 +449,16 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error)
+    protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error, ParametersInterface $src = null)
     {
         $details = explode(' ', $error->getMessage(), 2);
 
         switch ($details[0]) {
             case 'MOVED':
-                return $this->onMovedResponse($command, $details[1]);
+                return $this->onMovedResponse($command, $details[1], $src);
 
             case 'ASK':
-                return $this->onAskResponse($command, $details[1]);
+                return $this->onAskResponse($command, $details[1], $src);
 
             default:
                 return $error;
@@ -459,12 +474,12 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onMovedResponse(CommandInterface $command, $details)
+    protected function onMovedResponse(CommandInterface $command, $details, ParametersInterface $src = null)
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $src);
         }
 
         if ($this->useClusterSlots) {
@@ -485,12 +500,12 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      *
      * @return mixed
      */
-    protected function onAskResponse(CommandInterface $command, $details)
+    protected function onAskResponse(CommandInterface $command, $details, ParametersInterface $src = null)
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $src);
         }
 
         $connection->executeCommand(RawCommand::create('ASKING'));
@@ -582,14 +597,16 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $response = $this->retryCommandOnFailure($command, __FUNCTION__);
 
         if ($response instanceof ErrorResponseInterface) {
-            return $this->onErrorResponse($command, $response);
+            $randomConnection = $this->getRandomConnection();
+
+            return $this->onErrorResponse($command, $response, $randomConnection != null ? $randomConnection->getParameters() : null);
         }
 
         return $response;
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     #[ReturnTypeWillChange]
     public function count()
@@ -598,7 +615,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return Traversable<string, NodeConnectionInterface>
      */
     #[ReturnTypeWillChange]
     public function getIterator()

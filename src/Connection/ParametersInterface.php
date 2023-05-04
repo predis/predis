@@ -29,8 +29,10 @@ namespace Predis\Connection;
  * @property bool   $async_connect      Performs the connect() operation asynchronously.
  * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
  * @property bool   $persistent         Leaves the connection open after a GC collection.
+ * @property string $username           Optional username to access Redis (see the AUTH command).
  * @property string $password           Password to access Redis (see the AUTH command).
  * @property string $database           Database index (see the SELECT command).
+ * @property object $ssl                SSL/TLS configuration options.
  */
 interface ParametersInterface
 {
@@ -51,6 +53,15 @@ interface ParametersInterface
      * @return mixed|null
      */
     public function __get($parameter);
+
+    /**
+     * Sets a new value in the parameters OR overrides a value, previously set.
+     *
+     * @param $name     string  Key that needs to be set
+     * @param $value    object  Value associated with this key
+     * @return mixed
+     */
+    public function __set($name, $value);
 
     /**
      * Returns basic connection parameters as a valid URI string.

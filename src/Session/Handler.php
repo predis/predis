@@ -53,7 +53,9 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param  string $save_path
+     * @param  string $session_id
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function open($save_path, $session_id)
@@ -63,7 +65,7 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function close()
@@ -73,7 +75,8 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param  int  $maxlifetime
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function gc($maxlifetime)
@@ -83,7 +86,8 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param  string $session_id
+     * @return string
      */
     #[ReturnTypeWillChange]
     public function read($session_id)
@@ -96,7 +100,9 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param  string $session_id
+     * @param  string $session_data
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function write($session_id, $session_data)
@@ -107,7 +113,8 @@ class Handler implements SessionHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param  string $session_id
+     * @return bool
      */
     #[ReturnTypeWillChange]
     public function destroy($session_id)
