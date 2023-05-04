@@ -107,6 +107,21 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testFakeKeysCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testInterleavedKeysCommandsWithOneKey(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -336,6 +351,13 @@ class RedisStrategyTest extends PredisTestCase
     protected function getExpectedCommands(?string $type = null): array
     {
         $commands = [
+            /* server commands with no keys */
+            'MULTI' => 'keys-fake',
+            'EXEC' => 'keys-fake',
+            'CONFIG' => 'keys-fake',
+            'INFO' => 'keys-fake',
+            'FLUSHDB' => 'keys-fake',
+
             /* commands operating on the key space */
             'EXISTS' => 'keys-all',
             'DEL' => 'keys-all',
@@ -350,6 +372,7 @@ class RedisStrategyTest extends PredisTestCase
             'SORT' => 'keys-first', // TODO
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'KEYS' => 'keys-first',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',

@@ -39,6 +39,13 @@ abstract class ClusterStrategy implements StrategyInterface
         $getKeyFromAllArguments = [$this, 'getKeyFromAllArguments'];
 
         return [
+            /* server commands with no keys */
+            'MULTI' => [$this, 'getFakeKey'],
+            'EXEC' => [$this, 'getFakeKey'],
+            'CONFIG' => [$this, 'getFakeKey'],
+            'INFO' => [$this, 'getFakeKey'],
+            'FLUSHDB' => [$this, 'getFakeKey'],
+
             /* commands operating on the key space */
             'EXISTS' => $getKeyFromAllArguments,
             'DEL' => $getKeyFromAllArguments,
@@ -53,6 +60,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'SORT' => [$this, 'getKeyFromSortCommand'],
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
+            'KEYS' => $getKeyFromFirstArgument,
 
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,
@@ -171,6 +179,16 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
             'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
         ];
+    }
+
+    /**
+     * Returns "fake" key for commands that didn't require key argument.
+     *
+     * @return string
+     */
+    public function getFakeKey(): string
+    {
+        return 'key';
     }
 
     /**
