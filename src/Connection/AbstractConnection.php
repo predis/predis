@@ -104,6 +104,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function getInitCommands(): array
+    {
+        return $this->initCommands;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function executeCommand(CommandInterface $command)
     {
         $this->writeRequest($command);

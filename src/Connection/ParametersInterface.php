@@ -22,6 +22,7 @@ namespace Predis\Connection;
  * @property string $scheme             Connection scheme, such as 'tcp' or 'unix'.
  * @property string $host               IP address or hostname of Redis.
  * @property int    $port               TCP port on which Redis is listening to.
+ * @property int    $protocol           Version of RESP protocol.
  * @property string $path               Path of a UNIX domain socket file.
  * @property string $alias              Alias for the connection.
  * @property float  $timeout            Timeout for the connect() operation.

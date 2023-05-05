@@ -12,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use Predis\Command\RawCommand;
 use PredisTestCase;
 use ReflectionObject;
 use stdClass;
@@ -536,6 +537,22 @@ class FactoryTest extends PredisTestCase
 
         $factory->undefine('test');
         $factory->create('test://127.0.0.1');
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testCreatesResp3ConnectionOnProtocolParameterGiven(): void
+    {
+        $parameters = ['protocol' => 3];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('HELLO', $initCommands[0]->getId());
     }
 
     // ******************************************************************** //
