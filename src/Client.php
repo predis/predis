@@ -269,6 +269,32 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
+     * Applies the configured serializer and compression to given value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public function pack($value)
+    {
+        return $this->connection instanceof RelayConnection
+            ? $this->connection->pack($value)
+            : $value;
+    }
+
+    /**
+     * Deserializes and decompresses to given value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public function unpack($value)
+    {
+        return $this->connection instanceof RelayConnection
+            ? $this->connection->unpack($value)
+            : $value;
+    }
+
+    /**
      * Executes a command without filtering its arguments, parsing the response,
      * applying any prefix to keys or throwing exceptions on Redis errors even
      * regardless of client options.

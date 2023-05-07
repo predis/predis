@@ -144,14 +144,6 @@ class RelayConnection extends StreamConnection
             throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
         }
 
-        if (isset($parameters->serializer)) {
-            throw new NotSupportedException('The serializer parameter is currently unsupported.');
-        }
-
-        if (isset($parameters->compression)) {
-            throw new NotSupportedException('The compression parameter is currently unsupported.');
-        }
-
         return $parameters;
     }
 
@@ -286,6 +278,28 @@ class RelayConnection extends StreamConnection
         }
 
         return new ClientException($message, $code, $exception);
+    }
+
+    /**
+     * Applies the configured serializer and compression to given value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public function pack($value)
+    {
+        return $this->client->_pack($value);
+    }
+
+    /**
+     * Deserializes and decompresses to given value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public function unpack($value)
+    {
+        return $this->client->_unpack($value);
     }
 
     /**
