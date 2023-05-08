@@ -20,6 +20,7 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\RelayConnection;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
@@ -178,9 +179,25 @@ class MultiExec implements ClientContextInterface
      */
     protected function call($commandID, array $arguments = [])
     {
-        $response = $this->client->executeCommand(
-            $this->client->createCommand($commandID, $arguments)
-        );
+        try {
+            $response = $this->client->executeCommand(
+                $this->client->createCommand($commandID, $arguments)
+            );
+        } catch (ServerException $exception) {
+            if (! $this->client->getConnection() instanceof RelayConnection) {
+                throw $exception;
+            }
+
+            if (strcasecmp($commandID, 'EXEC') <> 0) {
+                throw $exception;
+            }
+
+            if (! strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
+                throw $exception;
+            }
+
+            return null;
+        }
 
         if ($response instanceof ErrorResponseInterface) {
             throw new ServerException($response->getMessage());
