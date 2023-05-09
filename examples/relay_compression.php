@@ -45,9 +45,7 @@ var_dump($data);
 
 /*
 object(stdClass)#11 (2) {
-  ["author"]=>
-  string(15) "Jean-Luc Picard"
-  ["text"]=>
-  string(43) "I look forward to your report Mr. Broccoli."
+    ["author"]=>string(15) "Jean-Luc Picard"
+    ["text"]=>string(43) "I look forward to your report Mr. Broccoli."
 }
 */
