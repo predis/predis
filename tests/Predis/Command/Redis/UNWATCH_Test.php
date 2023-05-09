@@ -95,6 +95,6 @@ class UNWATCH_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->multi();
-        $this->assertInstanceOf('Relay\\Relay', $redis->unwatch());
+        $this->assertInstanceOf('Relay\Relay', $redis->unwatch());
     }
 }
