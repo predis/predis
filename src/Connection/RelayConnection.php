@@ -283,7 +283,7 @@ class RelayConnection extends StreamConnection
     /**
      * Applies the configured serializer and compression to given value.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      * @return string
      */
     public function pack($value)
@@ -294,7 +294,7 @@ class RelayConnection extends StreamConnection
     /**
      * Deserializes and decompresses to given value.
      *
-     * @param mixed $value
+     * @param  mixed  $value
      * @return string
      */
     public function unpack($value)

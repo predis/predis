@@ -3,12 +3,13 @@
 ## Unreleased
 
 ### Added
-- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands
+- Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
 - Added support for `FCALL_RO` command
 - Added support for `Redis JSON` module
 - Added support for `Redis Bloom` module
 - Added support for `Redis Search` module
 - Added support for `Redis TimeSeries` module
+- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands
 
 ### Fixed
 - Fixed prefixes for `XTRIM` and `XREVRANGE` commands

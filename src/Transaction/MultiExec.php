@@ -184,15 +184,15 @@ class MultiExec implements ClientContextInterface
                 $this->client->createCommand($commandID, $arguments)
             );
         } catch (ServerException $exception) {
-            if (! $this->client->getConnection() instanceof RelayConnection) {
+            if (!$this->client->getConnection() instanceof RelayConnection) {
                 throw $exception;
             }
 
-            if (strcasecmp($commandID, 'EXEC') <> 0) {
+            if (strcasecmp($commandID, 'EXEC') != 0) {
                 throw $exception;
             }
 
-            if (! strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
+            if (!strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
                 throw $exception;
             }
 

@@ -22,8 +22,8 @@ class RelayConsumer extends Consumer
     /**
      * Subscribes to the specified channels.
      *
-     * @param string ...$channel One or more channel names.
-     * @param callable $callback The message callback.
+     * @param string   ...$channel One or more channel names.
+     * @param callable $callback   The message callback.
      */
     public function subscribe($channel) // @phpstan-ignore-line
     {
@@ -40,7 +40,7 @@ class RelayConsumer extends Consumer
                     'channel' => $channel,
                     'payload' => $message,
                 ], $relay);
-            }
+            },
         ]);
 
         $this->client->getConnection()->executeCommand($command);
@@ -51,8 +51,8 @@ class RelayConsumer extends Consumer
     /**
      * Subscribes to the specified channels using a pattern.
      *
-     * @param string ...$pattern One or more channel name patterns.
-     * @param callable $callback The message callback.
+     * @param string   ...$pattern One or more channel name patterns.
+     * @param callable $callback   The message callback.
      */
     public function psubscribe(...$pattern) // @phpstan-ignore-line
     {
@@ -70,7 +70,7 @@ class RelayConsumer extends Consumer
                     'channel' => $channel,
                     'payload' => $message,
                 ], $relay);
-            }
+            },
         ]);
 
         $this->client->getConnection()->executeCommand($command);
