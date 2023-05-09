@@ -1,5 +1,13 @@
 ## Changelog
 
+## Unreleased
+
+### Changed
+- Added `PrefixableCommandInterface` (#1262)
+
+### Removed
+- Removed Webdis and Phpiredis support
+
 ## v2.2.0-RC1 (2023-05-09)
 
 ### Added
