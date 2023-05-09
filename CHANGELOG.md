@@ -1,20 +1,18 @@
 ## Changelog
 
-## Unreleased
+## v2.2.0-RC1 (2023-05-09)
 
 ### Added
 - Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
-- Added support for `FCALL_RO` command
-- Added support for `Redis JSON` module
-- Added support for `Redis Bloom` module
-- Added support for `Redis Search` module
-- Added support for `Redis TimeSeries` module
-- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands
+- Added support for `FCALL_RO` command (#1191)
+- Added support for Redis `JSON`, `Bloom`, `Search` and `TimeSeries`  module (#1253)
+- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands (#1193)
 
 ### Fixed
-- Fixed prefixes for `XTRIM` and `XREVRANGE` commands
+- Fixed prefixes for `XTRIM` and `XREVRANGE` commands (#1230)
 - Fix `fclose()` being called on invalid stream resource (#1199)
 - Fix `BitByte` and `ExpireOptions` traits skip processing on null values (#1169)
+- Fix missing `@return` annotations (#1265)
 
 ## v2.1.2 (2023-03-02)
 
