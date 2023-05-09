@@ -78,7 +78,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd($key, ...$membersDictionary);
 
-        $this->assertSame($expectedResponse, $redis->zmscore($key, ...$members));
+        $this->assertEquals($expectedResponse, $redis->zmscore($key, ...$members));
         $this->assertNull($redis->zmscore($key, $notExpectedMember)[0]);
     }
 

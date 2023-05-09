@@ -31,4 +31,23 @@ class HRANDFIELD extends RedisCommand
     {
         return 'HRANDFIELD';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        // flatten Relay (RESP3) maps
+        $return = [];
+
+        array_walk_recursive($data, function ($value) use (&$return) {
+            $return[] = $value;
+        });
+
+        return $return;
+    }
 }

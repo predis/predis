@@ -17,6 +17,7 @@ use Predis\Command\PrefixableCommand;
 /**
  * @group commands
  * @group realm-pubsub
+ * @group relay-incompatible
  */
 class PUNSUBSCRIBE_Test extends PredisCommandTestCase
 {

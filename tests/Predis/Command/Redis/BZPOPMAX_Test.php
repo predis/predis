@@ -47,7 +47,7 @@ class BZPOPMAX_Test extends PredisCommandTestCase
 
         $redis->zadd('test-bzpopmax', ...$sortedSetDictionary);
 
-        $this->assertSame($expectedResponse, $redis->bzpopmax(['empty sorted set', 'test-bzpopmax'], 0));
+        $this->assertEquals($expectedResponse, $redis->bzpopmax(['empty sorted set', 'test-bzpopmax'], 0));
         $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmax', 0, -1));
     }
 
