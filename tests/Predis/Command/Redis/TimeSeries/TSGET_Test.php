@@ -18,6 +18,10 @@ use Predis\Command\Argument\TimeSeries\GetArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSGET_Test extends PredisCommandTestCase
 {
     /**

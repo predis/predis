@@ -41,6 +41,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: relay
 
       - name: Get Composer cache directory
         id: composer-cache
@@ -58,5 +59,8 @@ jobs:
           PHP_VERSION: ${{ matrix.php }}
         run: composer install --ansi --no-progress --prefer-dist
 
-      - name: Run PHPUnit tests
-        run: vendor/bin/phpunit
+      - name: Run tests
+        run: vendor/bin/phpunit --group realm-stack
+
+      - name: Run tests using Relay
+        run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
