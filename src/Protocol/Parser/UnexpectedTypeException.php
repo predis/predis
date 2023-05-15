@@ -12,6 +12,7 @@
 
 namespace Predis\Protocol\Parser;
 
+use Throwable;
 use UnexpectedValueException;
 
 class UnexpectedTypeException extends UnexpectedValueException
