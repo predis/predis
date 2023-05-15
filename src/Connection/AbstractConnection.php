@@ -15,6 +15,8 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
+use Predis\Protocol\Parser\ParserStrategyResolver;
+use Predis\Protocol\Parser\Strategy\ParserStrategyInterface;
 use Predis\Protocol\ProtocolException;
 
 /**
@@ -23,6 +25,11 @@ use Predis\Protocol\ProtocolException;
  */
 abstract class AbstractConnection implements NodeConnectionInterface
 {
+    /**
+     * @var ParserStrategyInterface
+     */
+    protected $parserStrategy;
+
     private $resource;
     private $cachedId;
 
@@ -35,6 +42,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     public function __construct(ParametersInterface $parameters)
     {
         $this->parameters = $this->assertParameters($parameters);
+        $this->setParserStrategy();
     }
 
     /**
@@ -206,5 +214,16 @@ abstract class AbstractConnection implements NodeConnectionInterface
     public function __sleep()
     {
         return ['parameters', 'initCommands'];
+    }
+
+    /**
+     * Set parser strategy for given connection.
+     *
+     * @return void
+     */
+    protected function setParserStrategy(): void
+    {
+        $strategyResolver = new ParserStrategyResolver();
+        $this->parserStrategy = $strategyResolver->resolve((int) $this->parameters->protocol);
     }
 }
