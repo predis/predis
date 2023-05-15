@@ -14,9 +14,8 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
-use Predis\Response\Error as ErrorResponse;
+use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
-use Predis\Response\Status as StatusResponse;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -289,21 +288,31 @@ class StreamConnection extends AbstractConnection
             $this->onConnectionError('Error while reading line from the server.');
         }
 
-        $prefix = $chunk[0];
-        $payload = substr($chunk, 1, -2);
+        try {
+            $parsedData = $this->parserStrategy->parseData($chunk);
+        } catch (UnexpectedTypeException $e) {
+            $this->onProtocolError("Unknown response prefix: '{$e->getType()}'.");
 
-        switch ($prefix) {
-            case '+':
-                return StatusResponse::get($payload);
+            return;
+        }
 
-            case '$':
-                $size = (int) $payload;
+        if (!is_array($parsedData)) {
+            return $parsedData;
+        }
 
-                if ($size === -1) {
-                    return;
+        switch ($parsedData['type']) {
+            case 'array':
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $data[$i] = $this->read();
                 }
 
+                return $data;
+
+            case 'bulkString':
                 $bulkData = '';
+                $size = $parsedData['value'];
                 $bytesLeft = ($size += 2);
 
                 do {
@@ -318,35 +327,9 @@ class StreamConnection extends AbstractConnection
                 } while ($bytesLeft > 0);
 
                 return substr($bulkData, 0, -2);
-
-            case '*':
-                $count = (int) $payload;
-
-                if ($count === -1) {
-                    return;
-                }
-
-                $multibulk = [];
-
-                for ($i = 0; $i < $count; ++$i) {
-                    $multibulk[$i] = $this->read();
-                }
-
-                return $multibulk;
-
-            case ':':
-                $integer = (int) $payload;
-
-                return $integer == $payload ? $integer : $payload;
-
-            case '-':
-                return new ErrorResponse($payload);
-
-            default:
-                $this->onProtocolError("Unknown response prefix: '$prefix'.");
-
-                return;
         }
+
+        return $parsedData;
     }
 
     /**
