@@ -26,4 +26,28 @@ class ACL extends RedisCommand
     {
         return 'ACL';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        if ($data === array_values($data)) {
+            return $data;
+        }
+
+        // flatten Relay (RESP3) maps
+        $return = [];
+
+        array_walk($data, function ($value, $key) use (&$return) {
+            $return[] = $key;
+            $return[] = $value;
+        });
+
+        return $return;
+    }
 }

@@ -92,7 +92,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
         );
 
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame(
+        $this->assertEquals(
             $expectedResultSortedSet,
             $redis->zrange($destination, 0, -1, ['withscores' => true])
         );

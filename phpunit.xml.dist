@@ -28,9 +28,11 @@
 
     <groups>
         <exclude>
-            <group>ext-phpiredis</group>
-            <group>ext-curl</group>
             <group>realm-webdis</group>
+            <group>realm-stack</group>
+            <group>ext-relay</group>
+            <group>ext-curl</group>
+            <group>ext-phpiredis</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -45,13 +47,9 @@
     </filter>
 
     <php>
-        <!-- Redis -->
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
         <const name="REDIS_SERVER_DBNUM" value="0" />
-
-        <!-- Webdis -->
-        <const name="WEBDIS_SERVER_HOST" value="127.0.0.1" />
-        <const name="WEBDIS_SERVER_PORT" value="7379" />
+        <env name="USE_RELAY" value="false" />
     </php>
 </phpunit>

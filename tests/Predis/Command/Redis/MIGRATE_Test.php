@@ -88,6 +88,7 @@ class MIGRATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsStatusNOKEYOnNonExistingKey(): void
@@ -96,6 +97,18 @@ class MIGRATE_Test extends PredisCommandTestCase
 
         $this->assertEquals('NOKEY', $response = $redis->migrate('169.254.10.10', 16379, 'foo', 15, 1));
         $this->assertInstanceOf('Predis\Response\Status', $response);
+    }
+
+    /**
+     * @group connected
+     * @group ext-relay
+     * @requiresRedisVersion >= 2.6.0
+     */
+    public function testReturnsStatusNOKEYOnNonExistingKeyUsingRelay(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('NOKEY', $redis->migrate('169.254.10.10', 16379, 'foo', 15, 1));
     }
 
     /**

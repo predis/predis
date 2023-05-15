@@ -145,6 +145,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.9
      */
     public function testGetsNameOfConnection(): void
