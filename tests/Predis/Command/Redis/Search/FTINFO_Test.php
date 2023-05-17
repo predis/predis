@@ -93,7 +93,7 @@ class FTINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown Index name');
+        $this->expectExceptionMessage('Unknown index name');
 
         $redis->ftinfo('index');
     }

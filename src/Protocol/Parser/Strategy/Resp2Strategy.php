@@ -22,7 +22,7 @@ class Resp2Strategy implements ParserStrategyInterface
     /**
      * Callbacks to process given RESP type.
      *
-     * @var callable[]
+     * @var string[]
      */
     protected $typeCallbacks = [
         '+' => 'parseSimpleString',
