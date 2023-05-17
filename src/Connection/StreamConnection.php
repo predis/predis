@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\Parser\UnexpectedTypeException;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 
 /**
@@ -301,6 +302,7 @@ class StreamConnection extends AbstractConnection
         }
 
         switch ($parsedData['type']) {
+            case 'push':
             case 'array':
                 $data = [];
 
@@ -311,22 +313,38 @@ class StreamConnection extends AbstractConnection
                 return $data;
 
             case 'bulkString':
-                $bulkData = '';
-                $size = $parsedData['value'];
-                $bytesLeft = ($size += 2);
-
-                do {
-                    $chunk = is_resource($socket) ? fread($socket, min($bytesLeft, 4096)) : false;
-
-                    if ($chunk === false || $chunk === '') {
-                        $this->onConnectionError('Error while reading bytes from the server.');
-                    }
-
-                    $bulkData .= $chunk;
-                    $bytesLeft = $size - strlen($bulkData);
-                } while ($bytesLeft > 0);
+            case 'verbatimString':
+                $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
                 return substr($bulkData, 0, -2);
+
+            case 'blobError':
+                $errorMessage = $this->readByChunks($socket, $parsedData['value']);
+
+                return new Error(substr($errorMessage, 0, -2));
+
+            case 'map':
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $key = $this->read();
+                    $data[$key] = $this->read();
+                }
+
+                return $data;
+
+            case 'set':
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $element = $this->read();
+
+                    if (!in_array($element, $data, true)) {
+                        $data[] = $element;
+                    }
+                }
+
+                return $data;
         }
 
         return $parsedData;
@@ -351,5 +369,31 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->write($buffer);
+    }
+
+    /**
+     * Reads given resource split on chunks with given size.
+     *
+     * @param $resource
+     * @param  int    $chunkSize
+     * @return string
+     */
+    private function readByChunks($resource, int $chunkSize): string
+    {
+        $string = '';
+        $bytesLeft = ($chunkSize += 2);
+
+        do {
+            $chunk = is_resource($resource) ? fread($resource, min($bytesLeft, 4096)) : false;
+
+            if ($chunk === false || $chunk === '') {
+                $this->onConnectionError('Error while reading bytes from the server.');
+            }
+
+            $string .= $chunk;
+            $bytesLeft = $chunkSize - strlen($string);
+        } while ($bytesLeft > 0);
+
+        return $string;
     }
 }
