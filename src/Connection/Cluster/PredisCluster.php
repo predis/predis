@@ -18,12 +18,10 @@ use IteratorAggregate;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
-use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use ReturnTypeWillChange;
-use UnexpectedValueException;
 
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers

@@ -15,7 +15,6 @@ namespace Predis\Connection\Cluster;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use PredisTestCase;
-use UnexpectedValueException;
 
 class PredisClusterTest extends PredisTestCase
 {

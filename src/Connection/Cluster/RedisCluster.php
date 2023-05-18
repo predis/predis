@@ -23,7 +23,6 @@ use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
-use Predis\Connection\ConnectionInterface;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
@@ -33,7 +32,6 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use ReturnTypeWillChange;
 use Throwable;
-use UnexpectedValueException;
 
 /**
  * Abstraction for a Redis-backed cluster of nodes (Redis >= 3.0.0).
