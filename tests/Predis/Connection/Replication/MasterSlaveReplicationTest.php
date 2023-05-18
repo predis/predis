@@ -1438,15 +1438,24 @@ repl_backlog_histlen:12978
     }
 
     /**
+     * @dataProvider connectionsProvider
      * @group disconnected
      */
-    public function testGetParameters(): void
+    public function testGetParameters(string $connection): void
     {
-        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $connection = $this->getMockConnection($connection);
 
         $replication = new MasterSlaveReplication();
-        $replication->add($master);
+        $replication->add($connection);
 
-        $this->assertSame($master->getParameters(), $replication->getParameters());
+        $this->assertSame($connection->getParameters(), $replication->getParameters());
+    }
+
+    public function connectionsProvider(): array
+    {
+        return [
+            'master connection' => ['tcp://127.0.0.1:6379?role=master'],
+            'slave connection' => ['tcp://127.0.0.1:6379'],
+        ];
     }
 }

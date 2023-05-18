@@ -19,6 +19,7 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
@@ -554,8 +555,18 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): ?ParametersInterface
     {
-        return $this->getMaster()->getParameters();
+        if (isset($this->master)) {
+            return $this->master->getParameters();
+        }
+
+        $slave = $this->pickSlave();
+
+        if (null !== $slave) {
+            return $slave->getParameters();
+        }
+
+        return null;
     }
 }

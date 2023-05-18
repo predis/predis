@@ -20,6 +20,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
 use Predis\Response\Error;
@@ -775,8 +776,20 @@ class SentinelReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): ?ParametersInterface
     {
-        return $this->getMaster()->getParameters();
+        if (isset($this->master)) {
+            return $this->master->getParameters();
+        }
+
+        if (!empty($this->slaves)) {
+            return $this->slaves[0]->getParameters();
+        }
+
+        if (!empty($this->sentinels)) {
+            return $this->sentinels[0]->getParameters();
+        }
+
+        return null;
     }
 }
